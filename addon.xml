@@ -1,0 +1,38 @@
+<!-- This is used to install the plugin as an add-on:
+https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons
+ -->
+<xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
+    <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
+        id="com.oxygenxml.plugin.WorkspaceAccess">
+        <xt:location href="${project.build.finalName}-plugin.jar"/>
+        <xt:version>${project.version}.0</xt:version>
+        <xt:oxy_version>17.0+</xt:oxy_version>
+        <xt:type>plugin</xt:type>
+        <xt:author>Oxygen XML Editor</xt:author>
+        <xt:name>WorkspaceAccess</xt:name>
+        <xt:description><html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+                <title>Sample Workspace Access plugin</title>
+            </head>
+            <body>
+                <div>
+                    <p>This plugin installs access to the &lt;oXygen/&gt; workspace. That enables
+                        &lt;oXygen/&gt; to open/save/close resources, access the editors content,
+                        etc. Such a plugin must implement an WorkspacePluginExtension. </p>
+                    <p>For more details see <a
+                        href="http://www.oxygenxml.com/doc/ug-oxygen/index.html?q=/doc/ug-oxygen/concepts/workspace-access-plugin.html"
+                        >http://www.oxygenxml.com/doc/ug-oxygen/index.html?q=/doc/ug-oxygen/concepts/workspace-access-plugin.html</a>
+                    </p>
+                </div>
+            </body>
+        </html>
+        </xt:description>
+        <xt:license><![CDATA[(c) Syncro Soft , All rights reserved.
+This Plug-In is part of the Oxygen XML Software and, as such, is part of the License Agreement governing the Oxygen XML Software.
+]]></xt:license>
+    </xt:extension>
+</xt:extensions>
+
+

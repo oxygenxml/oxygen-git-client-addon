@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The plugin.dtd file is located in the OXYGEN_INSATALL_DIR/plugins directory -->
+<!DOCTYPE plugin SYSTEM "../plugin.dtd">
+
+<plugin
+ id="com.oxygenxml.plugin.WorkspaceAccess"
+ name="CustomWorkspaceAccess"
+ description="Test"
+ version="${project.version}"
+ vendor="oXygen XML"
+ class="com.oxygenxml.sdksamples.workspace.WorkspaceAccessPlugin"
+ classLoaderType="preferReferencedResources">
+ 
+ <runtime>
+	<librariesFolder name="lib" />
+    <library name="target/classes" />
+	<librariesFolder name="target/lib" />
+ </runtime>
+ 
+ <extension type="WorkspaceAccess" 
+  class="com.oxygenxml.sdksamples.workspace.CustomWorkspaceAccessPluginExtension"/>
+ 
+  <!--The sample view which will present messages from the sample plugin.-->
+  <view id="SampleWorkspaceAccessID" initialSide="WEST" initialRow="0"/>
+  <!--The sample toolbar which will present messages from the sample plugin.-->
+  <toolbar id="SampleWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1"/>
+</plugin>
