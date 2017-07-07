@@ -1,5 +1,8 @@
 package com.oxygenxml.sdksamples.workspace.git;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import com.oxygenxml.sdksamples.workspace.git.view.CommitPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.GitWindow;
 import com.oxygenxml.sdksamples.workspace.git.view.StagedChangesPanel;
@@ -13,8 +16,23 @@ public class Application {
 	}
 
 	private void start() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		createAndShowFrame();
-		
+
 	}
 
 	private void createAndShowFrame() {
@@ -22,10 +40,11 @@ public class Application {
 		UnstagedChangesPanel unstagedChangesPanel = new UnstagedChangesPanel();
 		StagedChangesPanel stagedChangesPanel = new StagedChangesPanel();
 		CommitPanel commitPanel = new CommitPanel();
-		
-		StagingPanel stagingPanel = new StagingPanel(workingCopySelectionPanel, unstagedChangesPanel, stagedChangesPanel, commitPanel);
-		
+
+		StagingPanel stagingPanel = new StagingPanel(workingCopySelectionPanel, unstagedChangesPanel,
+				stagedChangesPanel, commitPanel);
+
 		GitWindow gitWindow = new GitWindow(stagingPanel);
-		
+
 	}
 }

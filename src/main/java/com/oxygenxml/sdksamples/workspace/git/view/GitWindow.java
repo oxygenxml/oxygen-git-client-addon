@@ -1,5 +1,8 @@
 package com.oxygenxml.sdksamples.workspace.git.view;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.JFrame;
 
 public class GitWindow extends JFrame{
@@ -14,13 +17,13 @@ public class GitWindow extends JFrame{
 
 	private void init() {
 		this.setTitle("Git");
-		this.add(stagingPanel);
+		this.getContentPane().add(stagingPanel, BorderLayout.CENTER);
 		
 		this.pack();
 		
+		this.setMinimumSize(new Dimension(600,700));
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(200, 200);
 		this.setLocationRelativeTo(null);
 	}
 
