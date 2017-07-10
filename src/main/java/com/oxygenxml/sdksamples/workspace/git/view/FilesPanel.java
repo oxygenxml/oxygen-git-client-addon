@@ -21,11 +21,15 @@ public class FilesPanel extends JPanel {
 		this.setBorder(BorderFactory.createTitledBorder("Files Panel"));
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+		
 		for (String fileName : fileNames) {
 			FilePanel filePanel = new FilePanel(fileName);
 			filePanels.add(filePanel);
 			this.add(filePanel);
 		}
+		
+		this.revalidate();
+		this.repaint();
 
 	}
 
@@ -48,6 +52,8 @@ public class FilesPanel extends JPanel {
 
 	public void setFileNames(List<String> fileNames) {
 		this.fileNames = fileNames;
+		this.removeAll();
+		init();
 	}
 
 }

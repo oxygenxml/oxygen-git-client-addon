@@ -19,10 +19,12 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileSystemView;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOption;
+import com.oxygenxml.sdksamples.workspace.git.utils.Folder;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 
 public class WorkingCopySelectionPanel extends JPanel {
@@ -47,28 +49,24 @@ public class WorkingCopySelectionPanel extends JPanel {
 		addBrowseButton(gbc);
 
 		addFileChooserOn(browseButton);
-		addWorkingCopySelectorListener();
+		//addWorkingCopySelectorListener();
 
 	}
 
-	private void addWorkingCopySelectorListener() {
+	public void addWorkingCopySelectorListener() {
+		
 		final StagingPanel parent = (StagingPanel) this.getParent();
-
+		
 		workingCopySelector.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					String path = (String) workingCopySelector.getSelectedItem();
-					File folder = new File(path);
-					File[] listOfFiles = folder.listFiles();
-
-					List<String> fileNames = new ArrayList<String>();
-
-					for (int i = 0; i < listOfFiles.length; i++) {
-						fileNames.add(listOfFiles[i].getName());
-					}
-					FilesPanel filesPanel = parent.getUnstagedChangesPanel().getFilesPanel();
-					filesPanel.setFileNames(fileNames);
+				
+					Folder folder = new Folder();
+					List<String> fileNames = folder.search(path);
+					FileTableModel model = (FileTableModel) parent.getUnstagedChangesPanel().getFilesTable().getModel();
+					model.setFileNames(fileNames);
 				}
 			}
 		});

@@ -38,21 +38,12 @@ public class FilePanel extends JPanel {
 		this.setBackground(Color.WHITE);
 		this.setLayout(new GridBagLayout());
 		
-		
-		MouseAdapter select = new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				
-			}
-		};
-		
-		this.addMouseListener(select);
-		fileNameCheckBox.addMouseListener(select);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		addFileNameCheckBox(gbc);
 		addStageButton(gbc);
+		
+		
 	}
 
 	private void addFileNameCheckBox(GridBagConstraints gbc) {

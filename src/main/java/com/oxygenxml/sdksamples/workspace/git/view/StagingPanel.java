@@ -75,6 +75,7 @@ public class StagingPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(workingCopySelectionPanel, gbc);
+		workingCopySelectionPanel.addWorkingCopySelectorListener();
 
 	}
 
