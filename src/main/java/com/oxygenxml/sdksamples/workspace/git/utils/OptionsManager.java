@@ -1,6 +1,11 @@
 package com.oxygenxml.sdksamples.workspace.git.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
@@ -14,9 +19,11 @@ import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOptions;
 
 public class OptionsManager {
 	private static final String REPOSITORY_FILENAME = "Repositories.xml";
-
-	private static RepositoryOptions repositoryOptions = null;
-
+	private static final String PROPERTIES_FILENAME = "Options.properties";
+	
+	private RepositoryOptions repositoryOptions = null;
+	private Properties properties = new Properties();
+	
 	private static OptionsManager instance;
 
 	public static OptionsManager getInstance() {
@@ -70,5 +77,16 @@ public class OptionsManager {
 
 		repositoryOptions.getRepositoryOptions().add(repositoryOption);
 		saveRepositoryOptions();
+	}
+
+	public void saveSelectedRepository(String path) {
+		OutputStream output = null;
+		try {
+			output = new FileOutputStream("config.properties");
+			properties.setProperty("Selected Repository", path);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

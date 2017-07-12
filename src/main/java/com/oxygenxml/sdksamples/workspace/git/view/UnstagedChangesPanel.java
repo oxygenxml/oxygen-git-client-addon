@@ -28,8 +28,6 @@ public class UnstagedChangesPanel extends JPanel {
 
 	private JButton stageAllButton;
 	private JButton switchViewButton;
-	private JScrollPane filesToBeStaged;
-	private FilesPanel filesPanel = new FilesPanel();
 	private JScrollPane scrollPane;
 	private JTable filesTable;
 
@@ -64,22 +62,6 @@ public class UnstagedChangesPanel extends JPanel {
 
 	public void setSwitchViewButton(JButton switchViewButton) {
 		this.switchViewButton = switchViewButton;
-	}
-
-	public JScrollPane getFilesToBeStaged() {
-		return filesToBeStaged;
-	}
-
-	public void setFilesToBeStaged(JScrollPane filesToBeStaged) {
-		this.filesToBeStaged = filesToBeStaged;
-	}
-
-	public FilesPanel getFilesPanel() {
-		return filesPanel;
-	}
-
-	public void setFilesPanel(FilesPanel filesPanel) {
-		this.filesPanel = filesPanel;
 	}
 
 	public JScrollPane getScrollPane() {
@@ -141,20 +123,13 @@ public class UnstagedChangesPanel extends JPanel {
 		filesTable.setShowGrid(false);
 		filesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-
-		filesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		// set the first column width
+		// set the checkbox column width
 		filesTable.getColumnModel().getColumn(0).setMaxWidth(30);
 		// set the button column width
-		filesTable.getColumnModel().getColumn(2).setMaxWidth(80);
-		
-		
-		
-		TableButton tableRendereEditor =  new TableButton(filesTable);
-		
-		TableColumn column = filesTable.getColumnModel().getColumn(2);
-		column.setCellRenderer(tableRendereEditor);
-		column.setCellEditor(tableRendereEditor);
+		filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(80);
+	
+		TableRendererEditor tableRendereEditor =  new TableRendererEditor(filesTable);
+		tableRendereEditor.render();
 		
 		scrollPane = new JScrollPane(filesTable);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);

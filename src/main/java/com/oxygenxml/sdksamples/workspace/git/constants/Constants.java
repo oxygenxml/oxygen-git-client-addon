@@ -8,5 +8,7 @@ public class Constants {
 	
 	public static final String RESOURCES_PATH = "src/main/resources/";
 	
+	public static final int STAGE_BUTTON_COLUMN = 2;
+	
 	
 }

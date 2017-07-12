@@ -18,7 +18,6 @@ public class StagedChangesPanel extends JPanel {
 	private JButton unstageAllButton;
 	private JButton switchViewButton;
 	private JScrollPane filesToBeUnstaged;
-	private FilesPanel filesPanel;
 	private JScrollPane scrollPane;
 	
 	public StagedChangesPanel() {
@@ -72,7 +71,7 @@ public class StagedChangesPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 2;
-		scrollPane = new JScrollPane(filesPanel);
+		scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		this.add(scrollPane, gbc);

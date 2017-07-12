@@ -62,7 +62,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					String path = (String) workingCopySelector.getSelectedItem();
-				
+					OptionsManager.getInstance().saveSelectedRepository(path);
 					Folder folder = new Folder();
 					List<String> fileNames = folder.search(path);
 					FileTableModel model = (FileTableModel) parent.getUnstagedChangesPanel().getFilesTable().getModel();
@@ -92,6 +92,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						if (!OptionsManager.getInstance().getRepositoryEntries().contains(repositoryOption)) {
 							workingCopySelector.addItem(directoryPath);
 							OptionsManager.getInstance().addRepository(repositoryOption);
+							
 						}
 
 						workingCopySelector.setSelectedItem(directoryPath);
