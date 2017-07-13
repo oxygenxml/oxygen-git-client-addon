@@ -6,47 +6,67 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 
 public class UnstagedChangesPanel extends JPanel {
 
+	private static final int LIST_VIEW = 1;
+	private static final int TREE_VIEW = 2;
+
 	private JButton stageAllButton;
 	private JButton switchViewButton;
 	private JScrollPane scrollPane;
 	private JTable filesTable;
+	private JTree tree;
+
+	private int currentView = 0;
 
 	public UnstagedChangesPanel() {
+		currentView = LIST_VIEW;
 		init();
 		this.setBorder(BorderFactory.createTitledBorder("UnstagedChanges"));
 
 	}
-	
+
+	public JTree getTree() {
+		return tree;
+	}
+
+	public void setTree(JTree tree) {
+		this.tree = tree;
+		if (currentView == TREE_VIEW) {
+			scrollPane.setViewportView(tree);
+		}
+
+	}
 
 	public JTable getFilesTable() {
 		return filesTable;
 	}
 
-
 	public void setFilesTable(JTable filesTable) {
 		this.filesTable = filesTable;
 	}
-
 
 	public JButton getStageAllButton() {
 		return stageAllButton;
@@ -79,6 +99,25 @@ public class UnstagedChangesPanel extends JPanel {
 		addStageAllButton(gbc);
 		addSwitchViewButton(gbc);
 		addFilesPanel(gbc);
+
+		addSwitchButtonListener();
+	}
+
+	private void addSwitchButtonListener() {
+
+		switchViewButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (currentView == LIST_VIEW) {
+					currentView = TREE_VIEW;
+					scrollPane.setViewportView(tree);
+				} else {
+					currentView = LIST_VIEW;
+					scrollPane.setViewportView(filesTable);
+				}
+			}
+		});
 	}
 
 	private void addStageAllButton(GridBagConstraints gbc) {
@@ -103,8 +142,8 @@ public class UnstagedChangesPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		stageAllButton = new JButton("Cheange View");
-		this.add(stageAllButton, gbc);
+		switchViewButton = new JButton("Cheange View");
+		this.add(switchViewButton, gbc);
 
 	}
 
@@ -122,22 +161,20 @@ public class UnstagedChangesPanel extends JPanel {
 		filesTable.setTableHeader(null);
 		filesTable.setShowGrid(false);
 		filesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		// set the checkbox column width
 		filesTable.getColumnModel().getColumn(0).setMaxWidth(30);
 		// set the button column width
 		filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(80);
-	
-		TableRendererEditor tableRendereEditor =  new TableRendererEditor(filesTable);
+
+		TableRendererEditor tableRendereEditor = new TableRendererEditor(filesTable);
 		tableRendereEditor.render();
-		
+
 		scrollPane = new JScrollPane(filesTable);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		filesTable.setFillsViewportHeight(true);
 		this.add(scrollPane, gbc);
 	}
-	
-	
 
 }

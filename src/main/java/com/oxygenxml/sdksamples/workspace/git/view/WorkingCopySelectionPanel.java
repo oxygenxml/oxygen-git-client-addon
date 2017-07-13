@@ -1,6 +1,7 @@
 package com.oxygenxml.sdksamples.workspace.git.view;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,9 +19,14 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeCellRenderer;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOption;
@@ -49,14 +55,14 @@ public class WorkingCopySelectionPanel extends JPanel {
 		addBrowseButton(gbc);
 
 		addFileChooserOn(browseButton);
-		//addWorkingCopySelectorListener();
+		// addWorkingCopySelectorListener();
 
 	}
 
 	public void addWorkingCopySelectorListener() {
-		
+
 		final StagingPanel parent = (StagingPanel) this.getParent();
-		
+
 		workingCopySelector.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
@@ -64,9 +70,16 @@ public class WorkingCopySelectionPanel extends JPanel {
 					String path = (String) workingCopySelector.getSelectedItem();
 					OptionsManager.getInstance().saveSelectedRepository(path);
 					Folder folder = new Folder();
+
+					// generate content for LIST_VIEW
 					List<String> fileNames = folder.search(path);
 					FileTableModel model = (FileTableModel) parent.getUnstagedChangesPanel().getFilesTable().getModel();
 					model.setFileNames(fileNames);
+
+					// generate content for TREE_VIEW
+					DefaultMutableTreeNode modelTree = folder.generateTreeScruture(path);
+					JTree tree = new JTree(modelTree);
+					parent.getUnstagedChangesPanel().setTree(tree);
 				}
 			}
 		});
@@ -84,20 +97,35 @@ public class WorkingCopySelectionPanel extends JPanel {
 				int returnValue = fileChooser.showOpenDialog(null);
 
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					if (fileChooser.getSelectedFile().isDirectory()) {
-						String directoryPath = fileChooser.getSelectedFile().getAbsolutePath();
+
+					String directoryPath = fileChooser.getSelectedFile().getAbsolutePath();
+					if (directoryisValid(directoryPath)) {
 
 						RepositoryOption repositoryOption = new RepositoryOption(directoryPath);
 
 						if (!OptionsManager.getInstance().getRepositoryEntries().contains(repositoryOption)) {
 							workingCopySelector.addItem(directoryPath);
 							OptionsManager.getInstance().addRepository(repositoryOption);
-							
+
 						}
 
 						workingCopySelector.setSelectedItem(directoryPath);
+					} else {
+						JOptionPane.showMessageDialog(null, "Please select a git directory");
+					}
+
+				}
+			}
+
+			private boolean directoryisValid(String directory) {
+				File folder = new File(directory);
+				File[] listOfFiles = folder.listFiles();
+				for (int i = 0; i < listOfFiles.length; i++) {
+					if (listOfFiles[i].isDirectory() && listOfFiles[i].getName().equals(".git")) {
+						return true;
 					}
 				}
+				return false;
 			}
 		});
 
@@ -132,6 +160,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		for (RepositoryOption repositoryOption : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryOption.getLocation());
 		}
+		workingCopySelector.setSelectedItem(OptionsManager.getInstance().getSelectedRepository());
 		this.add(workingCopySelector, gbc);
 	}
 

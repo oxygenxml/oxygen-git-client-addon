@@ -247,7 +247,7 @@ public class GitAccess {
 	}
 
 	/**
-	 * Pushes all the commits
+	 * Pushes all the commits from the local repository to the remote repository
 	 * 
 	 * @param username - Git username
 	 * @param password - Git password
@@ -276,7 +276,12 @@ public class GitAccess {
 	
 	
 	
-	
+	/**
+	 * Pulls the files that are not on the local repository from the remote repository
+	 * 
+	 * @param username - Git username
+	 * @param password - Git password
+	 */
 	public void pull(String username, String password){
 		try {
 			

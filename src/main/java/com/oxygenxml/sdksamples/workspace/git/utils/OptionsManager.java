@@ -1,8 +1,11 @@
 package com.oxygenxml.sdksamples.workspace.git.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Properties;
@@ -82,11 +85,36 @@ public class OptionsManager {
 	public void saveSelectedRepository(String path) {
 		OutputStream output = null;
 		try {
-			output = new FileOutputStream("config.properties");
-			properties.setProperty("Selected Repository", path);
-		} catch (FileNotFoundException e) {
+			output = new FileOutputStream(Constants.RESOURCES_PATH + "options.properties");
+			properties.setProperty("Selected-Repository", path);
+			properties.store(output, null);
+		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				output.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
+	}
+	
+	public String getSelectedRepository(){
+		InputStream input = null;
+		try {
+			input = new FileInputStream(Constants.RESOURCES_PATH + "options.properties");
+			properties.load(input);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			try {
+				input.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return properties.getProperty("Selected-Repository");
 	}
 }
