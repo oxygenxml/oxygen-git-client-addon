@@ -19,7 +19,6 @@ public class StagingPanel extends JPanel {
 		this.unstagedChangesPanel = unstagedChangesPanel;
 		this.stagedChangesPanel = stagedChangesPanel;
 		this.commitPanel = commitPanel;
-		init();
 	}
 
 	public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
@@ -54,8 +53,10 @@ public class StagingPanel extends JPanel {
 		this.commitPanel = commitPanel;
 	}
 
-	private void init() {
+	public void createGUI() {
 		this.setLayout(new GridBagLayout());
+		
+		
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -63,6 +64,11 @@ public class StagingPanel extends JPanel {
 		addUnstagedChangesPanel(gbc);
 		addStagedChangesPanel(gbc);
 		addCommitPanel(gbc);
+		
+		unstagedChangesPanel.createGUI();
+		stagedChangesPanel.createGUI();
+		commitPanel.createGUI();
+		workingCopySelectionPanel.createGUI();
 
 	}
 
@@ -75,7 +81,6 @@ public class StagingPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(workingCopySelectionPanel, gbc);
-		workingCopySelectionPanel.addWorkingCopySelectorListener();
 
 	}
 

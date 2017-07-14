@@ -26,11 +26,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOption;
-import com.oxygenxml.sdksamples.workspace.git.utils.Folder;
+import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
+import com.oxygenxml.sdksamples.workspace.git.service.entities.UnstageFile;
+import com.oxygenxml.sdksamples.workspace.git.utils.TreeFormatter;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 
 public class WorkingCopySelectionPanel extends JPanel {
@@ -38,12 +41,13 @@ public class WorkingCopySelectionPanel extends JPanel {
 	private JLabel label;
 	private JComboBox<String> workingCopySelector;
 	private JButton browseButton;
+	private GitAccess gitAccess;
 
-	public WorkingCopySelectionPanel() {
-		init();
+	public WorkingCopySelectionPanel(GitAccess gitAccess) {
+		this.gitAccess = gitAccess;
 	}
 
-	private void init() {
+	public void createGUI() {
 		this.setBorder(BorderFactory.createTitledBorder("WorkingCopy"));
 
 		this.setLayout(new GridBagLayout());
@@ -55,11 +59,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 		addBrowseButton(gbc);
 
 		addFileChooserOn(browseButton);
-		// addWorkingCopySelectorListener();
+		addWorkingCopySelectorListener();
 
 	}
 
-	public void addWorkingCopySelectorListener() {
+	private void addWorkingCopySelectorListener() {
 
 		final StagingPanel parent = (StagingPanel) this.getParent();
 
@@ -67,19 +71,19 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
+					// get and save the selected Option so that at restart the same
+					// repository will be selected
 					String path = (String) workingCopySelector.getSelectedItem();
 					OptionsManager.getInstance().saveSelectedRepository(path);
-					Folder folder = new Folder();
 
-					// generate content for LIST_VIEW
-					List<String> fileNames = folder.search(path);
-					FileTableModel model = (FileTableModel) parent.getUnstagedChangesPanel().getFilesTable().getModel();
-					model.setFileNames(fileNames);
+					gitAccess.setRepository(path);
+					List<UnstageFile> unstagedFiles = gitAccess.getUnstagedFiles();
+
+					// generate content for FLAT_VIEW
+					parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
 
 					// generate content for TREE_VIEW
-					DefaultMutableTreeNode modelTree = folder.generateTreeScruture(path);
-					JTree tree = new JTree(modelTree);
-					parent.getUnstagedChangesPanel().setTree(tree);
+					parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
 				}
 			}
 		});
@@ -160,7 +164,14 @@ public class WorkingCopySelectionPanel extends JPanel {
 		for (RepositoryOption repositoryOption : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryOption.getLocation());
 		}
-		workingCopySelector.setSelectedItem(OptionsManager.getInstance().getSelectedRepository());
+		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
+		workingCopySelector.setSelectedItem(repositoryPath);
+		gitAccess.setRepository(repositoryPath);
+		List<UnstageFile> unstagedFiles = gitAccess.getUnstagedFiles();
+		StagingPanel parent = (StagingPanel) this.getParent();
+		parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
+		parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
+		
 		this.add(workingCopySelector, gbc);
 	}
 

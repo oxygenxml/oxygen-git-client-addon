@@ -15,18 +15,21 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
+import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 
 public class CommitPanel extends JPanel {
 
 	private JLabel label;
 	private JTextArea commitMessage;
 	private JButton commitButton;
-
-	public CommitPanel() {
-		init();
+	private GitAccess gitAccess;
+	
+	
+	public CommitPanel(GitAccess gitAccess) {
+		this.gitAccess = gitAccess;
 	}
 
-	private void init() {
+	public void createGUI() {
 		this.setBorder(BorderFactory.createTitledBorder("Commit"));
 
 		this.setLayout(new GridBagLayout());

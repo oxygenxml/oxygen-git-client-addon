@@ -83,16 +83,17 @@ public class Application {
 	}
 
 	private void createAndShowFrame() {
-		WorkingCopySelectionPanel workingCopySelectionPanel = new WorkingCopySelectionPanel();
-		UnstagedChangesPanel unstagedChangesPanel = new UnstagedChangesPanel();
-		StagedChangesPanel stagedChangesPanel = new StagedChangesPanel();
-		CommitPanel commitPanel = new CommitPanel();
+		GitAccess gitAccess = new GitAccess();
+		WorkingCopySelectionPanel workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess);
+		UnstagedChangesPanel unstagedChangesPanel = new UnstagedChangesPanel(gitAccess);
+		StagedChangesPanel stagedChangesPanel = new StagedChangesPanel(gitAccess);
+		CommitPanel commitPanel = new CommitPanel(gitAccess);
 
 		StagingPanel stagingPanel = new StagingPanel(workingCopySelectionPanel, unstagedChangesPanel, stagedChangesPanel,
 				commitPanel);
 
 		GitWindow gitWindow = new GitWindow(stagingPanel);
-
+		gitWindow.createGUI();
 	}
 
 	private static void test(Git git) {

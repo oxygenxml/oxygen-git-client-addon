@@ -12,11 +12,11 @@ public class GitWindow extends JFrame{
 	public GitWindow(StagingPanel stagingPanel) {
 		super();
 		this.stagingPanel = stagingPanel;
-		init();
 	}
 
-	private void init() {
+	public void createGUI() {
 		this.setTitle("Git");
+		stagingPanel.createGUI();
 		this.getContentPane().add(stagingPanel, BorderLayout.CENTER);
 		
 		this.pack();

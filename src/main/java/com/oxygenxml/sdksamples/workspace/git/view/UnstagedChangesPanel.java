@@ -12,9 +12,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -25,8 +28,12 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
+import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
+import com.oxygenxml.sdksamples.workspace.git.service.entities.UnstageFile;
+import com.oxygenxml.sdksamples.workspace.git.utils.TreeFormatter;
 
 public class UnstagedChangesPanel extends JPanel {
 
@@ -34,16 +41,19 @@ public class UnstagedChangesPanel extends JPanel {
 	private static final int TREE_VIEW = 2;
 
 	private JButton stageAllButton;
+	private JButton stageSelectedButton;
 	private JButton switchViewButton;
 	private JScrollPane scrollPane;
 	private JTable filesTable;
 	private JTree tree;
 
+	private GitAccess gitAccess;
+
 	private int currentView = 0;
 
-	public UnstagedChangesPanel() {
+	public UnstagedChangesPanel(GitAccess gitAccess) {
+		this.gitAccess = gitAccess;
 		currentView = LIST_VIEW;
-		init();
 		this.setBorder(BorderFactory.createTitledBorder("UnstagedChanges"));
 
 	}
@@ -92,16 +102,42 @@ public class UnstagedChangesPanel extends JPanel {
 		this.scrollPane = scrollPane;
 	}
 
-	private void init() {
+	public void createTreeView(String path, List<UnstageFile> unstagedFiles) {
+		String rootFolder = path.substring(path.lastIndexOf("\\") + 1);
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
+
+		// Create the tree model and add the root node to it
+		DefaultTreeModel modelTree = new DefaultTreeModel(root);
+
+		// Create the tree with the new model
+		JTree tree = new JTree(modelTree);
+		TreeFormatter treeFormatter = new TreeFormatter();
+		for (UnstageFile unstageFile : unstagedFiles) {
+			treeFormatter.buildTreeFromString(modelTree, unstageFile.getFileLocation());
+		}
+		tree.expandRow(0);
+		this.setTree(tree);
+	}
+
+	public void createFlatView(List<UnstageFile> unstagedFiles) {
+
+		FileTableModel modelTable = (FileTableModel) this.getFilesTable().getModel();
+		modelTable.setUnstagedFiles(unstagedFiles);
+	}
+
+	public void createGUI() {
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		addStageAllButton(gbc);
+		addStageSelectedButton(gbc);
 		addSwitchViewButton(gbc);
 		addFilesPanel(gbc);
 
 		addSwitchButtonListener();
 	}
+
+
 
 	private void addSwitchButtonListener() {
 
@@ -119,6 +155,8 @@ public class UnstagedChangesPanel extends JPanel {
 			}
 		});
 	}
+	
+	
 
 	private void addStageAllButton(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
@@ -127,10 +165,24 @@ public class UnstagedChangesPanel extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.weightx = 1;
+		gbc.weightx = 0;
 		gbc.weighty = 0;
 		stageAllButton = new JButton("Stage all");
 		this.add(stageAllButton, gbc);
+	}
+	
+	private void addStageSelectedButton(GridBagConstraints gbc) {
+		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
+				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
+		stageSelectedButton = new JButton("Stage selected");
+		this.add(stageSelectedButton, gbc);
+
 	}
 
 	private void addSwitchViewButton(GridBagConstraints gbc) {
@@ -138,11 +190,11 @@ public class UnstagedChangesPanel extends JPanel {
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 1;
+		gbc.gridx = 2;
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		switchViewButton = new JButton("Cheange View");
+		switchViewButton = new JButton("Change View");
 		this.add(switchViewButton, gbc);
 
 	}
@@ -156,7 +208,7 @@ public class UnstagedChangesPanel extends JPanel {
 		gbc.gridy = 1;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
-		gbc.gridwidth = 2;
+		gbc.gridwidth = 3;
 		filesTable = new JTable(new FileTableModel());
 		filesTable.setTableHeader(null);
 		filesTable.setShowGrid(false);
@@ -167,8 +219,17 @@ public class UnstagedChangesPanel extends JPanel {
 		// set the button column width
 		filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(80);
 
-		TableRendererEditor tableRendereEditor = new TableRendererEditor(filesTable);
-		tableRendereEditor.render();
+		TableRendererEditor.install(filesTable);
+
+		filesTable.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
+
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+					int row, int column) {
+				return (JLabel) value;
+			}
+		});
+		
 
 		scrollPane = new JScrollPane(filesTable);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);

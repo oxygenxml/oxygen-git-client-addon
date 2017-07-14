@@ -7,39 +7,54 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.oxygenxml.sdksamples.workspace.git.service.entities.UnstageFile;
+
 public class FileTableModel extends AbstractTableModel {
 
-	private List<String> fileNames = new ArrayList<String>();
-	private List<Boolean> fileChecked = new ArrayList<Boolean>();
+	private static final String ADD = "ADD";
+	private static final String DELETE = "DELETE";
+	private static final String MODIFY = "MODIFY";
+	
+	private List<UnstageFile> unstagedFiles = new ArrayList<UnstageFile>();
+	private List<JLabel> fileChecked = new ArrayList<JLabel>();
+	
 
 	public FileTableModel() {
-		this.fileNames.add("teste");
-		this.fileNames.add("pocpac");
-		this.fileNames.add("pac");
-		this.fileNames.add("poc");
-		for (int i = 0; i < fileNames.size(); i++) {
-			fileChecked.add(false);
-		}
+		
 	}
 
-	public FileTableModel(List<String> fileNames) {
-		this.fileNames = fileNames;
-		for (int i = 0; i < fileNames.size(); i++) {
-			fileChecked.add(false);
+	public FileTableModel(List<UnstageFile> unstagedFiles) {
+		this.unstagedFiles = unstagedFiles;
+		for (UnstageFile unstageFile : unstagedFiles) {
+			ImageIcon icon = null;
+			switch(unstageFile.getChangeType()){
+				case ADD:
+					icon = new ImageIcon("src/main/resources/images/GitAdd10.png");
+					break;
+				case MODIFY:
+					icon = new ImageIcon("src/main/resources/images/GitModified10.png");
+					break;
+				case DELETE:
+					icon = new ImageIcon("src/main/resources/images/GitRemoved10.png");
+					break;
+			}
+			fileChecked.add(new JLabel(icon));
 		}
 	}
 
 	public int getRowCount() {
 		int size;
-		if (fileNames == null) {
+		if (unstagedFiles == null) {
 			size = 0;
 		} else {
-			size = fileNames.size();
+			size = unstagedFiles.size();
 		}
 		return size;
 	}
@@ -49,7 +64,7 @@ public class FileTableModel extends AbstractTableModel {
 		Class clazz = null;
 		switch (columnIndex) {
 		case 0:
-			clazz = Boolean.class;
+			clazz = JLabel.class;
 			break;
 		case 1:
 			clazz = String.class;
@@ -65,15 +80,7 @@ public class FileTableModel extends AbstractTableModel {
 
 	@Override
 	public boolean isCellEditable(int row, int column) {
-		return true;
-	}
-
-	@Override
-	public void setValueAt(Object aValue, int row, int column) {
-		if (aValue instanceof Boolean && column == 0) {
-			fileChecked.set(row, (Boolean) aValue);
-			fireTableCellUpdated(row, column);
-		}
+		return column == 2;
 	}
 
 	public int getColumnCount() {
@@ -87,17 +94,9 @@ public class FileTableModel extends AbstractTableModel {
 			temp = fileChecked.get(rowIndex);
 			break;
 		case 1:
-			temp = fileNames.get(rowIndex);
+			temp = unstagedFiles.get(rowIndex).getFileLocation();
 			break;
 		case 2:
-			/*JButton button = new JButton("Stage");
-			button.addActionListener(new ActionListener() {
-
-				public void actionPerformed(ActionEvent e) {
-					System.err.println("merge");
-
-				}
-			});*/
 			temp = "Stage";
 			break;
 
@@ -105,12 +104,53 @@ public class FileTableModel extends AbstractTableModel {
 		return temp;
 	}
 
-	public void setFileNames(List<String> fileNames) {
-		this.fileNames = fileNames;
-		for (int i = 0; i < fileNames.size(); i++) {
-			fileChecked.add(false);
+	public void setUnstagedFiles(List<UnstageFile> unstagedFiles) {
+		this.unstagedFiles = unstagedFiles;
+		fileChecked.clear();
+		for (UnstageFile unstageFile : unstagedFiles) {
+			ImageIcon icon = null;
+			switch(unstageFile.getChangeType()){
+				case ADD:
+					icon = new ImageIcon("src/main/resources/images/GitAdd10.png");
+					break;
+				case MODIFY:
+					icon = new ImageIcon("src/main/resources/images/GitModified10.png");
+					break;
+				case DELETE:
+					icon = new ImageIcon("src/main/resources/images/GitRemoved10.png");
+					break;
+			}
+			fileChecked.add(new JLabel(icon));
 		}
 		fireTableDataChanged();
+		
+	}
+
+	public void removeUnstageFile(int convertedRow) {
+		unstagedFiles.remove(convertedRow);
+		fileChecked.remove(convertedRow);
+		
+	}
+
+	public UnstageFile getUnstageFile(int convertedRow) {
+		return unstagedFiles.get(convertedRow);
+	}
+
+	public void addStafeFile(UnstageFile unstageFile) {
+		unstagedFiles.add(unstageFile);
+		ImageIcon icon = null;
+		switch(unstageFile.getChangeType()){
+			case ADD:
+				icon = new ImageIcon("src/main/resources/images/GitAdd10.png");
+				break;
+			case MODIFY:
+				icon = new ImageIcon("src/main/resources/images/GitModified10.png");
+				break;
+			case DELETE:
+				icon = new ImageIcon("src/main/resources/images/GitRemoved10.png");
+				break;
+		}
+		fileChecked.add(new JLabel(icon));
 		
 	}
 
