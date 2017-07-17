@@ -14,7 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.oxygenxml.sdksamples.workspace.git.service.entities.UnstageFile;
+import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 
 public class GitAccessUnstageFilesTest {
 
@@ -44,9 +44,9 @@ public class GitAccessUnstageFilesTest {
 			e.printStackTrace();
 		}
 		
-		List<UnstageFile> actual = gitAccess.getUnstagedFiles();
-		List<UnstageFile> expected = new ArrayList<UnstageFile>();
-		expected.add(new UnstageFile("MODIFY", "test.txt"));
+		List<FileStatus> actual = gitAccess.getUnstagedFiles();
+		List<FileStatus> expected = new ArrayList<FileStatus>();
+		expected.add(new FileStatus("MODIFY", "test.txt"));
 		assertEquals(actual, expected);
 	}
 	
@@ -59,9 +59,9 @@ public class GitAccessUnstageFilesTest {
 			e.printStackTrace();
 		}
 		
-		List<UnstageFile> actual = gitAccess.getUnstagedFiles();
-		List<UnstageFile> expected = new ArrayList<UnstageFile>();
-		expected.add(new UnstageFile("ADD", "add.txt"));
+		List<FileStatus> actual = gitAccess.getUnstagedFiles();
+		List<FileStatus> expected = new ArrayList<FileStatus>();
+		expected.add(new FileStatus("ADD", "add.txt"));
 		assertEquals(actual, expected);
 	}
 	
@@ -70,9 +70,9 @@ public class GitAccessUnstageFilesTest {
 		File file =new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		file.delete();
 		
-		List<UnstageFile> actual = gitAccess.getUnstagedFiles();
-		List<UnstageFile> expected = new ArrayList<UnstageFile>();
-		expected.add(new UnstageFile("DELETE", "test.txt"));
+		List<FileStatus> actual = gitAccess.getUnstagedFiles();
+		List<FileStatus> expected = new ArrayList<FileStatus>();
+		expected.add(new FileStatus("DELETE", "test.txt"));
 		assertEquals(actual, expected);
 	}
 

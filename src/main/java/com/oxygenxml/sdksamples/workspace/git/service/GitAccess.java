@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
@@ -19,6 +21,7 @@ import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
@@ -32,7 +35,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
-import com.oxygenxml.sdksamples.workspace.git.service.entities.UnstageFile;
+import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -97,8 +100,9 @@ public class GitAccess {
 	 * 
 	 * @return - A list with all unstaged files
 	 */
-	public List<UnstageFile> getUnstagedFiles() {
-		List<UnstageFile> unstagedFiles = new ArrayList<UnstageFile>();
+	public List<FileStatus> getUnstagedFiles() {
+		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
+		List<FileStatus> stagedFiles = getStagedFile();
 
 		// needed only to pass it to the formatter
 		OutputStream out = NullOutputStream.INSTANCE;
@@ -116,10 +120,16 @@ public class GitAccess {
 						|| entry.getChangeType().equals(DiffEntry.ChangeType.COPY)
 						|| entry.getChangeType().equals(DiffEntry.ChangeType.RENAME)) {
 					String filePath = entry.getNewPath();
-					unstagedFiles.add(new UnstageFile(changeType, filePath));
+					FileStatus unstageFile = new FileStatus(changeType, filePath);
+					if(!stagedFiles.contains(unstageFile)){
+						unstagedFiles.add(unstageFile);
+					}
 				} else {
 					String filePath = entry.getOldPath();
-					unstagedFiles.add(new UnstageFile(changeType, filePath));
+					FileStatus unstageFile = new FileStatus(changeType, filePath);
+					if(!stagedFiles.contains(unstageFile)){
+						unstagedFiles.add(unstageFile);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -140,30 +150,8 @@ public class GitAccess {
 	 * @param message
 	 *          - Message for the commit
 	 */
-	public void commit(File file, String message) {
+	public void commit(String message) {
 		try {
-			git.add().addFilepattern(file.getName()).call();
-			git.commit().setMessage(message).call();
-		} catch (NoFilepatternException e) {
-			e.printStackTrace();
-		} catch (GitAPIException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Commits the files locally
-	 * 
-	 * @param files
-	 *          - List of files to be commited
-	 * @param message
-	 *          - Message for the commited files
-	 */
-	public void commitAll(List<File> files, String message) {
-		try {
-			for (File file : files) {
-				git.add().addFilepattern(file.getName()).call();
-			}
 			git.commit().setMessage(message).call();
 		} catch (NoFilepatternException e) {
 			e.printStackTrace();
@@ -212,7 +200,8 @@ public class GitAccess {
 	/**
 	 * Creates a new branch in the repository
 	 * 
-	 * @param branchName - Name for the new branch
+	 * @param branchName
+	 *          - Name for the new branch
 	 */
 	public void createBranch(String branchName) {
 		try {
@@ -232,7 +221,8 @@ public class GitAccess {
 	/**
 	 * Delete a branch from the repository
 	 * 
-	 * @param branchName - Name for the branch to delete
+	 * @param branchName
+	 *          - Name for the branch to delete
 	 */
 	public void deleteBranch(String branchName) {
 		try {
@@ -249,20 +239,20 @@ public class GitAccess {
 	/**
 	 * Pushes all the commits from the local repository to the remote repository
 	 * 
-	 * @param username - Git username
-	 * @param password - Git password
+	 * @param username
+	 *          - Git username
+	 * @param password
+	 *          - Git password
 	 */
 	public void push(String username, String password) {
-		/*StoredConfig config = git.getRepository().getConfig();
-		config.setString("remote", "origin", "url", "https://github.com/BeniaminSavu/test.git");
+		/*
+		 * StoredConfig config = git.getRepository().getConfig();
+		 * config.setString("remote", "origin", "url",
+		 * "https://github.com/BeniaminSavu/test.git"); try { config.save(); } catch
+		 * (IOException e1) { e1.printStackTrace(); }
+		 */
 		try {
-			config.save();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}*/
-		try {
-			git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
-					.call();
+			git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
@@ -273,24 +263,134 @@ public class GitAccess {
 		}
 
 	}
-	
-	
-	
+
 	/**
-	 * Pulls the files that are not on the local repository from the remote repository
+	 * Pulls the files that are not on the local repository from the remote
+	 * repository
 	 * 
-	 * @param username - Git username
-	 * @param password - Git password
+	 * @param username
+	 *          - Git username
+	 * @param password
+	 *          - Git password
 	 */
-	public void pull(String username, String password){
+	public void pull(String username, String password) {
 		try {
-			
-			PullResult result = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+
+			PullResult result = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+					.call();
 			System.out.println(result.isSuccessful());
 			System.out.println(result.getFetchedFrom());
-			
-			
-			
+
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Adds a single file to the staging area. Preparing it for commit
+	 * 
+	 * @param file
+	 *          - the name of the file to be added
+	 */
+	public void add(FileStatus file) {
+		try {
+			if (file.getChangeType().equals("DELETE")) {
+				git.rm().addFilepattern(file.getFileLocation()).call();
+			} else {
+				git.add().addFilepattern(file.getFileLocation()).call();
+			}
+		} catch (NoFilepatternException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Adds multiple files to the staging area. Preparing the for commit
+	 * 
+	 * @param fileNames
+	 *          - the names of the files to be added
+	 */
+	public void addAll(List<FileStatus> files) {
+		try {
+			for (FileStatus file : files) {
+				if (file.getChangeType().equals("DELETE")) {
+					git.rm().addFilepattern(file.getFileLocation()).call();
+				} else {
+					git.add().addFilepattern(file.getFileLocation()).call();
+				}
+			}
+		} catch (NoFilepatternException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Well show all the files that have been added(also called staged) and are
+	 * ready to be commited.
+	 * 
+	 * @return - a set containing all the staged file names
+	 */
+	public List<FileStatus> getStagedFile() {
+		try {
+			Status status = git.status().call();
+			List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+			for (String fileName : status.getChanged()) {
+				stagedFiles.add(new FileStatus("MODIFY", fileName));
+			}
+			for (String fileName : status.getAdded()) {
+				stagedFiles.add(new FileStatus("ADD", fileName));
+			}
+			for (String fileName : status.getRemoved()) {
+				stagedFiles.add(new FileStatus("DELETE", fileName));
+			}
+			return stagedFiles;
+		} catch (NoWorkTreeException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+
+		return new ArrayList<FileStatus>();
+	}
+
+	/**
+	 * Removes a single file from the staging area.
+	 * 
+	 * @param fileName
+	 *          - the file to be removed from the staging area
+	 */
+	public void remove(FileStatus file) {
+		try {
+			ResetCommand reset = git.reset();
+			reset.addPath(file.getFileLocation());
+			reset.call();
+		} catch (NoFilepatternException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Removes all the specified files from the staging area.
+	 * 
+	 * @param fileNames
+	 *          - the list of file to be removed
+	 */
+	public void removeAll(List<FileStatus> files) {
+		try {
+			ResetCommand reset = git.reset();
+			for (FileStatus file : files) {
+				reset.addPath(file.getFileLocation());
+				
+			}
+			reset.call();
+		} catch (NoFilepatternException e) {
+			e.printStackTrace();
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}

@@ -32,7 +32,7 @@ import javax.swing.tree.TreeCellRenderer;
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOption;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
-import com.oxygenxml.sdksamples.workspace.git.service.entities.UnstageFile;
+import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 import com.oxygenxml.sdksamples.workspace.git.utils.TreeFormatter;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 
@@ -77,13 +77,16 @@ public class WorkingCopySelectionPanel extends JPanel {
 					OptionsManager.getInstance().saveSelectedRepository(path);
 
 					gitAccess.setRepository(path);
-					List<UnstageFile> unstagedFiles = gitAccess.getUnstagedFiles();
+					List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+					List<FileStatus> stagedFiles = gitAccess.getStagedFile();
 
 					// generate content for FLAT_VIEW
 					parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
+					parent.getStagedChangesPanel().createFlatView(stagedFiles);
 
 					// generate content for TREE_VIEW
 					parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
+					parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
 				}
 			}
 		});
@@ -167,11 +170,14 @@ public class WorkingCopySelectionPanel extends JPanel {
 		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
 		workingCopySelector.setSelectedItem(repositoryPath);
 		gitAccess.setRepository(repositoryPath);
-		List<UnstageFile> unstagedFiles = gitAccess.getUnstagedFiles();
+		
+		List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+		List<FileStatus> stagedFiles = gitAccess.getStagedFile();
 		StagingPanel parent = (StagingPanel) this.getParent();
 		parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
+		parent.getStagedChangesPanel().createFlatView(stagedFiles);
 		parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
-		
+		parent.getUnstagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
 		this.add(workingCopySelector, gbc);
 	}
 

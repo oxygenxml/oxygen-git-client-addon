@@ -10,11 +10,11 @@ public class StagingPanel extends JPanel {
 
 	private WorkingCopySelectionPanel workingCopySelectionPanel;
 	private UnstagedChangesPanel unstagedChangesPanel;
-	private StagedChangesPanel stagedChangesPanel;
+	private UnstagedChangesPanel stagedChangesPanel;
 	private CommitPanel commitPanel;
 
 	public StagingPanel(WorkingCopySelectionPanel workingCopySelectionPanel, UnstagedChangesPanel unstagedChangesPanel,
-			StagedChangesPanel stagedChangesPanel, CommitPanel commitPanel) {
+			UnstagedChangesPanel stagedChangesPanel, CommitPanel commitPanel) {
 		this.workingCopySelectionPanel = workingCopySelectionPanel;
 		this.unstagedChangesPanel = unstagedChangesPanel;
 		this.stagedChangesPanel = stagedChangesPanel;
@@ -37,11 +37,11 @@ public class StagingPanel extends JPanel {
 		this.unstagedChangesPanel = unstagedChangesPanel;
 	}
 
-	public StagedChangesPanel getStagedChangesPanel() {
+	public UnstagedChangesPanel getStagedChangesPanel() {
 		return stagedChangesPanel;
 	}
 
-	public void setStagedChangesPanel(StagedChangesPanel stagedChangesPanel) {
+	public void setStagedChangesPanel(UnstagedChangesPanel stagedChangesPanel) {
 		this.stagedChangesPanel = stagedChangesPanel;
 	}
 

@@ -1,11 +1,17 @@
 package com.oxygenxml.sdksamples.workspace.git.service.entities;
 
-public class UnstageFile {
-
+public class FileStatus {
+	
+	public static enum StageState {
+		STAGED, UNSTAGED
+	}
+	/**
+	 * 
+	 */
 	private String changeType;
 	private String fileLocation;
 
-	public UnstageFile(String changeType, String fileLocation) {
+	public FileStatus(String changeType, String fileLocation) {
 		this.changeType = changeType;
 		this.fileLocation = fileLocation;
 	}
@@ -48,7 +54,7 @@ public class UnstageFile {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UnstageFile other = (UnstageFile) obj;
+		FileStatus other = (FileStatus) obj;
 		if (changeType == null) {
 			if (other.changeType != null)
 				return false;
@@ -61,5 +67,7 @@ public class UnstageFile {
 			return false;
 		return true;
 	}
+	
+	
 
 }

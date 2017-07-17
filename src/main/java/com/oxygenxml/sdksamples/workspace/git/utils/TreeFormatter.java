@@ -71,7 +71,7 @@ public class TreeFormatter {
    * @param model The tree model
    * @param str The string to build the tree from
    */
-	public void buildTreeFromString(final DefaultTreeModel model, final String str) {
+	public static void buildTreeFromString(final DefaultTreeModel model, final String str) {
 		// Fetch the root node
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
 
@@ -111,7 +111,7 @@ public class TreeFormatter {
 	 *          The value of the child to compare with
 	 * @return The index
 	 */
-	private int childIndex(final DefaultMutableTreeNode node, final String childValue) {
+	public static int childIndex(final DefaultMutableTreeNode node, final String childValue) {
 		Enumeration<DefaultMutableTreeNode> children = node.children();
 		DefaultMutableTreeNode child = null;
 		int index = -1;

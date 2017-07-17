@@ -1,10 +1,11 @@
 package com.oxygenxml.sdksamples.workspace.git.view;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -23,8 +24,7 @@ public class CommitPanel extends JPanel {
 	private JTextArea commitMessage;
 	private JButton commitButton;
 	private GitAccess gitAccess;
-	
-	
+
 	public CommitPanel(GitAccess gitAccess) {
 		this.gitAccess = gitAccess;
 	}
@@ -39,6 +39,18 @@ public class CommitPanel extends JPanel {
 		addLabel(gbc);
 		addCommitMessageTextArea(gbc);
 		addCommitButton(gbc);
+
+		addCommitButtonListener();
+	}
+
+	private void addCommitButtonListener() {
+		commitButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				gitAccess.commit(commitMessage.getText());
+			}
+		});
 	}
 
 	private void addLabel(GridBagConstraints gbc) {

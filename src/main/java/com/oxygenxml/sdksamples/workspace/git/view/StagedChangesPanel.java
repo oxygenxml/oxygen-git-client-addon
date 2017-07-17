@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,6 +18,7 @@ import javax.swing.table.TableCellRenderer;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
+import com.oxygenxml.sdksamples.workspace.git.view.event.StageController;
 
 public class StagedChangesPanel extends JPanel {
 
@@ -26,8 +28,10 @@ public class StagedChangesPanel extends JPanel {
 	private JScrollPane scrollPane;
 	private JTable filesTable;;
 	private GitAccess gitAccess;
+	private StageController stageController;
 
-	public StagedChangesPanel(GitAccess gitAccess) {
+	public StagedChangesPanel(GitAccess gitAccess, StageController observer) {
+		this.stageController = observer;
 		this.gitAccess = gitAccess;
 		this.setBorder(BorderFactory.createTitledBorder("StagedChanges"));
 	}
@@ -140,10 +144,12 @@ public class StagedChangesPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 3;
-		scrollPane = new JScrollPane();
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setPreferredSize(new Dimension(200, 200));
-		filesTable = new JTable(new FileTableModel());
+		FileTableModel fileTableModel = new FileTableModel(false);
+
+		stageController.registerObserver(fileTableModel);
+		stageController.registerSubject(fileTableModel);
+
+		filesTable = new JTable(fileTableModel);
 		filesTable.setTableHeader(null);
 		filesTable.setShowGrid(false);
 
@@ -151,7 +157,7 @@ public class StagedChangesPanel extends JPanel {
 		filesTable.getColumnModel().getColumn(0).setMaxWidth(30);
 		// set the button column width
 		filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(80);
-		
+
 		TableRendererEditor.install(filesTable);
 
 		filesTable.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
@@ -159,7 +165,19 @@ public class StagedChangesPanel extends JPanel {
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 					int row, int column) {
-				return (JLabel) value;
+				ImageIcon icon = null;
+				switch ((String) value) {
+				case "ADD":
+					icon = new ImageIcon("src/main/resources/images/GitAdd10.png");
+					break;
+				case "MODIFY":
+					icon = new ImageIcon("src/main/resources/images/GitModified10.png");
+					break;
+				case "DELETE":
+					icon = new ImageIcon("src/main/resources/images/GitRemoved10.png");
+					break;
+				}
+				return new JLabel(icon);
 			}
 		});
 

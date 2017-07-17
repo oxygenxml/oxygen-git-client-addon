@@ -18,7 +18,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
-import com.oxygenxml.sdksamples.workspace.git.service.entities.UnstageFile;
+import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 
 public class TableRendererEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
@@ -42,11 +42,11 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 		table.addMouseListener(new MouseListener() {
 
 			public void mouseReleased(MouseEvent e) {
-			
+
 			}
 
 			public void mousePressed(MouseEvent e) {
-			
+
 			}
 
 			public void mouseExited(MouseEvent e) {
@@ -129,21 +129,13 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					StagingPanel stagingPanel = (StagingPanel) table.getParent().getParent().getParent().getParent();
+
 					FileTableModel unstagedTableModel = (FileTableModel) table.getModel();
 					int convertedRow = table.convertRowIndexToModel(row);
-					UnstageFile unstageFile = unstagedTableModel.getUnstageFile(convertedRow);
 					unstagedTableModel.removeUnstageFile(convertedRow);
-					unstagedTableModel.fireTableDataChanged();
-					
-					FileTableModel stagedTableModel = (FileTableModel) stagingPanel.getStagedChangesPanel().getFilesTable().getModel();
-					stagedTableModel.addStafeFile(unstageFile);
-					stagedTableModel.fireTableDataChanged();
-					
-					
-					
+
 					fireEditingStopped();
-					
+
 				}
 			});
 			return editedButton;
@@ -153,7 +145,7 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 	}
 
 	public Object getCellEditorValue() {
-		
+
 		return null;
 	}
 
@@ -180,7 +172,6 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 
 		boolean hov = hovered != null && hovered[0] == row && hovered[1] == column;
 		button.getModel().setRollover(hov);
-
 
 		return button;
 

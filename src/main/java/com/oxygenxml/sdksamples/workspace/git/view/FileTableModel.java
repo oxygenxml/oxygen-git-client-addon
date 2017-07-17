@@ -1,52 +1,27 @@
 package com.oxygenxml.sdksamples.workspace.git.view;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
 
-import com.oxygenxml.sdksamples.workspace.git.service.entities.UnstageFile;
+import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
+import com.oxygenxml.sdksamples.workspace.git.view.event.ChangeEvent;
+import com.oxygenxml.sdksamples.workspace.git.view.event.Observer;
+import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
 
-public class FileTableModel extends AbstractTableModel {
+public class FileTableModel extends AbstractTableModel implements Subject, Observer {
 
-	private static final String ADD = "ADD";
-	private static final String DELETE = "DELETE";
-	private static final String MODIFY = "MODIFY";
-	
-	private List<UnstageFile> unstagedFiles = new ArrayList<UnstageFile>();
-	private List<JLabel> fileChecked = new ArrayList<JLabel>();
-	
+	private List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 
-	public FileTableModel() {
-		
-	}
+	private Observer observer;
+	private boolean forStaging;
 
-	public FileTableModel(List<UnstageFile> unstagedFiles) {
-		this.unstagedFiles = unstagedFiles;
-		for (UnstageFile unstageFile : unstagedFiles) {
-			ImageIcon icon = null;
-			switch(unstageFile.getChangeType()){
-				case ADD:
-					icon = new ImageIcon("src/main/resources/images/GitAdd10.png");
-					break;
-				case MODIFY:
-					icon = new ImageIcon("src/main/resources/images/GitModified10.png");
-					break;
-				case DELETE:
-					icon = new ImageIcon("src/main/resources/images/GitRemoved10.png");
-					break;
-			}
-			fileChecked.add(new JLabel(icon));
-		}
+	public FileTableModel(boolean forStaging) {
+		this.forStaging = forStaging;
 	}
 
 	public int getRowCount() {
@@ -64,14 +39,14 @@ public class FileTableModel extends AbstractTableModel {
 		Class clazz = null;
 		switch (columnIndex) {
 		case 0:
-			clazz = JLabel.class;
+			clazz = String.class;
 			break;
 		case 1:
 			clazz = String.class;
 			break;
 		case 2:
 			// TODO Same as column 0
-			//clazz = JButton.class;
+			// clazz = JButton.class;
 			clazz = String.class;
 			break;
 		}
@@ -91,7 +66,7 @@ public class FileTableModel extends AbstractTableModel {
 		Object temp = null;
 		switch (columnIndex) {
 		case 0:
-			temp = fileChecked.get(rowIndex);
+			temp = unstagedFiles.get(rowIndex).getChangeType(); 
 			break;
 		case 1:
 			temp = unstagedFiles.get(rowIndex).getFileLocation();
@@ -104,54 +79,80 @@ public class FileTableModel extends AbstractTableModel {
 		return temp;
 	}
 
-	public void setUnstagedFiles(List<UnstageFile> unstagedFiles) {
+	public void setUnstagedFiles(List<FileStatus> unstagedFiles) {
 		this.unstagedFiles = unstagedFiles;
-		fileChecked.clear();
-		for (UnstageFile unstageFile : unstagedFiles) {
-			ImageIcon icon = null;
-			switch(unstageFile.getChangeType()){
-				case ADD:
-					icon = new ImageIcon("src/main/resources/images/GitAdd10.png");
-					break;
-				case MODIFY:
-					icon = new ImageIcon("src/main/resources/images/GitModified10.png");
-					break;
-				case DELETE:
-					icon = new ImageIcon("src/main/resources/images/GitRemoved10.png");
-					break;
-			}
-			fileChecked.add(new JLabel(icon));
-		}
 		fireTableDataChanged();
-		
+
 	}
 
 	public void removeUnstageFile(int convertedRow) {
-		unstagedFiles.remove(convertedRow);
-		fileChecked.remove(convertedRow);
+		// Update the table model. remove the file.
+		FileStatus fileStatus = unstagedFiles.remove(convertedRow);
 		
+		StageState newSTate = StageState.UNSTAGED;
+		StageState oldState = StageState.STAGED;
+		if (!forStaging) {
+			newSTate = StageState.STAGED;
+			oldState = StageState.UNSTAGED;
+		}
+		
+		List<FileStatus> fileToBeUpdated = Arrays.asList(new FileStatus[] {fileStatus});
+		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, fileToBeUpdated, this);
+		notifyObservers(changeEvent);
+		fireTableDataChanged();
 	}
 
-	public UnstageFile getUnstageFile(int convertedRow) {
+	public FileStatus getUnstageFile(int convertedRow) {
 		return unstagedFiles.get(convertedRow);
 	}
 
-	public void addStafeFile(UnstageFile unstageFile) {
-		unstagedFiles.add(unstageFile);
-		ImageIcon icon = null;
-		switch(unstageFile.getChangeType()){
-			case ADD:
-				icon = new ImageIcon("src/main/resources/images/GitAdd10.png");
-				break;
-			case MODIFY:
-				icon = new ImageIcon("src/main/resources/images/GitModified10.png");
-				break;
-			case DELETE:
-				icon = new ImageIcon("src/main/resources/images/GitRemoved10.png");
-				break;
-		}
-		fileChecked.add(new JLabel(icon));
-		
+	@Override
+	public void addObserver(Observer observer) {
+		if (observer == null)
+			throw new NullPointerException("Null Observer");
+
+		this.observer = observer;
 	}
 
+	@Override
+	public void removeObserver(Observer obj) {
+		observer = null;
+	}
+
+	public void notifyObservers(ChangeEvent changeEvent) {
+		observer.stateChanged(changeEvent);
+	}
+	
+	public List<FileStatus> getUnstagedFiles(){
+		return unstagedFiles;
+	}
+
+	public void removeAllFiles() {
+		StageState newSTate = StageState.UNSTAGED;
+		StageState oldState = StageState.STAGED;
+		if (!forStaging) {
+			newSTate = StageState.STAGED;
+			oldState = StageState.UNSTAGED;
+		}
+		
+		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, new ArrayList<FileStatus>(unstagedFiles), this);
+		notifyObservers(changeEvent);
+		
+		// Update inner model.
+		unstagedFiles.clear();
+		
+		fireTableDataChanged();
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent changeEvent) {
+		if (changeEvent.getSource() != this) {
+			List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
+			for (FileStatus unstageFile : fileToBeUpdated) {
+				unstagedFiles.add(unstageFile);
+			}
+			fireTableDataChanged();
+		}
+	}
+	
 }
