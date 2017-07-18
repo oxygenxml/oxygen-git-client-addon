@@ -177,7 +177,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
 		parent.getStagedChangesPanel().createFlatView(stagedFiles);
 		parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
-		parent.getUnstagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
+		parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
 		this.add(workingCopySelector, gbc);
 	}
 

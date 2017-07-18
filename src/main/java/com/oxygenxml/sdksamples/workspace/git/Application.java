@@ -67,9 +67,9 @@ public class Application {
 		GitAccess gitAccess = new GitAccess();
 		StageController observer = new StageController(gitAccess);
 		
-		WorkingCopySelectionPanel workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess);
 		UnstagedChangesPanel unstagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, false);
 		UnstagedChangesPanel stagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, true);
+		WorkingCopySelectionPanel workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess);
 		//StagedChangesPanel stagedChangesPanel = new StagedChangesPanel(gitAccess, observer);
 		CommitPanel commitPanel = new CommitPanel(gitAccess);
 

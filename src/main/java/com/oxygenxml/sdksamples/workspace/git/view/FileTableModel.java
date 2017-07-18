@@ -45,8 +45,6 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 			clazz = String.class;
 			break;
 		case 2:
-			// TODO Same as column 0
-			// clazz = JButton.class;
 			clazz = String.class;
 			break;
 		}
@@ -66,7 +64,7 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 		Object temp = null;
 		switch (columnIndex) {
 		case 0:
-			temp = unstagedFiles.get(rowIndex).getChangeType(); 
+			temp = unstagedFiles.get(rowIndex).getChangeType();
 			break;
 		case 1:
 			temp = unstagedFiles.get(rowIndex).getFileLocation();
@@ -88,18 +86,18 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 	public void removeUnstageFile(int convertedRow) {
 		// Update the table model. remove the file.
 		FileStatus fileStatus = unstagedFiles.remove(convertedRow);
-		
+
 		StageState newSTate = StageState.UNSTAGED;
 		StageState oldState = StageState.STAGED;
 		if (!forStaging) {
 			newSTate = StageState.STAGED;
 			oldState = StageState.UNSTAGED;
 		}
-		
-		List<FileStatus> fileToBeUpdated = Arrays.asList(new FileStatus[] {fileStatus});
+
+		List<FileStatus> fileToBeUpdated = Arrays.asList(new FileStatus[] { fileStatus });
 		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, fileToBeUpdated, this);
 		notifyObservers(changeEvent);
-		fireTableDataChanged();
+		//fireTableDataChanged();
 	}
 
 	public FileStatus getUnstageFile(int convertedRow) {
@@ -122,8 +120,8 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 	public void notifyObservers(ChangeEvent changeEvent) {
 		observer.stateChanged(changeEvent);
 	}
-	
-	public List<FileStatus> getUnstagedFiles(){
+
+	public List<FileStatus> getUnstagedFiles() {
 		return unstagedFiles;
 	}
 
@@ -134,25 +132,56 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 			newSTate = StageState.STAGED;
 			oldState = StageState.UNSTAGED;
 		}
-		
+
 		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, new ArrayList<FileStatus>(unstagedFiles), this);
 		notifyObservers(changeEvent);
-		
+
 		// Update inner model.
 		unstagedFiles.clear();
-		
-		fireTableDataChanged();
+
+		//fireTableDataChanged();
 	}
 
 	@Override
 	public void stateChanged(ChangeEvent changeEvent) {
-		if (changeEvent.getSource() != this) {
-			List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
-			for (FileStatus unstageFile : fileToBeUpdated) {
-				unstagedFiles.add(unstageFile);
+
+		List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
+		if (changeEvent.getNewState() == StageState.STAGED) {
+			if (forStaging) {
+				insertRows(fileToBeUpdated);
+			} else {
+				deleteRows(fileToBeUpdated);
 			}
-			fireTableDataChanged();
+		} else {
+			if (forStaging) {
+				deleteRows(fileToBeUpdated);
+			} else {
+				insertRows(fileToBeUpdated);
+			}
 		}
+		fireTableDataChanged();
 	}
-	
+
+	private void deleteRows(List<FileStatus> fileToBeUpdated) {
+		unstagedFiles.removeAll(fileToBeUpdated);
+
+	}
+
+	private void insertRows(List<FileStatus> fileToBeUpdated) {
+		unstagedFiles.addAll(fileToBeUpdated);
+	}
+
+	public String getChangeType(String fullPath) {
+		for (FileStatus fileStatus : unstagedFiles) {
+			if (fileStatus.getFileLocation().equals(fullPath)) {
+				return fileStatus.getChangeType();
+			}
+		}
+		return "";
+	}
+
+	public String getFileLocation(int convertedRow) {
+		return unstagedFiles.get(convertedRow).getFileLocation();
+	}
+
 }

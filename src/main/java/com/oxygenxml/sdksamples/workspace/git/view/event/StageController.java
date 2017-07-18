@@ -13,8 +13,8 @@ public class StageController implements Observer {
 	private List<Subject> subjects = new ArrayList<Subject>();
 	private List<Observer> observers = new ArrayList<Observer>();
 	
-	public StageController(GitAccess gitAccess2) {
-		gitAccess = gitAccess2;
+	public StageController(GitAccess gitAccess) {
+		this.gitAccess = gitAccess;
 	}
 
 	public void registerSubject(Subject subject) {

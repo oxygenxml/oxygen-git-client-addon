@@ -18,6 +18,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
+
 public class GitAccessCommitTest {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "src/test/resources";
@@ -37,7 +39,8 @@ public class GitAccessCommitTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		gitAccess.commit(file, "single file added");
+		gitAccess.add(new FileStatus("ADD", file.getName()));
+		gitAccess.commit("single file added");
 
 		Repository repository = gitAccess.getRepository();
 
@@ -76,10 +79,10 @@ public class GitAccessCommitTest {
 	@Test
 	public void testMultipleFileCommit() {
 		int n = 3;
-		List<File> files = new ArrayList<File>();
+		List<FileStatus> files = new ArrayList<FileStatus>();
 		for (int i = 0; i < n; i++) {
 			File file = new File(LOCAL_TEST_REPOSITPRY + "/test" + i + ".txt");
-			files.add(file);
+			files.add(new FileStatus("ADD", file.getName()));
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
@@ -87,7 +90,8 @@ public class GitAccessCommitTest {
 			}
 		}
 
-		gitAccess.commitAll(files, "multiple files added");
+		gitAccess.addAll(files);
+		gitAccess.commit("multiple files added");
 
 		Repository repository = gitAccess.getRepository();
 

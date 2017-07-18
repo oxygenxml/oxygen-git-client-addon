@@ -31,7 +31,8 @@ public class GitAccessUnstageFilesTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		gitAccess.commit(file, "file test added");
+		gitAccess.add(new FileStatus("ADD", file.getName()));
+		gitAccess.commit("file test added");
 	}
 
 	@Test
@@ -43,13 +44,13 @@ public class GitAccessUnstageFilesTest {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
 		expected.add(new FileStatus("MODIFY", "test.txt"));
 		assertEquals(actual, expected);
 	}
-	
+
 	@Test
 	public void testGetUnstagedFilesForAddedFiles() {
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/add.txt");
@@ -64,12 +65,12 @@ public class GitAccessUnstageFilesTest {
 		expected.add(new FileStatus("ADD", "add.txt"));
 		assertEquals(actual, expected);
 	}
-	
+
 	@Test
 	public void testGetUnstagedFilesForDeletedFiles() {
-		File file =new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
+		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		file.delete();
-		
+
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
 		expected.add(new FileStatus("DELETE", "test.txt"));

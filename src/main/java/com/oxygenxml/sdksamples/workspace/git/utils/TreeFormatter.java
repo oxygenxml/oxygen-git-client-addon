@@ -65,12 +65,14 @@ public class TreeFormatter {
 		return localRoot;
 	}
 
-	 /**
-   * Builds a tree from a given forward slash delimited string.
-   * 
-   * @param model The tree model
-   * @param str The string to build the tree from
-   */
+	/**
+	 * Builds a tree from a given forward slash delimited string.
+	 * 
+	 * @param model
+	 *          The tree model
+	 * @param str
+	 *          The string to build the tree from
+	 */
 	public static void buildTreeFromString(final DefaultTreeModel model, final String str) {
 		// Fetch the root node
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
@@ -125,6 +127,18 @@ public class TreeFormatter {
 		}
 
 		return index;
+	}
+
+	public static DefaultMutableTreeNode getTreeNodeFromString(DefaultTreeModel model, String path) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) model.getRoot();
+		String[] strings = path.split("/");
+		for (String s : strings) {
+			int index = childIndex(node, s);
+			if (index != -1) {
+				node = (DefaultMutableTreeNode) node.getChildAt(index);
+			}
+		}
+		return node;
 	}
 
 }

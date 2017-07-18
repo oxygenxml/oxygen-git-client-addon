@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -21,11 +22,12 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
-import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 import com.oxygenxml.sdksamples.workspace.git.utils.TreeFormatter;
 import com.oxygenxml.sdksamples.workspace.git.view.event.Observer;
 import com.oxygenxml.sdksamples.workspace.git.view.event.StageController;
@@ -41,7 +43,7 @@ public class UnstagedChangesPanel extends JPanel {
 	private JButton switchViewButton;
 	private JScrollPane scrollPane;
 	private JTable filesTable;
-	private JTree tree = new JTree();
+	private JTree tree = new JTree(new FileTreeModel(null, false));
 	private StageController stageController;
 
 	private boolean staging;
@@ -107,29 +109,42 @@ public class UnstagedChangesPanel extends JPanel {
 	}
 
 	public void createTreeView(String path, List<FileStatus> unstagedFiles) {
-		// TODO chenge the slashes
-		String rootFolder = path.substring(path.lastIndexOf("\\") + 1);
+		stageController.unregisterObserver((Observer) tree.getModel());
+		stageController.unregisterSubject((Subject) tree.getModel());
+
+		path = path.replace("\\", "/");
+		String rootFolder = path.substring(path.lastIndexOf("/") + 1);
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
 
 		// Create the tree model and add the root node to it
-		DefaultTreeModel modelTree = new FileTreeModel(root);
+		DefaultTreeModel modelTree = new FileTreeModel(root, false);
+		if (staging) {
+			modelTree = new FileTreeModel(root, true);
+		}
 
 		// Create the tree with the new model
 		tree.setModel(modelTree);
 		for (FileStatus unstageFile : unstagedFiles) {
 			TreeFormatter.buildTreeFromString(modelTree, unstageFile.getFileLocation());
 		}
-		tree.expandRow(0);
+		expandAllNodes(tree, 0, tree.getRowCount());
 
-		stageController.unregisterObserver((Observer) tree.getModel());
 		stageController.registerObserver((Observer) tree.getModel());
-
-		stageController.unregisterSubject((Subject) tree.getModel());
 		stageController.registerSubject((Subject) tree.getModel());
 
 		// TODO Restore selection.
 
 		this.setTree(tree);
+	}
+
+	private void expandAllNodes(JTree tree, int startingIndex, int rowCount) {
+		for (int i = startingIndex; i < rowCount; ++i) {
+			tree.expandRow(i);
+		}
+
+		if (tree.getRowCount() != rowCount) {
+			expandAllNodes(tree, rowCount, tree.getRowCount());
+		}
 	}
 
 	public void createFlatView(List<FileStatus> unstagedFiles) {
@@ -175,7 +190,31 @@ public class UnstagedChangesPanel extends JPanel {
 						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 						fileTableModel.removeUnstageFile(convertedRow);
 					}
+				} else {
+					TreePath[] selectedPaths = tree.getSelectionPaths();
+					List<FileStatus> selectedFiles = new ArrayList<FileStatus>();
+					String fullPath = "";
+					for (int i = 0; i < selectedPaths.length; i++) {
+						Object[] pathNodes = selectedPaths[i].getPath();
+
+						for (int j = 1; j < pathNodes.length; j++) {
+							if (j == pathNodes.length - 1) {
+								fullPath += pathNodes[j];
+							} else {
+								fullPath += pathNodes[j] + "/";
+							}
+
+						}
+						FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
+						String changeType = fileTableModel.getChangeType(fullPath);
+						selectedFiles.add(new FileStatus(changeType, fullPath));
+						fullPath = "";
+					}
+					FileTreeModel fileTreeModel = (FileTreeModel) tree.getModel();
+					fileTreeModel.removeUnstageFiles(selectedFiles);
+
 				}
+				expandAllNodes(tree, 0, tree.getRowCount());
 
 			}
 		});
@@ -188,9 +227,26 @@ public class UnstagedChangesPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
-					currentView = TREE_VIEW;
+					int[] selectedRows = filesTable.getSelectedRows();
 					FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
-					createTreeView(OptionsManager.getInstance().getSelectedRepository(), fileTableModel.getUnstagedFiles());
+
+					TreePath[] selectedPaths = new TreePath[selectedRows.length];
+					for (int i = 0; i < selectedRows.length; i++) {
+						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
+						String[] path = fileTableModel.getFileLocation(convertedRow).split("/");
+						
+						DefaultMutableTreeNode root = new DefaultMutableTreeNode("Oxygen-Git-Plugin");
+						DefaultMutableTreeNode node = root;
+						for (int j = 0; j < path.length; j++) {
+							DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(path[j]);
+							node.add(newNode);
+							node = newNode;
+						}
+						selectedPaths[i] = new TreePath(root);
+					}
+					tree.setSelectionPaths(selectedPaths);
+					currentView = TREE_VIEW;
+					expandAllNodes(tree, 0, tree.getRowCount());
 					scrollPane.setViewportView(tree);
 				} else {
 					currentView = FLAT_VIEW;
