@@ -97,4 +97,5 @@ public class FileTreeModel extends DefaultTreeModel implements Subject, Observer
 	private void notifyObservers(ChangeEvent changeEvent) {
 		observer.stateChanged(changeEvent);
 	}
+
 }
