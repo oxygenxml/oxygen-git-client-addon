@@ -98,6 +98,45 @@ public class OptionsManager {
 
 	}
 	
+	public void saveCredentials(UserCredentials userCredentials) {
+		OutputStream output = null;
+		try {
+			output = new FileOutputStream(Constants.RESOURCES_PATH + PROPERTIES_FILENAME);
+			properties.setProperty("Username", userCredentials.getUsername());
+			properties.setProperty("Password", userCredentials.getPassword());
+			properties.store(output, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				output.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
+	public UserCredentials getCredentials(){
+		InputStream input = null;
+		try {
+			input = new FileInputStream(Constants.RESOURCES_PATH + PROPERTIES_FILENAME);
+			properties.load(input);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			try {
+				input.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String username = properties.getProperty("Username");
+		String password = properties.getProperty("Password");
+		UserCredentials userCredentials = new UserCredentials(username, password);
+		return userCredentials;
+	}
+	
 	public String getSelectedRepository(){
 		InputStream input = null;
 		try {
