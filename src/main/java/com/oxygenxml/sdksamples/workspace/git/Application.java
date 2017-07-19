@@ -24,6 +24,7 @@ import com.oxygenxml.sdksamples.workspace.git.view.CommitPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.GitWindow;
 import com.oxygenxml.sdksamples.workspace.git.view.StagedChangesPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.StagingPanel;
+import com.oxygenxml.sdksamples.workspace.git.view.ToolbarPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.UnstagedChangesPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.WorkingCopySelectionPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.event.Observer;
@@ -70,11 +71,11 @@ public class Application {
 		UnstagedChangesPanel unstagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, false);
 		UnstagedChangesPanel stagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, true);
 		WorkingCopySelectionPanel workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess);
-		//StagedChangesPanel stagedChangesPanel = new StagedChangesPanel(gitAccess, observer);
-		CommitPanel commitPanel = new CommitPanel(gitAccess);
+		CommitPanel commitPanel = new CommitPanel(gitAccess, observer);
+		ToolbarPanel toolbarPanel = new ToolbarPanel(gitAccess);
 
 		StagingPanel stagingPanel = new StagingPanel(workingCopySelectionPanel, unstagedChangesPanel, stagedChangesPanel,
-				commitPanel);
+				commitPanel, toolbarPanel);
 
 		GitWindow gitWindow = new GitWindow(stagingPanel);
 		gitWindow.createGUI();
