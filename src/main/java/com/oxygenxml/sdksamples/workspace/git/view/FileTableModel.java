@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.table.AbstractTableModel;
 
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
@@ -97,7 +95,6 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 		List<FileStatus> fileToBeUpdated = Arrays.asList(new FileStatus[] { fileStatus });
 		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, fileToBeUpdated, this);
 		notifyObservers(changeEvent);
-		//fireTableDataChanged();
 	}
 
 	public FileStatus getUnstageFile(int convertedRow) {
@@ -138,8 +135,6 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 
 		// Update inner model.
 		unstagedFiles.clear();
-
-		//fireTableDataChanged();
 	}
 
 	@Override
@@ -182,6 +177,14 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 
 	public String getFileLocation(int convertedRow) {
 		return unstagedFiles.get(convertedRow).getFileLocation();
+	}
+
+	@Override
+	public void clear(List<FileStatus> files) {
+		if(forStaging){
+			deleteRows(files);
+			fireTableDataChanged();
+		}
 	}
 
 }
