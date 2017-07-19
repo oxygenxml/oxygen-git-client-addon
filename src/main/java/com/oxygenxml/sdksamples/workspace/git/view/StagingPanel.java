@@ -8,13 +8,15 @@ import javax.swing.JPanel;
 
 public class StagingPanel extends JPanel {
 
+	private ToolbarPanel toolbarPanel;
 	private WorkingCopySelectionPanel workingCopySelectionPanel;
 	private UnstagedChangesPanel unstagedChangesPanel;
 	private UnstagedChangesPanel stagedChangesPanel;
 	private CommitPanel commitPanel;
 
 	public StagingPanel(WorkingCopySelectionPanel workingCopySelectionPanel, UnstagedChangesPanel unstagedChangesPanel,
-			UnstagedChangesPanel stagedChangesPanel, CommitPanel commitPanel) {
+			UnstagedChangesPanel stagedChangesPanel, CommitPanel commitPanel, ToolbarPanel toolbarPanel) {
+		this.toolbarPanel = toolbarPanel;
 		this.workingCopySelectionPanel = workingCopySelectionPanel;
 		this.unstagedChangesPanel = unstagedChangesPanel;
 		this.stagedChangesPanel = stagedChangesPanel;
@@ -60,11 +62,13 @@ public class StagingPanel extends JPanel {
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
+		addToolbatPanel(gbc);
 		addWorkingCopySelectionPanel(gbc);
 		addUnstagedChangesPanel(gbc);
 		addStagedChangesPanel(gbc);
 		addCommitPanel(gbc);
 		
+		toolbarPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
 		commitPanel.createGUI();
@@ -72,12 +76,23 @@ public class StagingPanel extends JPanel {
 
 	}
 
-	private void addWorkingCopySelectionPanel(GridBagConstraints gbc) {
+	private void addToolbatPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
+		this.add(toolbarPanel, gbc);
+	}
+
+	private void addWorkingCopySelectionPanel(GridBagConstraints gbc) {
+		gbc.insets = new Insets(0, 0, 0, 0);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 1;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(workingCopySelectionPanel, gbc);
@@ -89,7 +104,7 @@ public class StagingPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		this.add(unstagedChangesPanel, gbc);
@@ -101,7 +116,7 @@ public class StagingPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
-		gbc.gridy = 2;
+		gbc.gridy = 3;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		this.add(stagedChangesPanel, gbc);
@@ -112,7 +127,7 @@ public class StagingPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 4;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(commitPanel, gbc);

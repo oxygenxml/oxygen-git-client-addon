@@ -15,14 +15,15 @@ import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
 
 public class FileTreeModel extends DefaultTreeModel implements Subject, Observer {
 
-	List<FileStatus> fileStatus = new ArrayList<FileStatus>();
+	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
 	private boolean forStaging;
 	private Observer observer;
 
-	public FileTreeModel(TreeNode root, boolean forStaging) {
+	public FileTreeModel(TreeNode root, boolean forStaging, List<FileStatus> filesStatus) {
 		super(root);
 		this.forStaging = forStaging;
+		this.filesStatus = filesStatus;
 	}
 
 	@Override
@@ -50,6 +51,7 @@ public class FileTreeModel extends DefaultTreeModel implements Subject, Observer
 		for (FileStatus fileStatus : fileToBeUpdated) {
 			TreeFormatter.buildTreeFromString(this, fileStatus.getFileLocation());
 		}
+		filesStatus.addAll(fileToBeUpdated);
 	}
 
 	private void deleteNodes(List<FileStatus> fileToBeUpdated) {
@@ -66,6 +68,7 @@ public class FileTreeModel extends DefaultTreeModel implements Subject, Observer
 				node = parentNode;
 			}
 		}
+		filesStatus.removeAll(fileToBeUpdated);
 	}
 
 	@Override
@@ -81,7 +84,16 @@ public class FileTreeModel extends DefaultTreeModel implements Subject, Observer
 		observer = null;
 	}
 
-	public void removeUnstageFiles(List<FileStatus> selectedFiles) {
+	public void removeUnstageFiles(List<String> selectedFiles) {
+
+		List<FileStatus> filesToRemove = new ArrayList<FileStatus>();
+		for (String string : selectedFiles) {
+			for (FileStatus fileStatus : filesStatus) {
+				if (fileStatus.getFileLocation().contains(string)) {
+					filesToRemove.add(new FileStatus(fileStatus));
+				}
+			}
+		}
 
 		StageState newSTate = StageState.UNSTAGED;
 		StageState oldState = StageState.STAGED;
@@ -90,12 +102,21 @@ public class FileTreeModel extends DefaultTreeModel implements Subject, Observer
 			oldState = StageState.UNSTAGED;
 		}
 
-		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, selectedFiles, this);
+		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, filesToRemove, this);
 		notifyObservers(changeEvent);
 	}
 
 	private void notifyObservers(ChangeEvent changeEvent) {
 		observer.stateChanged(changeEvent);
+	}
+
+	@Override
+	public void clear(List<FileStatus> files) {
+		if (forStaging) {
+			filesStatus.removeAll(files);
+			deleteNodes(files);
+			fireTreeStructureChanged(this, null, null, null);
+		}
 	}
 
 }

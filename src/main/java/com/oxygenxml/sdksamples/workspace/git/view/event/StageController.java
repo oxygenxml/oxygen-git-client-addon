@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
+import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 import com.oxygenxml.sdksamples.workspace.git.view.StageState;
 
 public class StageController implements Observer {
@@ -47,6 +48,13 @@ public class StageController implements Observer {
 		
 		for (Observer observer : observers) {
 			observer.stateChanged(changeEvent);
+		}
+	}
+	
+	@Override
+	public void clear(List<FileStatus> files){
+		for (Observer observer : observers) {
+			observer.clear(files);
 		}
 	}
 	

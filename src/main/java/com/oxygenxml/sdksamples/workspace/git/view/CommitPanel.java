@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -17,16 +18,19 @@ import javax.swing.ScrollPaneConstants;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
+import com.oxygenxml.sdksamples.workspace.git.view.event.StageController;
 
 public class CommitPanel extends JPanel {
 
+	private StageController stageController;
 	private JLabel label;
 	private JTextArea commitMessage;
 	private JButton commitButton;
 	private GitAccess gitAccess;
 
-	public CommitPanel(GitAccess gitAccess) {
+	public CommitPanel(GitAccess gitAccess, StageController observer) {
 		this.gitAccess = gitAccess;
+		this.stageController = observer;
 	}
 
 	public void createGUI() {
@@ -48,7 +52,10 @@ public class CommitPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				stageController.clear(gitAccess.getStagedFile());
+				commitMessage.setText("");
 				gitAccess.commit(commitMessage.getText());
+				JOptionPane.showMessageDialog(null, "Commit successful");
 			}
 		});
 	}

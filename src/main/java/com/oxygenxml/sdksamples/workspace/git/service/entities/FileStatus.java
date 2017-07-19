@@ -1,19 +1,18 @@
 package com.oxygenxml.sdksamples.workspace.git.service.entities;
 
 public class FileStatus {
-	
-	public static enum StageState {
-		STAGED, UNSTAGED
-	}
-	/**
-	 * 
-	 */
+
 	private String changeType;
 	private String fileLocation;
 
 	public FileStatus(String changeType, String fileLocation) {
 		this.changeType = changeType;
 		this.fileLocation = fileLocation;
+	}
+
+	public FileStatus(FileStatus fileStatus) {
+		this.changeType = fileStatus.getChangeType();
+		this.fileLocation = fileStatus.getFileLocation();
 	}
 
 	public String getChangeType() {
@@ -67,7 +66,5 @@ public class FileStatus {
 			return false;
 		return true;
 	}
-	
-	
 
 }

@@ -121,13 +121,13 @@ public class GitAccess {
 						|| entry.getChangeType().equals(DiffEntry.ChangeType.RENAME)) {
 					String filePath = entry.getNewPath();
 					FileStatus unstageFile = new FileStatus(changeType, filePath);
-					if(!stagedFiles.contains(unstageFile)){
+					if (!stagedFiles.contains(unstageFile)) {
 						unstagedFiles.add(unstageFile);
 					}
 				} else {
 					String filePath = entry.getOldPath();
 					FileStatus unstageFile = new FileStatus(changeType, filePath);
-					if(!stagedFiles.contains(unstageFile)){
+					if (!stagedFiles.contains(unstageFile)) {
 						unstagedFiles.add(unstageFile);
 					}
 				}
@@ -243,24 +243,19 @@ public class GitAccess {
 	 *          - Git username
 	 * @param password
 	 *          - Git password
+	 * @throws GitAPIException 
+	 * @throws TransportException 
+	 * @throws InvalidRemoteException 
 	 */
-	public void push(String username, String password) {
+	public void push(String username, String password) throws InvalidRemoteException, TransportException, GitAPIException {
 		/*
 		 * StoredConfig config = git.getRepository().getConfig();
 		 * config.setString("remote", "origin", "url",
 		 * "https://github.com/BeniaminSavu/test.git"); try { config.save(); } catch
 		 * (IOException e1) { e1.printStackTrace(); }
 		 */
-		try {
-			git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 
-		} catch (InvalidRemoteException e) {
-			e.printStackTrace();
-		} catch (TransportException e) {
-			e.printStackTrace();
-		} catch (GitAPIException e) {
-			e.printStackTrace();
-		}
+		git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 
 	}
 
@@ -386,7 +381,7 @@ public class GitAccess {
 			ResetCommand reset = git.reset();
 			for (FileStatus file : files) {
 				reset.addPath(file.getFileLocation());
-				
+
 			}
 			reset.call();
 		} catch (NoFilepatternException e) {
