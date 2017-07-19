@@ -2,13 +2,13 @@ package com.oxygenxml.sdksamples.workspace.git.utils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 public class TreeFormatter {
 
@@ -129,6 +129,15 @@ public class TreeFormatter {
 		return index;
 	}
 
+	/**
+	 * Finds the node in the tree from a given forward slash delimited string path.
+	 * 
+	 * @param model
+	 *          - The tree model
+	 * @param path
+	 *          - The string to find the node from
+	 * @return The node
+	 */
 	public static DefaultMutableTreeNode getTreeNodeFromString(DefaultTreeModel model, String path) {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) model.getRoot();
 		String[] strings = path.split("/");
@@ -141,4 +150,47 @@ public class TreeFormatter {
 		return node;
 	}
 
+	/**
+	 * Finds the common ancestors from the given selected paths 
+	 * 
+	 * @param selectedPaths - The paths selected
+	 * @return A List containing the common ancestors
+	 */
+	public static List<TreePath> getTreeCommonAncestors(TreePath[] selectedPaths) {
+		List<TreePath> commonAncestors = new ArrayList<TreePath>();
+		commonAncestors.add(selectedPaths[0]);
+		for (int i = 0; i < selectedPaths.length; i++) {
+			boolean newPathToAdd = false;
+			List<TreePath> pathsToRemove = new ArrayList<TreePath>();
+			for (TreePath treePath : commonAncestors) {
+				if (treePath.isDescendant(selectedPaths[i])) {
+					newPathToAdd = false;
+					break;
+				} else if (selectedPaths[i].isDescendant(treePath)) {
+					pathsToRemove.add(treePath);
+					newPathToAdd = false;
+				} else {
+					newPathToAdd = true;
+				}
+			}
+			if (pathsToRemove.size() != 0) {
+				commonAncestors.removeAll(pathsToRemove);
+				commonAncestors.add(selectedPaths[i]);
+			} else if(newPathToAdd){
+				commonAncestors.add(selectedPaths[i]);
+			}
+		}
+		return commonAncestors;
+	}
+
+	public static void expandAllNodes(JTree tree, int startingIndex, int rowCount) {
+		for (int i = startingIndex; i < rowCount; ++i) {
+			tree.expandRow(i);
+		}
+
+		if (tree.getRowCount() != rowCount) {
+			expandAllNodes(tree, rowCount, tree.getRowCount());
+		}
+	}
+	
 }
