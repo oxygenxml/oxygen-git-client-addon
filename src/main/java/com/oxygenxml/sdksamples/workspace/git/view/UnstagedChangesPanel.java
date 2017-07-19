@@ -26,6 +26,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
+import com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 import com.oxygenxml.sdksamples.workspace.git.utils.TreeFormatter;
@@ -43,7 +44,7 @@ public class UnstagedChangesPanel extends JPanel {
 	private JButton switchViewButton;
 	private JScrollPane scrollPane;
 	private JTable filesTable;
-	private JTree tree = new JTree(new FileTreeModel(null, false));
+	private JTree tree = new JTree(new FileTreeModel(null, false, null));
 	private StageController stageController;
 
 	private boolean staging;
@@ -117,9 +118,9 @@ public class UnstagedChangesPanel extends JPanel {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
 
 		// Create the tree model and add the root node to it
-		DefaultTreeModel modelTree = new FileTreeModel(root, false);
+		DefaultTreeModel modelTree = new FileTreeModel(root, false, new ArrayList<FileStatus>(unstagedFiles));
 		if (staging) {
-			modelTree = new FileTreeModel(root, true);
+			modelTree = new FileTreeModel(root, true, new ArrayList<FileStatus>(unstagedFiles));
 		}
 
 		// Create the tree with the new model
@@ -127,7 +128,7 @@ public class UnstagedChangesPanel extends JPanel {
 		for (FileStatus unstageFile : unstagedFiles) {
 			TreeFormatter.buildTreeFromString(modelTree, unstageFile.getFileLocation());
 		}
-		expandAllNodes(tree, 0, tree.getRowCount());
+		TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 
 		stageController.registerObserver((Observer) tree.getModel());
 		stageController.registerSubject((Subject) tree.getModel());
@@ -135,16 +136,6 @@ public class UnstagedChangesPanel extends JPanel {
 		// TODO Restore selection.
 
 		this.setTree(tree);
-	}
-
-	private void expandAllNodes(JTree tree, int startingIndex, int rowCount) {
-		for (int i = startingIndex; i < rowCount; ++i) {
-			tree.expandRow(i);
-		}
-
-		if (tree.getRowCount() != rowCount) {
-			expandAllNodes(tree, rowCount, tree.getRowCount());
-		}
 	}
 
 	public void createFlatView(List<FileStatus> unstagedFiles) {
@@ -191,12 +182,12 @@ public class UnstagedChangesPanel extends JPanel {
 						fileTableModel.removeUnstageFile(convertedRow);
 					}
 				} else {
+					List<String> selectedFiles = new ArrayList<String>();
 					TreePath[] selectedPaths = tree.getSelectionPaths();
-					List<FileStatus> selectedFiles = new ArrayList<FileStatus>();
+					List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(selectedPaths);
 					String fullPath = "";
-					for (int i = 0; i < selectedPaths.length; i++) {
-						Object[] pathNodes = selectedPaths[i].getPath();
-
+					for (TreePath treePath : commonAncestors) {
+						Object[] pathNodes = treePath.getPath();
 						for (int j = 1; j < pathNodes.length; j++) {
 							if (j == pathNodes.length - 1) {
 								fullPath += pathNodes[j];
@@ -205,18 +196,17 @@ public class UnstagedChangesPanel extends JPanel {
 							}
 
 						}
-						FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
-						String changeType = fileTableModel.getChangeType(fullPath);
-						selectedFiles.add(new FileStatus(changeType, fullPath));
+						selectedFiles.add(new String(fullPath));
 						fullPath = "";
 					}
 					FileTreeModel fileTreeModel = (FileTreeModel) tree.getModel();
 					fileTreeModel.removeUnstageFiles(selectedFiles);
 
 				}
-				expandAllNodes(tree, 0, tree.getRowCount());
-
+				TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 			}
+
+			
 		});
 	}
 
@@ -224,32 +214,39 @@ public class UnstagedChangesPanel extends JPanel {
 
 		switchViewButton.addActionListener(new ActionListener() {
 
+			TreePath[] selectedPaths = null;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
 					FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
 
-					TreePath[] selectedPaths = new TreePath[selectedRows.length];
+					selectedPaths = new TreePath[selectedRows.length];
 					for (int i = 0; i < selectedRows.length; i++) {
 						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
-						String[] path = fileTableModel.getFileLocation(convertedRow).split("/");
-						
-						DefaultMutableTreeNode root = new DefaultMutableTreeNode("Oxygen-Git-Plugin");
-						DefaultMutableTreeNode node = root;
-						for (int j = 0; j < path.length; j++) {
-							DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(path[j]);
-							node.add(newNode);
-							node = newNode;
+						String absolutePath = fileTableModel.getFileLocation(convertedRow);
+
+						DefaultMutableTreeNode nodeBuilder = TreeFormatter.getTreeNodeFromString((FileTreeModel) tree.getModel(),
+								absolutePath);
+						DefaultMutableTreeNode[] selectedPath = new DefaultMutableTreeNode[absolutePath.split("/").length + 1];
+						int count = selectedPath.length;
+						while (nodeBuilder != null) {
+							count--;
+							selectedPath[count] = nodeBuilder;
+							nodeBuilder = (DefaultMutableTreeNode) nodeBuilder.getParent();
 						}
-						selectedPaths[i] = new TreePath(root);
+
+						selectedPaths[i] = new TreePath(selectedPath);
 					}
 					tree.setSelectionPaths(selectedPaths);
-					currentView = TREE_VIEW;
-					expandAllNodes(tree, 0, tree.getRowCount());
+
+					TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 					scrollPane.setViewportView(tree);
+					currentView = TREE_VIEW;
 				} else {
 					currentView = FLAT_VIEW;
+					// filesTable.addRowSelectionInterval(index0, index1);
 					scrollPane.setViewportView(filesTable);
 				}
 			}
@@ -341,13 +338,13 @@ public class UnstagedChangesPanel extends JPanel {
 				ImageIcon icon = null;
 				switch ((String) value) {
 				case "ADD":
-					icon = new ImageIcon("src/main/resources/images/GitAdd10.png");
+					icon = new ImageIcon(ImageConstants.GIT_ADD_ICON);
 					break;
 				case "MODIFY":
-					icon = new ImageIcon("src/main/resources/images/GitModified10.png");
+					icon = new ImageIcon(ImageConstants.GIT_MODIFIED_ICON);
 					break;
 				case "DELETE":
-					icon = new ImageIcon("src/main/resources/images/GitRemoved10.png");
+					icon = new ImageIcon(ImageConstants.GIT_DELETE_ICON);
 					break;
 				}
 				return new JLabel(icon);

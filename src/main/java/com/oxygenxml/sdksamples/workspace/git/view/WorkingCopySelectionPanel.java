@@ -48,7 +48,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 	}
 
 	public void createGUI() {
-		this.setBorder(BorderFactory.createTitledBorder("WorkingCopy"));
 
 		this.setLayout(new GridBagLayout());
 
