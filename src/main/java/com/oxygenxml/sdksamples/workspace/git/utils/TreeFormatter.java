@@ -10,60 +10,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+/**
+ * An utility class for JTree. 
+ * @author intern2
+ *
+ */
 public class TreeFormatter {
-
-	private String prefixPath;
-
-	public TreeFormatter() {
-		this.prefixPath = "";
-	}
-
-	public List<String> search(String path) {
-		File rootFolder = new File(path);
-		File[] listOfFiles = rootFolder.listFiles();
-
-		String tempPrefixPath = prefixPath;
-		prefixPath += rootFolder.getName() + "/";
-
-		List<String> fileNames = new ArrayList<String>();
-
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isDirectory()) {
-				fileNames.addAll(search(listOfFiles[i].getAbsolutePath()));
-			} else if (listOfFiles[i].isFile()) {
-				fileNames.add(prefixPath + listOfFiles[i].getName());
-			}
-		}
-		prefixPath = tempPrefixPath;
-		return fileNames;
-	}
-
-	public DefaultMutableTreeNode generateTreeScruture(String path) {
-		File rootFolder = new File(path);
-		File[] listOfFiles = rootFolder.listFiles();
-
-		String tempPrefixPath = prefixPath;
-		prefixPath += rootFolder.getName() + "/";
-		DefaultMutableTreeNode localRoot = new DefaultMutableTreeNode(rootFolder.getName());
-
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isDirectory()) {
-				DefaultMutableTreeNode directory = generateTreeScruture(listOfFiles[i].getAbsolutePath());
-				localRoot.add(directory);
-			}
-		}
-
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isFile()) {
-				DefaultMutableTreeNode file = new DefaultMutableTreeNode(listOfFiles[i].getName());
-				localRoot.add(file);
-			}
-		}
-
-		prefixPath = tempPrefixPath;
-
-		return localRoot;
-	}
 
 	/**
 	 * Builds a tree from a given forward slash delimited string.
@@ -130,7 +82,8 @@ public class TreeFormatter {
 	}
 
 	/**
-	 * Finds the node in the tree from a given forward slash delimited string path.
+	 * Finds the node in the tree from a given forward slash delimited string
+	 * path.
 	 * 
 	 * @param model
 	 *          - The tree model
@@ -151,9 +104,10 @@ public class TreeFormatter {
 	}
 
 	/**
-	 * Finds the common ancestors from the given selected paths 
+	 * Finds the common ancestors from the given selected paths
 	 * 
-	 * @param selectedPaths - The paths selected
+	 * @param selectedPaths
+	 *          - The paths selected
 	 * @return A List containing the common ancestors
 	 */
 	public static List<TreePath> getTreeCommonAncestors(TreePath[] selectedPaths) {
@@ -176,13 +130,23 @@ public class TreeFormatter {
 			if (pathsToRemove.size() != 0) {
 				commonAncestors.removeAll(pathsToRemove);
 				commonAncestors.add(selectedPaths[i]);
-			} else if(newPathToAdd){
+			} else if (newPathToAdd) {
 				commonAncestors.add(selectedPaths[i]);
 			}
 		}
 		return commonAncestors;
 	}
 
+	/**
+	 * Expands all the nodes from the tree
+	 * 
+	 * @param tree
+	 *          - tree rows to expand
+	 * @param startingIndex
+	 *          - starting row index
+	 * @param rowCount
+	 *          - end row index
+	 */
 	public static void expandAllNodes(JTree tree, int startingIndex, int rowCount) {
 		for (int i = startingIndex; i < rowCount; ++i) {
 			tree.expandRow(i);
@@ -192,5 +156,5 @@ public class TreeFormatter {
 			expandAllNodes(tree, rowCount, tree.getRowCount());
 		}
 	}
-	
+
 }

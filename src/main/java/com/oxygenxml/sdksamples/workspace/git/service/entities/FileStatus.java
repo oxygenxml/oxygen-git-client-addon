@@ -1,5 +1,12 @@
 package com.oxygenxml.sdksamples.workspace.git.service.entities;
 
+/**
+ * Git File Status. Used to store the file location and the file state(DELETED,
+ * ADDED, MODIFIED)
+ * 
+ * @author intern2
+ *
+ */
 public class FileStatus {
 
 	private String changeType;

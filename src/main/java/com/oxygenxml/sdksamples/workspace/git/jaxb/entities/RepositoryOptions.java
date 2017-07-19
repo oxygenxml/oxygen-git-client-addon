@@ -8,6 +8,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Entity for the JAXB to store a list of elements
+ * 
+ * @author intern2
+ *
+ */
 @XmlRootElement(name = "repositoryOptions")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RepositoryOptions {

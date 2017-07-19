@@ -88,7 +88,7 @@ public class LoginDialog extends JDialog {
 				String username = getUsername();
 				String password = getPassword();
 				UserCredentials userCredentials = new UserCredentials(username, password);
-				OptionsManager.getInstance().saveCredentials(userCredentials);
+				OptionsManager.getInstance().saveGitCredentials(userCredentials);
 				if(push){
 					try {
 						gitAccess.push(username, password);

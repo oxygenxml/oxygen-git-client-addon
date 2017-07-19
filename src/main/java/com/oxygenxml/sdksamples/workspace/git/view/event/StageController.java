@@ -7,33 +7,40 @@ import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 import com.oxygenxml.sdksamples.workspace.git.view.StageState;
 
+/**
+ * Delegates the changing event to all other observers and makes sure that all
+ * the observers are properly updated
+ * 
+ * @author intern2
+ *
+ */
 public class StageController implements Observer {
 
 	private GitAccess gitAccess;
-	
+
 	private List<Subject> subjects = new ArrayList<Subject>();
 	private List<Observer> observers = new ArrayList<Observer>();
-	
+
 	public StageController(GitAccess gitAccess) {
 		this.gitAccess = gitAccess;
 	}
 
 	public void registerSubject(Subject subject) {
 		subjects.add(subject);
-		
+
 		subject.addObserver(this);
 	}
-	
+
 	public void registerObserver(Observer subject) {
 		observers.add(subject);
 	}
-	
+
 	public void unregisterSubject(Subject subject) {
 		subjects.remove(subject);
-		
+
 		subject.removeObserver(this);
 	}
-	
+
 	public void unregisterObserver(Observer subject) {
 		observers.remove(subject);
 	}
@@ -45,17 +52,17 @@ public class StageController implements Observer {
 		} else {
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
 		}
-		
+
 		for (Observer observer : observers) {
 			observer.stateChanged(changeEvent);
 		}
 	}
-	
+
 	@Override
-	public void clear(List<FileStatus> files){
+	public void clear(List<FileStatus> files) {
 		for (Observer observer : observers) {
 			observer.clear(files);
 		}
 	}
-	
+
 }

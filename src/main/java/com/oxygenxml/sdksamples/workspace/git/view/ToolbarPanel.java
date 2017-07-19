@@ -45,7 +45,7 @@ public class ToolbarPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				UserCredentials userCredentials = OptionsManager.getInstance().getCredentials();
+				UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials();
 				if (userCredentials.getUsername() == null || userCredentials.getPassword() == null) {
 					LoginDialog loginDialog = new LoginDialog(gitAccess, true);
 				} else {

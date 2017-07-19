@@ -5,12 +5,19 @@ import java.util.List;
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 import com.oxygenxml.sdksamples.workspace.git.view.StageState;
 
+/**
+ * Event created when a file is changing its state, from staged to unstaged or
+ * from unstaged to staged
+ * 
+ * @author intern2
+ *
+ */
 public class ChangeEvent {
 	private StageState newState;
 	private StageState oldState;
 	private List<FileStatus> fileToBeUpdated;
 	private Subject source;
-	
+
 	public ChangeEvent(StageState newState, StageState oldState, List<FileStatus> fileToBeUpdated, Subject source) {
 		super();
 		this.newState = newState;
@@ -18,7 +25,7 @@ public class ChangeEvent {
 		this.fileToBeUpdated = fileToBeUpdated;
 		this.source = source;
 	}
-	
+
 	public StageState getNewState() {
 		return newState;
 	}

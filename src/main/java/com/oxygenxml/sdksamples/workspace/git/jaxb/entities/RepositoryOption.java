@@ -4,6 +4,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Enitity for the JAXB to store a single element
+ * @author intern2
+ *
+ */
 @XmlRootElement(name = "option")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RepositoryOption {
