@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
@@ -50,6 +51,7 @@ public class ToolbarPanel extends JPanel {
 				} else {
 					try {
 						gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+						JOptionPane.showMessageDialog(null, "Push successful");
 					} catch (GitAPIException e1) {
 						LoginDialog loginDialog = new LoginDialog(gitAccess, true);
 						e1.printStackTrace();

@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -91,7 +92,10 @@ public class LoginDialog extends JDialog {
 				if(push){
 					try {
 						gitAccess.push(username, password);
+						dispose();
+						JOptionPane.showMessageDialog(null, "Push successful");
 					} catch (GitAPIException e1) {
+						JOptionPane.showMessageDialog(null, "Invalid credentials");
 						e1.printStackTrace();
 					}
 				} else {

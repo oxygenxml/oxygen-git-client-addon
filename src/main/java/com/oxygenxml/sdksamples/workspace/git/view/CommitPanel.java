@@ -53,8 +53,8 @@ public class CommitPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				stageController.clear(gitAccess.getStagedFile());
-				commitMessage.setText("");
 				gitAccess.commit(commitMessage.getText());
+				commitMessage.setText("");
 				JOptionPane.showMessageDialog(null, "Commit successful");
 			}
 		});
