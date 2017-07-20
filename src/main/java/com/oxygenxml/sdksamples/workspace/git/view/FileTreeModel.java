@@ -13,6 +13,12 @@ import com.oxygenxml.sdksamples.workspace.git.view.event.ChangeEvent;
 import com.oxygenxml.sdksamples.workspace.git.view.event.Observer;
 import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
 
+/**
+ *
+ * TODO How about we call this Staging(Resources)TreeModel? That's pretty much what it does... switches the
+ * staging state. 
+ *
+ */
 public class FileTreeModel extends DefaultTreeModel implements Subject, Observer {
 
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();

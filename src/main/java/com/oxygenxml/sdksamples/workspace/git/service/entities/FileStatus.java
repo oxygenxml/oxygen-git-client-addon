@@ -8,8 +8,11 @@ package com.oxygenxml.sdksamples.workspace.git.service.entities;
  *
  */
 public class FileStatus {
-
+	// TODO Create constants for the possbile values.
 	private String changeType;
+	/**
+	 * TODO Give some details about the location. Is it absolute? Relative to something? Some examples.
+	 */
 	private String fileLocation;
 
 	public FileStatus(String changeType, String fileLocation) {

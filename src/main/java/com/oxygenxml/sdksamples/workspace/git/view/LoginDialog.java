@@ -25,6 +25,9 @@ import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 import com.oxygenxml.sdksamples.workspace.git.utils.UserCredentials;
 
+/**
+ * TODO In the API there is a OKCancelDialog class that we could use. It will integrate better in Oxygen. 
+ */
 public class LoginDialog extends JDialog {
 
 	private boolean push;
@@ -37,7 +40,7 @@ public class LoginDialog extends JDialog {
 	private JButton btnCancel;
 	private boolean succeeded;
 
-	public LoginDialog(GitAccess gitAccess, boolean push) {
+	public LoginDialog(final GitAccess gitAccess, final boolean push) {
 		this.gitAccess = gitAccess;
 		this.push = push;
 

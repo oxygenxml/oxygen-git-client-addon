@@ -1,15 +1,9 @@
 package com.oxygenxml.sdksamples.workspace.git.view;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -47,6 +41,8 @@ public class ToolbarPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials();
 				if (userCredentials.getUsername() == null || userCredentials.getPassword() == null) {
+					// TODO I would prefer to leave the dialog with just the task to give you the credentials.
+					// The push/pull logic should stay in dedicated actions.
 					LoginDialog loginDialog = new LoginDialog(gitAccess, true);
 				} else {
 					Thread thread = new Thread(new AppWorker(userCredentials, gitAccess, true));

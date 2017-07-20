@@ -11,11 +11,20 @@ import com.oxygenxml.sdksamples.workspace.git.view.event.ChangeEvent;
 import com.oxygenxml.sdksamples.workspace.git.view.event.Observer;
 import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
 
+/**
+ * 
+ * TODO How about we call this Staging(Resources)TableModel? That's pretty much what it does... switches the
+ * staging state. 
+ */
 public class FileTableModel extends AbstractTableModel implements Subject, Observer {
 
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
 	private Observer observer;
+	/**
+	 * <code>true</code> if this model presents un-staged resources that will be staged.
+	 * <code>false</code> if this model presents staged resources that will be unstaged.
+	 */
 	private boolean forStaging;
 
 	public FileTableModel(boolean forStaging) {
@@ -35,6 +44,7 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		Class clazz = null;
+		// TODO Create contants for each index and use them everywhere in this class.
 		switch (columnIndex) {
 		case 0:
 			clazz = String.class;
@@ -122,6 +132,11 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 		return filesStatus;
 	}
 
+	/**
+	 * 
+	 * TODO This is not per se a remove. More of a state switch.
+	 * 
+	 */
 	public void removeAllFiles() {
 		StageState newSTate = StageState.UNSTAGED;
 		StageState oldState = StageState.STAGED;
@@ -139,7 +154,6 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 
 	@Override
 	public void stateChanged(ChangeEvent changeEvent) {
-
 		List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
 		if (changeEvent.getNewState() == StageState.STAGED) {
 			if (forStaging) {

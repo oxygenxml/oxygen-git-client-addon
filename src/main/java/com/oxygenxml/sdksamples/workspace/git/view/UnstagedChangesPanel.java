@@ -340,19 +340,17 @@ public class UnstagedChangesPanel extends JPanel {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 					int row, int column) {
 				ImageIcon icon = null;
-				switch ((String) value) {
-				case "ADD":
+				String str = (String) value;
+				// TODO Use contants from FileStatus
+				if ("ADD".equals(str)) {
 					icon = new ImageIcon(ImageConstants.GIT_ADD_ICON);
-					break;
-				case "MODIFY":
+				} else if ("MODIFY".equals(str)) {
 					icon = new ImageIcon(ImageConstants.GIT_MODIFIED_ICON);
-					break;
-				case "DELETE":
+				} else if ("DELETE".equals(str)) {
 					icon = new ImageIcon(ImageConstants.GIT_DELETE_ICON);
-					break;
 				}
-				return new JLabel(icon);
 
+				return new JLabel(icon);
 			}
 		});
 
