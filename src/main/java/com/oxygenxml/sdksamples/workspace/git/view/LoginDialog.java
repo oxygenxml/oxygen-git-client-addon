@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,7 +33,6 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  */
 public class LoginDialog extends OKCancelDialog {
 
-	private boolean push;
 	private GitAccess gitAccess;
 	private JTextField tfUsername;
 	private JPasswordField pfPassword;
@@ -40,11 +40,21 @@ public class LoginDialog extends OKCancelDialog {
 	private JLabel lbPassword;
 	private boolean succeeded;
 
-	public LoginDialog(final GitAccess gitAccess, final boolean push) {
+	public LoginDialog(GitAccess gitAccess) {
 		super(null, "GitAccount", true);
 		this.gitAccess = gitAccess;
-		this.push = push;
 
+		createGUI();
+		
+		this.pack();
+		this.setLocationRelativeTo(null);
+		this.setResizable(false);
+		this.setVisible(true);
+		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+		
+	}
+
+	public void createGUI() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -100,9 +110,7 @@ public class LoginDialog extends OKCancelDialog {
 				String password = getPassword();
 				UserCredentials userCredentials = new UserCredentials(username, password);
 				OptionsManager.getInstance().saveGitCredentials(userCredentials);
-				Thread thread = new Thread(new AppWorker(userCredentials, gitAccess, push));
 				dispose();
-				thread.start();
 			}
 		});
 	
@@ -115,13 +123,6 @@ public class LoginDialog extends OKCancelDialog {
 	
 
 		this.add(panel, BorderLayout.CENTER);
-		
-		pack();
-    setResizable(false);
-    setVisible(true);
-    setModal(true);
-    setLocationRelativeTo(null);
-		
 	}
 
 	public String getUsername() {

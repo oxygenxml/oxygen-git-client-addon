@@ -6,17 +6,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Base64;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
+import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.Options;
+import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryLocations;
 import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOption;
-import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOptions;
+
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Used to save and load different user options
@@ -28,21 +34,22 @@ public class OptionsManager {
 	/**
 	 * Why not store everything into one file?
 	 */
-	private static final String REPOSITORY_FILENAME = "Repositories.xml";
+	private static final String REPOSITORY_FILENAME = "Options.xml";
 	private static final String PROPERTIES_FILENAME = "Options.properties";
+	private static final String KEY = "Beni";
 
 	/**
 	 * All Repositories that were selected by the user with their options
 	 */
-	private RepositoryOptions repositoryOptions = null;
-	
+	private Options options = null;
+
 	/**
 	 * Properties file to store user options
 	 */
 	private Properties properties = new Properties();
 
 	/**
-	 * Singletone instance. 
+	 * Singletone instance.
 	 */
 	private static OptionsManager instance;
 
@@ -58,21 +65,20 @@ public class OptionsManager {
 	 * repositoryOptions variable
 	 */
 	private void loadRepositoryOptions() {
-		if (repositoryOptions == null) {
+		if (options == null) {
+			options = new Options();
+		}
+		if (options != null) {
 			String fileName = REPOSITORY_FILENAME;
 			JAXBContext jaxbContext;
 			try {
-				jaxbContext = JAXBContext.newInstance(RepositoryOptions.class);
+				jaxbContext = JAXBContext.newInstance(Options.class);
 				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-				repositoryOptions = (RepositoryOptions) jaxbUnmarshaller
-						.unmarshal(new File(Constants.RESOURCES_PATH + fileName));
+				options = (Options) jaxbUnmarshaller.unmarshal(new File(Constants.RESOURCES_PATH + fileName));
 			} catch (JAXBException e) {
 				e.printStackTrace();
 			}
 
-			if (repositoryOptions == null) {
-				repositoryOptions = new RepositoryOptions();
-			}
 		}
 	}
 
@@ -84,10 +90,10 @@ public class OptionsManager {
 		String fileName = REPOSITORY_FILENAME;
 		try {
 
-			JAXBContext jaxbContext = JAXBContext.newInstance(RepositoryOptions.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.marshal(repositoryOptions, new File(Constants.RESOURCES_PATH + fileName));
+			jaxbMarshaller.marshal(options, new File(Constants.RESOURCES_PATH + fileName));
 		} catch (JAXBException e1) {
 			e1.printStackTrace();
 		}
@@ -99,10 +105,10 @@ public class OptionsManager {
 	 * 
 	 * @return a set with the repository options
 	 */
-	public Set<RepositoryOption> getRepositoryEntries() {
+	public Set<String> getRepositoryEntries() {
 		loadRepositoryOptions();
 
-		return repositoryOptions.getRepositoryOptions();
+		return options.getRepositoryLocations().getLocations();
 	}
 
 	/**
@@ -111,10 +117,10 @@ public class OptionsManager {
 	 * @param repositoryOption
 	 *          - options to be saved
 	 */
-	public void addRepository(RepositoryOption repositoryOption) {
+	public void addRepository(String repositoryOption) {
 		loadRepositoryOptions();
 
-		repositoryOptions.getRepositoryOptions().add(repositoryOption);
+		options.getRepositoryLocations().getLocations().add(repositoryOption);
 		saveRepositoryOptions();
 	}
 
@@ -125,20 +131,10 @@ public class OptionsManager {
 	 *          - the path to the selected repository
 	 */
 	public void saveSelectedRepository(String path) {
-		OutputStream output = null;
-		try {
-			output = new FileOutputStream(Constants.RESOURCES_PATH + PROPERTIES_FILENAME);
-			properties.setProperty("Selected-Repository", path);
-			properties.store(output, null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				output.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		loadRepositoryOptions();
+		options.setSelectedRepository(path);
+
+		saveRepositoryOptions();
 	}
 
 	/**
@@ -147,21 +143,9 @@ public class OptionsManager {
 	 * @return the path to the selected repository
 	 */
 	public String getSelectedRepository() {
-		InputStream input = null;
-		try {
-			input = new FileInputStream(Constants.RESOURCES_PATH + PROPERTIES_FILENAME);
-			properties.load(input);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				input.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		loadRepositoryOptions();
 
-		return properties.getProperty("Selected-Repository");
+		return options.getSelectedRepository();
 	}
 
 	/**
@@ -171,22 +155,14 @@ public class OptionsManager {
 	 *          - the credentials to be saved
 	 */
 	public void saveGitCredentials(UserCredentials userCredentials) {
-		OutputStream output = null;
-		try {
-			output = new FileOutputStream(Constants.RESOURCES_PATH + PROPERTIES_FILENAME);
-			properties.setProperty("Username", userCredentials.getUsername());
-			// TODO Encript the password. You can use pluginWorkspaceAccess.getUtilAccess().encrypt(arg0)
-			properties.setProperty("Password", userCredentials.getPassword());
-			properties.store(output, null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				output.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		loadRepositoryOptions();
+		
+		options.setUsername(userCredentials.getUsername());
+		Cipher cipher = new Cipher();
+		String password =cipher.encrypt(userCredentials.getPassword());
+		options.setPassword(password);
+
+		saveRepositoryOptions();
 
 	}
 
@@ -196,23 +172,17 @@ public class OptionsManager {
 	 * @return the credentials
 	 */
 	public UserCredentials getGitCredentials() {
-		InputStream input = null;
-		try {
-			input = new FileInputStream(Constants.RESOURCES_PATH + PROPERTIES_FILENAME);
-			properties.load(input);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				input.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		String username = properties.getProperty("Username");
-		String password = properties.getProperty("Password");
+		loadRepositoryOptions();
+
+		String username = options.getUsername();
+		String password = options.getPassword();
+		
+		Cipher cipher = new Cipher();
+		password = cipher.decrypt(password);
+		
 		UserCredentials userCredentials = new UserCredentials(username, password);
 		return userCredentials;
 	}
+
 
 }

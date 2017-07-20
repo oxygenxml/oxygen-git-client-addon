@@ -107,11 +107,9 @@ public class WorkingCopySelectionPanel extends JPanel {
 					String directoryPath = fileChooser.getSelectedFile().getAbsolutePath();
 					if (directoryisValid(directoryPath)) {
 
-						RepositoryOption repositoryOption = new RepositoryOption(directoryPath);
-
-						if (!OptionsManager.getInstance().getRepositoryEntries().contains(repositoryOption)) {
+						if (!OptionsManager.getInstance().getRepositoryEntries().contains(directoryPath)) {
 							workingCopySelector.addItem(directoryPath);
-							OptionsManager.getInstance().addRepository(repositoryOption);
+							OptionsManager.getInstance().addRepository(directoryPath);
 
 						}
 
@@ -163,20 +161,22 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		workingCopySelector = new JComboBox<String>();
 
-		for (RepositoryOption repositoryOption : OptionsManager.getInstance().getRepositoryEntries()) {
-			workingCopySelector.addItem(repositoryOption.getLocation());
+		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
+			workingCopySelector.addItem(repositoryEntry);
 		}
 		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
 		workingCopySelector.setSelectedItem(repositoryPath);
-		gitAccess.setRepository(repositoryPath);
+		if(!repositoryPath.equals("")){
+			gitAccess.setRepository(repositoryPath);
+			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+			List<FileStatus> stagedFiles = gitAccess.getStagedFile();
+			StagingPanel parent = (StagingPanel) this.getParent();
+			parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
+			parent.getStagedChangesPanel().createFlatView(stagedFiles);
+			parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
+			parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
+		}
 		
-		List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-		List<FileStatus> stagedFiles = gitAccess.getStagedFile();
-		StagingPanel parent = (StagingPanel) this.getParent();
-		parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
-		parent.getStagedChangesPanel().createFlatView(stagedFiles);
-		parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
-		parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
 		this.add(workingCopySelector, gbc);
 	}
 

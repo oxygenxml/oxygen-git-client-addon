@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
-
 import com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
@@ -38,16 +37,13 @@ public class ToolbarPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials();
-				if (userCredentials.getUsername() == null || userCredentials.getPassword() == null) {
-					// TODO I would prefer to leave the dialog with just the task to give you the credentials.
-					// The push/pull logic should stay in dedicated actions.
-					LoginDialog loginDialog = new LoginDialog(gitAccess, true);
-				} else {
-					Thread thread = new Thread(new AppWorker(userCredentials, gitAccess, true));
-					thread.start();
-				}
+
+				Thread thread = new Thread(new PushPullWorker(userCredentials, gitAccess, true));
+				thread.start();
 			}
+
 		});
+		pushButton.setToolTipText("Push");
 		gitToolbar.add(pushButton);
 
 		JButton pullButton = new JButton(new ImageIcon(ImageConstants.GIT_PULL_ICON));
@@ -55,10 +51,22 @@ public class ToolbarPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				LoginDialog loginDialog = new LoginDialog(gitAccess, false);
+				LoginDialog loginDialog = new LoginDialog(gitAccess);
 			}
 		});
+		pullButton.setToolTipText("Pull");
 		gitToolbar.add(pullButton);
+
+		JButton storeCredentials = new JButton(new ImageIcon(ImageConstants.STORE_CREDENTIALS_ICON));
+		storeCredentials.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				LoginDialog loginDialog = new LoginDialog(gitAccess);
+			}
+		});
+		storeCredentials.setToolTipText("Update Credentials");
+		gitToolbar.add(storeCredentials);
 
 		this.add(gitToolbar, BorderLayout.PAGE_START);
 	}
