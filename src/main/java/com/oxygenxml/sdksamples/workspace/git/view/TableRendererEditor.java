@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.AbstractCellEditor;
@@ -18,7 +17,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
-import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 
 public class TableRendererEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
@@ -35,36 +33,6 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 		this.editedButton = new JButton();
 
 		addMouseMotionListener();
-		addMouseListener();
-	}
-
-	private void addMouseListener() {
-		table.addMouseListener(new MouseListener() {
-
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseClicked(MouseEvent e) {
-
-			}
-
-		});
-
 	}
 
 	public static void install(JTable table) {
@@ -107,10 +75,7 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 				}
 			}
 
-			public void mouseDragged(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
+			public void mouseDragged(MouseEvent e) {}
 		});
 
 	}

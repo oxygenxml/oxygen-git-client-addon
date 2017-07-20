@@ -25,6 +25,9 @@ import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOptions;
  *
  */
 public class OptionsManager {
+	/**
+	 * Why not store everything into one file?
+	 */
 	private static final String REPOSITORY_FILENAME = "Repositories.xml";
 	private static final String PROPERTIES_FILENAME = "Options.properties";
 
@@ -172,6 +175,7 @@ public class OptionsManager {
 		try {
 			output = new FileOutputStream(Constants.RESOURCES_PATH + PROPERTIES_FILENAME);
 			properties.setProperty("Username", userCredentials.getUsername());
+			// TODO Encript the password. You can use pluginWorkspaceAccess.getUtilAccess().encrypt(arg0)
 			properties.setProperty("Password", userCredentials.getPassword());
 			properties.store(output, null);
 		} catch (IOException e) {

@@ -337,6 +337,7 @@ public class UnstagedChangesPanel extends JPanel {
 					int row, int column) {
 				ImageIcon icon = null;
 				String str = (String) value;
+				// TODO Use contants from FileStatus
 				if ("ADD".equals(str)) {
 					icon = new ImageIcon(ImageConstants.GIT_ADD_ICON);
 				} else if ("MODIFY".equals(str)) {
