@@ -7,13 +7,13 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.UserCredentials;
 
-public class AppWorker implements Runnable{
+public class PushPullWorker implements Runnable{
 
 	private UserCredentials userCredentials;
 	private GitAccess gitAccess;
 	private boolean push;
 	
-	public AppWorker(UserCredentials userCredentials, GitAccess gitAccess, boolean push){
+	public PushPullWorker(UserCredentials userCredentials, GitAccess gitAccess, boolean push){
 		this.userCredentials = userCredentials;
 		this.gitAccess = gitAccess;
 		this.push = push;
