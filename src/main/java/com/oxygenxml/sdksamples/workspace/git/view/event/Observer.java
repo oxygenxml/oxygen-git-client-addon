@@ -19,16 +19,4 @@ public interface Observer {
 	 */
 	public void stateChanged(ChangeEvent changeEvent);
 
-	/**
-	 * 
-	 * TODO Is this necessary? We could fire a stateChange, with a transition from 
-	 * StageState.STAGED->StageState.COMMITTED.   
-	 * 
-	 * 
-	 * Removes the given files from being observed
-	 * 
-	 * @param files
-	 *          - files to be removed from the observers
-	 */
-	public void clear(List<FileStatus> files);
 }

@@ -1,5 +1,7 @@
 package com.oxygenxml.sdksamples.workspace.git.service.entities;
 
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
+
 /**
  * Git File Status. Used to store the file location and the file state(DELETED,
  * ADDED, MODIFIED)
@@ -9,13 +11,19 @@ package com.oxygenxml.sdksamples.workspace.git.service.entities;
  */
 public class FileStatus {
 	// TODO Create constants for the possbile values.
-	private String changeType;
 	/**
-	 * TODO Give some details about the location. Is it absolute? Relative to something? Some examples.
+	 * A file can be Added, Deleted or Modified
+	 */
+	private ChangeType changeType;
+	/**
+	 * The file location is releative to the selected git repository. For example
+	 * if a a git Repository is in C:/Git and we have a file stored in
+	 * C:/Git/file.txt. The fileLocation will be file.txt. If we have a file
+	 * sotred in C:/Git/Folder/file.txt, the fileLocation will be Folder/file.txt
 	 */
 	private String fileLocation;
 
-	public FileStatus(String changeType, String fileLocation) {
+	public FileStatus(ChangeType changeType, String fileLocation) {
 		this.changeType = changeType;
 		this.fileLocation = fileLocation;
 	}
@@ -25,11 +33,11 @@ public class FileStatus {
 		this.fileLocation = fileStatus.getFileLocation();
 	}
 
-	public String getChangeType() {
+	public ChangeType getChangeType() {
 		return changeType;
 	}
 
-	public void setChangeType(String changeType) {
+	public void setChangeType(ChangeType changeType) {
 		this.changeType = changeType;
 	}
 

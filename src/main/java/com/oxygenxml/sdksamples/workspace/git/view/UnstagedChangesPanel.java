@@ -22,8 +22,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants;
@@ -44,7 +45,7 @@ public class UnstagedChangesPanel extends JPanel {
 	private JButton switchViewButton;
 	private JScrollPane scrollPane;
 	private JTable filesTable;
-	private JTree tree = new JTree(new FileTreeModel(null, false, null));
+	private JTree tree = new JTree(new StagingResourcesTreeModel(null, false, null));
 	private StageController stageController;
 
 	private boolean staging;
@@ -118,9 +119,9 @@ public class UnstagedChangesPanel extends JPanel {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
 
 		// Create the tree model and add the root node to it
-		DefaultTreeModel modelTree = new FileTreeModel(root, false, new ArrayList<FileStatus>(unstagedFiles));
+		DefaultTreeModel modelTree = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(unstagedFiles));
 		if (staging) {
-			modelTree = new FileTreeModel(root, true, new ArrayList<FileStatus>(unstagedFiles));
+			modelTree = new StagingResourcesTreeModel(root, true, new ArrayList<FileStatus>(unstagedFiles));
 		}
 
 		// Create the tree with the new model
@@ -140,8 +141,8 @@ public class UnstagedChangesPanel extends JPanel {
 
 	public void createFlatView(List<FileStatus> unstagedFiles) {
 
-		FileTableModel modelTable = (FileTableModel) this.getFilesTable().getModel();
-		modelTable.setUnstagedFiles(unstagedFiles);
+		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) this.getFilesTable().getModel();
+		modelTable.setFilesStatus(unstagedFiles);
 	}
 
 	public void createGUI() {
@@ -163,8 +164,8 @@ public class UnstagedChangesPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
-				fileTableModel.removeAllFiles();
+				StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
+				fileTableModel.switchAllFilesStageState();
 			}
 		});
 	}
@@ -176,10 +177,10 @@ public class UnstagedChangesPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
-					FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
+					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 					for (int i = selectedRows.length - 1; i >= 0; i--) {
 						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
-						fileTableModel.removeUnstageFile(convertedRow);
+						fileTableModel.switchFileStageState(convertedRow);
 					}
 				} else {
 					List<String> selectedFiles = new ArrayList<String>();
@@ -191,8 +192,8 @@ public class UnstagedChangesPanel extends JPanel {
 						selectedFiles.add(new String(fullPath));
 						fullPath = "";
 					}
-					FileTreeModel fileTreeModel = (FileTreeModel) tree.getModel();
-					fileTreeModel.removeUnstageFiles(selectedFiles);
+					StagingResourcesTreeModel fileTreeModel = (StagingResourcesTreeModel) tree.getModel();
+					fileTreeModel.switchFilesStageState(selectedFiles);
 
 				}
 				TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
@@ -211,14 +212,14 @@ public class UnstagedChangesPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
-					FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
+					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
 					selectedPaths = new TreePath[selectedRows.length];
 					for (int i = 0; i < selectedRows.length; i++) {
 						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 						String absolutePath = fileTableModel.getFileLocation(convertedRow);
 
-						DefaultMutableTreeNode nodeBuilder = TreeFormatter.getTreeNodeFromString((FileTreeModel) tree.getModel(),
+						DefaultMutableTreeNode nodeBuilder = TreeFormatter.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(),
 								absolutePath);
 						DefaultMutableTreeNode[] selectedPath = new DefaultMutableTreeNode[absolutePath.split("/").length + 1];
 						int count = selectedPath.length;
@@ -238,7 +239,7 @@ public class UnstagedChangesPanel extends JPanel {
 				} else {
 					currentView = FLAT_VIEW;
 					filesTable.clearSelection();
-					FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
+					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
 					List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(tree.getSelectionPaths());
 					List<Integer> tableRowsToSelect = new ArrayList<Integer>();
@@ -316,9 +317,9 @@ public class UnstagedChangesPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 3;
-		FileTableModel fileTableModel = new FileTableModel(false);
+		StagingResourcesTableModel fileTableModel = new StagingResourcesTableModel(false);
 		if (staging) {
-			fileTableModel = new FileTableModel(true);
+			fileTableModel = new StagingResourcesTableModel(true);
 		}
 		stageController.registerObserver(fileTableModel);
 		stageController.registerSubject(fileTableModel);
@@ -340,13 +341,11 @@ public class UnstagedChangesPanel extends JPanel {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 					int row, int column) {
 				ImageIcon icon = null;
-				String str = (String) value;
-				// TODO Use contants from FileStatus
-				if ("ADD".equals(str)) {
+				if (ChangeType.ADD ==value) {
 					icon = new ImageIcon(ImageConstants.GIT_ADD_ICON);
-				} else if ("MODIFY".equals(str)) {
+				} else if (ChangeType.MODIFY ==value) {
 					icon = new ImageIcon(ImageConstants.GIT_MODIFIED_ICON);
-				} else if ("DELETE".equals(str)) {
+				} else if (ChangeType.DELETE == value) {
 					icon = new ImageIcon(ImageConstants.GIT_DELETE_ICON);
 				}
 

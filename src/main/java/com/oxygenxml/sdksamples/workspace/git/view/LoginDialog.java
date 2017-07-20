@@ -25,10 +25,12 @@ import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 import com.oxygenxml.sdksamples.workspace.git.utils.UserCredentials;
 
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+
 /**
  * TODO In the API there is a OKCancelDialog class that we could use. It will integrate better in Oxygen. 
  */
-public class LoginDialog extends JDialog {
+public class LoginDialog extends OKCancelDialog {
 
 	private boolean push;
 	private GitAccess gitAccess;
@@ -36,11 +38,10 @@ public class LoginDialog extends JDialog {
 	private JPasswordField pfPassword;
 	private JLabel lbUsername;
 	private JLabel lbPassword;
-	private JButton btnLogin;
-	private JButton btnCancel;
 	private boolean succeeded;
 
 	public LoginDialog(final GitAccess gitAccess, final boolean push) {
+		super(null, "GitAccount", true);
 		this.gitAccess = gitAccess;
 		this.push = push;
 
@@ -90,9 +91,9 @@ public class LoginDialog extends JDialog {
 		gbc.gridwidth = 2;
 		panel.add(pfPassword, gbc);
 
-		btnLogin = new JButton("Login");
-
-		btnLogin.addActionListener(new ActionListener() {
+		
+		
+		this.getOkButton().addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				String username = getUsername();
@@ -104,24 +105,20 @@ public class LoginDialog extends JDialog {
 				thread.start();
 			}
 		});
-		btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
+	
+		this.getCancelButton().addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
 		});
-		JPanel bp = new JPanel();
-		bp.add(btnLogin);
-		bp.add(btnCancel);
+	
 
 		this.add(panel, BorderLayout.CENTER);
-		this.add(bp, BorderLayout.PAGE_END);
 		
 		pack();
     setResizable(false);
     setVisible(true);
-    setTitle("Git Account");
     setModal(true);
     setLocationRelativeTo(null);
 		

@@ -18,7 +18,9 @@ import javax.swing.ScrollPaneConstants;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
+import com.oxygenxml.sdksamples.workspace.git.view.event.ChangeEvent;
 import com.oxygenxml.sdksamples.workspace.git.view.event.StageController;
+import com.oxygenxml.sdksamples.workspace.git.view.event.StageState;
 
 public class CommitPanel extends JPanel {
 
@@ -52,7 +54,8 @@ public class CommitPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stageController.clear(gitAccess.getStagedFile());
+				ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile(), null);
+				stageController.stateChanged(changeEvent);
 				gitAccess.commit(commitMessage.getText());
 				commitMessage.setText("");
 				JOptionPane.showMessageDialog(null, "Commit successful");

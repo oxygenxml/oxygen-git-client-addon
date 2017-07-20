@@ -95,9 +95,9 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					FileTableModel unstagedTableModel = (FileTableModel) table.getModel();
+					StagingResourcesTableModel unstagedTableModel = (StagingResourcesTableModel) table.getModel();
 					int convertedRow = table.convertRowIndexToModel(row);
-					unstagedTableModel.removeUnstageFile(convertedRow);
+					unstagedTableModel.switchFileStageState(convertedRow);
 
 					fireEditingStopped();
 

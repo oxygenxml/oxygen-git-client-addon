@@ -6,11 +6,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;

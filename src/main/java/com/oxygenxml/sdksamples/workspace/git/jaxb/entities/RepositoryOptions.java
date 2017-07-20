@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RepositoryOptions {
 
-	@XmlElement(name = "option")
+	@XmlElement(name = "location")
 	private Set<RepositoryOption> repositoryOptions = new HashSet<RepositoryOption>();
 
 	public Set<RepositoryOption> getRepositoryOptions() {

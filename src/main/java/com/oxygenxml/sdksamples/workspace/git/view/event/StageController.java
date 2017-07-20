@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
-import com.oxygenxml.sdksamples.workspace.git.view.StageState;
 
 /**
  * Delegates the changing event to all other observers and makes sure that all
@@ -49,19 +48,12 @@ public class StageController implements Observer {
 	public void stateChanged(ChangeEvent changeEvent) {
 		if (changeEvent.getNewState() == StageState.STAGED) {
 			gitAccess.addAll(changeEvent.getFileToBeUpdated());
-		} else {
+		} else if (changeEvent.getNewState() == StageState.UNSTAGED) {
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
 		}
 
 		for (Observer observer : observers) {
 			observer.stateChanged(changeEvent);
-		}
-	}
-
-	@Override
-	public void clear(List<FileStatus> files) {
-		for (Observer observer : observers) {
-			observer.clear(files);
 		}
 	}
 

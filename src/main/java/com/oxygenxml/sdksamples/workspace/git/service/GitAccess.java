@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
@@ -21,6 +20,7 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.Config;
@@ -117,11 +117,11 @@ public class GitAccess {
 			FileTreeIterator workTreeIterator = new FileTreeIterator(git.getRepository());
 			List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator, workTreeIterator);
 			for (DiffEntry entry : diffEntries) {
-				String changeType = entry.getChangeType().toString();
+				ChangeType changeType = entry.getChangeType();
 
-				if (entry.getChangeType().equals(DiffEntry.ChangeType.ADD)
-						|| entry.getChangeType().equals(DiffEntry.ChangeType.COPY)
-						|| entry.getChangeType().equals(DiffEntry.ChangeType.RENAME)) {
+				if (entry.getChangeType().equals(ChangeType.ADD)
+						|| entry.getChangeType().equals(ChangeType.COPY)
+						|| entry.getChangeType().equals(ChangeType.RENAME)) {
 					String filePath = entry.getNewPath();
 					FileStatus unstageFile = new FileStatus(changeType, filePath);
 					if (!stagedFiles.contains(unstageFile)) {
@@ -337,13 +337,13 @@ public class GitAccess {
 			Status status = git.status().call();
 			List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
 			for (String fileName : status.getChanged()) {
-				stagedFiles.add(new FileStatus("MODIFY", fileName));
+				stagedFiles.add(new FileStatus(ChangeType.MODIFY, fileName));
 			}
 			for (String fileName : status.getAdded()) {
-				stagedFiles.add(new FileStatus("ADD", fileName));
+				stagedFiles.add(new FileStatus(ChangeType.ADD, fileName));
 			}
 			for (String fileName : status.getRemoved()) {
-				stagedFiles.add(new FileStatus("DELETE", fileName));
+				stagedFiles.add(new FileStatus(ChangeType.DELETE, fileName));
 			}
 			return stagedFiles;
 		} catch (NoWorkTreeException e) {

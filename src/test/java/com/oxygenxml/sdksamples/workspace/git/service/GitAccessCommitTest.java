@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -39,7 +40,7 @@ public class GitAccessCommitTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		gitAccess.add(new FileStatus("ADD", file.getName()));
+		gitAccess.add(new FileStatus(ChangeType.ADD, file.getName()));
 		gitAccess.commit("single file added");
 
 		Repository repository = gitAccess.getRepository();
@@ -82,7 +83,7 @@ public class GitAccessCommitTest {
 		List<FileStatus> files = new ArrayList<FileStatus>();
 		for (int i = 0; i < n; i++) {
 			File file = new File(LOCAL_TEST_REPOSITPRY + "/test" + i + ".txt");
-			files.add(new FileStatus("ADD", file.getName()));
+			files.add(new FileStatus(ChangeType.ADD, file.getName()));
 			try {
 				file.createNewFile();
 			} catch (IOException e) {

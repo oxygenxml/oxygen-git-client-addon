@@ -3,7 +3,6 @@ package com.oxygenxml.sdksamples.workspace.git.view.event;
 import java.util.List;
 
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
-import com.oxygenxml.sdksamples.workspace.git.view.StageState;
 
 /**
  * Event created when a file is changing its state, from staged to unstaged or

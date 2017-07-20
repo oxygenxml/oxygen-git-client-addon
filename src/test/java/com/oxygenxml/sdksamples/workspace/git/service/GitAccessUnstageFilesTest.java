@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class GitAccessUnstageFilesTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		gitAccess.add(new FileStatus("ADD", file.getName()));
+		gitAccess.add(new FileStatus(ChangeType.ADD, file.getName()));
 		gitAccess.commit("file test added");
 	}
 
@@ -47,7 +48,7 @@ public class GitAccessUnstageFilesTest {
 
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
-		expected.add(new FileStatus("MODIFY", "test.txt"));
+		expected.add(new FileStatus(ChangeType.MODIFY, "test.txt"));
 		assertEquals(actual, expected);
 	}
 
@@ -62,7 +63,7 @@ public class GitAccessUnstageFilesTest {
 		
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
-		expected.add(new FileStatus("ADD", "add.txt"));
+		expected.add(new FileStatus(ChangeType.ADD, "add.txt"));
 		assertEquals(actual, expected);
 	}
 
@@ -73,7 +74,7 @@ public class GitAccessUnstageFilesTest {
 
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
-		expected.add(new FileStatus("DELETE", "test.txt"));
+		expected.add(new FileStatus(ChangeType.DELETE, "test.txt"));
 		assertEquals(actual, expected);
 	}
 
