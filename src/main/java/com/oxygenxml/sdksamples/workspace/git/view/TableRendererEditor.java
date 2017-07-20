@@ -115,7 +115,7 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 
 	}
 
-	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+	public Component getTableCellEditorComponent(final JTable table, Object value, boolean isSelected, final int row, int column) {
 
 		if (hovered != null && hovered[0] == row && hovered[1] == column) {
 

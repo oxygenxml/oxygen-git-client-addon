@@ -38,7 +38,7 @@ public class LoginDialog extends JDialog {
 	private JButton btnCancel;
 	private boolean succeeded;
 
-	public LoginDialog(GitAccess gitAccess, boolean push) {
+	public LoginDialog(final GitAccess gitAccess, final boolean push) {
 		this.gitAccess = gitAccess;
 		this.push = push;
 
