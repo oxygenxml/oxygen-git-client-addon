@@ -31,7 +31,6 @@ public class LoginDialog extends JDialog {
 	private GitAccess gitAccess;
 	private JTextField tfUsername;
 	private JPasswordField pfPassword;
-	private JComboBox<Object> gitSelectionComboBox;
 	private JLabel lbUsername;
 	private JLabel lbPassword;
 	private JButton btnLogin;
@@ -47,12 +46,20 @@ public class LoginDialog extends JDialog {
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
+		JLabel lblGitRemote = new JLabel("Enter details: "+ gitAccess.getRemoteName());
+		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
+				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 3;
+		panel.add(lblGitRemote, gbc);
+		
 		
 		lbUsername = new JLabel("Username: ");
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 0;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
 		gbc.gridwidth = 1;
 		panel.add(lbUsername, gbc);
 
@@ -60,7 +67,7 @@ public class LoginDialog extends JDialog {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 1;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
 		gbc.gridwidth = 2;
 		panel.add(tfUsername, gbc);
 
@@ -68,7 +75,7 @@ public class LoginDialog extends JDialog {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		gbc.gridwidth = 1;
 		panel.add(lbPassword, gbc);
 
@@ -76,7 +83,7 @@ public class LoginDialog extends JDialog {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 1;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		gbc.gridwidth = 2;
 		panel.add(pfPassword, gbc);
 
@@ -89,18 +96,9 @@ public class LoginDialog extends JDialog {
 				String password = getPassword();
 				UserCredentials userCredentials = new UserCredentials(username, password);
 				OptionsManager.getInstance().saveGitCredentials(userCredentials);
-				if(push){
-					try {
-						gitAccess.push(username, password);
-						dispose();
-						JOptionPane.showMessageDialog(null, "Push successful");
-					} catch (GitAPIException e1) {
-						JOptionPane.showMessageDialog(null, "Invalid credentials");
-						e1.printStackTrace();
-					}
-				} else {
-					gitAccess.pull(username, password);
-				}
+				Thread thread = new Thread(new AppWorker(userCredentials, gitAccess, push));
+				dispose();
+				thread.start();
 			}
 		});
 		btnCancel = new JButton("Cancel");

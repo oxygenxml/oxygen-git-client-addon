@@ -11,7 +11,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 /**
- * An utility class for JTree. 
+ * An utility class for JTree.
+ * 
  * @author intern2
  *
  */
@@ -112,26 +113,28 @@ public class TreeFormatter {
 	 */
 	public static List<TreePath> getTreeCommonAncestors(TreePath[] selectedPaths) {
 		List<TreePath> commonAncestors = new ArrayList<TreePath>();
-		commonAncestors.add(selectedPaths[0]);
-		for (int i = 0; i < selectedPaths.length; i++) {
-			boolean newPathToAdd = false;
-			List<TreePath> pathsToRemove = new ArrayList<TreePath>();
-			for (TreePath treePath : commonAncestors) {
-				if (treePath.isDescendant(selectedPaths[i])) {
-					newPathToAdd = false;
-					break;
-				} else if (selectedPaths[i].isDescendant(treePath)) {
-					pathsToRemove.add(treePath);
-					newPathToAdd = false;
-				} else {
-					newPathToAdd = true;
+		if (selectedPaths != null) {
+			commonAncestors.add(selectedPaths[0]);
+			for (int i = 0; i < selectedPaths.length; i++) {
+				boolean newPathToAdd = false;
+				List<TreePath> pathsToRemove = new ArrayList<TreePath>();
+				for (TreePath treePath : commonAncestors) {
+					if (treePath.isDescendant(selectedPaths[i])) {
+						newPathToAdd = false;
+						break;
+					} else if (selectedPaths[i].isDescendant(treePath)) {
+						pathsToRemove.add(treePath);
+						newPathToAdd = false;
+					} else {
+						newPathToAdd = true;
+					}
 				}
-			}
-			if (pathsToRemove.size() != 0) {
-				commonAncestors.removeAll(pathsToRemove);
-				commonAncestors.add(selectedPaths[i]);
-			} else if (newPathToAdd) {
-				commonAncestors.add(selectedPaths[i]);
+				if (pathsToRemove.size() != 0) {
+					commonAncestors.removeAll(pathsToRemove);
+					commonAncestors.add(selectedPaths[i]);
+				} else if (newPathToAdd) {
+					commonAncestors.add(selectedPaths[i]);
+				}
 			}
 		}
 		return commonAncestors;
@@ -155,6 +158,27 @@ public class TreeFormatter {
 		if (tree.getRowCount() != rowCount) {
 			expandAllNodes(tree, rowCount, tree.getRowCount());
 		}
+	}
+
+	/**
+	 * Generates an equivalent String path from a given TreePath
+	 * 
+	 * @param treePath
+	 *          - The path that will be converted to String
+	 * @return The String path
+	 */
+	public static String getStringPath(TreePath treePath) {
+		String fullPath = "";
+		Object[] pathNodes = treePath.getPath();
+		for (int j = 1; j < pathNodes.length; j++) {
+			if (j == pathNodes.length - 1) {
+				fullPath += pathNodes[j];
+			} else {
+				fullPath += pathNodes[j] + "/";
+			}
+
+		}
+		return fullPath;
 	}
 
 }

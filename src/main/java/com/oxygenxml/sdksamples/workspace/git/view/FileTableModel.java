@@ -13,7 +13,7 @@ import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
 
 public class FileTableModel extends AbstractTableModel implements Subject, Observer {
 
-	private List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
+	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
 	private Observer observer;
 	private boolean forStaging;
@@ -24,10 +24,10 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 
 	public int getRowCount() {
 		int size;
-		if (unstagedFiles == null) {
+		if (filesStatus == null) {
 			size = 0;
 		} else {
-			size = unstagedFiles.size();
+			size = filesStatus.size();
 		}
 		return size;
 	}
@@ -62,10 +62,10 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 		Object temp = null;
 		switch (columnIndex) {
 		case 0:
-			temp = unstagedFiles.get(rowIndex).getChangeType();
+			temp = filesStatus.get(rowIndex).getChangeType();
 			break;
 		case 1:
-			temp = unstagedFiles.get(rowIndex).getFileLocation();
+			temp = filesStatus.get(rowIndex).getFileLocation();
 			break;
 		case 2:
 			temp = "Stage";
@@ -76,14 +76,14 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 	}
 
 	public void setUnstagedFiles(List<FileStatus> unstagedFiles) {
-		this.unstagedFiles = unstagedFiles;
+		this.filesStatus = unstagedFiles;
 		fireTableDataChanged();
 
 	}
 
 	public void removeUnstageFile(int convertedRow) {
 		// Update the table model. remove the file.
-		FileStatus fileStatus = unstagedFiles.remove(convertedRow);
+		FileStatus fileStatus = filesStatus.remove(convertedRow);
 
 		StageState newSTate = StageState.UNSTAGED;
 		StageState oldState = StageState.STAGED;
@@ -98,7 +98,7 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 	}
 
 	public FileStatus getUnstageFile(int convertedRow) {
-		return unstagedFiles.get(convertedRow);
+		return filesStatus.get(convertedRow);
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 	}
 
 	public List<FileStatus> getUnstagedFiles() {
-		return unstagedFiles;
+		return filesStatus;
 	}
 
 	public void removeAllFiles() {
@@ -130,11 +130,11 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 			oldState = StageState.UNSTAGED;
 		}
 
-		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, new ArrayList<FileStatus>(unstagedFiles), this);
+		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, new ArrayList<FileStatus>(filesStatus), this);
 		notifyObservers(changeEvent);
 
 		// Update inner model.
-		unstagedFiles.clear();
+		filesStatus.clear();
 	}
 
 	@Override
@@ -158,16 +158,16 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 	}
 
 	private void deleteRows(List<FileStatus> fileToBeUpdated) {
-		unstagedFiles.removeAll(fileToBeUpdated);
+		filesStatus.removeAll(fileToBeUpdated);
 
 	}
 
 	private void insertRows(List<FileStatus> fileToBeUpdated) {
-		unstagedFiles.addAll(fileToBeUpdated);
+		filesStatus.addAll(fileToBeUpdated);
 	}
 
 	public String getChangeType(String fullPath) {
-		for (FileStatus fileStatus : unstagedFiles) {
+		for (FileStatus fileStatus : filesStatus) {
 			if (fileStatus.getFileLocation().equals(fullPath)) {
 				return fileStatus.getChangeType();
 			}
@@ -176,15 +176,27 @@ public class FileTableModel extends AbstractTableModel implements Subject, Obser
 	}
 
 	public String getFileLocation(int convertedRow) {
-		return unstagedFiles.get(convertedRow).getFileLocation();
+		return filesStatus.get(convertedRow).getFileLocation();
 	}
 
 	@Override
 	public void clear(List<FileStatus> files) {
-		if(forStaging){
+		if (forStaging) {
 			deleteRows(files);
 			fireTableDataChanged();
 		}
+	}
+
+	public List<Integer> getRows(String path) {
+		List<Integer> rows = new ArrayList<Integer>();
+
+		for (int i = 0; i<filesStatus.size(); i++) {
+			if (filesStatus.get(i).getFileLocation().contains(path)) {
+				rows.add(i);
+			}
+
+		}
+		return rows;
 	}
 
 }

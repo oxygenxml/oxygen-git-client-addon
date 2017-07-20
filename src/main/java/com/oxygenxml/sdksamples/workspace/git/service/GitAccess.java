@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
@@ -22,6 +23,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.NoWorkTreeException;
+import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
@@ -83,7 +85,8 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void createNewRepository(String path) {
-
+		
+		
 		try {
 			git = Git.init().setDirectory(new File(path)).call();
 		} catch (IllegalStateException e) {
@@ -391,4 +394,10 @@ public class GitAccess {
 		}
 	}
 
+	public String getRemoteName(){
+		Config storedConfig = git.getRepository().getConfig();
+		String url = storedConfig.getString("remote", "origin", "url");
+		
+		return url;
+	}
 }

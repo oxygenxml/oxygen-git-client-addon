@@ -49,13 +49,8 @@ public class ToolbarPanel extends JPanel {
 				if (userCredentials.getUsername() == null || userCredentials.getPassword() == null) {
 					LoginDialog loginDialog = new LoginDialog(gitAccess, true);
 				} else {
-					try {
-						gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
-						JOptionPane.showMessageDialog(null, "Push successful");
-					} catch (GitAPIException e1) {
-						LoginDialog loginDialog = new LoginDialog(gitAccess, true);
-						e1.printStackTrace();
-					}
+					Thread thread = new Thread(new AppWorker(userCredentials, gitAccess, true));
+					thread.start();
 				}
 			}
 		});

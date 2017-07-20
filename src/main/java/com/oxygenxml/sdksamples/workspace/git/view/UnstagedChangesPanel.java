@@ -187,15 +187,7 @@ public class UnstagedChangesPanel extends JPanel {
 					List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(selectedPaths);
 					String fullPath = "";
 					for (TreePath treePath : commonAncestors) {
-						Object[] pathNodes = treePath.getPath();
-						for (int j = 1; j < pathNodes.length; j++) {
-							if (j == pathNodes.length - 1) {
-								fullPath += pathNodes[j];
-							} else {
-								fullPath += pathNodes[j] + "/";
-							}
-
-						}
+						fullPath = TreeFormatter.getStringPath(treePath);
 						selectedFiles.add(new String(fullPath));
 						fullPath = "";
 					}
@@ -206,7 +198,6 @@ public class UnstagedChangesPanel extends JPanel {
 				TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 			}
 
-			
 		});
 	}
 
@@ -246,7 +237,20 @@ public class UnstagedChangesPanel extends JPanel {
 					currentView = TREE_VIEW;
 				} else {
 					currentView = FLAT_VIEW;
-					// filesTable.addRowSelectionInterval(index0, index1);
+					filesTable.clearSelection();
+					FileTableModel fileTableModel = (FileTableModel) filesTable.getModel();
+
+					List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(tree.getSelectionPaths());
+					List<Integer> tableRowsToSelect = new ArrayList<Integer>();
+					for (TreePath treePath : commonAncestors) {
+						String path = TreeFormatter.getStringPath(treePath);
+						tableRowsToSelect.addAll(fileTableModel.getRows(path));
+					}
+
+					for (Integer i : tableRowsToSelect) {
+
+						filesTable.addRowSelectionInterval(i, i);
+					}
 					scrollPane.setViewportView(filesTable);
 				}
 			}
