@@ -313,7 +313,7 @@ public class GitAccess {
 	public void addAll(List<FileStatus> files) {
 		try {
 			for (FileStatus file : files) {
-				if (file.getChangeType().equals("DELETE")) {
+				if (file.getChangeType() == ChangeType.DELETE) {
 					git.rm().addFilepattern(file.getFileLocation()).call();
 				} else {
 					git.add().addFilepattern(file.getFileLocation()).call();
