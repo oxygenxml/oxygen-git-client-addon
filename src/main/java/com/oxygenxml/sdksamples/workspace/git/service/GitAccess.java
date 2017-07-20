@@ -3,6 +3,8 @@ package com.oxygenxml.sdksamples.workspace.git.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -394,9 +396,17 @@ public class GitAccess {
 		}
 	}
 
-	public String getRemoteName(){
+	public String getHostName(){
 		Config storedConfig = git.getRepository().getConfig();
 		String url = storedConfig.getString("remote", "origin", "url");
+		try {
+			URL u = new URL(url);
+			url = u.getHost();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+		
 		
 		return url;
 	}

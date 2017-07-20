@@ -18,7 +18,6 @@ import javax.xml.bind.Unmarshaller;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.Options;
-import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryLocations;
 import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOption;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -35,18 +34,11 @@ public class OptionsManager {
 	 * Why not store everything into one file?
 	 */
 	private static final String REPOSITORY_FILENAME = "Options.xml";
-	private static final String PROPERTIES_FILENAME = "Options.properties";
-	private static final String KEY = "Beni";
 
 	/**
 	 * All Repositories that were selected by the user with their options
 	 */
 	private Options options = null;
-
-	/**
-	 * Properties file to store user options
-	 */
-	private Properties properties = new Properties();
 
 	/**
 	 * Singletone instance.
@@ -156,10 +148,10 @@ public class OptionsManager {
 	 */
 	public void saveGitCredentials(UserCredentials userCredentials) {
 		loadRepositoryOptions();
-		
+
 		options.setUsername(userCredentials.getUsername());
 		Cipher cipher = new Cipher();
-		String password =cipher.encrypt(userCredentials.getPassword());
+		String password = cipher.encrypt(userCredentials.getPassword());
 		options.setPassword(password);
 
 		saveRepositoryOptions();
@@ -176,13 +168,12 @@ public class OptionsManager {
 
 		String username = options.getUsername();
 		String password = options.getPassword();
-		
+
 		Cipher cipher = new Cipher();
 		password = cipher.decrypt(password);
-		
+
 		UserCredentials userCredentials = new UserCredentials(username, password);
 		return userCredentials;
 	}
-
 
 }

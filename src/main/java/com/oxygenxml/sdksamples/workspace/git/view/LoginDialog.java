@@ -60,7 +60,7 @@ public class LoginDialog extends OKCancelDialog {
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
-		JLabel lblGitRemote = new JLabel("Enter details: "+ gitAccess.getRemoteName());
+		JLabel lblGitRemote = new JLabel("<html>Enter <b>"+ gitAccess.getHostName() + "</b> account: </html>");
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 0;

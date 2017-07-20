@@ -15,6 +15,7 @@ import com.oxygenxml.sdksamples.workspace.git.view.ToolbarPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.UnstagedChangesPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.WorkingCopySelectionPanel;
 import com.oxygenxml.sdksamples.workspace.git.view.event.StageController;
+import com.sun.xml.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
@@ -22,6 +23,7 @@ public class Application {
 
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		new Application().start();
+	
 	}
 
 	private void start() {
