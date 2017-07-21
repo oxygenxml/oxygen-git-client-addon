@@ -68,7 +68,7 @@ public class OptionsManager {
 			try {
 				jaxbContext = JAXBContext.newInstance(Options.class);
 				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-				options = (Options) jaxbUnmarshaller.unmarshal(new File(Constants.RESOURCES_PATH + fileName));
+				options = (Options) jaxbUnmarshaller.unmarshal(new File(getClass().getClassLoader().getResource("Options.xml").getPath()));
 			} catch (JAXBException e) {
 				e.printStackTrace();
 			}
@@ -87,7 +87,7 @@ public class OptionsManager {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.marshal(options, new File(Constants.RESOURCES_PATH + fileName));
+			jaxbMarshaller.marshal(options, new File(getClass().getClassLoader().getResource("Options.xml").getPath()));
 		} catch (JAXBException e1) {
 			e1.printStackTrace();
 		}
