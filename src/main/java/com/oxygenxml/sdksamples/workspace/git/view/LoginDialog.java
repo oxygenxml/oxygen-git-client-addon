@@ -25,6 +25,7 @@ import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 import com.oxygenxml.sdksamples.workspace.git.utils.UserCredentials;
+import com.oxygenxml.sdksamples.workspace.git.view.event.PushPullController;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
@@ -33,17 +34,15 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  */
 public class LoginDialog extends OKCancelDialog {
 
-	private GitAccess gitAccess;
+	private PushPullController pushPullController;
+	private String host;
 	private JTextField tfUsername;
 	private JPasswordField pfPassword;
-	private JLabel lbUsername;
-	private JLabel lbPassword;
-	private boolean succeeded;
-
-	public LoginDialog(GitAccess gitAccess) {
+	
+	public LoginDialog(PushPullController pushPullController, String host) {
 		super(null, "GitAccount", true);
-		this.gitAccess = gitAccess;
-
+		this.pushPullController = pushPullController;
+		this.host = host;
 		createGUI();
 		
 		this.pack();
@@ -60,7 +59,7 @@ public class LoginDialog extends OKCancelDialog {
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
-		JLabel lblGitRemote = new JLabel("<html>Enter <b>"+ gitAccess.getHostName() + "</b> account: </html>");
+		JLabel lblGitRemote = new JLabel("<html>Enter <b>"+ host + "</b> account: </html>");
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 0;
@@ -69,7 +68,7 @@ public class LoginDialog extends OKCancelDialog {
 		panel.add(lblGitRemote, gbc);
 		
 		
-		lbUsername = new JLabel("Username: ");
+		JLabel lbUsername = new JLabel("Username: ");
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 0;
@@ -85,7 +84,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridwidth = 2;
 		panel.add(tfUsername, gbc);
 
-		lbPassword = new JLabel("Password: ");
+		JLabel lbPassword = new JLabel("Password: ");
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 0;
@@ -102,38 +101,16 @@ public class LoginDialog extends OKCancelDialog {
 		panel.add(pfPassword, gbc);
 
 		
-		
-		this.getOkButton().addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				String username = getUsername();
-				String password = getPassword();
-				UserCredentials userCredentials = new UserCredentials(username, password);
-				OptionsManager.getInstance().saveGitCredentials(userCredentials);
-				dispose();
-			}
-		});
-	
-		this.getCancelButton().addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-	
-
 		this.add(panel, BorderLayout.CENTER);
 	}
+	
+	protected void doOK() {
+		String username = tfUsername.getText().trim();
+		String password = new String(pfPassword.getPassword());
+		UserCredentials userCredentials = new UserCredentials(username, password);
+		OptionsManager.getInstance().saveGitCredentials(userCredentials);
+		dispose();
+		pushPullController.updateCredentials();
+  }
 
-	public String getUsername() {
-		return tfUsername.getText().trim();
-	}
-
-	public String getPassword() {
-		return new String(pfPassword.getPassword());
-	}
-
-	public boolean isSucceeded() {
-		return succeeded;
-	}
 }
