@@ -9,18 +9,41 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
+import org.eclipse.jgit.transport.PushConnection;
+
 import com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 import com.oxygenxml.sdksamples.workspace.git.utils.UserCredentials;
+import com.oxygenxml.sdksamples.workspace.git.view.event.Command;
+import com.oxygenxml.sdksamples.workspace.git.view.event.PushPullController;
 
 public class ToolbarPanel extends JPanel {
 
 	private JToolBar gitToolbar;
-	private GitAccess gitAccess;
+	private PushPullController pushPullController;
+	private JButton pushButton;
+	private JButton pullButton;
+	private JButton storeCredentials;
 
-	public ToolbarPanel(GitAccess gitAccess) {
-		this.gitAccess = gitAccess;
+	public ToolbarPanel(PushPullController pushPullController) {
+		this.pushPullController = pushPullController;
+	}
+
+	public JButton getPushButton() {
+		return pushButton;
+	}
+
+	public void setPushButton(JButton pushButton) {
+		this.pushButton = pushButton;
+	}
+
+	public JButton getPullButton() {
+		return pullButton;
+	}
+
+	public void setPullButton(JButton pullButton) {
+		this.pullButton = pullButton;
 	}
 
 	public void createGUI() {
@@ -31,38 +54,35 @@ public class ToolbarPanel extends JPanel {
 	private void addPushAndPullButtons() {
 		gitToolbar = new JToolBar();
 
-		JButton pushButton = new JButton(new ImageIcon(ImageConstants.GIT_PUSH_ICON));
+		pushButton = new JButton(new ImageIcon(ImageConstants.GIT_PUSH_ICON));
 		pushButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials();
-
-				Thread thread = new Thread(new PushPullWorker(userCredentials, gitAccess, true));
-				thread.start();
+				pushPullController.execute(Command.PUSH, userCredentials);
 			}
-
 		});
 		pushButton.setToolTipText("Push");
 		gitToolbar.add(pushButton);
 
-		JButton pullButton = new JButton(new ImageIcon(ImageConstants.GIT_PULL_ICON));
+		pullButton = new JButton(new ImageIcon(ImageConstants.GIT_PULL_ICON));
 		pullButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				LoginDialog loginDialog = new LoginDialog(gitAccess);
+				UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials();
+				pushPullController.execute(Command.PUSH, userCredentials);
 			}
 		});
 		pullButton.setToolTipText("Pull");
 		gitToolbar.add(pullButton);
 
-		JButton storeCredentials = new JButton(new ImageIcon(ImageConstants.STORE_CREDENTIALS_ICON));
+		storeCredentials = new JButton(new ImageIcon(ImageConstants.STORE_CREDENTIALS_ICON));
 		storeCredentials.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				LoginDialog loginDialog = new LoginDialog(gitAccess);
 			}
 		});
 		storeCredentials.setToolTipText("Update Credentials");
