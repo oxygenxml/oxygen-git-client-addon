@@ -12,15 +12,21 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
+import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidConfigurationException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
+import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NotMergedException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -87,8 +93,7 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void createNewRepository(String path) {
-		
-		
+
 		try {
 			git = Git.init().setDirectory(new File(path)).call();
 		} catch (IllegalStateException e) {
@@ -121,8 +126,7 @@ public class GitAccess {
 			for (DiffEntry entry : diffEntries) {
 				ChangeType changeType = entry.getChangeType();
 
-				if (entry.getChangeType().equals(ChangeType.ADD)
-						|| entry.getChangeType().equals(ChangeType.COPY)
+				if (entry.getChangeType().equals(ChangeType.ADD) || entry.getChangeType().equals(ChangeType.COPY)
 						|| entry.getChangeType().equals(ChangeType.RENAME)) {
 					String filePath = entry.getNewPath();
 					FileStatus unstageFile = new FileStatus(changeType, filePath);
@@ -248,11 +252,12 @@ public class GitAccess {
 	 *          - Git username
 	 * @param password
 	 *          - Git password
-	 * @throws GitAPIException 
-	 * @throws TransportException 
-	 * @throws InvalidRemoteException 
+	 * @throws GitAPIException
+	 * @throws TransportException
+	 * @throws InvalidRemoteException
 	 */
-	public void push(String username, String password) throws InvalidRemoteException, TransportException, GitAPIException {
+	public void push(String username, String password)
+			throws InvalidRemoteException, TransportException, GitAPIException {
 		/*
 		 * StoredConfig config = git.getRepository().getConfig();
 		 * config.setString("remote", "origin", "url",
@@ -272,18 +277,19 @@ public class GitAccess {
 	 *          - Git username
 	 * @param password
 	 *          - Git password
+	 * @throws GitAPIException 
+	 * @throws TransportException 
+	 * @throws NoHeadException 
+	 * @throws RefNotAdvertisedException 
+	 * @throws RefNotFoundException 
+	 * @throws CanceledException 
+	 * @throws InvalidRemoteException 
+	 * @throws DetachedHeadException 
+	 * @throws InvalidConfigurationException 
+	 * @throws WrongRepositoryStateException 
 	 */
-	public void pull(String username, String password) {
-		try {
-
-			PullResult result = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
-					.call();
-			System.out.println(result.isSuccessful());
-			System.out.println(result.getFetchedFrom());
-
-		} catch (GitAPIException e) {
-			e.printStackTrace();
-		}
+	public void pull(String username, String password) throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException, RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException {
+		git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 	}
 
 	/**
@@ -396,7 +402,7 @@ public class GitAccess {
 		}
 	}
 
-	public String getHostName(){
+	public String getHostName() {
 		Config storedConfig = git.getRepository().getConfig();
 		String url = storedConfig.getString("remote", "origin", "url");
 		try {
@@ -405,9 +411,7 @@ public class GitAccess {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		
-		
-		
+
 		return url;
 	}
 }

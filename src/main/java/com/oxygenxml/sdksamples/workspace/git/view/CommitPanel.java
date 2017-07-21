@@ -35,6 +35,14 @@ public class CommitPanel extends JPanel {
 		this.stageController = observer;
 	}
 
+	public JButton getCommitButton() {
+		return commitButton;
+	}
+
+	public void setCommitButton(JButton commitButton) {
+		this.commitButton = commitButton;
+	}
+
 	public void createGUI() {
 		this.setBorder(BorderFactory.createTitledBorder("Commit"));
 
@@ -54,7 +62,8 @@ public class CommitPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile(), null);
+				ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile(),
+						null);
 				stageController.stateChanged(changeEvent);
 				gitAccess.commit(commitMessage.getText());
 				commitMessage.setText("");
