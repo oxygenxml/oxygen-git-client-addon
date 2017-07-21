@@ -4,9 +4,9 @@ import javax.swing.JOptionPane;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
-import com.oxygenxml.sdksamples.workspace.git.utils.UserCredentials;
 import com.oxygenxml.sdksamples.workspace.git.view.LoginDialog;
 import com.oxygenxml.sdksamples.workspace.git.view.StagingPanel;
 
@@ -25,12 +25,12 @@ public class PushPullController {
 	}
 
 	public void updateCredentials() {
-		UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials();
-		execute(command, userCredentials);
+		execute(command);
 	}
 
-	public void execute(Command command, UserCredentials userCredentials) {
+	public void execute(Command command) {
 		this.command = command;
+		UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEnabled(false);
 		stagingPanel.getWorkingCopySelectionPanel().getBrowseButton().setEnabled(false);
 		stagingPanel.getCommitPanel().getCommitButton().setEnabled(false);

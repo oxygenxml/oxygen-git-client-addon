@@ -30,7 +30,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
-import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOption;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 import com.oxygenxml.sdksamples.workspace.git.utils.TreeFormatter;

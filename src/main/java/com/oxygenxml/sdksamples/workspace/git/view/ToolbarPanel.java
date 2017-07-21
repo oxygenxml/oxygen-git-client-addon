@@ -12,9 +12,9 @@ import javax.swing.JToolBar;
 import org.eclipse.jgit.transport.PushConnection;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants;
+import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
-import com.oxygenxml.sdksamples.workspace.git.utils.UserCredentials;
 import com.oxygenxml.sdksamples.workspace.git.view.event.Command;
 import com.oxygenxml.sdksamples.workspace.git.view.event.PushPullController;
 
@@ -59,8 +59,7 @@ public class ToolbarPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials();
-				pushPullController.execute(Command.PUSH, userCredentials);
+				pushPullController.execute(Command.PUSH);
 			}
 		});
 		pushButton.setToolTipText("Push");
@@ -71,8 +70,7 @@ public class ToolbarPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials();
-				pushPullController.execute(Command.PUSH, userCredentials);
+				pushPullController.execute(Command.PUSH);
 			}
 		});
 		pullButton.setToolTipText("Pull");
