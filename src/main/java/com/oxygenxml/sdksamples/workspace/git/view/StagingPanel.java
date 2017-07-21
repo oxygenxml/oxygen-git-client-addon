@@ -55,10 +55,16 @@ public class StagingPanel extends JPanel {
 		this.commitPanel = commitPanel;
 	}
 
+	public ToolbarPanel getToolbarPanel() {
+		return toolbarPanel;
+	}
+
+	public void setToolbarPanel(ToolbarPanel toolbarPanel) {
+		this.toolbarPanel = toolbarPanel;
+	}
+
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
-		
-		
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -67,7 +73,7 @@ public class StagingPanel extends JPanel {
 		addUnstagedChangesPanel(gbc);
 		addStagedChangesPanel(gbc);
 		addCommitPanel(gbc);
-		
+
 		toolbarPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
