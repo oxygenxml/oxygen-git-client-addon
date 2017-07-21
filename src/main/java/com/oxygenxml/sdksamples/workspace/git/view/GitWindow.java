@@ -26,5 +26,7 @@ public class GitWindow extends JFrame{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 	}
+	
+
 
 }

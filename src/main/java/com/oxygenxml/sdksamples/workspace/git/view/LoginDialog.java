@@ -22,9 +22,9 @@ import javax.swing.JTextField;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
+import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
-import com.oxygenxml.sdksamples.workspace.git.utils.UserCredentials;
 import com.oxygenxml.sdksamples.workspace.git.view.event.PushPullController;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -107,7 +107,7 @@ public class LoginDialog extends OKCancelDialog {
 	protected void doOK() {
 		String username = tfUsername.getText().trim();
 		String password = new String(pfPassword.getPassword());
-		UserCredentials userCredentials = new UserCredentials(username, password);
+		UserCredentials userCredentials = new UserCredentials(username, password, host);
 		OptionsManager.getInstance().saveGitCredentials(userCredentials);
 		dispose();
 		pushPullController.updateCredentials();

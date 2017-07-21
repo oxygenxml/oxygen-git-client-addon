@@ -15,11 +15,8 @@ public class Options {
 	@XmlElement(name = "selectedRepository")
 	private String selectedRepository = "";
 
-	@XmlElement(name = "username")
-	private String username = "";
-
-	@XmlElement(name = "password")
-	private String password = "";
+	@XmlElement(name = "userCredentials")
+	private UserCredentialsList userCredentialsList;
 
 	public RepositoryLocations getRepositoryLocations() {
 		return repositoryLocations;
@@ -37,20 +34,14 @@ public class Options {
 		this.selectedRepository = selectedRepository;
 	}
 
-	public String getUsername() {
-		return username;
+	public UserCredentialsList getUserCredentialsList() {
+		return userCredentialsList;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
+		this.userCredentialsList = userCredentialsList;
 	}
 
-	public String getPassword() {
-		return password;
-	}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
 
 }
