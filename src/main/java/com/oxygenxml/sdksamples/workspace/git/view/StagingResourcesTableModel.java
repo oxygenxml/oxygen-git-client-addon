@@ -19,11 +19,11 @@ import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
  * TODO How about we call this Staging(Resources)TableModel? That's pretty much
  * what it does... switches the staging state.
  */
-public class StagingResourcesTableModel extends AbstractTableModel implements Subject, Observer {
+public class StagingResourcesTableModel extends AbstractTableModel implements Subject<ChangeEvent>, Observer<ChangeEvent> {
 
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
-	private Observer observer;
+	private Observer<ChangeEvent> observer;
 	/**
 	 * <code>true</code> if this model presents un-staged resources that will be
 	 * staged. <code>false</code> if this model presents staged resources that
@@ -116,16 +116,14 @@ public class StagingResourcesTableModel extends AbstractTableModel implements Su
 		return filesStatus.get(convertedRow);
 	}
 
-	@Override
-	public void addObserver(Observer observer) {
+	public void addObserver(Observer<ChangeEvent> observer) {
 		if (observer == null)
 			throw new NullPointerException("Null Observer");
 
 		this.observer = observer;
 	}
 
-	@Override
-	public void removeObserver(Observer obj) {
+	public void removeObserver(Observer<ChangeEvent> obj) {
 		observer = null;
 	}
 
@@ -152,7 +150,6 @@ public class StagingResourcesTableModel extends AbstractTableModel implements Su
 		filesStatus.clear();
 	}
 
-	@Override
 	public void stateChanged(ChangeEvent changeEvent) {
 		List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
 		if (changeEvent.getNewState() == StageState.STAGED) {

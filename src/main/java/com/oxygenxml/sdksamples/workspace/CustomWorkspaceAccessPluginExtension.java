@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -14,6 +15,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
+
+import com.oxygenxml.sdksamples.workspace.git.Application;
 
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.ecss.extensions.api.AuthorDocumentController;
@@ -55,8 +58,9 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	  //You can access the content inside each opened WSEditor depending on the current editing page (Text/Grid or Author).  
 	  // A sample action which will be mounted on the main menu, toolbar and contextual menu.
 	final Action selectionSourceAction = createShowSelectionAction(pluginWorkspaceAccess);
-	final Action testSourceAction = createShowSelectionAction(pluginWorkspaceAccess);
 	//Mount the action on the contextual menus for the Text and Author modes.
+	
+	
 	pluginWorkspaceAccess.addMenusAndToolbarsContributorCustomizer(new MenusAndToolbarsContributorCustomizer() {
 				/**
 				 * Customize the author popup menu.
@@ -66,7 +70,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 						AuthorAccess authorAccess) {
 					// Add our custom action
 					popup.add(selectionSourceAction);
-					popup.add(testSourceAction);
 				}
 
 				@Override
@@ -74,7 +77,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 						WSTextEditorPage textPage) {
 					// Add our custom action
 					popup.add(selectionSourceAction);
-					popup.add(testSourceAction);
 				}
 			});
 
@@ -86,7 +88,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 		  public void customizeMainMenu(JMenuBar mainMenuBar) {
 			  JMenu myMenu = new JMenu("My menu");
 			  myMenu.add(selectionSourceAction);
-			  myMenu.add(testSourceAction);
 			  // Add your menu before the Help menu
 			  mainMenuBar.add(myMenu, mainMenuBar.getMenuCount() - 1);
 		  }
@@ -110,9 +111,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 					  WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
 					  if (editorAccess != null) {
 						  selectionSourceAction.setEnabled(
-								  EditorPageConstants.PAGE_AUTHOR.equals(editorAccess.getCurrentPageID())
-								  || EditorPageConstants.PAGE_TEXT.equals(editorAccess.getCurrentPageID()));
-						  testSourceAction.setEnabled(
 								  EditorPageConstants.PAGE_AUTHOR.equals(editorAccess.getCurrentPageID())
 								  || EditorPageConstants.PAGE_TEXT.equals(editorAccess.getCurrentPageID()));
 					  }
@@ -196,11 +194,15 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 			  if(
 					  //The view ID defined in the "plugin.xml"
 					  "SampleWorkspaceAccessID".equals(viewInfo.getViewID())) {
-				  customMessagesArea = new JTextArea("Messages:");
-				  viewInfo.setComponent(new JScrollPane(customMessagesArea));
-				  viewInfo.setTitle("Custom Messages");
+				  customMessagesArea = new JTextArea("Messages: poc poc");
+				  Application application = new Application();
+				  application.start();
+				  
+				  viewInfo.setComponent(application.getGitWindow());
+				//  viewInfo.setComponent(new JScrollPane(customMessagesArea));
+				  //viewInfo.setTitle("Custom Messages");
 				  //You can have images located inside the JAR library and use them...
-//				  viewInfo.setIcon(new ImageIcon(getClass().getClassLoader().getResource("images/customMessage.png").toString()));
+				 viewInfo.setIcon(new ImageIcon(getClass().getClassLoader().getResource("images/GitPush24.png")));
 			  } 
 		  }
 	  }); 
@@ -243,6 +245,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 						  } else {
 							  // No selection
 							  pluginWorkspaceAccess.showInformationMessage("No selection available.");
+							
 						  }
 					  } else if (EditorPageConstants.PAGE_TEXT.equals(editorAccess.getCurrentPageID())) {
 						  WSTextEditorPage textPage = (WSTextEditorPage) editorAccess.getCurrentPage();

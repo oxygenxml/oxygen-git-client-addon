@@ -10,13 +10,13 @@ import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 import com.oxygenxml.sdksamples.workspace.git.view.LoginDialog;
 import com.oxygenxml.sdksamples.workspace.git.view.StagingPanel;
 
-public class PushPullController {
+public class PushPullController implements Subject<PushPullEvent> {
 
-	private StagingPanel stagingPanel;
+	private Observer<PushPullEvent> observer;
 	private GitAccess gitAccess;
 	private Command command;
-	
-	public PushPullController(GitAccess gitAccess ) {
+
+	public PushPullController(GitAccess gitAccess) {
 		this.gitAccess = gitAccess;
 	}
 
@@ -28,18 +28,14 @@ public class PushPullController {
 		execute(command);
 	}
 
-	public void execute(Command command) {
+	public void execute(final Command command) {
 		this.command = command;
-		UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
-		stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEnabled(false);
-		stagingPanel.getWorkingCopySelectionPanel().getBrowseButton().setEnabled(false);
-		stagingPanel.getCommitPanel().getCommitButton().setEnabled(false);
-		stagingPanel.getToolbarPanel().getPushButton().setEnabled(false);
-		stagingPanel.getToolbarPanel().getPullButton().setEnabled(false);
-			new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
+		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
+		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED);
+		notifyObservers(pushPullEvent);
+		new Thread(new Runnable() {
+
+			public void run() {
 				try {
 					if (command == Command.PUSH) {
 						gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
@@ -52,24 +48,30 @@ public class PushPullController {
 					if (e.getMessage().contains("not authorized")) {
 						JOptionPane.showMessageDialog(null, "Invalid credentials");
 						loadNewCredentials();
-						return;
 					}
 					e.printStackTrace();
+				} finally{
+					PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED);
+					notifyObservers(pushPullEvent);
 				}
-				
-				stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEnabled(true);
-				stagingPanel.getWorkingCopySelectionPanel().getBrowseButton().setEnabled(true);
-				stagingPanel.getCommitPanel().getCommitButton().setEnabled(true);
-				stagingPanel.getToolbarPanel().getPushButton().setEnabled(true);
-				stagingPanel.getToolbarPanel().getPullButton().setEnabled(true);
-				
-				
-				}
-			}).start();
+
+			}
+		}).start();
 	}
 
-	public void setContainerPanel(StagingPanel stagingPanel) {
-		this.stagingPanel = stagingPanel;
+	private void notifyObservers(PushPullEvent pushPullEvent) {
+		observer.stateChanged(pushPullEvent);
+	}
+
+	public void addObserver(Observer<PushPullEvent> observer) {
+		if (observer == null)
+			throw new NullPointerException("Null Observer");
+
+		this.observer = observer;
+	}
+
+	public void removeObserver(Observer<PushPullEvent> obj) {
+		observer = null;
 	}
 
 }

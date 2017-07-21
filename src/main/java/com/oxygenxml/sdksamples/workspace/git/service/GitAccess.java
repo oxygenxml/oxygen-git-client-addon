@@ -47,6 +47,8 @@ import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
+import com.oxygenxml.sdksamples.workspace.git.utils.FileHelper;
+import com.oxygenxml.sdksamples.workspace.git.utils.OptionsManager;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -122,24 +124,36 @@ public class GitAccess {
 		formatter.setRepository(git.getRepository());
 		try {
 			AbstractTreeIterator commitTreeIterator = getLastCommitTreeIterator(git.getRepository(), Constants.HEAD);
-			FileTreeIterator workTreeIterator = new FileTreeIterator(git.getRepository());
-			List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator, workTreeIterator);
-			for (DiffEntry entry : diffEntries) {
-				ChangeType changeType = entry.getChangeType();
+			if (commitTreeIterator != null) {
+				FileTreeIterator workTreeIterator = new FileTreeIterator(git.getRepository());
+				List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator, workTreeIterator);
+				for (DiffEntry entry : diffEntries) {
+					ChangeType changeType = entry.getChangeType();
 
-				if (entry.getChangeType().equals(ChangeType.ADD) || entry.getChangeType().equals(ChangeType.COPY)
-						|| entry.getChangeType().equals(ChangeType.RENAME)) {
-					String filePath = entry.getNewPath();
-					FileStatus unstageFile = new FileStatus(changeType, filePath);
-					if (!stagedFiles.contains(unstageFile)) {
-						unstagedFiles.add(unstageFile);
+					if (entry.getChangeType().equals(ChangeType.ADD) || entry.getChangeType().equals(ChangeType.COPY)
+							|| entry.getChangeType().equals(ChangeType.RENAME)) {
+						String filePath = entry.getNewPath();
+						FileStatus unstageFile = new FileStatus(changeType, filePath);
+						if (!stagedFiles.contains(unstageFile)) {
+							unstagedFiles.add(unstageFile);
+						}
+					} else {
+						String filePath = entry.getOldPath();
+						FileStatus unstageFile = new FileStatus(changeType, filePath);
+						if (!stagedFiles.contains(unstageFile)) {
+							unstagedFiles.add(unstageFile);
+						}
 					}
-				} else {
-					String filePath = entry.getOldPath();
-					FileStatus unstageFile = new FileStatus(changeType, filePath);
-					if (!stagedFiles.contains(unstageFile)) {
-						unstagedFiles.add(unstageFile);
-					}
+				}
+			} else {
+				String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+				List<String> fileNames = FileHelper.search(selectedRepository);
+				for (String fileName : fileNames) {
+					selectedRepository = selectedRepository.replace("\\", "/");
+					int cut = selectedRepository.substring(selectedRepository.lastIndexOf("/") + 1).length();
+					String file = fileName.substring(cut + 1);
+					FileStatus unstageFile = new FileStatus(ChangeType.ADD, file);
+					unstagedFiles.add(unstageFile);
 				}
 			}
 		} catch (Exception e) {
@@ -173,15 +187,19 @@ public class GitAccess {
 	private AbstractTreeIterator getLastCommitTreeIterator(Repository repository, String branch) throws Exception {
 		Ref head = repository.exactRef(branch);
 
-		RevWalk walk = new RevWalk(repository);
-		RevCommit commit = walk.parseCommit(head.getObjectId());
-		RevTree tree = walk.parseTree(commit.getTree().getId());
+		if (head.getObjectId() != null) {
+			RevWalk walk = new RevWalk(repository);
+			RevCommit commit = walk.parseCommit(head.getObjectId());
+			RevTree tree = walk.parseTree(commit.getTree().getId());
 
-		CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
-		ObjectReader oldReader = repository.newObjectReader();
-		oldTreeParser.reset(oldReader, tree.getId());
-		walk.close();
-		return oldTreeParser;
+			CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
+			ObjectReader oldReader = repository.newObjectReader();
+			oldTreeParser.reset(oldReader, tree.getId());
+			walk.close();
+			return oldTreeParser;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -277,18 +295,20 @@ public class GitAccess {
 	 *          - Git username
 	 * @param password
 	 *          - Git password
-	 * @throws GitAPIException 
-	 * @throws TransportException 
-	 * @throws NoHeadException 
-	 * @throws RefNotAdvertisedException 
-	 * @throws RefNotFoundException 
-	 * @throws CanceledException 
-	 * @throws InvalidRemoteException 
-	 * @throws DetachedHeadException 
-	 * @throws InvalidConfigurationException 
-	 * @throws WrongRepositoryStateException 
+	 * @throws GitAPIException
+	 * @throws TransportException
+	 * @throws NoHeadException
+	 * @throws RefNotAdvertisedException
+	 * @throws RefNotFoundException
+	 * @throws CanceledException
+	 * @throws InvalidRemoteException
+	 * @throws DetachedHeadException
+	 * @throws InvalidConfigurationException
+	 * @throws WrongRepositoryStateException
 	 */
-	public void pull(String username, String password) throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException, RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException {
+	public void pull(String username, String password) throws WrongRepositoryStateException,
+			InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException,
+			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException {
 		git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 	}
 
@@ -402,6 +422,11 @@ public class GitAccess {
 		}
 	}
 
+	/**
+	 * Gets the host name from the repositoryURL
+	 * 
+	 * @return the host name
+	 */
 	public String getHostName() {
 		Config storedConfig = git.getRepository().getConfig();
 		String url = storedConfig.getString("remote", "origin", "url");
@@ -414,4 +439,5 @@ public class GitAccess {
 
 		return url;
 	}
+
 }

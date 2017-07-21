@@ -3,7 +3,10 @@ package com.oxygenxml.sdksamples.workspace.git.view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 
 public class GitWindow extends JFrame{
 
@@ -25,6 +28,10 @@ public class GitWindow extends JFrame{
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
+	}
+
+	public JPanel getMainPanel() {
+		return stagingPanel;
 	}
 	
 

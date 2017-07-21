@@ -60,7 +60,6 @@ public class CommitPanel extends JPanel {
 	private void addCommitButtonListener() {
 		commitButton.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile(),
 						null);

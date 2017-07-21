@@ -20,7 +20,7 @@ import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
  * what it does... switches the staging state.
  *
  */
-public class StagingResourcesTreeModel extends DefaultTreeModel implements Subject, Observer {
+public class StagingResourcesTreeModel extends DefaultTreeModel implements Subject<ChangeEvent>, Observer<ChangeEvent> {
 
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
@@ -30,7 +30,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	 * will be unstaged.
 	 */
 	private boolean forStaging;
-	private Observer observer;
+	private Observer<ChangeEvent> observer;
 
 	public StagingResourcesTreeModel(TreeNode root, boolean forStaging, List<FileStatus> filesStatus) {
 		super(root);
@@ -38,7 +38,6 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		this.filesStatus = filesStatus;
 	}
 
-	@Override
 	public void stateChanged(ChangeEvent changeEvent) {
 		List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
 		if (changeEvent.getNewState() == StageState.STAGED) {
@@ -87,16 +86,14 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		filesStatus.removeAll(fileToBeUpdated);
 	}
 
-	@Override
-	public void addObserver(Observer observer) {
+	public void addObserver(Observer<ChangeEvent> observer) {
 		if (observer == null)
 			throw new NullPointerException("Null Observer");
 
 		this.observer = observer;
 	}
 
-	@Override
-	public void removeObserver(Observer obj) {
+	public void removeObserver(Observer<ChangeEvent> obj) {
 		observer = null;
 	}
 

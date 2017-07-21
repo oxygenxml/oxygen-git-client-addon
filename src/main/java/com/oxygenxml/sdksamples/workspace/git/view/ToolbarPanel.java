@@ -53,11 +53,9 @@ public class ToolbarPanel extends JPanel {
 
 	private void addPushAndPullButtons() {
 		gitToolbar = new JToolBar();
-
-		pushButton = new JButton(new ImageIcon(ImageConstants.GIT_PUSH_ICON));
+		pushButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PUSH_ICON)));
 		pushButton.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				pushPullController.execute(Command.PUSH);
 			}
@@ -65,10 +63,9 @@ public class ToolbarPanel extends JPanel {
 		pushButton.setToolTipText("Push");
 		gitToolbar.add(pushButton);
 
-		pullButton = new JButton(new ImageIcon(ImageConstants.GIT_PULL_ICON));
+		pullButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PULL_ICON)));
 		pullButton.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				pushPullController.execute(Command.PUSH);
 			}
@@ -76,10 +73,9 @@ public class ToolbarPanel extends JPanel {
 		pullButton.setToolTipText("Pull");
 		gitToolbar.add(pullButton);
 
-		storeCredentials = new JButton(new ImageIcon(ImageConstants.STORE_CREDENTIALS_ICON));
+		storeCredentials = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.STORE_CREDENTIALS_ICON)));
 		storeCredentials.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 			}
 		});

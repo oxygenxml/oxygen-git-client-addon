@@ -92,7 +92,6 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 			}
 			editedButton.addActionListener(new ActionListener() {
 
-				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					StagingResourcesTableModel unstagedTableModel = (StagingResourcesTableModel) table.getModel();

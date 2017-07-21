@@ -3,16 +3,27 @@ package com.oxygenxml.sdksamples.workspace.git.view;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
-public class StagingPanel extends JPanel {
+import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
+import com.oxygenxml.sdksamples.workspace.git.view.event.ActionStatus;
+import com.oxygenxml.sdksamples.workspace.git.view.event.ChangeEvent;
+import com.oxygenxml.sdksamples.workspace.git.view.event.Observer;
+import com.oxygenxml.sdksamples.workspace.git.view.event.PushPullEvent;
+import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
+
+public class StagingPanel extends JPanel implements Observer<PushPullEvent>{
 
 	private ToolbarPanel toolbarPanel;
 	private WorkingCopySelectionPanel workingCopySelectionPanel;
 	private UnstagedChangesPanel unstagedChangesPanel;
 	private UnstagedChangesPanel stagedChangesPanel;
 	private CommitPanel commitPanel;
+	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
+	private List<Observer<PushPullEvent>> observers = new ArrayList<Observer<PushPullEvent>>();
 
 	public StagingPanel(WorkingCopySelectionPanel workingCopySelectionPanel, UnstagedChangesPanel unstagedChangesPanel,
 			UnstagedChangesPanel stagedChangesPanel, CommitPanel commitPanel, ToolbarPanel toolbarPanel) {
@@ -137,6 +148,35 @@ public class StagingPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(commitPanel, gbc);
+	}
+
+	public void stateChanged(PushPullEvent pushPullEvent) {
+		if(pushPullEvent.getActionStatus() == ActionStatus.STARTED){
+			workingCopySelectionPanel.getBrowseButton().setEnabled(false);
+			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(false);
+			toolbarPanel.getPushButton().setEnabled(false);
+			toolbarPanel.getPullButton().setEnabled(false);
+			commitPanel.getCommitButton().setEnabled(false);
+		} else {
+			workingCopySelectionPanel.getBrowseButton().setEnabled(true);
+			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(true);
+			toolbarPanel.getPushButton().setEnabled(true);
+			toolbarPanel.getPullButton().setEnabled(true);
+			commitPanel.getCommitButton().setEnabled(true);
+		}
+	}
+
+
+	public void registerSubject(Subject<PushPullEvent> subject) {
+		subjects.add(subject);
+
+		subject.addObserver(this);
+	}
+
+	public void unregisterSubject(Subject<PushPullEvent> subject) {
+		subjects.remove(subject);
+
+		subject.removeObserver(this);
 	}
 
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Base64;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -18,9 +19,10 @@ import javax.xml.bind.Unmarshaller;
 
 import com.oxygenxml.sdksamples.workspace.git.constants.Constants;
 import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.Options;
-import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.RepositoryOption;
+import com.oxygenxml.sdksamples.workspace.git.jaxb.entities.UserCredentials;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
@@ -149,10 +151,10 @@ public class OptionsManager {
 	public void saveGitCredentials(UserCredentials userCredentials) {
 		loadRepositoryOptions();
 
-		options.setUsername(userCredentials.getUsername());
 		Cipher cipher = new Cipher();
 		String password = cipher.encrypt(userCredentials.getPassword());
-		options.setPassword(password);
+		userCredentials.setPassword(password);
+		options.getUserCredentialsList().getCredentials().add(userCredentials);
 
 		saveRepositoryOptions();
 
@@ -163,17 +165,27 @@ public class OptionsManager {
 	 * 
 	 * @return the credentials
 	 */
-	public UserCredentials getGitCredentials() {
+	public UserCredentials getGitCredentials(String host) {
 		loadRepositoryOptions();
 
-		String username = options.getUsername();
-		String password = options.getPassword();
+		List<UserCredentials> userCredentialsList = options.getUserCredentialsList().getCredentials();
+		String username = "";
+		String password = "";
+		for (UserCredentials credential : userCredentialsList) {
+			if (host.equals(credential.getHost())) {
+				username = credential.getUsername();
+				password = credential.getPassword();
+				break;
+			}
+		}
 
 		Cipher cipher = new Cipher();
 		password = cipher.decrypt(password);
 
-		UserCredentials userCredentials = new UserCredentials(username, password);
+		UserCredentials userCredentials = new UserCredentials(username, password, host);
 		return userCredentials;
 	}
 
+
+	
 }

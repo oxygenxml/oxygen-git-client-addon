@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,11 @@ public class TreeFormatterTest {
 
 	@Test
 	public void testGetNodeFromString() {
+		
+		
+		URL resource = getClass().getClassLoader().getResource(com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants.GIT_PUSH_ICON);
+		System.out.println(resource);
+		
 		List<String> paths = new ArrayList<String>();
 		paths.add("src/add/poc.txt");
 		paths.add("src/add/hello.txt");

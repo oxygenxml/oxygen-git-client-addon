@@ -6,7 +6,7 @@ package com.oxygenxml.sdksamples.workspace.git.view.event;
  * @author intern2
  *
  */
-public interface Subject {
+public interface Subject<T> {
 	// methods to register and unregister observers
 	/**
 	 * Adds a new observer
@@ -14,7 +14,7 @@ public interface Subject {
 	 * @param obj
 	 *          - the observer
 	 */
-	public void addObserver(Observer obj);
+	public void addObserver(Observer<T> obj);
 
 	/**
 	 * Removes an observer
@@ -22,5 +22,5 @@ public interface Subject {
 	 * @param obj
 	 *          - the observer
 	 */
-	public void removeObserver(Observer obj);
+	public void removeObserver(Observer<T> obj);
 }

@@ -31,9 +31,7 @@ import com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants;
 import com.oxygenxml.sdksamples.workspace.git.service.GitAccess;
 import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
 import com.oxygenxml.sdksamples.workspace.git.utils.TreeFormatter;
-import com.oxygenxml.sdksamples.workspace.git.view.event.Observer;
 import com.oxygenxml.sdksamples.workspace.git.view.event.StageController;
-import com.oxygenxml.sdksamples.workspace.git.view.event.Subject;
 
 public class UnstagedChangesPanel extends JPanel {
 
@@ -111,8 +109,9 @@ public class UnstagedChangesPanel extends JPanel {
 	}
 
 	public void createTreeView(String path, List<FileStatus> unstagedFiles) {
-		stageController.unregisterObserver((Observer) tree.getModel());
-		stageController.unregisterSubject((Subject) tree.getModel());
+		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+		stageController.unregisterObserver(treeModel);
+		stageController.unregisterSubject(treeModel);
 
 		path = path.replace("\\", "/");
 		String rootFolder = path.substring(path.lastIndexOf("/") + 1);
@@ -131,8 +130,8 @@ public class UnstagedChangesPanel extends JPanel {
 		}
 		TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 
-		stageController.registerObserver((Observer) tree.getModel());
-		stageController.registerSubject((Subject) tree.getModel());
+		stageController.registerObserver(treeModel);
+		stageController.registerSubject(treeModel);
 
 		// TODO Restore selection.
 
@@ -162,7 +161,6 @@ public class UnstagedChangesPanel extends JPanel {
 	private void addStageAllButtonListener() {
 		stageAllButton.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 				fileTableModel.switchAllFilesStageState();
@@ -173,7 +171,6 @@ public class UnstagedChangesPanel extends JPanel {
 	private void addStageSelectedButtonListener() {
 		stageSelectedButton.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
@@ -208,7 +205,6 @@ public class UnstagedChangesPanel extends JPanel {
 
 			TreePath[] selectedPaths = null;
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
@@ -219,8 +215,8 @@ public class UnstagedChangesPanel extends JPanel {
 						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 						String absolutePath = fileTableModel.getFileLocation(convertedRow);
 
-						DefaultMutableTreeNode nodeBuilder = TreeFormatter.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(),
-								absolutePath);
+						DefaultMutableTreeNode nodeBuilder = TreeFormatter
+								.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(), absolutePath);
 						DefaultMutableTreeNode[] selectedPath = new DefaultMutableTreeNode[absolutePath.split("/").length + 1];
 						int count = selectedPath.length;
 						while (nodeBuilder != null) {
@@ -337,16 +333,15 @@ public class UnstagedChangesPanel extends JPanel {
 
 		filesTable.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
 
-			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 					int row, int column) {
 				ImageIcon icon = null;
-				if (ChangeType.ADD ==value) {
-					icon = new ImageIcon(ImageConstants.GIT_ADD_ICON);
-				} else if (ChangeType.MODIFY ==value) {
-					icon = new ImageIcon(ImageConstants.GIT_MODIFIED_ICON);
+				if (ChangeType.ADD == value) {
+					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_ADD_ICON));
+				} else if (ChangeType.MODIFY == value) {
+					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_MODIFIED_ICON));
 				} else if (ChangeType.DELETE == value) {
-					icon = new ImageIcon(ImageConstants.GIT_DELETE_ICON);
+					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_DELETE_ICON));
 				}
 
 				return new JLabel(icon);

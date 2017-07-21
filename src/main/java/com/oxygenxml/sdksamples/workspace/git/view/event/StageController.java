@@ -13,38 +13,37 @@ import com.oxygenxml.sdksamples.workspace.git.service.entities.FileStatus;
  * @author intern2
  *
  */
-public class StageController implements Observer {
+public class StageController implements Observer<ChangeEvent> {
 
 	private GitAccess gitAccess;
 
-	private List<Subject> subjects = new ArrayList<Subject>();
-	private List<Observer> observers = new ArrayList<Observer>();
+	private List<Subject<ChangeEvent>> subjects = new ArrayList<Subject<ChangeEvent>>();
+	private List<Observer<ChangeEvent>> observers = new ArrayList<Observer<ChangeEvent>>();
 
 	public StageController(GitAccess gitAccess) {
 		this.gitAccess = gitAccess;
 	}
 
-	public void registerSubject(Subject subject) {
+	public void registerSubject(Subject<ChangeEvent> subject) {
 		subjects.add(subject);
 
 		subject.addObserver(this);
 	}
 
-	public void registerObserver(Observer subject) {
+	public void registerObserver(Observer<ChangeEvent> subject) {
 		observers.add(subject);
 	}
 
-	public void unregisterSubject(Subject subject) {
+	public void unregisterSubject(Subject<ChangeEvent> subject) {
 		subjects.remove(subject);
 
 		subject.removeObserver(this);
 	}
 
-	public void unregisterObserver(Observer subject) {
+	public void unregisterObserver(Observer<ChangeEvent> subject) {
 		observers.remove(subject);
 	}
 
-	@Override
 	public void stateChanged(ChangeEvent changeEvent) {
 		if (changeEvent.getNewState() == StageState.STAGED) {
 			gitAccess.addAll(changeEvent.getFileToBeUpdated());
@@ -52,9 +51,10 @@ public class StageController implements Observer {
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
 		}
 
-		for (Observer observer : observers) {
+		for (Observer<ChangeEvent> observer : observers) {
 			observer.stateChanged(changeEvent);
 		}
 	}
+
 
 }
