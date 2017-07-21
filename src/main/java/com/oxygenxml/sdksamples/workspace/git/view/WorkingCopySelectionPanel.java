@@ -47,6 +47,22 @@ public class WorkingCopySelectionPanel extends JPanel {
 		this.gitAccess = gitAccess;
 	}
 
+	public JComboBox<String> getWorkingCopySelector() {
+		return workingCopySelector;
+	}
+
+	public void setWorkingCopySelector(JComboBox<String> workingCopySelector) {
+		this.workingCopySelector = workingCopySelector;
+	}
+
+	public JButton getBrowseButton() {
+		return browseButton;
+	}
+
+	public void setBrowseButton(JButton browseButton) {
+		this.browseButton = browseButton;
+	}
+
 	public void createGUI() {
 
 		this.setLayout(new GridBagLayout());
@@ -166,7 +182,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		}
 		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
 		workingCopySelector.setSelectedItem(repositoryPath);
-		if(!repositoryPath.equals("")){
+		if (!repositoryPath.equals("")) {
 			gitAccess.setRepository(repositoryPath);
 			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 			List<FileStatus> stagedFiles = gitAccess.getStagedFile();
@@ -176,7 +192,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 			parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
 			parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
 		}
-		
+
 		this.add(workingCopySelector, gbc);
 	}
 
