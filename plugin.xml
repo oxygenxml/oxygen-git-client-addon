@@ -8,7 +8,7 @@
  description="Test"
  version="${project.version}"
  vendor="oXygen XML"
- class="com.oxygenxml.sdksamples.workspace.WorkspaceAccessPlugin"
+ class="com.oxygenxml.git.WorkspaceAccessPlugin"
  classLoaderType="preferReferencedResources">
  
  <runtime>
@@ -18,10 +18,8 @@
  </runtime>
  
  <extension type="WorkspaceAccess" 
-  class="com.oxygenxml.sdksamples.workspace.CustomWorkspaceAccessPluginExtension"/>
+  class="com.oxygenxml.git.CustomWorkspaceAccessPluginExtension"/>
  
   <!--The sample view which will present messages from the sample plugin.-->
-  <view id="SampleWorkspaceAccessID" initialSide="WEST" initialRow="0"/>
-  <!--The sample toolbar which will present messages from the sample plugin.-->
-  <toolbar id="SampleWorkspaceAccessToolbarID" initialSide="NORTH" initialRow="1"/>
+  <view id="GitStagingView" initialSide="WEST" initialRow="0"/>
 </plugin>

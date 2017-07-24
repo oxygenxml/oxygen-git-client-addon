@@ -15,7 +15,8 @@ import javax.swing.tree.TreePath;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.oxygenxml.sdksamples.workspace.git.view.StagingResourcesTreeModel;
+import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.view.StagingResourcesTreeModel;
 
 public class TreeFormatterTest {
 
@@ -24,7 +25,7 @@ public class TreeFormatterTest {
 	public void testGetNodeFromString() {
 		
 		
-		URL resource = getClass().getClassLoader().getResource(com.oxygenxml.sdksamples.workspace.git.constants.ImageConstants.GIT_PUSH_ICON);
+		URL resource = getClass().getClassLoader().getResource(com.oxygenxml.git.constants.ImageConstants.GIT_PUSH_ICON);
 		System.out.println(resource);
 		
 		List<String> paths = new ArrayList<String>();

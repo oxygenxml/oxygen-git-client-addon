@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.oxygenxml.samples</groupId>
 	<artifactId>oxygen-plugin-workspace-access</artifactId>
-	<version>1.0</version>
+	<version>1.0.0</version>
 
 	<repositories>
 		<repository>
