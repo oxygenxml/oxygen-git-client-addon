@@ -1,22 +1,21 @@
 package com.oxygenxml.git.view;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
 
+import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.view.event.ActionStatus;
-import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
+import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
+import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.Subject;
 
 /**
@@ -25,89 +24,76 @@ import com.oxygenxml.git.view.event.Subject;
  * @author intern2
  *
  */
-public class StagingPanel extends JPanel implements Observer<PushPullEvent>{
+public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 	private ToolbarPanel toolbarPanel;
 	private WorkingCopySelectionPanel workingCopySelectionPanel;
 	private UnstagedChangesPanel unstagedChangesPanel;
 	private UnstagedChangesPanel stagedChangesPanel;
 	private CommitPanel commitPanel;
-	private JSplitPane splitPane;
 	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
-	private List<Observer<PushPullEvent>> observers = new ArrayList<Observer<PushPullEvent>>();
-	
 
-	public StagingPanel(WorkingCopySelectionPanel workingCopySelectionPanel, UnstagedChangesPanel unstagedChangesPanel,
-			UnstagedChangesPanel stagedChangesPanel, CommitPanel commitPanel, ToolbarPanel toolbarPanel) {
-		this.toolbarPanel = toolbarPanel;
-		this.workingCopySelectionPanel = workingCopySelectionPanel;
-		this.unstagedChangesPanel = unstagedChangesPanel;
-		this.stagedChangesPanel = stagedChangesPanel;
-		this.commitPanel = commitPanel;
-	}
+	public StagingPanel(DiffHandler diffHandler) {
+		createGUI();
+		unstagedChangesPanel.setDiffHandler(diffHandler);
+		stagedChangesPanel.setDiffHandler(diffHandler);
 
-	public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
-		return workingCopySelectionPanel;
-	}
-
-	public void setWorkingCopySelectionPanel(WorkingCopySelectionPanel workingCopySelectionPanel) {
-		this.workingCopySelectionPanel = workingCopySelectionPanel;
 	}
 
 	public UnstagedChangesPanel getUnstagedChangesPanel() {
 		return unstagedChangesPanel;
 	}
 
-	public void setUnstagedChangesPanel(UnstagedChangesPanel unstagedChangesPanel) {
-		this.unstagedChangesPanel = unstagedChangesPanel;
-	}
-
 	public UnstagedChangesPanel getStagedChangesPanel() {
 		return stagedChangesPanel;
-	}
-
-	public void setStagedChangesPanel(UnstagedChangesPanel stagedChangesPanel) {
-		this.stagedChangesPanel = stagedChangesPanel;
-	}
-
-	public CommitPanel getCommitPanel() {
-		return commitPanel;
-	}
-
-	public void setCommitPanel(CommitPanel commitPanel) {
-		this.commitPanel = commitPanel;
-	}
-
-	public ToolbarPanel getToolbarPanel() {
-		return toolbarPanel;
-	}
-
-	public void setToolbarPanel(ToolbarPanel toolbarPanel) {
-		this.toolbarPanel = toolbarPanel;
 	}
 
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
 
+		GitAccess gitAccess = new GitAccess();
+		StageController observer = new StageController(gitAccess);
+		PushPullController pushPullController = new PushPullController(gitAccess);
+
+		unstagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, false);
+		stagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, true);
+		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
+		splitPane.add(unstagedChangesPanel);
+		splitPane.add(stagedChangesPanel);
+		splitPane.setDividerSize(5);
+		splitPane.setContinuousLayout(true);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setBorder(null);
+
+		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess);
+		commitPanel = new CommitPanel(gitAccess, observer);
+		toolbarPanel = new ToolbarPanel(pushPullController);
+		
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		addToolbatPanel(gbc);
 		addWorkingCopySelectionPanel(gbc);
-		addUnstagedChangesPanel(gbc);
-		addStagedChangesPanel(gbc);
+		addSplitPanel(gbc, splitPane);
 		addCommitPanel(gbc);
 
 		toolbarPanel.createGUI();
+		commitPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
-		commitPanel.createGUI();
 		workingCopySelectionPanel.createGUI();
-
-		addSplitPanel(gbc);
+		
+		registerSubject(pushPullController);
 	}
 
-	private void addSplitPanel(GridBagConstraints gbc) {
-		
+	private void addSplitPanel(GridBagConstraints gbc, Component splitPane) {
+		gbc.insets = new Insets(0, 5, 0, 5);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		this.add(splitPane, gbc);
 	}
 
 	private void addToolbatPanel(GridBagConstraints gbc) {
@@ -130,30 +116,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent>{
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(workingCopySelectionPanel, gbc);
-
-	}
-
-	private void addUnstagedChangesPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(0, 5, 0, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		this.add(unstagedChangesPanel, gbc);
-
-	}
-
-	private void addStagedChangesPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(0, 5, 0, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.gridx = 0;
-		gbc.gridy = 3;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		this.add(stagedChangesPanel, gbc);
 	}
 
 	private void addCommitPanel(GridBagConstraints gbc) {
@@ -161,14 +123,14 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent>{
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
-		gbc.gridy = 4;
+		gbc.gridy = 3;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(commitPanel, gbc);
 	}
 
 	public void stateChanged(PushPullEvent pushPullEvent) {
-		if(pushPullEvent.getActionStatus() == ActionStatus.STARTED){
+		if (pushPullEvent.getActionStatus() == ActionStatus.STARTED) {
 			workingCopySelectionPanel.getBrowseButton().setEnabled(false);
 			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(false);
 			toolbarPanel.getPushButton().setEnabled(false);
@@ -183,7 +145,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent>{
 		}
 	}
 
-
 	public void registerSubject(Subject<PushPullEvent> subject) {
 		subjects.add(subject);
 
@@ -194,10 +155,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent>{
 		subjects.remove(subject);
 
 		subject.removeObserver(this);
-	}
-
-	public void setSplit(JSplitPane splitPane) {
-		this.splitPane = splitPane;
 	}
 
 }

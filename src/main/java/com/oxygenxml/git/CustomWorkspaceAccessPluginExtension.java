@@ -3,6 +3,8 @@ package com.oxygenxml.git;
 import javax.swing.ImageIcon;
 
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.view.DiffHandler;
+import com.oxygenxml.git.view.StagingPanel;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -20,6 +22,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
   public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
   	
+  	//pluginWorkspaceAccess.openDiffFilesApplication(leftURL, rightURL)
   	
 	  pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 		  /**
@@ -30,12 +33,13 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 					  //The view ID defined in the "plugin.xml"
 					  "GitStagingView".equals(viewInfo.getViewID())) {
 
+			  	DiffHandler diffHandler = new DiffHandler(pluginWorkspaceAccess);
 
-			  	Application application = new Application();
-				  application.start();
+//			  	Application application = new Application();
+//				  application.start();
 				  
 				  // TODO THE StagingPanel is enough. NO need to create the application.
-				  viewInfo.setComponent(application.getGitWindow());
+				  viewInfo.setComponent(new StagingPanel(diffHandler));
 				//  viewInfo.setComponent(new JScrollPane(customMessagesArea));
 				  //viewInfo.setTitle("Custom Messages");
 				  //You can have images located inside the JAR library and use them...

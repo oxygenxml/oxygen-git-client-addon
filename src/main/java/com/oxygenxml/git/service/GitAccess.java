@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CanceledException;
@@ -30,9 +30,14 @@ import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -44,8 +49,11 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
+import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
+import com.oxygenxml.git.WorkspaceAccessPlugin;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
@@ -440,4 +448,58 @@ public class GitAccess {
 		return url;
 	}
 
+	public URL getFileContent(String path){
+		// find the HEAD
+		Repository repository = git.getRepository();
+		ObjectId lastCommitId;
+		try {
+			lastCommitId = repository.resolve(Constants.HEAD);
+			RevWalk revWalk = new RevWalk(repository);
+			RevCommit commit = revWalk.parseCommit(lastCommitId);
+			// and using commit's tree find the path
+			RevTree tree = commit.getTree();
+			TreeWalk treeWalk = new TreeWalk(repository);
+			treeWalk.addTree(tree);
+			treeWalk.setRecursive(true);
+			treeWalk.setFilter(PathFilter.create(path));
+			if (!treeWalk.next()) {
+				return null;
+			}
+			ObjectId objectId = treeWalk.getObjectId(0);
+			ObjectLoader loader = repository.open(objectId);
+			String fileName = path.substring(path.lastIndexOf("/") + 1);
+			/*OutputStream out = new FileOutputStream(new File(WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir(), 
+					fileName));*/
+			
+			File file = new File("C:/Users/intern2/Documents/Oxygen-Git-Plugin/temp/" + fileName);
+			file.getParentFile().mkdirs();
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			OutputStream out = new FileOutputStream(file);
+			loader.copyTo(out);
+			System.out.println("created at " + file.getAbsolutePath());
+//			loader.openStream()
+			out.close();
+			treeWalk.close();
+			revWalk.close();
+			return file.toURI().toURL();
+			
+		} catch (RevisionSyntaxException e) {
+			e.printStackTrace();
+		} catch (AmbiguousObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+		// now we have to get the commit
+		// and then one can use either
+		//InputStream in = loader.openStream();
+		// or
+		//loader.copyTo(out);
+	}
 }

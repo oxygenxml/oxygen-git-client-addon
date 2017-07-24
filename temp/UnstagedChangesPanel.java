@@ -6,14 +6,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
@@ -44,20 +38,22 @@ import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.StageController;
 
 /**
- * TODO IMprovements: 0. Diff (on commit (local <-> base) + on pull-conflicts
- * (local <-> remote )) pluginWorkspaceAccess.openDiffFilesApplication(leftURL,
- * rightURL, ancestorURL) 1. addon.xml description 2. upload addon. 3. Table
- * Renderers. Present the file name followed by the path.
+ * TODO IMprovements: 
+ * 0. Diff (on commit (local <-> base) + on pull-conflicts
+ * (local <-> remote )) pluginWorkspaceAccess.openDiffFilesApplication(leftURL, rightURL, ancestorURL)
+ * 1. addon.xml description 
+ * 2. upload addon. 
+ * 3. Table Renderers. Present the file name followed by the path.
  * 
  * 
- * 1. More icons: browser, switch to TRee/Table view 2. SPlit pane so we can
- * resize the staging/unstaging/commit areas. 3. TOoltips: on a file it could
- * present the status and the full path. 4. Use OXygen's options support.
+ * 1. More icons: browser, switch to TRee/Table view 
+ * 2. SPlit pane so we can resize the staging/unstaging/commit areas. 
+ * 3. TOoltips: on a file it could present the status and the full path. 
+ * 4. Use OXygen's options support.
  * 
  * 
  * 
@@ -68,7 +64,6 @@ public class UnstagedChangesPanel extends JPanel {
 	private static final int FLAT_VIEW = 1;
 	private static final int TREE_VIEW = 2;
 
-	private DiffHandler diffHandler;
 	private JButton stageAllButton;
 	private JButton stageSelectedButton;
 	private JButton switchViewButton;
@@ -88,6 +83,11 @@ public class UnstagedChangesPanel extends JPanel {
 		this.stageController = observer;
 		this.gitAccess = gitAccess;
 		currentView = FLAT_VIEW;
+		if (staging) {
+			this.setBorder(BorderFactory.createTitledBorder("StagedChanges"));
+		} else {
+			this.setBorder(BorderFactory.createTitledBorder("UnstagedChanges"));
+		}
 
 	}
 
@@ -383,21 +383,21 @@ public class UnstagedChangesPanel extends JPanel {
 				return iconLabel;
 			}
 		});
+		
 
 		filesTable.getColumnModel().getColumn(1).setCellRenderer(new TableCellRenderer() {
 
-			public Component getTableCellRendererComponent(final JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+					int row, int column) {
 				String toRender = (String) value;
 				String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
 				if (!fileName.equals(toRender)) {
 					toRender = toRender.replace("/" + fileName, "");
 					toRender = fileName + " -" + toRender;
 				}
-				JTextField label = new JTextField(toRender);
+				JTextField label =  new JTextField(toRender);
 				label.setBorder(null);
-
+				
 				if (isSelected) {
 					label.setForeground(table.getSelectionForeground());
 					label.setBackground(table.getSelectionBackground());
@@ -409,62 +409,16 @@ public class UnstagedChangesPanel extends JPanel {
 				}
 				label.setToolTipText(toRender);
 				return label;
-
+				
+				
 			}
 		});
-
-		filesTable.addMouseListener(new MouseListener() {
-
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mousePressed(MouseEvent e) {
-				Point point = new Point(e.getX(), e.getY());
-				int row = filesTable.convertRowIndexToModel(filesTable.rowAtPoint(point));
-				int column = filesTable.columnAtPoint(point);
-				if (column == 1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-					StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-					String fileAbsolutePath = OptionsManager.getInstance().getSelectedRepository() +"/" + model.getUnstageFile(row).getFileLocation();
-					URL fileURL = null;
-					try {
-						fileURL = new File(fileAbsolutePath).toURI().toURL();
-					} catch (MalformedURLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-					URL lastCommitedFileURL = gitAccess.getFileContent(model.getUnstageFile(row).getFileLocation());
-					diffHandler.makeDiff(fileURL, lastCommitedFileURL);
-				}
-			}
-
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
+		
 		scrollPane = new JScrollPane(filesTable);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		filesTable.setFillsViewportHeight(true);
 		this.add(scrollPane, gbc);
-	}
-
-	public void setDiffHandler(DiffHandler diffHandler) {
-		this.diffHandler = diffHandler;
 	}
 
 }
