@@ -79,7 +79,7 @@ public class ToolbarPanel extends JPanel {
 		pullButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				pushPullController.execute(Command.PUSH);
+				pushPullController.execute(Command.PULL);
 			}
 		});
 		pullButton.setToolTipText("Pull");

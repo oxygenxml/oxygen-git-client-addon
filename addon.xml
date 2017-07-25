@@ -1,32 +1,74 @@
-<!-- This is used to install the plugin as an add-on:
-https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons
- -->
+<!-- This is used to install the plugin as an add-on: https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons -->
 <xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
-    <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
-        id="com.oxygenxml.git">
-        <xt:location href="${project.build.finalName}-plugin.jar"/>
-        <xt:version>${project.version}</xt:version>
-        <xt:oxy_version>17.0+</xt:oxy_version>
-        <xt:type>plugin</xt:type>
-        <xt:author>Oxygen XML Editor</xt:author>
-        <xt:name>Git Support</xt:name>
-        <xt:description><html xmlns="http://www.w3.org/1999/xhtml">
-            <head>
-                <title>Git support plugin</title>
-            </head>
-            <body>
-                <div>
-                    <p></p>
-                </div>
-            </body>
-        </html>
-        </xt:description>
-        <xt:license><![CDATA[(c) Syncro Soft , All rights reserved.
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
+	<xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
+		id="com.oxygenxml.git">
+		<xt:location href="${project.build.finalName}-plugin.jar" />
+		<xt:version>${project.version}</xt:version>
+		<xt:oxy_version>17.0+</xt:oxy_version>
+		<xt:type>plugin</xt:type>
+		<xt:author>Oxygen XML Editor</xt:author>
+		<xt:name>Git Support</xt:name>
+		<xt:description>
+			<html xmlns="http://www.w3.org/1999/xhtml">
+				<head>
+					<title>Git support plugin</title>
+				</head>
+				<body>
+					<div>
+						<p>After installing the plugin if the git window is not visible
+							you should go to the "Window" menu -> show view -> Git Staging.
+						</p>
+						<p>Usage:
+							- Select a working copy from your file system. The folder
+							selected must be a git Repository otherwise the plugin will prompt
+							you with an error message. The plugin assumes you already have a
+							checkout repository.
+							- After you have selected the repository the
+							plugin will show you all the modification that have occurred since
+							your last commit in the unstaging area (files that have been
+							modified, new files and deleted files) with their location
+							relative from the working copy and a button to individually stage
+							them.
+							- You then can then select to stage all those files by
+							clicking on the "Stage All" button or some of them by selecting
+							the files you want and clicking on the "Stage Selected" button or
+							you can individually send a file to the staging area by clicking
+							the "Stage" button that appears on the right for each file.
+							- If you don't like the flat(table) view you can opt for a tree view
+							by clicking on the button positioned above the table to the
+							right. It has the same functionality
+							- Once the files are in the
+							staging area they are ready to be commited. But if you change
+							your mind regarding one of the files that you previously staged
+							you can of course unstage that file or all of them and commit
+							only the files you want. Basically the staging area works the
+							same as the unstaging area. Same buttons with the same
+							functionality.
+							- If you want to see the difference between the
+							last commit and your current modifications you can double click
+							the file that appears in the staging or unstaging area and a diff
+							window will appear highlighting the changes.
+							- Once you are
+							satisfied with your file choice you can add a commit message in
+							the text area and click on the commit button. The files will be
+							commited locally on your system. To send them to the remote
+							repository you must click on the push button(is the first button
+							on the top left corner, represented by an "up arrow"). Ofcourse if
+							you have changes that you want to bring from the remote
+							repository you have the option to "pull" them using the second
+							button located also in the top left corner represented by a "down
+							arrow".
+						</p>
+					</div>
+				</body>
+			</html>
+		</xt:description>
+		<xt:license><![CDATA[(c) Syncro Soft , All rights reserved.
 This Plug-In is part of the Oxygen XML Software and, as such, is part of the License Agreement governing the Oxygen XML Software.
 ]]></xt:license>
-    </xt:extension>
+	</xt:extension>
 </xt:extensions>
 
 

@@ -6,10 +6,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.MergeCommand;
+import org.eclipse.jgit.api.MergeResult;
+import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CanceledException;
@@ -32,8 +37,11 @@ import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.NoMergeBaseException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.errors.NoMergeBaseException.MergeBaseFailureReason;
+import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -41,10 +49,13 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.merge.Merger;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -58,9 +69,14 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
  * File status(staged, unstaged)
+ * 
+ * TODO Beni Add monitors and progress.
  * 
  * @author intern2
  *
@@ -68,10 +84,11 @@ import com.oxygenxml.git.utils.OptionsManager;
 public class GitAccess {
 
 	private Git git;
-
+	
 	public GitAccess() {
 
 	}
+
 
 	/**
 	 * Sets the git repository. File path must exist
@@ -83,6 +100,16 @@ public class GitAccess {
 
 		try {
 			git = Git.open(new File(path + "/.git"));
+			Config config = git.getRepository().getConfig();
+			config.setString("diff", null, "tool", "oxygendiff");
+			config.setString("merge", null, "tool", "oxygendiff");
+			config.setString("difftool", "oxygendiff", "cmd",
+					"'[pathToOxygenInstallDir]/diffFiles.exe' -ext $REMOTE $LOCAL $LOCAL");
+			config.setString("mergetool", "oxygendiff", "cmd",
+					"'[pathToOxygenInstallDir]/diffFiles.exe' -ext $LOCAL $REMOTE $BASE $MERGED");
+			config.setString("mergetool", "oxygendiff", "trustExitCode", "true");
+			config.setString("difftool", null, "prompt", "false");
+			git.getRepository().getConfig().save();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -292,7 +319,17 @@ public class GitAccess {
 		 * (IOException e1) { e1.printStackTrace(); }
 		 */
 
-		git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+		Iterable<PushResult> call = git.push()
+				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+		Iterator<PushResult> results = call.iterator();
+		while (results.hasNext()) {
+			System.out.println(results.hasNext());
+			PushResult result = results.next();
+			for (RemoteRefUpdate info : result.getRemoteUpdates()) {
+				System.out.println(info.getStatus());
+			}
+		}
+		System.out.println(results.hasNext());
 	}
 
 	/**
@@ -313,11 +350,47 @@ public class GitAccess {
 	 * @throws DetachedHeadException
 	 * @throws InvalidConfigurationException
 	 * @throws WrongRepositoryStateException
+	 * @throws IOException
+	 * @throws IncorrectObjectTypeException
+	 * @throws AmbiguousObjectException
+	 * @throws RevisionSyntaxException
 	 */
 	public void pull(String username, String password) throws WrongRepositoryStateException,
 			InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException,
-			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException {
-		git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException,
+			RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+
+		git.fetch().call();
+		
+
+		PullResult result = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+				.call();
+
+		for (String conflictingPath : result.getMergeResult().getConflicts().keySet()) {
+			URL local = new URL("git://Local/" + conflictingPath);
+			URL remote = new URL("git://Remote/" + conflictingPath);
+			URL base = new URL("git://Base/" + conflictingPath);
+			
+			((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(local,remote, base);
+		}
+
+	}
+
+	private RevCommit getBaseCommit(RevWalk walk, RevCommit a, RevCommit b)
+			throws IncorrectObjectTypeException, IOException {
+		walk.reset();
+		walk.setRevFilter(RevFilter.MERGE_BASE);
+		walk.markStart(a);
+		walk.markStart(b);
+		final RevCommit base = walk.next();
+		if (base == null)
+			return null;
+		final RevCommit base2 = walk.next();
+		if (base2 != null) {
+			throw new NoMergeBaseException(MergeBaseFailureReason.MULTIPLE_MERGE_BASES_NOT_SUPPORTED,
+					MessageFormat.format(JGitText.get().multipleMergeBasesFor, a.name(), b.name(), base.name(), base2.name()));
+		}
+		return base;
 	}
 
 	/**
@@ -448,7 +521,7 @@ public class GitAccess {
 		return url;
 	}
 
-	public URL getFileContent(String path){
+	public URL getFileContent(String path) {
 		// find the HEAD
 		Repository repository = git.getRepository();
 		ObjectId lastCommitId;
@@ -468,23 +541,21 @@ public class GitAccess {
 			ObjectId objectId = treeWalk.getObjectId(0);
 			ObjectLoader loader = repository.open(objectId);
 			String fileName = path.substring(path.lastIndexOf("/") + 1);
-			/*OutputStream out = new FileOutputStream(new File(WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir(), 
-					fileName));*/
-			
-			File file = new File("C:/Users/intern2/Documents/Oxygen-Git-Plugin/temp/" + fileName);
+
+			File file = new File(WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir(), "/temp/" + fileName);
 			file.getParentFile().mkdirs();
-			if(!file.exists()){
+			if (!file.exists()) {
 				file.createNewFile();
 			}
 			OutputStream out = new FileOutputStream(file);
 			loader.copyTo(out);
 			System.out.println("created at " + file.getAbsolutePath());
-//			loader.openStream()
+			// loader.openStream()
 			out.close();
 			treeWalk.close();
 			revWalk.close();
 			return file.toURI().toURL();
-			
+
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
 		} catch (AmbiguousObjectException e) {
@@ -495,11 +566,9 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 		return null;
-		
-		// now we have to get the commit
-		// and then one can use either
-		//InputStream in = loader.openStream();
-		// or
-		//loader.copyTo(out);
+	}
+	
+	public ObjectId get(String path){
+		return null;
 	}
 }

@@ -1,8 +1,13 @@
 package com.oxygenxml.git.view.event;
 
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 import com.oxygenxml.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
@@ -49,6 +54,14 @@ public class PushPullController implements Subject<PushPullEvent> {
 						JOptionPane.showMessageDialog(null, "Invalid credentials");
 						loadNewCredentials();
 					}
+					e.printStackTrace();
+				} catch (RevisionSyntaxException e) {
+					e.printStackTrace();
+				} catch (AmbiguousObjectException e) {
+					e.printStackTrace();
+				} catch (IncorrectObjectTypeException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
 					e.printStackTrace();
 				} finally{
 					PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED);

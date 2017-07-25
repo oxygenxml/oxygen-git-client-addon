@@ -19,7 +19,6 @@ public class GitWindow extends JFrame{
 
 	public void createGUI() {
 		this.setTitle("Git");
-		stagingPanel.createGUI();
 		this.getContentPane().add(stagingPanel, BorderLayout.CENTER);
 		
 		this.pack();

@@ -33,11 +33,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	private CommitPanel commitPanel;
 	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
 
-	public StagingPanel(DiffHandler diffHandler) {
+	public StagingPanel() {
 		createGUI();
-		unstagedChangesPanel.setDiffHandler(diffHandler);
-		stagedChangesPanel.setDiffHandler(diffHandler);
-
 	}
 
 	public UnstagedChangesPanel getUnstagedChangesPanel() {

@@ -48,6 +48,9 @@ import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.StageController;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 /**
  * TODO IMprovements: 0. Diff (on commit (local <-> base) + on pull-conflicts
  * (local <-> remote )) pluginWorkspaceAccess.openDiffFilesApplication(leftURL,
@@ -68,7 +71,6 @@ public class UnstagedChangesPanel extends JPanel {
 	private static final int FLAT_VIEW = 1;
 	private static final int TREE_VIEW = 2;
 
-	private DiffHandler diffHandler;
 	private JButton stageAllButton;
 	private JButton stageSelectedButton;
 	private JButton switchViewButton;
@@ -393,7 +395,7 @@ public class UnstagedChangesPanel extends JPanel {
 				String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
 				if (!fileName.equals(toRender)) {
 					toRender = toRender.replace("/" + fileName, "");
-					toRender = fileName + " -" + toRender;
+					toRender = fileName + " - " + toRender;
 				}
 				JTextField label = new JTextField(toRender);
 				label.setBorder(null);
@@ -416,7 +418,6 @@ public class UnstagedChangesPanel extends JPanel {
 		filesTable.addMouseListener(new MouseListener() {
 
 			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
@@ -431,27 +432,23 @@ public class UnstagedChangesPanel extends JPanel {
 					try {
 						fileURL = new File(fileAbsolutePath).toURI().toURL();
 					} catch (MalformedURLException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					
 					URL lastCommitedFileURL = gitAccess.getFileContent(model.getUnstageFile(row).getFileLocation());
-					diffHandler.makeDiff(fileURL, lastCommitedFileURL);
+					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(fileURL, lastCommitedFileURL);
 				}
 			}
 
 			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -461,10 +458,6 @@ public class UnstagedChangesPanel extends JPanel {
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		filesTable.setFillsViewportHeight(true);
 		this.add(scrollPane, gbc);
-	}
-
-	public void setDiffHandler(DiffHandler diffHandler) {
-		this.diffHandler = diffHandler;
 	}
 
 }
