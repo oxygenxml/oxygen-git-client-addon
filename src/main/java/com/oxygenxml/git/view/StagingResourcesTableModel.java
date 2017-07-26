@@ -9,8 +9,10 @@ import javax.swing.table.AbstractTableModel;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
+import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
 
@@ -103,6 +105,9 @@ public class StagingResourcesTableModel extends AbstractTableModel
 
 	public void switchFileStageState(int convertedRow) {
 		// Update the table model. remove the file.
+		if(filesStatus.get(convertedRow).getChangeType() == GitChangeType.CONFLICT){
+			return;
+		}
 		FileStatus fileStatus = filesStatus.remove(convertedRow);
 
 		StageState newSTate = StageState.UNSTAGED;
@@ -112,6 +117,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			oldState = StageState.UNSTAGED;
 		}
 
+		
 		List<FileStatus> fileToBeUpdated = Arrays.asList(new FileStatus[] { fileStatus });
 		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, fileToBeUpdated);
 		notifyObservers(changeEvent);
@@ -149,11 +155,15 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			oldState = StageState.UNSTAGED;
 		}
 
-		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, new ArrayList<FileStatus>(filesStatus));
+		List<FileStatus> filesToBeUpdated = new ArrayList<FileStatus>();
+		for (FileStatus fileStatus : filesStatus) {
+			if(fileStatus.getChangeType() != GitChangeType.CONFLICT){
+				filesToBeUpdated.add(fileStatus);
+			}
+		}
+		filesStatus.removeAll(filesToBeUpdated);
+		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, filesToBeUpdated);
 		notifyObservers(changeEvent);
-
-		// Update inner model.
-		filesStatus.clear();
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
@@ -184,10 +194,15 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	}
 
 	private void insertRows(List<FileStatus> fileToBeUpdated) {
+		for (FileStatus fileStatus : fileToBeUpdated) {
+			if(fileStatus.getChangeType() == GitChangeType.CONFLICT){
+				fileStatus.setChangeType(GitChangeType.MODIFY);
+			}
+		}
 		filesStatus.addAll(fileToBeUpdated);
 	}
 
-	public ChangeType getChangeType(String fullPath) {
+	public GitChangeType getChangeType(String fullPath) {
 		for (FileStatus fileStatus : filesStatus) {
 			if (fileStatus.getFileLocation().equals(fullPath)) {
 				return fileStatus.getChangeType();

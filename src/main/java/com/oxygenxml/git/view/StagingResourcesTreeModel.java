@@ -8,6 +8,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
@@ -100,7 +101,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		List<FileStatus> filesToRemove = new ArrayList<FileStatus>();
 		for (String string : selectedFiles) {
 			for (FileStatus fileStatus : filesStatus) {
-				if (fileStatus.getFileLocation().contains(string)) {
+				if (fileStatus.getFileLocation().contains(string) && fileStatus.getChangeType() != GitChangeType.CONFLICT) {
 					filesToRemove.add(new FileStatus(fileStatus));
 				}
 			}

@@ -9,6 +9,10 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -21,6 +25,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,6 +49,7 @@ import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.StageController;
@@ -183,6 +189,30 @@ public class UnstagedChangesPanel extends JPanel {
 		addSwitchButtonListener();
 		addStageSelectedButtonListener();
 		addStageAllButtonListener();
+		if (staging) {
+			filesTable.addFocusListener(new FocusListener() {
+
+				public void focusLost(FocusEvent e) {
+				}
+
+				public void focusGained(FocusEvent e) {
+					createFlatView(GitAccess.getInstance().getStagedFile());
+					createTreeView(OptionsManager.getInstance().getSelectedRepository(), GitAccess.getInstance().getStagedFile());
+				}
+			});
+		} else {
+			filesTable.addFocusListener(new FocusListener() {
+
+				public void focusLost(FocusEvent e) {
+				}
+
+				public void focusGained(FocusEvent e) {
+					createFlatView(GitAccess.getInstance().getUnstagedFiles());
+					createTreeView(OptionsManager.getInstance().getSelectedRepository(),
+							GitAccess.getInstance().getUnstagedFiles());
+				}
+			});
+		}
 	}
 
 	private void addStageAllButtonListener() {
@@ -360,7 +390,7 @@ public class UnstagedChangesPanel extends JPanel {
 		// set the checkbox column width
 		filesTable.getColumnModel().getColumn(0).setMaxWidth(30);
 		// set the button column width
-		filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(80);
+		filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(100);
 
 		TableRendererEditor.install(filesTable);
 
@@ -370,15 +400,18 @@ public class UnstagedChangesPanel extends JPanel {
 					int row, int column) {
 				ImageIcon icon = null;
 				String toolTip = "";
-				if (ChangeType.ADD == value) {
+				if (GitChangeType.ADD == value) {
 					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_ADD_ICON));
 					toolTip = "File Created";
-				} else if (ChangeType.MODIFY == value) {
+				} else if (GitChangeType.MODIFY == value) {
 					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_MODIFIED_ICON));
 					toolTip = "File Modified";
-				} else if (ChangeType.DELETE == value) {
+				} else if (GitChangeType.DELETE == value) {
 					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_DELETE_ICON));
 					toolTip = "File Deleted";
+				} else if (GitChangeType.CONFLICT == value) {
+					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_CONFLICT_ICON));
+					toolTip = "Conflict";
 				}
 				JLabel iconLabel = new JLabel(icon);
 				iconLabel.setToolTipText(toolTip);
@@ -427,16 +460,9 @@ public class UnstagedChangesPanel extends JPanel {
 				int column = filesTable.columnAtPoint(point);
 				if (column == 1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
 					StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-					String fileAbsolutePath = OptionsManager.getInstance().getSelectedRepository() +"/" + model.getUnstageFile(row).getFileLocation();
-					URL fileURL = null;
-					try {
-						fileURL = new File(fileAbsolutePath).toURI().toURL();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					}
-					
-					URL lastCommitedFileURL = gitAccess.getFileContent(model.getUnstageFile(row).getFileLocation());
-					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(fileURL, lastCommitedFileURL);
+					FileStatus file = model.getUnstageFile(row);
+					Diff diff = new Diff(file);
+					diff.fire();
 				}
 			}
 

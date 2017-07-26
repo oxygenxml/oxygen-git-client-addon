@@ -52,6 +52,7 @@ public class StageController implements Observer<ChangeEvent> {
 	 * 
 	 */
 	public void stateChanged(ChangeEvent changeEvent) {
+		
 		if (changeEvent.getNewState() == StageState.STAGED) {
 			gitAccess.addAll(changeEvent.getFileToBeUpdated());
 		} else if (changeEvent.getNewState() == StageState.UNSTAGED) {

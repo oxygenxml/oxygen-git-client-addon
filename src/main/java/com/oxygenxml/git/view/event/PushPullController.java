@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.event;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -41,12 +42,13 @@ public class PushPullController implements Subject<PushPullEvent> {
 		new Thread(new Runnable() {
 
 			public void run() {
+				Set<String> conflictingFiles = null;
 				try {
 					if (command == Command.PUSH) {
 						gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 						JOptionPane.showMessageDialog(null, "Push successful");
 					} else {
-						gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
+						conflictingFiles = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
 						JOptionPane.showMessageDialog(null, "Pull successful");
 					}
 				} catch (GitAPIException e) {

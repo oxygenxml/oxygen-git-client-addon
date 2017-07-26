@@ -17,6 +17,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class TableRendererEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
@@ -75,31 +77,48 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 				}
 			}
 
-			public void mouseDragged(MouseEvent e) {}
+			public void mouseDragged(MouseEvent e) {
+			}
 		});
 
 	}
 
-	public Component getTableCellEditorComponent(final JTable table, Object value, boolean isSelected, final int row, int column) {
+	public Component getTableCellEditorComponent(final JTable table, Object value, boolean isSelected, final int row,
+			int column) {
 
 		if (hovered != null && hovered[0] == row && hovered[1] == column) {
 
-			editedButton.setText((String) value);
 			if (editedButton.getActionListeners().length != 0) {
 				editedButton.removeActionListener(editedButton.getActionListeners()[0]);
 			}
-			editedButton.addActionListener(new ActionListener() {
+			StagingResourcesTableModel model = (StagingResourcesTableModel) table.getModel();
+			int convertedRow = table.convertRowIndexToModel(row);
+			final FileStatus file = model.getUnstageFile(convertedRow);
+			if (file.getChangeType() == GitChangeType.CONFLICT) {
+				editedButton.setText("Rezolve");
+				editedButton.addActionListener(new ActionListener() {
+					
+					public void actionPerformed(ActionEvent e) {
+						Diff diff = new Diff(file);
+						diff.fire();
+						fireEditingStopped();
+					}
+				});
+			} else {
+				editedButton.setText((String) value);
+				editedButton.addActionListener(new ActionListener() {
 
-				public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e) {
 
-					StagingResourcesTableModel unstagedTableModel = (StagingResourcesTableModel) table.getModel();
-					int convertedRow = table.convertRowIndexToModel(row);
-					unstagedTableModel.switchFileStageState(convertedRow);
+						StagingResourcesTableModel unstagedTableModel = (StagingResourcesTableModel) table.getModel();
+						int convertedRow = table.convertRowIndexToModel(row);
+						unstagedTableModel.switchFileStageState(convertedRow);
 
-					fireEditingStopped();
+						fireEditingStopped();
 
-				}
-			});
+					}
+				});
+			}
 			return editedButton;
 		}
 
@@ -114,28 +133,27 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
 
-		/*if (isSelected) {
-			button.setForeground(table.getSelectionForeground());
-			button.setBackground(table.getSelectionBackground());
-
-		} else {
-			button.setForeground(table.getForeground());
-			button.setBackground(UIManager.getColor("Button.background"));
-
-		}*/
-
-		if (value == null) {
-			button.setText("");
-			button.setIcon(null);
-		} else {
-			button.setText(value.toString());
-			button.setIcon(null);
-		}
-
 		boolean hov = hovered != null && hovered[0] == row && hovered[1] == column;
 		button.getModel().setRollover(hov);
 
-		return button;
+		StagingResourcesTableModel model = (StagingResourcesTableModel) table.getModel();
+		int convertedRow = table.convertRowIndexToModel(row);
+		FileStatus file = model.getUnstageFile(convertedRow);
+		if (file.getChangeType() == GitChangeType.CONFLICT) {
+			button.setText("Rezolve");
+			return button;
+		} else {
+
+			if (value == null) {
+				button.setText("");
+				button.setIcon(null);
+			} else {
+				button.setText(value.toString());
+				button.setIcon(null);
+			}
+
+			return button;
+		}
 
 	}
 

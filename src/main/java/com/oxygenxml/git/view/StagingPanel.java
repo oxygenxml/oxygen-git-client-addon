@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +13,16 @@ import javax.swing.JPanel;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.Subject;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Main panel containing all the other panels.
@@ -48,7 +54,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
 
-		GitAccess gitAccess = new GitAccess();
+		GitAccess gitAccess = GitAccess.getInstance();
 		StageController observer = new StageController(gitAccess);
 		PushPullController pushPullController = new PushPullController(gitAccess);
 
@@ -65,7 +71,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess);
 		commitPanel = new CommitPanel(gitAccess, observer);
 		toolbarPanel = new ToolbarPanel(pushPullController);
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		addToolbatPanel(gbc);
@@ -78,7 +84,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
 		workingCopySelectionPanel.createGUI();
-		
+
 		registerSubject(pushPullController);
 	}
 

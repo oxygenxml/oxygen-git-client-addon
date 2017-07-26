@@ -3,6 +3,7 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,6 +11,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeCommand;
@@ -19,6 +21,7 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
@@ -37,6 +40,7 @@ import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoMergeBaseException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -66,6 +70,7 @@ import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.WorkspaceAccessPlugin;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
 
@@ -84,11 +89,18 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 public class GitAccess {
 
 	private Git git;
-	
-	public GitAccess() {
+	private static GitAccess instance;
+
+	private GitAccess() {
 
 	}
 
+	public static GitAccess getInstance() {
+		if (instance == null) {
+			instance = new GitAccess();
+		}
+		return instance;
+	}
 
 	/**
 	 * Sets the git repository. File path must exist
@@ -151,6 +163,12 @@ public class GitAccess {
 	public List<FileStatus> getUnstagedFiles() {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 		List<FileStatus> stagedFiles = getStagedFile();
+		List<FileStatus> conflictingFiles = getConflictingFiles();
+		
+		List<String> conflictingPaths = new ArrayList<String>();
+		for (FileStatus conflictingFile : conflictingFiles) {
+			conflictingPaths.add(conflictingFile.getFileLocation());
+		}
 
 		// needed only to pass it to the formatter
 		OutputStream out = NullOutputStream.INSTANCE;
@@ -163,23 +181,35 @@ public class GitAccess {
 				FileTreeIterator workTreeIterator = new FileTreeIterator(git.getRepository());
 				List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator, workTreeIterator);
 				for (DiffEntry entry : diffEntries) {
-					ChangeType changeType = entry.getChangeType();
+					GitChangeType changeType = null;
+					if(entry.getChangeType() == ChangeType.ADD){
+						changeType = GitChangeType.ADD;
+					} else if(entry.getChangeType() == ChangeType.MODIFY){
+						changeType = GitChangeType.MODIFY;
+					} else if(entry.getChangeType() == ChangeType.DELETE){
+						changeType = GitChangeType.DELETE;
+					}
 
 					if (entry.getChangeType().equals(ChangeType.ADD) || entry.getChangeType().equals(ChangeType.COPY)
 							|| entry.getChangeType().equals(ChangeType.RENAME)) {
 						String filePath = entry.getNewPath();
 						FileStatus unstageFile = new FileStatus(changeType, filePath);
 						if (!stagedFiles.contains(unstageFile)) {
-							unstagedFiles.add(unstageFile);
+							if(!conflictingPaths.contains(filePath)){
+								unstagedFiles.add(unstageFile);
+							}
 						}
 					} else {
 						String filePath = entry.getOldPath();
 						FileStatus unstageFile = new FileStatus(changeType, filePath);
 						if (!stagedFiles.contains(unstageFile)) {
-							unstagedFiles.add(unstageFile);
+							if(!conflictingPaths.contains(filePath)){
+								unstagedFiles.add(unstageFile);
+							}
 						}
 					}
 				}
+				unstagedFiles.addAll(conflictingFiles);
 			} else {
 				String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
 				List<String> fileNames = FileHelper.search(selectedRepository);
@@ -187,7 +217,7 @@ public class GitAccess {
 					selectedRepository = selectedRepository.replace("\\", "/");
 					int cut = selectedRepository.substring(selectedRepository.lastIndexOf("/") + 1).length();
 					String file = fileName.substring(cut + 1);
-					FileStatus unstageFile = new FileStatus(ChangeType.ADD, file);
+					FileStatus unstageFile = new FileStatus(GitChangeType.ADD, file);
 					unstagedFiles.add(unstageFile);
 				}
 			}
@@ -312,12 +342,6 @@ public class GitAccess {
 	 */
 	public void push(String username, String password)
 			throws InvalidRemoteException, TransportException, GitAPIException {
-		/*
-		 * StoredConfig config = git.getRepository().getConfig();
-		 * config.setString("remote", "origin", "url",
-		 * "https://github.com/BeniaminSavu/test.git"); try { config.save(); } catch
-		 * (IOException e1) { e1.printStackTrace(); }
-		 */
 
 		Iterable<PushResult> call = git.push()
 				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
@@ -340,6 +364,7 @@ public class GitAccess {
 	 *          - Git username
 	 * @param password
 	 *          - Git password
+	 * @return 
 	 * @throws GitAPIException
 	 * @throws TransportException
 	 * @throws NoHeadException
@@ -355,28 +380,20 @@ public class GitAccess {
 	 * @throws AmbiguousObjectException
 	 * @throws RevisionSyntaxException
 	 */
-	public void pull(String username, String password) throws WrongRepositoryStateException,
+	public Set<String> pull(String username, String password) throws WrongRepositoryStateException,
 			InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException,
 			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException,
 			RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
 
-		git.fetch().call();
-		
-
 		PullResult result = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
 				.call();
+		System.out.println(result.toString());
 
-		for (String conflictingPath : result.getMergeResult().getConflicts().keySet()) {
-			URL local = new URL("git://Local/" + conflictingPath);
-			URL remote = new URL("git://Remote/" + conflictingPath);
-			URL base = new URL("git://Base/" + conflictingPath);
-			
-			((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(local,remote, base);
-		}
+		return result.getMergeResult().getConflicts().keySet();
 
 	}
 
-	private RevCommit getBaseCommit(RevWalk walk, RevCommit a, RevCommit b)
+	private RevCommit getCommonAncestor(RevWalk walk, RevCommit a, RevCommit b)
 			throws IncorrectObjectTypeException, IOException {
 		walk.reset();
 		walk.setRevFilter(RevFilter.MERGE_BASE);
@@ -422,7 +439,7 @@ public class GitAccess {
 	public void addAll(List<FileStatus> files) {
 		try {
 			for (FileStatus file : files) {
-				if (file.getChangeType() == ChangeType.DELETE) {
+				if (file.getChangeType() == GitChangeType.DELETE) {
 					git.rm().addFilepattern(file.getFileLocation()).call();
 				} else {
 					git.add().addFilepattern(file.getFileLocation()).call();
@@ -446,13 +463,13 @@ public class GitAccess {
 			Status status = git.status().call();
 			List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
 			for (String fileName : status.getChanged()) {
-				stagedFiles.add(new FileStatus(ChangeType.MODIFY, fileName));
+				stagedFiles.add(new FileStatus(GitChangeType.MODIFY, fileName));
 			}
 			for (String fileName : status.getAdded()) {
-				stagedFiles.add(new FileStatus(ChangeType.ADD, fileName));
+				stagedFiles.add(new FileStatus(GitChangeType.ADD, fileName));
 			}
 			for (String fileName : status.getRemoved()) {
-				stagedFiles.add(new FileStatus(ChangeType.DELETE, fileName));
+				stagedFiles.add(new FileStatus(GitChangeType.DELETE, fileName));
 			}
 			return stagedFiles;
 		} catch (NoWorkTreeException e) {
@@ -464,6 +481,25 @@ public class GitAccess {
 		return new ArrayList<FileStatus>();
 	}
 
+	public List<FileStatus> getConflictingFiles() {
+		try {
+			Status status = git.status().call();
+			List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+			for (String fileName : status.getConflicting()) {
+				stagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
+			}
+			
+			return stagedFiles;
+		} catch (NoWorkTreeException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+
+		return new ArrayList<FileStatus>();
+	}
+	
+	
 	/**
 	 * Removes a single file from the staging area.
 	 * 
@@ -523,39 +559,25 @@ public class GitAccess {
 
 	public URL getFileContent(String path) {
 		// find the HEAD
-		Repository repository = git.getRepository();
-		ObjectId lastCommitId;
+
+		String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+		selectedRepository = selectedRepository.replace("\\", "/");
+		URL url = null;
+		File file = new File(selectedRepository + "/" + path);
 		try {
-			lastCommitId = repository.resolve(Constants.HEAD);
-			RevWalk revWalk = new RevWalk(repository);
-			RevCommit commit = revWalk.parseCommit(lastCommitId);
-			// and using commit's tree find the path
-			RevTree tree = commit.getTree();
-			TreeWalk treeWalk = new TreeWalk(repository);
-			treeWalk.addTree(tree);
-			treeWalk.setRecursive(true);
-			treeWalk.setFilter(PathFilter.create(path));
-			if (!treeWalk.next()) {
-				return null;
-			}
-			ObjectId objectId = treeWalk.getObjectId(0);
-			ObjectLoader loader = repository.open(objectId);
-			String fileName = path.substring(path.lastIndexOf("/") + 1);
+			url = file.toURI().toURL();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return url;
 
-			File file = new File(WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir(), "/temp/" + fileName);
-			file.getParentFile().mkdirs();
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			OutputStream out = new FileOutputStream(file);
-			loader.copyTo(out);
-			System.out.println("created at " + file.getAbsolutePath());
-			// loader.openStream()
-			out.close();
-			treeWalk.close();
-			revWalk.close();
-			return file.toURI().toURL();
+	}
 
+	public ObjectId getLastLocalCommit() {
+		Repository repo = git.getRepository();
+		try {
+			ObjectId localCommit = repo.resolve("HEAD^{commit}");
+			return localCommit;
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
 		} catch (AmbiguousObjectException e) {
@@ -567,8 +589,78 @@ public class GitAccess {
 		}
 		return null;
 	}
-	
-	public ObjectId get(String path){
+
+	public ObjectId getRemoteCommit() {
+		Repository repo = git.getRepository();
+		try {
+			ObjectId remoteCommit = repo.resolve("FETCH_HEAD^{commit}");
+			return remoteCommit;
+		} catch (RevisionSyntaxException e) {
+			e.printStackTrace();
+		} catch (AmbiguousObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return null;
+	}
+
+	public ObjectId getBaseCommit() {
+		Repository repository = git.getRepository();
+		RevWalk walk = new RevWalk(repository);
+		ObjectId localCommit;
+		ObjectId remoteCommit;
+		RevCommit baseCommit = null;
+		try {
+			localCommit = repository.resolve("FETCH_HEAD^{commit}");
+			remoteCommit = repository.resolve("HEAD^{commit}");
+			baseCommit = getCommonAncestor(walk, walk.parseCommit(localCommit), walk.parseCommit(remoteCommit));
+		} catch (RevisionSyntaxException e) {
+			e.printStackTrace();
+		} catch (AmbiguousObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		walk.close();
+		return baseCommit.toObjectId();
+	}
+
+	public InputStream getInputStreamFrom(ObjectId commit, String path)
+			throws MissingObjectException, IncorrectObjectTypeException, IOException {
+		Repository repository = git.getRepository();
+		RevWalk revWalk = new RevWalk(repository);
+		RevCommit revCommit = revWalk.parseCommit(commit);
+		// and using commit's tree find the path
+		RevTree tree = revCommit.getTree();
+		TreeWalk treeWalk = new TreeWalk(repository);
+		treeWalk.addTree(tree);
+		treeWalk.setRecursive(true);
+		treeWalk.setFilter(PathFilter.create(path));
+
+		ObjectLoader loader = null;
+		if (treeWalk.next()) {
+			ObjectId objectId = treeWalk.getObjectId(0);
+			loader = repository.open(objectId);
+		}
+
+		treeWalk.close();
+		revWalk.close();
+		
+		return loader.openStream();
+	}
+
+	public void reset(){
+		try {
+			git.reset().call();
+		} catch (CheckoutConflictException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
 	}
 }

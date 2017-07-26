@@ -14,7 +14,7 @@ public class FileStatus {
 	/**
 	 * A file can be Added, Deleted or Modified
 	 */
-	private ChangeType changeType;
+	private GitChangeType changeType;
 	
 	/**
 	 * The file location is releative to the selected git repository. For example
@@ -24,7 +24,7 @@ public class FileStatus {
 	 */
 	private String fileLocation;
 
-	public FileStatus(ChangeType changeType, String fileLocation) {
+	public FileStatus(GitChangeType changeType, String fileLocation) {
 		this.changeType = changeType;
 		this.fileLocation = fileLocation;
 	}
@@ -34,11 +34,11 @@ public class FileStatus {
 		this.fileLocation = fileStatus.getFileLocation();
 	}
 
-	public ChangeType getChangeType() {
+	public GitChangeType getChangeType() {
 		return changeType;
 	}
 
-	public void setChangeType(ChangeType changeType) {
+	public void setChangeType(GitChangeType changeType) {
 		this.changeType = changeType;
 	}
 
