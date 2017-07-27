@@ -76,7 +76,10 @@ public class Diff {
 					File f = new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation());
 					long lastModified = f.lastModified();
 					Date date = new Date(lastModified);
-					System.out.println(date);
+					System.out.println("last modified = " + date);
+					long time = GitAccess.getInstance().getTimeStamp();
+					Date date2 = new Date(time);
+					System.out.println("last push = " + date2);
 				}
 			});
 		} catch (MalformedURLException e1) {

@@ -90,6 +90,7 @@ public class GitAccess {
 
 	private Git git;
 	private static GitAccess instance;
+	private long timestamp;
 
 	private GitAccess() {
 
@@ -380,16 +381,14 @@ public class GitAccess {
 	 * @throws AmbiguousObjectException
 	 * @throws RevisionSyntaxException
 	 */
-	public Set<String> pull(String username, String password) throws WrongRepositoryStateException,
+	public void pull(String username, String password) throws WrongRepositoryStateException,
 			InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException,
 			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException,
 			RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
 
-		PullResult result = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+		git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
 				.call();
-		System.out.println(result.toString());
-
-		return result.getMergeResult().getConflicts().keySet();
+		timestamp = System.currentTimeMillis();
 
 	}
 
@@ -663,4 +662,9 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 	}
+	
+	public long getTimeStamp(){
+		return timestamp;
+	}
 }
+
