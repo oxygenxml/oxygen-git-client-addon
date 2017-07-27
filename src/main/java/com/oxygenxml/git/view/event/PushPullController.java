@@ -30,7 +30,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	}
 
 	public void loadNewCredentials() {
-		//new LoginDialog(this, gitAccess.getHostName());
+		new LoginDialog(this, gitAccess.getHostName());
 	}
 
 	public void updateCredentials() {
@@ -40,6 +40,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	public void execute(final Command command) {
 		this.command = command;
 		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
+		System.out.println(userCredentials);
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED);
 		notifyObservers(pushPullEvent);
 		new Thread(new Runnable() {
