@@ -28,7 +28,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	}
 
 	public void loadNewCredentials() {
-		new LoginDialog(this, gitAccess.getHostName());
+		//new LoginDialog(this, gitAccess.getHostName());
 	}
 
 	public void updateCredentials() {
