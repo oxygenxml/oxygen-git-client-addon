@@ -1,18 +1,44 @@
-# sample-plugin-workspace-access
-Sample Maven-based workspace access plugin.
+# Git support plugin
 
-This sample plugin implements the plugin extension API: 
 
-            ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension
+After installing the plugin if the git window is not visible you should go to the "Window" menu -> show view -> Git Staging.
 
-which allows you to add new toolbar, menu and contextual menu buttons, custom views and to interract with the opened XML documents.
-
-For more details see: http://www.oxygenxml.com/doc/ug-editor/index.html#concepts/workspace-access-plugin.html
-
-If you are using the Eclipse workbench you can clone the project locally and use in the Eclipse the "Import->Existing Maven Projects" functionality.
-
-Afterwards you can run "mvn install" (either from the command line or from the IDE) to create a JAR containing the plugin folder in the project's "target" folder. 
-
-In the same "target" folder there will be an "addon.xml" file allowing you to install the plugin directly from Oxygen (Help menu->Install new add-ons). Or you can manually unpack the JAR in the "OXYGEN_INSTALL_DIR/plugins" folder.
-
-If you want to debug your Java code and do not want to run "mvn install" and to install the plugin in Oxygen all the time, in the "OXYGEN_INSTALL_DIR\plugins" folder you can create a folder with any name (for example "sample") in which you place a file called "plugin.redirect" containing the full file path reference to your project (for example in my case "C:\Users\radu_coravu\Documents\sample-plugin-workspace-access"). After this, when Oxygen will start it will automatically load the plugin from your project location. So you will just need to modify the Java code, the IDE will automatically compile it, then restart Oxygen and test your changes.
+Usage:
+- Select a working copy from your file system. The folder
+selected must be a git Repository otherwise the plugin will prompt
+you with an error message. The plugin assumes you already have a
+checkout repository.
+- After you have selected the repository the
+plugin will show you all the modification that have occurred since
+your last commit in the unstaging area (files that have been
+modified, new files and deleted files) with their location
+relative to the working copy and a button to individually stage
+them.
+- You can then select to stage all those files by
+clicking on the "Stage All" button or some of them by selecting
+the files you want and clicking on the "Stage Selected" button or
+you can individually send a file to the staging area by clicking
+the "Stage" button that appears on the right for each file.
+- If you don't like the flat(table) view you can opt for a tree view
+by clicking on the button positioned above the table to the
+right. It has the same functionality
+- Once the files are in the taging area they are ready to be commited. But if you change
+your mind regarding one of the files that you previously staged
+you can of course unstage that file or all of them and commit
+only the files you want. Basically the staging area works the
+same as the unstaging area. Same buttons with the same
+functionality.
+- If you want to see the difference between the
+last commit and your current modifications you can double click
+the file that appears in the staging or unstaging area and a diff
+window will appear highlighting the changes.
+- Once you are
+satisfied with your file choice you can add a commit message in
+the text area and click on the commit button. The files will be
+commited locally on your system. To send them to the remote
+repository you must click on the push button(is the first button
+on the top left corner, represented by an "up arrow"). Ofcourse if
+you have changes that you want to bring from the remote
+repository you have the option to "pull" them using the second
+button located also in the top left corner represented by a "down
+arrow".
