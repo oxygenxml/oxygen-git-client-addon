@@ -86,8 +86,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 					List<FileStatus> stagedFiles = gitAccess.getStagedFile();
 
 					// generate content for FLAT_VIEW
-					parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
-					parent.getStagedChangesPanel().createFlatView(stagedFiles);
+					parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
+					parent.getStagedChangesPanel().updateFlatView(stagedFiles);
 
 					// generate content for TREE_VIEW
 					parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
@@ -177,8 +177,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 			List<FileStatus> stagedFiles = gitAccess.getStagedFile();
 			StagingPanel parent = (StagingPanel) this.getParent();
-			parent.getUnstagedChangesPanel().createFlatView(unstagedFiles);
-			parent.getStagedChangesPanel().createFlatView(stagedFiles);
+			parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
+			parent.getStagedChangesPanel().updateFlatView(stagedFiles);
 			parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
 			parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
 		}

@@ -9,8 +9,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.WorkspaceAccessPlugin;
-import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.jaxb.entities.Options;
 import com.oxygenxml.git.jaxb.entities.UserCredentials;
 
@@ -21,6 +22,11 @@ import com.oxygenxml.git.jaxb.entities.UserCredentials;
  *
  */
 public class OptionsManager {
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(OptionsManager.class);
+	
 	/**
 	 * TODO Set it from the outside.
 	 * 
@@ -55,19 +61,25 @@ public class OptionsManager {
 	private void loadRepositoryOptions() {
 		if (options == null) {
 			options = new Options();
-		}
-		if (options != null) {
-			String fileName = REPOSITORY_FILENAME;
-			JAXBContext jaxbContext;
-			try {
-				jaxbContext = JAXBContext.newInstance(Options.class);
-				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-				options = (Options) jaxbUnmarshaller.unmarshal(new File(getClass().getClassLoader().getResource("Options.xml").getPath()));
-			} catch (JAXBException e) {
-				e.printStackTrace();
-			}
+				try {
+					JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
+					Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+					File optionsFile = getOptionsFile();
+					if (optionsFile.exists()) {
+						options = (Options) jaxbUnmarshaller.unmarshal(optionsFile);
+					} else {
+						logger.warn("Options file doesn't exist:" + optionsFile.getAbsolutePath());
+					}
+				} catch (JAXBException e) {
+					logger.warn("Options not loaded: " + e,  e);
+				}
 
-		}
+			}
+	}
+
+	private File getOptionsFile() {
+		File baseDir = WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir();
+		return new File(baseDir, REPOSITORY_FILENAME);
 	}
 
 	/**
@@ -75,13 +87,12 @@ public class OptionsManager {
 	 * repositoryOptions variable
 	 */
 	private void saveRepositoryOptions() {
-		String fileName = REPOSITORY_FILENAME;
 		try {
 
 			JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.marshal(options, new File(getClass().getClassLoader().getResource("Options.xml").getPath()));
+			jaxbMarshaller.marshal(options, getOptionsFile());
 		} catch (JAXBException e1) {
 			e1.printStackTrace();
 		}

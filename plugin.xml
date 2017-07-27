@@ -9,7 +9,7 @@
  version="${project.version}"
  vendor="oXygen XML"
  class="com.oxygenxml.git.WorkspaceAccessPlugin"
- classLoaderType="preferReferencedResources">
+ classLoaderType="preferOxygenResources">
  
  <runtime>
 	<librariesFolder name="lib" />

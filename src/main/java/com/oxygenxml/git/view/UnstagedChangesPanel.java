@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -9,23 +8,15 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,15 +26,10 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
-import javax.swing.event.CellEditorListener;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-
-import org.eclipse.jgit.diff.DiffEntry.ChangeType;
-import org.mozilla.javascript.tools.debugger.treetable.AbstractCellEditor;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
@@ -53,9 +39,6 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.StageController;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * TODO IMprovements: 0. Diff (on commit (local <-> base) + on pull-conflicts
@@ -101,13 +84,6 @@ public class UnstagedChangesPanel extends JPanel {
 
 	public JTree getTree() {
 		return tree;
-	}
-
-	public void setTree(JTree tree) {
-		if (currentView == TREE_VIEW) {
-			scrollPane.setViewportView(tree);
-		}
-
 	}
 
 	public JTable getFilesTable() {
@@ -162,17 +138,16 @@ public class UnstagedChangesPanel extends JPanel {
 		for (FileStatus unstageFile : unstagedFiles) {
 			TreeFormatter.buildTreeFromString(modelTree, unstageFile.getFileLocation());
 		}
+		
+		// TODO Restoring selection between views should be enough.
 		TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 
 		treeModel = (StagingResourcesTreeModel) tree.getModel();
 		stageController.registerObserver(treeModel);
 		stageController.registerSubject(treeModel);
-
-		this.setTree(tree);
 	}
 
-	public void createFlatView(List<FileStatus> unstagedFiles) {
-
+	public void updateFlatView(List<FileStatus> unstagedFiles) {
 		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) this.getFilesTable().getModel();
 		modelTable.setFilesStatus(unstagedFiles);
 	}
@@ -189,30 +164,21 @@ public class UnstagedChangesPanel extends JPanel {
 		addSwitchButtonListener();
 		addStageSelectedButtonListener();
 		addStageAllButtonListener();
-		if (staging) {
-			filesTable.addFocusListener(new FocusListener() {
+		
+		filesTable.addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent e) {}
+			public void focusGained(FocusEvent e) {
+				
+				// TODO Update the models only if there are changes.
 
-				public void focusLost(FocusEvent e) {
-				}
-
-				public void focusGained(FocusEvent e) {
-					createFlatView(GitAccess.getInstance().getStagedFile());
-					createTreeView(OptionsManager.getInstance().getSelectedRepository(), GitAccess.getInstance().getStagedFile());
-				}
-			});
-		} else {
-			filesTable.addFocusListener(new FocusListener() {
-
-				public void focusLost(FocusEvent e) {
-				}
-
-				public void focusGained(FocusEvent e) {
-					createFlatView(GitAccess.getInstance().getUnstagedFiles());
-					createTreeView(OptionsManager.getInstance().getSelectedRepository(),
-							GitAccess.getInstance().getUnstagedFiles());
-				}
-			});
-		}
+				// TODO Update just the current view (flat or tree) 
+				
+				// TODO If the GIT probing takes long we could do it on thread.
+				List<FileStatus> stagedFile = staging ? GitAccess.getInstance().getStagedFile() : GitAccess.getInstance().getUnstagedFiles();
+				updateFlatView(stagedFile);
+				createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFile);
+			}
+		});
 	}
 
 	private void addStageAllButtonListener() {
