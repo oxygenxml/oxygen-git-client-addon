@@ -17,6 +17,8 @@ import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.LoginDialog;
 import com.oxygenxml.git.view.StagingPanel;
 
+import de.schlichtherle.io.util.SynchronizedOutputStream;
+
 public class PushPullController implements Subject<PushPullEvent> {
 
 	private Observer<PushPullEvent> observer;
@@ -56,6 +58,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 						JOptionPane.showMessageDialog(null, "Pull successful");
 					}
 				} catch (GitAPIException e) {
+					System.out.println("+++++++++++++++++++++++++++++++++++++++++++");
 					if (e.getMessage().contains("not authorized")) {
 						JOptionPane.showMessageDialog(null, "Invalid credentials");
 						loadNewCredentials();
