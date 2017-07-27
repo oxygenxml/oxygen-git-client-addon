@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Date;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -67,7 +68,7 @@ public class Diff {
 			URL remote = new URL("git://Remote/" + file.getFileLocation());
 			URL base = new URL("git://Base/" + file.getFileLocation());
 
-			JFrame diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+			final JFrame diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 					.openDiffFilesApplication(local, remote, base);
 			
 			diffFrame.addComponentListener(new ComponentAdapter() {
@@ -80,6 +81,16 @@ public class Diff {
 					long time = GitAccess.getInstance().getTimeStamp();
 					Date date2 = new Date(time);
 					System.out.println("last push = " + date2);
+					System.out.println(lastModified/1000);
+					System.out.println(time/1000);
+					if((lastModified / 1000) == (time / 1000)){
+						String[] options = new String[] {"Yes", "No", "Always Yes"};
+				    int response = JOptionPane.showOptionDialog(null, "Message", "Cnnflict Warning",
+				        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+				        null, options, options[0]);
+				    System.out.println(response);
+				    diffFrame.removeComponentListener(this);
+					}
 				}
 			});
 		} catch (MalformedURLException e1) {
