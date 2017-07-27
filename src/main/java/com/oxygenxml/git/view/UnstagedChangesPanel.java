@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -25,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -39,6 +41,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.StageController;
+import com.sun.xml.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
 /**
  * TODO IMprovements: 0. Diff (on commit (local <-> base) + on pull-conflicts
@@ -118,7 +121,7 @@ public class UnstagedChangesPanel extends JPanel {
 		this.scrollPane = scrollPane;
 	}
 
-	public void createTreeView(String path, List<FileStatus> unstagedFiles) {
+	public void createTreeView(String path, List<FileStatus> filesStatus) {
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 		stageController.unregisterObserver(treeModel);
 		stageController.unregisterSubject(treeModel);
@@ -128,21 +131,20 @@ public class UnstagedChangesPanel extends JPanel {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
 
 		// Create the tree model and add the root node to it
-		DefaultTreeModel modelTree = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(unstagedFiles));
+		treeModel = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(filesStatus));
 		if (staging) {
-			modelTree = new StagingResourcesTreeModel(root, true, new ArrayList<FileStatus>(unstagedFiles));
+			treeModel = new StagingResourcesTreeModel(root, true, new ArrayList<FileStatus>(filesStatus));
 		}
 
 		// Create the tree with the new model
-		tree.setModel(modelTree);
-		for (FileStatus unstageFile : unstagedFiles) {
-			TreeFormatter.buildTreeFromString(modelTree, unstageFile.getFileLocation());
+		tree.setModel(treeModel);
+		for (FileStatus unstageFile : filesStatus) {
+			TreeFormatter.buildTreeFromString(treeModel, unstageFile.getFileLocation());
 		}
-		
-		// TODO Restoring selection between views should be enough.
-		TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 
-		treeModel = (StagingResourcesTreeModel) tree.getModel();
+		// TODO Restoring selection between views should be enough.
+		// TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
+
 		stageController.registerObserver(treeModel);
 		stageController.registerSubject(treeModel);
 	}
@@ -164,21 +166,51 @@ public class UnstagedChangesPanel extends JPanel {
 		addSwitchButtonListener();
 		addStageSelectedButtonListener();
 		addStageAllButtonListener();
-		
-		filesTable.addFocusListener(new FocusListener() {
-			public void focusLost(FocusEvent e) {}
-			public void focusGained(FocusEvent e) {
-				
-				// TODO Update the models only if there are changes.
 
-				// TODO Update just the current view (flat or tree) 
-				
-				// TODO If the GIT probing takes long we could do it on thread.
-				List<FileStatus> stagedFile = staging ? GitAccess.getInstance().getStagedFile() : GitAccess.getInstance().getUnstagedFiles();
-				updateFlatView(stagedFile);
-				createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFile);
-			}
-		});
+		if (!staging) {
+			filesTable.addFocusListener(new FocusListener() {
+				public void focusLost(FocusEvent e) {
+				}
+
+				public void focusGained(FocusEvent e) {
+					System.out.println("focus gained " + staging);
+					// TODO Update the models only if there are changes.
+
+					// TODO Update just the current view (flat or tree)
+
+					// TODO If the GIT probing takes long we could do it on thread.
+
+					new SwingWorker<List<FileStatus>, Integer>() {
+
+						@Override
+						protected List<FileStatus> doInBackground() throws Exception {
+							System.out.println("started geting files for " + staging);
+							return GitAccess.getInstance().getUnstagedFiles();
+
+						}
+
+						@Override
+						protected void done() {
+							System.out.println("started done for " + staging);
+							List<FileStatus> files = new ArrayList<FileStatus>();
+							try {
+								files = get();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							} catch (ExecutionException e) {
+								e.printStackTrace();
+							}
+							System.out.println("fineshed geting fiels for " + staging);
+							updateFlatView(files);
+							createTreeView(OptionsManager.getInstance().getSelectedRepository(), files);
+							System.out.println();
+						}
+
+					}.execute();
+
+				}
+			});
+		}
 	}
 
 	private void addStageAllButtonListener() {
@@ -216,7 +248,6 @@ public class UnstagedChangesPanel extends JPanel {
 					fileTreeModel.switchFilesStageState(selectedFiles);
 
 				}
-				TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 			}
 
 		});
@@ -252,7 +283,6 @@ public class UnstagedChangesPanel extends JPanel {
 					}
 					tree.setSelectionPaths(selectedPaths);
 
-					TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
 					scrollPane.setViewportView(tree);
 					currentView = TREE_VIEW;
 					switchViewButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.TABLE_VIEW)));

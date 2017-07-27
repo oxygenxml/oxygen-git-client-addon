@@ -16,7 +16,7 @@ public class Options {
 	private String selectedRepository = "";
 
 	@XmlElement(name = "userCredentials")
-	private UserCredentialsList userCredentialsList;
+	private UserCredentialsList userCredentialsList = new UserCredentialsList();
 
 	public RepositoryLocations getRepositoryLocations() {
 		return repositoryLocations;
