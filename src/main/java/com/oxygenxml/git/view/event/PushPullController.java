@@ -49,18 +49,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 			public void run() {
 				try {
 					if (command == Command.PUSH) {
-						Status status ;
-						try {
-							
-							status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
-						} catch (Throwable t) {
-							System.out.println(t.getCause().getClass().getName());
-							t.printStackTrace();
-							throw new RuntimeException(t);
-						}
-						if(Status.OK == status){
+						Status status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+
+						if (Status.OK == status) {
 							JOptionPane.showMessageDialog(null, "Push successful");
-						} else if(Status.REJECTED_NONFASTFORWARD == status){
+						} else if (Status.REJECTED_NONFASTFORWARD == status) {
 							JOptionPane.showMessageDialog(null, "Push failed, please get your repository up to date(PULL)");
 						}
 					} else {
@@ -70,7 +63,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 				} catch (GitAPIException e) {
 					if (e.getMessage().contains("not authorized")) {
 						JOptionPane.showMessageDialog(null, "Invalid credentials");
-						//						loadNewCredentials();
+						loadNewCredentials();
 					}
 					e.printStackTrace();
 				} catch (RevisionSyntaxException e) {
@@ -81,7 +74,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
-				} finally{
+				} finally {
 					PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED);
 					notifyObservers(pushPullEvent);
 				}
