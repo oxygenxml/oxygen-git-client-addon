@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
@@ -48,7 +49,15 @@ public class PushPullController implements Subject<PushPullEvent> {
 			public void run() {
 				try {
 					if (command == Command.PUSH) {
-						Status status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+						Status status ;
+						try {
+							
+							status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+						} catch (Throwable t) {
+							System.out.println(t.getCause().getClass().getName());
+							t.printStackTrace();
+							throw new RuntimeException(t);
+						}
 						if(Status.OK == status){
 							JOptionPane.showMessageDialog(null, "Push successful");
 						} else if(Status.REJECTED_NONFASTFORWARD == status){
