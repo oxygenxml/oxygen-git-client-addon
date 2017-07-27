@@ -59,10 +59,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 						JOptionPane.showMessageDialog(null, "Pull successful");
 					}
 				} catch (GitAPIException e) {
-					System.out.println("+++++++++++++++++++++++++++++++++++++++++++");
 					if (e.getMessage().contains("not authorized")) {
 						JOptionPane.showMessageDialog(null, "Invalid credentials");
-						loadNewCredentials();
+						//						loadNewCredentials();
 					}
 					e.printStackTrace();
 				} catch (RevisionSyntaxException e) {
