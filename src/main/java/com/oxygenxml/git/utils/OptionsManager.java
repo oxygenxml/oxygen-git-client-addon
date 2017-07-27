@@ -160,7 +160,7 @@ public class OptionsManager {
 		String password = cipher.encrypt(userCredentials.getPassword());
 		userCredentials.setPassword(password);
 		options.getUserCredentialsList().getCredentials().add(userCredentials);
-
+		
 		saveRepositoryOptions();
 
 	}
@@ -190,7 +190,19 @@ public class OptionsManager {
 		UserCredentials userCredentials = new UserCredentials(username, password, host);
 		return userCredentials;
 	}
-
+	
+	public boolean isAlwaysSave(){
+		loadRepositoryOptions();
+		
+		return options.isAlwaysSave();
+	}
+	
+	public void setAlwaysSave(boolean alwaysSave){
+		loadRepositoryOptions();
+		options.setAlwaysSave(alwaysSave);
+		
+		saveRepositoryOptions();
+	}
 
 	
 }

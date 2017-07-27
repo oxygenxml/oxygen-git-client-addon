@@ -91,7 +91,7 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 			if (editedButton.getActionListeners().length != 0) {
 				editedButton.removeActionListener(editedButton.getActionListeners()[0]);
 			}
-			StagingResourcesTableModel model = (StagingResourcesTableModel) table.getModel();
+			final StagingResourcesTableModel model = (StagingResourcesTableModel) table.getModel();
 			int convertedRow = table.convertRowIndexToModel(row);
 			final FileStatus file = model.getUnstageFile(convertedRow);
 			if (file.getChangeType() == GitChangeType.CONFLICT) {

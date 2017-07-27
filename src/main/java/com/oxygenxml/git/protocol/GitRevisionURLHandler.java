@@ -92,7 +92,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the input stream
 		 */
 		public InputStream getInputStream() throws IOException {
-			return GitAccess.getInstance().getInputStreamFrom(revision, path);
+			return GitAccess.getInstance().getLoaderFrom(revision, path).openStream();
 		}
 
 		/**

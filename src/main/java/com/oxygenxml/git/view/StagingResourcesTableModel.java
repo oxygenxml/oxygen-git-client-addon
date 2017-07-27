@@ -98,6 +98,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	}
 
 	public void setFilesStatus(List<FileStatus> filesStatus) {
+		System.out.println("In table model" + filesStatus);
 		this.filesStatus = filesStatus;
 		fireTableDataChanged();
 

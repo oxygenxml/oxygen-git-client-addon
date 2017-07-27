@@ -173,7 +173,6 @@ public class UnstagedChangesPanel extends JPanel {
 				}
 
 				public void focusGained(FocusEvent e) {
-					System.out.println("focus gained " + staging);
 					// TODO Update the models only if there are changes.
 
 					// TODO Update just the current view (flat or tree)
@@ -184,26 +183,37 @@ public class UnstagedChangesPanel extends JPanel {
 
 						@Override
 						protected List<FileStatus> doInBackground() throws Exception {
-							System.out.println("started geting files for " + staging);
 							return GitAccess.getInstance().getUnstagedFiles();
 
 						}
 
 						@Override
 						protected void done() {
-							System.out.println("started done for " + staging);
 							List<FileStatus> files = new ArrayList<FileStatus>();
+							List<FileStatus> newFiles = new ArrayList<FileStatus>();
+							StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+							List<FileStatus> filesInModel = model.getUnstagedFiles();
 							try {
 								files = get();
+								System.out.println("Git returned files: " + files);
+								System.out.println("Table model returned files: " + filesInModel);
+								for (FileStatus fileStatus : filesInModel) {
+									if (files.contains(fileStatus)) {
+										newFiles.add(fileStatus);
+										files.remove(fileStatus);
+									}
+								}
+								newFiles.addAll(files);
+								System.out.println("New files: " + newFiles);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							} catch (ExecutionException e) {
 								e.printStackTrace();
 							}
-							System.out.println("fineshed geting fiels for " + staging);
-							updateFlatView(files);
-							createTreeView(OptionsManager.getInstance().getSelectedRepository(), files);
-							System.out.println();
+							if (!newFiles.equals(filesInModel)) {
+								updateFlatView(newFiles);
+								createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+							}
 						}
 
 					}.execute();
@@ -456,7 +466,8 @@ public class UnstagedChangesPanel extends JPanel {
 				int column = filesTable.columnAtPoint(point);
 				if (column == 1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
 					StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-					FileStatus file = model.getUnstageFile(row);
+					int convertedRow = filesTable.convertRowIndexToModel(row);
+					FileStatus file = model.getUnstageFile(convertedRow);
 					Diff diff = new Diff(file);
 					diff.fire();
 				}

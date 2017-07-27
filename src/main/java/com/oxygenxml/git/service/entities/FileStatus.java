@@ -10,12 +10,12 @@ import org.eclipse.jgit.diff.DiffEntry.ChangeType;
  *
  */
 public class FileStatus {
-	
+
 	/**
 	 * A file can be Added, Deleted or Modified
 	 */
 	private GitChangeType changeType;
-	
+
 	/**
 	 * The file location is releative to the selected git repository. For example
 	 * if a a git Repository is in C:/Git and we have a file stored in
@@ -73,10 +73,7 @@ public class FileStatus {
 		if (getClass() != obj.getClass())
 			return false;
 		FileStatus other = (FileStatus) obj;
-		if (changeType == null) {
-			if (other.changeType != null)
-				return false;
-		} else if (!changeType.equals(other.changeType))
+		if (changeType != other.changeType)
 			return false;
 		if (fileLocation == null) {
 			if (other.fileLocation != null)

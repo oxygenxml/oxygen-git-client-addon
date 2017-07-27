@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Options>
     <repositoryLocations>
+        <location>C:\Users\intern2\Documents\test2</location>
         <location>C:\Users\intern2\Documents\Oxygen-Git-Plugin</location>
         <location>C:\Users\intern2\Documents\test</location>
     </repositoryLocations>
     <selectedRepository>C:\Users\intern2\Documents\Oxygen-Git-Plugin</selectedRepository>
     <userCredentials/>
+    <alwaysSave>false</alwaysSave>
 </Options>

@@ -9,6 +9,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
 import com.oxygenxml.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
@@ -44,8 +45,12 @@ public class PushPullController implements Subject<PushPullEvent> {
 			public void run() {
 				try {
 					if (command == Command.PUSH) {
-						gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
-						JOptionPane.showMessageDialog(null, "Push successful");
+						Status status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+						if(Status.OK == status){
+							JOptionPane.showMessageDialog(null, "Push successful");
+						} else if(Status.REJECTED_NONFASTFORWARD == status){
+							JOptionPane.showMessageDialog(null, "Push failed, please get your repository up to date(PULL)");
+						}
 					} else {
 						gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
 						JOptionPane.showMessageDialog(null, "Pull successful");

@@ -18,6 +18,9 @@ public class Options {
 	@XmlElement(name = "userCredentials")
 	private UserCredentialsList userCredentialsList = new UserCredentialsList();
 
+	@XmlElement(name = "alwaysSave")
+	private boolean alwaysSave = false;
+
 	public RepositoryLocations getRepositoryLocations() {
 		return repositoryLocations;
 	}
@@ -42,6 +45,12 @@ public class Options {
 		this.userCredentialsList = userCredentialsList;
 	}
 
+	public boolean isAlwaysSave() {
+		return alwaysSave;
+	}
 
+	public void setAlwaysSave(boolean alwaysSave) {
+		this.alwaysSave = alwaysSave;
+	}
 
 }

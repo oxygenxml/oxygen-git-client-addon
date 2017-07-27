@@ -10,8 +10,11 @@ import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.eclipse.jgit.lib.ObjectLoader;
+
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -59,7 +62,6 @@ public class Diff {
 		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(fileURL,
 				lastCommitedFileURL);
 
-		
 	}
 
 	private void conflictDiff() {
@@ -70,7 +72,7 @@ public class Diff {
 
 			final JFrame diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 					.openDiffFilesApplication(local, remote, base);
-			
+
 			diffFrame.addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentHidden(ComponentEvent e) {
@@ -81,16 +83,34 @@ public class Diff {
 					long time = GitAccess.getInstance().getTimeStamp();
 					Date date2 = new Date(time);
 					System.out.println("last push = " + date2);
-					System.out.println(lastModified/1000);
-					System.out.println(time/1000);
-					if((lastModified / 1000) == (time / 1000)){
-						String[] options = new String[] {"Yes", "No", "Always Yes"};
-				    int response = JOptionPane.showOptionDialog(null, "Message", "Cnnflict Warning",
-				        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-				        null, options, options[0]);
-				    System.out.println(response);
-				    diffFrame.removeComponentListener(this);
+					System.out.println(lastModified / 1000);
+					System.out.println(time / 1000);
+					if ((lastModified / 1000) == (time / 1000)) {
+						if (OptionsManager.getInstance().isAlwaysSave()) {
+							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
+							GitAccess.getInstance().reset();
+						} else {
+							String[] options = new String[] { "Yes", "No", "Always Yes" };
+							int response = JOptionPane.showOptionDialog(null, "Message", "Cnnflict Warning",
+									JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+							if (response == 0) {
+								GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
+								GitAccess.getInstance().reset();
+							} else if (response == 1) {
+
+							} else if (response == 2) {
+
+								OptionsManager.getInstance().setAlwaysSave(true);
+								GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
+								GitAccess.getInstance().reset();
+							}
+						}
+					} else {
+						
+						GitAccess.getInstance().reset();
 					}
+
+					diffFrame.removeComponentListener(this);
 				}
 			});
 		} catch (MalformedURLException e1) {
