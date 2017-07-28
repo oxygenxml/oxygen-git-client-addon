@@ -4,20 +4,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.net.Authenticator;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.MergeCommand;
-import org.eclipse.jgit.api.MergeResult;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CanceledException;
@@ -43,9 +42,9 @@ import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoMergeBaseException;
+import org.eclipse.jgit.errors.NoMergeBaseException.MergeBaseFailureReason;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
-import org.eclipse.jgit.errors.NoMergeBaseException.MergeBaseFailureReason;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Constants;
@@ -54,11 +53,11 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.merge.Merger;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
@@ -69,14 +68,12 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
-import com.oxygenxml.git.WorkspaceAccessPlugin;
+import com.oxygenxml.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import com.oxygenxml.git.view.LoginDialog;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -88,6 +85,10 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  */
 public class GitAccess {
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(GitAccess.class);
 
 	private Git git;
 	private static GitAccess instance;
@@ -252,7 +253,7 @@ public class GitAccess {
 	}
 
 	private AbstractTreeIterator getLastCommitTreeIterator(Repository repository, String branch) throws Exception {
-		Ref head = repository.exactRef(branch);
+		Ref head = repository.findRef(branch);
 
 		if (head.getObjectId() != null) {
 			RevWalk walk = new RevWalk(repository);
@@ -342,16 +343,70 @@ public class GitAccess {
 	 * @throws TransportException
 	 * @throws InvalidRemoteException
 	 */
-	public org.eclipse.jgit.transport.RemoteRefUpdate.Status push(String username, String password)
+	public org.eclipse.jgit.transport.RemoteRefUpdate.Status push(final String username, final String password)
 			throws InvalidRemoteException, TransportException, GitAPIException {
 
-		Iterable<PushResult> call = git.push()
-				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
-		Iterator<PushResult> results = call.iterator();
-		while (results.hasNext()) {
-			PushResult result = results.next();
-			for (RemoteRefUpdate info : result.getRemoteUpdates()) {
-				return info.getStatus();
+		Authenticator oldAuth = null;
+		try {
+			try {
+				Field declaredField = Authenticator.class.getDeclaredField("theAuthenticator");
+				declaredField.setAccessible(true);
+				
+				oldAuth = (Authenticator) declaredField.get(null);
+				
+//				Authenticator.setDefault(new Authenticator() {
+//					int count = 1;
+//					@Override
+//					protected PasswordAuthentication getPasswordAuthentication() {
+//						logger.info("ours       " + getHostName());
+//						logger.info("requesting " + getRequestingHost());
+//						
+//						if (getHostName().equals(getRequestingHost())) {
+//							logger.info("Get credentials " + count);
+//							if (count == 1) {
+//								logger.info("Return " + username);
+//
+//								count++;
+//
+//								return new PasswordAuthentication(username, password.toCharArray());
+//							}
+//							count++;
+//
+//
+//							LoginDialog loginDialog = new LoginDialog(GitAccess.getInstance().getHostName());
+//
+//							UserCredentials userCredentials = loginDialog.getUserCredentials();
+//
+//							String username2 = userCredentials.getUsername();
+//
+//							logger.info("Return " + username2);
+//
+//							String password2 = userCredentials.getPassword();
+//							return new PasswordAuthentication(username2, password2.toCharArray());
+//						} else {
+//							// TODO We could delegate to the default implementation.
+//							return null;
+//						}
+//					}
+//				});
+				
+				Authenticator.setDefault(null);
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+
+			Iterable<PushResult> call = git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+			Iterator<PushResult> results = call.iterator();
+			while (results.hasNext()) {
+				PushResult result = results.next();
+				for (RemoteRefUpdate info : result.getRemoteUpdates()) {
+					return info.getStatus();
+				}
+			}
+
+		} finally {
+			if (oldAuth != null) {
+				Authenticator.setDefault(oldAuth);
 			}
 		}
 		return org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON;

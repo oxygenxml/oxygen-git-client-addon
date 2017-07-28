@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.event;
 
 import java.io.IOException;
-import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -16,11 +15,10 @@ import com.oxygenxml.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.LoginDialog;
-import com.oxygenxml.git.view.StagingPanel;
-
-import de.schlichtherle.io.util.SynchronizedOutputStream;
 
 public class PushPullController implements Subject<PushPullEvent> {
+	
+	private static Logger logger = Logger.getLogger(PushPullController.class);
 
 	private Observer<PushPullEvent> observer;
 	private GitAccess gitAccess;
@@ -30,8 +28,8 @@ public class PushPullController implements Subject<PushPullEvent> {
 		this.gitAccess = gitAccess;
 	}
 
-	public void loadNewCredentials() {
-		new LoginDialog(this, gitAccess.getHostName());
+	public UserCredentials loadNewCredentials() {
+		return new LoginDialog(gitAccess.getHostName()).getUserCredentials();
 	}
 
 	public void updateCredentials() {
@@ -40,16 +38,19 @@ public class PushPullController implements Subject<PushPullEvent> {
 
 	public void execute(final Command command) {
 		this.command = command;
-		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
-		System.out.println(userCredentials);
+		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(
+				gitAccess.getHostName());
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED);
 		notifyObservers(pushPullEvent);
 		new Thread(new Runnable() {
 
 			public void run() {
 				try {
+					
 					if (command == Command.PUSH) {
-						Status status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+						Status status = gitAccess.push(
+										userCredentials.getUsername(), 
+										userCredentials.getPassword());
 
 						if (Status.OK == status) {
 							JOptionPane.showMessageDialog(null, "Push successful");
@@ -61,9 +62,14 @@ public class PushPullController implements Subject<PushPullEvent> {
 						JOptionPane.showMessageDialog(null, "Pull successful");
 					}
 				} catch (GitAPIException e) {
-					if (e.getMessage().contains("not authorized")) {
+					if (e.getMessage().contains("not authorized") 
+							|| e.getMessage().contains("not permitted")) {
+						// TODO Specify the used user name.
 						JOptionPane.showMessageDialog(null, "Invalid credentials");
-						loadNewCredentials();
+						UserCredentials loadNewCredentials = loadNewCredentials();
+						if (loadNewCredentials != null) {
+							execute(command);
+						}
 					}
 					e.printStackTrace();
 				} catch (RevisionSyntaxException e) {

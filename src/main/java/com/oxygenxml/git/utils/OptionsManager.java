@@ -1,6 +1,7 @@
 package com.oxygenxml.git.utils;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -159,7 +160,17 @@ public class OptionsManager {
 		Cipher cipher = new Cipher();
 		String password = cipher.encrypt(userCredentials.getPassword());
 		userCredentials.setPassword(password);
-		options.getUserCredentialsList().getCredentials().add(userCredentials);
+		List<UserCredentials> credentials = options.getUserCredentialsList().getCredentials();
+		for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
+			UserCredentials alreadyHere = (UserCredentials) iterator.next();
+			if (alreadyHere.getHost().equals(userCredentials.getHost())) {
+				//Replace.
+				iterator.remove();
+				break;
+			}
+		}
+		
+		credentials.add(userCredentials);
 		
 		saveRepositoryOptions();
 
