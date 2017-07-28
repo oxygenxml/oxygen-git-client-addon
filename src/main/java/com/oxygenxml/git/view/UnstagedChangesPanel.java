@@ -142,9 +142,6 @@ public class UnstagedChangesPanel extends JPanel {
 			TreeFormatter.buildTreeFromString(treeModel, unstageFile.getFileLocation());
 		}
 
-		// TODO Restoring selection between views should be enough.
-		// TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
-
 		stageController.registerObserver(treeModel);
 		stageController.registerSubject(treeModel);
 	}
