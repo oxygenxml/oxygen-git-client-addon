@@ -1,21 +1,15 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import org.eclipse.jgit.lib.ObjectLoader;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -85,16 +79,17 @@ public class Diff {
 
 					if (diffClosedTimeStamp == diffStartedTimeStamp) {
 
-						String[] options = new String[] { "Yes", "No" };
-						int response = JOptionPane.showOptionDialog(
-								(Component) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
-								"Conflict Resolved", "Cnnflict Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-								options, options[0]);
+						String[] options = new String[] { "   Yes   ", "   No   " };
+						int[] optonsId = new int[] { 0, 1 };
+						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+								.showConfirmDialog("Cnnflict Warning", "Conflict Resolved?", options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
+							GitAccess.getInstance().merge();
 							GitAccess.getInstance().reset();
 						}
 					} else {
+						GitAccess.getInstance().merge();
 						GitAccess.getInstance().reset();
 					}
 					diffFrame.removeComponentListener(this);

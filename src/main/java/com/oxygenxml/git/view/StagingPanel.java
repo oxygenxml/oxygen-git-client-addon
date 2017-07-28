@@ -9,6 +9,7 @@ import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.jidesoft.swing.JideSplitPane;
@@ -86,6 +87,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		workingCopySelectionPanel.createGUI();
 
 		registerSubject(pushPullController);
+		
+		
 	}
 
 	private void addSplitPanel(GridBagConstraints gbc, Component splitPane) {

@@ -51,7 +51,6 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 */
 		protected GitRevisionConnection(URL url) throws IOException {
 			super(url);
-			// TODO Allow output only for LOCAL.
 			setDoOutput(true);
 			GitAccess gitAccess = GitAccess.getInstance();
 

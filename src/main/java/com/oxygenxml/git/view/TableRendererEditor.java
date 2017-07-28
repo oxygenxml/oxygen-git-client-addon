@@ -10,7 +10,6 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
 import javax.swing.JTable;
-import javax.swing.UIManager;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -95,7 +94,7 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 			int convertedRow = table.convertRowIndexToModel(row);
 			final FileStatus file = model.getUnstageFile(convertedRow);
 			if (file.getChangeType() == GitChangeType.CONFLICT) {
-				editedButton.setText("Rezolve");
+				editedButton.setText("Resolve");
 				editedButton.addActionListener(new ActionListener() {
 					
 					public void actionPerformed(ActionEvent e) {
@@ -140,7 +139,7 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 		int convertedRow = table.convertRowIndexToModel(row);
 		FileStatus file = model.getUnstageFile(convertedRow);
 		if (file.getChangeType() == GitChangeType.CONFLICT) {
-			button.setText("Rezolve");
+			button.setText("Resolve");
 			return button;
 		} else {
 

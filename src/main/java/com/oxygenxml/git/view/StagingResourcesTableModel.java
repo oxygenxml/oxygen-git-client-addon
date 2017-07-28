@@ -12,7 +12,6 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
 
@@ -36,6 +35,8 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	 */
 	private boolean forStaging;
 
+	
+	
 	public StagingResourcesTableModel(boolean forStaging) {
 		this.forStaging = forStaging;
 	}
@@ -98,7 +99,6 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	}
 
 	public void setFilesStatus(List<FileStatus> filesStatus) {
-		System.out.println("In table model" + filesStatus);
 		this.filesStatus = filesStatus;
 		fireTableDataChanged();
 

@@ -30,7 +30,6 @@ import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import com.oxygenxml.git.constants.Constants;
@@ -41,23 +40,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.StageController;
-import com.sun.xml.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
-/**
- * TODO IMprovements: 0. Diff (on commit (local <-> base) + on pull-conflicts
- * (local <-> remote )) pluginWorkspaceAccess.openDiffFilesApplication(leftURL,
- * rightURL, ancestorURL) 1. addon.xml description 2. upload addon. 3. Table
- * Renderers. Present the file name followed by the path.
- * 
- * 
- * 1. More icons: browser, switch to TRee/Table view 2. SPlit pane so we can
- * resize the staging/unstaging/commit areas. 3. TOoltips: on a file it could
- * present the status and the full path. 4. Use OXygen's options support.
- * 
- * 
- * 
- * 
- */
 public class UnstagedChangesPanel extends JPanel {
 
 	private static final int FLAT_VIEW = 1;
@@ -164,60 +147,53 @@ public class UnstagedChangesPanel extends JPanel {
 		addStageSelectedButtonListener();
 		addStageAllButtonListener();
 
-		if (!staging) {
-			filesTable.addFocusListener(new FocusListener() {
-				public void focusLost(FocusEvent e) {
-				}
+		filesTable.addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent e) {
+			}
 
-				public void focusGained(FocusEvent e) {
-					// TODO Update the models only if there are changes.
+			public void focusGained(FocusEvent e) {
+				new SwingWorker<List<FileStatus>, Integer>() {
 
-					// TODO Update just the current view (flat or tree)
-
-					// TODO If the GIT probing takes long we could do it on thread.
-
-					new SwingWorker<List<FileStatus>, Integer>() {
-
-						@Override
-						protected List<FileStatus> doInBackground() throws Exception {
+					@Override
+					protected List<FileStatus> doInBackground() throws Exception {
+						if (!staging) {
 							return GitAccess.getInstance().getUnstagedFiles();
-
+						} else {
+							return GitAccess.getInstance().getStagedFile();
 						}
 
-						@Override
-						protected void done() {
-							List<FileStatus> files = new ArrayList<FileStatus>();
-							List<FileStatus> newFiles = new ArrayList<FileStatus>();
-							StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-							List<FileStatus> filesInModel = model.getUnstagedFiles();
-							try {
-								files = get();
-								System.out.println("Git returned files: " + files);
-								System.out.println("Table model returned files: " + filesInModel);
-								for (FileStatus fileStatus : filesInModel) {
-									if (files.contains(fileStatus)) {
-										newFiles.add(fileStatus);
-										files.remove(fileStatus);
-									}
+					}
+
+					@Override
+					protected void done() {
+						List<FileStatus> files = new ArrayList<FileStatus>();
+						List<FileStatus> newFiles = new ArrayList<FileStatus>();
+						StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+						List<FileStatus> filesInModel = model.getUnstagedFiles();
+						try {
+							files = get();
+							for (FileStatus fileStatus : filesInModel) {
+								if (files.contains(fileStatus)) {
+									newFiles.add(fileStatus);
+									files.remove(fileStatus);
 								}
-								newFiles.addAll(files);
-								System.out.println("New files: " + newFiles);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							} catch (ExecutionException e) {
-								e.printStackTrace();
 							}
-							if (!newFiles.equals(filesInModel)) {
-								updateFlatView(newFiles);
-								createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
-							}
+							newFiles.addAll(files);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							e.printStackTrace();
 						}
+						if (!newFiles.equals(filesInModel)) {
+							updateFlatView(newFiles);
+							createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+						}
+					}
 
-					}.execute();
+				}.execute();
 
-				}
-			});
-		}
+			}
+		});
 	}
 
 	private void addStageAllButtonListener() {

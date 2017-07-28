@@ -34,10 +34,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 					  //The view ID defined in the "plugin.xml"
 					  "GitStagingView".equals(viewInfo.getViewID())) {
 
-//			  	Application application = new Application();
-//				  application.start();
-				  
-				  // TODO THE StagingPanel is enough. NO need to create the application.
 				  viewInfo.setComponent(new StagingPanel());
 				//  viewInfo.setComponent(new JScrollPane(customMessagesArea));
 				  //viewInfo.setTitle("Custom Messages");

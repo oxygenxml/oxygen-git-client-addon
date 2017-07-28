@@ -1,10 +1,8 @@
 package com.oxygenxml.git.view.event;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
 
 /**
  * Event created when a file is changing its state, from staged to unstaged or

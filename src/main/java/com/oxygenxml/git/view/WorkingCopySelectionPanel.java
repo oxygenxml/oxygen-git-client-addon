@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -9,6 +10,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -19,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
@@ -27,6 +30,8 @@ import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.OptionsManager;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class WorkingCopySelectionPanel extends JPanel {
 
@@ -81,28 +86,46 @@ public class WorkingCopySelectionPanel extends JPanel {
 					// get and save the selected Option so that at restart the same
 					// repository will be selected
 					String path = (String) workingCopySelector.getSelectedItem();
-					OptionsManager.getInstance().saveSelectedRepository(path);
+					
 
 					try {
-						gitAccess.setRepository(path);
 						
+						gitAccess.setRepository(path);
 						List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 						List<FileStatus> stagedFiles = gitAccess.getStagedFile();
-						
+						OptionsManager.getInstance().saveSelectedRepository(path);
+
 						// generate content for FLAT_VIEW
 						parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
 						parent.getStagedChangesPanel().updateFlatView(stagedFiles);
-						
+
 						// generate content for TREE_VIEW
 						parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
 						parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
 					} catch (RepositoryNotFoundException ex) {
-						// TODO Handle the exception. Present it to the user.
-						// 2. Remove it from the combo.
+						OptionsManager.getInstance().removeSelectedRepository(path);
+						workingCopySelector.setSelectedItem(null);
+						workingCopySelector.removeItem(path);
+					
+						// clear content from FLAT_VIEW
+						parent.getUnstagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
+						parent.getStagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
+
+						// clear content from TREE_VIEW
+						parent.getUnstagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
+						parent.getStagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
+						SwingUtilities.invokeLater(new Runnable() {
+							
+							public void run() {
+								JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+										"The selected repository was not found");
+								
+							}
+						});
 					} catch (IOException e1) {
-						// TODO Handle the exception. Present it to the user.
-						
 						e1.printStackTrace();
+						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								"Could not load the repository");
 					}
 				}
 			}
@@ -133,7 +156,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 						workingCopySelector.setSelectedItem(directoryPath);
 					} else {
-						JOptionPane.showMessageDialog(null, "Please select a git directory");
+						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								"Please select a git directory");
 					}
 
 				}
@@ -184,21 +208,24 @@ public class WorkingCopySelectionPanel extends JPanel {
 		}
 		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
 		try {
-		workingCopySelector.setSelectedItem(repositoryPath);
-		if (!repositoryPath.equals("")) {
-			gitAccess.setRepository(repositoryPath);
-			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-			List<FileStatus> stagedFiles = gitAccess.getStagedFile();
-			StagingPanel parent = (StagingPanel) this.getParent();
-			parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
-			parent.getStagedChangesPanel().updateFlatView(stagedFiles);
-			parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
-			parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
-		}
+			workingCopySelector.setSelectedItem(repositoryPath);
+			if (!repositoryPath.equals("") ) {
+				System.out.println(repositoryPath);
+				gitAccess.setRepository(repositoryPath);
+				List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+				List<FileStatus> stagedFiles = gitAccess.getStagedFile();
+				StagingPanel parent = (StagingPanel) this.getParent();
+				parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
+				parent.getStagedChangesPanel().updateFlatView(stagedFiles);
+				parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
+				parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
+			}
 		} catch (IOException e) {
 			workingCopySelector.setSelectedItem(null);
-			
-			// TODO Present the error to the user.
+			OptionsManager.getInstance().saveSelectedRepository("");
+
+			JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+					"Last selected repository not found. It may have been deleted");
 		}
 
 		this.add(workingCopySelector, gbc);
@@ -213,7 +240,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		browseButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FILE_CHOOSER_ICON)));
+		browseButton = new JButton(
+				new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FILE_CHOOSER_ICON)));
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);
 		browswtoolbar.setFloatable(false);

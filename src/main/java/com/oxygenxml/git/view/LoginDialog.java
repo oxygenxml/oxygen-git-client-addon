@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -14,6 +15,7 @@ import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.git.utils.OptionsManager;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 public class LoginDialog extends OKCancelDialog {
@@ -23,7 +25,7 @@ public class LoginDialog extends OKCancelDialog {
 	private UserCredentials userCredentials;
 	
 	public LoginDialog(String host) {
-		super(null, "GitAccount", true);
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "GitAccount", true);
 		this.host = host;
 		createGUI();
 		

@@ -28,15 +28,7 @@ public class OptionsManager {
 	 */
 	private static Logger logger = Logger.getLogger(OptionsManager.class);
 	
-	/**
-	 * TODO Set it from the outside.
-	 * 
-	 * Why not store everything into one file?
-	 */
 	private static final String REPOSITORY_FILENAME = "Options.xml";
-			/*new File(
-					WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir(), 
-					"Options.xml").getAbsolutePath();*/
 
 	/**
 	 * All Repositories that were selected by the user with their options
@@ -147,6 +139,14 @@ public class OptionsManager {
 
 		return options.getSelectedRepository();
 	}
+	
+	public void removeSelectedRepository(String path) {
+		loadRepositoryOptions();
+		options.getRepositoryLocations().getLocations().remove(path);
+
+		saveRepositoryOptions();
+	}
+
 
 	/**
 	 * Saves the user credentials for git push and pull
@@ -215,5 +215,6 @@ public class OptionsManager {
 		saveRepositoryOptions();
 	}
 
+	
 	
 }

@@ -1,7 +1,9 @@
 package com.oxygenxml.git.view.event;
 
+import java.awt.Component;
 import java.io.IOException;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -13,11 +15,17 @@ import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
 import com.oxygenxml.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.PullResponse;
+import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.LoginDialog;
+import com.oxygenxml.git.view.PullDialog;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class PushPullController implements Subject<PushPullEvent> {
-	
+
 	private static Logger logger = Logger.getLogger(PushPullController.class);
 
 	private Observer<PushPullEvent> observer;
@@ -38,34 +46,43 @@ public class PushPullController implements Subject<PushPullEvent> {
 
 	public void execute(final Command command) {
 		this.command = command;
-		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(
-				gitAccess.getHostName());
+		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED);
 		notifyObservers(pushPullEvent);
 		new Thread(new Runnable() {
 
 			public void run() {
 				try {
-					
+
 					if (command == Command.PUSH) {
-						Status status = gitAccess.push(
-										userCredentials.getUsername(), 
-										userCredentials.getPassword());
+						Status status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 
 						if (Status.OK == status) {
-							JOptionPane.showMessageDialog(null, "Push successful");
+							((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+							.showInformationMessage("Push successful");
 						} else if (Status.REJECTED_NONFASTFORWARD == status) {
-							JOptionPane.showMessageDialog(null, "Push failed, please get your repository up to date(PULL)");
+							((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+							.showInformationMessage("Push failed, please get your repository up to date(PULL)");
 						}
 					} else {
-						gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
-						JOptionPane.showMessageDialog(null, "Pull successful");
+						PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
+						if (PullStatus.OK == response.getStatus()) {
+							JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+									"Pull successful");
+						} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
+							((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+									.showInformationMessage("Cannot push with uncommited changes");
+
+						} else if (PullStatus.CONFLICTS == response.getStatus()) {
+							new PullDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "Information",
+									true, response.getConflictingFiles());
+
+						}
 					}
 				} catch (GitAPIException e) {
-					if (e.getMessage().contains("not authorized") 
-							|| e.getMessage().contains("not permitted")) {
-						// TODO Specify the used user name.
-						JOptionPane.showMessageDialog(null, "Invalid credentials");
+					if (e.getMessage().contains("not authorized") || e.getMessage().contains("not permitted")) {
+						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								"Invalid credentials for " + userCredentials.getUsername());
 						UserCredentials loadNewCredentials = loadNewCredentials();
 						if (loadNewCredentials != null) {
 							execute(command);

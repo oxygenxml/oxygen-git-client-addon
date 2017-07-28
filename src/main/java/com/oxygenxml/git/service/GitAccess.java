@@ -11,23 +11,30 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.MergeResult;
+import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
+import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
+import org.eclipse.jgit.api.errors.InvalidMergeHeadsException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.NotMergedException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
@@ -53,6 +60,7 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -89,7 +97,6 @@ public class GitAccess {
 
 	private Git git;
 	private static GitAccess instance;
-	private long timestamp;
 
 	private GitAccess() {
 
@@ -332,51 +339,54 @@ public class GitAccess {
 			try {
 				Field declaredField = Authenticator.class.getDeclaredField("theAuthenticator");
 				declaredField.setAccessible(true);
-				
+
 				oldAuth = (Authenticator) declaredField.get(null);
-				
-//				Authenticator.setDefault(new Authenticator() {
-//					int count = 1;
-//					@Override
-//					protected PasswordAuthentication getPasswordAuthentication() {
-//						logger.info("ours       " + getHostName());
-//						logger.info("requesting " + getRequestingHost());
-//						
-//						if (getHostName().equals(getRequestingHost())) {
-//							logger.info("Get credentials " + count);
-//							if (count == 1) {
-//								logger.info("Return " + username);
-//
-//								count++;
-//
-//								return new PasswordAuthentication(username, password.toCharArray());
-//							}
-//							count++;
-//
-//
-//							LoginDialog loginDialog = new LoginDialog(GitAccess.getInstance().getHostName());
-//
-//							UserCredentials userCredentials = loginDialog.getUserCredentials();
-//
-//							String username2 = userCredentials.getUsername();
-//
-//							logger.info("Return " + username2);
-//
-//							String password2 = userCredentials.getPassword();
-//							return new PasswordAuthentication(username2, password2.toCharArray());
-//						} else {
-//							// TODO We could delegate to the default implementation.
-//							return null;
-//						}
-//					}
-//				});
-				
+
+				// Authenticator.setDefault(new Authenticator() {
+				// int count = 1;
+				// @Override
+				// protected PasswordAuthentication getPasswordAuthentication() {
+				// logger.info("ours " + getHostName());
+				// logger.info("requesting " + getRequestingHost());
+				//
+				// if (getHostName().equals(getRequestingHost())) {
+				// logger.info("Get credentials " + count);
+				// if (count == 1) {
+				// logger.info("Return " + username);
+				//
+				// count++;
+				//
+				// return new PasswordAuthentication(username, password.toCharArray());
+				// }
+				// count++;
+				//
+				//
+				// LoginDialog loginDialog = new
+				// LoginDialog(GitAccess.getInstance().getHostName());
+				//
+				// UserCredentials userCredentials = loginDialog.getUserCredentials();
+				//
+				// String username2 = userCredentials.getUsername();
+				//
+				// logger.info("Return " + username2);
+				//
+				// String password2 = userCredentials.getPassword();
+				// return new PasswordAuthentication(username2,
+				// password2.toCharArray());
+				// } else {
+				// // TODO We could delegate to the default implementation.
+				// return null;
+				// }
+				// }
+				// });
+
 				Authenticator.setDefault(null);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 
-			Iterable<PushResult> call = git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+			Iterable<PushResult> call = git.push()
+					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 			Iterator<PushResult> results = call.iterator();
 			while (results.hasNext()) {
 				PushResult result = results.next();
@@ -417,13 +427,30 @@ public class GitAccess {
 	 * @throws AmbiguousObjectException
 	 * @throws RevisionSyntaxException
 	 */
-	public void pull(String username, String password) throws WrongRepositoryStateException,
+	public PullResponse pull(String username, String password) throws WrongRepositoryStateException,
 			InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException,
 			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException,
 			RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
 
-		git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
-		timestamp = System.currentTimeMillis();
+		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
+		if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0) {
+			response.setStatus(PullStatus.UNCOMITED_FILES);
+		} else {
+			git.reset().call();
+			PullResult call = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+					.call();
+			MergeResult mergeResult = call.getMergeResult();
+			if (mergeResult != null) {
+				if (mergeResult.getConflicts() != null) {
+					Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
+					if (conflictingFiles != null) {
+						response.setConflictingFiles(conflictingFiles);
+						response.setStatus(PullStatus.CONFLICTS);
+					}
+				}
+			}
+		}
+		return response;
 
 	}
 
@@ -697,10 +724,6 @@ public class GitAccess {
 		}
 	}
 
-	public long getTimeStamp() {
-		return timestamp;
-	}
-
 	public void restoreLastCommit(String fileLocation) {
 		File file = new File(OptionsManager.getInstance().getSelectedRepository() + "/" + fileLocation);
 		OutputStream out = null;
@@ -719,6 +742,28 @@ public class GitAccess {
 		} catch (IncorrectObjectTypeException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void merge() {
+		try {
+
+			ObjectId commit = getRemoteCommit();
+			git.merge().setStrategy(MergeStrategy.RECURSIVE).include(commit).call();
+		} catch (NoHeadException e) {
+			e.printStackTrace();
+		} catch (ConcurrentRefUpdateException e) {
+			e.printStackTrace();
+		} catch (CheckoutConflictException e) {
+			e.printStackTrace();
+		} catch (InvalidMergeHeadsException e) {
+			e.printStackTrace();
+		} catch (WrongRepositoryStateException e) {
+			e.printStackTrace();
+		} catch (NoMessageException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
 	}

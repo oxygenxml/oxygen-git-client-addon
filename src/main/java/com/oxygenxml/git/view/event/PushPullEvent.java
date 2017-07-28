@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.event;
 
-import java.util.Set;
 
 /**
  * Event created when an the push or the pull action is initiated

@@ -2,37 +2,22 @@ package com.oxygenxml.git.utils;
 
 import org.apache.commons.codec.binary.Base64;
 
-/**
- * TODO Use 
- * 
- * pluginWorkspaceAccess.getUtilAccess().encrypt(toEncrypt)
- */
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 public class Cipher {
-	private static final String KEY = "some-secret-key-of-your-choice";
 
 	public String encrypt(final String text) {
-		return Base64.encodeBase64String(this.xor(text.getBytes()));
+		return ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess().encrypt(text);
 	}
 
 	public String decrypt(final String hash) {
-		try {
-			return new String(this.xor(Base64.decodeBase64(hash.getBytes())), "UTF-8");
-		} catch (java.io.UnsupportedEncodingException ex) {
-			throw new IllegalStateException(ex);
+		String decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess().decrypt(hash);
+		if(decryptedPassword == null){
+			return "";
+		} else {
+			return decryptedPassword;
 		}
 	}
 
-	private byte[] xor(final byte[] input) {
-		final byte[] output = new byte[input.length];
-		final byte[] secret = this.KEY.getBytes();
-		int spos = 0;
-		for (int pos = 0; pos < input.length; ++pos) {
-			output[pos] = (byte) (input[pos] ^ secret[spos]);
-			spos += 1;
-			if (spos >= secret.length) {
-				spos = 0;
-			}
-		}
-		return output;
-	}
 }

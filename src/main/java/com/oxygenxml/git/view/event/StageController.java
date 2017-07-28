@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.entities.FileStatus;
 
 /**
  * Delegates the changing event to all other observers and makes sure that all
