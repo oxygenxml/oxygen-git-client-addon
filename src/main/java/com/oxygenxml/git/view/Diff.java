@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -70,46 +71,32 @@ public class Diff {
 			URL remote = new URL("git://Remote/" + file.getFileLocation());
 			URL base = new URL("git://Base/" + file.getFileLocation());
 
+			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+			final File localCopy = new File(selectedRepository, file.getFileLocation());
+			final long diffStartedTimeStamp = localCopy.lastModified();
+
 			final JFrame diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 					.openDiffFilesApplication(local, remote, base);
 
 			diffFrame.addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentHidden(ComponentEvent e) {
-					File f = new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation());
-					long lastModified = f.lastModified();
-					Date date = new Date(lastModified);
-					System.out.println("last modified = " + date);
-					long time = GitAccess.getInstance().getTimeStamp();
-					Date date2 = new Date(time);
-					System.out.println("last push = " + date2);
-					System.out.println(lastModified / 1000);
-					System.out.println(time / 1000);
-					if ((lastModified / 1000) == (time / 1000)) {
-						if (OptionsManager.getInstance().isAlwaysSave()) {
+					long diffClosedTimeStamp = localCopy.lastModified();
+
+					if (diffClosedTimeStamp == diffStartedTimeStamp) {
+
+						String[] options = new String[] { "Yes", "No" };
+						int response = JOptionPane.showOptionDialog(
+								(Component) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
+								"Conflict Resolved", "Cnnflict Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+								options, options[0]);
+						if (response == 0) {
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
 							GitAccess.getInstance().reset();
-						} else {
-							String[] options = new String[] { "Yes", "No", "Always Yes" };
-							int response = JOptionPane.showOptionDialog(null, "Message", "Cnnflict Warning",
-									JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-							if (response == 0) {
-								GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
-								GitAccess.getInstance().reset();
-							} else if (response == 1) {
-
-							} else if (response == 2) {
-
-								OptionsManager.getInstance().setAlwaysSave(true);
-								GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
-								GitAccess.getInstance().reset();
-							}
 						}
 					} else {
-						
 						GitAccess.getInstance().reset();
 					}
-
 					diffFrame.removeComponentListener(this);
 				}
 			});

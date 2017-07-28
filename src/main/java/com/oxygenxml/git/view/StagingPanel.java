@@ -145,6 +145,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			toolbarPanel.getPushButton().setEnabled(true);
 			toolbarPanel.getPullButton().setEnabled(true);
 			commitPanel.getCommitButton().setEnabled(true);
+			unstagedChangesPanel.updateFlatView(GitAccess.getInstance().getUnstagedFiles());
+			unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), GitAccess.getInstance().getUnstagedFiles());
 		}
 	}
 
