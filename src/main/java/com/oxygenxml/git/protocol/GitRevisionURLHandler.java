@@ -105,7 +105,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				URL fileContent = GitAccess.getInstance().getFileContent(path);
 				return fileContent.openConnection().getOutputStream();
 			}
-			return null;
+			throw new IOException("Writing is permitted only in the local file.");
 		}
 
 		public void connect() throws IOException {

@@ -8,9 +8,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,6 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
@@ -81,17 +83,27 @@ public class WorkingCopySelectionPanel extends JPanel {
 					String path = (String) workingCopySelector.getSelectedItem();
 					OptionsManager.getInstance().saveSelectedRepository(path);
 
-					gitAccess.setRepository(path);
-					List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-					List<FileStatus> stagedFiles = gitAccess.getStagedFile();
-
-					// generate content for FLAT_VIEW
-					parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
-					parent.getStagedChangesPanel().updateFlatView(stagedFiles);
-
-					// generate content for TREE_VIEW
-					parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
-					parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
+					try {
+						gitAccess.setRepository(path);
+						
+						List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+						List<FileStatus> stagedFiles = gitAccess.getStagedFile();
+						
+						// generate content for FLAT_VIEW
+						parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
+						parent.getStagedChangesPanel().updateFlatView(stagedFiles);
+						
+						// generate content for TREE_VIEW
+						parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
+						parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
+					} catch (RepositoryNotFoundException ex) {
+						// TODO Handle the exception. Present it to the user.
+						// 2. Remove it from the combo.
+					} catch (IOException e1) {
+						// TODO Handle the exception. Present it to the user.
+						
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -171,6 +183,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 			workingCopySelector.addItem(repositoryEntry);
 		}
 		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
+		try {
 		workingCopySelector.setSelectedItem(repositoryPath);
 		if (!repositoryPath.equals("")) {
 			gitAccess.setRepository(repositoryPath);
@@ -181,6 +194,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 			parent.getStagedChangesPanel().updateFlatView(stagedFiles);
 			parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
 			parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
+		}
+		} catch (IOException e) {
+			workingCopySelector.setSelectedItem(null);
+			
+			// TODO Present the error to the user.
 		}
 
 		this.add(workingCopySelector, gbc);

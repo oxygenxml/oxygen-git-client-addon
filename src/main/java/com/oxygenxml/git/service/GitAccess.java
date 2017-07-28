@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -44,6 +43,7 @@ import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoMergeBaseException;
 import org.eclipse.jgit.errors.NoMergeBaseException.MergeBaseFailureReason;
 import org.eclipse.jgit.errors.NoWorkTreeException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.Config;
@@ -57,7 +57,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
-import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
@@ -68,12 +67,10 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
-import com.oxygenxml.git.jaxb.entities.UserCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
-import com.oxygenxml.git.view.LoginDialog;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -111,24 +108,8 @@ public class GitAccess {
 	 * @param path
 	 *          - A string that specifies the git Repository folder
 	 */
-	public void setRepository(String path) {
-
-		try {
-			git = Git.open(new File(path + "/.git"));
-			Config config = git.getRepository().getConfig();
-			config.setString("diff", null, "tool", "oxygendiff");
-			config.setString("merge", null, "tool", "oxygendiff");
-			config.setString("difftool", "oxygendiff", "cmd",
-					"'[pathToOxygenInstallDir]/diffFiles.exe' -ext $REMOTE $LOCAL $LOCAL");
-			config.setString("mergetool", "oxygendiff", "cmd",
-					"'[pathToOxygenInstallDir]/diffFiles.exe' -ext $LOCAL $REMOTE $BASE $MERGED");
-			config.setString("mergetool", "oxygendiff", "trustExitCode", "true");
-			config.setString("difftool", null, "prompt", "false");
-			git.getRepository().getConfig().save();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
+		git = Git.open(new File(path + "/.git"));
 	}
 
 	/**
