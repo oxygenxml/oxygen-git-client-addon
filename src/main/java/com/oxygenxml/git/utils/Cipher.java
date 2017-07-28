@@ -2,6 +2,11 @@ package com.oxygenxml.git.utils;
 
 import org.apache.commons.codec.binary.Base64;
 
+/**
+ * TODO Use 
+ * 
+ * pluginWorkspaceAccess.getUtilAccess().encrypt(toEncrypt)
+ */
 public class Cipher {
 	private static final String KEY = "some-secret-key-of-your-choice";
 
