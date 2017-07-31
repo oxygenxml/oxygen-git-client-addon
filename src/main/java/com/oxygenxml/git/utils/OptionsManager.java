@@ -16,10 +16,13 @@ import com.oxygenxml.git.WorkspaceAccessPlugin;
 import com.oxygenxml.git.jaxb.entities.Options;
 import com.oxygenxml.git.jaxb.entities.UserCredentials;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 /**
  * Used to save and load different user options
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 public class OptionsManager {
@@ -27,7 +30,7 @@ public class OptionsManager {
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(OptionsManager.class);
-	
+
 	private static final String REPOSITORY_FILENAME = "Options.xml";
 
 	/**
@@ -36,10 +39,15 @@ public class OptionsManager {
 	private Options options = null;
 
 	/**
-	 * Singletone instance.
+	 * Singleton instance.
 	 */
 	private static OptionsManager instance;
 
+	/**
+	 * Gets the singleton instance
+	 * 
+	 * @return singleton instance
+	 */
 	public static OptionsManager getInstance() {
 		if (instance == null) {
 			instance = new OptionsManager();
@@ -54,20 +62,20 @@ public class OptionsManager {
 	private void loadRepositoryOptions() {
 		if (options == null) {
 			options = new Options();
-				try {
-					JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
-					Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-					File optionsFile = getOptionsFile();
-					if (optionsFile.exists()) {
-						options = (Options) jaxbUnmarshaller.unmarshal(optionsFile);
-					} else {
-						logger.warn("Options file doesn't exist:" + optionsFile.getAbsolutePath());
-					}
-				} catch (JAXBException e) {
-					logger.warn("Options not loaded: " + e,  e);
+			try {
+				JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
+				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+				File optionsFile = getOptionsFile();
+				if (optionsFile.exists()) {
+					options = (Options) jaxbUnmarshaller.unmarshal(optionsFile);
+				} else {
+					logger.warn("Options file doesn't exist:" + optionsFile.getAbsolutePath());
 				}
-
+			} catch (JAXBException e) {
+				logger.warn("Options not loaded: " + e, e);
 			}
+
+		}
 	}
 
 	private File getOptionsFile() {
@@ -139,14 +147,13 @@ public class OptionsManager {
 
 		return options.getSelectedRepository();
 	}
-	
+
 	public void removeSelectedRepository(String path) {
 		loadRepositoryOptions();
 		options.getRepositoryLocations().getLocations().remove(path);
 
 		saveRepositoryOptions();
 	}
-
 
 	/**
 	 * Saves the user credentials for git push and pull
@@ -157,21 +164,21 @@ public class OptionsManager {
 	public void saveGitCredentials(UserCredentials userCredentials) {
 		loadRepositoryOptions();
 
-		Cipher cipher = new Cipher();
-		String password = cipher.encrypt(userCredentials.getPassword());
-		userCredentials.setPassword(password);
+		String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess()
+				.encrypt(userCredentials.getPassword());
+		userCredentials.setPassword(encryptedPassword);
 		List<UserCredentials> credentials = options.getUserCredentialsList().getCredentials();
 		for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
 			UserCredentials alreadyHere = (UserCredentials) iterator.next();
 			if (alreadyHere.getHost().equals(userCredentials.getHost())) {
-				//Replace.
+				// Replace.
 				iterator.remove();
 				break;
 			}
 		}
-		
+
 		credentials.add(userCredentials);
-		
+
 		saveRepositoryOptions();
 
 	}
@@ -195,26 +202,13 @@ public class OptionsManager {
 			}
 		}
 
-		Cipher cipher = new Cipher();
-		password = cipher.decrypt(password);
+		String decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess().decrypt(password);
+		if(decryptedPassword == null){
+			decryptedPassword = "";
+		}
 
-		UserCredentials userCredentials = new UserCredentials(username, password, host);
+		UserCredentials userCredentials = new UserCredentials(username, decryptedPassword, host);
 		return userCredentials;
 	}
-	
-	public boolean isAlwaysSave(){
-		loadRepositoryOptions();
-		
-		return options.isAlwaysSave();
-	}
-	
-	public void setAlwaysSave(boolean alwaysSave){
-		loadRepositoryOptions();
-		options.setAlwaysSave(alwaysSave);
-		
-		saveRepositoryOptions();
-	}
 
-	
-	
 }

@@ -4,7 +4,7 @@ package com.oxygenxml.git.view.event;
 /**
  * Acts as an observer and listens for changes
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 public interface Observer<T> {

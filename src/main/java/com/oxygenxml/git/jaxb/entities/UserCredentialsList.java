@@ -8,6 +8,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Enitity for the JAXB to store the user credentials
+ * 
+ * @author Beniamin SavuF
+ *
+ */
 @XmlRootElement(name = "userCredentials")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserCredentialsList {

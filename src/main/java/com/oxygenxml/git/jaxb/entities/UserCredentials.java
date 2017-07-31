@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Git user credentials POJO
+ * Git user credentials POJO for the JAXB
  * 
  * @author intern2
  *

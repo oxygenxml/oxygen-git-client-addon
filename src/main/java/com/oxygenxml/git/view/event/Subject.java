@@ -3,7 +3,7 @@ package com.oxygenxml.git.view.event;
 /**
  * The entities that are being observed for new changes
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 public interface Subject<T> {

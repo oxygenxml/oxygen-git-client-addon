@@ -5,6 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Entity for the JAXB to store the plugin options
+ * 
+ * @author Beniamin Savu
+ *
+ */
 @XmlRootElement(name = "Options")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Options {
@@ -17,9 +23,6 @@ public class Options {
 
 	@XmlElement(name = "userCredentials")
 	private UserCredentialsList userCredentialsList = new UserCredentialsList();
-
-	@XmlElement(name = "alwaysSave")
-	private boolean alwaysSave = false;
 
 	public RepositoryLocations getRepositoryLocations() {
 		return repositoryLocations;
@@ -43,14 +46,6 @@ public class Options {
 
 	public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
 		this.userCredentialsList = userCredentialsList;
-	}
-
-	public boolean isAlwaysSave() {
-		return alwaysSave;
-	}
-
-	public void setAlwaysSave(boolean alwaysSave) {
-		this.alwaysSave = alwaysSave;
 	}
 
 }

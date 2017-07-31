@@ -1,5 +1,11 @@
 package com.oxygenxml.git.constants;
 
+/**
+ * All image locations that are used in this plugin
+ * 
+ * @author Beniamin Savu
+ *
+ */
 public class ImageConstants {
 
 	public static final String GIT_ADD_ICON = "images/GitAdd10.png";

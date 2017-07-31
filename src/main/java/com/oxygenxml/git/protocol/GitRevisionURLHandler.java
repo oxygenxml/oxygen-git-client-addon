@@ -19,13 +19,14 @@ import com.oxygenxml.git.service.GitAccess;
 import ro.sync.exml.editor.ContentTypes;
 
 /**
- * Handler for the "filexmlzip" protocol. Can be used to open/edit XML files
- * directly from ZIPs
+ * Handler for the "git" protocol. Can be used to for the three way diff on the
+ * remote commit, last local commit and the base
+ * 
  */
 public class GitRevisionURLHandler extends URLStreamHandler {
 
 	/**
-	 * The filexmlzip protocol
+	 * The git protocol
 	 */
 	public static final String GIT_PROTOCOL = "git";
 
@@ -55,10 +56,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			GitAccess gitAccess = GitAccess.getInstance();
 
 			try {
-
-
 				path = url.getPath();
-
 				if (path.startsWith("/")) {
 					path = path.substring(1);
 				}
@@ -74,7 +72,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				} else if (REMOTE.equals(host)) {
 					revision = gitAccess.getRemoteCommit();
 					hostInitiator = REMOTE;
-				}else if (BASE.equals(host)) {
+				} else if (BASE.equals(host)) {
 					revision = gitAccess.getBaseCommit();
 					hostInitiator = BASE;
 				} else {
@@ -123,7 +121,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 */
 		@Override
 		public String getContentType() {
-			// LEt Oxygen decide.
+			// Let Oxygen decide.
 			return null;
 		}
 	}

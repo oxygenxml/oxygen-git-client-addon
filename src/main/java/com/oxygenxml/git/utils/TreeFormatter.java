@@ -1,6 +1,5 @@
 package com.oxygenxml.git.utils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -13,7 +12,7 @@ import javax.swing.tree.TreePath;
 /**
  * An utility class for JTree.
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 public class TreeFormatter {

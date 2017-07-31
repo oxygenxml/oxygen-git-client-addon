@@ -1,16 +1,18 @@
 package com.oxygenxml.git.view.event;
 
-
 /**
  * Event created when an the push or the pull action is initiated
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 public class PushPullEvent {
 
+	/**
+	 * The state in which the push or pull is (Started or Finished)
+	 */
 	private ActionStatus actionStatus;
-	
+
 	public PushPullEvent(ActionStatus actionStatus) {
 		this.actionStatus = actionStatus;
 	}

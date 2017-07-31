@@ -19,7 +19,7 @@ public class CustomProtocolURLHandlerExtension
 	private static final String CPROTO = "cproto";
 
 	/**
-	 * The file xml zip protocol name.
+	 * The git protocol name.
 	 */
 	private static final String GIT = "git";
 
