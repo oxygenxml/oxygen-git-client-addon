@@ -17,7 +17,7 @@ public class FileHelper {
 	/**
 	 * Saves the upper path from the current path. For Example having the current
 	 * path "C:/test/folder1/folder2", the prefixPath will be "C:/test/folder1"
-     * TODO Statics are bad! Let's pass this path as a parameter.
+	 * TODO Statics are bad! Let's pass this path as a parameter.
 	 */
 	private static String prefixPath = "";
 
@@ -48,7 +48,14 @@ public class FileHelper {
 		prefixPath = tempPrefixPath;
 		return fileNames;
 	}
-	
+
+	/**
+	 * Returns the URL from a given path
+	 * 
+	 * @param path
+	 *          - the path to get the URL
+	 * @return the URL from the given path
+	 */
 	public static URL getFileURL(String path) {
 
 		String selectedRepository = OptionsManager.getInstance().getSelectedRepository();

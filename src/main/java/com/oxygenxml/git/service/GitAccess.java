@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.http.protocol.ResponseServer;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
@@ -73,12 +71,10 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
-import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
-import com.oxygenxml.git.view.LoginDialog;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -341,7 +337,7 @@ public class GitAccess {
 				declaredField.setAccessible(true);
 
 				oldAuth = (Authenticator) declaredField.get(null);
-
+				
 				/*Authenticator.setDefault(new Authenticator() {
 					int count = 1;
 					
@@ -385,7 +381,6 @@ public class GitAccess {
 			while (results.hasNext()) {
 				PushResult result = results.next();
 				for (RemoteRefUpdate info : result.getRemoteUpdates()) {
-					System.out.println(info.getStatus());
 					return info.getStatus();
 				}
 			}
