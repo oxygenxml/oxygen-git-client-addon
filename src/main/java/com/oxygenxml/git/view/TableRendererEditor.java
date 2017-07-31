@@ -98,8 +98,8 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 				editedButton.addActionListener(new ActionListener() {
 					
 					public void actionPerformed(ActionEvent e) {
-						Diff diff = new Diff(file);
-						diff.fire();
+						DiffPresenter diff = new DiffPresenter(file);
+						diff.showDiff();
 						fireEditingStopped();
 					}
 				});

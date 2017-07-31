@@ -15,15 +15,15 @@ import com.oxygenxml.git.utils.OptionsManager;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-public class Diff {
+public class DiffPresenter {
 
 	private FileStatus file;
 
-	public Diff(FileStatus file) {
+	public DiffPresenter(FileStatus file) {
 		this.file = file;
 	}
 
-	public void fire() {
+	public void showDiff() {
 		switch (file.getChangeType()) {
 		case CONFLICT:
 			conflictDiff();
@@ -61,6 +61,7 @@ public class Diff {
 
 	private void conflictDiff() {
 		try {
+		  // TODO Add some methods to build/break such URLs. Maybe in GitRevisionURLHandler
 			URL local = new URL("git://Local/" + file.getFileLocation());
 			URL remote = new URL("git://Remote/" + file.getFileLocation());
 			URL base = new URL("git://Base/" + file.getFileLocation());
@@ -82,7 +83,7 @@ public class Diff {
 						String[] options = new String[] { "   Yes   ", "   No   " };
 						int[] optonsId = new int[] { 0, 1 };
 						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-								.showConfirmDialog("Cnnflict Warning", "Conflict Resolved?", options, optonsId);
+								.showConfirmDialog("Conflict Warning", "Conflict Resolved?", options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
 							GitAccess.getInstance().add(file);

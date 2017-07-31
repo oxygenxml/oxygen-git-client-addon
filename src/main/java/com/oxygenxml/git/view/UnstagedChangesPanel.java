@@ -441,8 +441,8 @@ public class UnstagedChangesPanel extends JPanel {
 					StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 					int convertedRow = filesTable.convertRowIndexToModel(row);
 					FileStatus file = model.getUnstageFile(convertedRow);
-					Diff diff = new Diff(file);
-					diff.fire();
+					DiffPresenter diff = new DiffPresenter(file);
+					diff.showDiff();
 				}
 			}
 

@@ -15,6 +15,7 @@ public class FileHelper {
 	/**
 	 * Saves the upper path from the current path. For Example having the current
 	 * path "C:/test/folder1/folder2", the prefixPath will be "C:/test/folder1"
+     * TODO Statics are bad! Let's pass this path as a parameter.
 	 */
 	private static String prefixPath = "";
 

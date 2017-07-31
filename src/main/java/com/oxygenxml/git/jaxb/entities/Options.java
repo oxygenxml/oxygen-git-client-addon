@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Entity for the JAXB to store the plugin options
+ * TODO  A good name for the package: com.oxygenxml.git.options
  * 
  * @author Beniamin Savu
  *

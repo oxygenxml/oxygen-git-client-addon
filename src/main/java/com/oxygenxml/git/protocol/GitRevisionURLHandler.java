@@ -1,22 +1,15 @@
 package com.oxygenxml.git.protocol;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLDecoder;
 import java.net.URLStreamHandler;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.eclipse.jgit.lib.ObjectId;
 
 import com.oxygenxml.git.service.GitAccess;
-
-import ro.sync.exml.editor.ContentTypes;
 
 /**
  * Handler for the "git" protocol. Can be used to for the three way diff on the

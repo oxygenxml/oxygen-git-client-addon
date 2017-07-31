@@ -62,12 +62,13 @@ public class CommitPanel extends JPanel {
 				stageController.stateChanged(changeEvent);
 				gitAccess.commit(commitMessage.getText());
 				commitMessage.setText("");
+				// TODO Give the parent.
 				JOptionPane.showMessageDialog(null, "Commit successful");
 			}
 		});
 	}
 
-	private void addLabel(GridBagConstraints gbc) {
+	private void addLabel(GridBagConstraints gbc) { 
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
