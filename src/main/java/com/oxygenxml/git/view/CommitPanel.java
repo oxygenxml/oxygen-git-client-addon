@@ -62,6 +62,7 @@ public class CommitPanel extends JPanel {
 				stageController.stateChanged(changeEvent);
 				gitAccess.commit(commitMessage.getText());
 				commitMessage.setText("");
+				// TODO Give the parent.
 				JOptionPane.showMessageDialog(null, "Commit successful");
 			}
 		});
