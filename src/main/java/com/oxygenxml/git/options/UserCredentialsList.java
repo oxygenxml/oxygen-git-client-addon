@@ -1,4 +1,4 @@
-package com.oxygenxml.git.jaxb.entities;
+package com.oxygenxml.git.options;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.oxygenxml.git.jaxb.entities;
+package com.oxygenxml.git.options;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
