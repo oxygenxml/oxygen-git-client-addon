@@ -61,6 +61,7 @@ import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.merge.MergeStrategy;
+import org.eclipse.jgit.merge.ThreeWayMerger;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -742,28 +743,6 @@ public class GitAccess {
 		} catch (IncorrectObjectTypeException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void merge() {
-		try {
-
-			ObjectId commit = getRemoteCommit();
-			git.merge().setStrategy(MergeStrategy.RECURSIVE).include(commit).call();
-		} catch (NoHeadException e) {
-			e.printStackTrace();
-		} catch (ConcurrentRefUpdateException e) {
-			e.printStackTrace();
-		} catch (CheckoutConflictException e) {
-			e.printStackTrace();
-		} catch (InvalidMergeHeadsException e) {
-			e.printStackTrace();
-		} catch (WrongRepositoryStateException e) {
-			e.printStackTrace();
-		} catch (NoMessageException e) {
-			e.printStackTrace();
-		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
 	}

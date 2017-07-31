@@ -85,12 +85,10 @@ public class Diff {
 								.showConfirmDialog("Cnnflict Warning", "Conflict Resolved?", options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
-							GitAccess.getInstance().merge();
-							GitAccess.getInstance().reset();
+							GitAccess.getInstance().add(file);
 						}
 					} else {
-						GitAccess.getInstance().merge();
-						GitAccess.getInstance().reset();
+						GitAccess.getInstance().add(file);
 					}
 					diffFrame.removeComponentListener(this);
 				}
