@@ -22,7 +22,7 @@ import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
-import com.oxygenxml.git.jaxb.entities.UserCredentials;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
@@ -149,11 +149,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 				if (PullStatus.OK == response.getStatus()) {
 					JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 							"Pull successful");
-				} /*else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
+				} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showInformationMessage("Cannot pull with uncommited changes");
 
-				}*/ else if (PullStatus.CONFLICTS == response.getStatus()) {
+				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					// prompts a dialog showing the files in conflict
 					new PullDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "Information", true,
 							response.getConflictingFiles());

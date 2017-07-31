@@ -13,8 +13,8 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.WorkspaceAccessPlugin;
-import com.oxygenxml.git.jaxb.entities.Options;
-import com.oxygenxml.git.jaxb.entities.UserCredentials;
+import com.oxygenxml.git.options.Options;
+import com.oxygenxml.git.options.UserCredentials;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;

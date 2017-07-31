@@ -73,7 +73,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
-import com.oxygenxml.git.jaxb.entities.UserCredentials;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
@@ -431,10 +431,8 @@ public class GitAccess {
 		if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0) {
 			response.setStatus(PullStatus.UNCOMITED_FILES);
 		} else {
-			System.out.println("mesaaaaaaj");
 			PullResult call = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
 					.call();
-			System.out.println(call.getMergeResult().getMergeStatus());
 			MergeResult mergeResult = call.getMergeResult();
 			if (mergeResult != null) {
 				if (mergeResult.getConflicts() != null) {
@@ -614,21 +612,6 @@ public class GitAccess {
 		return url;
 	}
 
-	public URL getFileContent(String path) {
-		// find the HEAD
-
-		String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
-		selectedRepository = selectedRepository.replace("\\", "/");
-		URL url = null;
-		File file = new File(selectedRepository + "/" + path);
-		try {
-			url = file.toURI().toURL();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		return url;
-
-	}
 
 	public ObjectId getLastLocalCommit() {
 		Repository repo = git.getRepository();
@@ -725,8 +708,15 @@ public class GitAccess {
 		File file = new File(OptionsManager.getInstance().getSelectedRepository() + "/" + fileLocation);
 		OutputStream out = null;
 		try {
+			if(!file.exists()){
+				file.getParentFile().mkdirs();
+				file.createNewFile();
+				System.out.println("file created");
+			}
 			out = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		ObjectId lastCommitId = getLastLocalCommit();
@@ -734,12 +724,19 @@ public class GitAccess {
 		try {
 			loader = getLoaderFrom(lastCommitId, fileLocation);
 			loader.copyTo(out);
+			
 		} catch (MissingObjectException e) {
 			e.printStackTrace();
 		} catch (IncorrectObjectTypeException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally{
+			try {
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

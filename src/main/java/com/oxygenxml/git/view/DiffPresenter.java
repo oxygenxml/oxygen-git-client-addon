@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -39,13 +40,13 @@ public class DiffPresenter {
 		}
 	}
 
-	private void openFile() {
+	public void openFile() {
 		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-				.open(GitAccess.getInstance().getFileContent(file.getFileLocation()));
+				.open(FileHelper.getFileURL(file.getFileLocation()));
 	}
 
 	private void diffView() {
-		URL fileURL = GitAccess.getInstance().getFileContent(file.getFileLocation());
+		URL fileURL = FileHelper.getFileURL(file.getFileLocation());
 		URL lastCommitedFileURL = null;
 
 		try {

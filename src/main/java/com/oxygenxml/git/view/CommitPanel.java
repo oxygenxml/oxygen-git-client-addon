@@ -21,6 +21,9 @@ import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 public class CommitPanel extends JPanel {
 
 	private StageController stageController;
@@ -62,8 +65,8 @@ public class CommitPanel extends JPanel {
 				stageController.stateChanged(changeEvent);
 				gitAccess.commit(commitMessage.getText());
 				commitMessage.setText("");
-				// TODO Give the parent.
-				JOptionPane.showMessageDialog(null, "Commit successful");
+				((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+				.showInformationMessage("Commit successful");
 			}
 		});
 	}

@@ -10,6 +10,7 @@ import java.net.URLStreamHandler;
 import org.eclipse.jgit.lib.ObjectId;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.utils.FileHelper;
 
 /**
  * Handler for the "git" protocol. Can be used to for the three way diff on the
@@ -92,7 +93,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 */
 		public OutputStream getOutputStream() throws IOException {
 			if (LOCAL.equals(hostInitiator)) {
-				URL fileContent = GitAccess.getInstance().getFileContent(path);
+				URL fileContent = FileHelper.getFileURL(path);
 				return fileContent.openConnection().getOutputStream();
 			}
 			throw new IOException("Writing is permitted only in the local file.");

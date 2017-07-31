@@ -1,6 +1,8 @@
 package com.oxygenxml.git.utils;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,5 +47,20 @@ public class FileHelper {
 		}
 		prefixPath = tempPrefixPath;
 		return fileNames;
+	}
+	
+	public static URL getFileURL(String path) {
+
+		String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+		selectedRepository = selectedRepository.replace("\\", "/");
+		URL url = null;
+		File file = new File(selectedRepository + "/" + path);
+		try {
+			url = file.toURI().toURL();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return url;
+
 	}
 }

@@ -12,6 +12,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -19,19 +21,26 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SortingFocusTraversalPolicy;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.io.FileUtils;
+
+import com.google.common.io.Files;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -46,6 +55,7 @@ public class UnstagedChangesPanel extends JPanel {
 	private static final int FLAT_VIEW = 1;
 	private static final int TREE_VIEW = 2;
 
+	private JPopupMenu contextualMenu = new JPopupMenu();
 	private JButton stageAllButton;
 	private JButton stageSelectedButton;
 	private JButton switchViewButton;
@@ -444,6 +454,19 @@ public class UnstagedChangesPanel extends JPanel {
 					DiffPresenter diff = new DiffPresenter(file);
 					diff.showDiff();
 				}
+				if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
+
+					int clickedRow = filesTable.rowAtPoint(e.getPoint());
+					if (clickedRow >= 0 && clickedRow < filesTable.getRowCount()) {
+						filesTable.setRowSelectionInterval(clickedRow, clickedRow);
+					} else {
+						filesTable.clearSelection();
+					}
+					contextualMenu.removeAll();
+					FileStatus file = getSelectedFile();
+					addContextualMenu(file);
+					contextualMenu.show(filesTable, e.getX(), e.getY());
+				}
 			}
 
 			public void mouseExited(MouseEvent e) {
@@ -464,6 +487,61 @@ public class UnstagedChangesPanel extends JPanel {
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		filesTable.setFillsViewportHeight(true);
 		this.add(scrollPane, gbc);
+	}
+
+	private void addContextualMenu(final FileStatus file) {
+		//Open menu
+		JMenuItem open = new JMenuItem("Open");
+		open.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				DiffPresenter diff = new DiffPresenter(file);
+				diff.openFile();
+			}
+
+		});
+		contextualMenu.add(open);
+
+		//Show Diff menu
+		JMenuItem showDiff = new JMenuItem("Show Diff");
+		if (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.DELETE) {
+			showDiff.setEnabled(false);
+		}
+		showDiff.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				DiffPresenter diff = new DiffPresenter(file);
+				diff.showDiff();
+			}
+		});
+		contextualMenu.add(showDiff);
+
+		//Discard Menu
+		JMenuItem discard = new JMenuItem("Discard");
+		discard.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (file.getChangeType() == GitChangeType.ADD) {
+					try {
+						FileUtils.forceDelete(new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					gitAccess.remove(file);
+					gitAccess.restoreLastCommit(file.getFileLocation());
+				}
+			}
+		});
+		contextualMenu.add(discard);
+	}
+
+	private FileStatus getSelectedFile() {
+		int selectedRow = filesTable.getSelectedRow();
+		int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRow);
+		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+		FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
+		return file;
 	}
 
 }

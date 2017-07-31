@@ -12,7 +12,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.oxygenxml.git.constants.Constants;
-import com.oxygenxml.git.jaxb.entities.UserCredentials;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.utils.OptionsManager;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -30,7 +30,6 @@ public class LoginDialog extends OKCancelDialog {
 		createGUI();
 		
 		this.pack();
-		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
