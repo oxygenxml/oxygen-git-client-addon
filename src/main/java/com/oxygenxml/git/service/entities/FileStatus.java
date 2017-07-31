@@ -1,7 +1,5 @@
 package com.oxygenxml.git.service.entities;
 
-import org.eclipse.jgit.diff.DiffEntry.ChangeType;
-
 /**
  * Git File Status. Used to store the file location and the file state(DELETED,
  * ADDED, MODIFIED)

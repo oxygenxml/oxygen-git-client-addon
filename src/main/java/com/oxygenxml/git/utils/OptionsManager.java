@@ -157,6 +157,7 @@ public class OptionsManager {
 	public void saveGitCredentials(UserCredentials userCredentials) {
 		loadRepositoryOptions();
 
+    // TODO Use Oxygen's crypt.
 		Cipher cipher = new Cipher();
 		String password = cipher.encrypt(userCredentials.getPassword());
 		userCredentials.setPassword(password);
@@ -194,6 +195,8 @@ public class OptionsManager {
 				break;
 			}
 		}
+		
+		// TODO Use Oxygen's crypt. 
 
 		Cipher cipher = new Cipher();
 		password = cipher.decrypt(password);

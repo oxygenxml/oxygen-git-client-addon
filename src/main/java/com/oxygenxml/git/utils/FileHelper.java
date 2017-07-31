@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileHelper {
-
+  /**
+   * TODO Statics are bad! Let's pass this path as a parameter.
+   */
 	private static String prefixPath = "";
 	
 	public static List<String> search(String path) {

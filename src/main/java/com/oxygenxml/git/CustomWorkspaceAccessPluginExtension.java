@@ -9,7 +9,6 @@ import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
-import ro.sync.util.editorvars.EditorVariables;
 
 /**
  * Plugin extension - workspace access extension.
@@ -21,10 +20,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
    */
 
   public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
-  	
-  	//pluginWorkspaceAccess.openDiffFilesApplication(leftURL, rightURL)
-  	String oxygenINstallDir = pluginWorkspaceAccess.getUtilAccess().expandEditorVariables(EditorVariables.OXYGEN_INSTALL_DIR, null);
-  	
 	  pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 		  /**
 		   * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)

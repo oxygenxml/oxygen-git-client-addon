@@ -5,6 +5,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * TODO  A good name for the package: com.oxygenxml.git.options
+ * 
+ * @author alex_jitianu
+ */
 @XmlRootElement(name = "Options")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Options {
