@@ -7,23 +7,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
@@ -34,10 +28,6 @@ import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.Subject;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.editor.page.author.actions.ActionPerformedListener;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Main panel containing all the other panels.
@@ -69,7 +59,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
 
-		GitAccess gitAccess = GitAccess.getInstance();
+		final GitAccess gitAccess = GitAccess.getInstance();
 		StageController observer = new StageController(gitAccess);
 		PushPullController pushPullController = new PushPullController(gitAccess);
 
@@ -102,9 +92,52 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		registerSubject(pushPullController);
 		
+		// Detect focus transitions between the view and the outside.
+    installFocusListener(this, new FocusAdapter() {
+      boolean inTheView = false;
+      @Override
+      public void focusGained(FocusEvent e) {
+        // The focus is somewhere in he view.
+        if (!inTheView) {
+          // TODO The focus was lost but now is back.
+          unstagedChangesPanel.updateFlatView(gitAccess.getUnstagedFiles());
+          stagedChangesPanel.updateFlatView(gitAccess.getStagedFile());
+        }
+        inTheView = true;
+      }
+      
+      @Override
+      public void focusLost(FocusEvent e) {
+        // The focus might still be somewhere in the view.
+        if (e.getOppositeComponent() != null) {
+          inTheView = SwingUtilities.isDescendingFrom((Component) e.getOppositeComponent(), StagingPanel.this);
+        } else {
+          inTheView = false;
+        }
+      }
+    });
 	}
 
-	private void addSplitPanel(GridBagConstraints gbc, Component splitPane) {
+	/**
+	 * Adds a focus listener on the component and its descendents.
+	 * 
+	 * @param c The component.
+	 * @param focusListener Focus Listener.
+	 */
+	private void installFocusListener(Component c, FocusListener focusListener) {
+	  c.addFocusListener(focusListener);
+	  
+	  if (c instanceof Container) {
+	    Container container = (Container) c;
+	    int componentCount = container.getComponentCount();
+	    for (int i = 0; i < componentCount; i++) {
+	      Component child = container.getComponent(i);
+	      installFocusListener(child, focusListener);
+	    }
+	  }
+  }
+
+  private void addSplitPanel(GridBagConstraints gbc, Component splitPane) {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
