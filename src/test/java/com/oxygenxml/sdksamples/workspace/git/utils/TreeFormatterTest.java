@@ -23,8 +23,6 @@ public class TreeFormatterTest {
 
 	@Test
 	public void testGetNodeFromString() {
-		
-		
 		URL resource = getClass().getClassLoader().getResource(com.oxygenxml.git.constants.ImageConstants.GIT_PUSH_ICON);
 		System.out.println(resource);
 		
@@ -47,7 +45,6 @@ public class TreeFormatterTest {
 		String expected = "info.txt";
 
 		assertEquals(actual, expected);
-
 	}
 
 	@Test

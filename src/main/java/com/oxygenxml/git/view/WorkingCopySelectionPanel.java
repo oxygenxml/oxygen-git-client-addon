@@ -210,15 +210,14 @@ public class WorkingCopySelectionPanel extends JPanel {
 		try {
 			workingCopySelector.setSelectedItem(repositoryPath);
 			if (!repositoryPath.equals("") ) {
-				System.out.println(repositoryPath);
 				gitAccess.setRepository(repositoryPath);
-				List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+				/*List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 				List<FileStatus> stagedFiles = gitAccess.getStagedFile();
 				StagingPanel parent = (StagingPanel) this.getParent();
 				parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
 				parent.getStagedChangesPanel().updateFlatView(stagedFiles);
 				parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
-				parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);
+				parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);*/
 			}
 		} catch (IOException e) {
 			workingCopySelector.setSelectedItem(null);

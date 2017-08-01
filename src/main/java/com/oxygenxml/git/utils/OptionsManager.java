@@ -1,5 +1,6 @@
 package com.oxygenxml.git.utils;
 
+import java.io.Console;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.WorkspaceAccessPlugin;
+import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.options.Options;
 import com.oxygenxml.git.options.UserCredentials;
 
@@ -79,7 +81,12 @@ public class OptionsManager {
 	}
 
 	private File getOptionsFile() {
-		File baseDir = WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir();
+		File baseDir = null;
+		if (WorkspaceAccessPlugin.getInstance() != null) {
+			baseDir = WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir();
+		} else {
+			baseDir = new File("src/main/resources");
+		}
 		return new File(baseDir, REPOSITORY_FILENAME);
 	}
 
@@ -164,8 +171,8 @@ public class OptionsManager {
 	public void saveGitCredentials(UserCredentials userCredentials) {
 		loadRepositoryOptions();
 
-		String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess()
-				.encrypt(userCredentials.getPassword());
+		String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+				.getUtilAccess().encrypt(userCredentials.getPassword());
 		userCredentials.setPassword(encryptedPassword);
 		List<UserCredentials> credentials = options.getUserCredentialsList().getCredentials();
 		for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
@@ -202,8 +209,9 @@ public class OptionsManager {
 			}
 		}
 
-		String decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess().decrypt(password);
-		if(decryptedPassword == null){
+		String decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+				.getUtilAccess().decrypt(password);
+		if (decryptedPassword == null) {
 			decryptedPassword = "";
 		}
 

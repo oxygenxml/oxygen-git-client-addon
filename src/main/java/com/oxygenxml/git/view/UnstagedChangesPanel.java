@@ -152,58 +152,20 @@ public class UnstagedChangesPanel extends JPanel {
 		addStageSelectedButton(gbc);
 		addSwitchViewButton(gbc);
 		addFilesPanel(gbc);
-
+		
 		addSwitchButtonListener();
 		addStageSelectedButtonListener();
 		addStageAllButtonListener();
-
-		filesTable.addFocusListener(new FocusListener() {
-			public void focusLost(FocusEvent e) {
-			}
-
-			public void focusGained(FocusEvent e) {
-				new SwingWorker<List<FileStatus>, Integer>() {
-
-					@Override
-					protected List<FileStatus> doInBackground() throws Exception {
-						if (!staging) {
-							return GitAccess.getInstance().getUnstagedFiles();
-						} else {
-							return GitAccess.getInstance().getStagedFile();
-						}
-
-					}
-
-					@Override
-					protected void done() {
-						List<FileStatus> files = new ArrayList<FileStatus>();
-						List<FileStatus> newFiles = new ArrayList<FileStatus>();
-						StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-						List<FileStatus> filesInModel = model.getUnstagedFiles();
-						try {
-							files = get();
-							for (FileStatus fileStatus : filesInModel) {
-								if (files.contains(fileStatus)) {
-									newFiles.add(fileStatus);
-									files.remove(fileStatus);
-								}
-							}
-							newFiles.addAll(files);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						} catch (ExecutionException e) {
-							e.printStackTrace();
-						}
-						if (!newFiles.equals(filesInModel)) {
-							updateFlatView(newFiles);
-							createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
-						}
-					}
-
-				}.execute();
-
-			}
-		});
+	
+		if(!staging){
+			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+			updateFlatView(unstagedFiles);
+			createTreeView(OptionsManager.getInstance().getSelectedRepository(), unstagedFiles);
+		} else {
+			List<FileStatus> stagedFiles = gitAccess.getStagedFile();
+			updateFlatView(stagedFiles);
+			createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFiles);
+		}
 	}
 
 	private void addStageAllButtonListener() {

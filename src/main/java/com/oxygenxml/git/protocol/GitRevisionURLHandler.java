@@ -3,6 +3,7 @@ package com.oxygenxml.git.protocol;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -29,11 +30,6 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 */
 	private static class GitRevisionConnection extends URLConnection {
 
-		private static final String LOCAL = "Local";
-		private static final String REMOTE = "Remote";
-		private static final String BASE = "Base";
-		private static final String LAST_COMMIT = "LastCommit";
-
 		private ObjectId revision;
 		private String path;
 		private String hostInitiator;
@@ -47,34 +43,38 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		protected GitRevisionConnection(URL url) throws IOException {
 			super(url);
 			setDoOutput(true);
-			GitAccess gitAccess = GitAccess.getInstance();
 
 			try {
-				path = url.getPath();
-				if (path.startsWith("/")) {
-					path = path.substring(1);
-				}
-
-				String host = url.getHost();
-
-				if (LOCAL.equals(host)) {
+				GitAccess gitAccess = GitAccess.getInstance();
+				String host = getHost(url);
+				if (GitFile.LOCAL.equals(host)) {
 					revision = gitAccess.getLastLocalCommit();
-					hostInitiator = LOCAL;
-				} else if (LAST_COMMIT.equals(host)) {
+					hostInitiator = GitFile.LOCAL;
+				} else if (GitFile.LAST_COMMIT.equals(host)) {
 					revision = gitAccess.getLastLocalCommit();
-					hostInitiator = LAST_COMMIT;
-				} else if (REMOTE.equals(host)) {
+					hostInitiator = GitFile.LAST_COMMIT;
+				} else if (GitFile.REMOTE.equals(host)) {
 					revision = gitAccess.getRemoteCommit();
-					hostInitiator = REMOTE;
-				} else if (BASE.equals(host)) {
+					hostInitiator = GitFile.REMOTE;
+				} else if (GitFile.BASE.equals(host)) {
 					revision = gitAccess.getBaseCommit();
-					hostInitiator = BASE;
+					hostInitiator = GitFile.BASE;
 				} else {
 					throw new Exception("Bad syntax: " + path);
 				}
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
+		}
+
+		private String getHost(URL url) {
+			path = url.getPath();
+			if (path.startsWith("/")) {
+				path = path.substring(1);
+			}
+			String host = url.getHost();
+
+			return host;
 		}
 
 		/**
@@ -92,7 +92,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the output stream
 		 */
 		public OutputStream getOutputStream() throws IOException {
-			if (LOCAL.equals(hostInitiator)) {
+			if (GitFile.LOCAL.equals(hostInitiator)) {
 				URL fileContent = FileHelper.getFileURL(path);
 				return fileContent.openConnection().getOutputStream();
 			}
@@ -130,6 +130,23 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	protected URLConnection openConnection(URL u) throws IOException {
 		URLConnection connection = new GitRevisionConnection(u);
 		return connection;
+	}
+
+	public static URL buildURL(String gitFile, String fileLocation) throws MalformedURLException {
+		URL url = null;
+		if (gitFile.equals(GitFile.LOCAL)) {
+			url = new URL("git://Local/" + fileLocation);
+		} else if (gitFile.equals(GitFile.REMOTE)) {
+			url = new URL("git://Remote/" + fileLocation);
+		} else if (gitFile.equals(GitFile.BASE)) {
+			url = new URL("git://Base/" + fileLocation);
+		} else if (gitFile.equals(GitFile.LAST_COMMIT)) {
+			url = new URL("git://LastCommit/" + fileLocation);
+		} else {
+			url = new URL("");
+		}
+
+		return url;
 	}
 
 }

@@ -56,9 +56,6 @@ public class CustomProtocolURLHandlerExtension
 	 * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#isReadOnly(java.net.URL)
 	 */
 	public boolean isReadOnly(URL url) {
-		// TODO Some of our resources are indeed read only. We should implement
-		// this.
-		// com.oxygenxml.git.protocol.GitRevisionURLHandler.GitRevisionConnection.getOutputStream()
 		return !CustomProtocolHandler.getCanonicalFileFromFileUrl(url).canWrite();
 	}
 }

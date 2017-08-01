@@ -1,32 +1,31 @@
 package com.oxygenxml.git.view;
 
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
 
 /**
@@ -86,58 +85,114 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		toolbarPanel.createGUI();
 		commitPanel.createGUI();
+		workingCopySelectionPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
-		workingCopySelectionPanel.createGUI();
 
 		registerSubject(pushPullController);
-		
+
 		// Detect focus transitions between the view and the outside.
-    installFocusListener(this, new FocusAdapter() {
-      boolean inTheView = false;
-      @Override
-      public void focusGained(FocusEvent e) {
-        // The focus is somewhere in he view.
-        if (!inTheView) {
-          // TODO The focus was lost but now is back.
-          unstagedChangesPanel.updateFlatView(gitAccess.getUnstagedFiles());
-          stagedChangesPanel.updateFlatView(gitAccess.getStagedFile());
-        }
-        inTheView = true;
-      }
-      
-      @Override
-      public void focusLost(FocusEvent e) {
-        // The focus might still be somewhere in the view.
-        if (e.getOppositeComponent() != null) {
-          inTheView = SwingUtilities.isDescendingFrom((Component) e.getOppositeComponent(), StagingPanel.this);
-        } else {
-          inTheView = false;
-        }
-      }
-    });
+		installFocusListener(this, new FocusAdapter() {
+			boolean inTheView = false;
+
+			@Override
+			public void focusGained(final FocusEvent e) {
+				// The focus is somewhere in he view.
+				if (!inTheView) {
+					// The focus was lost but now is back.
+					updateFiles(StageState.UNSTAGED);
+					updateFiles(StageState.STAGED);
+
+				}
+				inTheView = true;
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				// The focus might still be somewhere in the view.
+				if (e.getOppositeComponent() != null) {
+					inTheView = SwingUtilities.isDescendingFrom((Component) e.getOppositeComponent(), StagingPanel.this);
+				} else {
+					inTheView = false;
+				}
+			}
+
+			private void updateFiles(final StageState state) {
+				new SwingWorker<List<FileStatus>, Integer>() {
+
+					@Override
+					protected List<FileStatus> doInBackground() throws Exception {
+						if (state == StageState.UNSTAGED) {
+							return GitAccess.getInstance().getUnstagedFiles();
+						} else {
+							return GitAccess.getInstance().getStagedFile();
+						}
+					}
+
+					@Override
+					protected void done() {
+						List<FileStatus> files = new ArrayList<FileStatus>();
+						List<FileStatus> newFiles = new ArrayList<FileStatus>();
+						StagingResourcesTableModel model = null;
+						if (state == StageState.UNSTAGED) {
+							model = (StagingResourcesTableModel) unstagedChangesPanel.getFilesTable().getModel();
+						} else {
+							model = (StagingResourcesTableModel) stagedChangesPanel.getFilesTable().getModel();
+						}
+						List<FileStatus> filesInModel = model.getUnstagedFiles();
+						try {
+							files = get();
+							for (FileStatus fileStatus : filesInModel) {
+								if (files.contains(fileStatus)) {
+									newFiles.add(fileStatus);
+									files.remove(fileStatus);
+								}
+							}
+							newFiles.addAll(files);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							e.printStackTrace();
+						}
+						if (!newFiles.equals(filesInModel)) {
+							if (state == StageState.UNSTAGED) {
+								unstagedChangesPanel.updateFlatView(newFiles);
+								unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+							} else {
+								stagedChangesPanel.updateFlatView(newFiles);
+								stagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+							}
+						}
+					}
+
+				}.execute();
+			}
+
+		});
 	}
 
 	/**
 	 * Adds a focus listener on the component and its descendents.
 	 * 
-	 * @param c The component.
-	 * @param focusListener Focus Listener.
+	 * @param c
+	 *          The component.
+	 * @param focusListener
+	 *          Focus Listener.
 	 */
 	private void installFocusListener(Component c, FocusListener focusListener) {
-	  c.addFocusListener(focusListener);
-	  
-	  if (c instanceof Container) {
-	    Container container = (Container) c;
-	    int componentCount = container.getComponentCount();
-	    for (int i = 0; i < componentCount; i++) {
-	      Component child = container.getComponent(i);
-	      installFocusListener(child, focusListener);
-	    }
-	  }
-  }
+		c.addFocusListener(focusListener);
 
-  private void addSplitPanel(GridBagConstraints gbc, Component splitPane) {
+		if (c instanceof Container) {
+			Container container = (Container) c;
+			int componentCount = container.getComponentCount();
+			for (int i = 0; i < componentCount; i++) {
+				Component child = container.getComponent(i);
+				installFocusListener(child, focusListener);
+			}
+		}
+	}
+
+	private void addSplitPanel(GridBagConstraints gbc, Component splitPane) {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
@@ -195,7 +250,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			toolbarPanel.getPullButton().setEnabled(true);
 			commitPanel.getCommitButton().setEnabled(true);
 			unstagedChangesPanel.updateFlatView(GitAccess.getInstance().getUnstagedFiles());
-			unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), GitAccess.getInstance().getUnstagedFiles());
+			unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(),
+					GitAccess.getInstance().getUnstagedFiles());
 		}
 	}
 

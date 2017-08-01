@@ -62,6 +62,7 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
@@ -132,7 +133,7 @@ public class GitAccess {
 	public void createNewRepository(String path) {
 
 		try {
-			git = Git.init().setDirectory(new File(path)).call();
+			git = Git.init().setBare(false).setDirectory(new File(path)).call();
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
@@ -733,6 +734,12 @@ public class GitAccess {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public org.eclipse.jgit.transport.RemoteRefUpdate.Status push(String username, String password, String remote)
+			throws InvalidRemoteException, TransportException, GitAPIException {
+		git.push().setRemote(remote);
+		return push(username, password);
 	}
 
 }

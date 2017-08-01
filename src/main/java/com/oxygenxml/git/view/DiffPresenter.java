@@ -8,6 +8,8 @@ import java.net.URL;
 
 import javax.swing.JFrame;
 
+import com.oxygenxml.git.protocol.GitFile;
+import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.FileHelper;
@@ -50,7 +52,7 @@ public class DiffPresenter {
 		URL lastCommitedFileURL = null;
 
 		try {
-			lastCommitedFileURL = new URL("git://LastCommit/" + file.getFileLocation());
+			lastCommitedFileURL = GitRevisionURLHandler.buildURL(GitFile.LAST_COMMIT, file.getFileLocation());
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}
@@ -62,11 +64,10 @@ public class DiffPresenter {
 
 	private void conflictDiff() {
 		try {
-		  // TODO Add some methods to build/break such URLs. Maybe in GitRevisionURLHandler
-			URL local = new URL("git://Local/" + file.getFileLocation());
-			URL remote = new URL("git://Remote/" + file.getFileLocation());
-			URL base = new URL("git://Base/" + file.getFileLocation());
-
+			URL local = GitRevisionURLHandler.buildURL(GitFile.LOCAL, file.getFileLocation());
+			URL remote = GitRevisionURLHandler.buildURL(GitFile.REMOTE, file.getFileLocation());
+			URL base = GitRevisionURLHandler.buildURL(GitFile.BASE, file.getFileLocation());
+			
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
 			final File localCopy = new File(selectedRepository, file.getFileLocation());
 			final long diffStartedTimeStamp = localCopy.lastModified();
