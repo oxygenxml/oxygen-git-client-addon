@@ -51,18 +51,13 @@ public class GitAccessRestoreLastCommitTest {
 	@Test
 	public void testRestoreLastCommit() throws IOException {
 		String actual = getFileContent();
-		System.out.println(actual);
-		try {
-			PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
-			out.println("hellllo");
-			out.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 		
+		PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
+		out.println("hellllo");
+		out.close();
+
 		gitAccess.restoreLastCommit("test.txt");
 		String expected = getFileContent();
-		System.out.println(expected);
 		assertEquals(actual, expected);
 	}
 

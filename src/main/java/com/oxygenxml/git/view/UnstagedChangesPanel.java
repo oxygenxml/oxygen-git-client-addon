@@ -491,7 +491,11 @@ public class UnstagedChangesPanel extends JPanel {
 					}
 				} else {
 					gitAccess.remove(file);
-					gitAccess.restoreLastCommit(file.getFileLocation());
+					try {
+						gitAccess.restoreLastCommit(file.getFileLocation());
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		});

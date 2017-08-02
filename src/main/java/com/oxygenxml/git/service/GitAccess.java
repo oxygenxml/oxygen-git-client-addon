@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.Authenticator;
@@ -16,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
@@ -42,6 +44,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoMergeBaseException;
@@ -76,6 +79,9 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
+import com.thaiopensource.relaxng.input.InputFailedException;
+
+import de.schlichtherle.io.FileInputStream;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -338,38 +344,30 @@ public class GitAccess {
 				declaredField.setAccessible(true);
 
 				oldAuth = (Authenticator) declaredField.get(null);
-				
-				/*Authenticator.setDefault(new Authenticator() {
-					int count = 1;
-					
-					
-					@Override
-					protected PasswordAuthentication getPasswordAuthentication() {
-						logger.info("ours " + getHostName());
-						logger.info("requesting " + getRequestingHost());
 
-						if (getHostName().equals(getRequestingHost())) {
-							logger.info("Get credentials " + count);
-							if (count == 1) {
-								logger.info("Return " + username);
-								count++;
-								return new PasswordAuthentication(username, password.toCharArray());
-							}
-							count++;
-							LoginDialog loginDialog = new LoginDialog(GitAccess.getInstance().getHostName());
-
-							UserCredentials userCredentials = loginDialog.getUserCredentials();
-							String username2 = userCredentials.getUsername();
-							String password2 = userCredentials.getPassword();
-							logger.info("Return " + username2);
-
-							return new PasswordAuthentication(username2, password2.toCharArray());
-						} else {
-							// TODO We could delegate to the default implementation.
-							return null;
-						}
-					}
-				});*/
+				/*
+				 * Authenticator.setDefault(new Authenticator() { int count = 1;
+				 * 
+				 * 
+				 * @Override protected PasswordAuthentication
+				 * getPasswordAuthentication() { logger.info("ours " + getHostName());
+				 * logger.info("requesting " + getRequestingHost());
+				 * 
+				 * if (getHostName().equals(getRequestingHost())) {
+				 * logger.info("Get credentials " + count); if (count == 1) {
+				 * logger.info("Return " + username); count++; return new
+				 * PasswordAuthentication(username, password.toCharArray()); } count++;
+				 * LoginDialog loginDialog = new
+				 * LoginDialog(GitAccess.getInstance().getHostName());
+				 * 
+				 * UserCredentials userCredentials = loginDialog.getUserCredentials();
+				 * String username2 = userCredentials.getUsername(); String password2 =
+				 * userCredentials.getPassword(); logger.info("Return " + username2);
+				 * 
+				 * return new PasswordAuthentication(username2,
+				 * password2.toCharArray()); } else { // TODO We could delegate to the
+				 * default implementation. return null; } } });
+				 */
 
 				Authenticator.setDefault(null);
 			} catch (Throwable e) {
@@ -427,6 +425,7 @@ public class GitAccess {
 		if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0) {
 			response.setStatus(PullStatus.UNCOMITED_FILES);
 		} else {
+			git.reset().call();
 			PullResult call = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
 					.call();
 			MergeResult mergeResult = call.getMergeResult();
@@ -440,7 +439,7 @@ public class GitAccess {
 				}
 			}
 		}
-		
+
 		return response;
 
 	}
@@ -608,7 +607,6 @@ public class GitAccess {
 		return url;
 	}
 
-
 	public ObjectId getLastLocalCommit() {
 		Repository repo = git.getRepository();
 		try {
@@ -667,10 +665,11 @@ public class GitAccess {
 	}
 
 	public ObjectLoader getLoaderFrom(ObjectId commit, String path)
-			throws MissingObjectException, IncorrectObjectTypeException, IOException {
+			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
 		Repository repository = git.getRepository();
 		RevWalk revWalk = new RevWalk(repository);
 		RevCommit revCommit = revWalk.parseCommit(commit);
+		System.out.println("Rev commit =" + revCommit.name());
 		// and using commit's tree find the path
 		RevTree tree = revCommit.getTree();
 		TreeWalk treeWalk = new TreeWalk(repository);
@@ -686,8 +685,18 @@ public class GitAccess {
 
 		treeWalk.close();
 		revWalk.close();
-
 		return loader;
+	}
+
+	public InputStream getInputStream(ObjectId commit, String path) throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
+		ObjectLoader loader = getLoaderFrom(commit, path);
+
+		if (loader == null) {
+			File file = File.createTempFile("test", "poc");
+			InputStream input = new FileInputStream(file);
+			return input;
+		}
+		return loader.openStream();
 	}
 
 	public void reset() {
@@ -704,7 +713,7 @@ public class GitAccess {
 		File file = new File(OptionsManager.getInstance().getSelectedRepository() + "/" + fileLocation);
 		OutputStream out = null;
 		try {
-			if(!file.exists()){
+			if (!file.exists()) {
 				file.getParentFile().mkdirs();
 				file.createNewFile();
 				System.out.println("file created");
@@ -720,26 +729,20 @@ public class GitAccess {
 		try {
 			loader = getLoaderFrom(lastCommitId, fileLocation);
 			loader.copyTo(out);
-			
+
 		} catch (MissingObjectException e) {
 			e.printStackTrace();
 		} catch (IncorrectObjectTypeException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			try {
 				out.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public org.eclipse.jgit.transport.RemoteRefUpdate.Status push(String username, String password, String remote)
-			throws InvalidRemoteException, TransportException, GitAPIException {
-		git.push().setRemote(remote);
-		return push(username, password);
 	}
 
 }

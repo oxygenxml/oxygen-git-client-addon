@@ -67,7 +67,7 @@ public class DiffPresenter {
 			URL local = GitRevisionURLHandler.buildURL(GitFile.LOCAL, file.getFileLocation());
 			URL remote = GitRevisionURLHandler.buildURL(GitFile.REMOTE, file.getFileLocation());
 			URL base = GitRevisionURLHandler.buildURL(GitFile.BASE, file.getFileLocation());
-			
+
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
 			final File localCopy = new File(selectedRepository, file.getFileLocation());
 			final long diffStartedTimeStamp = localCopy.lastModified();

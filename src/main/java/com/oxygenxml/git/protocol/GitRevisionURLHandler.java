@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.utils.FileHelper;
@@ -83,7 +84,8 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the input stream
 		 */
 		public InputStream getInputStream() throws IOException {
-			return GitAccess.getInstance().getLoaderFrom(revision, path).openStream();
+			GitAccess gitAccess = GitAccess.getInstance();
+			return gitAccess.getInputStream(revision, path);
 		}
 
 		/**
