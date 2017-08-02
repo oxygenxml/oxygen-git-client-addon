@@ -21,6 +21,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
+import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
@@ -99,6 +100,8 @@ public class GitAccess {
 	private static Logger logger = Logger.getLogger(GitAccess.class);
 
 	private Git git;
+
+	private boolean conflict = false;
 	private static GitAccess instance;
 
 	private GitAccess() {
@@ -158,6 +161,9 @@ public class GitAccess {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 		List<FileStatus> stagedFiles = getStagedFile();
 		List<FileStatus> conflictingFiles = getConflictingFiles();
+		if (conflictingFiles.size() > 0) {
+			conflict = true;
+		}
 
 		List<String> conflictingPaths = new ArrayList<String>();
 		for (FileStatus conflictingFile : conflictingFiles) {
@@ -333,9 +339,10 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 * @throws TransportException
 	 * @throws InvalidRemoteException
+	 * @throws IOException
 	 */
 	public org.eclipse.jgit.transport.RemoteRefUpdate.Status push(final String username, final String password)
-			throws InvalidRemoteException, TransportException, GitAPIException {
+			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 
 		Authenticator oldAuth = null;
 		try {
@@ -373,7 +380,13 @@ public class GitAccess {
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
-
+			if (conflict) {
+				String branch = git.getRepository().getBranch();
+				Config storedConfig = git.getRepository().getConfig();
+				String url = storedConfig.getString("remote", "origin", "url");
+				git.commit().setMessage("Merge branch " + "'" + branch + "'" + " of " + url).call();
+				conflict = false;
+			}
 			Iterable<PushResult> call = git.push()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 			Iterator<PushResult> results = call.iterator();
@@ -428,6 +441,7 @@ public class GitAccess {
 			git.reset().call();
 			PullResult call = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
 					.call();
+
 			MergeResult mergeResult = call.getMergeResult();
 			if (mergeResult != null) {
 				if (mergeResult.getConflicts() != null) {
@@ -435,8 +449,12 @@ public class GitAccess {
 					if (conflictingFiles != null) {
 						response.setConflictingFiles(conflictingFiles);
 						response.setStatus(PullStatus.CONFLICTS);
+						conflict = true;
 					}
 				}
+			}
+			if (call.getMergeResult().getMergeStatus() == MergeStatus.ALREADY_UP_TO_DATE) {
+				response.setStatus(PullStatus.UP_TO_DATE);
 			}
 		}
 
@@ -669,7 +687,6 @@ public class GitAccess {
 		Repository repository = git.getRepository();
 		RevWalk revWalk = new RevWalk(repository);
 		RevCommit revCommit = revWalk.parseCommit(commit);
-		System.out.println("Rev commit =" + revCommit.name());
 		// and using commit's tree find the path
 		RevTree tree = revCommit.getTree();
 		TreeWalk treeWalk = new TreeWalk(repository);
@@ -688,7 +705,8 @@ public class GitAccess {
 		return loader;
 	}
 
-	public InputStream getInputStream(ObjectId commit, String path) throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
+	public InputStream getInputStream(ObjectId commit, String path)
+			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
 		ObjectLoader loader = getLoaderFrom(commit, path);
 
 		if (loader == null) {
@@ -743,6 +761,10 @@ public class GitAccess {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void isConflict(boolean conflict) {
+		this.conflict = conflict;
 	}
 
 }

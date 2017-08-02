@@ -1,12 +1,18 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.JFrame;
+
+import org.eclipse.jgit.errors.CorruptObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
 
 import com.oxygenxml.git.protocol.GitFile;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
@@ -21,6 +27,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 public class DiffPresenter {
 
 	private FileStatus file;
+	private Component diffFrame;
 
 	public DiffPresenter(FileStatus file) {
 		this.file = file;
@@ -72,9 +79,24 @@ public class DiffPresenter {
 			final File localCopy = new File(selectedRepository, file.getFileLocation());
 			final long diffStartedTimeStamp = localCopy.lastModified();
 
-			final JFrame diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-					.openDiffFilesApplication(local, remote, base);
-
+			try {
+				if (GitAccess.getInstance().getLoaderFrom(GitAccess.getInstance().getBaseCommit(),
+						file.getFileLocation()) == null) {
+					diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+							.openDiffFilesApplication(local, remote);
+				} else {
+					diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+							.openDiffFilesApplication(local, remote, base);
+				}
+			} catch (MissingObjectException e1) {
+				e1.printStackTrace();
+			} catch (IncorrectObjectTypeException e1) {
+				e1.printStackTrace();
+			} catch (CorruptObjectException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			diffFrame.addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentHidden(ComponentEvent e) {
@@ -96,6 +118,7 @@ public class DiffPresenter {
 					diffFrame.removeComponentListener(this);
 				}
 			});
+
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}

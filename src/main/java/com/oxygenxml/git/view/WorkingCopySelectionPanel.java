@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -91,9 +92,9 @@ public class WorkingCopySelectionPanel extends JPanel {
 					try {
 						
 						gitAccess.setRepository(path);
+						OptionsManager.getInstance().saveSelectedRepository(path);
 						List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 						List<FileStatus> stagedFiles = gitAccess.getStagedFile();
-						OptionsManager.getInstance().saveSelectedRepository(path);
 
 						// generate content for FLAT_VIEW
 						parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
@@ -202,6 +203,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weighty = 0;
 
 		workingCopySelector = new JComboBox<String>();
+		workingCopySelector.setMinimumSize(new Dimension(10, 15));
 
 		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryEntry);

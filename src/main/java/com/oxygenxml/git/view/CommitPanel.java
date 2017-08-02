@@ -101,7 +101,7 @@ public class CommitPanel extends JPanel {
 
 		JScrollPane scrollPane = new JScrollPane(commitMessage);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setPreferredSize(new Dimension(200, 3 * fontH));
+		scrollPane.setMinimumSize(new Dimension(10, 3 * fontH));
 		this.add(scrollPane, gbc);
 	}
 

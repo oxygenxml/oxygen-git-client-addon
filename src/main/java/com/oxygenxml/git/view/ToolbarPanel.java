@@ -35,16 +35,8 @@ public class ToolbarPanel extends JPanel {
 		return pushButton;
 	}
 
-	public void setPushButton(JButton pushButton) {
-		this.pushButton = pushButton;
-	}
-
 	public JButton getPullButton() {
 		return pullButton;
-	}
-
-	public void setPullButton(JButton pullButton) {
-		this.pullButton = pullButton;
 	}
 
 	/**
@@ -54,7 +46,7 @@ public class ToolbarPanel extends JPanel {
 	public void createGUI() {
 		this.setLayout(new BorderLayout());
 		addPushAndPullButtons();
-		addUndefinedButton();
+		//addUndefinedButton();
 
 		this.add(gitToolbar, BorderLayout.PAGE_START);
 	}

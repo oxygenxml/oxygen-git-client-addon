@@ -158,6 +158,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 					new PullDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "Information", true,
 							response.getConflictingFiles());
 
+				} else if (PullStatus.UP_TO_DATE == response.getStatus()){
+					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+					.showInformationMessage("Repository is already up to date");
 				}
 			}
 
@@ -170,9 +173,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * @throws InvalidRemoteException
 			 * @throws TransportException
 			 * @throws GitAPIException
+			 * @throws IOException 
 			 */
 			private void push(final UserCredentials userCredentials)
-					throws InvalidRemoteException, TransportException, GitAPIException {
+					throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 				Status status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 
 				if (Status.OK == status) {

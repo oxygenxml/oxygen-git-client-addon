@@ -15,6 +15,7 @@ import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.eclipse.jgit.transport.URIish;
 import org.junit.After;
 import org.junit.Before;
@@ -27,8 +28,10 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 public class GitAccessPushTest {
 	private final static String LOCAL_TEST_REPOSITPRY = "src/test/resources/local";
 	private final static String REMOTE_TEST_REPOSITPRY = "src/test/resources/remote";
+	private final static String SECOND_TEST_REPOSITPRY = "src/test/resources/local2";
 	private Repository db1;
 	private Repository db2;
+	private Repository db3;
 	private GitAccess gitAccess;
 
 	@Before
@@ -38,9 +41,13 @@ public class GitAccessPushTest {
 		db2 = gitAccess.getRepository();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		db1 = gitAccess.getRepository();
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.createNewRepository(SECOND_TEST_REPOSITPRY);
+		db3 = gitAccess.getRepository();
+
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		try {
+			file.createNewFile();
+			file = new File(SECOND_TEST_REPOSITPRY + "/test2.txt");
 			file.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -51,7 +58,7 @@ public class GitAccessPushTest {
 	@Test(expected = MissingObjectException.class)
 	public void testRemoteRepositoryHasNoCommitst()
 			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException {
-
+		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
 		final StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
 		URIish uri = new URIish(db2.getDirectory().toURI().toURL());
@@ -67,9 +74,9 @@ public class GitAccessPushTest {
 	}
 
 	@Test
-	public void testPush()
+	public void testPushOK()
 			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException {
-
+		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
 		final StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
 		URIish uri = new URIish(db2.getDirectory().toURI().toURL());
@@ -86,15 +93,50 @@ public class GitAccessPushTest {
 				db2.resolve(gitAccess.getLastLocalCommit().getName() + "^{commit}"));
 
 	}
+	
+	@Test
+	public void testPushRejected()
+			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException {
+		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		StoredConfig config = gitAccess.getRepository().getConfig();
+		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
+		URIish uri = new URIish(db2.getDirectory().toURI().toURL());
+		remoteConfig.addURI(uri);
+		remoteConfig.update(config);
+		config.save();
+
+		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+		gitAccess.commit("file test added");
+		gitAccess.push("", "");
+		
+		gitAccess.setRepository(SECOND_TEST_REPOSITPRY);
+		config = gitAccess.getRepository().getConfig();
+		remoteConfig = new RemoteConfig(config, "origin");
+		uri = new URIish(db2.getDirectory().toURI().toURL());
+		remoteConfig.addURI(uri);
+		remoteConfig.update(config);
+		config.save();
+
+		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+		gitAccess.commit("file poc");
+		Status actual = gitAccess.push("", "");
+		Status expected = Status.REJECTED_NONFASTFORWARD;
+		assertEquals(expected, actual);
+		
+	}
 
 	@After
 	public void freeResources() {
 		gitAccess.close();
+		db1.close();
 		db2.close();
+		db3.close();
 		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 		try {
 			FileUtils.deleteDirectory(dirToDelete);
 			dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
+			FileUtils.deleteDirectory(dirToDelete);
+			dirToDelete = new File(SECOND_TEST_REPOSITPRY);
 			FileUtils.deleteDirectory(dirToDelete);
 		} catch (IOException e) {
 			e.printStackTrace();
