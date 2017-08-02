@@ -97,13 +97,17 @@ public class PushPullController implements Subject<PushPullEvent> {
 						pull(userCredentials);
 					}
 				} catch (GitAPIException e) {
-					if (e.getMessage().contains("not authorized") || e.getMessage().contains("not permitted")) {
+					if (e.getMessage().contains("not authorized")) {
 						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								"Invalid credentials for " + userCredentials.getUsername());
 						UserCredentials loadNewCredentials = loadNewCredentials();
 						if (loadNewCredentials != null) {
 							execute(command);
 						}
+					}
+					if (e.getMessage().contains("not permitted")) {
+						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								"You have no rights to push in this repository " + userCredentials.getUsername());
 					}
 					e.printStackTrace();
 				} catch (RevisionSyntaxException e) {
@@ -158,9 +162,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 					new PullDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "Information", true,
 							response.getConflictingFiles());
 
-				} else if (PullStatus.UP_TO_DATE == response.getStatus()){
+				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-					.showInformationMessage("Repository is already up to date");
+							.showInformationMessage("Repository is already up to date");
 				}
 			}
 
@@ -173,7 +177,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * @throws InvalidRemoteException
 			 * @throws TransportException
 			 * @throws GitAPIException
-			 * @throws IOException 
+			 * @throws IOException
 			 */
 			private void push(final UserCredentials userCredentials)
 					throws InvalidRemoteException, TransportException, GitAPIException, IOException {
@@ -187,7 +191,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 							.showInformationMessage("Push failed, please get your repository up to date(PULL)");
 				} else if (Status.UP_TO_DATE == status) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-					.showInformationMessage("There was nothing to push");
+							.showInformationMessage("There was nothing to push");
 				}
 			}
 		}).start();

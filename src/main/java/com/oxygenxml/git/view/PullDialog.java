@@ -38,7 +38,7 @@ public class PullDialog extends OKCancelDialog{
 		getContentPane().add(scollPane, BorderLayout.SOUTH);
 		getCancelButton().setVisible(false);
 		this.pack();
-		this.setLocationRelativeTo(null);
+		this.setLocationRelativeTo(frame);
 		this.setResizable(false);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);

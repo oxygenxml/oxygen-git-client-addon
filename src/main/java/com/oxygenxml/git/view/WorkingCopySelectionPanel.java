@@ -103,6 +103,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						// generate content for TREE_VIEW
 						parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
 						parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
+						
 					} catch (RepositoryNotFoundException ex) {
 						OptionsManager.getInstance().removeSelectedRepository(path);
 						workingCopySelector.setSelectedItem(null);
@@ -203,7 +204,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weighty = 0;
 
 		workingCopySelector = new JComboBox<String>();
-		workingCopySelector.setMinimumSize(new Dimension(10, 15));
+		workingCopySelector.setMinimumSize(new Dimension(10, 20));
 
 		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryEntry);
@@ -213,13 +214,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 			workingCopySelector.setSelectedItem(repositoryPath);
 			if (!repositoryPath.equals("") ) {
 				gitAccess.setRepository(repositoryPath);
-				/*List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-				List<FileStatus> stagedFiles = gitAccess.getStagedFile();
-				StagingPanel parent = (StagingPanel) this.getParent();
-				parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
-				parent.getStagedChangesPanel().updateFlatView(stagedFiles);
-				parent.getUnstagedChangesPanel().createTreeView(repositoryPath, unstagedFiles);
-				parent.getStagedChangesPanel().createTreeView(repositoryPath, stagedFiles);*/
 			}
 		} catch (IOException e) {
 			workingCopySelector.setSelectedItem(null);

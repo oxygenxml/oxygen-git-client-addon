@@ -15,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -48,9 +49,12 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.StageState;
 
-public class UnstagedChangesPanel extends JPanel {
+public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
 	private static final int FLAT_VIEW = 1;
 	private static final int TREE_VIEW = 2;
@@ -78,40 +82,8 @@ public class UnstagedChangesPanel extends JPanel {
 
 	}
 
-	public JTree getTree() {
-		return tree;
-	}
-
 	public JTable getFilesTable() {
 		return filesTable;
-	}
-
-	public void setFilesTable(JTable filesTable) {
-		this.filesTable = filesTable;
-	}
-
-	public JButton getStageAllButton() {
-		return stageAllButton;
-	}
-
-	public void setStageAllButton(JButton stageAllButton) {
-		this.stageAllButton = stageAllButton;
-	}
-
-	public JButton getSwitchViewButton() {
-		return switchViewButton;
-	}
-
-	public void setSwitchViewButton(JButton switchViewButton) {
-		this.switchViewButton = switchViewButton;
-	}
-
-	public JScrollPane getScrollPane() {
-		return scrollPane;
-	}
-
-	public void setScrollPane(JScrollPane scrollPane) {
-		this.scrollPane = scrollPane;
 	}
 
 	public void createTreeView(String path, List<FileStatus> filesStatus) {
@@ -152,12 +124,12 @@ public class UnstagedChangesPanel extends JPanel {
 		addStageSelectedButton(gbc);
 		addSwitchViewButton(gbc);
 		addFilesPanel(gbc);
-		
+
 		addSwitchButtonListener();
 		addStageSelectedButtonListener();
 		addStageAllButtonListener();
-	
-		if(!staging){
+
+		if (!staging) {
 			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 			updateFlatView(unstagedFiles);
 			createTreeView(OptionsManager.getInstance().getSelectedRepository(), unstagedFiles);
@@ -166,6 +138,7 @@ public class UnstagedChangesPanel extends JPanel {
 			updateFlatView(stagedFiles);
 			createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFiles);
 		}
+		stageController.registerObserver(this);
 	}
 
 	private void addStageAllButtonListener() {
@@ -203,6 +176,7 @@ public class UnstagedChangesPanel extends JPanel {
 					fileTreeModel.switchFilesStageState(selectedFiles);
 
 				}
+				stageSelectedButton.setEnabled(false);
 			}
 
 		});
@@ -295,6 +269,7 @@ public class UnstagedChangesPanel extends JPanel {
 		} else {
 			stageSelectedButton = new JButton("Stage selected");
 		}
+		stageSelectedButton.setEnabled(false);
 		this.add(stageSelectedButton, gbc);
 
 	}
@@ -409,6 +384,9 @@ public class UnstagedChangesPanel extends JPanel {
 				Point point = new Point(e.getX(), e.getY());
 				int row = filesTable.convertRowIndexToModel(filesTable.rowAtPoint(point));
 				int column = filesTable.columnAtPoint(point);
+				if (column != 1 || row == -1) {
+					filesTable.clearSelection();
+				}
 				if (column == 1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
 					StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 					int convertedRow = filesTable.convertRowIndexToModel(row);
@@ -416,7 +394,7 @@ public class UnstagedChangesPanel extends JPanel {
 					DiffPresenter diff = new DiffPresenter(file);
 					diff.showDiff();
 				}
-				if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
+				if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && row != -1) {
 
 					int clickedRow = filesTable.rowAtPoint(e.getPoint());
 					if (clickedRow >= 0 && clickedRow < filesTable.getRowCount()) {
@@ -428,6 +406,9 @@ public class UnstagedChangesPanel extends JPanel {
 					FileStatus file = getSelectedFile();
 					addContextualMenu(file);
 					contextualMenu.show(filesTable, e.getX(), e.getY());
+				}
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					toggleSelectedButton();
 				}
 			}
 
@@ -452,20 +433,9 @@ public class UnstagedChangesPanel extends JPanel {
 	}
 
 	private void addContextualMenu(final FileStatus file) {
-		//Open menu
-		JMenuItem open = new JMenuItem("Open");
-		open.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {
-				DiffPresenter diff = new DiffPresenter(file);
-				diff.openFile();
-			}
-
-		});
-		contextualMenu.add(open);
-
-		//Show Diff menu
-		JMenuItem showDiff = new JMenuItem("Show Diff");
+		// Show Diff menu
+		JMenuItem showDiff = new JMenuItem("Open in compare editor");
 		if (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.DELETE) {
 			showDiff.setEnabled(false);
 		}
@@ -478,14 +448,27 @@ public class UnstagedChangesPanel extends JPanel {
 		});
 		contextualMenu.add(showDiff);
 
-		//Discard Menu
+		// Open menu
+		JMenuItem open = new JMenuItem("Open");
+		open.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				DiffPresenter diff = new DiffPresenter(file);
+				diff.openFile();
+			}
+
+		});
+		contextualMenu.add(open);
+
+		// Discard Menu
 		JMenuItem discard = new JMenuItem("Discard");
 		discard.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				if (file.getChangeType() == GitChangeType.ADD) {
 					try {
-						FileUtils.forceDelete(new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
+						FileUtils.forceDelete(
+								new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -497,6 +480,17 @@ public class UnstagedChangesPanel extends JPanel {
 						e1.printStackTrace();
 					}
 				}
+				
+				StageState newState = StageState.STAGED;
+				StageState oldState = StageState.UNSTAGED;
+				if(staging){
+					newState = StageState.UNSTAGED;
+					oldState = StageState.STAGED;
+				}
+				List<FileStatus> files = new ArrayList<FileStatus>();
+				files.add(file);
+				ChangeEvent changeEvent = new ChangeEvent(newState , oldState, files);
+				//stageController.stateChanged(changeEvent);
 			}
 		});
 		contextualMenu.add(discard);
@@ -508,6 +502,18 @@ public class UnstagedChangesPanel extends JPanel {
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 		FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
 		return file;
+	}
+
+	public void stateChanged(ChangeEvent changeEvent) {
+		toggleSelectedButton();
+	}
+
+	private void toggleSelectedButton() {
+		if (filesTable.getSelectedRowCount() > 0) {
+			stageSelectedButton.setEnabled(true);
+		} else {
+			stageSelectedButton.setEnabled(false);
+		}
 	}
 
 }

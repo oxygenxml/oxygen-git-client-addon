@@ -98,6 +98,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			@Override
 			public void focusGained(final FocusEvent e) {
 				// The focus is somewhere in he view.
+				System.out.println("Focus is " + inTheView);
 				if (!inTheView) {
 					// The focus was lost but now is back.
 					updateFiles(StageState.UNSTAGED);

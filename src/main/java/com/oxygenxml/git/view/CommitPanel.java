@@ -18,13 +18,14 @@ import javax.swing.ScrollPaneConstants;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-public class CommitPanel extends JPanel {
+public class CommitPanel extends JPanel implements Observer<ChangeEvent>{
 
 	private StageController stageController;
 	private JLabel label;
@@ -49,7 +50,7 @@ public class CommitPanel extends JPanel {
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
-
+		stageController.registerObserver(this);
 		addLabel(gbc);
 		addCommitMessageTextArea(gbc);
 		addCommitButton(gbc);
@@ -115,7 +116,16 @@ public class CommitPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		commitButton = new JButton("Commit");
+		commitButton.setEnabled(false);
 		this.add(commitButton, gbc);
+	}
+
+	public void stateChanged(ChangeEvent changeEvent) {
+		if(gitAccess.getStagedFile().size() > 0){
+			commitButton.setEnabled(true);
+		} else {
+			commitButton.setEnabled(false);
+		}
 	}
 
 }
