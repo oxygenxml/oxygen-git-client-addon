@@ -1,6 +1,9 @@
 package com.oxygenxml.git.view;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 
@@ -26,6 +30,8 @@ public class ToolbarPanel extends JPanel {
 	private JButton pushButton;
 	private JButton pullButton;
 	private JButton storeCredentials;
+	private int pushesAhead = 0 ;
+	private int pullsBehind = 0;
 
 	public ToolbarPanel(PushPullController pushPullController) {
 		this.pushPullController = pushPullController;
@@ -39,6 +45,11 @@ public class ToolbarPanel extends JPanel {
 		return pullButton;
 	}
 
+	public void setPullsBehind(int pullsBehind){
+		this.pullsBehind = pullsBehind;
+		System.out.println("repaint with " + pullsBehind);
+		pullButton.repaint();
+	}
 	/**
 	 * Sets the panel layout and creates all the buttons with their functionality
 	 * making the visible
@@ -57,7 +68,22 @@ public class ToolbarPanel extends JPanel {
 	private void addPushAndPullButtons() {
 		gitToolbar = new JToolBar();
 		gitToolbar.setFloatable(false);
-		pushButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PUSH_ICON)));
+		pushButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PUSH_ICON))) {
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				
+				// TODO Paint the counter
+				String str = "" + GitAccess.getInstance().getNumberOfCommitsFromBase();
+				g.setFont(g.getFont().deriveFont(Font.BOLD));
+				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+				int stringWidth = fontMetrics.stringWidth(str);
+				g.drawString(
+						str, 
+						pushButton.getWidth() - stringWidth, 
+						pushButton.getHeight() - fontMetrics.getDescent());
+			}
+		};
 		pushButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -67,7 +93,22 @@ public class ToolbarPanel extends JPanel {
 		pushButton.setToolTipText("Push");
 		gitToolbar.add(pushButton);
 
-		pullButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PULL_ICON)));
+		pullButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PULL_ICON))){
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				
+				String str = "" + pullsBehind;
+				g.setFont(g.getFont().deriveFont(Font.BOLD));
+				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+				int stringWidth = fontMetrics.stringWidth(str);
+				g.drawString(
+						str, 
+						pushButton.getWidth() - stringWidth, 
+						pushButton.getHeight() - fontMetrics.getDescent());
+			}
+			
+		};
 		pullButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

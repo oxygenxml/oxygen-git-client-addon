@@ -55,6 +55,14 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		return stagedChangesPanel;
 	}
 
+	public CommitPanel getCommitPanel() {
+		return commitPanel;
+	}
+	
+	public ToolbarPanel getToolbarPanel(){
+		return toolbarPanel;
+	}
+
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
 
@@ -83,9 +91,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		addSplitPanel(gbc, splitPane);
 		addCommitPanel(gbc);
 
+		workingCopySelectionPanel.createGUI();
 		toolbarPanel.createGUI();
 		commitPanel.createGUI();
-		workingCopySelectionPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
 
@@ -103,7 +111,26 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 					// The focus was lost but now is back.
 					updateFiles(StageState.UNSTAGED);
 					updateFiles(StageState.STAGED);
-
+					new SwingWorker<Integer, Integer>(){
+						protected Integer doInBackground() throws Exception {
+							GitAccess.getInstance().fetch();
+							return GitAccess.getInstance().getNumberOfCommits();
+						}
+						
+						@Override
+						protected void done() {
+							super.done();
+							try {
+								int pullsBehind = get();
+								toolbarPanel.setPullsBehind(pullsBehind);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							} catch (ExecutionException e) {
+								e.printStackTrace();
+							}
+						}
+					}.execute();
+					
 				}
 				inTheView = true;
 			}
@@ -249,7 +276,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(true);
 			toolbarPanel.getPushButton().setEnabled(true);
 			toolbarPanel.getPullButton().setEnabled(true);
-			commitPanel.getCommitButton().setEnabled(true);
 			unstagedChangesPanel.updateFlatView(GitAccess.getInstance().getUnstagedFiles());
 			unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(),
 					GitAccess.getInstance().getUnstagedFiles());

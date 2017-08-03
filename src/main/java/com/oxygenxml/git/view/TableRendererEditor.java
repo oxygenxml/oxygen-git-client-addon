@@ -18,17 +18,20 @@ import javax.swing.table.TableModel;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.event.StageController;
 
 public class TableRendererEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
 	private JTable table;
+	private StageController stageController;
 	private JButton button;
 	private JButton editedButton;
 	private int[] hovered = null;
 	private int[] previousHovered = null;
+	
 
-	private TableRendererEditor(JTable table) {
-
+	private TableRendererEditor(JTable table, StageController stageController) {
+		this.stageController = stageController;
 		this.table = table;
 		this.button = new JButton();
 		this.editedButton = new JButton();
@@ -36,8 +39,8 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 		addMouseMotionListener();
 	}
 
-	public static void install(JTable table) {
-		TableRendererEditor tableRendereEditor = new TableRendererEditor(table);
+	public static void install(JTable table, StageController stageController) {
+		TableRendererEditor tableRendereEditor = new TableRendererEditor(table, stageController);
 		TableColumn column = table.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN);
 		column.setCellRenderer(tableRendereEditor);
 		column.setCellEditor(tableRendereEditor);
@@ -98,7 +101,7 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 				editedButton.addActionListener(new ActionListener() {
 					
 					public void actionPerformed(ActionEvent e) {
-						DiffPresenter diff = new DiffPresenter(file);
+						DiffPresenter diff = new DiffPresenter(file, stageController);
 						diff.showDiff();
 						fireEditingStopped();
 					}

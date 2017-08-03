@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CanceledException;
@@ -28,7 +29,7 @@ import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.LoginDialog;
-import com.oxygenxml.git.view.PullDialog;
+import com.oxygenxml.git.view.PullWithConflictsDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -159,7 +160,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					// prompts a dialog showing the files in conflict
-					new PullDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "Information", true,
+					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "Information", true,
 							response.getConflictingFiles());
 
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {

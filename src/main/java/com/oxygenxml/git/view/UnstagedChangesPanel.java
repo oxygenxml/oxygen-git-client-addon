@@ -318,7 +318,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		// set the button column width
 		filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(100);
 
-		TableRendererEditor.install(filesTable);
+		TableRendererEditor.install(filesTable, stageController);
 
 		filesTable.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
 
@@ -391,7 +391,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 					StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 					int convertedRow = filesTable.convertRowIndexToModel(row);
 					FileStatus file = model.getUnstageFile(convertedRow);
-					DiffPresenter diff = new DiffPresenter(file);
+					DiffPresenter diff = new DiffPresenter(file, stageController);
 					diff.showDiff();
 				}
 				if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && row != -1) {
@@ -442,7 +442,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		showDiff.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				DiffPresenter diff = new DiffPresenter(file);
+				DiffPresenter diff = new DiffPresenter(file, stageController);
 				diff.showDiff();
 			}
 		});
@@ -453,7 +453,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		open.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				DiffPresenter diff = new DiffPresenter(file);
+				DiffPresenter diff = new DiffPresenter(file, stageController);
 				diff.openFile();
 			}
 
@@ -481,16 +481,12 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 					}
 				}
 				
-				StageState newState = StageState.STAGED;
-				StageState oldState = StageState.UNSTAGED;
-				if(staging){
-					newState = StageState.UNSTAGED;
-					oldState = StageState.STAGED;
-				}
+				StageState oldState = StageState.UNDEFINED;
+				StageState newState = StageState.DISCARD;
 				List<FileStatus> files = new ArrayList<FileStatus>();
 				files.add(file);
 				ChangeEvent changeEvent = new ChangeEvent(newState , oldState, files);
-				//stageController.stateChanged(changeEvent);
+				stageController.stateChanged(changeEvent);
 			}
 		});
 		contextualMenu.add(discard);
@@ -514,6 +510,10 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		} else {
 			stageSelectedButton.setEnabled(false);
 		}
+	}
+	
+	public JButton getStageSelectedButton(){
+		return stageSelectedButton;
 	}
 
 }

@@ -103,10 +103,10 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	}
 
 	public void switchFileStageState(int convertedRow) {
-		// Update the table model. remove the file.
 		if (filesStatus.get(convertedRow).getChangeType() == GitChangeType.CONFLICT) {
 			return;
 		}
+		// Update the table model. remove the file.
 		FileStatus fileStatus = filesStatus.remove(convertedRow);
 
 		StageState newSTate = StageState.UNSTAGED;
@@ -178,17 +178,18 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			} else {
 				insertRows(fileToBeUpdated);
 			}
-		} else {
+		} else if(changeEvent.getNewState() == StageState.COMMITED){
 			if (forStaging) {
 				filesStatus.clear();
 			}
+		} else if(changeEvent.getNewState() == StageState.DISCARD){
+			deleteRows(fileToBeUpdated);
 		}
 		fireTableDataChanged();
 	}
 
 	private void deleteRows(List<FileStatus> fileToBeUpdated) {
 		filesStatus.removeAll(fileToBeUpdated);
-
 	}
 
 	private void insertRows(List<FileStatus> fileToBeUpdated) {

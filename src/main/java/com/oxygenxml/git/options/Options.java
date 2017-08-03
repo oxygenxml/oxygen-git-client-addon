@@ -24,6 +24,9 @@ public class Options {
 	@XmlElement(name = "userCredentials")
 	private UserCredentialsList userCredentialsList = new UserCredentialsList();
 
+	@XmlElement(name = "commitMessages")
+	private CommitMessages commitMessages = new CommitMessages();
+
 	public RepositoryLocations getRepositoryLocations() {
 		return repositoryLocations;
 	}
@@ -46,6 +49,14 @@ public class Options {
 
 	public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
 		this.userCredentialsList = userCredentialsList;
+	}
+
+	public CommitMessages getCommitMessages() {
+		return commitMessages;
+	}
+
+	public void setCommitMessages(CommitMessages commitMessages) {
+		this.commitMessages = commitMessages;
 	}
 
 }

@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
@@ -64,7 +63,9 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
+import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
@@ -80,7 +81,6 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
-import com.thaiopensource.relaxng.input.InputFailedException;
 
 import de.schlichtherle.io.FileInputStream;
 
@@ -122,6 +122,9 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
+		if(git != null){
+			git.close();
+		}
 		git = Git.open(new File(path + "/.git"));
 	}
 
@@ -441,7 +444,6 @@ public class GitAccess {
 			git.reset().call();
 			PullResult call = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
 					.call();
-
 			MergeResult mergeResult = call.getMergeResult();
 			if (mergeResult != null) {
 				if (mergeResult.getConflicts() != null) {
@@ -767,4 +769,63 @@ public class GitAccess {
 		this.conflict = conflict;
 	}
 
+	public int getNumberOfCommitsFromBase() {
+		int numberOfCommits = 0;
+		Repository repository = git.getRepository();
+		RevWalk walk = new RevWalk(repository);
+		walk.reset();
+		try {
+			RevCommit localCommit = walk.parseCommit(getLastLocalCommit());
+			System.out.println("Local commit: " + localCommit.getFullMessage());
+			RevCommit baseCommit = walk.parseCommit(getBaseCommit());
+			System.out.println("Base commit: " + baseCommit.getFullMessage());
+			RevCommit remoteCommit = walk.parseCommit(getRemoteCommit());
+			System.out.println("Remote commit: " + remoteCommit.getFullMessage());
+
+			numberOfCommits = RevWalkUtils.count(walk, localCommit, baseCommit);
+
+		} catch (MissingObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		walk.close();
+		return numberOfCommits;
+	}
+
+	public int getNumberOfCommits() {
+		int numberOfCommits = 0;
+		Repository repository = git.getRepository();
+		RevWalk walk = new RevWalk(repository);
+		walk.reset();
+		try {
+			RevCommit remoteCommit = walk.parseCommit(getRemoteCommit());
+			RevCommit baseCommit = walk.parseCommit(getBaseCommit());
+			numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
+		} catch (RevisionSyntaxException e) {
+			e.printStackTrace();
+		} catch (AmbiguousObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		walk.close();
+		return numberOfCommits;
+	}
+
+	public void fetch() {
+		try {
+			git.fetch().setCheckFetchedObjects(false).setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
+		} catch (InvalidRemoteException e) {
+			e.printStackTrace();
+		} catch (TransportException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
 }

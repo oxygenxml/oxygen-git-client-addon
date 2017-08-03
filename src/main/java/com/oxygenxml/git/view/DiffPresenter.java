@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -14,12 +16,17 @@ import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 
+import com.google.common.util.concurrent.Service.State;
 import com.oxygenxml.git.protocol.GitFile;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
+import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.StageState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -28,8 +35,10 @@ public class DiffPresenter {
 
 	private FileStatus file;
 	private Component diffFrame;
+	private StageController stageController;
 
-	public DiffPresenter(FileStatus file) {
+	public DiffPresenter(FileStatus file, StageController stageController) {
+		this.stageController = stageController;
 		this.file = file;
 	}
 
@@ -111,9 +120,21 @@ public class DiffPresenter {
 						if (response == 0) {
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
 							GitAccess.getInstance().add(file);
+							StageState oldState = StageState.UNDEFINED;
+							StageState newState = StageState.DISCARD;
+							List<FileStatus> files = new ArrayList<FileStatus>();
+							files.add(file);
+							ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+							stageController.stateChanged(changeEvent);
 						}
 					} else {
-						GitAccess.getInstance().add(file);
+						file.setChangeType(GitChangeType.MODIFY);
+						StageState oldState = StageState.UNSTAGED;
+						StageState newState = StageState.STAGED;
+						List<FileStatus> files = new ArrayList<FileStatus>();
+						files.add(file);
+						ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+						stageController.stateChanged(changeEvent);
 					}
 					diffFrame.removeComponentListener(this);
 				}

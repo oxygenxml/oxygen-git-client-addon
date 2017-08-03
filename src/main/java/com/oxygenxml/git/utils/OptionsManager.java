@@ -34,6 +34,7 @@ public class OptionsManager {
 	private static Logger logger = Logger.getLogger(OptionsManager.class);
 
 	private static final String REPOSITORY_FILENAME = "Options.xml";
+	private static final int PREVIOUSLY_COMMITED_MESSAGES = 7;
 
 	/**
 	 * All Repositories that were selected by the user with their options
@@ -217,6 +218,29 @@ public class OptionsManager {
 
 		UserCredentials userCredentials = new UserCredentials(username, decryptedPassword, host);
 		return userCredentials;
+	}
+
+	public List<String> getPreviouslyCommitedMessages() {
+		loadRepositoryOptions();
+
+		return options.getCommitMessages().getMessages();
+
+	}
+
+	public void saveCommitMessage(String commitMessage) {
+		loadRepositoryOptions();
+
+		List<String> messages = options.getCommitMessages().getMessages();
+		if(messages.contains(commitMessage)){
+			messages.remove(commitMessage);
+		}
+		messages.add(0, commitMessage);
+		if (messages.size() > PREVIOUSLY_COMMITED_MESSAGES) {
+			messages.remove(messages.size() - 1);
+		}
+		options.getCommitMessages().setMessages(messages);
+		
+		saveRepositoryOptions();
 	}
 
 }

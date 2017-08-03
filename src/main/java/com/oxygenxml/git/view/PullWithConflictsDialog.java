@@ -15,9 +15,9 @@ import javax.swing.border.EmptyBorder;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
-public class PullDialog extends OKCancelDialog{
+public class PullWithConflictsDialog extends OKCancelDialog{
 
-	public PullDialog(JFrame frame, String title, boolean modal, Set<String> conflictFiles) {
+	public PullWithConflictsDialog(JFrame frame, String title, boolean modal, Set<String> conflictFiles) {
 		super(frame, title, modal);
 		
 		JLabel label = new JLabel("Pull Successful with conflicts: ");

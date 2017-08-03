@@ -7,5 +7,5 @@ package com.oxygenxml.git.view.event;
  *
  */
 public enum StageState {
-	STAGED, UNSTAGED, COMMITED
+	STAGED, UNSTAGED, COMMITED, UNDEFINED, DISCARD
 }

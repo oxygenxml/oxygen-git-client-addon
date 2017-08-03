@@ -104,6 +104,16 @@ public class WorkingCopySelectionPanel extends JPanel {
 						parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
 						parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
 						
+						if(gitAccess.getStagedFile().size() > 0){
+							parent.getCommitPanel().getCommitButton().setEnabled(true);
+						} else {
+							parent.getCommitPanel().getCommitButton().setEnabled(false);
+						}
+						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
+						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
+						
+						gitAccess.fetch();
+						parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getNumberOfCommits());
 					} catch (RepositoryNotFoundException ex) {
 						OptionsManager.getInstance().removeSelectedRepository(path);
 						workingCopySelector.setSelectedItem(null);

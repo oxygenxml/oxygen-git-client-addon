@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Entity for the JAXB to store the list of repository locations
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 @XmlRootElement(name = "repositoryLocations")
