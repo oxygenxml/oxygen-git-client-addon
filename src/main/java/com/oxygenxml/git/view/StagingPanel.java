@@ -98,6 +98,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		stagedChangesPanel.createGUI();
 
 		registerSubject(pushPullController);
+		registerSubject(commitPanel);
 
 		// Detect focus transitions between the view and the outside.
 		installFocusListener(this, new FocusAdapter() {
@@ -106,7 +107,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			@Override
 			public void focusGained(final FocusEvent e) {
 				// The focus is somewhere in he view.
-				System.out.println("Focus is " + inTheView);
 				if (!inTheView) {
 					// The focus was lost but now is back.
 					updateFiles(StageState.UNSTAGED);
@@ -114,7 +114,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 					new SwingWorker<Integer, Integer>(){
 						protected Integer doInBackground() throws Exception {
 							GitAccess.getInstance().fetch();
-							return GitAccess.getInstance().getNumberOfCommits();
+							return GitAccess.getInstance().getPullsBehind();
 						}
 						
 						@Override
@@ -266,12 +266,14 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 	public void stateChanged(PushPullEvent pushPullEvent) {
 		if (pushPullEvent.getActionStatus() == ActionStatus.STARTED) {
+			commitPanel.setStatus(pushPullEvent.getMessage());
 			workingCopySelectionPanel.getBrowseButton().setEnabled(false);
 			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(false);
 			toolbarPanel.getPushButton().setEnabled(false);
 			toolbarPanel.getPullButton().setEnabled(false);
 			commitPanel.getCommitButton().setEnabled(false);
-		} else {
+		} else if(pushPullEvent.getActionStatus() == ActionStatus.FINISHED){
+			commitPanel.setStatus(pushPullEvent.getMessage());
 			workingCopySelectionPanel.getBrowseButton().setEnabled(true);
 			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(true);
 			toolbarPanel.getPushButton().setEnabled(true);
@@ -279,6 +281,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			unstagedChangesPanel.updateFlatView(GitAccess.getInstance().getUnstagedFiles());
 			unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(),
 					GitAccess.getInstance().getUnstagedFiles());
+			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
+			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
+		} else if(pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT){
+			commitPanel.setStatus(pushPullEvent.getMessage());
+			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
+			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
 		}
 	}
 

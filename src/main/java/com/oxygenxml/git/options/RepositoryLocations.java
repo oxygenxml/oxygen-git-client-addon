@@ -18,6 +18,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RepositoryLocations {
 
+	/**
+	 * The list with the users repositories
+	 */
 	@XmlElement(name = "location")
 	private Set<String> locations = new HashSet<String>();
 

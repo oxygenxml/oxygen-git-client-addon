@@ -15,15 +15,28 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Options {
 
+	/**
+	 * Wrapper for a list with the repository locations
+	 */
 	@XmlElement(name = "repositoryLocations")
 	private RepositoryLocations repositoryLocations = new RepositoryLocations();
 
+	/**
+	 * Last selected repository from the user
+	 */
 	@XmlElement(name = "selectedRepository")
 	private String selectedRepository = "";
 
+	/**
+	 * A list of user credentials containing the username, password and the host.
+	 * Only one credential per host can be stored
+	 */
 	@XmlElement(name = "userCredentials")
 	private UserCredentialsList userCredentialsList = new UserCredentialsList();
 
+	/**
+	 * Wrapper for a list of commit messages
+	 */
 	@XmlElement(name = "commitMessages")
 	private CommitMessages commitMessages = new CommitMessages();
 

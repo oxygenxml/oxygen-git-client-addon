@@ -86,16 +86,23 @@ public class PushPullController implements Subject<PushPullEvent> {
 	public void execute(final Command command) {
 		this.command = command;
 		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
-		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED);
+		String message = "";
+		if(command == Command.PUSH){
+			message = "Pushing...";
+		} else {
+			message = "Pulling...";
+		}
+		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
 		notifyObservers(pushPullEvent);
 		new Thread(new Runnable() {
 
 			public void run() {
+				String message = "";
 				try {
 					if (command == Command.PUSH) {
-						push(userCredentials);
+						message = push(userCredentials);
 					} else {
-						pull(userCredentials);
+						message = pull(userCredentials);
 					}
 				} catch (GitAPIException e) {
 					if (e.getMessage().contains("not authorized")) {
@@ -120,7 +127,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
-					PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED);
+					PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);
 					notifyObservers(pushPullEvent);
 				}
 
@@ -146,14 +153,16 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * @throws IncorrectObjectTypeException
 			 * @throws IOException
 			 */
-			private void pull(final UserCredentials userCredentials)
+			private String pull(final UserCredentials userCredentials)
 					throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException,
 					InvalidRemoteException, CanceledException, RefNotFoundException, RefNotAdvertisedException, NoHeadException,
 					TransportException, GitAPIException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
 				PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
+				String message = "";
 				if (PullStatus.OK == response.getStatus()) {
-					JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-							"Pull successful");
+					//JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+					//		"Pull successful");
+					message = "Pull successful"; 
 				} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showInformationMessage("Cannot pull with uncommited changes");
@@ -164,9 +173,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 							response.getConflictingFiles());
 
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
-					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showInformationMessage("Repository is already up to date");
+					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+					//		.showInformationMessage("Repository is already up to date");
+					message = "Repository is already up to date";
 				}
+				return message;
 			}
 
 			/**
@@ -180,20 +191,23 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * @throws GitAPIException
 			 * @throws IOException
 			 */
-			private void push(final UserCredentials userCredentials)
+			private String push(final UserCredentials userCredentials)
 					throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 				Status status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
-
+				String message = "";
 				if (Status.OK == status) {
-					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showInformationMessage("Push successful");
+					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+						//	.showInformationMessage("Push successful");
+					message = "Push successful";
 				} else if (Status.REJECTED_NONFASTFORWARD == status) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showInformationMessage("Push failed, please get your repository up to date(PULL)");
 				} else if (Status.UP_TO_DATE == status) {
-					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showInformationMessage("There was nothing to push");
+					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+					//		.showInformationMessage("There was nothing to push");.
+					message = "There was nothing to push";
 				}
+				return message;
 			}
 		}).start();
 	}

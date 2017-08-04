@@ -12,9 +12,11 @@ public class PushPullEvent {
 	 * The state in which the push or pull is (Started or Finished)
 	 */
 	private ActionStatus actionStatus;
+	private String message;
 
-	public PushPullEvent(ActionStatus actionStatus) {
+	public PushPullEvent(ActionStatus actionStatus, String message) {
 		this.actionStatus = actionStatus;
+		this.message = message;
 	}
 
 	public ActionStatus getActionStatus() {
@@ -23,6 +25,14 @@ public class PushPullEvent {
 
 	public void setActionStatus(ActionStatus actionStatus) {
 		this.actionStatus = actionStatus;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+	
+	public void setMessage(String message){
+		this.message = message;
 	}
 
 }

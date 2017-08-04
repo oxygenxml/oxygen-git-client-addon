@@ -9,7 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Entity for the JAXB to store the list of commit messages
+ * Entity for the JAXB to store the list of commit messages. Stores last 7
+ * committed messages
  * 
  * @author Beniamin Savu
  *
@@ -18,6 +19,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CommitMessages {
 
+	/**
+	 * The last 7 committed messages
+	 */
 	@XmlElement(name = "message")
 	private List<String> messages = new ArrayList<String>();
 

@@ -15,6 +15,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserCredentials {
 
+	/**
+	 * The host for which the username and password are validF
+	 */
 	@XmlElement(name = "host")
 	private String host="";
 

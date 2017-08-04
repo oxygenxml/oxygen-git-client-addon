@@ -87,10 +87,9 @@ public class WorkingCopySelectionPanel extends JPanel {
 					// get and save the selected Option so that at restart the same
 					// repository will be selected
 					String path = (String) workingCopySelector.getSelectedItem();
-					
 
 					try {
-						
+
 						gitAccess.setRepository(path);
 						OptionsManager.getInstance().saveSelectedRepository(path);
 						List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
@@ -103,22 +102,27 @@ public class WorkingCopySelectionPanel extends JPanel {
 						// generate content for TREE_VIEW
 						parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
 						parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
-						
-						if(gitAccess.getStagedFile().size() > 0){
+
+						if (gitAccess.getStagedFile().size() > 0) {
 							parent.getCommitPanel().getCommitButton().setEnabled(true);
 						} else {
 							parent.getCommitPanel().getCommitButton().setEnabled(false);
 						}
 						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
 						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
-						
-						gitAccess.fetch();
-						parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getNumberOfCommits());
+						SwingUtilities.invokeLater(new Runnable() {
+
+							public void run() {
+								gitAccess.fetch();
+								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
+								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
+							}
+						});
 					} catch (RepositoryNotFoundException ex) {
 						OptionsManager.getInstance().removeSelectedRepository(path);
 						workingCopySelector.setSelectedItem(null);
 						workingCopySelector.removeItem(path);
-					
+
 						// clear content from FLAT_VIEW
 						parent.getUnstagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
 						parent.getStagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
@@ -127,11 +131,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 						parent.getUnstagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
 						parent.getStagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
 						SwingUtilities.invokeLater(new Runnable() {
-							
+
 							public void run() {
 								JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 										"The selected repository was not found");
-								
+
 							}
 						});
 					} catch (IOException e1) {
@@ -222,7 +226,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
 		try {
 			workingCopySelector.setSelectedItem(repositoryPath);
-			if (!repositoryPath.equals("") ) {
+			if (!repositoryPath.equals("")) {
 				gitAccess.setRepository(repositoryPath);
 			}
 		} catch (IOException e) {

@@ -16,7 +16,8 @@ import com.oxygenxml.git.utils.FileHelper;
 
 /**
  * Handler for the "git" protocol. Can be used to for the three way diff on the
- * remote commit, last local commit and the base
+ * remote commit, last local commit and the base. It is also used for the 2 way
+ * diff with the Last Local Commit
  * 
  */
 public class GitRevisionURLHandler extends URLStreamHandler {
@@ -31,9 +32,22 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 */
 	private static class GitRevisionConnection extends URLConnection {
 
-		private ObjectId revision;
+		/**
+		 * The "file object" used to get the input stream from. The jgit library
+		 * uses this kind of object(ObjectId) to point to commits.
+		 */
+		private ObjectId fileObject;
+
+		/**
+		 * Path obtained from the URL. The path is relative to the selected
+		 * repository
+		 */
 		private String path;
-		private String hostInitiator;
+
+		/**
+		 * The host which is used to let the user write in the diff tool
+		 */
+		private String currentHost;
 
 		/**
 		 * Construct the connection
@@ -49,17 +63,17 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				GitAccess gitAccess = GitAccess.getInstance();
 				String host = getHost(url);
 				if (GitFile.LOCAL.equals(host)) {
-					revision = gitAccess.getLastLocalCommit();
-					hostInitiator = GitFile.LOCAL;
+					fileObject = gitAccess.getLastLocalCommit();
+					currentHost = GitFile.LOCAL;
 				} else if (GitFile.LAST_COMMIT.equals(host)) {
-					revision = gitAccess.getLastLocalCommit();
-					hostInitiator = GitFile.LAST_COMMIT;
+					fileObject = gitAccess.getLastLocalCommit();
+					currentHost = GitFile.LAST_COMMIT;
 				} else if (GitFile.REMOTE.equals(host)) {
-					revision = gitAccess.getRemoteCommit();
-					hostInitiator = GitFile.REMOTE;
+					fileObject = gitAccess.getRemoteCommit();
+					currentHost = GitFile.REMOTE;
 				} else if (GitFile.BASE.equals(host)) {
-					revision = gitAccess.getBaseCommit();
-					hostInitiator = GitFile.BASE;
+					fileObject = gitAccess.getBaseCommit();
+					currentHost = GitFile.BASE;
 				} else {
 					throw new Exception("Bad syntax: " + path);
 				}
@@ -68,6 +82,13 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			}
 		}
 
+		/**
+		 * Retrieves the host from the given URL
+		 * 
+		 * @param url
+		 *          - URL to get the host
+		 * @return the URL host
+		 */
 		private String getHost(URL url) {
 			path = url.getPath();
 			if (path.startsWith("/")) {
@@ -85,7 +106,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 */
 		public InputStream getInputStream() throws IOException {
 			GitAccess gitAccess = GitAccess.getInstance();
-			return gitAccess.getInputStream(revision, path);
+			return gitAccess.getInputStream(fileObject, path);
 		}
 
 		/**
@@ -94,7 +115,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the output stream
 		 */
 		public OutputStream getOutputStream() throws IOException {
-			if (GitFile.LOCAL.equals(hostInitiator)) {
+			if (GitFile.LOCAL.equals(currentHost)) {
 				URL fileContent = FileHelper.getFileURL(path);
 				return fileContent.openConnection().getOutputStream();
 			}
@@ -134,6 +155,16 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		return connection;
 	}
 
+	/**
+	 * Constructs an URL for the diff tool
+	 * 
+	 * @param gitFile
+	 *          - what file is used (Local, Last Commit, Base, Remote)
+	 * @param fileLocation
+	 *          - the file location relative to the repository
+	 * @return the URL of the form git://gitFile/fileLocation
+	 * @throws MalformedURLException
+	 */
 	public static URL buildURL(String gitFile, String fileLocation) throws MalformedURLException {
 		URL url = null;
 		if (gitFile.equals(GitFile.LOCAL)) {

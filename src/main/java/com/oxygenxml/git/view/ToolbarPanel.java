@@ -20,7 +20,7 @@ import com.oxygenxml.git.view.event.PushPullController;
 /**
  * Contains additional support buttons like push and pull
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 public class ToolbarPanel extends JPanel {
@@ -30,7 +30,7 @@ public class ToolbarPanel extends JPanel {
 	private JButton pushButton;
 	private JButton pullButton;
 	private JButton storeCredentials;
-	private int pushesAhead = 0 ;
+	private int pushesAhead = 0;
 	private int pullsBehind = 0;
 
 	public ToolbarPanel(PushPullController pushPullController) {
@@ -45,19 +45,26 @@ public class ToolbarPanel extends JPanel {
 		return pullButton;
 	}
 
-	public void setPullsBehind(int pullsBehind){
+	public void setPullsBehind(int pullsBehind) {
 		this.pullsBehind = pullsBehind;
-		System.out.println("repaint with " + pullsBehind);
 		pullButton.repaint();
 	}
+
+	public void setPushesAhead(int pushesAhead) {
+		this.pushesAhead = pushesAhead;
+		pushButton.repaint();
+	}
+
 	/**
 	 * Sets the panel layout and creates all the buttons with their functionality
 	 * making the visible
 	 */
 	public void createGUI() {
 		this.setLayout(new BorderLayout());
+		this.pushesAhead = GitAccess.getInstance().getPushesAhead();
+		this.pullsBehind = GitAccess.getInstance().getPullsBehind();
 		addPushAndPullButtons();
-		//addUndefinedButton();
+		// addUndefinedButton();
 
 		this.add(gitToolbar, BorderLayout.PAGE_START);
 	}
@@ -72,47 +79,51 @@ public class ToolbarPanel extends JPanel {
 			@Override
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				
+
 				// TODO Paint the counter
-				String str = "" + GitAccess.getInstance().getNumberOfCommitsFromBase();
+				String str = "";
+				if (pushesAhead > 0) {
+					str = "" + pushesAhead;
+				}
 				g.setFont(g.getFont().deriveFont(Font.BOLD));
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
 				int stringWidth = fontMetrics.stringWidth(str);
-				g.drawString(
-						str, 
-						pushButton.getWidth() - stringWidth, 
-						pushButton.getHeight() - fontMetrics.getDescent());
+				g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
 			}
 		};
 		pushButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				pushPullController.execute(Command.PUSH);
+				if (pullsBehind == 0) {
+					pushesAhead = 0;
+				}
 			}
 		});
 		pushButton.setToolTipText("Push");
 		gitToolbar.add(pushButton);
 
-		pullButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PULL_ICON))){
+		pullButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PULL_ICON))) {
 			@Override
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				
-				String str = "" + pullsBehind;
+
+				String str = "";
+				if (pullsBehind > 0) {
+					str = "" + pullsBehind;
+				}
 				g.setFont(g.getFont().deriveFont(Font.BOLD));
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
 				int stringWidth = fontMetrics.stringWidth(str);
-				g.drawString(
-						str, 
-						pushButton.getWidth() - stringWidth, 
-						pushButton.getHeight() - fontMetrics.getDescent());
+				g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
 			}
-			
+
 		};
 		pullButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				pushPullController.execute(Command.PULL);
+				pullsBehind = 0;
 			}
 		});
 		pullButton.setToolTipText("Pull");

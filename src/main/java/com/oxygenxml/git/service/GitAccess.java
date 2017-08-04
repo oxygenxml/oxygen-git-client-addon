@@ -102,6 +102,7 @@ public class GitAccess {
 	private Git git;
 
 	private boolean conflict = false;
+	private List<FileStatus> filesInConflict = new ArrayList<FileStatus>();
 	private static GitAccess instance;
 
 	private GitAccess() {
@@ -122,7 +123,7 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
-		if(git != null){
+		if (git != null) {
 			git.close();
 		}
 		git = Git.open(new File(path + "/.git"));
@@ -164,6 +165,7 @@ public class GitAccess {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 		List<FileStatus> stagedFiles = getStagedFile();
 		List<FileStatus> conflictingFiles = getConflictingFiles();
+		filesInConflict = conflictingFiles;
 		if (conflictingFiles.size() > 0) {
 			conflict = true;
 		}
@@ -244,6 +246,9 @@ public class GitAccess {
 	 */
 	public void commit(String message) {
 		try {
+			if(filesInConflict.size() > 0){
+				conflict = false;
+			}
 			git.commit().setMessage(message).call();
 		} catch (NoFilepatternException e) {
 			e.printStackTrace();
@@ -388,6 +393,7 @@ public class GitAccess {
 				Config storedConfig = git.getRepository().getConfig();
 				String url = storedConfig.getString("remote", "origin", "url");
 				git.commit().setMessage("Merge branch " + "'" + branch + "'" + " of " + url).call();
+				filesInConflict.clear();
 				conflict = false;
 			}
 			Iterable<PushResult> call = git.push()
@@ -647,7 +653,7 @@ public class GitAccess {
 	public ObjectId getRemoteCommit() {
 		Repository repo = git.getRepository();
 		try {
-			ObjectId remoteCommit = repo.resolve("FETCH_HEAD^{commit}");
+			ObjectId remoteCommit = repo.resolve("origin/master^{commit}");
 			return remoteCommit;
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
@@ -668,8 +674,8 @@ public class GitAccess {
 		ObjectId remoteCommit;
 		RevCommit baseCommit = null;
 		try {
-			localCommit = repository.resolve("FETCH_HEAD^{commit}");
-			remoteCommit = repository.resolve("HEAD^{commit}");
+			remoteCommit = repository.resolve("origin/master^{commit}");
+			localCommit = repository.resolve("HEAD^{commit}");
 			baseCommit = getCommonAncestor(walk, walk.parseCommit(localCommit), walk.parseCommit(remoteCommit));
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
@@ -736,7 +742,6 @@ public class GitAccess {
 			if (!file.exists()) {
 				file.getParentFile().mkdirs();
 				file.createNewFile();
-				System.out.println("file created");
 			}
 			out = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
@@ -769,18 +774,14 @@ public class GitAccess {
 		this.conflict = conflict;
 	}
 
-	public int getNumberOfCommitsFromBase() {
+	public int getPushesAhead() {
 		int numberOfCommits = 0;
 		Repository repository = git.getRepository();
 		RevWalk walk = new RevWalk(repository);
 		walk.reset();
 		try {
 			RevCommit localCommit = walk.parseCommit(getLastLocalCommit());
-			System.out.println("Local commit: " + localCommit.getFullMessage());
 			RevCommit baseCommit = walk.parseCommit(getBaseCommit());
-			System.out.println("Base commit: " + baseCommit.getFullMessage());
-			RevCommit remoteCommit = walk.parseCommit(getRemoteCommit());
-			System.out.println("Remote commit: " + remoteCommit.getFullMessage());
 
 			numberOfCommits = RevWalkUtils.count(walk, localCommit, baseCommit);
 
@@ -795,7 +796,7 @@ public class GitAccess {
 		return numberOfCommits;
 	}
 
-	public int getNumberOfCommits() {
+	public int getPullsBehind() {
 		int numberOfCommits = 0;
 		Repository repository = git.getRepository();
 		RevWalk walk = new RevWalk(repository);
@@ -819,12 +820,22 @@ public class GitAccess {
 
 	public void fetch() {
 		try {
-			git.fetch().setCheckFetchedObjects(false).setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
+			// RevWalk revWalk = new RevWalk(git.getRepository());
+			git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
+			// git.log().add(git.getRepository().resolve("origin/master")).call();
+			// FetchResult result = git.fetch().setRemote("origin").call();
+			// RevCommit commit =
+			// revWalk.parseCommit(result.getAdvertisedRef("refs/heads/" +
+			// git.getRepository().getBranch()).getTarget().getObjectId());
+			// System.out.println("Fetch last commit: " + commit.getFullMessage());
+			// revWalk.close();
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
 		} catch (TransportException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
+			e.printStackTrace();
+		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
 		}
 	}

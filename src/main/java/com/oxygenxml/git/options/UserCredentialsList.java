@@ -11,13 +11,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Enitity for the JAXB to store the user credentials
  * 
- * @author Beniamin SavuF
+ * @author Beniamin Savu
  *
  */
 @XmlRootElement(name = "userCredentials")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserCredentialsList {
 
+	/**
+	 * List with the credentials
+	 */
 	@XmlElement(name = "credential")
 	private List<UserCredentials> credentials = new ArrayList<UserCredentials>();
 
