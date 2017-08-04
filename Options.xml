@@ -14,12 +14,12 @@
         </credential>
     </userCredentials>
     <commitMessages>
-        <message>push 6</message>
-        <message>push 5</message>
         <message>push 4</message>
         <message>push 3</message>
         <message>push 2</message>
         <message>push 1</message>
-        <message>push 14</message>
+        <message>push 12</message>
+        <message>push 11</message>
+        <message>push 10</message>
     </commitMessages>
 </Options>

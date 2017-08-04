@@ -81,6 +81,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
+import com.oxygenxml.git.view.StatusMessages;
 
 import de.schlichtherle.io.FileInputStream;
 
@@ -123,9 +124,8 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
-		if (git != null) {
-			git.close();
-		}
+		filesInConflict.clear();
+		conflict = false;
 		git = Git.open(new File(path + "/.git"));
 	}
 
@@ -165,8 +165,8 @@ public class GitAccess {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 		List<FileStatus> stagedFiles = getStagedFile();
 		List<FileStatus> conflictingFiles = getConflictingFiles();
-		filesInConflict = conflictingFiles;
-		if (conflictingFiles.size() > 0) {
+		if (conflictingFiles.size() > 0 && filesInConflict.size() == 0) {
+			filesInConflict = conflictingFiles;
 			conflict = true;
 		}
 
@@ -246,7 +246,7 @@ public class GitAccess {
 	 */
 	public void commit(String message) {
 		try {
-			if(filesInConflict.size() > 0){
+			if (conflict) {
 				conflict = false;
 			}
 			git.commit().setMessage(message).call();
@@ -349,9 +349,10 @@ public class GitAccess {
 	 * @throws InvalidRemoteException
 	 * @throws IOException
 	 */
-	public org.eclipse.jgit.transport.RemoteRefUpdate.Status push(final String username, final String password)
+	public PushResponse push(final String username, final String password)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 
+		PushResponse response = new PushResponse();
 		Authenticator oldAuth = null;
 		try {
 			try {
@@ -388,30 +389,42 @@ public class GitAccess {
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
-			if (conflict) {
+			if (getConflictingFiles().size() > 0) {
+				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+				response.setMessage(StatusMessages.PUSH_WITH_CONFLICTS);
+				return response;
+			}
+			if (getPullsBehind() > 0) {
+				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+				response.setMessage(StatusMessages.BRANCH_BEHIND);
+				return response;
+			}
+			if (conflict && getConflictingFiles().size() == 0) {
 				String branch = git.getRepository().getBranch();
 				Config storedConfig = git.getRepository().getConfig();
 				String url = storedConfig.getString("remote", "origin", "url");
 				git.commit().setMessage("Merge branch " + "'" + branch + "'" + " of " + url).call();
-				filesInConflict.clear();
 				conflict = false;
 			}
+
 			Iterable<PushResult> call = git.push()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 			Iterator<PushResult> results = call.iterator();
 			while (results.hasNext()) {
 				PushResult result = results.next();
 				for (RemoteRefUpdate info : result.getRemoteUpdates()) {
-					return info.getStatus();
+					response.setStatus(info.getStatus());
+					return response;
 				}
 			}
-
 		} finally {
 			if (oldAuth != null) {
 				Authenticator.setDefault(oldAuth);
 			}
 		}
-		return org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON;
+		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+		response.setMessage(StatusMessages.PUSH_FAILED_UNKNOWN);
+		return response;
 	}
 
 	/**
@@ -470,6 +483,19 @@ public class GitAccess {
 
 	}
 
+	/**
+	 * Finds the common base for the given commit "a" and the given commit "b"
+	 * 
+	 * @param walk
+	 *          - used to browse through commits
+	 * @param a
+	 *          - commit "a"
+	 * @param b
+	 *          - commit "b"
+	 * @return the bese commit
+	 * @throws IncorrectObjectTypeException
+	 * @throws IOException
+	 */
 	private RevCommit getCommonAncestor(RevWalk walk, RevCommit a, RevCommit b)
 			throws IncorrectObjectTypeException, IOException {
 		walk.reset();
@@ -514,6 +540,7 @@ public class GitAccess {
 	 *          - the names of the files to be added
 	 */
 	public void addAll(List<FileStatus> files) {
+
 		try {
 			for (FileStatus file : files) {
 				if (file.getChangeType() == GitChangeType.DELETE) {
@@ -558,6 +585,11 @@ public class GitAccess {
 		return new ArrayList<FileStatus>();
 	}
 
+	/**
+	 * Gets the conflicting file from the git status
+	 * 
+	 * @return the conflicting files list
+	 */
 	public List<FileStatus> getConflictingFiles() {
 		try {
 			Status status = git.status().call();
@@ -633,6 +665,11 @@ public class GitAccess {
 		return url;
 	}
 
+	/**
+	 * Finds the last local commit in the repository
+	 * 
+	 * @return the last local commit
+	 */
 	public ObjectId getLastLocalCommit() {
 		Repository repo = git.getRepository();
 		try {
@@ -650,6 +687,11 @@ public class GitAccess {
 		return null;
 	}
 
+	/**
+	 * Finds the last remote commit from the remote repository
+	 * 
+	 * @return the last remote commit
+	 */
 	public ObjectId getRemoteCommit() {
 		Repository repo = git.getRepository();
 		try {
@@ -667,6 +709,11 @@ public class GitAccess {
 		return null;
 	}
 
+	/**
+	 * Finds the base commit from the last local commit and the remote commit
+	 * 
+	 * @return the base commitF
+	 */
 	public ObjectId getBaseCommit() {
 		Repository repository = git.getRepository();
 		RevWalk walk = new RevWalk(repository);
@@ -690,6 +737,19 @@ public class GitAccess {
 		return baseCommit.toObjectId();
 	}
 
+	/**
+	 * Gets the loader for a file from a specified commit and its path
+	 * 
+	 * @param commit
+	 *          - the commit from which to get the loader
+	 * @param path
+	 *          - the path to the file
+	 * @return the loader
+	 * @throws MissingObjectException
+	 * @throws IncorrectObjectTypeException
+	 * @throws CorruptObjectException
+	 * @throws IOException
+	 */
 	public ObjectLoader getLoaderFrom(ObjectId commit, String path)
 			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
 		Repository repository = git.getRepository();
@@ -713,6 +773,20 @@ public class GitAccess {
 		return loader;
 	}
 
+	/**
+	 * Gets the InputStream for the file that is found in the given commit at the
+	 * given path
+	 * 
+	 * @param commit
+	 *          - the commit in which the file exists
+	 * @param path
+	 *          - the path to the file
+	 * @return the InputStream for the file
+	 * @throws MissingObjectException
+	 * @throws IncorrectObjectTypeException
+	 * @throws CorruptObjectException
+	 * @throws IOException
+	 */
 	public InputStream getInputStream(ObjectId commit, String path)
 			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
 		ObjectLoader loader = getLoaderFrom(commit, path);
@@ -725,6 +799,9 @@ public class GitAccess {
 		return loader.openStream();
 	}
 
+	/**
+	 * Performs a git reset. The equivalent of the git command "git reset"
+	 */
 	public void reset() {
 		try {
 			git.reset().call();
@@ -735,6 +812,13 @@ public class GitAccess {
 		}
 	}
 
+	/**
+	 * Restores the last commit file content to the local file at the given path.
+	 * Both files must have the same path, otherwise it will not work.
+	 * 
+	 * @param fileLocation
+	 *          - the path to the file you want to restore
+	 */
 	public void restoreLastCommit(String fileLocation) {
 		File file = new File(OptionsManager.getInstance().getSelectedRepository() + "/" + fileLocation);
 		OutputStream out = null;
@@ -770,10 +854,12 @@ public class GitAccess {
 		}
 	}
 
-	public void isConflict(boolean conflict) {
-		this.conflict = conflict;
-	}
-
+	/**
+	 * Calculates how many commits the local repository is ahead from the current
+	 * local repository base commit
+	 * 
+	 * @return the number of commits ahead
+	 */
 	public int getPushesAhead() {
 		int numberOfCommits = 0;
 		Repository repository = git.getRepository();
@@ -796,6 +882,12 @@ public class GitAccess {
 		return numberOfCommits;
 	}
 
+	/**
+	 * Calculates how many commits the remote repository is ahead from the local
+	 * repository base commit
+	 * 
+	 * @return the number of commits the remote is ahead
+	 */
 	public int getPullsBehind() {
 		int numberOfCommits = 0;
 		Repository repository = git.getRepository();
@@ -818,6 +910,9 @@ public class GitAccess {
 		return numberOfCommits;
 	}
 
+	/**
+	 * Brings all the commits to the local repository
+	 */
 	public void fetch() {
 		try {
 			// RevWalk revWalk = new RevWalk(git.getRepository());
@@ -839,4 +934,5 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 	}
+
 }

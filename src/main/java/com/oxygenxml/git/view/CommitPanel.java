@@ -93,20 +93,23 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		commitButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile());
-				stageController.stateChanged(changeEvent);
-				gitAccess.commit(commitMessage.getText());
-				OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());
-				previouslyMessages.removeAllItems();
-				for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
-					previouslyMessages.addItem(previouslyCommitMessage);
+				String message = "";
+				if (gitAccess.getConflictingFiles().size() > 0) {
+					message = StatusMessages.COMMIT_WITH_CONFLICTS;
+				} else {
+					message = StatusMessages.COMMIT_SUCCESS;
+					ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile());
+					stageController.stateChanged(changeEvent);
+					gitAccess.commit(commitMessage.getText());
+					OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());
+					previouslyMessages.removeAllItems();
+					for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
+						previouslyMessages.addItem(previouslyCommitMessage);
+					}
+
+					commitButton.setEnabled(false);
 				}
 				commitMessage.setText("");
-				commitButton.setEnabled(false);
-				// ((StandalonePluginWorkspace)
-				// PluginWorkspaceProvider.getPluginWorkspace())
-				// .showInformationMessage("Commit successful");
-				String message = "Commit successful";
 				PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, message);
 				notifyObservers(pushPullEvent);
 			}
@@ -191,15 +194,15 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		commitButton = new JButton("Commit");
-		if (gitAccess.getStagedFile().size() > 0) {
-			commitButton.setEnabled(true);
-		} else {
-			commitButton.setEnabled(false);
-		}
+		toggleCommitButton();
 		this.add(commitButton, gbc);
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
+		toggleCommitButton();
+	}
+
+	private void toggleCommitButton() {
 		if (gitAccess.getStagedFile().size() > 0) {
 			commitButton.setEnabled(true);
 		} else {
@@ -223,6 +226,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	public void setStatus(final String message) {
+		toggleCommitButton();
 		new Thread(new Runnable() {
 
 			public void run() {
@@ -231,7 +235,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 						messagesActive++;
 						statusLabel.setText(message);
 					}
-					TimeUnit.SECONDS.sleep(5);
+					TimeUnit.SECONDS.sleep(3);
 					synchronized (this) {
 						messagesActive--;
 						if (messagesActive == 0) {

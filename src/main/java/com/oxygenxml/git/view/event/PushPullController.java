@@ -27,9 +27,11 @@ import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
+import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.LoginDialog;
 import com.oxygenxml.git.view.PullWithConflictsDialog;
+import com.oxygenxml.git.view.StatusMessages;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -162,7 +164,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 				if (PullStatus.OK == response.getStatus()) {
 					//JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 					//		"Pull successful");
-					message = "Pull successful"; 
+					message = StatusMessages.PULL_SUCCESSFUL;
 				} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showInformationMessage("Cannot pull with uncommited changes");
@@ -175,7 +177,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
 					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 					//		.showInformationMessage("Repository is already up to date");
-					message = "Repository is already up to date";
+					message = StatusMessages.PULL_UP_TO_DATE;
 				}
 				return message;
 			}
@@ -193,19 +195,21 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 */
 			private String push(final UserCredentials userCredentials)
 					throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-				Status status = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+				PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
-				if (Status.OK == status) {
+				if (Status.OK == response.getStatus()) {
 					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 						//	.showInformationMessage("Push successful");
-					message = "Push successful";
-				} else if (Status.REJECTED_NONFASTFORWARD == status) {
+					message = StatusMessages.PUSH_SUCCESSFUL;
+				} else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showInformationMessage("Push failed, please get your repository up to date(PULL)");
-				} else if (Status.UP_TO_DATE == status) {
+				} else if (Status.UP_TO_DATE == response.getStatus()) {
 					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 					//		.showInformationMessage("There was nothing to push");.
-					message = "There was nothing to push";
+					message = StatusMessages.PUSH_UP_TO_DATE;
+				} else if(Status.REJECTED_OTHER_REASON == response.getStatus()){
+					message = response.getMessage();
 				}
 				return message;
 			}

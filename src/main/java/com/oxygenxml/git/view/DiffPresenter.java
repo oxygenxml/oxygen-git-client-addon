@@ -119,6 +119,7 @@ public class DiffPresenter {
 								.showConfirmDialog("Conflict Warning", "Conflict Resolved?", options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
+							System.out.println("add file");
 							GitAccess.getInstance().add(file);
 							StageState oldState = StageState.UNDEFINED;
 							StageState newState = StageState.DISCARD;
