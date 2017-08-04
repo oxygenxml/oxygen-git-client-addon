@@ -1,7 +1,7 @@
 package com.oxygenxml.git.service.entities;
 
 /**
- * Used in File Status to mark the file in which of the following states is
+ * Used in File Status to mark the file in which of the following states it is
  * 
  * @author Beniamin Savu
  *

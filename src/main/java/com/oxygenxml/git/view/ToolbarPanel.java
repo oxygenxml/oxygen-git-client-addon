@@ -94,9 +94,7 @@ public class ToolbarPanel extends JPanel {
 		pushButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Conflict before push " + GitAccess.getInstance().getConflict());
 				pushPullController.execute(Command.PUSH);
-				System.out.println("Conflict after push " + GitAccess.getInstance().getConflict());
 				if (pullsBehind == 0) {
 					pushesAhead = 0;
 				}

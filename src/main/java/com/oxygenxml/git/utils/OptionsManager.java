@@ -33,7 +33,14 @@ public class OptionsManager {
 	 */
 	private static Logger logger = Logger.getLogger(OptionsManager.class);
 
-	private static final String REPOSITORY_FILENAME = "Options.xml";
+	/**
+	 * The filename in which all the options are saved
+	 */
+	private static final String PLUGIN_OPTIONS_FILENAME = "Options.xml";
+
+	/**
+	 * Constant for how many commits messages to be saved
+	 */
 	private static final int PREVIOUSLY_COMMITED_MESSAGES = 7;
 
 	/**
@@ -88,7 +95,7 @@ public class OptionsManager {
 		} else {
 			baseDir = new File("src/main/resources");
 		}
-		return new File(baseDir, REPOSITORY_FILENAME);
+		return new File(baseDir, PLUGIN_OPTIONS_FILENAME);
 	}
 
 	/**
@@ -220,6 +227,11 @@ public class OptionsManager {
 		return userCredentials;
 	}
 
+	/**
+	 * Loads the last PREVIOUSLY_COMMITED_MESSAGES massages
+	 * 
+	 * @return a list with the previously committed messages
+	 */
 	public List<String> getPreviouslyCommitedMessages() {
 		loadRepositoryOptions();
 
@@ -227,11 +239,17 @@ public class OptionsManager {
 
 	}
 
+	/**
+	 * Saves the last commit message and promotes it in front of the list
+	 * 
+	 * @param commitMessage
+	 *          - the last commitMessage
+	 */
 	public void saveCommitMessage(String commitMessage) {
 		loadRepositoryOptions();
 
 		List<String> messages = options.getCommitMessages().getMessages();
-		if(messages.contains(commitMessage)){
+		if (messages.contains(commitMessage)) {
 			messages.remove(commitMessage);
 		}
 		messages.add(0, commitMessage);
@@ -239,7 +257,7 @@ public class OptionsManager {
 			messages.remove(messages.size() - 1);
 		}
 		options.getCommitMessages().setMessages(messages);
-		
+
 		saveRepositoryOptions();
 	}
 

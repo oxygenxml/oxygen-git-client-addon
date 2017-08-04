@@ -7,5 +7,13 @@ package com.oxygenxml.git.view.event;
  *
  */
 public enum Command {
-	PUSH, PULL
+	/**
+	 * The controller will execute push
+	 */
+	PUSH, 
+	
+	/**
+	 * The controller will execute pull
+	 */
+	PULL;
 }

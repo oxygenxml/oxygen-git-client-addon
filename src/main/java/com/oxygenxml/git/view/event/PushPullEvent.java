@@ -12,6 +12,10 @@ public class PushPullEvent {
 	 * The state in which the push or pull is (Started or Finished)
 	 */
 	private ActionStatus actionStatus;
+	
+	/**
+	 * Additional information for the fired event
+	 */
 	private String message;
 
 	public PushPullEvent(ActionStatus actionStatus, String message) {
