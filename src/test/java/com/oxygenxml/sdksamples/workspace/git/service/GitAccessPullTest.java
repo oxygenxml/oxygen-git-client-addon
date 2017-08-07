@@ -1,20 +1,17 @@
 package com.oxygenxml.sdksamples.workspace.git.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -29,6 +26,7 @@ import org.junit.Test;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
+import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
@@ -121,12 +119,13 @@ public class GitAccessPullTest {
 		
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
-		Status pushActual = gitAccess.push("", "");
+		PushResponse pushResponse = gitAccess.push("", "");
+		Status pushActual = pushResponse.getStatus();
 		Status pushExpected = Status.REJECTED_NONFASTFORWARD;
 		assertEquals(pushExpected, pushActual);
 		
-		PullResponse response = gitAccess.pull("", "");
-		PullStatus pullActual = response.getStatus();
+		PullResponse pullResponse = gitAccess.pull("", "");
+		PullStatus pullActual = pullResponse.getStatus();
 		PullStatus pullExpected = PullStatus.CONFLICTS;
 		assertEquals(pullExpected, pullActual);
 	}

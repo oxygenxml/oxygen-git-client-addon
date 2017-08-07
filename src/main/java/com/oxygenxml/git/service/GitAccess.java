@@ -60,6 +60,7 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -77,6 +78,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
+import com.icl.saxon.om.Name;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
@@ -102,8 +104,6 @@ public class GitAccess {
 
 	private Git git;
 
-	private boolean conflict = false;
-	private List<FileStatus> filesInConflict = new ArrayList<FileStatus>();
 	private static GitAccess instance;
 
 	private GitAccess() {
@@ -124,9 +124,8 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
-		filesInConflict.clear();
-		conflict = false;
 		git = Git.open(new File(path + "/.git"));
+		System.out.println(git.getRepository().getRepositoryState().name());
 	}
 
 	/**
@@ -165,11 +164,6 @@ public class GitAccess {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 		List<FileStatus> stagedFiles = getStagedFile();
 		List<FileStatus> conflictingFiles = getConflictingFiles();
-		if (conflictingFiles.size() > 0 && filesInConflict.size() == 0) {
-			filesInConflict = conflictingFiles;
-			conflict = true;
-		}
-
 		List<String> conflictingPaths = new ArrayList<String>();
 		for (FileStatus conflictingFile : conflictingFiles) {
 			conflictingPaths.add(conflictingFile.getFileLocation());
@@ -246,10 +240,8 @@ public class GitAccess {
 	 */
 	public void commit(String message) {
 		try {
-			if (conflict) {
-				conflict = false;
-			}
 			git.commit().setMessage(message).call();
+			System.out.println("After commit: " + git.getRepository().getRepositoryState());
 		} catch (NoFilepatternException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
@@ -389,22 +381,23 @@ public class GitAccess {
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
-			if (getConflictingFiles().size() > 0) {
+			RepositoryState repositoryState = git.getRepository().getRepositoryState();
+			
+			if (repositoryState == RepositoryState.MERGING) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 				response.setMessage(StatusMessages.PUSH_WITH_CONFLICTS);
 				return response;
 			}
-			if (getPullsBehind() > 0) {
+			if (getPullsBehind() > 0 && repositoryState != RepositoryState.MERGING_RESOLVED) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 				response.setMessage(StatusMessages.BRANCH_BEHIND);
 				return response;
 			}
-			if (conflict && getConflictingFiles().size() == 0) {
+			if (repositoryState == RepositoryState.MERGING_RESOLVED) {
 				String branch = git.getRepository().getBranch();
 				Config storedConfig = git.getRepository().getConfig();
 				String url = storedConfig.getString("remote", "origin", "url");
 				git.commit().setMessage("Merge branch " + "'" + branch + "'" + " of " + url).call();
-				conflict = false;
 			}
 
 			Iterable<PushResult> call = git.push()
@@ -457,7 +450,9 @@ public class GitAccess {
 			RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
 
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
-		if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0) {
+		if (getConflictingFiles().size() > 0) {
+			response.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
+		} else if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0){
 			response.setStatus(PullStatus.UNCOMITED_FILES);
 		} else {
 			git.reset().call();
@@ -470,7 +465,6 @@ public class GitAccess {
 					if (conflictingFiles != null) {
 						response.setConflictingFiles(conflictingFiles);
 						response.setStatus(PullStatus.CONFLICTS);
-						conflict = true;
 					}
 				}
 			}
@@ -694,8 +688,9 @@ public class GitAccess {
 	 */
 	public ObjectId getRemoteCommit() {
 		Repository repo = git.getRepository();
+		ObjectId remoteCommit = null;
 		try {
-			ObjectId remoteCommit = repo.resolve("origin/master^{commit}");
+			remoteCommit = repo.resolve("origin/master^{commit}");
 			return remoteCommit;
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
@@ -706,7 +701,7 @@ public class GitAccess {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return remoteCommit;
 	}
 
 	/**
@@ -894,9 +889,11 @@ public class GitAccess {
 		RevWalk walk = new RevWalk(repository);
 		walk.reset();
 		try {
-			RevCommit remoteCommit = walk.parseCommit(getRemoteCommit());
-			RevCommit baseCommit = walk.parseCommit(getBaseCommit());
-			numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
+			if (getRemoteCommit() != null && getBaseCommit() != null) {
+				RevCommit remoteCommit = walk.parseCommit(getRemoteCommit());
+				RevCommit baseCommit = walk.parseCommit(getBaseCommit());
+				numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
+			}
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
 		} catch (AmbiguousObjectException e) {
@@ -915,15 +912,7 @@ public class GitAccess {
 	 */
 	public void fetch() {
 		try {
-			// RevWalk revWalk = new RevWalk(git.getRepository());
 			git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
-			// git.log().add(git.getRepository().resolve("origin/master")).call();
-			// FetchResult result = git.fetch().setRemote("origin").call();
-			// RevCommit commit =
-			// revWalk.parseCommit(result.getAdvertisedRef("refs/heads/" +
-			// git.getRepository().getBranch()).getTarget().getObjectId());
-			// System.out.println("Fetch last commit: " + commit.getFullMessage());
-			// revWalk.close();
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
 		} catch (TransportException e) {

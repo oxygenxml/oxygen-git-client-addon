@@ -1,6 +1,5 @@
 package com.oxygenxml.git.utils;
 
-import java.io.Console;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +13,6 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.WorkspaceAccessPlugin;
-import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.options.Options;
 import com.oxygenxml.git.options.UserCredentials;
 
@@ -88,6 +86,11 @@ public class OptionsManager {
 		}
 	}
 
+	/**
+	 * Creates the the options file and returns it
+	 * 
+	 * @return the options file
+	 */
 	private File getOptionsFile() {
 		File baseDir = null;
 		if (WorkspaceAccessPlugin.getInstance() != null) {

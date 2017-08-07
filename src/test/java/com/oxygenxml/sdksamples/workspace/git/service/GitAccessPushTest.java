@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
@@ -119,7 +120,8 @@ public class GitAccessPushTest {
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("file poc");
-		Status actual = gitAccess.push("", "");
+		PushResponse response = gitAccess.push("", "");
+		Status actual = response.getStatus();
 		Status expected = Status.REJECTED_NONFASTFORWARD;
 		assertEquals(expected, actual);
 		

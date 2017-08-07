@@ -89,10 +89,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 		this.command = command;
 		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		String message = "";
-		if(command == Command.PUSH){
-			message = "Pushing...";
+		if (command == Command.PUSH) {
+			message = StatusMessages.PUSH_IN_PROGRESS;
 		} else {
-			message = "Pulling...";
+			message = StatusMessages.PULL_IN_PROGRESS;
 		}
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
 		notifyObservers(pushPullEvent);
@@ -162,8 +162,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 				PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (PullStatus.OK == response.getStatus()) {
-					//JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-					//		"Pull successful");
+					// JOptionPane.showMessageDialog((Component)
+					// PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+					// "Pull successful");
 					message = StatusMessages.PULL_SUCCESSFUL;
 				} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
@@ -171,13 +172,17 @@ public class PushPullController implements Subject<PushPullEvent> {
 
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					// prompts a dialog showing the files in conflict
-					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "Information", true,
-							response.getConflictingFiles());
+					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+							"Information", true, response.getConflictingFiles());
 
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
-					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-					//		.showInformationMessage("Repository is already up to date");
+					// ((StandalonePluginWorkspace)
+					// PluginWorkspaceProvider.getPluginWorkspace())
+					// .showInformationMessage("Repository is already up to date");
 					message = StatusMessages.PULL_UP_TO_DATE;
+				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
+					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+					.showInformationMessage(StatusMessages.PULL_WITH_CONFLICTS);
 				}
 				return message;
 			}
@@ -198,18 +203,22 @@ public class PushPullController implements Subject<PushPullEvent> {
 				PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (Status.OK == response.getStatus()) {
-					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-						//	.showInformationMessage("Push successful");
+					// ((StandalonePluginWorkspace)
+					// PluginWorkspaceProvider.getPluginWorkspace())
+					// .showInformationMessage("Push successful");
 					message = StatusMessages.PUSH_SUCCESSFUL;
 				} else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showInformationMessage("Push failed, please get your repository up to date(PULL)");
 				} else if (Status.UP_TO_DATE == response.getStatus()) {
-					//((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-					//		.showInformationMessage("There was nothing to push");.
+					// ((StandalonePluginWorkspace)
+					// PluginWorkspaceProvider.getPluginWorkspace())
+					// .showInformationMessage("There was nothing to push");.
 					message = StatusMessages.PUSH_UP_TO_DATE;
-				} else if(Status.REJECTED_OTHER_REASON == response.getStatus()){
-					message = response.getMessage();
+				} else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
+					// message = response.getMessage();
+					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+							.showInformationMessage(response.getMessage());
 				}
 				return message;
 			}

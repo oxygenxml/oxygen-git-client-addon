@@ -25,5 +25,10 @@ public enum PullStatus {
 	/**
 	 * The repository is already up to date
 	 */
-	UP_TO_DATE;
+	UP_TO_DATE,
+
+	/**
+	 * The repository already has conflicts and cannot pull until they are resolved
+	 */
+	REPOSITORY_HAS_CONFLICTS;
 }
