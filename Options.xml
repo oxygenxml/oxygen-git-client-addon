@@ -14,12 +14,15 @@
         </credential>
     </userCredentials>
     <commitMessages>
+        <message>Did the following:
+- disard with git checkout
+- added menu reolve conflict: keep mine, keep theirs
+- if a file is in conlfict, then it's resolved with it's local copy and there are no other file in the staging and unstaging area the user will be informed that to conclude it's merging he must commit</message>
         <message>4</message>
         <message>3</message>
         <message>2</message>
         <message>1</message>
         <message>All conflicts fixed but you are still merging. (use "git commit" to conclude merge)</message>
         <message>5</message>
-        <message>removed the conflict flag</message>
     </commitMessages>
 </Options>

@@ -438,9 +438,6 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 		// Show Diff menu
 		JMenuItem showDiff = new JMenuItem("Open in compare editor");
-		if (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.DELETE) {
-			showDiff.setEnabled(false);
-		}
 		showDiff.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -462,79 +459,120 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		});
 		contextualMenu.add(open);
 
-		if (file.getChangeType() == GitChangeType.CONFLICT) {
-			JMenuItem rezolveMine = new JMenuItem("Resolve Using \"Mine\"");
-			rezolveMine.addActionListener(new ActionListener() {
+		JMenuItem resolveMine = new JMenuItem("Resolve Using \"Mine\"");
+		resolveMine.addActionListener(new ActionListener() {
 
-				public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {
+				gitAccess.remove(file);
+				gitAccess.restoreLastCommit(file.getFileLocation());
+				gitAccess.add(file);
+				StageState oldState = StageState.UNDEFINED;
+				StageState newState = StageState.DISCARD;
+				List<FileStatus> files = new ArrayList<FileStatus>();
+				files.add(file);
+				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+				stageController.stateChanged(changeEvent);
+			}
+		});
+		JMenuItem resolveTheirs = new JMenuItem("Resolve Using \"Theirs\"");
+		resolveTheirs.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				gitAccess.remove(file);
+				gitAccess.updateWithRemoteFile(file.getFileLocation());
+				StageState oldState = StageState.UNSTAGED;
+				StageState newState = StageState.STAGED;
+				List<FileStatus> files = new ArrayList<FileStatus>();
+				files.add(file);
+				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+				stageController.stateChanged(changeEvent);
+			}
+		});
+
+		JMenuItem diff = new JMenuItem("Open in compare editor");
+		diff.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				DiffPresenter diff = new DiffPresenter(file, stageController);
+				diff.openFile();
+			}
+		});
+
+		JMenuItem markResolved = new JMenuItem("Mark Resoved");
+		markResolved.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				StageState oldState = StageState.UNSTAGED;
+				StageState newState = StageState.STAGED;
+				List<FileStatus> files = new ArrayList<FileStatus>();
+				files.add(file);
+				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+				stageController.stateChanged(changeEvent);
+			}
+		});
+
+		JMenuItem markUnresolved = new JMenuItem("Mark Unresolved");
+		markUnresolved.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				gitAccess.restoreLastCommit(file.getFileLocation());
+				StageState oldState = StageState.STAGED;
+				StageState newState = StageState.UNSTAGED;
+				List<FileStatus> files = new ArrayList<FileStatus>();
+				files.add(file);
+				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+				stageController.stateChanged(changeEvent);
+			}
+		});
+
+		JMenu resolveConflict = new JMenu("Resolve Conflcit");
+		resolveConflict.add(diff);
+		resolveConflict.addSeparator();
+		resolveConflict.add(resolveMine);
+		resolveConflict.add(resolveTheirs);
+		resolveConflict.addSeparator();
+		resolveConflict.add(markResolved);
+		resolveConflict.add(markUnresolved);
+		contextualMenu.add(resolveConflict);
+		// Discard Menu
+		JMenuItem discard = new JMenuItem("Discard");
+		discard.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (file.getChangeType() == GitChangeType.ADD) {
+					try {
+						FileUtils.forceDelete(
+								new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				} else {
 					gitAccess.remove(file);
 					gitAccess.restoreLastCommit(file.getFileLocation());
-					gitAccess.add(file);
-					StageState oldState = StageState.UNDEFINED;
-					StageState newState = StageState.DISCARD;
-					List<FileStatus> files = new ArrayList<FileStatus>();
-					files.add(file);
-					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
-					stageController.stateChanged(changeEvent);
 				}
-			});
-			JMenuItem rezolveTheirs = new JMenuItem("Resolve Using \"Theirs\"");
-			rezolveTheirs.addActionListener(new ActionListener() {
 
-				public void actionPerformed(ActionEvent e) {
-					gitAccess.remove(file);
-					gitAccess.updateWithRemoteFile(file.getFileLocation());
-					gitAccess.add(file);
-					StageState oldState = StageState.UNSTAGED;
-					StageState newState = StageState.STAGED;
-					List<FileStatus> files = new ArrayList<FileStatus>();
-					files.add(file);
-					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
-					stageController.stateChanged(changeEvent);
-				}
-			});
+				StageState oldState = StageState.UNDEFINED;
+				StageState newState = StageState.DISCARD;
+				List<FileStatus> files = new ArrayList<FileStatus>();
+				files.add(file);
+				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+				stageController.stateChanged(changeEvent);
+			}
+		});
+		contextualMenu.add(discard);
 
-			JMenuItem diff = new JMenuItem("Open in compare editor");
-			diff.addActionListener(new ActionListener() {
-
-				public void actionPerformed(ActionEvent e) {
-					DiffPresenter diff = new DiffPresenter(file, stageController);
-					diff.openFile();
-				}
-			});
-
-			JMenu rezolveConflict = new JMenu("Resolve Conflcit");
-			rezolveConflict.add(diff);
-			rezolveConflict.add(rezolveMine);
-			rezolveConflict.add(rezolveTheirs);
-			contextualMenu.add(rezolveConflict);
-		} else {
-			// Discard Menu
-			JMenuItem discard = new JMenuItem("Discard");
-			discard.addActionListener(new ActionListener() {
-
-				public void actionPerformed(ActionEvent e) {
-					if (file.getChangeType() == GitChangeType.ADD) {
-						try {
-							FileUtils.forceDelete(
-									new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						}
-					} else {
-						gitAccess.remove(file);
-						gitAccess.restoreLastCommit(file.getFileLocation());
-					}
-
-					StageState oldState = StageState.UNDEFINED;
-					StageState newState = StageState.DISCARD;
-					List<FileStatus> files = new ArrayList<FileStatus>();
-					files.add(file);
-					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
-					stageController.stateChanged(changeEvent);
-				}
-			});
-			contextualMenu.add(discard);
+		if (file.getChangeType() == GitChangeType.ADD && file.getChangeType() == GitChangeType.DELETE) {
+			showDiff.setEnabled(false);
+			diff.setEnabled(false);
+			resolveMine.setEnabled(false);
+			resolveTheirs.setEnabled(false);
+			markResolved.setEnabled(false);
+		} else if (file.getChangeType() == GitChangeType.MODIFY) {
+			resolveMine.setEnabled(false);
+			resolveTheirs.setEnabled(false);
+			markResolved.setEnabled(false);
+		} else if(file.getChangeType() == GitChangeType.CONFLICT){
+			discard.setEnabled(false);
 		}
 	}
 

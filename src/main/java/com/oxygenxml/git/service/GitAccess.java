@@ -930,4 +930,15 @@ public class GitAccess {
 		}
 	}
 
+	public void restoreConflict(String filePath) {
+		try {
+			git.checkout().addPath(filePath).call();
+			
+		} catch (CheckoutConflictException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

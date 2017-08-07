@@ -148,6 +148,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		previouslyMessages.setEditable(true);
 		previouslyMessages.setSelectedItem("Previously Commit Messages");
 		previouslyMessages.setEditable(false);
+		previouslyMessages.setMinimumSize(new Dimension(10, 20));
 		this.add(previouslyMessages, gbc);
 	}
 

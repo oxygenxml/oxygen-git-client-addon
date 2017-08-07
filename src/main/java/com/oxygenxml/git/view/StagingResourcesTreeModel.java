@@ -57,10 +57,6 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 			}
 		} else if (changeEvent.getNewState() == StageState.DISCARD) {
 			deleteNodes(filesStatus);
-		} else if (changeEvent.getNewState() == StageState.RESOLVED) {
-			if (forStaging) {
-				insertNodes(fileToBeUpdated);
-			}
 		}
 
 		fireTreeStructureChanged(this, null, null, null);
