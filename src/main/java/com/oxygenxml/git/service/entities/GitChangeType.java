@@ -17,5 +17,5 @@ public enum GitChangeType {
 	DELETE,
 
 	/** File is in conflict */
-	CONFLICT;
+	CONFLICT,
 }

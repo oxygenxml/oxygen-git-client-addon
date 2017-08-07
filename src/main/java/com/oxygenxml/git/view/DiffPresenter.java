@@ -118,10 +118,10 @@ public class DiffPresenter {
 						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 								.showConfirmDialog("Conflict Warning", "Conflict Resolved?", options, optonsId);
 						if (response == 0) {
+							GitAccess.getInstance().remove(file);
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
-							System.out.println("add file");
 							GitAccess.getInstance().add(file);
-							StageState oldState = StageState.UNDEFINED;
+							StageState oldState = StageState.UNSTAGED;
 							StageState newState = StageState.DISCARD;
 							List<FileStatus> files = new ArrayList<FileStatus>();
 							files.add(file);

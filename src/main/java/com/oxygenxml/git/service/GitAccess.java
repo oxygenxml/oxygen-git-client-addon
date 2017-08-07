@@ -23,6 +23,7 @@ import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
@@ -125,7 +126,6 @@ public class GitAccess {
 	 */
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
 		git = Git.open(new File(path + "/.git"));
-		System.out.println(git.getRepository().getRepositoryState().name());
 	}
 
 	/**
@@ -241,7 +241,6 @@ public class GitAccess {
 	public void commit(String message) {
 		try {
 			git.commit().setMessage(message).call();
-			System.out.println("After commit: " + git.getRepository().getRepositoryState());
 		} catch (NoFilepatternException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
@@ -382,7 +381,7 @@ public class GitAccess {
 				e.printStackTrace();
 			}
 			RepositoryState repositoryState = git.getRepository().getRepositoryState();
-			
+
 			if (repositoryState == RepositoryState.MERGING) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 				response.setMessage(StatusMessages.PUSH_WITH_CONFLICTS);
@@ -393,12 +392,14 @@ public class GitAccess {
 				response.setMessage(StatusMessages.BRANCH_BEHIND);
 				return response;
 			}
-			if (repositoryState == RepositoryState.MERGING_RESOLVED) {
-				String branch = git.getRepository().getBranch();
-				Config storedConfig = git.getRepository().getConfig();
-				String url = storedConfig.getString("remote", "origin", "url");
-				git.commit().setMessage("Merge branch " + "'" + branch + "'" + " of " + url).call();
-			}
+			/*
+			 * if (repositoryState == RepositoryState.MERGING_RESOLVED) { String
+			 * branch = git.getRepository().getBranch(); Config storedConfig =
+			 * git.getRepository().getConfig(); String url =
+			 * storedConfig.getString("remote", "origin", "url");
+			 * git.commit().setMessage("Merge branch " + "'" + branch + "'" + " of " +
+			 * url).call(); }
+			 */
 
 			Iterable<PushResult> call = git.push()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
@@ -452,7 +453,7 @@ public class GitAccess {
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
 		if (getConflictingFiles().size() > 0) {
 			response.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
-		} else if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0){
+		} else if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0) {
 			response.setStatus(PullStatus.UNCOMITED_FILES);
 		} else {
 			git.reset().call();
@@ -815,38 +816,33 @@ public class GitAccess {
 	 *          - the path to the file you want to restore
 	 */
 	public void restoreLastCommit(String fileLocation) {
-		File file = new File(OptionsManager.getInstance().getSelectedRepository() + "/" + fileLocation);
-		OutputStream out = null;
 		try {
-			if (!file.exists()) {
-				file.getParentFile().mkdirs();
-				file.createNewFile();
-			}
-			out = new FileOutputStream(file);
-		} catch (FileNotFoundException e) {
+			git.checkout().addPath(fileLocation).call();
+		} catch (RefAlreadyExistsException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (RefNotFoundException e) {
+			e.printStackTrace();
+		} catch (InvalidRefNameException e) {
+			e.printStackTrace();
+		} catch (CheckoutConflictException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
-		ObjectId lastCommitId = getLastLocalCommit();
-		ObjectLoader loader;
-		try {
-			loader = getLoaderFrom(lastCommitId, fileLocation);
-			loader.copyTo(out);
-
-		} catch (MissingObjectException e) {
-			e.printStackTrace();
-		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		/*
+		 * File file = new File(OptionsManager.getInstance().getSelectedRepository()
+		 * + "/" + fileLocation); OutputStream out = null; try { if (!file.exists())
+		 * { file.getParentFile().mkdirs(); file.createNewFile(); } out = new
+		 * FileOutputStream(file); } catch (FileNotFoundException e) {
+		 * e.printStackTrace(); } catch (IOException e) { e.printStackTrace(); }
+		 * ObjectId lastCommitId = getLastLocalCommit(); ObjectLoader loader; try {
+		 * loader = getLoaderFrom(lastCommitId, fileLocation); loader.copyTo(out);
+		 * 
+		 * } catch (MissingObjectException e) { e.printStackTrace(); } catch
+		 * (IncorrectObjectTypeException e) { e.printStackTrace(); } catch
+		 * (IOException e) { e.printStackTrace(); } finally { try { out.close(); }
+		 * catch (IOException e) { e.printStackTrace(); } }
+		 */
 	}
 
 	/**
@@ -908,7 +904,7 @@ public class GitAccess {
 	}
 
 	/**
-	 * Brings all the commits to the local repository
+	 * Brings all the commits to the local repository but does not merge them
 	 */
 	public void fetch() {
 		try {
@@ -920,6 +916,16 @@ public class GitAccess {
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		} catch (RevisionSyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateWithRemoteFile(String filePath) {
+		try {
+			git.checkout().setStartPoint("origin/master").addPath(filePath).call();
+		} catch (CheckoutConflictException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
 	}

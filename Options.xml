@@ -18,8 +18,8 @@
         <message>3</message>
         <message>2</message>
         <message>1</message>
-        <message>commit 13</message>
-        <message>commit 12</message>
-        <message>commit 11</message>
+        <message>All conflicts fixed but you are still merging. (use "git commit" to conclude merge)</message>
+        <message>5</message>
+        <message>removed the conflict flag</message>
     </commitMessages>
 </Options>

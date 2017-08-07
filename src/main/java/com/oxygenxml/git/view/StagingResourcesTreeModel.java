@@ -51,9 +51,15 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 			} else {
 				insertNodes(fileToBeUpdated);
 			}
-		} else {
+		} else if (changeEvent.getNewState() == StageState.COMMITED) {
 			if (forStaging) {
-				deleteNodes(filesStatus);
+				filesStatus.clear();
+			}
+		} else if (changeEvent.getNewState() == StageState.DISCARD) {
+			deleteNodes(filesStatus);
+		} else if (changeEvent.getNewState() == StageState.RESOLVED) {
+			if (forStaging) {
+				insertNodes(fileToBeUpdated);
 			}
 		}
 
@@ -61,7 +67,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	}
 
 	private void insertNodes(List<FileStatus> fileToBeUpdated) {
-		
+
 		for (FileStatus fileStatus : fileToBeUpdated) {
 			TreeFormatter.buildTreeFromString(this, fileStatus.getFileLocation());
 		}

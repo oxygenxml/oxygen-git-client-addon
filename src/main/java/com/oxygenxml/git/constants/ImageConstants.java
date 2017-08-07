@@ -14,6 +14,7 @@ public class ImageConstants {
 	public static final String GIT_CONFLICT_ICON = "images/GitWarning10.png";
 	public static final String GIT_PUSH_ICON = "images/GitPush24.png";
 	public static final String GIT_PULL_ICON = "images/GitPull24.png";
+	public static final String GIT_RESOLVED_ICON = "images/GitResolved10.png";
 	public static final String STORE_CREDENTIALS_ICON = "images/GitCredentials24.png";
 	public static final String GIT_ICON = "images/Git-Icon20.png";
 	public static final String FILE_CHOOSER_ICON = "images/Open24.png";

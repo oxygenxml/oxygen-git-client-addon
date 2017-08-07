@@ -2,7 +2,9 @@ package com.oxygenxml.git.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -178,11 +180,11 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			} else {
 				insertRows(fileToBeUpdated);
 			}
-		} else if(changeEvent.getNewState() == StageState.COMMITED){
+		} else if (changeEvent.getNewState() == StageState.COMMITED) {
 			if (forStaging) {
 				filesStatus.clear();
 			}
-		} else if(changeEvent.getNewState() == StageState.DISCARD){
+		} else if (changeEvent.getNewState() == StageState.DISCARD) {
 			deleteRows(fileToBeUpdated);
 		}
 		fireTableDataChanged();

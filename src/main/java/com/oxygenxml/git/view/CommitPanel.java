@@ -20,6 +20,8 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
+import org.eclipse.jgit.lib.RepositoryState;
+
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.options.Options;
 import com.oxygenxml.git.service.GitAccess;
@@ -203,11 +205,16 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	private void toggleCommitButton() {
-		if (gitAccess.getStagedFile().size() > 0) {
+		if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
+				&& gitAccess.getStagedFile().size() == 0 && gitAccess.getUnstagedFiles().size() == 0) {
+			commitButton.setEnabled(true);
+			commitMessage.setText("All conflicts fixed but you are still merging. (use \"git commit\" to conclude merge)");
+		} else if (gitAccess.getStagedFile().size() > 0) {
 			commitButton.setEnabled(true);
 		} else {
 			commitButton.setEnabled(false);
 		}
+
 	}
 
 	private void notifyObservers(PushPullEvent pushPullEvent) {
@@ -247,6 +254,10 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 				}
 			}
 		}).start();
+	}
+
+	public void clearCommitMessage() {
+		commitMessage.setText("");
 	}
 
 }

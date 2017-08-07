@@ -274,6 +274,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			commitPanel.getCommitButton().setEnabled(false);
 		} else if(pushPullEvent.getActionStatus() == ActionStatus.FINISHED){
 			commitPanel.setStatus(pushPullEvent.getMessage());
+			commitPanel.clearCommitMessage();
 			workingCopySelectionPanel.getBrowseButton().setEnabled(true);
 			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(true);
 			toolbarPanel.getPushButton().setEnabled(true);

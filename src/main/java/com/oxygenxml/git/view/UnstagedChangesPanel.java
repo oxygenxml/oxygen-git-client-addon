@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -460,36 +462,80 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		});
 		contextualMenu.add(open);
 
-		// Discard Menu
-		JMenuItem discard = new JMenuItem("Discard");
-		discard.addActionListener(new ActionListener() {
+		if (file.getChangeType() == GitChangeType.CONFLICT) {
+			JMenuItem rezolveMine = new JMenuItem("Resolve Using \"Mine\"");
+			rezolveMine.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {
-				if (file.getChangeType() == GitChangeType.ADD) {
-					try {
-						FileUtils.forceDelete(
-								new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} else {
+				public void actionPerformed(ActionEvent e) {
 					gitAccess.remove(file);
-					try {
-						gitAccess.restoreLastCommit(file.getFileLocation());
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
+					gitAccess.restoreLastCommit(file.getFileLocation());
+					gitAccess.add(file);
+					StageState oldState = StageState.UNDEFINED;
+					StageState newState = StageState.DISCARD;
+					List<FileStatus> files = new ArrayList<FileStatus>();
+					files.add(file);
+					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+					stageController.stateChanged(changeEvent);
 				}
-				
-				StageState oldState = StageState.UNDEFINED;
-				StageState newState = StageState.DISCARD;
-				List<FileStatus> files = new ArrayList<FileStatus>();
-				files.add(file);
-				ChangeEvent changeEvent = new ChangeEvent(newState , oldState, files);
-				stageController.stateChanged(changeEvent);
-			}
-		});
-		contextualMenu.add(discard);
+			});
+			JMenuItem rezolveTheirs = new JMenuItem("Resolve Using \"Theirs\"");
+			rezolveTheirs.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					gitAccess.remove(file);
+					gitAccess.updateWithRemoteFile(file.getFileLocation());
+					gitAccess.add(file);
+					StageState oldState = StageState.UNSTAGED;
+					StageState newState = StageState.STAGED;
+					List<FileStatus> files = new ArrayList<FileStatus>();
+					files.add(file);
+					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+					stageController.stateChanged(changeEvent);
+				}
+			});
+
+			JMenuItem diff = new JMenuItem("Open in compare editor");
+			diff.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					DiffPresenter diff = new DiffPresenter(file, stageController);
+					diff.openFile();
+				}
+			});
+
+			JMenu rezolveConflict = new JMenu("Resolve Conflcit");
+			rezolveConflict.add(diff);
+			rezolveConflict.add(rezolveMine);
+			rezolveConflict.add(rezolveTheirs);
+			contextualMenu.add(rezolveConflict);
+		} else {
+			// Discard Menu
+			JMenuItem discard = new JMenuItem("Discard");
+			discard.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					if (file.getChangeType() == GitChangeType.ADD) {
+						try {
+							FileUtils.forceDelete(
+									new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					} else {
+						gitAccess.remove(file);
+						gitAccess.restoreLastCommit(file.getFileLocation());
+					}
+
+					StageState oldState = StageState.UNDEFINED;
+					StageState newState = StageState.DISCARD;
+					List<FileStatus> files = new ArrayList<FileStatus>();
+					files.add(file);
+					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+					stageController.stateChanged(changeEvent);
+				}
+			});
+			contextualMenu.add(discard);
+		}
 	}
 
 	private FileStatus getSelectedFile() {
@@ -511,8 +557,8 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			stageSelectedButton.setEnabled(false);
 		}
 	}
-	
-	public JButton getStageSelectedButton(){
+
+	public JButton getStageSelectedButton() {
 		return stageSelectedButton;
 	}
 
