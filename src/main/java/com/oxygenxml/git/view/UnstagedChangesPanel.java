@@ -42,6 +42,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.google.common.io.Files;
 import com.oxygenxml.git.constants.Constants;
@@ -494,7 +495,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 			public void actionPerformed(ActionEvent e) {
 				DiffPresenter diff = new DiffPresenter(file, stageController);
-				diff.openFile();
+				diff.showDiff();
 			}
 		});
 
@@ -511,16 +512,13 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			}
 		});
 
-		JMenuItem markUnresolved = new JMenuItem("Mark Unresolved");
-		markUnresolved.addActionListener(new ActionListener() {
+		JMenuItem restartMerge = new JMenuItem("Restart Merge");
+		restartMerge.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				gitAccess.restoreLastCommit(file.getFileLocation());
-				StageState oldState = StageState.STAGED;
-				StageState newState = StageState.UNSTAGED;
-				List<FileStatus> files = new ArrayList<FileStatus>();
-				files.add(file);
-				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
+				gitAccess.restartMerge();
+				ChangeEvent changeEvent = new ChangeEvent(StageState.UNDEFINED, StageState.UNDEFINED,
+						new ArrayList<FileStatus>());
 				stageController.stateChanged(changeEvent);
 			}
 		});
@@ -530,9 +528,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		resolveConflict.addSeparator();
 		resolveConflict.add(resolveMine);
 		resolveConflict.add(resolveTheirs);
-		resolveConflict.addSeparator();
 		resolveConflict.add(markResolved);
-		resolveConflict.add(markUnresolved);
+		resolveConflict.addSeparator();
+		resolveConflict.add(restartMerge);
 		contextualMenu.add(resolveConflict);
 		// Discard Menu
 		JMenuItem discard = new JMenuItem("Discard");
@@ -561,6 +559,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		});
 		contextualMenu.add(discard);
 
+		resolveConflict.setEnabled(false);
 		if (file.getChangeType() == GitChangeType.ADD && file.getChangeType() == GitChangeType.DELETE) {
 			showDiff.setEnabled(false);
 			diff.setEnabled(false);
@@ -571,8 +570,12 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			resolveMine.setEnabled(false);
 			resolveTheirs.setEnabled(false);
 			markResolved.setEnabled(false);
-		} else if(file.getChangeType() == GitChangeType.CONFLICT){
+		} else if (file.getChangeType() == GitChangeType.CONFLICT) {
 			discard.setEnabled(false);
+		}
+		if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
+				|| gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
+			resolveConflict.setEnabled(true);
 		}
 	}
 

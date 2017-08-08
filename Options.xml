@@ -14,6 +14,7 @@
         </credential>
     </userCredentials>
     <commitMessages>
+        <message>end day commit</message>
         <message>Did the following:
 - disard with git checkout
 - added menu reolve conflict: keep mine, keep theirs
@@ -23,6 +24,5 @@
         <message>2</message>
         <message>1</message>
         <message>All conflicts fixed but you are still merging. (use "git commit" to conclude merge)</message>
-        <message>5</message>
     </commitMessages>
 </Options>

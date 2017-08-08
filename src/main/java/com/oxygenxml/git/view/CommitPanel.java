@@ -234,7 +234,6 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	public void setStatus(final String message) {
-		toggleCommitButton();
 		new Thread(new Runnable() {
 
 			public void run() {
@@ -258,7 +257,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	public void clearCommitMessage() {
-		commitMessage.setText("");
+		commitMessage.setText(null);
 	}
 
 }

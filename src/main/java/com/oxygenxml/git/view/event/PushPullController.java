@@ -62,7 +62,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 	/**
 	 * The command to execute (Push or Pull)
 	 */
-	private Command command;
 
 	public PushPullController(GitAccess gitAccess) {
 		this.gitAccess = gitAccess;
@@ -86,7 +85,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 *          - The command to execute
 	 */
 	public void execute(final Command command) {
-		this.command = command;
 		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		String message = "";
 		if (command == Command.PUSH) {

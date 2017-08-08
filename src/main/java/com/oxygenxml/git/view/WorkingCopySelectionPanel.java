@@ -103,6 +103,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
 						parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
 
+						parent.getCommitPanel().clearCommitMessage();
 						if (gitAccess.getStagedFile().size() > 0) {
 							parent.getCommitPanel().getCommitButton().setEnabled(true);
 						} else {
@@ -110,6 +111,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						}
 						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
 						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
+						
 						SwingUtilities.invokeLater(new Runnable() {
 
 							public void run() {

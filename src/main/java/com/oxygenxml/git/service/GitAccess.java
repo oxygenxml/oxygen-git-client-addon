@@ -1,8 +1,6 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,13 +26,16 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
+import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
+import org.eclipse.jgit.api.errors.InvalidMergeHeadsException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.NotMergedException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
@@ -54,7 +55,9 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
+import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.Config;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -62,12 +65,12 @@ import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
-import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
@@ -79,7 +82,6 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
-import com.icl.saxon.om.Name;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileHelper;
@@ -387,19 +389,11 @@ public class GitAccess {
 				response.setMessage(StatusMessages.PUSH_WITH_CONFLICTS);
 				return response;
 			}
-			if (getPullsBehind() > 0 && repositoryState != RepositoryState.MERGING_RESOLVED) {
+			if (getPullsBehind() > 0) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 				response.setMessage(StatusMessages.BRANCH_BEHIND);
 				return response;
 			}
-			/*
-			 * if (repositoryState == RepositoryState.MERGING_RESOLVED) { String
-			 * branch = git.getRepository().getBranch(); Config storedConfig =
-			 * git.getRepository().getConfig(); String url =
-			 * storedConfig.getString("remote", "origin", "url");
-			 * git.commit().setMessage("Merge branch " + "'" + branch + "'" + " of " +
-			 * url).call(); }
-			 */
 
 			Iterable<PushResult> call = git.push()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
@@ -922,23 +916,54 @@ public class GitAccess {
 
 	public void updateWithRemoteFile(String filePath) {
 		try {
-			git.checkout().setStartPoint("origin/master").addPath(filePath).call();
+			RevWalk walk = new RevWalk(git.getRepository());
+			walk.reset();
+			RevCommit commit = walk.parseCommit(git.getRepository().resolve("MERGE_HEAD"));
+			git.checkout().setStartPoint(commit).addPath(filePath).call();
+			walk.close();
 		} catch (CheckoutConflictException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
 			e.printStackTrace();
+		} catch (RevisionSyntaxException e) {
+			e.printStackTrace();
+		} catch (MissingObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (AmbiguousObjectException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public void restoreConflict(String filePath) {
+	public void restartMerge() {
+		
 		try {
-			git.checkout().addPath(filePath).call();
-			
+			git.clean().call();
+			git.reset().setMode(ResetType.HARD).call();
+			AnyObjectId commitToMerge =  getRemoteCommit();
+			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
+		} catch (RevisionSyntaxException e) {
+			e.printStackTrace();
+		} catch (NoWorkTreeException e) {
+			e.printStackTrace();
+		} catch (NoHeadException e) {
+			e.printStackTrace();
+		} catch (ConcurrentRefUpdateException e) {
+			e.printStackTrace();
 		} catch (CheckoutConflictException e) {
+			e.printStackTrace();
+		} catch (InvalidMergeHeadsException e) {
+			e.printStackTrace();
+		} catch (WrongRepositoryStateException e) {
+			e.printStackTrace();
+		} catch (NoMessageException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
 	}
-
+		
 }
