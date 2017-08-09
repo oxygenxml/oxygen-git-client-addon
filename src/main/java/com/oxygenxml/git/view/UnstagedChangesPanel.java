@@ -58,6 +58,7 @@ import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
 
+import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent> {
@@ -146,6 +147,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFiles);
 		}
 		stageController.registerObserver(this);
+		this.setMinimumSize(new Dimension(250, 100));
 	}
 
 	private void addTreeMouseListener() {
@@ -339,7 +341,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		JToolBar toolbar = new JToolBar();
-		switchViewButton = new JButton();
+		switchViewButton = new ToolbarButton(null, false);
 		switchViewButton.setToolTipText("Change View");
 		switchViewButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.TREE_VIEW)));
 		toolbar.add(switchViewButton);

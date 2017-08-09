@@ -9,11 +9,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,9 +35,12 @@ import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 public class WorkingCopySelectionPanel extends JPanel {
 
@@ -65,7 +70,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 	}
 
 	public void createGUI() {
-
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -77,6 +81,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		addFileChooserOn(browseButton);
 		addWorkingCopySelectorListener();
 
+		this.setMinimumSize(new Dimension(250, 25));
 	}
 
 	private void addWorkingCopySelectorListener() {
@@ -114,6 +119,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						}
 						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
 						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
+					
 
 						SwingUtilities.invokeLater(new Runnable() {
 
@@ -121,6 +127,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 								gitAccess.fetch();
 								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
 								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
+								parent.getToolbarPanel().updateInformationLabel();
 							}
 						});
 					} catch (RepositoryNotFoundException ex) {
@@ -163,16 +170,10 @@ public class WorkingCopySelectionPanel extends JPanel {
 		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setDialogTitle("Choose a directory to open your repository: ");
-				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-				int returnValue = fileChooser.showOpenDialog(null);
-
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-
-					String directoryPath = fileChooser.getSelectedFile().getAbsolutePath();
-					if (directoryisValid(directoryPath)) {
+				File directory = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).chooseDirectory();
+				if (directory != null) {
+					String directoryPath = directory.getAbsolutePath();
+					if (FileHelper.isGitRepository(directoryPath) && directoryPath != null) {
 
 						if (!OptionsManager.getInstance().getRepositoryEntries().contains(directoryPath)) {
 							workingCopySelector.addItem(directoryPath);
@@ -185,19 +186,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								"Please select a git directory");
 					}
-
 				}
-			}
-
-			private boolean directoryisValid(String directory) {
-				File folder = new File(directory);
-				File[] listOfFiles = folder.listFiles();
-				for (int i = 0; i < listOfFiles.length; i++) {
-					if (listOfFiles[i].isDirectory() && listOfFiles[i].getName().equals(".git")) {
-						return true;
-					}
-				}
-				return false;
 			}
 		});
 
@@ -232,7 +221,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 		workingCopySelector.setRenderer(renderer);
 		workingCopySelector.setMinimumSize(new Dimension(10, 20));
 
-		
 		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryEntry);
 		}
@@ -276,8 +264,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		browseButton = new JButton(
-				new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FILE_CHOOSER_ICON)));
+		browseButton = new ToolbarButton(null, false);
+		browseButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FILE_CHOOSER_ICON)));
 		browseButton.setToolTipText("Browse File System");
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);
@@ -292,11 +280,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 				boolean cellHasFocus) {
 
 			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			
-			/*if (-1 < index && null != value) {
-				list.setToolTipText((String) value);
-				
-			}*/
+
+			/*
+			 * if (-1 < index && null != value) { list.setToolTipText((String) value);
+			 * 
+			 * }
+			 */
 			comp.setToolTipText((String) value);
 			String path = (String) value;
 			path = path.replace("\\", "/");

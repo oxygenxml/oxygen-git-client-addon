@@ -695,7 +695,7 @@ public class GitAccess {
 		Repository repo = git.getRepository();
 		ObjectId remoteCommit = null;
 		try {
-			remoteCommit = repo.resolve("origin/master^{commit}");
+			remoteCommit = repo.resolve("origin/" + getCurrentBranch() + "^{commit}");
 			return remoteCommit;
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
@@ -721,7 +721,7 @@ public class GitAccess {
 		ObjectId remoteCommit = null;
 		ObjectId baseCommit = null;
 		try {
-			remoteCommit = repository.resolve("origin/master^{commit}");
+			remoteCommit = repository.resolve("origin/" + getCurrentBranch() + "^{commit}");
 			localCommit = repository.resolve("HEAD^{commit}");
 			if (remoteCommit != null && localCommit != null) {
 				RevCommit base = getCommonAncestor(walk, walk.parseCommit(localCommit), walk.parseCommit(remoteCommit));
@@ -1010,6 +1010,17 @@ public class GitAccess {
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getCurrentBranch() {
+		if (git != null) {
+			try {
+				return git.getRepository().getBranch();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return "";
 	}
 
 }

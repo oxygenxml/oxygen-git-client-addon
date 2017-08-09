@@ -11,7 +11,7 @@ public class StatusMessages {
 	public static final String PUSH_IN_PROGRESS = "<html><b>Pushing...</b></html>";
 	public static final String PULL_WITH_UNCOMMITED_CHANGES = "<html><b>Cannot pull with uncommited changes</b></html>";
 	public static final String PULL_UP_TO_DATE = "<html><b>Repository is already up to date</b></html>";	
-	public static final String PULL_SUCCESSFUL = "<html><b>Pull successful</b></html>";
+	public static final String PULL_SUCCESSFUL = "<html><b>Pull successful. Repository up to date	</b></html>";
 	public static final String PULL_IN_PROGRESS = "<html><b>Pulling...</b></html>";
 	public static final String PULL_WITH_CONFLICTS = "<html><b>Cannot Pull. Please resolve conflicts</b></html>";
 }

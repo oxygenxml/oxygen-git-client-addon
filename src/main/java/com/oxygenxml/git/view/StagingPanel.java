@@ -19,7 +19,9 @@ import javax.swing.SwingWorker;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
@@ -35,6 +37,7 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.util.editorvars.EditorVariables;
 
 /**
  * Main panel containing all the other panels.
@@ -137,30 +140,42 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			@Override
 			public void focusGained(final FocusEvent e) {
 				// The focus is somewhere in he view.
-				if (!inTheView) {
-					// The focus was lost but now is back.
-					updateFiles(StageState.UNSTAGED);
-					updateFiles(StageState.STAGED);
-					new SwingWorker<Integer, Integer>() {
-						protected Integer doInBackground() throws Exception {
-							GitAccess.getInstance().fetch();
-							return GitAccess.getInstance().getPullsBehind();
-						}
-
-						@Override
-						protected void done() {
-							super.done();
-							try {
-								int pullsBehind = get();
-								toolbarPanel.setPullsBehind(pullsBehind);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							} catch (ExecutionException e) {
-								e.printStackTrace();
+				try {
+					if (!inTheView && gitAccess.getRepository() != null) {
+						// The focus was lost but now is back.
+						String projectView = EditorVariables.expandEditorVariables("${pd}", null);
+						if (FileHelper.isGitRepository(projectView)) {
+							if (!OptionsManager.getInstance().getRepositoryEntries().contains(projectView)) {
+								OptionsManager.getInstance().addRepository(projectView);
+								workingCopySelectionPanel.getWorkingCopySelector().addItem(projectView);
 							}
 						}
-					}.execute();
 
+						updateFiles(StageState.UNSTAGED);
+						updateFiles(StageState.STAGED);
+						new SwingWorker<Integer, Integer>() {
+							protected Integer doInBackground() throws Exception {
+								GitAccess.getInstance().fetch();
+								return GitAccess.getInstance().getPullsBehind();
+							}
+
+							@Override
+							protected void done() {
+								super.done();
+								try {
+									int pullsBehind = get();
+									toolbarPanel.setPullsBehind(pullsBehind);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								} catch (ExecutionException e) {
+									e.printStackTrace();
+								}
+							}
+						}.execute();
+						toolbarPanel.updateInformationLabel();
+					}
+				} catch (NoRepositorySelected e1) {
+					e1.printStackTrace();
 				}
 				inTheView = true;
 			}
@@ -318,10 +333,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 					GitAccess.getInstance().getUnstagedFiles());
 			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
 			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
+			toolbarPanel.updateInformationLabel();
 		} else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
 			commitPanel.setStatus(pushPullEvent.getMessage());
 			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
 			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
+			toolbarPanel.updateInformationLabel();
 		}
 	}
 
