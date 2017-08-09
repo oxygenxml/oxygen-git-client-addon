@@ -124,4 +124,12 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		observer.stateChanged(changeEvent);
 	}
 
+	public FileStatus getFileByPath(String path){
+		for (FileStatus fileStatus : filesStatus) {
+			if(path.equals(fileStatus.getFileLocation())){
+				return fileStatus;
+			}
+		}
+		return null;
+	}
 }

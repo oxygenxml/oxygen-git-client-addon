@@ -101,7 +101,7 @@ public class ToolbarPanel extends JPanel {
 			}
 		});
 		pushButton.setToolTipText("Push");
-		gitToolbar.add(pushButton);
+		
 
 		pullButton = new JButton(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PULL_ICON))) {
 			@Override
@@ -127,7 +127,10 @@ public class ToolbarPanel extends JPanel {
 			}
 		});
 		pullButton.setToolTipText("Pull");
+		
+		
 		gitToolbar.add(pullButton);
+		gitToolbar.add(pushButton);
 
 	}
 

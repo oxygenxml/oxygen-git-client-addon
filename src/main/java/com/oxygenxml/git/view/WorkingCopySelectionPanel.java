@@ -14,11 +14,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -111,7 +114,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						}
 						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
 						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
-						
+
 						SwingUtilities.invokeLater(new Runnable() {
 
 							public void run() {
@@ -122,7 +125,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						});
 					} catch (RepositoryNotFoundException ex) {
 						OptionsManager.getInstance().removeSelectedRepository(path);
-						if(workingCopySelector.getItemCount() > 0){
+						if (workingCopySelector.getItemCount() > 0) {
 							workingCopySelector.setSelectedItem(0);
 						} else {
 							workingCopySelector.setSelectedItem(null);
@@ -225,8 +228,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weighty = 0;
 
 		workingCopySelector = new JComboBox<String>();
+		ComboboxToolTipRenderer renderer = new ComboboxToolTipRenderer();
+		workingCopySelector.setRenderer(renderer);
 		workingCopySelector.setMinimumSize(new Dimension(10, 20));
 
+		
 		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryEntry);
 		}
@@ -239,7 +245,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		} catch (IOException e) {
 			OptionsManager.getInstance().removeSelectedRepository(repositoryPath);
 			workingCopySelector.removeItem(repositoryPath);
-			if(workingCopySelector.getItemCount() > 0){
+			if (workingCopySelector.getItemCount() > 0) {
 				workingCopySelector.setSelectedIndex(0);
 				try {
 					gitAccess.setRepository((String) workingCopySelector.getSelectedItem());
@@ -248,7 +254,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-			}else{
+			} else {
 				workingCopySelector.setSelectedItem(null);
 				gitAccess.close();
 			}
@@ -272,10 +278,32 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weighty = 0;
 		browseButton = new JButton(
 				new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FILE_CHOOSER_ICON)));
+		browseButton.setToolTipText("Browse File System");
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);
 		browswtoolbar.setFloatable(false);
 		this.add(browswtoolbar, gbc);
+	}
+
+	class ComboboxToolTipRenderer extends DefaultListCellRenderer {
+
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			
+			/*if (-1 < index && null != value) {
+				list.setToolTipText((String) value);
+				
+			}*/
+			comp.setToolTipText((String) value);
+			String path = (String) value;
+			path = path.replace("\\", "/");
+			String rootFolder = path.substring(path.lastIndexOf("/") + 1);
+			comp.setText(rootFolder);
+			return comp;
+		}
 	}
 
 }

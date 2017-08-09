@@ -116,7 +116,7 @@ public class DiffPresenter {
 						String[] options = new String[] { "   Yes   ", "   No   " };
 						int[] optonsId = new int[] { 0, 1 };
 						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-								.showConfirmDialog("Conflict Warning", "Conflict Resolved?", options, optonsId);
+								.showConfirmDialog("Conflict Resolution", "You haven't modified the local version. Do you want to resolve the conflict by keeping your version?", options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().remove(file);
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());

@@ -211,7 +211,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
 					&& gitAccess.getStagedFile().size() == 0 && gitAccess.getUnstagedFiles().size() == 0) {
 				commitButton.setEnabled(true);
-				commitMessage.setText("All conflicts fixed but you are still merging. (use \"git commit\" to conclude merge)");
+				commitMessage.setText("All conflicts fixed but you are still merging. Commit to conclude the merge.");
 			} else if (gitAccess.getStagedFile().size() > 0) {
 				commitButton.setEnabled(true);
 			} else {

@@ -58,6 +58,8 @@ import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
 
+import ro.sync.exml.workspace.api.standalone.ui.Tree;
+
 public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
 	private static final int FLAT_VIEW = 1;
@@ -132,6 +134,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		addSwitchButtonListener();
 		addStageSelectedButtonListener();
 		addStageAllButtonListener();
+		addTreeMouseListener();
 
 		if (!staging) {
 			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
@@ -143,6 +146,54 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFiles);
 		}
 		stageController.registerObserver(this);
+	}
+
+	private void addTreeMouseListener() {
+		tree.addMouseListener(new MouseListener() {
+
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			public void mousePressed(MouseEvent e) {
+				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
+				if (treePath != null) {
+					String stringPath = TreeFormatter.getStringPath(treePath);
+					if (model.isLeaf(TreeFormatter.getTreeNodeFromString(model, stringPath))) {
+						if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+							FileStatus file = model.getFileByPath(stringPath);
+							DiffPresenter diff = new DiffPresenter(file, stageController);
+							diff.showDiff();
+						}
+						if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
+							tree.setSelectionPath(treePath);
+							contextualMenu.removeAll();
+							FileStatus file = model.getFileByPath(stringPath);
+							addContextualMenu(file);
+							contextualMenu.show(tree, e.getX(), e.getY());
+						}
+
+					}
+				} else {
+					tree.clearSelection();
+				}
+				toggleSelectedButton();
+			}
+
+			public void mouseExited(MouseEvent e) {
+
+			}
+
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			public void mouseClicked(MouseEvent e) {
+
+			}
+		});
+
 	}
 
 	private void addStageAllButtonListener() {
@@ -289,6 +340,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		gbc.weighty = 0;
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new JButton();
+		switchViewButton.setToolTipText("Change View");
 		switchViewButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.TREE_VIEW)));
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
@@ -407,13 +459,13 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 						filesTable.clearSelection();
 					}
 					contextualMenu.removeAll();
-					FileStatus file = getSelectedFile();
+					FileStatus file = getTableSelectedFile();
 					addContextualMenu(file);
 					contextualMenu.show(filesTable, e.getX(), e.getY());
 				}
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					toggleSelectedButton();
-				}
+				
+				toggleSelectedButton();
+				
 			}
 
 			public void mouseExited(MouseEvent e) {
@@ -584,7 +636,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		}
 	}
 
-	private FileStatus getSelectedFile() {
+	private FileStatus getTableSelectedFile() {
 		int selectedRow = filesTable.getSelectedRow();
 		int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRow);
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
@@ -597,7 +649,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	}
 
 	private void toggleSelectedButton() {
-		if (filesTable.getSelectedRowCount() > 0) {
+		if(currentView == FLAT_VIEW && filesTable.getSelectedRowCount() > 0 || currentView == TREE_VIEW && tree.getSelectionCount() > 0){
 			stageSelectedButton.setEnabled(true);
 		} else {
 			stageSelectedButton.setEnabled(false);

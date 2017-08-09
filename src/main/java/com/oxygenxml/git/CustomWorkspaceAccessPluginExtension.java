@@ -1,11 +1,20 @@
 package com.oxygenxml.git;
 
+import java.net.URL;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.StagingPanel;
 
+import ro.sync.exml.options.Options;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
+import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
@@ -20,6 +29,25 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
    */
 
   public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
+  	
+  	pluginWorkspaceAccess.addEditorChangeListener(new WSEditorChangeListener() {
+  		@Override
+  		public void editorOpened(final URL editorLocation) {
+  			WSEditor editorAccess = pluginWorkspaceAccess.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
+  			editorAccess.addEditorListener(new WSEditorListener() {
+  				@Override
+  				public void editorSaved(int operationType) {
+  					String fileInWorkPath = editorLocation.getFile().substring(1);
+  					String selectedRepositoryPath = OptionsManager.getInstance().getSelectedRepository();
+  					selectedRepositoryPath = selectedRepositoryPath.replace("\\", "/");
+  					if(fileInWorkPath.startsWith(selectedRepositoryPath)){
+  						System.out.println("update");
+  					}
+  				}
+  			});
+  		}
+  	}, PluginWorkspace.MAIN_EDITING_AREA);
+  	
 	  pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 		  /**
 		   * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)

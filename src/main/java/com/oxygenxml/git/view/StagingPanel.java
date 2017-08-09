@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -27,6 +28,13 @@ import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
+
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
+import ro.sync.exml.workspace.api.listeners.WSEditorListener;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Main panel containing all the other panels.
@@ -58,8 +66,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	public CommitPanel getCommitPanel() {
 		return commitPanel;
 	}
-	
-	public ToolbarPanel getToolbarPanel(){
+
+	public ToolbarPanel getToolbarPanel() {
 		return toolbarPanel;
 	}
 
@@ -100,6 +108,28 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		registerSubject(pushPullController);
 		registerSubject(commitPanel);
 
+		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+				.addEditorChangeListener(new WSEditorChangeListener() {
+					@Override
+					public void editorOpened(final URL editorLocation) {
+						WSEditor editorAccess = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+								.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
+						editorAccess.addEditorListener(new WSEditorListener() {
+							@Override
+							public void editorSaved(int operationType) {
+								String fileInWorkPath = editorLocation.getFile().substring(1);
+								String selectedRepositoryPath = OptionsManager.getInstance().getSelectedRepository();
+								selectedRepositoryPath = selectedRepositoryPath.replace("\\", "/");
+								if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+									List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
+									unstagedChangesPanel.updateFlatView(newFiles);
+									unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+								}
+							}
+						});
+					}
+				}, PluginWorkspace.MAIN_EDITING_AREA);
+
 		// Detect focus transitions between the view and the outside.
 		installFocusListener(this, new FocusAdapter() {
 			boolean inTheView = false;
@@ -111,12 +141,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 					// The focus was lost but now is back.
 					updateFiles(StageState.UNSTAGED);
 					updateFiles(StageState.STAGED);
-					new SwingWorker<Integer, Integer>(){
+					new SwingWorker<Integer, Integer>() {
 						protected Integer doInBackground() throws Exception {
 							GitAccess.getInstance().fetch();
 							return GitAccess.getInstance().getPullsBehind();
 						}
-						
+
 						@Override
 						protected void done() {
 							super.done();
@@ -130,7 +160,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 							}
 						}
 					}.execute();
-					
+
 				}
 				inTheView = true;
 			}
@@ -273,10 +303,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			toolbarPanel.getPushButton().setEnabled(false);
 			toolbarPanel.getPullButton().setEnabled(false);
 			commitPanel.getCommitButton().setEnabled(false);
-		} else if(pushPullEvent.getActionStatus() == ActionStatus.FINISHED){
+		} else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
 			commitPanel.setStatus(pushPullEvent.getMessage());
 			commitPanel.clearCommitMessage();
-			if(GitAccess.getInstance().getStagedFile().size() > 0){
+			if (GitAccess.getInstance().getStagedFile().size() > 0) {
 				commitPanel.getCommitButton().setEnabled(true);
 			}
 			workingCopySelectionPanel.getBrowseButton().setEnabled(true);
@@ -288,7 +318,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 					GitAccess.getInstance().getUnstagedFiles());
 			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
 			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
-		} else if(pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT){
+		} else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
 			commitPanel.setStatus(pushPullEvent.getMessage());
 			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
 			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
