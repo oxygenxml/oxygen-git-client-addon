@@ -4,6 +4,7 @@
         <location>C:\Users\intern2\Documents\New folder</location>
         <location>C:\Users\intern2\Documents\test4</location>
         <location>C:\Users\intern2\Documents\Oxygen-Git-Plugin</location>
+        <location>C:\Users\intern2\Documents\test4_2</location>
         <location>C:\Users\intern2\Documents\test</location>
     </repositoryLocations>
     <selectedRepository>C:\Users\intern2\Documents\Oxygen-Git-Plugin</selectedRepository>
@@ -20,12 +21,12 @@
         </credential>
     </userCredentials>
     <commitMessages>
+        <message>commit 6</message>
+        <message>Treated the case when a repository has just been cloned and there are no commits (it's brand new).</message>
         <message>commit 5</message>
         <message>commit 4</message>
         <message>commit 3</message>
         <message>commit 2</message>
         <message>commit 1</message>
-        <message>Added restart merge, fix some minor bugs</message>
-        <message>end day commit</message>
     </commitMessages>
 </Options>

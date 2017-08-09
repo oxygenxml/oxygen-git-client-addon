@@ -916,10 +916,12 @@ public class GitAccess {
 					numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
 				}
 				if (getBaseCommit() == null) {
-					Iterable<RevCommit> logs = git.log().not(repository.resolve("HEAD"))
-							.add(repository.resolve("remotes/origin/" + git.getRepository().getBranch())).call();
-					for (RevCommit revCommit : logs) {
-						numberOfCommits++;
+					if (repository.resolve("remotes/origin/" + git.getRepository().getBranch()) != null) {
+						Iterable<RevCommit> logs = git.log().not(repository.resolve("HEAD"))
+								.add(repository.resolve("remotes/origin/" + git.getRepository().getBranch())).call();
+						for (RevCommit revCommit : logs) {
+							numberOfCommits++;
+						}
 					}
 				}
 			} catch (RevisionSyntaxException e) {
@@ -938,6 +940,7 @@ public class GitAccess {
 			walk.close();
 		}
 		return numberOfCommits;
+
 	}
 
 	/**
