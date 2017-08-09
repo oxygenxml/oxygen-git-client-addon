@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
@@ -42,7 +43,7 @@ public class GitAccessPullTest {
 
 	@Before
 	public void init()
-			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException {
+			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		db1 = gitAccess.getRepository();

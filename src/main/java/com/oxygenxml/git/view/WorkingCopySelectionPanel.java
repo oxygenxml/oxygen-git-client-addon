@@ -122,7 +122,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 						});
 					} catch (RepositoryNotFoundException ex) {
 						OptionsManager.getInstance().removeSelectedRepository(path);
-						workingCopySelector.setSelectedItem(null);
+						if(workingCopySelector.getItemCount() > 0){
+							workingCopySelector.setSelectedItem(0);
+						} else {
+							workingCopySelector.setSelectedItem(null);
+							gitAccess.close();
+						}
 						workingCopySelector.removeItem(path);
 
 						// clear content from FLAT_VIEW
@@ -232,7 +237,21 @@ public class WorkingCopySelectionPanel extends JPanel {
 				gitAccess.setRepository(repositoryPath);
 			}
 		} catch (IOException e) {
-			workingCopySelector.setSelectedItem(null);
+			OptionsManager.getInstance().removeSelectedRepository(repositoryPath);
+			workingCopySelector.removeItem(repositoryPath);
+			if(workingCopySelector.getItemCount() > 0){
+				workingCopySelector.setSelectedIndex(0);
+				try {
+					gitAccess.setRepository((String) workingCopySelector.getSelectedItem());
+				} catch (RepositoryNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}else{
+				workingCopySelector.setSelectedItem(null);
+				gitAccess.close();
+			}
 			OptionsManager.getInstance().saveSelectedRepository("");
 
 			JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),

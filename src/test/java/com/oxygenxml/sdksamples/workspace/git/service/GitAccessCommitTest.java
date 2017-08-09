@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
@@ -34,7 +35,7 @@ public class GitAccessCommitTest {
 	}
 
 	@Test
-	public void testSingleFileCommit() {
+	public void testSingleFileCommit() throws NoRepositorySelected {
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		try {
 			file.createNewFile();
@@ -79,7 +80,7 @@ public class GitAccessCommitTest {
 	}
 
 	@Test
-	public void testMultipleFileCommit() {
+	public void testMultipleFileCommit() throws NoRepositorySelected {
 		int n = 3;
 		List<FileStatus> files = new ArrayList<FileStatus>();
 		for (int i = 0; i < n; i++) {

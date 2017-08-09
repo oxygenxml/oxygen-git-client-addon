@@ -20,19 +20,21 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 public class LoginDialog extends OKCancelDialog {
 	private String host;
+	private String message;
 	private JTextField tfUsername;
 	private JPasswordField pfPassword;
 	private UserCredentials userCredentials;
 	
-	public LoginDialog(String host) {
+	public LoginDialog(String host, String loginMessage) {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), "GitAccount", true);
 		this.host = host;
+		this.message = loginMessage;
 		createGUI();
 		
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.pack();
 		this.setResizable(false);
 		this.setVisible(true);
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
 		
 	}
@@ -43,7 +45,7 @@ public class LoginDialog extends OKCancelDialog {
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
-		JLabel lblGitRemote = new JLabel("<html>Enter <b>"+ host + "</b> account: </html>");
+		JLabel lblGitRemote = new JLabel("<html>"+ message + "<br>Enter <b>"+ host + "</b> account: </html>");
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.gridx = 0;

@@ -2,6 +2,7 @@
 <Options>
     <repositoryLocations>
         <location>C:\Users\intern2\Documents\New folder</location>
+        <location>C:\Users\intern2\Documents\test4</location>
         <location>C:\Users\intern2\Documents\Oxygen-Git-Plugin</location>
         <location>C:\Users\intern2\Documents\test</location>
     </repositoryLocations>
@@ -12,17 +13,19 @@
             <username>benisavu@gmail.com</username>
             <password>9.1.134;134;158;109;113;205;152;197;102;149;169;167;163;144;164;153;209;200;96;104;</password>
         </credential>
+        <credential>
+            <host>bitbucket.org</host>
+            <username>benjisavu@gmail.com</username>
+            <password>9.1.134;134;158;109;113;205;152;197;102;149;169;167;163;144;164;153;209;200;96;104;</password>
+        </credential>
     </userCredentials>
     <commitMessages>
+        <message>commit 5</message>
+        <message>commit 4</message>
+        <message>commit 3</message>
+        <message>commit 2</message>
+        <message>commit 1</message>
+        <message>Added restart merge, fix some minor bugs</message>
         <message>end day commit</message>
-        <message>Did the following:
-- disard with git checkout
-- added menu reolve conflict: keep mine, keep theirs
-- if a file is in conlfict, then it's resolved with it's local copy and there are no other file in the staging and unstaging area the user will be informed that to conclude it's merging he must commit</message>
-        <message>4</message>
-        <message>3</message>
-        <message>2</message>
-        <message>1</message>
-        <message>All conflicts fixed but you are still merging. (use "git commit" to conclude merge)</message>
     </commitMessages>
 </Options>

@@ -89,6 +89,7 @@ import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.StatusMessages;
 
 import de.schlichtherle.io.FileInputStream;
+import de.schlichtherle.io.util.SynchronizedOutputStream;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -133,8 +134,12 @@ public class GitAccess {
 	/**
 	 * 
 	 * @return the git Repository
+	 * @throws NoRepositorySelected
 	 */
-	public Repository getRepository() {
+	public Repository getRepository() throws NoRepositorySelected {
+		if (git == null) {
+			throw new NoRepositorySelected("Repository is empty");
+		}
 		return git.getRepository();
 	}
 
@@ -175,55 +180,57 @@ public class GitAccess {
 		OutputStream out = NullOutputStream.INSTANCE;
 
 		DiffFormatter formatter = new DiffFormatter(out);
-		formatter.setRepository(git.getRepository());
-		try {
-			AbstractTreeIterator commitTreeIterator = getLastCommitTreeIterator(git.getRepository(), Constants.HEAD);
-			if (commitTreeIterator != null) {
-				FileTreeIterator workTreeIterator = new FileTreeIterator(git.getRepository());
-				List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator, workTreeIterator);
-				for (DiffEntry entry : diffEntries) {
-					GitChangeType changeType = null;
-					if (entry.getChangeType() == ChangeType.ADD) {
-						changeType = GitChangeType.ADD;
-					} else if (entry.getChangeType() == ChangeType.MODIFY) {
-						changeType = GitChangeType.MODIFY;
-					} else if (entry.getChangeType() == ChangeType.DELETE) {
-						changeType = GitChangeType.DELETE;
-					}
+		if (git != null) {
+			formatter.setRepository(git.getRepository());
+			try {
+				AbstractTreeIterator commitTreeIterator = getLastCommitTreeIterator(git.getRepository(), Constants.HEAD);
+				if (commitTreeIterator != null) {
+					FileTreeIterator workTreeIterator = new FileTreeIterator(git.getRepository());
+					List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator, workTreeIterator);
+					for (DiffEntry entry : diffEntries) {
+						GitChangeType changeType = null;
+						if (entry.getChangeType() == ChangeType.ADD) {
+							changeType = GitChangeType.ADD;
+						} else if (entry.getChangeType() == ChangeType.MODIFY) {
+							changeType = GitChangeType.MODIFY;
+						} else if (entry.getChangeType() == ChangeType.DELETE) {
+							changeType = GitChangeType.DELETE;
+						}
 
-					if (entry.getChangeType().equals(ChangeType.ADD) || entry.getChangeType().equals(ChangeType.COPY)
-							|| entry.getChangeType().equals(ChangeType.RENAME)) {
-						String filePath = entry.getNewPath();
-						FileStatus unstageFile = new FileStatus(changeType, filePath);
-						if (!stagedFiles.contains(unstageFile)) {
-							if (!conflictingPaths.contains(filePath)) {
-								unstagedFiles.add(unstageFile);
+						if (entry.getChangeType().equals(ChangeType.ADD) || entry.getChangeType().equals(ChangeType.COPY)
+								|| entry.getChangeType().equals(ChangeType.RENAME)) {
+							String filePath = entry.getNewPath();
+							FileStatus unstageFile = new FileStatus(changeType, filePath);
+							if (!stagedFiles.contains(unstageFile)) {
+								if (!conflictingPaths.contains(filePath)) {
+									unstagedFiles.add(unstageFile);
+								}
 							}
-						}
-					} else {
-						String filePath = entry.getOldPath();
-						FileStatus unstageFile = new FileStatus(changeType, filePath);
-						if (!stagedFiles.contains(unstageFile)) {
-							if (!conflictingPaths.contains(filePath)) {
-								unstagedFiles.add(unstageFile);
+						} else {
+							String filePath = entry.getOldPath();
+							FileStatus unstageFile = new FileStatus(changeType, filePath);
+							if (!stagedFiles.contains(unstageFile)) {
+								if (!conflictingPaths.contains(filePath)) {
+									unstagedFiles.add(unstageFile);
+								}
 							}
 						}
 					}
+					unstagedFiles.addAll(conflictingFiles);
+				} else {
+					String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+					List<String> fileNames = FileHelper.search(selectedRepository);
+					for (String fileName : fileNames) {
+						selectedRepository = selectedRepository.replace("\\", "/");
+						int cut = selectedRepository.substring(selectedRepository.lastIndexOf("/") + 1).length();
+						String file = fileName.substring(cut + 1);
+						FileStatus unstageFile = new FileStatus(GitChangeType.ADD, file);
+						unstagedFiles.add(unstageFile);
+					}
 				}
-				unstagedFiles.addAll(conflictingFiles);
-			} else {
-				String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
-				List<String> fileNames = FileHelper.search(selectedRepository);
-				for (String fileName : fileNames) {
-					selectedRepository = selectedRepository.replace("\\", "/");
-					int cut = selectedRepository.substring(selectedRepository.lastIndexOf("/") + 1).length();
-					String file = fileName.substring(cut + 1);
-					FileStatus unstageFile = new FileStatus(GitChangeType.ADD, file);
-					unstagedFiles.add(unstageFile);
-				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		formatter.close();
@@ -552,25 +559,26 @@ public class GitAccess {
 	 * @return - a set containing all the staged file names
 	 */
 	public List<FileStatus> getStagedFile() {
-		try {
-			Status status = git.status().call();
-			List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
-			for (String fileName : status.getChanged()) {
-				stagedFiles.add(new FileStatus(GitChangeType.MODIFY, fileName));
+		if (git != null) {
+			try {
+				Status status = git.status().call();
+				List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+				for (String fileName : status.getChanged()) {
+					stagedFiles.add(new FileStatus(GitChangeType.MODIFY, fileName));
+				}
+				for (String fileName : status.getAdded()) {
+					stagedFiles.add(new FileStatus(GitChangeType.ADD, fileName));
+				}
+				for (String fileName : status.getRemoved()) {
+					stagedFiles.add(new FileStatus(GitChangeType.DELETE, fileName));
+				}
+				return stagedFiles;
+			} catch (NoWorkTreeException e) {
+				e.printStackTrace();
+			} catch (GitAPIException e) {
+				e.printStackTrace();
 			}
-			for (String fileName : status.getAdded()) {
-				stagedFiles.add(new FileStatus(GitChangeType.ADD, fileName));
-			}
-			for (String fileName : status.getRemoved()) {
-				stagedFiles.add(new FileStatus(GitChangeType.DELETE, fileName));
-			}
-			return stagedFiles;
-		} catch (NoWorkTreeException e) {
-			e.printStackTrace();
-		} catch (GitAPIException e) {
-			e.printStackTrace();
 		}
-
 		return new ArrayList<FileStatus>();
 	}
 
@@ -580,18 +588,20 @@ public class GitAccess {
 	 * @return the conflicting files list
 	 */
 	public List<FileStatus> getConflictingFiles() {
-		try {
-			Status status = git.status().call();
-			List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
-			for (String fileName : status.getConflicting()) {
-				stagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
-			}
+		if (git != null) {
+			try {
+				Status status = git.status().call();
+				List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+				for (String fileName : status.getConflicting()) {
+					stagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
+				}
 
-			return stagedFiles;
-		} catch (NoWorkTreeException e) {
-			e.printStackTrace();
-		} catch (GitAPIException e) {
-			e.printStackTrace();
+				return stagedFiles;
+			} catch (NoWorkTreeException e) {
+				e.printStackTrace();
+			} catch (GitAPIException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return new ArrayList<FileStatus>();
@@ -707,13 +717,18 @@ public class GitAccess {
 	public ObjectId getBaseCommit() {
 		Repository repository = git.getRepository();
 		RevWalk walk = new RevWalk(repository);
-		ObjectId localCommit;
-		ObjectId remoteCommit;
-		RevCommit baseCommit = null;
+		ObjectId localCommit = null;
+		ObjectId remoteCommit = null;
+		ObjectId baseCommit = null;
 		try {
 			remoteCommit = repository.resolve("origin/master^{commit}");
 			localCommit = repository.resolve("HEAD^{commit}");
-			baseCommit = getCommonAncestor(walk, walk.parseCommit(localCommit), walk.parseCommit(remoteCommit));
+			if (remoteCommit != null && localCommit != null) {
+				RevCommit base = getCommonAncestor(walk, walk.parseCommit(localCommit), walk.parseCommit(remoteCommit));
+				if (base != null) {
+					baseCommit = base.toObjectId();
+				}
+			}
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
 		} catch (AmbiguousObjectException e) {
@@ -724,7 +739,7 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 		walk.close();
-		return baseCommit.toObjectId();
+		return baseCommit;
 	}
 
 	/**
@@ -847,23 +862,38 @@ public class GitAccess {
 	 */
 	public int getPushesAhead() {
 		int numberOfCommits = 0;
-		Repository repository = git.getRepository();
-		RevWalk walk = new RevWalk(repository);
-		walk.reset();
-		try {
-			RevCommit localCommit = walk.parseCommit(getLastLocalCommit());
-			RevCommit baseCommit = walk.parseCommit(getBaseCommit());
-
-			numberOfCommits = RevWalkUtils.count(walk, localCommit, baseCommit);
-
-		} catch (MissingObjectException e) {
-			e.printStackTrace();
-		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (git != null) {
+			Repository repository = git.getRepository();
+			RevWalk walk = new RevWalk(repository);
+			walk.reset();
+			try {
+				ObjectId local = getLastLocalCommit();
+				ObjectId base = getBaseCommit();
+				if (local != null && base != null) {
+					RevCommit localCommit = walk.parseCommit(local);
+					RevCommit baseCommit = walk.parseCommit(base);
+					numberOfCommits = RevWalkUtils.count(walk, localCommit, baseCommit);
+				}
+				if (base == null) {
+					System.out.println("base is null");
+					Iterable<RevCommit> results = git.log().call();
+					for (RevCommit revCommit : results) {
+						numberOfCommits++;
+					}
+				}
+			} catch (MissingObjectException e) {
+				e.printStackTrace();
+			} catch (IncorrectObjectTypeException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NoHeadException e) {
+				numberOfCommits = 0;
+			} catch (GitAPIException e) {
+				e.printStackTrace();
+			}
+			walk.close();
 		}
-		walk.close();
 		return numberOfCommits;
 	}
 
@@ -875,25 +905,38 @@ public class GitAccess {
 	 */
 	public int getPullsBehind() {
 		int numberOfCommits = 0;
-		Repository repository = git.getRepository();
-		RevWalk walk = new RevWalk(repository);
-		walk.reset();
-		try {
-			if (getRemoteCommit() != null && getBaseCommit() != null) {
-				RevCommit remoteCommit = walk.parseCommit(getRemoteCommit());
-				RevCommit baseCommit = walk.parseCommit(getBaseCommit());
-				numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
+		if (git != null) {
+			Repository repository = git.getRepository();
+			RevWalk walk = new RevWalk(repository);
+			walk.reset();
+			try {
+				if (getRemoteCommit() != null && getBaseCommit() != null) {
+					RevCommit remoteCommit = walk.parseCommit(getRemoteCommit());
+					RevCommit baseCommit = walk.parseCommit(getBaseCommit());
+					numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
+				}
+				if (getBaseCommit() == null) {
+					Iterable<RevCommit> logs = git.log().not(repository.resolve("HEAD"))
+							.add(repository.resolve("remotes/origin/" + git.getRepository().getBranch())).call();
+					for (RevCommit revCommit : logs) {
+						numberOfCommits++;
+					}
+				}
+			} catch (RevisionSyntaxException e) {
+				e.printStackTrace();
+			} catch (AmbiguousObjectException e) {
+				e.printStackTrace();
+			} catch (IncorrectObjectTypeException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NoHeadException e) {
+				e.printStackTrace();
+			} catch (GitAPIException e) {
+				e.printStackTrace();
 			}
-		} catch (RevisionSyntaxException e) {
-			e.printStackTrace();
-		} catch (AmbiguousObjectException e) {
-			e.printStackTrace();
-		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			walk.close();
 		}
-		walk.close();
 		return numberOfCommits;
 	}
 
@@ -939,11 +982,11 @@ public class GitAccess {
 	}
 
 	public void restartMerge() {
-		
+
 		try {
 			git.clean().call();
 			git.reset().setMode(ResetType.HARD).call();
-			AnyObjectId commitToMerge =  getRemoteCommit();
+			AnyObjectId commitToMerge = getRemoteCommit();
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
@@ -965,5 +1008,5 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 	}
-		
+
 }

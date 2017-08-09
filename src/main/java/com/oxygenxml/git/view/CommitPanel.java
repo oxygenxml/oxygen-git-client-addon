@@ -25,6 +25,7 @@ import org.eclipse.jgit.lib.RepositoryState;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.options.Options;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
@@ -206,13 +207,17 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	private void toggleCommitButton() {
-		if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-				&& gitAccess.getStagedFile().size() == 0 && gitAccess.getUnstagedFiles().size() == 0) {
-			commitButton.setEnabled(true);
-			commitMessage.setText("All conflicts fixed but you are still merging. (use \"git commit\" to conclude merge)");
-		} else if (gitAccess.getStagedFile().size() > 0) {
-			commitButton.setEnabled(true);
-		} else {
+		try {
+			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
+					&& gitAccess.getStagedFile().size() == 0 && gitAccess.getUnstagedFiles().size() == 0) {
+				commitButton.setEnabled(true);
+				commitMessage.setText("All conflicts fixed but you are still merging. (use \"git commit\" to conclude merge)");
+			} else if (gitAccess.getStagedFile().size() > 0) {
+				commitButton.setEnabled(true);
+			} else {
+				commitButton.setEnabled(false);
+			}
+		} catch (NoRepositorySelected e) {
 			commitButton.setEnabled(false);
 		}
 

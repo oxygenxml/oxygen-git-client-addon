@@ -48,6 +48,7 @@ import com.google.common.io.Files;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.OptionsManager;
@@ -573,9 +574,13 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		} else if (file.getChangeType() == GitChangeType.CONFLICT) {
 			discard.setEnabled(false);
 		}
-		if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-				|| gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
-			resolveConflict.setEnabled(true);
+		try {
+			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
+					|| gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
+				resolveConflict.setEnabled(true);
+			}
+		} catch (NoRepositorySelected e1) {
+			resolveConflict.setEnabled(false);
 		}
 	}
 

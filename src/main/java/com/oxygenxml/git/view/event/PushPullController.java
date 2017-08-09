@@ -59,21 +59,18 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 */
 	private GitAccess gitAccess;
 
-	/**
-	 * The command to execute (Push or Pull)
-	 */
-
 	public PushPullController(GitAccess gitAccess) {
 		this.gitAccess = gitAccess;
 	}
 
 	/**
 	 * Opens a login dialog to update the credentials
+	 * @param loginMessage 
 	 * 
 	 * @return the new credentials
 	 */
-	public UserCredentials loadNewCredentials() {
-		return new LoginDialog(gitAccess.getHostName()).getUserCredentials();
+	public UserCredentials loadNewCredentials(String loginMessage) {
+		return new LoginDialog(gitAccess.getHostName(), loginMessage).getUserCredentials();
 	}
 
 	/**
@@ -106,9 +103,15 @@ public class PushPullController implements Subject<PushPullEvent> {
 					}
 				} catch (GitAPIException e) {
 					if (e.getMessage().contains("not authorized")) {
-						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								"Invalid credentials for " + userCredentials.getUsername());
-						UserCredentials loadNewCredentials = loadNewCredentials();
+						String loginMessage = "";
+						if("".equals(userCredentials.getUsername())){
+							loginMessage = "Invalid credentials";
+						} else {
+							loginMessage = "Invalid credentials for " + userCredentials.getUsername();
+						}
+						//JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+						//		"Invalid credentials for " + userCredentials.getUsername());
+						UserCredentials loadNewCredentials = loadNewCredentials(loginMessage);
 						if (loadNewCredentials != null) {
 							execute(command);
 						}
