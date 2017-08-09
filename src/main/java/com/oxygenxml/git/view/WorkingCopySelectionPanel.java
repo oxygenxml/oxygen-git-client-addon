@@ -119,7 +119,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 						}
 						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
 						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
-					
 
 						SwingUtilities.invokeLater(new Runnable() {
 
@@ -286,11 +285,13 @@ public class WorkingCopySelectionPanel extends JPanel {
 			 * 
 			 * }
 			 */
-			comp.setToolTipText((String) value);
-			String path = (String) value;
-			path = path.replace("\\", "/");
-			String rootFolder = path.substring(path.lastIndexOf("/") + 1);
-			comp.setText(rootFolder);
+			if (value != null) {
+				comp.setToolTipText((String) value);
+				String path = (String) value;
+				path = path.replace("\\", "/");
+				String rootFolder = path.substring(path.lastIndexOf("/") + 1);
+				comp.setText(rootFolder);
+			}
 			return comp;
 		}
 	}
