@@ -13,17 +13,14 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.Constants;
-import com.oxygenxml.git.options.Options;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.OptionsManager;
@@ -34,9 +31,6 @@ import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subject<PushPullEvent> {
 
@@ -73,7 +67,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 		addCommitButtonListener();
 		addPreviouslyMessagesComboBoxListener();
-		this.setMinimumSize(new Dimension(250, 140));
+		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.COMMIT_PANEL_HEIGHT));
 	}
 
 	private void addPreviouslyMessagesComboBoxListener() {

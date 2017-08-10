@@ -9,19 +9,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Action;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -81,7 +77,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		addFileChooserOn(browseButton);
 		addWorkingCopySelectorListener();
 
-		this.setMinimumSize(new Dimension(250, 25));
+		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.WORKINGCOPY_PANEL_HEIGHT));
 	}
 
 	private void addWorkingCopySelectorListener() {

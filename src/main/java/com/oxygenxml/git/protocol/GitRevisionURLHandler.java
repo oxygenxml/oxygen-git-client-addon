@@ -9,7 +9,6 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.utils.FileHelper;

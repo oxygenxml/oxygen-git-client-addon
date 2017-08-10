@@ -1,8 +1,6 @@
 package com.oxygenxml.git.view;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -97,7 +95,7 @@ public class ToolbarPanel extends JPanel {
 		gbc.weighty = 0;
 		updateInformationLabel();
 		this.add(statusInformationLabel, gbc);
-		this.setMinimumSize(new Dimension(250, 35));
+		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.TOOLBAR_PANEL_HEIGHT));
 	}
 
 	public void updateInformationLabel() {

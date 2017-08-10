@@ -57,7 +57,6 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.Config;
-import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -89,7 +88,6 @@ import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.StatusMessages;
 
 import de.schlichtherle.io.FileInputStream;
-import de.schlichtherle.io.util.SynchronizedOutputStream;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve

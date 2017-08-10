@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Options>
     <repositoryLocations>
-        <location>C:\Users\intern2\Documents\New folder</location>
-        <location>C:\Users\intern2\Documents\test4</location>
         <location>C:\Users\intern2\Documents\Oxygen-Git-Plugin</location>
-        <location>C:\Users\intern2\Documents\test4_2</location>
         <location>C:\Users\intern2\Documents\test</location>
     </repositoryLocations>
     <selectedRepository>C:\Users\intern2\Documents\Oxygen-Git-Plugin</selectedRepository>
@@ -14,27 +11,8 @@
             <username>benisavu@gmail.com</username>
             <password>9.1.134;134;158;109;113;205;152;197;102;149;169;167;163;144;164;153;209;200;96;104;</password>
         </credential>
-        <credential>
-            <host>bitbucket.org</host>
-            <username>benjisavu@gmail.com</username>
-            <password>9.1.134;134;158;109;113;205;152;197;102;149;169;167;163;144;164;153;209;200;96;104;</password>
-        </credential>
     </userCredentials>
     <commitMessages>
-        <message>- Use Oxygen's ro.sync.exml.workspace.api.standalone.ui.ToolbarButton for all buttons
-- To browse, use Oxygen's ro.sync.exml.workspace.api.WorkspaceUtilities.chooseDirectory()
--The working copy should present the the name of the directory and the full path on tooltip
-3.1 in the combo's drop down, put the project directory as well (if it is a GIT repository). The project directory can be obtained using:
-- When you minimize the view some controls are disappearing. Let's put a decent minimum size on the panels.
-- Status information. The essential status information would be the branch and a status: Up to date, or the revision number.
-- After Pull, if successful, show an "Up to date" message.</message>
-        <message>All conflicts fixed but you are still merging. Commit to conclude the merge.</message>
-        <message>- Listen for changes in Oxygen
-- Added tree contextual menu
-- Modified some messages</message>
-        <message>commit 6</message>
-        <message>Treated the case when a repository has just been cloned and there are no commits (it's brand new).</message>
-        <message>commit 5</message>
-        <message>commit 4</message>
+        <message>Added tree icons with respective tooltips. The same with those from the table view</message>
     </commitMessages>
 </Options>

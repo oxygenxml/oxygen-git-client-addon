@@ -16,7 +16,6 @@ import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 
-import com.google.common.util.concurrent.Service.State;
 import com.oxygenxml.git.protocol.GitFile;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.GitAccess;

@@ -30,7 +30,6 @@ import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
-import javax.swing.plaf.synth.SynthSeparatorUI;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -146,7 +145,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFiles);
 		}
 		stageController.registerObserver(this);
-		this.setMinimumSize(new Dimension(250, 100));
+		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.STAGING_PANEl_HEIGHT));
 	}
 
 	private void addTreeMouseListener() {
