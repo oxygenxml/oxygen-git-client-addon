@@ -1,8 +1,6 @@
 package com.oxygenxml.git.view;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -10,7 +8,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.Action;
@@ -20,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
-import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.view.event.Command;
@@ -41,7 +37,6 @@ public class ToolbarPanel extends JPanel {
 	private PushPullController pushPullController;
 	private ToolbarButton pushButton;
 	private ToolbarButton pullButton;
-	private JButton storeCredentials;
 	private int pushesAhead = 0;
 	private int pullsBehind = 0;
 
@@ -224,21 +219,4 @@ public class ToolbarPanel extends JPanel {
 		gitToolbar.add(pullButton);
 
 	}
-
-	/**
-	 * Remains to be done
-	 */
-	private void addUndefinedButton() {
-		storeCredentials = new JButton(
-				new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.STORE_CREDENTIALS_ICON)));
-		storeCredentials.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-			}
-
-		});
-		storeCredentials.setToolTipText("Update Credentials");
-		gitToolbar.add(storeCredentials);
-	}
-
 }
