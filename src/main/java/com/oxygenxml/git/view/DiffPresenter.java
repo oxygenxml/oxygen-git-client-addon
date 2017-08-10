@@ -144,4 +144,8 @@ public class DiffPresenter {
 			e1.printStackTrace();
 		}
 	}
+
+	public void setFile(FileStatus fileStatus) {
+		this.file = fileStatus;
+	}
 }

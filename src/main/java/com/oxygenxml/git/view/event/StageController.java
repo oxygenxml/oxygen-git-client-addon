@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.entities.FileStatus;
 
 /**
  * Delegates the changing event to all other observers and makes sure that all
@@ -91,6 +92,17 @@ public class StageController implements Observer<ChangeEvent> {
 			gitAccess.addAll(changeEvent.getFileToBeUpdated());
 		} else if (changeEvent.getNewState() == StageState.UNSTAGED) {
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
+		} else if (changeEvent.getOldState() == StageState.UNDEFINED && changeEvent.getNewState() == StageState.DISCARD){
+			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
+			for (FileStatus file : changeEvent.getFileToBeUpdated()) {				
+				gitAccess.restoreLastCommit(file.getFileLocation());
+			}
+		} else if (changeEvent.getOldState() == StageState.UNSTAGED && changeEvent.getNewState() == StageState.DISCARD){
+			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
+			for (FileStatus file : changeEvent.getFileToBeUpdated()) {				
+				gitAccess.restoreLastCommit(file.getFileLocation());
+			}
+			gitAccess.addAll(changeEvent.getFileToBeUpdated());
 		}
 
 		for (Observer<ChangeEvent> observer : observers) {

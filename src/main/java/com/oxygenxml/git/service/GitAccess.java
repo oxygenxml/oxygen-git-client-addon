@@ -167,18 +167,37 @@ public class GitAccess {
 	 */
 	public List<FileStatus> getUnstagedFiles() {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
-		List<FileStatus> stagedFiles = getStagedFile();
+		/*List<FileStatus> stagedFiles = getStagedFile();
 		List<FileStatus> conflictingFiles = getConflictingFiles();
 		List<String> conflictingPaths = new ArrayList<String>();
 		for (FileStatus conflictingFile : conflictingFiles) {
 			conflictingPaths.add(conflictingFile.getFileLocation());
+		}*/
+		try {
+			Status status = git.status().call();
+			for (String string : status.getUntracked()) {
+				unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
+			}
+			for (String string : status.getModified()) {
+				unstagedFiles.add(new FileStatus(GitChangeType.MODIFY, string));
+			}
+			for (String string : status.getMissing()) {
+				unstagedFiles.add(new FileStatus(GitChangeType.DELETE, string));
+			}
+			unstagedFiles.addAll(getConflictingFiles());
+			
+		} catch (NoWorkTreeException e1) {
+			e1.printStackTrace();
+		} catch (GitAPIException e1) {
+			e1.printStackTrace();
 		}
+		return unstagedFiles;
 		// TODO Check if these are the staged files
 //		git.status().call().getChanged()
 		// TODO Check if we can get the unstaged files like this.
 //		git.status().call().getModified()
 		// needed only to pass it to the formatter
-		OutputStream out = NullOutputStream.INSTANCE;
+		/*OutputStream out = NullOutputStream.INSTANCE;
 
 		DiffFormatter formatter = new DiffFormatter(out);
 		if (git != null) {
@@ -233,7 +252,7 @@ public class GitAccess {
 		formatter.close();
 
 		return unstagedFiles;
-
+*/
 	}
 
 	/**

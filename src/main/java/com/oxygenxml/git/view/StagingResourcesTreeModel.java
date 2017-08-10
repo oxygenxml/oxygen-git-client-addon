@@ -53,12 +53,13 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 			}
 		} else if (changeEvent.getNewState() == StageState.COMMITED) {
 			if (forStaging) {
+				deleteNodes(filesStatus);
 				filesStatus.clear();
 			}
 		} else if (changeEvent.getNewState() == StageState.DISCARD) {
-			deleteNodes(filesStatus);
+			deleteNodes(fileToBeUpdated);
 		}
-
+		
 		fireTreeStructureChanged(this, null, null, null);
 	}
 
@@ -131,5 +132,24 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 			}
 		}
 		return null;
+	}
+
+	public List<FileStatus> getFilesByPaths(List<String> selectedPaths) {
+		List<FileStatus> containingPaths = new ArrayList<FileStatus>();
+		for (String path : selectedPaths) {
+			for (FileStatus fileStatus : filesStatus) {
+				if (fileStatus.getFileLocation().startsWith(path)) {
+					containingPaths.add(new FileStatus(fileStatus));
+				}
+			}
+		}
+		return containingPaths;
+	}
+
+
+	public void setFilesStatus(List<FileStatus> filesStatus) {
+		this.filesStatus = filesStatus;
+		insertNodes(filesStatus);
+		fireTreeStructureChanged(this, null, null, null);
 	}
 }

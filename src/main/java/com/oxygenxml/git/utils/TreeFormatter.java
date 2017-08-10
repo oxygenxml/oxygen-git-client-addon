@@ -180,4 +180,17 @@ public class TreeFormatter {
 		return fullPath;
 	}
 
+	
+	public static List<String> getStringComonAncestor(JTree tree) {
+		List<String> selectedFiles = new ArrayList<String>();
+		TreePath[] selectedPaths = tree.getSelectionPaths();
+		List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(selectedPaths);
+		String fullPath = "";
+		for (TreePath treePath : commonAncestors) {
+			fullPath = TreeFormatter.getStringPath(treePath);
+			selectedFiles.add(new String(fullPath));
+			fullPath = "";
+		}
+		return selectedFiles;
+	}
 }

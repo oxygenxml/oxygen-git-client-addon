@@ -177,7 +177,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					message = StatusMessages.PULL_SUCCESSFUL;
 				} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showInformationMessage("Cannot pull with uncommited changes");
+							.showWarningMessage(StatusMessages.PULL_WITH_UNCOMMITED_CHANGES);
 
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					// prompts a dialog showing the files in conflict
@@ -191,7 +191,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					message = StatusMessages.PULL_UP_TO_DATE;
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showInformationMessage(StatusMessages.PULL_WITH_CONFLICTS);
+							.showWarningMessage(StatusMessages.PULL_WITH_CONFLICTS);
 				}
 				return message;
 			}
@@ -218,7 +218,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					message = StatusMessages.PUSH_SUCCESSFUL;
 				} else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showInformationMessage("Push failed, please get your repository up to date(PULL)");
+							.showWarningMessage("Push failed, please get your repository up to date(PULL)");
 				} else if (Status.UP_TO_DATE == response.getStatus()) {
 					// ((StandalonePluginWorkspace)
 					// PluginWorkspaceProvider.getPluginWorkspace())
@@ -227,7 +227,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 				} else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
 					// message = response.getMessage();
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showInformationMessage(response.getMessage());
+							.showWarningMessage(response.getMessage());
 				}
 				return message;
 			}
