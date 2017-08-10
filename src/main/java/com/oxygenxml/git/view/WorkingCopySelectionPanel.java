@@ -225,9 +225,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 		}
 		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
 		try {
-			workingCopySelector.setSelectedItem(repositoryPath);
 			if (!repositoryPath.equals("")) {
+				workingCopySelector.setSelectedItem(repositoryPath);
 				gitAccess.setRepository(repositoryPath);
+			} else if(workingCopySelector.getItemCount() > 0){
+				workingCopySelector.setSelectedIndex(0);
+				gitAccess.setRepository((String) workingCopySelector.getSelectedItem());
 			}
 		} catch (IOException e) {
 			OptionsManager.getInstance().removeSelectedRepository(repositoryPath);
@@ -279,12 +282,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 				boolean cellHasFocus) {
 
 			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-			/*
-			 * if (-1 < index && null != value) { list.setToolTipText((String) value);
-			 * 
-			 * }
-			 */
+			
 			if (value != null) {
 				comp.setToolTipText((String) value);
 				String path = (String) value;

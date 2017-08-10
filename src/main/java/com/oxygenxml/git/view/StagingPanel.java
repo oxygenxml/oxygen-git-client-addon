@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
@@ -140,43 +143,57 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			@Override
 			public void focusGained(final FocusEvent e) {
 				// The focus is somewhere in he view.
-				try {
-					if (!inTheView && gitAccess.getRepository() != null) {
-						// The focus was lost but now is back.
-						String projectView = EditorVariables.expandEditorVariables("${pd}", null);
-						if (FileHelper.isGitRepository(projectView)) {
-							if (!OptionsManager.getInstance().getRepositoryEntries().contains(projectView)) {
-								OptionsManager.getInstance().addRepository(projectView);
-								workingCopySelectionPanel.getWorkingCopySelector().addItem(projectView);
-							}
-						}
 
-						updateFiles(StageState.UNSTAGED);
-						updateFiles(StageState.STAGED);
-						new SwingWorker<Integer, Integer>() {
-							protected Integer doInBackground() throws Exception {
-								GitAccess.getInstance().fetch();
-								return GitAccess.getInstance().getPullsBehind();
-							}
-
-							@Override
-							protected void done() {
-								super.done();
+				if (!inTheView) {
+					// The focus was lost but now is back.
+					String projectView = EditorVariables.expandEditorVariables("${pd}", null);
+					if (FileHelper.isGitRepository(projectView)) {
+						if (!OptionsManager.getInstance().getRepositoryEntries().contains(projectView)) {
+							OptionsManager.getInstance().addRepository(projectView);
+							workingCopySelectionPanel.getWorkingCopySelector().addItem(projectView);
+							if (workingCopySelectionPanel.getWorkingCopySelector().getItemCount() == 1) {
+								workingCopySelectionPanel.getWorkingCopySelector().setSelectedIndex(0);
 								try {
-									int pullsBehind = get();
-									toolbarPanel.setPullsBehind(pullsBehind);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								} catch (ExecutionException e) {
-									e.printStackTrace();
+									gitAccess.setRepository(workingCopySelectionPanel.getWorkingCopySelector().getItemAt(0));
+								} catch (RepositoryNotFoundException e1) {
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									e1.printStackTrace();
 								}
 							}
-						}.execute();
-						toolbarPanel.updateInformationLabel();
+						}
 					}
-				} catch (NoRepositorySelected e1) {
-					e1.printStackTrace();
+					try {
+						if (gitAccess.getRepository() != null) {
+
+							updateFiles(StageState.UNSTAGED);
+							updateFiles(StageState.STAGED);
+							new SwingWorker<Integer, Integer>() {
+								protected Integer doInBackground() throws Exception {
+									GitAccess.getInstance().fetch();
+									return GitAccess.getInstance().getPullsBehind();
+								}
+
+								@Override
+								protected void done() {
+									super.done();
+									try {
+										int pullsBehind = get();
+										toolbarPanel.setPullsBehind(pullsBehind);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									} catch (ExecutionException e) {
+										e.printStackTrace();
+									}
+								}
+							}.execute();
+							toolbarPanel.updateInformationLabel();
+						}
+					} catch (NoRepositorySelected e1) {
+						return;
+					}
 				}
+
 				inTheView = true;
 			}
 
