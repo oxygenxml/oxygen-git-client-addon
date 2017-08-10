@@ -5,7 +5,7 @@
 	<xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
 		id="com.oxygenxml.git">
 		<xt:location href="git.support-1.0.0-plugin.jar" />
-		<xt:version>1.0.1</xt:version>
+		<xt:version>1.0.2</xt:version>
 		<xt:oxy_version>17.0+</xt:oxy_version>
 		<xt:type>plugin</xt:type>
 		<xt:author>Oxygen XML Editor</xt:author>
