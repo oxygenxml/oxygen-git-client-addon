@@ -59,13 +59,16 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 */
 	private GitAccess gitAccess;
 
+	boolean commandExecuted = true;
+
 	public PushPullController(GitAccess gitAccess) {
 		this.gitAccess = gitAccess;
 	}
 
 	/**
 	 * Opens a login dialog to update the credentials
-	 * @param loginMessage 
+	 * 
+	 * @param loginMessage
 	 * 
 	 * @return the new credentials
 	 */
@@ -101,19 +104,23 @@ public class PushPullController implements Subject<PushPullEvent> {
 					} else {
 						message = pull(userCredentials);
 					}
+					commandExecuted = true;
 				} catch (GitAPIException e) {
 					if (e.getMessage().contains("not authorized")) {
 						String loginMessage = "";
-						if("".equals(userCredentials.getUsername())){
+						if ("".equals(userCredentials.getUsername())) {
 							loginMessage = "Invalid credentials";
 						} else {
 							loginMessage = "Invalid credentials for " + userCredentials.getUsername();
 						}
-						//JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-						//		"Invalid credentials for " + userCredentials.getUsername());
+						// JOptionPane.showMessageDialog((Component)
+						// PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+						// "Invalid credentials for " + userCredentials.getUsername());
 						UserCredentials loadNewCredentials = loadNewCredentials(loginMessage);
 						if (loadNewCredentials != null) {
+							commandExecuted = false;
 							execute(command);
+							return;
 						}
 					}
 					if (e.getMessage().contains("not permitted")) {
@@ -130,8 +137,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
-					PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);
-					notifyObservers(pushPullEvent);
+					if (commandExecuted) {
+						PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);
+						notifyObservers(pushPullEvent);
+					}
 				}
 
 			}
@@ -183,7 +192,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					message = StatusMessages.PULL_UP_TO_DATE;
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-					.showInformationMessage(StatusMessages.PULL_WITH_CONFLICTS);
+							.showInformationMessage(StatusMessages.PULL_WITH_CONFLICTS);
 				}
 				return message;
 			}
