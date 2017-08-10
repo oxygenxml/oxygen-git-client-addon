@@ -8,22 +8,17 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -33,18 +28,17 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SortingFocusTraversalPolicy;
-import javax.swing.SwingWorker;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
+import javax.swing.plaf.synth.SynthSeparatorUI;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.google.common.io.Files;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -59,7 +53,6 @@ import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
 
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
@@ -85,6 +78,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		this.staging = staging;
 		this.stageController = observer;
 		this.gitAccess = gitAccess;
+		ToolTipManager.sharedInstance().registerComponent(tree);
 		currentView = FLAT_VIEW;
 
 	}
@@ -94,6 +88,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	}
 
 	public void createTreeView(String path, List<FileStatus> filesStatus) {
+
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 		stageController.unregisterObserver(treeModel);
 		stageController.unregisterSubject(treeModel);
@@ -116,6 +111,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 		stageController.registerObserver(treeModel);
 		stageController.registerSubject(treeModel);
+		
+		CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
+		tree.setCellRenderer(treeRenderer);
 	}
 
 	public void updateFlatView(List<FileStatus> unstagedFiles) {
@@ -137,6 +135,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		addStageAllButtonListener();
 		addTreeMouseListener();
 
+		
 		if (!staging) {
 			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 			updateFlatView(unstagedFiles);
@@ -465,9 +464,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 					addContextualMenu(file);
 					contextualMenu.show(filesTable, e.getX(), e.getY());
 				}
-				
+
 				toggleSelectedButton();
-				
+
 			}
 
 			public void mouseExited(MouseEvent e) {
@@ -651,7 +650,8 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	}
 
 	private void toggleSelectedButton() {
-		if(currentView == FLAT_VIEW && filesTable.getSelectedRowCount() > 0 || currentView == TREE_VIEW && tree.getSelectionCount() > 0){
+		if (currentView == FLAT_VIEW && filesTable.getSelectedRowCount() > 0
+				|| currentView == TREE_VIEW && tree.getSelectionCount() > 0) {
 			stageSelectedButton.setEnabled(true);
 		} else {
 			stageSelectedButton.setEnabled(false);
@@ -660,6 +660,43 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 	public JButton getStageSelectedButton() {
 		return stageSelectedButton;
+	}
+
+	class CustomTreeIconRenderer extends DefaultTreeCellRenderer {
+
+		@Override
+		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
+				int row, boolean hasFocus) {
+
+			JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+			StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+			TreePath treePath = tree.getPathForRow(row);
+			if (treePath != null) {
+				String path = TreeFormatter.getStringPath(treePath);
+				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
+					FileStatus file = model.getFileByPath(path);
+					ImageIcon icon = null;
+					String toolTip = "";
+					if (GitChangeType.ADD == file.getChangeType()) {
+						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_ADD_ICON));
+						toolTip = "File Created";
+					} else if (GitChangeType.MODIFY == file.getChangeType()) {
+						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_MODIFIED_ICON));
+						toolTip = "File Modified";
+					} else if (GitChangeType.DELETE == file.getChangeType()) {
+						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_DELETE_ICON));
+						toolTip = "File Deleted";
+					} else if (GitChangeType.CONFLICT == file.getChangeType()) {
+						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_CONFLICT_ICON));
+						toolTip = "Conflict";
+					}
+					label.setIcon(icon);
+					label.setToolTipText(toolTip);
+				}
+			}
+
+			return label;
+		}
 	}
 
 }
