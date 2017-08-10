@@ -175,7 +175,10 @@ public class GitAccess {
 		for (FileStatus conflictingFile : conflictingFiles) {
 			conflictingPaths.add(conflictingFile.getFileLocation());
 		}
-
+		// TODO Check if these are the staged files
+//		git.status().call().getChanged()
+		// TODO Check if we can get the unstaged files like this.
+//		git.status().call().getModified()
 		// needed only to pass it to the formatter
 		OutputStream out = NullOutputStream.INSTANCE;
 
@@ -197,23 +200,19 @@ public class GitAccess {
 							changeType = GitChangeType.DELETE;
 						}
 
+						String filePath = null;
 						if (entry.getChangeType().equals(ChangeType.ADD) || entry.getChangeType().equals(ChangeType.COPY)
 								|| entry.getChangeType().equals(ChangeType.RENAME)) {
-							String filePath = entry.getNewPath();
-							FileStatus unstageFile = new FileStatus(changeType, filePath);
-							if (!stagedFiles.contains(unstageFile)) {
-								if (!conflictingPaths.contains(filePath)) {
-									unstagedFiles.add(unstageFile);
-								}
-							}
+							filePath = entry.getNewPath();
 						} else {
-							String filePath = entry.getOldPath();
-							FileStatus unstageFile = new FileStatus(changeType, filePath);
-							if (!stagedFiles.contains(unstageFile)) {
-								if (!conflictingPaths.contains(filePath)) {
-									unstagedFiles.add(unstageFile);
-								}
-							}
+							filePath = entry.getOldPath();
+						}
+						
+						FileStatus unstageFile = new FileStatus(changeType, filePath);
+						if (!stagedFiles.contains(unstageFile)) {
+						  if (!conflictingPaths.contains(filePath)) {
+						    unstagedFiles.add(unstageFile);
+						  }
 						}
 					}
 					unstagedFiles.addAll(conflictingFiles);
