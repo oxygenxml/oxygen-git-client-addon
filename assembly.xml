@@ -17,6 +17,14 @@
         <include>**/*</include>
       </includes>
     </fileSet>
+    
+    <fileSet>
+			<directory>i18n</directory>
+			<outputDirectory>/i18n</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
   </fileSets>
 
   <files>
