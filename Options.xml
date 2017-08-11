@@ -14,6 +14,12 @@
         </credential>
     </userCredentials>
     <commitMessages>
+        <message>Aded internalization for some Strings
+Removed JSplitPane expand/collapse arrows 
+Sorting for the flat view
+Improvements related to the discard operation
+Disable "Open in compare editor" for newly added files
+Removed the unstage/stage buttons</message>
         <message>test</message>
         <message>conflict resolved</message>
         <message>conflict 2</message>
