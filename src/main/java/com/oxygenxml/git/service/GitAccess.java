@@ -178,23 +178,26 @@ public class GitAccess {
 		for (FileStatus conflictingFile : conflictingFiles) {
 			conflictingPaths.add(conflictingFile.getFileLocation());
 		}*/
-		try {
-			Status status = git.status().call();
-			for (String string : status.getUntracked()) {
-				unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
+		if(git !=null){
+			try {
+
+				Status status = git.status().call();
+				for (String string : status.getUntracked()) {
+					unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
+				}
+				for (String string : status.getModified()) {
+					unstagedFiles.add(new FileStatus(GitChangeType.MODIFY, string));
+				}
+				for (String string : status.getMissing()) {
+					unstagedFiles.add(new FileStatus(GitChangeType.DELETE, string));
+				}
+				unstagedFiles.addAll(getConflictingFiles());
+
+			} catch (NoWorkTreeException e1) {
+				e1.printStackTrace();
+			} catch (GitAPIException e1) {
+				e1.printStackTrace();
 			}
-			for (String string : status.getModified()) {
-				unstagedFiles.add(new FileStatus(GitChangeType.MODIFY, string));
-			}
-			for (String string : status.getMissing()) {
-				unstagedFiles.add(new FileStatus(GitChangeType.DELETE, string));
-			}
-			unstagedFiles.addAll(getConflictingFiles());
-			
-		} catch (NoWorkTreeException e1) {
-			e1.printStackTrace();
-		} catch (GitAPIException e1) {
-			e1.printStackTrace();
 		}
 		return unstagedFiles;
 		// TODO Check if these are the staged files

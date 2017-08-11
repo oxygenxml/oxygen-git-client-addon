@@ -6,25 +6,6 @@
         <location>C:\Users\intern2\Documents\test</location>
     </repositoryLocations>
     <selectedRepository>C:\Users\intern2\Documents\Oxygen-Git-Plugin</selectedRepository>
-    <userCredentials>
-        <credential>
-            <host>github.com</host>
-            <username>benisavu@gmail.com</username>
-            <password>9.1.134;134;158;109;113;205;152;197;102;149;169;167;163;144;164;153;209;200;96;104;</password>
-        </credential>
-    </userCredentials>
-    <commitMessages>
-        <message>Aded internalization for some Strings
-Removed JSplitPane expand/collapse arrows 
-Sorting for the flat view
-Improvements related to the discard operation
-Disable "Open in compare editor" for newly added files
-Removed the unstage/stage buttons</message>
-        <message>test</message>
-        <message>conflict resolved</message>
-        <message>conflict 2</message>
-        <message>conflict 1</message>
-        <message>conflicts</message>
-        <message>Added tree icons with respective tooltips. The same with those from the table view</message>
-    </commitMessages>
+    <userCredentials/>
+    <commitMessages/>
 </Options>
