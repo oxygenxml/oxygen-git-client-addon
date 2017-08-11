@@ -1,5 +1,10 @@
 # Git support plugin
 
+You can install the add-on by using Oxygen's add-ons support. In Oxygen, go to Help->Install new add-ons... and paste:
+
+https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml
+
+and continue the installation.
 
 After installing the plugin if the git window is not visible you should go to the "Window" menu -> show view -> Git Staging.
 
