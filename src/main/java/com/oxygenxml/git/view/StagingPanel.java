@@ -24,6 +24,7 @@ import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.event.ActionStatus;
@@ -56,11 +57,17 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	private UnstagedChangesPanel stagedChangesPanel;
 	private CommitPanel commitPanel;
 	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
+	private Translator translator;
 
-	public StagingPanel() {
+	public StagingPanel(Translator translator) {
+		this.translator = translator;
 		createGUI();
 	}
 
+	public WorkingCopySelectionPanel getWorkingCopySelectionPanel(){
+		return workingCopySelectionPanel;
+	}
+	
 	public UnstagedChangesPanel getUnstagedChangesPanel() {
 		return unstagedChangesPanel;
 	}
@@ -84,8 +91,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		StageController observer = new StageController(gitAccess);
 		PushPullController pushPullController = new PushPullController(gitAccess);
 
-		unstagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, false);
-		stagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, true);
+		unstagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, false, translator);
+		stagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, true, translator);
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
 		splitPane.add(stagedChangesPanel);
@@ -94,9 +101,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setBorder(null);
 
-		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess);
-		commitPanel = new CommitPanel(gitAccess, observer);
-		toolbarPanel = new ToolbarPanel(pushPullController);
+		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
+		commitPanel = new CommitPanel(gitAccess, observer,translator);
+		toolbarPanel = new ToolbarPanel(pushPullController, translator);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -143,55 +150,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			@Override
 			public void focusGained(final FocusEvent e) {
 				// The focus is somewhere in he view.
-
 				if (!inTheView) {
 					// The focus was lost but now is back.
-					String projectView = EditorVariables.expandEditorVariables("${pd}", null);
-					if (FileHelper.isGitRepository(projectView)) {
-						if (!OptionsManager.getInstance().getRepositoryEntries().contains(projectView)) {
-							OptionsManager.getInstance().addRepository(projectView);
-							workingCopySelectionPanel.getWorkingCopySelector().addItem(projectView);
-							if (workingCopySelectionPanel.getWorkingCopySelector().getItemCount() == 1) {
-								workingCopySelectionPanel.getWorkingCopySelector().setSelectedIndex(0);
-								try {
-									gitAccess.setRepository(workingCopySelectionPanel.getWorkingCopySelector().getItemAt(0));
-								} catch (RepositoryNotFoundException e1) {
-									e1.printStackTrace();
-								} catch (IOException e1) {
-									e1.printStackTrace();
-								}
-							}
-						}
-					}
-					try {
-						if (gitAccess.getRepository() != null) {
-
-							updateFiles(StageState.UNSTAGED);
-							updateFiles(StageState.STAGED);
-							new SwingWorker<Integer, Integer>() {
-								protected Integer doInBackground() throws Exception {
-									GitAccess.getInstance().fetch();
-									return GitAccess.getInstance().getPullsBehind();
-								}
-
-								@Override
-								protected void done() {
-									super.done();
-									try {
-										int pullsBehind = get();
-										toolbarPanel.setPullsBehind(pullsBehind);
-									} catch (InterruptedException e) {
-										e.printStackTrace();
-									} catch (ExecutionException e) {
-										e.printStackTrace();
-									}
-								}
-							}.execute();
-							toolbarPanel.updateInformationLabel();
-						}
-					} catch (NoRepositorySelected e1) {
-						return;
-					}
+					new Refresh(StagingPanel.this).call();
 				}
 
 				inTheView = true;
@@ -206,58 +167,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 					inTheView = false;
 				}
 			}
-
-			private void updateFiles(final StageState state) {
-				new SwingWorker<List<FileStatus>, Integer>() {
-
-					@Override
-					protected List<FileStatus> doInBackground() throws Exception {
-						if (state == StageState.UNSTAGED) {
-							return GitAccess.getInstance().getUnstagedFiles();
-						} else {
-							return GitAccess.getInstance().getStagedFile();
-						}
-					}
-
-					@Override
-					protected void done() {
-						List<FileStatus> files = new ArrayList<FileStatus>();
-						List<FileStatus> newFiles = new ArrayList<FileStatus>();
-						StagingResourcesTableModel model = null;
-						if (state == StageState.UNSTAGED) {
-							model = (StagingResourcesTableModel) unstagedChangesPanel.getFilesTable().getModel();
-						} else {
-							model = (StagingResourcesTableModel) stagedChangesPanel.getFilesTable().getModel();
-						}
-						List<FileStatus> filesInModel = model.getUnstagedFiles();
-						try {
-							files = get();
-							for (FileStatus fileStatus : filesInModel) {
-								if (files.contains(fileStatus)) {
-									newFiles.add(fileStatus);
-									files.remove(fileStatus);
-								}
-							}
-							newFiles.addAll(files);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						} catch (ExecutionException e) {
-							e.printStackTrace();
-						}
-						if (!newFiles.equals(filesInModel)) {
-							if (state == StageState.UNSTAGED) {
-								unstagedChangesPanel.updateFlatView(newFiles);
-								unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
-							} else {
-								stagedChangesPanel.updateFlatView(newFiles);
-								stagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
-							}
-						}
-					}
-
-				}.execute();
-			}
-
 		});
 	}
 

@@ -21,6 +21,8 @@ import javax.swing.JToolBar;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 
@@ -42,10 +44,12 @@ public class ToolbarPanel extends JPanel {
 	private JButton storeCredentials;
 	private int pushesAhead = 0;
 	private int pullsBehind = 0;
+	private Translator translator;
 
-	public ToolbarPanel(PushPullController pushPullController) {
+	public ToolbarPanel(PushPullController pushPullController, Translator translator) {
 		this.pushPullController = pushPullController;
 		this.statusInformationLabel = new JLabel();
+		this.translator = translator;
 	}
 
 	public JButton getPushButton() {
@@ -169,7 +173,7 @@ public class ToolbarPanel extends JPanel {
 			}
 		};
 		pushButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PUSH_ICON)));
-		pushButton.setToolTipText("Push");
+		pushButton.setToolTipText(translator.getTraslation(Tags.PUSH_BUTTON_TOOLTIP));
 
 		// PULL button
 		Action pullAction = new Action() {
@@ -211,12 +215,13 @@ public class ToolbarPanel extends JPanel {
 				g.setFont(g.getFont().deriveFont(Font.BOLD));
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
 				int stringWidth = fontMetrics.stringWidth(str);
-				g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
+				//g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
+				g.drawString(str, pullButton.getWidth() - stringWidth, fontMetrics.getHeight() - fontMetrics.getDescent());
 			}
 
 		};
 		pullButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PULL_ICON)));
-		pullButton.setToolTipText("Pull");
+		pullButton.setToolTipText(translator.getTraslation(Tags.PULL_BUTTON_TOOLTIP));
 
 		gitToolbar.add(pushButton);
 		gitToolbar.add(pullButton);

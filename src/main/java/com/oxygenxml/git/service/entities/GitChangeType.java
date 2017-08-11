@@ -7,6 +7,10 @@ package com.oxygenxml.git.service.entities;
  *
  */
 public enum GitChangeType {
+	
+	/** File is in conflict */
+	CONFLICT,
+
 	/** Add a new file to the project */
 	ADD,
 
@@ -15,7 +19,4 @@ public enum GitChangeType {
 
 	/** Delete an existing file from the project */
 	DELETE,
-
-	/** File is in conflict */
-	CONFLICT,
 }

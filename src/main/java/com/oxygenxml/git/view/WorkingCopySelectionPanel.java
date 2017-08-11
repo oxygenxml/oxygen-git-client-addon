@@ -31,6 +31,8 @@ import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
 
@@ -44,8 +46,10 @@ public class WorkingCopySelectionPanel extends JPanel {
 	private JComboBox<String> workingCopySelector;
 	private JButton browseButton;
 	private GitAccess gitAccess;
+	private Translator translator;
 
-	public WorkingCopySelectionPanel(GitAccess gitAccess) {
+	public WorkingCopySelectionPanel(GitAccess gitAccess, Translator translator) {
+		this.translator = translator;
 		this.gitAccess = gitAccess;
 	}
 
@@ -196,7 +200,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		label = new JLabel("Working copy: ");
+		label = new JLabel(translator.getTraslation(Tags.WORKING_COPY_LABEL));
 		this.add(label, gbc);
 
 	}
@@ -264,7 +268,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weighty = 0;
 		browseButton = new ToolbarButton(null, false);
 		browseButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FILE_CHOOSER_ICON)));
-		browseButton.setToolTipText("Browse File System");
+		browseButton.setToolTipText(translator.getTraslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);
 		browswtoolbar.setFloatable(false);

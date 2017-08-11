@@ -83,6 +83,9 @@ import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.StatusMessages;
@@ -108,6 +111,8 @@ public class GitAccess {
 
 	private static GitAccess instance;
 
+	private Translator translator = new TranslatorExtensionImpl();
+	
 	private GitAccess() {
 
 	}
@@ -409,7 +414,7 @@ public class GitAccess {
 
 			if (repositoryState == RepositoryState.MERGING) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-				response.setMessage(StatusMessages.PUSH_WITH_CONFLICTS);
+				response.setMessage(translator.getTraslation(Tags.PUSH_WITH_CONFLICTS));
 				return response;
 			}
 			if (getPullsBehind() > 0) {

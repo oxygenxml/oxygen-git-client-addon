@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -9,6 +10,7 @@ import javax.swing.table.AbstractTableModel;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.FileStatusComparator;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
@@ -72,7 +74,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	}
 
 	public int getColumnCount() {
-		return 3;
+		return 2;
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
@@ -98,8 +100,8 @@ public class StagingResourcesTableModel extends AbstractTableModel
 
 	public void setFilesStatus(List<FileStatus> filesStatus) {
 		this.filesStatus = filesStatus;
+		Collections.sort(filesStatus, new FileStatusComparator());
 		fireTableDataChanged();
-
 	}
 
 	public void switchFileStageState(int convertedRow) {
@@ -159,7 +161,6 @@ public class StagingResourcesTableModel extends AbstractTableModel
 				filesToBeUpdated.add(fileStatus);
 			}
 		}
-		filesStatus.removeAll(filesToBeUpdated);
 		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, filesToBeUpdated);
 		notifyObservers(changeEvent);
 	}
@@ -190,6 +191,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 
 	private void deleteRows(List<FileStatus> fileToBeUpdated) {
 		filesStatus.removeAll(fileToBeUpdated);
+		Collections.sort(filesStatus, new FileStatusComparator());
 	}
 
 	private void insertRows(List<FileStatus> fileToBeUpdated) {
@@ -199,6 +201,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			}
 		}
 		filesStatus.addAll(fileToBeUpdated);
+		Collections.sort(filesStatus, new FileStatusComparator());
 	}
 
 	public GitChangeType getChangeType(String fullPath) {

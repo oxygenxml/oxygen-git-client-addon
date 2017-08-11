@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Options>
     <repositoryLocations>
+        <location>C:\Users\intern2\Documents\New folder</location>
         <location>C:\Users\intern2\Documents\Oxygen-Git-Plugin</location>
         <location>C:\Users\intern2\Documents\test</location>
     </repositoryLocations>
-    <selectedRepository>C:\Users\intern2\Documents\test</selectedRepository>
+    <selectedRepository>C:\Users\intern2\Documents\Oxygen-Git-Plugin</selectedRepository>
     <userCredentials>
         <credential>
             <host>github.com</host>
@@ -13,6 +14,11 @@
         </credential>
     </userCredentials>
     <commitMessages>
+        <message>test</message>
+        <message>conflict resolved</message>
+        <message>conflict 2</message>
+        <message>conflict 1</message>
+        <message>conflicts</message>
         <message>Added tree icons with respective tooltips. The same with those from the table view</message>
     </commitMessages>
 </Options>

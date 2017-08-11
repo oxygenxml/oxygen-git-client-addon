@@ -46,6 +46,8 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
@@ -76,11 +78,14 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	private GitAccess gitAccess;
 
 	private int currentView = 0;
+	
+	private Translator translator;
 
-	public UnstagedChangesPanel(GitAccess gitAccess, StageController observer, boolean staging) {
+	public UnstagedChangesPanel(GitAccess gitAccess, StageController observer, boolean staging, Translator translator) {
 		this.staging = staging;
 		this.stageController = observer;
 		this.gitAccess = gitAccess;
+		this.translator = translator;
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		currentView = FLAT_VIEW;
 
@@ -107,8 +112,8 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		}
 
 		// Create the tree with the new model
-		treeModel.setFilesStatus(filesStatus);
 		tree.setModel(treeModel);
+		treeModel.setFilesStatus(filesStatus);
 
 		stageController.registerObserver(treeModel);
 		stageController.registerSubject(treeModel);
@@ -164,7 +169,6 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 							DiffPresenter diff = new DiffPresenter(file, stageController);
 							diff.showDiff();
 						}
-						
 
 					}
 					if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
@@ -298,9 +302,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		if (staging) {
-			stageAllButton = new JButton("Unstage all");
+			stageAllButton = new JButton(translator.getTraslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
 		} else {
-			stageAllButton = new JButton("Stage all");
+			stageAllButton = new JButton(translator.getTraslation(Tags.STAGE_ALL_BUTTON_TEXT));
 		}
 		this.add(stageAllButton, gbc);
 	}
@@ -315,9 +319,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		if (staging) {
-			stageSelectedButton = new JButton("Unstage selected");
+			stageSelectedButton = new JButton(translator.getTraslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
 		} else {
-			stageSelectedButton = new JButton("Stage selected");
+			stageSelectedButton = new JButton(translator.getTraslation(Tags.STAGE_SELECTED_BUTTON_TEXT));
 		}
 		stageSelectedButton.setEnabled(false);
 		this.add(stageSelectedButton, gbc);
@@ -335,7 +339,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		gbc.weighty = 0;
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
-		switchViewButton.setToolTipText("Change View");
+		switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_VIEW_BUTTON_TOOLTIP));
 		switchViewButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.TREE_VIEW)));
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
@@ -367,9 +371,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		// set the checkbox column width
 		filesTable.getColumnModel().getColumn(0).setMaxWidth(30);
 		// set the button column width
-		filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(100);
+		// filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(100);
 
-		TableRendererEditor.install(filesTable, stageController);
+		// TableRendererEditor.install(filesTable, stageController);
 
 		filesTable.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
 
@@ -379,16 +383,16 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				String toolTip = "";
 				if (GitChangeType.ADD == value) {
 					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_ADD_ICON));
-					toolTip = "File Created";
+					toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
 				} else if (GitChangeType.MODIFY == value) {
 					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_MODIFIED_ICON));
-					toolTip = "File Modified";
+					toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
 				} else if (GitChangeType.DELETE == value) {
 					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_DELETE_ICON));
-					toolTip = "File Deleted";
+					toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
 				} else if (GitChangeType.CONFLICT == value) {
 					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_CONFLICT_ICON));
-					toolTip = "Conflict";
+					toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
 				}
 				JLabel iconLabel = new JLabel(icon);
 				iconLabel.setToolTipText(toolTip);
@@ -416,7 +420,6 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 				} else {
 					label.setForeground(table.getForeground());
-					label.setBackground(UIManager.getColor("Button.background"));
 
 				}
 				label.setToolTipText(toRender);
@@ -478,6 +481,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		});
 
 		scrollPane = new JScrollPane(filesTable);
+		scrollPane.add(tree);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		filesTable.setFillsViewportHeight(true);
@@ -510,6 +514,26 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			}
 
 		});
+
+		JMenuItem changeState = new JMenuItem();
+		changeState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StageState oldState = StageState.UNSTAGED;
+				StageState newState = StageState.STAGED;
+				if (staging) {
+					oldState = StageState.STAGED;
+					newState = StageState.UNSTAGED;
+				}
+				List<FileStatus> resolveUsingMineFiles = new ArrayList<FileStatus>(files);
+				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, resolveUsingMineFiles);
+				stageController.stateChanged(changeEvent);
+			}
+		});
+		if (staging) {
+			changeState.setText("Unstage");
+		} else {
+			changeState.setText("Stage");
+		}
 
 		JMenuItem resolveMine = new JMenuItem("Resolve Using \"Mine\"");
 		resolveMine.addActionListener(new ActionListener() {
@@ -607,15 +631,20 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		});
 		contextualMenu.add(showDiff);
 		contextualMenu.add(open);
+		contextualMenu.add(changeState);
 		contextualMenu.add(resolveConflict);
 		contextualMenu.add(discard);
 
 		boolean sameChangeType = true;
+		boolean containsConflicts = false;
 		if (files.size() > 1) {
 			GitChangeType gitChangeType = files.get(0).getChangeType();
 			for (FileStatus file : files) {
-				if (gitChangeType != fileStatus.getChangeType()) {
+				if (gitChangeType != file.getChangeType()) {
 					sameChangeType = false;
+				}
+				if (GitChangeType.CONFLICT == file.getChangeType()) {
+					containsConflicts = true;
 				}
 			}
 			showDiff.setEnabled(false);
@@ -624,53 +653,73 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			showDiff.setEnabled(true);
 			diff.setEnabled(true);
 		}
-		if (fileStatus.getChangeType() == GitChangeType.ADD && sameChangeType) {
+		if (files.size() > 1 && containsConflicts && !sameChangeType) {
 			showDiff.setEnabled(false);
 			open.setEnabled(true);
-			resolveConflict.setEnabled(false);
+			changeState.setEnabled(false);
+			resolveConflict.setEnabled(true);
 			diff.setEnabled(false);
 			resolveMine.setEnabled(false);
 			resolveTheirs.setEnabled(false);
 			restartMerge.setEnabled(true);
 			markResolved.setEnabled(false);
-			discard.setEnabled(true);
-		} else if (fileStatus.getChangeType() == GitChangeType.DELETE && sameChangeType) {
-			open.setEnabled(false);
-			resolveConflict.setEnabled(false);
-			resolveMine.setEnabled(false);
-			resolveTheirs.setEnabled(false);
-			restartMerge.setEnabled(true);
-			markResolved.setEnabled(false);
-			discard.setEnabled(true);
-		} else if (fileStatus.getChangeType() == GitChangeType.MODIFY && sameChangeType) {
-			open.setEnabled(true);
-			resolveConflict.setEnabled(false);
-			resolveMine.setEnabled(false);
-			resolveTheirs.setEnabled(false);
-			restartMerge.setEnabled(true);
-			markResolved.setEnabled(false);
-			discard.setEnabled(true);
-		} else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
-			open.setEnabled(true);
-			resolveConflict.setEnabled(true);
-			resolveMine.setEnabled(true);
-			resolveTheirs.setEnabled(true);
-			restartMerge.setEnabled(true);
-			markResolved.setEnabled(true);
 			discard.setEnabled(false);
 		} else {
-			open.setEnabled(true);
-			resolveConflict.setEnabled(false);
-			resolveMine.setEnabled(false);
-			resolveTheirs.setEnabled(false);
-			restartMerge.setEnabled(false);
-			markResolved.setEnabled(false);
-			discard.setEnabled(true);
+			if (fileStatus.getChangeType() == GitChangeType.ADD && sameChangeType) {
+				showDiff.setEnabled(false);
+				open.setEnabled(true);
+				changeState.setEnabled(true);
+				resolveConflict.setEnabled(false);
+				diff.setEnabled(false);
+				resolveMine.setEnabled(false);
+				resolveTheirs.setEnabled(false);
+				restartMerge.setEnabled(true);
+				markResolved.setEnabled(false);
+				discard.setEnabled(true);
+			} else if (fileStatus.getChangeType() == GitChangeType.DELETE && sameChangeType) {
+				showDiff.setEnabled(false);
+				open.setEnabled(false);
+				changeState.setEnabled(true);
+				resolveConflict.setEnabled(false);
+				resolveMine.setEnabled(false);
+				resolveTheirs.setEnabled(false);
+				restartMerge.setEnabled(true);
+				markResolved.setEnabled(false);
+				discard.setEnabled(true);
+			} else if (fileStatus.getChangeType() == GitChangeType.MODIFY && sameChangeType) {
+				open.setEnabled(true);
+				changeState.setEnabled(true);
+				resolveConflict.setEnabled(false);
+				resolveMine.setEnabled(false);
+				resolveTheirs.setEnabled(false);
+				restartMerge.setEnabled(true);
+				markResolved.setEnabled(false);
+				discard.setEnabled(true);
+			} else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
+				open.setEnabled(true);
+				changeState.setEnabled(false);
+				resolveConflict.setEnabled(true);
+				resolveMine.setEnabled(true);
+				resolveTheirs.setEnabled(true);
+				restartMerge.setEnabled(true);
+				markResolved.setEnabled(true);
+				discard.setEnabled(false);
+			} else {
+				showDiff.setEnabled(false);
+				open.setEnabled(true);
+				resolveConflict.setEnabled(false);
+				resolveMine.setEnabled(false);
+				resolveTheirs.setEnabled(false);
+				restartMerge.setEnabled(false);
+				markResolved.setEnabled(false);
+				discard.setEnabled(true);
+			}
 		}
 		try {
 			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
 					|| gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
 				resolveConflict.setEnabled(true);
+				restartMerge.setEnabled(true);
 			}
 		} catch (NoRepositorySelected e1) {
 			resolveConflict.setEnabled(false);

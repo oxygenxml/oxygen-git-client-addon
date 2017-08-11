@@ -23,6 +23,8 @@ import org.eclipse.jgit.lib.RepositoryState;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
@@ -43,10 +45,12 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	private JLabel statusLabel;
 	private Observer<PushPullEvent> observer;
 	private volatile int messagesActive = 0;
+	private Translator translator;
 
-	public CommitPanel(GitAccess gitAccess, StageController observer) {
+	public CommitPanel(GitAccess gitAccess, StageController observer, Translator translator) {
 		this.gitAccess = gitAccess;
 		this.stageController = observer;
+		this.translator = translator;
 	}
 
 	public JButton getCommitButton() {
@@ -93,9 +97,9 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			public void actionPerformed(ActionEvent e) {
 				String message = "";
 				if (gitAccess.getConflictingFiles().size() > 0) {
-					message = StatusMessages.COMMIT_WITH_CONFLICTS;
+					message = translator.getTraslation(Tags.COMMIT_WITH_CONFLICTS);
 				} else {
-					message = StatusMessages.COMMIT_SUCCESS;
+					message = translator.getTraslation(Tags.COMMIT_SUCCESS);
 					ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile());
 					stageController.stateChanged(changeEvent);
 					gitAccess.commit(commitMessage.getText());

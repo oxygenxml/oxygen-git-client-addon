@@ -2,13 +2,21 @@ package com.oxygenxml.git;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
+import com.oxygenxml.git.view.Refresh;
 import com.oxygenxml.git.view.StagingPanel;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -36,6 +44,9 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
   	if(FileHelper.isGitRepository(projectViewPath)){
   		OptionsManager.getInstance().addRepository(projectViewPath);
   	}
+  	
+  	Translator translator = new TranslatorExtensionImpl();
+  	final StagingPanel stagingPanel = new StagingPanel(translator);
 	  pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 		  /**
 		   * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)
@@ -46,7 +57,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 					  //The view ID defined in the "plugin.xml"
 					  GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
 
-				  viewInfo.setComponent(new StagingPanel());
+				  viewInfo.setComponent(stagingPanel);
 				//  viewInfo.setComponent(new JScrollPane(customMessagesArea));
 				  //viewInfo.setTitle("Custom Messages");
 				  //You can have images located inside the JAR library and use them...
@@ -70,8 +81,18 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	        pluginWorkspaceAccess.getOptionsStorage().setOption(key, "true");
 	      }
 	    }
+	    
 	  });
 	  
+	  
+	  parentFrame.addWindowListener(new WindowAdapter() {
+	  	@Override
+	  	public void windowActivated(WindowEvent e) {
+	  		super.windowActivated(e);
+	  		new Refresh(stagingPanel).call();
+	  	}
+	  });
+	 
   }
 
   /**
@@ -82,4 +103,5 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	  //You can reject the application closing here
     return true;
   }
+  
 }
