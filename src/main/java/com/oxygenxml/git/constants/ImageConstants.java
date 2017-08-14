@@ -12,11 +12,12 @@ public class ImageConstants {
 	public static final String GIT_DELETE_ICON = "images/GitRemoved10.png";
 	public static final String GIT_MODIFIED_ICON = "images/GitModified10.png";
 	public static final String GIT_CONFLICT_ICON = "images/GitWarning10.png";
-	public static final String GIT_PUSH_ICON = "images/GitPush24.png";
-	public static final String GIT_PULL_ICON = "images/GitPull24.png";
+	public static final String GIT_PUSH_ICON = "images/GitPush16.png";
+	public static final String GIT_PULL_ICON = "images/GitPull16.png";
 	public static final String GIT_RESOLVED_ICON = "images/GitResolved10.png";
-	public static final String GIT_ICON = "images/Git-Icon20.png";
-	public static final String FILE_CHOOSER_ICON = "images/Open24.png";
-	public static final String TREE_VIEW = "images/TreeView24.png";
-	public static final String TABLE_VIEW = "images/TableView24.png";
+	public static final String GIT_ICON = "images/DockableFrameGitStaging16.png";
+	public static final String FILE_CHOOSER_ICON = "images/Open16.png";
+	public static final String TREE_VIEW = "images/GitTreeMode16.png";
+	public static final String TABLE_VIEW = "images/GitFlatMode16.png";
+	public static final String FOLDER_TREE_ICON = "images/FolderTree10.png";
 }

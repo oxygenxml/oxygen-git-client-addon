@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -42,13 +43,13 @@ import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
@@ -78,7 +79,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	private GitAccess gitAccess;
 
 	private int currentView = 0;
-	
+
 	private Translator translator;
 
 	public UnstagedChangesPanel(GitAccess gitAccess, StageController observer, boolean staging, Translator translator) {
@@ -123,8 +124,35 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	}
 
 	public void updateFlatView(List<FileStatus> unstagedFiles) {
-		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) this.getFilesTable().getModel();
+		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
+		List<FileStatus> selectedFiles = getSelectedFilesBeforeModelChange();
 		modelTable.setFilesStatus(unstagedFiles);
+		
+		restoreSelectionAfterModelChange(modelTable, selectedFiles);
+		selectedFiles.clear();
+	}
+
+	private void restoreSelectionAfterModelChange(StagingResourcesTableModel model, List<FileStatus> s) {
+		for (FileStatus fileStatus : s) {
+			int row = model.getRow(fileStatus.getFileLocation());
+			if(row != -1){
+				filesTable.addRowSelectionInterval(row, row);
+			}
+		}
+	}
+
+	private List<FileStatus> getSelectedFilesBeforeModelChange() {
+		List<FileStatus> selectedFiles = new ArrayList<FileStatus>();
+		int[] selectedRows = null;
+		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+		selectedRows = filesTable.getSelectedRows();
+		if (selectedRows != null) {
+			for (int i = 0; i < selectedRows.length; i++) {
+				int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
+				selectedFiles.add(model.getUnstageFile(convertedRow));
+			}
+		}
+		return selectedFiles;
 	}
 
 	public void createGUI() {
@@ -748,14 +776,16 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				int row, boolean hasFocus) {
 
 			JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
+			Icon icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FOLDER_TREE_ICON));
+			String toolTip = "";
+
 			StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 			TreePath treePath = tree.getPathForRow(row);
 			if (treePath != null) {
 				String path = TreeFormatter.getStringPath(treePath);
 				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
 					FileStatus file = model.getFileByPath(path);
-					ImageIcon icon = null;
-					String toolTip = "";
 					if (GitChangeType.ADD == file.getChangeType()) {
 						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_ADD_ICON));
 						toolTip = "File Created";
@@ -769,10 +799,13 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_CONFLICT_ICON));
 						toolTip = "Conflict";
 					}
-					label.setIcon(icon);
-					label.setToolTipText(toolTip);
-				}				
+
+				}
 			}
+
+			label.setIcon(icon);
+			label.setToolTipText(toolTip);
+
 			return label;
 		}
 	}

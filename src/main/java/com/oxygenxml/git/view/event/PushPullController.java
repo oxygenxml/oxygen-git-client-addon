@@ -22,6 +22,7 @@ import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.PullResponse;
@@ -29,7 +30,6 @@ import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.LoginDialog;
 import com.oxygenxml.git.view.PullWithConflictsDialog;
 import com.oxygenxml.git.view.StatusMessages;

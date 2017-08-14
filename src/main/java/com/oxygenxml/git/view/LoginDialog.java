@@ -12,8 +12,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
-import com.oxygenxml.git.utils.OptionsManager;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;

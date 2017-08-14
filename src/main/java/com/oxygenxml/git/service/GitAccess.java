@@ -81,13 +81,13 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.StatusMessages;
 
 import de.schlichtherle.io.FileInputStream;

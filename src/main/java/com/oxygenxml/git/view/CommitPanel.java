@@ -21,11 +21,11 @@ import javax.swing.ScrollPaneConstants;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
@@ -127,7 +127,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		label = new JLabel("Message for the commit: ");
+		label = new JLabel(translator.getTraslation(Tags.COMMIT_MESSAGE_LABEL));
 		this.add(label, gbc);
 	}
 
@@ -146,7 +146,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			previouslyMessages.addItem(previouslyCommitMessage);
 		}
 		previouslyMessages.setEditable(true);
-		previouslyMessages.setSelectedItem("Previously Commit Messages");
+		previouslyMessages.setSelectedItem(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
 		previouslyMessages.setEditable(false);
 		previouslyMessages.setMinimumSize(new Dimension(10, 20));
 		this.add(previouslyMessages, gbc);
@@ -196,7 +196,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.gridy = 3;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-		commitButton = new JButton("Commit");
+		commitButton = new JButton(translator.getTraslation(Tags.COMMIT_BUTTON_TEXT));
 		toggleCommitButton();
 		this.add(commitButton, gbc);
 	}

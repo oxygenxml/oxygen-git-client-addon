@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.batik.svggen.font.table.Os2Table;
 
+import com.oxygenxml.git.options.OptionsManager;
+
 /**
  * An utility class for files
  * 

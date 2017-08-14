@@ -236,4 +236,13 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		return rows;
 	}
 
+	public int getRow(String fileLocation) {
+		for (int i = 0; i < filesStatus.size(); i++) {
+			if (filesStatus.get(i).getFileLocation().equals(fileLocation)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 }

@@ -8,24 +8,29 @@ import java.awt.Insets;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.apache.http.impl.auth.UnsupportedDigestAlgorithmException;
+
 import com.jidesoft.swing.JideSplitPane;
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -34,7 +39,6 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.util.editorvars.EditorVariables;
 
 /**
  * Main panel containing all the other panels.
@@ -59,10 +63,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		createGUI();
 	}
 
-	public WorkingCopySelectionPanel getWorkingCopySelectionPanel(){
+	public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
 		return workingCopySelectionPanel;
 	}
-	
+
 	public UnstagedChangesPanel getUnstagedChangesPanel() {
 		return unstagedChangesPanel;
 	}
@@ -97,7 +101,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		splitPane.setBorder(null);
 
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
-		commitPanel = new CommitPanel(gitAccess, observer,translator);
+		commitPanel = new CommitPanel(gitAccess, observer, translator);
 		toolbarPanel = new ToolbarPanel(pushPullController, translator);
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -126,6 +130,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 							@Override
 							public void editorSaved(int operationType) {
 								String fileInWorkPath = editorLocation.getFile().substring(1);
+								try {
+									fileInWorkPath = URLDecoder.decode(fileInWorkPath, "UTF-8");
+								} catch (UnsupportedEncodingException e) {
+									e.printStackTrace();
+								}
 								String selectedRepositoryPath = OptionsManager.getInstance().getSelectedRepository();
 								selectedRepositoryPath = selectedRepositoryPath.replace("\\", "/");
 								if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
@@ -141,7 +150,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		// Detect focus transitions between the view and the outside.
 		installFocusListener(this, new FocusAdapter() {
 			boolean inTheView = false;
-			
+
 			@Override
 			public void focusGained(final FocusEvent e) {
 				// The focus is somewhere in he view.

@@ -14,10 +14,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.OptionsManager;
 
 public class GitAccessRestoreLastCommitTest {
 

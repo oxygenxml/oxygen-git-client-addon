@@ -152,7 +152,7 @@ public class ToolbarPanel extends JPanel {
 
 			public void addPropertyChangeListener(PropertyChangeListener listener) {
 
-			}
+			} 
 		};
 		pushButton = new ToolbarButton(pushAction, false) {
 			@Override
