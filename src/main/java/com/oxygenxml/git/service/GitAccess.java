@@ -422,7 +422,7 @@ public class GitAccess {
 			}
 			if (getPullsBehind() > 0) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-				response.setMessage(StatusMessages.BRANCH_BEHIND);
+				response.setMessage(translator.getTraslation(Tags.BRANCH_BEHIND));
 				return response;
 			}
 
@@ -442,7 +442,7 @@ public class GitAccess {
 			}
 		}
 		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-		response.setMessage(StatusMessages.PUSH_FAILED_UNKNOWN);
+		response.setMessage(translator.getTraslation(Tags.PUSH_FAILED_UNKNOWN));
 		return response;
 	}
 

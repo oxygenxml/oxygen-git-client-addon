@@ -27,6 +27,8 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.OptionsManager;
 import com.oxygenxml.git.view.LoginDialog;
 import com.oxygenxml.git.view.PullWithConflictsDialog;
@@ -60,7 +62,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 
 	boolean commandExecuted = true;
 
-	public PushPullController(GitAccess gitAccess) {
+	private Translator translator;
+	
+	public PushPullController(GitAccess gitAccess, Translator translator) {
+		this.translator = translator;
 		this.gitAccess = gitAccess;
 	}
 
@@ -87,9 +92,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		String message = "";
 		if (command == Command.PUSH) {
-			message = StatusMessages.PUSH_IN_PROGRESS;
+			message = translator.getTraslation(Tags.PUSH_IN_PROGRESS);
 		} else {
-			message = StatusMessages.PULL_IN_PROGRESS;
+			message = translator.getTraslation(Tags.PULL_IN_PROGRESS);
 		}
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
 		notifyObservers(pushPullEvent);
@@ -174,10 +179,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 					// JOptionPane.showMessageDialog((Component)
 					// PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 					// "Pull successful");
-					message = StatusMessages.PULL_SUCCESSFUL;
+					message = translator.getTraslation(Tags.PULL_SUCCESSFUL);
 				} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showWarningMessage(StatusMessages.PULL_WITH_UNCOMMITED_CHANGES);
+							.showWarningMessage(translator.getTraslation(Tags.PULL_WITH_UNCOMMITED_CHANGES));
 
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					// prompts a dialog showing the files in conflict
@@ -191,7 +196,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					message = StatusMessages.PULL_UP_TO_DATE;
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showWarningMessage(StatusMessages.PULL_WITH_CONFLICTS);
+							.showWarningMessage(translator.getTraslation(Tags.PULL_UP_TO_DATE));
 				}
 				return message;
 			}
@@ -215,7 +220,8 @@ public class PushPullController implements Subject<PushPullEvent> {
 					// ((StandalonePluginWorkspace)
 					// PluginWorkspaceProvider.getPluginWorkspace())
 					// .showInformationMessage("Push successful");
-					message = StatusMessages.PUSH_SUCCESSFUL;
+					
+					message = translator.getTraslation(Tags.PUSH_SUCCESSFUL);
 				} else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage("Push failed, please get your repository up to date(PULL)");
@@ -223,7 +229,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					// ((StandalonePluginWorkspace)
 					// PluginWorkspaceProvider.getPluginWorkspace())
 					// .showInformationMessage("There was nothing to push");.
-					message = StatusMessages.PUSH_UP_TO_DATE;
+					message = translator.getTraslation(Tags.PUSH_UP_TO_DATE);
 				} else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
 					// message = response.getMessage();
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())

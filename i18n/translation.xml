@@ -7,7 +7,7 @@
         <language description="Japanese" lang="ja_JP" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
-    <key value="Worling_Copy_Label">
+    <key value="Working_Copy_Label">
         <comment>Label displayed on the left of the working copy combo box</comment>
         <val lang="en_US">Working copy: </val>
         <val lang="de_DE">de_DE_translation</val>

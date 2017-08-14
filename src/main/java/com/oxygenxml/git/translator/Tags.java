@@ -1,7 +1,7 @@
 package com.oxygenxml.git.translator;
 
 public class Tags {
-	public static final String WORKING_COPY_LABEL =  "Worling_Copy_Label";
+	public static final String WORKING_COPY_LABEL =  "Working_Copy_Label";
 	public static final String PUSH_BUTTON_TOOLTIP = "Push_Button_ToolTip";
 	public static final String PULL_BUTTON_TOOLTIP = "Pull_Button_ToolTip";
 	public static final String BROWSE_BUTTON_TOOLTIP = "Browse_Button_ToolTip";
@@ -28,7 +28,7 @@ public class Tags {
 	public static final String PUSH_IN_PROGRESS = "Push_In_Progress";
 	public static final String PULL_WITH_UNCOMMITED_CHANGES = "Pull_With_Uncommitted_Changes";
 	public static final String PULL_UP_TO_DATE = "Pull_Up_To_Date";	
-	public static final String PULL_SUCCESSFUL = "Pill_Successful";
+	public static final String PULL_SUCCESSFUL = "Pull_Successful";
 	public static final String PULL_IN_PROGRESS = "Pull_In_Progress";
 	public static final String PULL_WITH_CONFLICTS = "Pull_With_Conflicts";
 }
