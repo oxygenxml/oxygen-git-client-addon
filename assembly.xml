@@ -17,14 +17,6 @@
         <include>**/*</include>
       </includes>
     </fileSet>
-    
-    <fileSet>
-			<directory>i18n</directory>
-			<outputDirectory>/i18n</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
   </fileSets>
 
   <files>
@@ -36,6 +28,10 @@
       <source>plugin.xml</source>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
+    </file>
+    <file>
+      <source>i18n/translation.xml</source>
+      <outputDirectory>/i18n</outputDirectory>
     </file>
   </files>
 </assembly>
