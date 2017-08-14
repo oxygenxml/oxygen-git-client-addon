@@ -1,10 +1,13 @@
 package com.oxygenxml.git.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -59,7 +62,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		} else if (changeEvent.getNewState() == StageState.DISCARD) {
 			deleteNodes(fileToBeUpdated);
 		}
-		
+
 		fireTreeStructureChanged(this, null, null, null);
 	}
 
@@ -69,6 +72,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 			TreeFormatter.buildTreeFromString(this, fileStatus.getFileLocation());
 		}
 		filesStatus.addAll(fileToBeUpdated);
+		sortTree();
 	}
 
 	private void deleteNodes(List<FileStatus> fileToBeUpdated) {
@@ -86,6 +90,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 			}
 		}
 		filesStatus.removeAll(fileToBeUpdated);
+		sortTree();
 	}
 
 	public void addObserver(Observer<ChangeEvent> observer) {
@@ -125,9 +130,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		observer.stateChanged(changeEvent);
 	}
 
-	public FileStatus getFileByPath(String path){
+	public FileStatus getFileByPath(String path) {
 		for (FileStatus fileStatus : filesStatus) {
-			if(path.equals(fileStatus.getFileLocation())){
+			if (path.equals(fileStatus.getFileLocation())) {
 				return fileStatus;
 			}
 		}
@@ -146,10 +151,34 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		return containingPaths;
 	}
 
-
 	public void setFilesStatus(List<FileStatus> filesStatus) {
 		this.filesStatus.clear();
 		insertNodes(filesStatus);
 		fireTreeStructureChanged(this, null, null, null);
 	}
+
+	private void sortTree() {
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
+		Enumeration e = root.depthFirstEnumeration();
+		while (e.hasMoreElements()) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
+			if (!node.isLeaf()) {
+				sort(node);
+			}
+		}
+	}
+
+	private void sort(DefaultMutableTreeNode parent) {
+		int n = parent.getChildCount();
+		List<DefaultMutableTreeNode> children = new ArrayList<DefaultMutableTreeNode>(n);
+		for (int i = 0; i < n; i++) {
+			children.add((DefaultMutableTreeNode) parent.getChildAt(i));
+		}
+		Collections.sort(children, new NodeTreeComparator()); // iterative merge sort
+		parent.removeAllChildren();
+		for (MutableTreeNode node : children) {
+			parent.add(node);
+		}
+	}
+
 }

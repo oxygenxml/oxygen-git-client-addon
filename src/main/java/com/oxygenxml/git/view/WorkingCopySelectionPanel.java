@@ -177,9 +177,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						if (!OptionsManager.getInstance().getRepositoryEntries().contains(directoryPath)) {
 							workingCopySelector.addItem(directoryPath);
 							OptionsManager.getInstance().addRepository(directoryPath);
-
 						}
-
 						workingCopySelector.setSelectedItem(directoryPath);
 					} else {
 						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),

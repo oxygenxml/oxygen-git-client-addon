@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.batik.svggen.font.table.Os2Table;
+
 /**
  * An utility class for files
  * 
@@ -69,17 +71,42 @@ public class FileHelper {
 		}
 		return url;
 	}
-	
-	public static boolean isGitRepository(String path){
+
+	public static boolean isGitRepository(String path) {
 		File rootFolder = new File(path);
 		File[] listOfFiles = rootFolder.listFiles();
 
-
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isDirectory() && ".git".equals(listOfFiles[i].getName())) {
-				return true;
+		if (listOfFiles != null) {
+			for (int i = 0; i < listOfFiles.length; i++) {
+				if (listOfFiles[i].isDirectory() && ".git".equals(listOfFiles[i].getName())) {
+					return true;
+				}
 			}
 		}
 		return false;
+	}
+
+	public static String findXPR(String projectViewPath) {
+		File rootFolder = new File(projectViewPath);
+		File[] listOfFiles = rootFolder.listFiles();
+
+		String xprPath = "";
+		for (int i = 0; i < listOfFiles.length; i++) {
+			String extension = listOfFiles[i].getName().substring(listOfFiles[i].getName().lastIndexOf(".") + 1);
+			if ("xpr".equals(extension)) {
+				xprPath = listOfFiles[i].getAbsolutePath();
+				break;
+			}
+		}
+		return xprPath;
+	}
+
+	public static boolean isURL(String path) {
+		try {
+			new URL(path);
+			return true;
+		} catch (MalformedURLException e) {
+			return false;
+		}
 	}
 }

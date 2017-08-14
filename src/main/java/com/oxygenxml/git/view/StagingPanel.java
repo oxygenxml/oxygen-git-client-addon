@@ -8,31 +8,24 @@ import java.awt.Insets;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.OptionsManager;
+import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
-import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -58,9 +51,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	private CommitPanel commitPanel;
 	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
 	private Translator translator;
+	private Refresh refresh;
 
-	public StagingPanel(Translator translator) {
+	public StagingPanel(Translator translator, Refresh refresh) {
 		this.translator = translator;
+		this.refresh = refresh;
 		createGUI();
 	}
 
@@ -89,7 +84,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		final GitAccess gitAccess = GitAccess.getInstance();
 		StageController observer = new StageController(gitAccess);
-		PushPullController pushPullController = new PushPullController(gitAccess);
+		PushPullController pushPullController = new PushPullController(gitAccess, translator);
 
 		unstagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, false, translator);
 		stagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, true, translator);
@@ -146,13 +141,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		// Detect focus transitions between the view and the outside.
 		installFocusListener(this, new FocusAdapter() {
 			boolean inTheView = false;
-
+			
 			@Override
 			public void focusGained(final FocusEvent e) {
 				// The focus is somewhere in he view.
 				if (!inTheView) {
-					// The focus was lost but now is back.
-					new Refresh(StagingPanel.this).call();
+					refresh.call(StagingPanel.this);
 				}
 
 				inTheView = true;

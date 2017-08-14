@@ -160,7 +160,6 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			public void mousePressed(MouseEvent e) {
 				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
-				System.out.println("treepath: " + treePath);
 				if (treePath != null) {
 					String stringPath = TreeFormatter.getStringPath(treePath);
 					if (model.isLeaf(TreeFormatter.getTreeNodeFromString(model, stringPath))) {
@@ -173,7 +172,6 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 					}
 					if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
 						boolean treeInSelection = false;
-						System.out.println("treeInSelection: " + treeInSelection);
 						TreePath[] paths = tree.getSelectionPaths();
 						if (paths != null) {
 							for (int i = 0; i < paths.length; i++) {
@@ -188,7 +186,6 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 							tree.setSelectionPath(treePath);
 						}
 						List<String> selectedPaths = TreeFormatter.getStringComonAncestor(tree);
-						System.out.println("string sp: " + selectedPaths);
 						contextualMenu.removeAll();
 						addContextualMenu(model.getFilesByPaths(selectedPaths));
 						contextualMenu.show(tree, e.getX(), e.getY());
@@ -774,9 +771,8 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 					}
 					label.setIcon(icon);
 					label.setToolTipText(toolTip);
-				}
+				}				
 			}
-
 			return label;
 		}
 	}
