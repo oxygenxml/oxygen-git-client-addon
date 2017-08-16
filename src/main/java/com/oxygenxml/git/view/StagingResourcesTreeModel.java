@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -77,9 +76,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 
 	private void deleteNodes(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
-			DefaultMutableTreeNode node = TreeFormatter.getTreeNodeFromString(this, fileStatus.getFileLocation());
+			MyNode node = TreeFormatter.getTreeNodeFromString(this, fileStatus.getFileLocation());
 			while (node.getParent() != null) {
-				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
+				MyNode parentNode = (MyNode) node.getParent();
 				if (node.getSiblingCount() != 1) {
 					parentNode.remove(node);
 					break;
@@ -159,21 +158,21 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	}
 
 	private void sortTree() {
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
+		MyNode root = (MyNode) getRoot();
 		Enumeration e = root.depthFirstEnumeration();
 		while (e.hasMoreElements()) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
+			MyNode node = (MyNode) e.nextElement();
 			if (!node.isLeaf()) {
 				sort(node);
 			}
 		}
 	}
 
-	private void sort(DefaultMutableTreeNode parent) {
+	private void sort(MyNode parent) {
 		int n = parent.getChildCount();
-		List<DefaultMutableTreeNode> children = new ArrayList<DefaultMutableTreeNode>(n);
+		List<MyNode> children = new ArrayList<MyNode>(n);
 		for (int i = 0; i < n; i++) {
-			children.add((DefaultMutableTreeNode) parent.getChildAt(i));
+			children.add((MyNode) parent.getChildAt(i));
 		}
 		Collections.sort(children, new NodeTreeComparator()); // iterative merge sort
 		parent.removeAllChildren();

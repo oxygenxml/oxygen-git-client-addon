@@ -152,6 +152,9 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		previouslyMessages.setSelectedItem(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
 		previouslyMessages.setEditable(false);
 		
+		int height = (int) previouslyMessages.getPreferredSize().getHeight();
+		previouslyMessages.setMinimumSize(new Dimension(10, height));
+		
 		this.add(previouslyMessages, gbc);
 	}
 

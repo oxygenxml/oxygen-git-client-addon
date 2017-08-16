@@ -214,12 +214,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		gbc.weightx = 1;
-		gbc.weighty = 0;
+		gbc.weighty = 1;
 
 		workingCopySelector = new JComboBox<String>();
 		ComboboxToolTipRenderer renderer = new ComboboxToolTipRenderer();
 		workingCopySelector.setRenderer(renderer);
-		int height = new Integer(workingCopySelector.getHeight());
+		int height = (int) workingCopySelector.getPreferredSize().getHeight();
 		workingCopySelector.setMinimumSize(new Dimension(10, height));
 
 		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {

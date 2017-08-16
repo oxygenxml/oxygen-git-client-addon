@@ -34,9 +34,10 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
@@ -102,11 +103,11 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 	public void createTreeView(String path, List<FileStatus> filesStatus) {
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
+		MyNode rootNode = (MyNode) treeModel.getRoot();
 		Enumeration<TreePath> expandedPaths = null;
 		if (rootNode != null) {
-			TreePath treePath = new TreePath(rootNode);
-			expandedPaths = tree.getExpandedDescendants(treePath);
+			TreePath rootTreePath = new TreePath(rootNode);
+			expandedPaths = tree.getExpandedDescendants(rootTreePath);
 		}
 		stageController.unregisterObserver(treeModel);
 		stageController.unregisterSubject(treeModel);
@@ -114,7 +115,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		path = path.replace("\\", "/");
 		String rootFolder = path.substring(path.lastIndexOf("/") + 1);
 		if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
+			MyNode root = new MyNode(rootFolder);
 			// Create the tree model and add the root node to it
 			treeModel = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(filesStatus));
 			if (staging) {
@@ -132,6 +133,8 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 		CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
 		tree.setCellRenderer(treeRenderer);
+		
+		//restore last expanded paths after refresh
 		if (expandedPaths != null) {
 			List<TreePath> paths = Collections.list(expandedPaths);
 			for (int i = 0; i < tree.getRowCount(); i++) {
@@ -332,14 +335,14 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 			String absolutePath = fileTableModel.getFileLocation(convertedRow);
 
-			DefaultMutableTreeNode nodeBuilder = TreeFormatter
+			MyNode nodeBuilder = TreeFormatter
 					.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(), absolutePath);
-			DefaultMutableTreeNode[] selectedPath = new DefaultMutableTreeNode[absolutePath.split("/").length + 1];
+			MyNode[] selectedPath = new MyNode[absolutePath.split("/").length + 1];
 			int count = selectedPath.length;
 			while (nodeBuilder != null) {
 				count--;
 				selectedPath[count] = nodeBuilder;
-				nodeBuilder = (DefaultMutableTreeNode) nodeBuilder.getParent();
+				nodeBuilder = (MyNode) nodeBuilder.getParent();
 			}
 
 			selectedPaths[i] = new TreePath(selectedPath);

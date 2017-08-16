@@ -5,9 +5,10 @@ import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
+import com.oxygenxml.git.view.MyNode;
 
 /**
  * An utility class for JTree.
@@ -27,14 +28,14 @@ public class TreeFormatter {
 	 */
 	public static void buildTreeFromString(final DefaultTreeModel model, final String str) {
 		// Fetch the root node
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+		MyNode root = (MyNode) model.getRoot();
 
 		// Split the string around the delimiter
 		String[] strings = str.split("/");
 
 		// Create a node object to use for traversing down the tree as it
 		// is being created
-		DefaultMutableTreeNode node = root;
+		MyNode node = root;
 
 		// Iterate of the string array
 		for (String s : strings) {
@@ -45,13 +46,13 @@ public class TreeFormatter {
 			// Index less than 0, this is a new node not currently present on the tree
 			if (index < 0) {
 				// Add the new node
-				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(s);
+				MyNode newChild = new MyNode(s);
 				node.insert(newChild, node.getChildCount());
 				node = newChild;
 			}
 			// Else, existing node, skip to the next string
 			else {
-				node = (DefaultMutableTreeNode) node.getChildAt(index);
+				node = (MyNode) node.getChildAt(index);
 			}
 		}
 	}
@@ -65,9 +66,9 @@ public class TreeFormatter {
 	 *          The value of the child to compare with
 	 * @return The index
 	 */
-	public static int childIndex(final DefaultMutableTreeNode node, final String childValue) {
-		Enumeration<DefaultMutableTreeNode> children = node.children();
-		DefaultMutableTreeNode child = null;
+	public static int childIndex(final MyNode node, final String childValue) {
+		Enumeration<MyNode> children = node.children();
+		MyNode child = null;
 		int index = -1;
 
 		while (children.hasMoreElements() && index < 0) {
@@ -91,13 +92,13 @@ public class TreeFormatter {
 	 *          - The string to find the node from
 	 * @return The node
 	 */
-	public static DefaultMutableTreeNode getTreeNodeFromString(DefaultTreeModel model, String path) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) model.getRoot();
+	public static MyNode getTreeNodeFromString(DefaultTreeModel model, String path) {
+		MyNode node = (MyNode) model.getRoot();
 		String[] strings = path.split("/");
 		for (String s : strings) {
 			int index = childIndex(node, s);
 			if (index != -1) {
-				node = (DefaultMutableTreeNode) node.getChildAt(index);
+				node = (MyNode) node.getChildAt(index);
 			}
 		}
 		return node;
