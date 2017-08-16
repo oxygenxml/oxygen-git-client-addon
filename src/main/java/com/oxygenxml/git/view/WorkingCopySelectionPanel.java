@@ -39,6 +39,7 @@ import com.oxygenxml.git.utils.FileHelper;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import ro.sync.ui.Icons;
 
 public class WorkingCopySelectionPanel extends JPanel {
 
@@ -265,7 +266,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		browseButton = new ToolbarButton(null, false);
-		browseButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FILE_CHOOSER_ICON)));
+		browseButton.setIcon(Icons.getIcon(ImageConstants.FILE_CHOOSER_ICON));
 		browseButton.setToolTipText(translator.getTraslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);

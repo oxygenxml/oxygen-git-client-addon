@@ -152,6 +152,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	}
 
 	public void setFilesStatus(List<FileStatus> filesStatus) {
+		deleteNodes(this.filesStatus);
 		this.filesStatus.clear();
 		insertNodes(filesStatus);
 		fireTreeStructureChanged(this, null, null, null);

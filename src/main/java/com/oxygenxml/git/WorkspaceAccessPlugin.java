@@ -15,7 +15,7 @@ public class WorkspaceAccessPlugin extends Plugin {
   /**
    * Constructs the plugin.
    * 
-   * @param descriptor The plugin descriptor
+   * @param descriptor The plugin descriptor 
    */
   public WorkspaceAccessPlugin(PluginDescriptor descriptor) {
     super(descriptor);

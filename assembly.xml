@@ -20,6 +20,10 @@
   </fileSets>
 
   <files>
+  <file>
+      <source>target/${project.build.finalName}-images.jar</source>
+      <outputDirectory>/lib</outputDirectory>
+    </file>
     <file>
       <source>target/build/${project.build.finalName}.jar</source>
       <outputDirectory>/lib</outputDirectory>

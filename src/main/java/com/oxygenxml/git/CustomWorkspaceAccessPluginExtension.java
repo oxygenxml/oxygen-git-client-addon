@@ -19,6 +19,7 @@ import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
+import ro.sync.ui.Icons;
 
 /**
  * Plugin extension - workspace access extension.
@@ -52,7 +53,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 				GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
 
 					viewInfo.setComponent(stagingPanel);
-					viewInfo.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_ICON)));
+					viewInfo.setIcon(Icons.getIcon(ImageConstants.GIT_ICON));
 					viewInfo.setTitle("Git Staging");
 				}
 			}

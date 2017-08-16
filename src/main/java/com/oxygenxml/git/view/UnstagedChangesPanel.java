@@ -10,11 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -32,7 +31,8 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -55,10 +55,12 @@ import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
+import com.sun.xml.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import ro.sync.ui.Icons;
 
 public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
@@ -82,12 +84,15 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 	private Translator translator;
 
+
 	public UnstagedChangesPanel(GitAccess gitAccess, StageController observer, boolean staging, Translator translator) {
 		this.staging = staging;
 		this.stageController = observer;
 		this.gitAccess = gitAccess;
 		this.translator = translator;
 		ToolTipManager.sharedInstance().registerComponent(tree);
+
+
 		currentView = FLAT_VIEW;
 
 	}
@@ -97,23 +102,32 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	}
 
 	public void createTreeView(String path, List<FileStatus> filesStatus) {
-
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
+		Enumeration<TreePath> expandedPaths = null;
+		if(rootNode != null){
+			TreePath treePath = new TreePath(rootNode);
+			expandedPaths = tree.getExpandedDescendants(treePath);
+		}
 		stageController.unregisterObserver(treeModel);
 		stageController.unregisterSubject(treeModel);
 
 		path = path.replace("\\", "/");
 		String rootFolder = path.substring(path.lastIndexOf("/") + 1);
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
-
-		// Create the tree model and add the root node to it
-		treeModel = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(filesStatus));
-		if (staging) {
-			treeModel = new StagingResourcesTreeModel(root, true, new ArrayList<FileStatus>(filesStatus));
+		if(rootNode == null || !rootFolder.equals(rootNode.getUserObject())){
+			System.out.println("new working copy");
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
+			// Create the tree model and add the root node to it
+			treeModel = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(filesStatus));
+			if (staging) {
+				treeModel = new StagingResourcesTreeModel(root, true, new ArrayList<FileStatus>(filesStatus));
+			}
+			
+			// Create the tree with the new model
+			tree.setModel(treeModel);
 		}
 
-		// Create the tree with the new model
-		tree.setModel(treeModel);
+		
 		treeModel.setFilesStatus(filesStatus);
 
 		stageController.registerObserver(treeModel);
@@ -121,13 +135,20 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 		CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
 		tree.setCellRenderer(treeRenderer);
+		while(expandedPaths != null && expandedPaths.hasMoreElements()){
+			TreePath treePath = expandedPaths.nextElement();
+			System.out.println(tree.getRowForPath(treePath));
+			System.out.println(treePath);
+			System.out.println();
+			tree.expandPath(treePath);
+		}
 	}
-
+	
 	public void updateFlatView(List<FileStatus> unstagedFiles) {
 		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
 		List<FileStatus> selectedFiles = getSelectedFilesBeforeModelChange();
 		modelTable.setFilesStatus(unstagedFiles);
-		
+
 		restoreSelectionAfterModelChange(modelTable, selectedFiles);
 		selectedFiles.clear();
 	}
@@ -135,7 +156,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	private void restoreSelectionAfterModelChange(StagingResourcesTableModel model, List<FileStatus> s) {
 		for (FileStatus fileStatus : s) {
 			int row = model.getRow(fileStatus.getFileLocation());
-			if(row != -1){
+			if (row != -1) {
 				filesTable.addRowSelectionInterval(row, row);
 			}
 		}
@@ -269,34 +290,14 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 			public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
-					int[] selectedRows = filesTable.getSelectedRows();
-					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
-
-					selectedPaths = new TreePath[selectedRows.length];
-					for (int i = 0; i < selectedRows.length; i++) {
-						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
-						String absolutePath = fileTableModel.getFileLocation(convertedRow);
-
-						DefaultMutableTreeNode nodeBuilder = TreeFormatter
-								.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(), absolutePath);
-						DefaultMutableTreeNode[] selectedPath = new DefaultMutableTreeNode[absolutePath.split("/").length + 1];
-						int count = selectedPath.length;
-						while (nodeBuilder != null) {
-							count--;
-							selectedPath[count] = nodeBuilder;
-							nodeBuilder = (DefaultMutableTreeNode) nodeBuilder.getParent();
-						}
-
-						selectedPaths[i] = new TreePath(selectedPath);
-					}
+					selectedPaths = restoreSelectedPathsFromTableToTree();
 					tree.setSelectionPaths(selectedPaths);
-
 					scrollPane.setViewportView(tree);
 					currentView = TREE_VIEW;
-					switchViewButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.TABLE_VIEW)));
+					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TABLE_VIEW));
 				} else {
 					currentView = FLAT_VIEW;
-					switchViewButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.TREE_VIEW)));
+					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
 					filesTable.clearSelection();
 					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
@@ -314,7 +315,32 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 					scrollPane.setViewportView(filesTable);
 				}
 			}
+
 		});
+	}
+
+	private TreePath[] restoreSelectedPathsFromTableToTree() {
+		int[] selectedRows = filesTable.getSelectedRows();
+		StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
+
+		TreePath[] selectedPaths = new TreePath[selectedRows.length];
+		for (int i = 0; i < selectedRows.length; i++) {
+			int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
+			String absolutePath = fileTableModel.getFileLocation(convertedRow);
+
+			DefaultMutableTreeNode nodeBuilder = TreeFormatter
+					.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(), absolutePath);
+			DefaultMutableTreeNode[] selectedPath = new DefaultMutableTreeNode[absolutePath.split("/").length + 1];
+			int count = selectedPath.length;
+			while (nodeBuilder != null) {
+				count--;
+				selectedPath[count] = nodeBuilder;
+				nodeBuilder = (DefaultMutableTreeNode) nodeBuilder.getParent();
+			}
+
+			selectedPaths[i] = new TreePath(selectedPath);
+		}
+		return selectedPaths;
 	}
 
 	private void addStageAllButton(GridBagConstraints gbc) {
@@ -365,7 +391,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
 		switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_VIEW_BUTTON_TOOLTIP));
-		switchViewButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.TREE_VIEW)));
+		switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
 		this.add(toolbar, gbc);
@@ -407,16 +433,16 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				ImageIcon icon = null;
 				String toolTip = "";
 				if (GitChangeType.ADD == value) {
-					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_ADD_ICON));
+					icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
 					toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
 				} else if (GitChangeType.MODIFY == value) {
-					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_MODIFIED_ICON));
+					icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
 					toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
 				} else if (GitChangeType.DELETE == value) {
-					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_DELETE_ICON));
+					icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
 					toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
 				} else if (GitChangeType.CONFLICT == value) {
-					icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_CONFLICT_ICON));
+					icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
 					toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
 				}
 				JLabel iconLabel = new JLabel(icon);
@@ -777,7 +803,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 			JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-			Icon icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.FOLDER_TREE_ICON));
+			Icon icon =Icons.getIcon(ImageConstants.FOLDER_TREE_ICON);
 			String toolTip = "";
 
 			StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
@@ -787,16 +813,16 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
 					FileStatus file = model.getFileByPath(path);
 					if (GitChangeType.ADD == file.getChangeType()) {
-						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_ADD_ICON));
+						icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
 						toolTip = "File Created";
 					} else if (GitChangeType.MODIFY == file.getChangeType()) {
-						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_MODIFIED_ICON));
+						icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
 						toolTip = "File Modified";
 					} else if (GitChangeType.DELETE == file.getChangeType()) {
-						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_DELETE_ICON));
+						icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
 						toolTip = "File Deleted";
 					} else if (GitChangeType.CONFLICT == file.getChangeType()) {
-						icon = new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_CONFLICT_ICON));
+						icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
 						toolTip = "Conflict";
 					}
 

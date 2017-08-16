@@ -26,6 +26,7 @@ import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import ro.sync.ui.Icons;
 
 /**
  * Contains additional support buttons like push and pull
@@ -170,7 +171,8 @@ public class ToolbarPanel extends JPanel {
 				g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
 			}
 		};
-		pushButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PUSH_ICON)));
+		
+		pushButton.setIcon(Icons.getIcon(ImageConstants.GIT_PUSH_ICON));
 		pushButton.setToolTipText(translator.getTraslation(Tags.PUSH_BUTTON_TOOLTIP));
 
 		// PULL button
@@ -218,7 +220,7 @@ public class ToolbarPanel extends JPanel {
 			}
 
 		};
-		pullButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource(ImageConstants.GIT_PULL_ICON)));
+		pullButton.setIcon(Icons.getIcon(ImageConstants.GIT_PULL_ICON));
 		pullButton.setToolTipText(translator.getTraslation(Tags.PULL_BUTTON_TOOLTIP));
 
 		gitToolbar.add(pushButton);
