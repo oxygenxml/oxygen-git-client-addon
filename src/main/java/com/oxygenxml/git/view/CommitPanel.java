@@ -101,7 +101,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 				} else {
 					message = translator.getTraslation(Tags.COMMIT_SUCCESS);
 					ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile());
-					stageController.stateChanged(changeEvent);
+					stageController.stateChanged(changeEvent); 
 					gitAccess.commit(commitMessage.getText());
 					OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());
 					previouslyMessages.removeAllItems();
@@ -127,6 +127,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
+		gbc.gridwidth = 2;
 		label = new JLabel(translator.getTraslation(Tags.COMMIT_MESSAGE_LABEL));
 		this.add(label, gbc);
 	}
@@ -138,17 +139,19 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 1;
-		gbc.weightx = 0;
+		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
 		previouslyMessages = new JComboBox<String>();
+		
+		
 		for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
 			previouslyMessages.addItem(previouslyCommitMessage);
 		}
 		previouslyMessages.setEditable(true);
 		previouslyMessages.setSelectedItem(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
 		previouslyMessages.setEditable(false);
-		previouslyMessages.setMinimumSize(new Dimension(10, 20));
+		
 		this.add(previouslyMessages, gbc);
 	}
 

@@ -18,11 +18,13 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
@@ -217,7 +219,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 		workingCopySelector = new JComboBox<String>();
 		ComboboxToolTipRenderer renderer = new ComboboxToolTipRenderer();
 		workingCopySelector.setRenderer(renderer);
-		workingCopySelector.setMinimumSize(new Dimension(10, 20));
+		int height = new Integer(workingCopySelector.getHeight());
+		workingCopySelector.setMinimumSize(new Dimension(10, height));
 
 		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryEntry);
@@ -271,6 +274,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);
 		browswtoolbar.setFloatable(false);
+		browswtoolbar.setOpaque(false);
 		this.add(browswtoolbar, gbc);
 	}
 

@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -84,14 +85,12 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 	private Translator translator;
 
-
 	public UnstagedChangesPanel(GitAccess gitAccess, StageController observer, boolean staging, Translator translator) {
 		this.staging = staging;
 		this.stageController = observer;
 		this.gitAccess = gitAccess;
 		this.translator = translator;
 		ToolTipManager.sharedInstance().registerComponent(tree);
-
 
 		currentView = FLAT_VIEW;
 
@@ -105,7 +104,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
 		Enumeration<TreePath> expandedPaths = null;
-		if(rootNode != null){
+		if (rootNode != null) {
 			TreePath treePath = new TreePath(rootNode);
 			expandedPaths = tree.getExpandedDescendants(treePath);
 		}
@@ -114,20 +113,18 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 		path = path.replace("\\", "/");
 		String rootFolder = path.substring(path.lastIndexOf("/") + 1);
-		if(rootNode == null || !rootFolder.equals(rootNode.getUserObject())){
-			System.out.println("new working copy");
+		if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
 			DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootFolder);
 			// Create the tree model and add the root node to it
 			treeModel = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(filesStatus));
 			if (staging) {
 				treeModel = new StagingResourcesTreeModel(root, true, new ArrayList<FileStatus>(filesStatus));
 			}
-			
+
 			// Create the tree with the new model
 			tree.setModel(treeModel);
 		}
 
-		
 		treeModel.setFilesStatus(filesStatus);
 
 		stageController.registerObserver(treeModel);
@@ -135,15 +132,22 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 		CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
 		tree.setCellRenderer(treeRenderer);
-		while(expandedPaths != null && expandedPaths.hasMoreElements()){
-			TreePath treePath = expandedPaths.nextElement();
-			System.out.println(tree.getRowForPath(treePath));
-			System.out.println(treePath);
-			System.out.println();
-			tree.expandPath(treePath);
+		if (expandedPaths != null) {
+			List<TreePath> paths = Collections.list(expandedPaths);
+			for (int i = 0; i < tree.getRowCount(); i++) {
+				TreePath currentPath = tree.getPathForRow(i);
+				String currentStringPath = TreeFormatter.getStringPath(currentPath);
+				for (TreePath treePath : paths) {
+					String stringTreePahr = TreeFormatter.getStringPath(treePath);
+					System.out.println(stringTreePahr);
+					if (currentStringPath.equals(stringTreePahr)) {
+						tree.expandRow(i);
+					}
+				}
+			}
 		}
 	}
-	
+
 	public void updateFlatView(List<FileStatus> unstagedFiles) {
 		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
 		List<FileStatus> selectedFiles = getSelectedFilesBeforeModelChange();
@@ -394,6 +398,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
+		toolbar.setOpaque(false);
 		this.add(toolbar, gbc);
 
 	}
@@ -803,7 +808,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 			JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-			Icon icon =Icons.getIcon(ImageConstants.FOLDER_TREE_ICON);
+			Icon icon = Icons.getIcon(ImageConstants.FOLDER_TREE_ICON);
 			String toolTip = "";
 
 			StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();

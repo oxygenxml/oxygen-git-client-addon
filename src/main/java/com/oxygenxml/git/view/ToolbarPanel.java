@@ -77,7 +77,8 @@ public class ToolbarPanel extends JPanel {
 		this.setLayout(new GridBagLayout());
 		this.pushesAhead = GitAccess.getInstance().getPushesAhead();
 		this.pullsBehind = GitAccess.getInstance().getPullsBehind();
-
+		
+		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -122,6 +123,7 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private void addPushAndPullButtons() {
 		gitToolbar = new JToolBar();
+		gitToolbar.setOpaque(false);
 		gitToolbar.setFloatable(false);
 
 		// PUSH button
