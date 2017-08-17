@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
@@ -16,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.view.MyNode;
 import com.oxygenxml.git.view.StagingResourcesTreeModel;
 
 public class TreeFormatterTest {
@@ -33,14 +33,14 @@ public class TreeFormatterTest {
 		paths.add("src/main/java/test.java");
 		paths.add("src/main/java/package/file.java");
 		paths.add("resources/java/find.txt");
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Test");
+		MyNode root = new MyNode("Test");
 		DefaultTreeModel model = new DefaultTreeModel(root);
 
 		for (String string : paths) {
 			TreeFormatter.buildTreeFromString(model, string);
 		}
 
-		DefaultMutableTreeNode node = TreeFormatter.getTreeNodeFromString(model, "src/add/java/info.txt");
+		MyNode node = TreeFormatter.getTreeNodeFromString(model, "src/add/java/info.txt");
 		String actual = (String) node.getUserObject();
 		String expected = "info.txt";
 
