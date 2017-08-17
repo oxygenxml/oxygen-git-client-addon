@@ -17,7 +17,7 @@
  			Because of that we have to make the icons available in Oxygen's ClassLoader.		
  	-->
 	<library name="lib/${project.build.finalName}-images.jar" scope="global"/>
-	<library name="target/git.support-1.0.0-images.jar" scope="global" />
+  <library name="src\main\resources" scope="global" />
 	
 	
 	<librariesFolder name="lib" />
