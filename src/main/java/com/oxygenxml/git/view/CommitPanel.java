@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
@@ -21,10 +22,14 @@ import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
 
 import org.eclipse.jgit.lib.RepositoryState;
 
@@ -188,48 +193,22 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		final UndoManager undoManager = new UndoManager();
 		Document doc = commitMessage.getDocument();
 		// Listen for undo and redo events
-		doc.addUndoableEditListener(new UndoableEditListener() {
-			public void undoableEditHappened(UndoableEditEvent evt) {
-				undoManager.addEdit(evt.getEdit());
-			}
-		});
+		doc.addUndoableEditListener(undoManager);
 
 		// Create an undo action and add it to the text component
 		commitMessage.getActionMap().put("Undo", new AbstractAction("Undo") {
 			public void actionPerformed(ActionEvent evt) {
-				try {
-					if (undoManager.canUndo()) {
-						String text = commitMessage.getText();
-						while(!text.endsWith(" ")){
-							undoManager.undo();
-							text = commitMessage.getText();
-						}
-						if(!"".equals(text)){
-							undoManager.undo();
-						}
-					}
-				} catch (CannotUndoException e) {
-				}
+				undoManager.undo();
 			}
 		});
-
+		
 		// Bind the undo action to ctl-Z
 		commitMessage.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
 
 		// Create a redo action and add it to the text component
 		commitMessage.getActionMap().put("Redo", new AbstractAction("Redo") {
 			public void actionPerformed(ActionEvent evt) {
-				try {
-					if (undoManager.canRedo()) {
-						undoManager.redo();
-						String text = commitMessage.getText();
-						while(!text.endsWith(" ")){
-							undoManager.redo();
-							text = commitMessage.getText();
-						}
-					}
-				} catch (CannotRedoException e) {
-				}
+				undoManager.redo();
 			}
 		});
 
@@ -326,6 +305,120 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 	public void clearCommitMessage() {
 		commitMessage.setText(null);
+	}
+
+	class MyCompoundEdit extends CompoundEdit {
+		boolean isUnDone = false;
+
+		public int getLength() {
+			return edits.size();
+		}
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			isUnDone = true;
+		}
+
+		public void redo() throws CannotUndoException {
+			super.redo();
+			isUnDone = false;
+		}
+
+		public boolean canUndo() {
+			return edits.size() > 0 && !isUnDone;
+		}
+
+		public boolean canRedo() {
+			return edits.size() > 0 && isUnDone;
+		}
+
+	}
+
+	class UndoManager extends AbstractUndoableEdit implements UndoableEditListener {
+		String lastEditName = null;
+		int lastOffset = -1;
+		ArrayList<MyCompoundEdit> edits = new ArrayList<MyCompoundEdit>();
+		MyCompoundEdit current;
+		int pointer = -1;
+
+		public void undoableEditHappened(UndoableEditEvent e) {
+			UndoableEdit edit = e.getEdit();
+			if (edit instanceof AbstractDocument.DefaultDocumentEvent) {
+				try {
+					AbstractDocument.DefaultDocumentEvent event = (AbstractDocument.DefaultDocumentEvent) edit;
+					int start = event.getOffset();
+					int len = event.getLength();
+					String text = event.getDocument().getText(start, len);
+					boolean isNeedStart = false;
+					if (current == null) {
+						isNeedStart = true;
+					} else if (text.contains("\n") && !"deletion".equals(edit.getPresentationName())) {
+						isNeedStart = true;
+					} else if (lastEditName == null || !lastEditName.equals(edit.getPresentationName())) {
+						isNeedStart = true;
+					} else if(Math.abs(lastOffset - start) > 1){
+						isNeedStart = true;
+					}
+
+					while (pointer < edits.size() - 1) {
+						edits.remove(edits.size() - 1);
+						isNeedStart = true;
+					}
+					if (isNeedStart) {
+						createCompoundEdit();
+					}
+
+					current.addEdit(edit);
+					lastEditName = edit.getPresentationName();
+					lastOffset = start;
+
+				} catch (BadLocationException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+
+		public void createCompoundEdit() {
+			if (current == null) {
+				current = new MyCompoundEdit();
+			} else if (current.getLength() > 0) {
+				current = new MyCompoundEdit();
+			}
+
+			edits.add(current);
+			pointer++;
+		}
+
+		public void undo() throws CannotUndoException {
+			if (!canUndo()) {
+				throw new CannotUndoException();
+			}
+
+			MyCompoundEdit u = edits.get(pointer);
+			u.undo();
+			pointer--;
+
+		}
+
+		public void redo() throws CannotUndoException {
+			if (!canRedo()) {
+				throw new CannotUndoException();
+			}
+
+			pointer++;
+			MyCompoundEdit u = edits.get(pointer);
+			u.redo();
+
+		}
+
+		public boolean canUndo() {
+			return pointer >= 0;
+		}
+
+		public boolean canRedo() {
+			return edits.size() > 0 && pointer < edits.size() - 1;
+		}
+
 	}
 
 }
