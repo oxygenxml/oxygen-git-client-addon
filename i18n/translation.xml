@@ -10,7 +10,7 @@
     <key value="Working_Copy_Label">
         <comment>Label displayed on the left of the working copy combo box</comment>
         <val lang="en_US">Working copy: </val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Arbeitskopie: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -19,7 +19,7 @@
     <key value="Push_Button_ToolTip">
         <comment>The tooltip for the push button</comment>
         <val lang="en_US">Push</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Push</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -28,7 +28,7 @@
     <key value="Pull_Button_ToolTip">
         <comment>The tooltip for the pull button</comment>
         <val lang="en_US">Pull</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Pull</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -37,7 +37,7 @@
     <key value="Browse_Button_ToolTip">
         <comment>The tooltip for the browse button</comment>
         <val lang="en_US">Browse File System</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Im Dateisystem suchen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -46,7 +46,7 @@
     <key value="Stage_All_Button_Text">
         <comment>The text displayed on the StageAll button</comment>
         <val lang="en_US">Stage All</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Alle vormerken</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -55,7 +55,7 @@
     <key value="Unstage_All_Button_Text">
         <comment>The text displayed on the UnstageAll button</comment>
         <val lang="en_US">Unstage All</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Alle nicht mehr vormerken</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -64,7 +64,7 @@
     <key value="Stage_Selected_Button_Text">
         <comment>The text displayed on the Stage Selected button</comment>
         <val lang="en_US">Stage Selected</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Auswahl vormerken</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -73,7 +73,7 @@
     <key value="Unstage_Selected_Button_Text">
         <comment>The text displayed on the Unstage Selected button</comment>
         <val lang="en_US">Unstage Selected</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Auswahl nicht mehr vormerken</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -82,7 +82,7 @@
     <key value="Change_View_Button_ToolTip">
         <comment>The tooltip for the ChangeView button</comment>
         <val lang="en_US">Change View</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Ansicht ändern</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -91,7 +91,7 @@
     <key value="Add_Icon_ToolTip">
         <comment>The tooltip for the "+" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Created</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Datei erstellt</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -100,7 +100,7 @@
     <key value="Modified_Icon_ToolTip">
         <comment>The tooltip for the "*" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Modified</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Datei geändert</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -109,7 +109,7 @@
     <key value="Delete_Icon_ToolTip">
         <comment>The tooltip for the "-" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Deleted</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Datei gelöscht</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -118,7 +118,7 @@
     <key value="Conflict_Icon_ToolTip">
         <comment>The tooltip for the "!" icon that appears on the left side of the file</comment>
         <val lang="en_US">Conflict</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Konflikt</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -127,7 +127,7 @@
     <key value="Commit_Message_Label">
         <comment>The massage displayed above the previouslt committed messages combo box</comment>
         <val lang="en_US">Message for the commit: </val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Commit-Nachricht: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -136,7 +136,7 @@
     <key value="Commit_ComboBox_Display_Message">
         <comment>The massage displayed on the combo box containing the previouslt commited messages</comment>
         <val lang="en_US">Previously committed messages </val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Vorherige Commit-Nachrichten </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -145,7 +145,7 @@
     <key value="Commit_Button_Text">
         <comment>The massage displayed on the commit button</comment>
         <val lang="en_US">Commit</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Commit</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -154,7 +154,7 @@
     <key value="Commit_Success">
         <comment>The massage displayed when a commit is successful</comment>
         <val lang="en_US">Commit successful</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Commit erfolgreich</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -163,7 +163,7 @@
     <key value="Commit_With_Conflicts">
         <comment>The massage displayed when you have conflicts</comment>
         <val lang="en_US">Cannot commit while having conflicts</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Commit nicht möglich während ungelöste Konflikte bestehen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -172,7 +172,7 @@
     <key value="Push_With_Conflicts">
         <comment>The massage displayed when you push with conflicts</comment>
         <val lang="en_US">Cannot Push. Please resolve conflicts</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Push nicht möglich. Bitte Konflikte lösen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -181,7 +181,7 @@
     <key value="Branch_Behind">
         <comment>The massage displayed when you push but your repository is not up to date</comment>
         <val lang="en_US">Cannot Push. Your current branch is behind</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -190,7 +190,7 @@
     <key value="Push_Successful">
         <comment>The massage displayed when you push successful</comment>
         <val lang="en_US">Push successful</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Push erfolgreich</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -199,7 +199,7 @@
     <key value="Push_Failed_Unknown">
         <comment>The massage displayed when your push fails</comment>
         <val lang="en_US">Cannot push</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Push nicht möglich</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -208,7 +208,7 @@
     <key value="Push_Up_To_Date">
         <comment>The massage displayed when you push with no changes</comment>
         <val lang="en_US">There was nothing to push</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Es wurde nichts gepusht.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -217,7 +217,7 @@
     <key value="Push_In_Progress">
         <comment>The massage displayed when your push is in progress</comment>
         <val lang="en_US">Pushing...</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Push läuft...</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -226,7 +226,7 @@
     <key value="Pull_With_Uncommitted_Changes">
         <comment>The massage displayed when you pull with uncommitted files</comment>
         <val lang="en_US">Cannot pull with uncommitted changes</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Pull kann nicht ausgeführt werden solange es uncommittete Änderungen gibt</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -235,7 +235,7 @@
     <key value="Pull_Up_To_Date">
         <comment>The massage displayed when your repository is up to date</comment>
         <val lang="en_US">Repository is already up to date</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Repository ist bereits auf dem aktuellen Stand</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -244,7 +244,7 @@
     <key value="Pull_Successful">
         <comment>The massage displayed when your pull is successful</comment>
         <val lang="en_US">Pull successful. Repository up to date</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -253,7 +253,7 @@
     <key value="Pull_In_Progress">
         <comment>The massage displayed when your pull is in progress</comment>
         <val lang="en_US">Pulling...</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Pull läuft...</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -262,7 +262,7 @@
     <key value="Pull_With_Conflicts">
         <comment>The massage displayed when you pull while having conflicts</comment>
         <val lang="en_US">Cannot Pull. Please resolve conflicts</val>
-        <val lang="de_DE">de_DE_translation</val>
+        <val lang="de_DE">Pull nicht möglich. Bitte Konflikte lösen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
