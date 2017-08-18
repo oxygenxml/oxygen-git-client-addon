@@ -89,8 +89,28 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	public UnstagedChangesPanel(GitAccess gitAccess, StageController observer, boolean staging, Translator translator) {
 		this.staging = staging;
 		this.stageController = observer;
+		this.stageController.addTree(this.tree);
 		this.gitAccess = gitAccess;
 		this.translator = translator;
+		tree.addTreeExpansionListener(new TreeExpansionListener() {
+			
+			public void treeExpanded(TreeExpansionEvent event) {
+				TreePath path = event.getPath();
+				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+				MyNode node = (MyNode) path.getLastPathComponent();
+				if(!model.isLeaf(node)){
+					int children = node.getChildCount();
+					if(children == 1){
+						MyNode child = (MyNode) node.getChildAt(0);
+						TreePath childPath = new TreePath(child.getPath());
+						tree.expandPath(childPath);
+					}
+				}
+			}
+			
+			public void treeCollapsed(TreeExpansionEvent event) {
+			}
+		});
 		ToolTipManager.sharedInstance().registerComponent(tree);
 
 		currentView = FLAT_VIEW;
@@ -104,11 +124,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 	public void createTreeView(String path, List<FileStatus> filesStatus) {
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 		MyNode rootNode = (MyNode) treeModel.getRoot();
-		Enumeration<TreePath> expandedPaths = null;
-		if (rootNode != null) {
-			TreePath rootTreePath = new TreePath(rootNode);
-			expandedPaths = tree.getExpandedDescendants(rootTreePath);
-		}
+		Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
 		stageController.unregisterObserver(treeModel);
 		stageController.unregisterSubject(treeModel);
 
@@ -135,21 +151,21 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		tree.setCellRenderer(treeRenderer);
 		
 		//restore last expanded paths after refresh
-		if (expandedPaths != null) {
-			List<TreePath> paths = Collections.list(expandedPaths);
-			for (int i = 0; i < tree.getRowCount(); i++) {
-				TreePath currentPath = tree.getPathForRow(i);
-				String currentStringPath = TreeFormatter.getStringPath(currentPath);
-				for (TreePath treePath : paths) {
-					String stringTreePahr = TreeFormatter.getStringPath(treePath);
-					System.out.println(stringTreePahr);
-					if (currentStringPath.equals(stringTreePahr)) {
-						tree.expandRow(i);
-					}
-				}
-			}
-		}
+		TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
 	}
+
+	private Enumeration<TreePath> getLastExpandedPaths() {
+		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+		MyNode rootNode = (MyNode) treeModel.getRoot();
+		Enumeration<TreePath> expandedPaths = null;
+		if (rootNode != null) {
+			TreePath rootTreePath = new TreePath(rootNode);
+			expandedPaths = tree.getExpandedDescendants(rootTreePath);
+		}
+		return expandedPaths;
+	}
+
+
 
 	public void updateFlatView(List<FileStatus> unstagedFiles) {
 		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
@@ -783,11 +799,13 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		} catch (NoRepositorySelected e1) {
 			resolveConflict.setEnabled(false);
 		}
-
+		
+		
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
 		toggleSelectedButton();
+		
 	}
 
 	private void toggleSelectedButton() {

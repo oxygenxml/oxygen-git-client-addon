@@ -41,6 +41,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 		final StagingPanel stagingPanel = new StagingPanel(translator, refresh);
 		refresh.call(stagingPanel);
 
+		
 
 		pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 			/**

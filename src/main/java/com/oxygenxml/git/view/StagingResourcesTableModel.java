@@ -3,7 +3,9 @@ package com.oxygenxml.git.view;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -100,7 +102,8 @@ public class StagingResourcesTableModel extends AbstractTableModel
 
 	public void setFilesStatus(List<FileStatus> filesStatus) {
 		this.filesStatus = filesStatus;
-		Collections.sort(filesStatus, new FileStatusComparator());
+		Collections.sort(this.filesStatus, new FileStatusComparator());
+		removeDuplicates();
 		fireTableDataChanged();
 	}
 
@@ -186,7 +189,15 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		} else if (changeEvent.getNewState() == StageState.DISCARD) {
 			deleteRows(fileToBeUpdated);
 		}
+		removeDuplicates();
 		fireTableDataChanged();
+	}
+
+	private void removeDuplicates() {
+		Set<FileStatus> set = new HashSet<FileStatus>();
+		set.addAll(this.filesStatus);
+		this.filesStatus.clear();
+		this.filesStatus.addAll(set);
 	}
 
 	private void deleteRows(List<FileStatus> fileToBeUpdated) {

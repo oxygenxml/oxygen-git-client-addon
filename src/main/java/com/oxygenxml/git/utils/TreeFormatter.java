@@ -1,6 +1,7 @@
 package com.oxygenxml.git.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -193,5 +194,21 @@ public class TreeFormatter {
 			fullPath = "";
 		}
 		return selectedFiles;
+	}
+	
+	public static void restoreLastExpandedPaths(Enumeration<TreePath> expandedPaths, JTree tree) {
+		if (expandedPaths != null) {
+			List<TreePath> paths = Collections.list(expandedPaths);
+			for (int i = 0; i < tree.getRowCount(); i++) {
+				TreePath currentPath = tree.getPathForRow(i);
+				String currentStringPath = TreeFormatter.getStringPath(currentPath);
+				for (TreePath treePath : paths) {
+					String stringTreePahr = TreeFormatter.getStringPath(treePath);
+					if (currentStringPath.equals(stringTreePahr)) {
+						tree.expandRow(i);
+					}
+				}
+			}
+		}
 	}
 }

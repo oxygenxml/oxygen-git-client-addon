@@ -1,10 +1,17 @@
 package com.oxygenxml.git.view.event;
 
+import java.awt.Container;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.view.MyNode;
 
 /**
  * Delegates the changing event to all other observers and makes sure that all
@@ -30,6 +37,8 @@ public class StageController implements Observer<ChangeEvent> {
 	 * delegate some work to them)
 	 */
 	private List<Observer<ChangeEvent>> observers = new ArrayList<Observer<ChangeEvent>>();
+
+	private List<JTree> trees = new ArrayList<JTree>();
 
 	public StageController(GitAccess gitAccess) {
 		this.gitAccess = gitAccess;
@@ -104,10 +113,23 @@ public class StageController implements Observer<ChangeEvent> {
 			}
 			gitAccess.addAll(changeEvent.getFileToBeUpdated());
 		}
-
+		
+		List<Enumeration<TreePath>> treePathsToRestore = new ArrayList<Enumeration<TreePath>>();
+		for (JTree tree : trees) {
+			MyNode rootNode = (MyNode) tree.getModel().getRoot();
+			TreePath rootTreePath = new TreePath(rootNode);
+			treePathsToRestore.add(tree.getExpandedDescendants(rootTreePath));
+		}
 		for (Observer<ChangeEvent> observer : observers) {
 			observer.stateChanged(changeEvent);
 		}
+		for(int i = 0; i<trees.size(); i++){
+			TreeFormatter.restoreLastExpandedPaths(treePathsToRestore.get(i), trees.get(i));
+		}
+	}
+
+	public void addTree(JTree tree) {
+		trees .add(tree);
 	}
 
 }

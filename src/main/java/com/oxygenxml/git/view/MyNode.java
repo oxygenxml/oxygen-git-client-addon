@@ -1,12 +1,17 @@
 package com.oxygenxml.git.view;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 public class MyNode extends DefaultMutableTreeNode {
 	
 	
 	public MyNode(String rootFolder) {
 		super(rootFolder);
+	}
+	
+	public MyNode(TreePath path){
+		super(path);
 	}
 
 	@Override
