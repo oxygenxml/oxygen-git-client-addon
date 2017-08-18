@@ -10,13 +10,21 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.Document;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import org.eclipse.jgit.lib.RepositoryState;
 
@@ -101,7 +109,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 				} else {
 					message = translator.getTraslation(Tags.COMMIT_SUCCESS);
 					ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile());
-					stageController.stateChanged(changeEvent); 
+					stageController.stateChanged(changeEvent);
 					gitAccess.commit(commitMessage.getText());
 					OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());
 					previouslyMessages.removeAllItems();
@@ -143,18 +151,17 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
 		previouslyMessages = new JComboBox<String>();
-		
-		
+
 		for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
 			previouslyMessages.addItem(previouslyCommitMessage);
 		}
 		previouslyMessages.setEditable(true);
 		previouslyMessages.setSelectedItem(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
 		previouslyMessages.setEditable(false);
-		
+
 		int height = (int) previouslyMessages.getPreferredSize().getHeight();
 		previouslyMessages.setMinimumSize(new Dimension(10, height));
-		
+
 		this.add(previouslyMessages, gbc);
 	}
 
@@ -177,6 +184,57 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		JScrollPane scrollPane = new JScrollPane(commitMessage);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setMinimumSize(new Dimension(10, 3 * fontH));
+
+		final UndoManager undoManager = new UndoManager();
+		Document doc = commitMessage.getDocument();
+		// Listen for undo and redo events
+		doc.addUndoableEditListener(new UndoableEditListener() {
+			public void undoableEditHappened(UndoableEditEvent evt) {
+				undoManager.addEdit(evt.getEdit());
+			}
+		});
+
+		// Create an undo action and add it to the text component
+		commitMessage.getActionMap().put("Undo", new AbstractAction("Undo") {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					if (undoManager.canUndo()) {
+						String text = commitMessage.getText();
+						while(!text.endsWith(" ")){
+							undoManager.undo();
+							text = commitMessage.getText();
+						}
+						if(!"".equals(text)){
+							undoManager.undo();
+						}
+					}
+				} catch (CannotUndoException e) {
+				}
+			}
+		});
+
+		// Bind the undo action to ctl-Z
+		commitMessage.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
+
+		// Create a redo action and add it to the text component
+		commitMessage.getActionMap().put("Redo", new AbstractAction("Redo") {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					if (undoManager.canRedo()) {
+						undoManager.redo();
+						String text = commitMessage.getText();
+						while(!text.endsWith(" ")){
+							undoManager.redo();
+							text = commitMessage.getText();
+						}
+					}
+				} catch (CannotRedoException e) {
+				}
+			}
+		});
+
+		// Bind the redo action to ctl-Y
+		commitMessage.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "Redo");
 		this.add(scrollPane, gbc);
 	}
 
