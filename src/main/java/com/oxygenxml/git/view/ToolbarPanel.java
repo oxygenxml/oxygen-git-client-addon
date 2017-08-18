@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -170,7 +171,12 @@ public class ToolbarPanel extends JPanel {
 				g.setFont(g.getFont().deriveFont(Font.BOLD));
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
 				int stringWidth = fontMetrics.stringWidth(str);
+				int stringHeight = fontMetrics.getHeight();
+				g.setColor(Color.WHITE);
+				g.fillRect(pushButton.getWidth() - stringWidth - 1,  pushButton.getHeight() - stringHeight, stringWidth, stringHeight);
+				g.setColor(Color.BLACK);
 				g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
+				
 			}
 		};
 		
@@ -217,8 +223,11 @@ public class ToolbarPanel extends JPanel {
 				g.setFont(g.getFont().deriveFont(Font.BOLD));
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
 				int stringWidth = fontMetrics.stringWidth(str);
-				//g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
-				g.drawString(str, pullButton.getWidth() - stringWidth, fontMetrics.getHeight() - fontMetrics.getDescent());
+				int stringHeight = fontMetrics.getHeight();
+				g.setColor(new Color(255, 255, 255, 130));
+				g.fillRect(pullButton.getWidth() - stringWidth, 0, stringWidth, stringHeight);
+				g.setColor(Color.BLACK);
+				g.drawString(str, pullButton.getWidth() - stringWidth, fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
 			}
 
 		};

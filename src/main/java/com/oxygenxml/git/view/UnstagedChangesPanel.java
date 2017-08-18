@@ -93,21 +93,21 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		this.gitAccess = gitAccess;
 		this.translator = translator;
 		tree.addTreeExpansionListener(new TreeExpansionListener() {
-			
+
 			public void treeExpanded(TreeExpansionEvent event) {
 				TreePath path = event.getPath();
 				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 				MyNode node = (MyNode) path.getLastPathComponent();
-				if(!model.isLeaf(node)){
+				if (!model.isLeaf(node)) {
 					int children = node.getChildCount();
-					if(children == 1){
+					if (children == 1) {
 						MyNode child = (MyNode) node.getChildAt(0);
 						TreePath childPath = new TreePath(child.getPath());
 						tree.expandPath(childPath);
 					}
 				}
 			}
-			
+
 			public void treeCollapsed(TreeExpansionEvent event) {
 			}
 		});
@@ -149,8 +149,8 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 		CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
 		tree.setCellRenderer(treeRenderer);
-		
-		//restore last expanded paths after refresh
+
+		// restore last expanded paths after refresh
 		TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
 	}
 
@@ -164,8 +164,6 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		}
 		return expandedPaths;
 	}
-
-
 
 	public void updateFlatView(List<FileStatus> unstagedFiles) {
 		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
@@ -351,8 +349,8 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 			String absolutePath = fileTableModel.getFileLocation(convertedRow);
 
-			MyNode nodeBuilder = TreeFormatter
-					.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(), absolutePath);
+			MyNode nodeBuilder = TreeFormatter.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(),
+					absolutePath);
 			MyNode[] selectedPath = new MyNode[absolutePath.split("/").length + 1];
 			int count = selectedPath.length;
 			while (nodeBuilder != null) {
@@ -511,44 +509,45 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				int column = filesTable.columnAtPoint(point);
 				if (column != 1 || row == -1) {
 					filesTable.clearSelection();
-				}
-				if (column == 1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-					StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-					int convertedRow = filesTable.convertRowIndexToModel(row);
-					FileStatus file = model.getUnstageFile(convertedRow);
-					DiffPresenter diff = new DiffPresenter(file, stageController);
-					diff.showDiff();
-				}
-				if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && row != -1) {
-					boolean inSelection = false;
-					List<FileStatus> files = new ArrayList<FileStatus>();
-					int clickedRow = filesTable.rowAtPoint(e.getPoint());
-					int[] selectedRows = filesTable.getSelectedRows();
-					for (int i = 0; i < selectedRows.length; i++) {
-						if (clickedRow == selectedRows[i]) {
-							inSelection = true;
-							break;
-						}
-
+				} else {
+					if (column == 1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+						StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+						int convertedRow = filesTable.convertRowIndexToModel(row);
+						FileStatus file = model.getUnstageFile(convertedRow);
+						DiffPresenter diff = new DiffPresenter(file, stageController);
+						diff.showDiff();
 					}
-
-					if (clickedRow >= 0 && clickedRow < filesTable.getRowCount()) {
-						if (!inSelection) {
-							filesTable.setRowSelectionInterval(clickedRow, clickedRow);
-							selectedRows = filesTable.getSelectedRows();
-						}
-						contextualMenu.removeAll();
-
+					if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && row != -1) {
+						boolean inSelection = false;
+						List<FileStatus> files = new ArrayList<FileStatus>();
+						int clickedRow = filesTable.rowAtPoint(e.getPoint());
+						int[] selectedRows = filesTable.getSelectedRows();
 						for (int i = 0; i < selectedRows.length; i++) {
-							int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
-							StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-							FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
-							files.add(file);
+							if (clickedRow == selectedRows[i]) {
+								inSelection = true;
+								break;
+							}
+
 						}
-						addContextualMenu(files);
-						contextualMenu.show(filesTable, e.getX(), e.getY());
-					} else {
-						filesTable.clearSelection();
+
+						if (clickedRow >= 0 && clickedRow < filesTable.getRowCount()) {
+							if (!inSelection) {
+								filesTable.setRowSelectionInterval(clickedRow, clickedRow);
+								selectedRows = filesTable.getSelectedRows();
+							}
+							contextualMenu.removeAll();
+
+							for (int i = 0; i < selectedRows.length; i++) {
+								int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
+								StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+								FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
+								files.add(file);
+							}
+							addContextualMenu(files);
+							contextualMenu.show(filesTable, e.getX(), e.getY());
+						} else {
+							filesTable.clearSelection();
+						}
 					}
 				}
 				toggleSelectedButton();
@@ -799,13 +798,12 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		} catch (NoRepositorySelected e1) {
 			resolveConflict.setEnabled(false);
 		}
-		
-		
+
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
 		toggleSelectedButton();
-		
+
 	}
 
 	private void toggleSelectedButton() {
