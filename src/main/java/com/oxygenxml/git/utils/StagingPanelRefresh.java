@@ -45,17 +45,9 @@ public class StagingPanelRefresh implements Refresh {
 	private void execute() {
 		String projectView = EditorVariables.expandEditorVariables("${pd}", null);
 		if (!projectView.equals(lastSelectedProjectView)) {
-			checkForGitRepositories(projectView);
+			checkForGitRepositoriesUpAndDownFrom(projectView);
 			lastSelectedProjectView = new String(projectView);
-			if (FileHelper.isGitRepository(projectView)) {
-				WorkingCopySelectionPanel workingCopySelectionPanel = stagingPanel.getWorkingCopySelectionPanel();
-				if (!OptionsManager.getInstance().getRepositoryEntries().contains(projectView)) {
-					OptionsManager.getInstance().addRepository(projectView);
-					workingCopySelectionPanel.getWorkingCopySelector().addItem(projectView);
-				}
-				OptionsManager.getInstance().saveSelectedRepository(projectView);
-				workingCopySelectionPanel.getWorkingCopySelector().setSelectedItem(projectView);
-			}
+			addGitFolder(projectView);
 		}
 		try {
 			if (gitAccess.getRepository() != null) {
@@ -70,19 +62,16 @@ public class StagingPanelRefresh implements Refresh {
 		}
 	}
 
-	private void checkForGitRepositories(String projectView) {
+	private void checkForGitRepositoriesUpAndDownFrom(String projectView) {
 		String projectName = EditorVariables.expandEditorVariables("${pn}", null);
-		projectName += ".xpr";
+		String projectXprName = projectName + ".xpr";
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 		SAXParser saxParser;
 		try {
 			saxParser = saxParserFactory.newSAXParser();
 			XPRHandler handler = new XPRHandler();
-			String xprPath = FileHelper.findXPR(projectView);
-			if (!"".equals(xprPath)) {
-				File xmlFile = new File(projectView, projectName);
-				saxParser.parse(xmlFile, handler);
-			}
+			File xmlFile = new File(projectView, projectXprName);
+			saxParser.parse(xmlFile, handler);
 			List<String> pathsFromProjectView = handler.getPaths();
 			for (String path : pathsFromProjectView) {
 				File file = null;
@@ -93,12 +82,7 @@ public class StagingPanelRefresh implements Refresh {
 				} 
 				if(file != null){
 					String pathToCheck = file.getAbsolutePath();
-					if (FileHelper.isGitRepository(pathToCheck)) {
-						if (!OptionsManager.getInstance().getRepositoryEntries().contains(pathToCheck)) {
-							OptionsManager.getInstance().addRepository(file.getAbsolutePath());
-							stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(pathToCheck);
-						}
-					}
+					addGitFolder(pathToCheck);
 				}
 			}
 
@@ -108,6 +92,23 @@ public class StagingPanelRefresh implements Refresh {
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
+		}
+		File file = new File(projectView);
+		while(file.getParent() != null){
+			String projectParent = file.getParent();
+			addGitFolder(projectParent);
+			file = file.getParentFile();
+		}
+	}
+
+	private void addGitFolder(String pathToCheck) {
+		if (FileHelper.isGitRepository(pathToCheck)) {
+			if (!OptionsManager.getInstance().getRepositoryEntries().contains(pathToCheck)) {
+				OptionsManager.getInstance().addRepository(pathToCheck);
+				stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(pathToCheck);
+			}
+			OptionsManager.getInstance().saveSelectedRepository(pathToCheck);
+			stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(pathToCheck);
 		}
 	}
 
