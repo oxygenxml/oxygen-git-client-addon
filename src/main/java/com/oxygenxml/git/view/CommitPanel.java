@@ -198,17 +198,21 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		// Create an undo action and add it to the text component
 		commitMessage.getActionMap().put("Undo", new AbstractAction("Undo") {
 			public void actionPerformed(ActionEvent evt) {
-				undoManager.undo();
+				if (undoManager.canUndo()) {
+					undoManager.undo();
+				}
 			}
 		});
-		
+
 		// Bind the undo action to ctl-Z
 		commitMessage.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
 
 		// Create a redo action and add it to the text component
 		commitMessage.getActionMap().put("Redo", new AbstractAction("Redo") {
 			public void actionPerformed(ActionEvent evt) {
-				undoManager.redo();
+				if (undoManager.canRedo()) {
+					undoManager.redo();
+				}
 			}
 		});
 
@@ -348,7 +352,10 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 					AbstractDocument.DefaultDocumentEvent event = (AbstractDocument.DefaultDocumentEvent) edit;
 					int start = event.getOffset();
 					int len = event.getLength();
-					String text = event.getDocument().getText(start, len);
+					String text = "";
+					if ("addition".equals(edit.getPresentationName())) {
+						text = event.getDocument().getText(start, len);
+					}
 					boolean isNeedStart = false;
 					if (current == null) {
 						isNeedStart = true;
@@ -356,7 +363,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 						isNeedStart = true;
 					} else if (lastEditName == null || !lastEditName.equals(edit.getPresentationName())) {
 						isNeedStart = true;
-					} else if(Math.abs(lastOffset - start) > 1){
+					} else if (Math.abs(lastOffset - start) > 1) {
 						isNeedStart = true;
 					}
 
