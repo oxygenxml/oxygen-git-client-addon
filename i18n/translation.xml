@@ -268,4 +268,103 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
+    <key value="Contextual_Menu_Open_In_Compare">
+        <comment>The text displayed for the "Open in compare editor" contextual menu item </comment>
+        <val lang="en_US">Open in compare editor</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Open">
+        <comment>The text displayed for the "Open" contextual menu item</comment>
+        <val lang="en_US">Open</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Unstage">
+        <comment>The text displayed for the "Unstage" contextual menu item</comment>
+        <val lang="en_US">Unstage</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Stage">
+        <comment>The text displayed for the "Stage" contextual menu item</comment>
+        <val lang="en_US">Stage</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Resolve_Conflict">
+        <comment>The text displayed for the "Resolve_Conflict" contextual menu item</comment>
+        <val lang="en_US">Resolve Conflict</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Discard">
+        <comment>The text displayed for the "Discard" contextual menu item</comment>
+        <val lang="en_US">Discard</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Discard_Confirmation_Message">
+        <comment>The text displayed when you click on the "Discard" contextual menu item</comment>
+        <val lang="en_US">Are you sure you want to discard your changes ?</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Resolve_Using_Mine">
+        <comment>The text displayed for the "Resolve Using "Mine" " contextual menu item</comment>
+        <val lang="en_US">Resolve Using "Mine"</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Resolve_Using_Theirs">
+        <comment>The text displayed for the "Resolve Using "Theirs" " contextual menu item</comment>
+        <val lang="en_US">Resolve Using "Theirs"</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Restart_Merge">
+        <comment>The text displayed for the "Restart Merge " contextual menu item</comment>
+        <val lang="en_US">Restart Merge</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Contextual_Menu_Mark_Resolved">
+        <comment>The text displayed for the "Mark Resolved" contextual menu item</comment>
+        <val lang="en_US">Mark Resolved</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
 </translation>

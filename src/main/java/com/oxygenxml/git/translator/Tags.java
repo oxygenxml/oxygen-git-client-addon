@@ -31,4 +31,16 @@ public class Tags {
 	public static final String PULL_SUCCESSFUL = "Pull_Successful";
 	public static final String PULL_IN_PROGRESS = "Pull_In_Progress";
 	public static final String PULL_WITH_CONFLICTS = "Pull_With_Conflicts";
+	
+	public static final String CONTEXTUAL_MENU_OPEN_IN_COMPARE = "Contextual_Menu_Open_In_Compare";
+	public static final String CONTEXTUAL_MENU_OPEN = "Contextual_Menu_Open";
+	public static final String CONTEXTUAL_MENU_STAGE = "Contextual_Menu_Stage";
+	public static final String CONTEXTUAL_MENU_UNSTAGE = "Contextual_Menu_Unstage";
+	public static final String CONTEXTUAL_MENU_RESOLVE_CONFLICT = "Contextual_Menu_Resolve_Conflict";
+	public static final String CONTEXTUAL_MENU_DISCARD = "Contextual_Menu_Discard";
+	public static final String CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE = "Contextual_Menu_Discard_Confirmation_Message";
+	public static final String CONTEXTUAL_MENU_RESOLVE_USING_MINE = "Contextual_Menu_Resolve_Using_Mine";
+	public static final String CONTEXTUAL_MENU_RESOLVE_USING_THEIRS = "Contextual_Menu_Resolve_Using_Theirs";
+	public static final String CONTEXTUAL_MENU_RESTART_MERGE = "Contextual_Menu_Restart_Merge";
+	public static final String CONTEXTUAL_MENU_MARK_RESOLVED = "Contextual_Menu_Mark_Resolved";
 }

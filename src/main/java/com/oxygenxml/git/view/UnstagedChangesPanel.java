@@ -566,7 +566,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		final FileStatus fileStatus = files.get(0);
 
 		// Show Diff menu
-		JMenuItem showDiff = new JMenuItem("Open in compare editor");
+		JMenuItem showDiff = new JMenuItem();
 		showDiff.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -574,9 +574,10 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				diff.showDiff();
 			}
 		});
+		showDiff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
 
 		// Open menu
-		JMenuItem open = new JMenuItem("Open");
+		JMenuItem open = new JMenuItem();
 		open.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -588,6 +589,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			}
 
 		});
+		open.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN));
 
 		JMenuItem changeState = new JMenuItem();
 		changeState.addActionListener(new ActionListener() {
@@ -604,12 +606,12 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			}
 		});
 		if (staging) {
-			changeState.setText("Unstage");
+			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_UNSTAGE));
 		} else {
-			changeState.setText("Stage");
+			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_STAGE));
 		}
 
-		JMenuItem resolveMine = new JMenuItem("Resolve Using \"Mine\"");
+		JMenuItem resolveMine = new JMenuItem();
 		resolveMine.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -620,6 +622,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				stageController.stateChanged(changeEvent);
 			}
 		});
+		resolveMine.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE));
+		
+		
 		JMenuItem resolveTheirs = new JMenuItem("Resolve Using \"Theirs\"");
 		resolveTheirs.addActionListener(new ActionListener() {
 
@@ -634,8 +639,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				stageController.stateChanged(changeEvent);
 			}
 		});
+		resolveTheirs.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS));
 
-		JMenuItem diff = new JMenuItem("Open in compare editor");
+		JMenuItem diff = new JMenuItem();
 		diff.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -643,8 +649,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				diff.showDiff();
 			}
 		});
+		diff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
 
-		JMenuItem markResolved = new JMenuItem("Mark Resoved");
+		JMenuItem markResolved = new JMenuItem();
 		markResolved.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -654,8 +661,9 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				stageController.stateChanged(changeEvent);
 			}
 		});
+		markResolved.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED));
 
-		JMenuItem restartMerge = new JMenuItem("Restart Merge");
+		JMenuItem restartMerge = new JMenuItem();
 		restartMerge.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -665,8 +673,10 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				stageController.stateChanged(changeEvent);
 			}
 		});
+		restartMerge.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE));
 
-		JMenu resolveConflict = new JMenu("Resolve Conflcit");
+		JMenu resolveConflict = new JMenu();
+		resolveConflict.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
 		resolveConflict.add(diff);
 		resolveConflict.addSeparator();
 		resolveConflict.add(resolveMine);
@@ -676,14 +686,15 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		resolveConflict.add(restartMerge);
 
 		// Discard Menu
-		JMenuItem discard = new JMenuItem("Discard");
+		JMenuItem discard = new JMenuItem();
 		discard.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				String[] options = new String[] { "   Yes   ", "   No   " };
 				int[] optonsId = new int[] { 0, 1 };
-				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-						.showConfirmDialog("Discard", "Are you sure you want to discard your changes ?", options, optonsId);
+				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD),
+						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
 				if (response == 0) {
 					for (FileStatus file : files) {
 						if (file.getChangeType() == GitChangeType.ADD) {
@@ -703,6 +714,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				}
 			}
 		});
+		discard.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD));
 		contextualMenu.add(showDiff);
 		contextualMenu.add(open);
 		contextualMenu.add(changeState);
@@ -838,16 +850,16 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 					FileStatus file = model.getFileByPath(path);
 					if (GitChangeType.ADD == file.getChangeType()) {
 						icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-						toolTip = "File Created";
+						toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
 					} else if (GitChangeType.MODIFY == file.getChangeType()) {
 						icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
-						toolTip = "File Modified";
+						toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
 					} else if (GitChangeType.DELETE == file.getChangeType()) {
 						icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
-						toolTip = "File Deleted";
+						toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
 					} else if (GitChangeType.CONFLICT == file.getChangeType()) {
 						icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
-						toolTip = "Conflict";
+						toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
 					}
 
 				}
