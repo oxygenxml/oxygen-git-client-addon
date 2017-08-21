@@ -12,7 +12,7 @@ public class XPRHandler extends DefaultHandler {
 	/**
 	 * List to hold the file paths from the xpr file
 	 */
-	private List<String> filePaths;
+	private List<String> filePaths = new ArrayList<String>();
 
 
 	@Override
@@ -21,9 +21,6 @@ public class XPRHandler extends DefaultHandler {
 			// create a new file path
 			String filePath = attributes.getValue("path");
 			if (filePath != null && (!"".equals(filePath))) {
-				if (filePaths == null) {
-					filePaths = new ArrayList<String>();
-				}
 				filePaths.add(filePath);
 			}
 		}

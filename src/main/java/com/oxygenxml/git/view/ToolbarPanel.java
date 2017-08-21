@@ -168,11 +168,12 @@ public class ToolbarPanel extends JPanel {
 				if (pushesAhead > 0) {
 					str = "" + pushesAhead;
 				}
-				g.setFont(g.getFont().deriveFont(Font.BOLD));
+				g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
+				
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
 				int stringWidth = fontMetrics.stringWidth(str);
 				int stringHeight = fontMetrics.getHeight();
-				g.setColor(Color.WHITE);
+				g.setColor(new Color(255, 255, 255, 100));
 				g.fillRect(pushButton.getWidth() - stringWidth - 1,  pushButton.getHeight() - stringHeight, stringWidth, stringHeight);
 				g.setColor(Color.BLACK);
 				g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
@@ -220,11 +221,11 @@ public class ToolbarPanel extends JPanel {
 				if (pullsBehind > 0) {
 					str = "" + pullsBehind;
 				}
-				g.setFont(g.getFont().deriveFont(Font.BOLD));
+				g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
 				int stringWidth = fontMetrics.stringWidth(str);
 				int stringHeight = fontMetrics.getHeight();
-				g.setColor(new Color(255, 255, 255, 130));
+				g.setColor(new Color(255, 255, 255, 100));
 				g.fillRect(pullButton.getWidth() - stringWidth, 0, stringWidth, stringHeight);
 				g.setColor(Color.BLACK);
 				g.drawString(str, pullButton.getWidth() - stringWidth, fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
