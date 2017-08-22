@@ -37,8 +37,8 @@ public class StagingPanelRefresh implements Refresh {
 		this.gitAccess = GitAccess.getInstance();
 	}
 
-	public void call(JComponent stagingPanel) {
-		this.stagingPanel = (StagingPanel) stagingPanel;
+	public void call() {
+		
 		execute();
 	}
 
@@ -55,7 +55,6 @@ public class StagingPanelRefresh implements Refresh {
 				updateFiles(StageState.STAGED);
 				updateCounter(Command.PULL);
 				updateCounter(Command.PUSH);
-				stagingPanel.getToolbarPanel().updateInformationLabel();
 			}
 		} catch (NoRepositorySelected e1) {
 			return;
@@ -130,6 +129,7 @@ public class StagingPanelRefresh implements Refresh {
 					int counter = get();
 					if (command == Command.PULL) {
 						stagingPanel.getToolbarPanel().setPullsBehind(counter);
+						stagingPanel.getToolbarPanel().updateInformationLabel();
 					} else {
 						stagingPanel.getToolbarPanel().setPushesAhead(counter);
 					}
@@ -193,6 +193,10 @@ public class StagingPanelRefresh implements Refresh {
 			}
 
 		}.execute();
+	}
+
+	public void setPanel(JComponent stagingPanel) {
+		this.stagingPanel = (StagingPanel) stagingPanel;
 	}
 
 }

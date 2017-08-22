@@ -16,6 +16,7 @@ import com.oxygenxml.git.utils.StagingPanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
@@ -36,10 +37,12 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
+		PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
 		Translator translator = new TranslatorExtensionImpl();
 		final Refresh refresh = new StagingPanelRefresh();
 		final StagingPanel stagingPanel = new StagingPanel(translator, refresh);
-		refresh.call(stagingPanel);
+		refresh.setPanel(stagingPanel);
+		refresh.call();
 
 		
 
@@ -83,7 +86,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 			@Override
 			public void windowActivated(WindowEvent e) {
 				super.windowActivated(e);
-				refresh.call(stagingPanel);
+				refresh.call();
 			}
 		});
 

@@ -30,6 +30,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Refresh;
+import com.oxygenxml.git.utils.StagingPanelRefresh;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -89,7 +90,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	private Translator translator;
 
 	/**
-	 * Panel refresh
+	 * Main panel refresh
 	 */
 	private Refresh refresh;
 
@@ -138,7 +139,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
 		commitPanel = new CommitPanel(gitAccess, observer, translator);
-		toolbarPanel = new ToolbarPanel(pushPullController, translator);
+		toolbarPanel = new ToolbarPanel(pushPullController, translator, refresh);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -195,7 +196,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			public void focusGained(final FocusEvent e) {
 				// The focus is somewhere in he view.
 				if (!inTheView) {
-					refresh.call(StagingPanel.this);
+					refresh.call();
 				}
 
 				inTheView = true;
@@ -220,7 +221,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		Action action = new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				refresh.call(StagingPanel.this);
+				refresh.call();
 			}
 		};
 		this.getActionMap().put("Refresh", action);

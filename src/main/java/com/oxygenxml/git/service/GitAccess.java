@@ -634,12 +634,14 @@ public class GitAccess {
 	 */
 	public void removeAll(List<FileStatus> files) {
 		try {
-			ResetCommand reset = git.reset();
-			for (FileStatus file : files) {
-				reset.addPath(file.getFileLocation());
+			if (files.size() > 0) {
+				ResetCommand reset = git.reset();
+				for (FileStatus file : files) {
+					reset.addPath(file.getFileLocation());
 
+				}
+				reset.call();
 			}
-			reset.call();
 		} catch (NoFilepatternException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
@@ -876,7 +878,6 @@ public class GitAccess {
 					numberOfCommits = RevWalkUtils.count(walk, localCommit, baseCommit);
 				}
 				if (base == null) {
-					System.out.println("base is null");
 					Iterable<RevCommit> results = git.log().call();
 					for (RevCommit revCommit : results) {
 						numberOfCommits++;
@@ -1024,6 +1025,22 @@ public class GitAccess {
 			}
 		}
 		return "";
+	}
+
+	public void setBranch(String selectedBranch) {
+		try {
+			git.checkout().setName(selectedBranch).call();
+		} catch (RefAlreadyExistsException e) {
+			e.printStackTrace();
+		} catch (RefNotFoundException e) {
+			e.printStackTrace();
+		} catch (InvalidRefNameException e) {
+			e.printStackTrace();
+		} catch (CheckoutConflictException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

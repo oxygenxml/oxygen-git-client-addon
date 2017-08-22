@@ -16,6 +16,7 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -24,11 +25,14 @@ import javax.swing.SwingConstants;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
@@ -67,6 +71,11 @@ public class ToolbarPanel extends JPanel {
 	private ToolbarButton pullButton;
 
 	/**
+	 * Button for selecting a branch
+	 */
+	private ToolbarButton branchSelectButton;
+
+	/**
 	 * Counter for how many pushes the local copy is ahead of the base
 	 */
 	private int pushesAhead = 0;
@@ -81,10 +90,16 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private Translator translator;
 
-	public ToolbarPanel(PushPullController pushPullController, Translator translator) {
+	/**
+	 * Main panel refresh
+	 */
+	private Refresh refresh;
+
+	public ToolbarPanel(PushPullController pushPullController, Translator translator, Refresh refresh) {
 		this.pushPullController = pushPullController;
 		this.statusInformationLabel = new JLabel();
 		this.translator = translator;
+		this.refresh = refresh;
 	}
 
 	public JButton getPushButton() {
@@ -123,6 +138,7 @@ public class ToolbarPanel extends JPanel {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		addPushAndPullButtons();
+		addBranchSelectButton();
 		this.add(gitToolbar, gbc);
 
 		gbc.insets = new Insets(0, 0, 0, 0);
@@ -134,7 +150,29 @@ public class ToolbarPanel extends JPanel {
 		gbc.weighty = 0;
 		updateInformationLabel();
 		this.add(statusInformationLabel, gbc);
+
 		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.TOOLBAR_PANEL_HEIGHT));
+	}
+
+	private void addBranchSelectButton() {
+		Action branchSelectAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (GitAccess.getInstance().getRepository() != null) {
+						new BranchSelectDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								"Select Branch", true, refresh);
+					}
+				} catch (NoRepositorySelected e1) {
+				}
+			}
+		};
+		branchSelectButton = new ToolbarButton(branchSelectAction, false);
+		branchSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_BRANCH_ICON));
+		branchSelectButton.setToolTipText("Change Branch");
+		setCustomWidthOn(branchSelectButton);
+
+		gitToolbar.add(branchSelectButton);
 	}
 
 	public void updateInformationLabel() {
@@ -165,9 +203,14 @@ public class ToolbarPanel extends JPanel {
 		Action pushAction = new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				pushPullController.execute(Command.PUSH);
-				if (pullsBehind == 0) {
-					pushesAhead = 0;
+				try {
+					if (GitAccess.getInstance().getRepository() != null) {
+						pushPullController.execute(Command.PUSH);
+						if (pullsBehind == 0) {
+							pushesAhead = 0;
+						}
+					}
+				} catch (NoRepositorySelected e1) {
 				}
 			}
 
@@ -182,7 +225,7 @@ public class ToolbarPanel extends JPanel {
 				if (pushesAhead > 0) {
 					str = "" + pushesAhead;
 				}
-				if(pushesAhead > 9){
+				if (pushesAhead > 9) {
 					pushButton.setHorizontalAlignment(SwingConstants.LEFT);
 				} else {
 					pushButton.setHorizontalAlignment(SwingConstants.CENTER);
@@ -207,8 +250,13 @@ public class ToolbarPanel extends JPanel {
 		Action pullAction = new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				pushPullController.execute(Command.PULL);
-				pullsBehind = 0;
+				try {
+					if (GitAccess.getInstance().getRepository() != null)
+						pushPullController.execute(Command.PULL);
+					pullsBehind = 0;
+				} catch (NoRepositorySelected e1) {
+
+				}
 			}
 		};
 		pullButton = new ToolbarButton(pullAction, false) {
@@ -220,7 +268,7 @@ public class ToolbarPanel extends JPanel {
 				if (pullsBehind > 0) {
 					str = "" + pullsBehind;
 				}
-				if(pullsBehind > 9){
+				if (pullsBehind > 9) {
 					pullButton.setHorizontalAlignment(SwingConstants.LEFT);
 				} else {
 					pullButton.setHorizontalAlignment(SwingConstants.CENTER);
@@ -257,6 +305,5 @@ public class ToolbarPanel extends JPanel {
 		button.setPreferredSize(d);
 		button.setMinimumSize(d);
 		button.setMaximumSize(d);
-		button.setHorizontalAlignment(SwingConstants.LEFT);
 	}
 }
