@@ -1,5 +1,7 @@
 # Git support plugin
 
+This add-on is compatible with Oxygen XML Editor (or XML Author) version 17.0 or higher. 
+
 You can install the add-on by using Oxygen's add-ons support. In Oxygen, go to Help->Install new add-ons... and paste:
 
 https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml
