@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>4.4.1.201607150455-r</version>
+			<version>4.8.0.201706111038-r</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
@@ -49,6 +49,13 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- JGIT uses slf4j. We will distribute an implementation to avoid class loader issues. -->
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-log4j12</artifactId>
+		    <version>1.7.25</version>
+		</dependency>
+		
 		
 	</dependencies>
 
