@@ -421,4 +421,31 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
+    <key value="Branch_Selection_Dialog_Title">
+        <comment>The text displayed in the title for the dialog that appears when you select your current branch</comment>
+        <val lang="en_US">Select Branch</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Branch_Selection_Label">
+        <comment>The text displayed in the dialog that appears near the combo box</comment>
+        <val lang="en_US">Branch: </val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Change_Branch_Button_Tooltip">
+        <comment>The tooltip for the push button</comment>
+        <val lang="en_US">Change Branch</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
 </translation>

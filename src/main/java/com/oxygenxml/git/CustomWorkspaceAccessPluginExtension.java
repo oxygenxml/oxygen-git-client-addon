@@ -37,7 +37,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
-		PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
+		//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
 		Translator translator = new TranslatorExtensionImpl();
 		final Refresh refresh = new StagingPanelRefresh();
 		final StagingPanel stagingPanel = new StagingPanel(translator, refresh);

@@ -18,6 +18,8 @@ import org.eclipse.jgit.lib.Ref;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Refresh;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -27,10 +29,13 @@ public class BranchSelectDialog extends OKCancelDialog {
 	private JComboBox<String> branchesList;
 
 	private Refresh refresh;
+	
+	private Translator translator;
 
-	public BranchSelectDialog(JFrame parentFrame, String title, boolean modal, Refresh refresh) {
+	public BranchSelectDialog(JFrame parentFrame, String title, boolean modal, Refresh refresh, Translator translator) {
 		super(parentFrame, title, modal);
 		this.refresh = refresh;
+		this.translator = translator;
 
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -75,7 +80,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		JLabel label = new JLabel("Branch: ");
+		JLabel label = new JLabel(translator.getTraslation(Tags.BRANCH_SELECTION_LABEL));
 		getContentPane().add(label, gbc);
 	}
 

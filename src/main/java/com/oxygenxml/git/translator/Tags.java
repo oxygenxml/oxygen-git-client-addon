@@ -243,4 +243,19 @@ public class Tags {
 	 * the diff for a conflict file and you don't modify anithing
 	 */
 	public static final String TITLE_CHECK_IF_CONFLICT_RESOLVED = "Title_Check_If_Conflict_Resolved";
+	
+	/**
+	 * The text displayed in the title for the dialog that appears when you select your current branch
+	 */
+	public static final String BRANCH_SELECTION_DIALOG_TITLE = "Branch_Selection_Dialog_Title";
+
+	/**
+	 * The text displayed in the dialog that appears near the combo box
+	 */
+	public static final String BRANCH_SELECTION_LABEL = "Branch_Selection_Label";
+	
+	/**
+	 * The tooltip for the push button
+	 */
+	public static final String CHANGE_BRANCH_BUTTON_TOOLTIP = "Change_Branch_Button_Tooltip";
 }

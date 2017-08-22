@@ -9,12 +9,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -161,7 +158,7 @@ public class ToolbarPanel extends JPanel {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
 						new BranchSelectDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								"Select Branch", true, refresh);
+								translator.getTraslation(Tags.BRANCH_SELECTION_DIALOG_TITLE), true, refresh, translator);
 					}
 				} catch (NoRepositorySelected e1) {
 				}
@@ -169,7 +166,7 @@ public class ToolbarPanel extends JPanel {
 		};
 		branchSelectButton = new ToolbarButton(branchSelectAction, false);
 		branchSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_BRANCH_ICON));
-		branchSelectButton.setToolTipText("Change Branch");
+		branchSelectButton.setToolTipText(translator.getTraslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
 		setCustomWidthOn(branchSelectButton);
 
 		gitToolbar.add(branchSelectButton);
