@@ -116,6 +116,11 @@ public class StagingPanelRefresh implements Refresh {
 			protected Integer doInBackground() throws Exception {
 				if (command == Command.PULL) {
 					GitAccess.getInstance().fetch();
+					if(GitAccess.getInstance().isUnavailable()){
+						stagingPanel.getCommitPanel().setStatus("unavailable");
+					} else {
+						stagingPanel.getCommitPanel().setStatus("availbale");
+					}
 					return GitAccess.getInstance().getPullsBehind();
 				} else {
 					return GitAccess.getInstance().getPushesAhead();

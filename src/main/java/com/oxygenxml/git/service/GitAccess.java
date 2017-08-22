@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.input.SwappedDataInputStream;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
@@ -105,6 +106,8 @@ public class GitAccess {
 
 	private Translator translator = new TranslatorExtensionImpl();
 
+	private boolean unavailable;
+
 	private GitAccess() {
 
 	}
@@ -173,18 +176,28 @@ public class GitAccess {
 		 */
 		if (git != null) {
 			try {
-
+				List<FileStatus> submodules = new ArrayList<FileStatus>();
 				Status status = git.status().call();
+				for (String string : git.submoduleStatus().call().keySet()) {
+					submodules.add(new FileStatus(GitChangeType.SUBMODULE, string));
+				}
 				for (String string : status.getUntracked()) {
-					unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
+					if (!submodules.contains(string)) {
+						unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
+					}
 				}
 				for (String string : status.getModified()) {
-					unstagedFiles.add(new FileStatus(GitChangeType.MODIFY, string));
+					if (!submodules.contains(string)) {
+						unstagedFiles.add(new FileStatus(GitChangeType.MODIFY, string));
+					}
 				}
 				for (String string : status.getMissing()) {
-					unstagedFiles.add(new FileStatus(GitChangeType.DELETE, string));
+					if (!submodules.contains(string)) {
+						unstagedFiles.add(new FileStatus(GitChangeType.DELETE, string));
+					}
 				}
 				unstagedFiles.addAll(getConflictingFiles());
+				unstagedFiles.addAll(submodules);
 
 			} catch (NoWorkTreeException e1) {
 				e1.printStackTrace();
@@ -950,18 +963,18 @@ public class GitAccess {
 	 */
 	public void fetch() {
 		try {
-
 			git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
-
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
 		} catch (TransportException e) {
-			e.printStackTrace();
+			unavailable = true;
+			return;
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
 		}
+		unavailable = false;
 	}
 
 	public void updateWithRemoteFile(String filePath) {
@@ -1027,9 +1040,13 @@ public class GitAccess {
 		return "";
 	}
 
-	public void setBranch(String selectedBranch) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException {
-			git.checkout().setName(selectedBranch).call();
-		
+	public void setBranch(String selectedBranch) throws RefAlreadyExistsException, RefNotFoundException,
+			InvalidRefNameException, CheckoutConflictException, GitAPIException {
+		git.checkout().setName(selectedBranch).call();
+
 	}
 
+	public boolean isUnavailable() {
+		return unavailable;
+	}
 }

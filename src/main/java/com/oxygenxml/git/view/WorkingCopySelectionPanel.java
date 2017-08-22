@@ -158,7 +158,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						// calculate the how many pushes ahead and pulls behind the current
 						// selected working copy is from the base. It is on thread because
 						// the fetch command takes a longer time
-						SwingUtilities.invokeLater(new Runnable() {
+						new Thread(new Runnable() {
 
 							public void run() {
 								gitAccess.fetch();
@@ -166,7 +166,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
 								parent.getToolbarPanel().updateInformationLabel();
 							}
-						});
+						}).start();
 					} catch (RepositoryNotFoundException ex) {
 						// We are here if the selected Repository doesn't exists anymore
 						OptionsManager.getInstance().removeSelectedRepository(path);

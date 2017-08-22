@@ -8,6 +8,9 @@ package com.oxygenxml.git.service.entities;
  */
 public enum GitChangeType {
 	
+	/**This file is a submodule*/
+	SUBMODULE,
+	
 	/** File is in conflict */
 	CONFLICT,
 

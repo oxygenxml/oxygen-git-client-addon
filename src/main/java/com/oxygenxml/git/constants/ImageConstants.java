@@ -20,4 +20,5 @@ public class ImageConstants {
 	public static final String TREE_VIEW = "/images/GitTreeMode16.png";
 	public static final String TABLE_VIEW = "/images/GitFlatMode16.png";
 	public static final String FOLDER_TREE_ICON = "/images/FolderTree10.png";
+	public static final String VALIDATION_ERROR = "/images/ValidationError12.png";
 }

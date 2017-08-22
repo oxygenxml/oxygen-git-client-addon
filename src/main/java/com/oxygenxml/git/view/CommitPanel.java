@@ -34,6 +34,7 @@ import javax.swing.undo.UndoableEdit;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -46,6 +47,8 @@ import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
+
+import ro.sync.ui.Icons;
 
 public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subject<PushPullEvent> {
 
@@ -285,26 +288,34 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	public void setStatus(final String message) {
-		new Thread(new Runnable() {
-
-			public void run() {
-				try {
-					synchronized (this) {
-						messagesActive++;
-						statusLabel.setText(message);
-					}
-					TimeUnit.SECONDS.sleep(3);
-					synchronized (this) {
-						messagesActive--;
-						if (messagesActive == 0) {
-							statusLabel.setText("");
+		if("unavailable".equals(message)){
+			statusLabel.setText("Cannot reach host");
+			statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
+		}else if("availbale".equals(message)){
+			statusLabel.setText(null);
+			statusLabel.setIcon(null);
+		}else {
+			new Thread(new Runnable() {
+				
+				public void run() {
+					try {
+						synchronized (this) {
+							messagesActive++;
+							statusLabel.setText(message);
 						}
+						TimeUnit.SECONDS.sleep(3);
+						synchronized (this) {
+							messagesActive--;
+							if (messagesActive == 0) {
+								statusLabel.setText("");
+							}
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
-			}
-		}).start();
+			}).start();
+		}
 	}
 
 	public void clearCommitMessage() {
