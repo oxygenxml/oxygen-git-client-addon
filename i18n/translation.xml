@@ -440,8 +440,17 @@
     </key>
     
     <key value="Change_Branch_Button_Tooltip">
-        <comment>The tooltip for the push button</comment>
+        <comment>The tooltip for the change branch button</comment>
         <val lang="en_US">Change Branch</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Change_Branch_Error_Message">
+        <comment>The the message displayed when branch selection fails</comment>
+        <val lang="en_US">Please commit your changes before you switch branches.</val>
         <val lang="de_DE">de_DE translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>

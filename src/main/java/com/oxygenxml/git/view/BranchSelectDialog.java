@@ -14,6 +14,11 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.Ref;
 
 import com.oxygenxml.git.constants.Constants;
@@ -27,6 +32,8 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 public class BranchSelectDialog extends OKCancelDialog {
 
 	private JComboBox<String> branchesList;
+	
+	private JLabel information;
 
 	private Refresh refresh;
 	
@@ -41,13 +48,28 @@ public class BranchSelectDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		addLabel(gbc);
 		addBranchSelectCombo(gbc);
+		addInformationLabel(gbc);
 
 		this.pack();
 		this.setLocationRelativeTo(parentFrame);
-		this.setMinimumSize(new Dimension(300, 120));
+		this.setMinimumSize(new Dimension(320, 140));
 		this.setResizable(true);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+	}
+
+	private void addInformationLabel(GridBagConstraints gbc) {
+		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
+				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
+		gbc.gridwidth = 2;
+		information = new JLabel();
+		getContentPane().add(information, gbc);
 	}
 
 	private void addBranchSelectCombo(GridBagConstraints gbc) {
@@ -59,7 +81,6 @@ public class BranchSelectDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-
 		branchesList = new JComboBox<String>();
 		for (Ref branch : GitAccess.getInstance().getBrachList()) {
 			String name = branch.getName();
@@ -86,7 +107,20 @@ public class BranchSelectDialog extends OKCancelDialog {
 
 	protected void doOK() {
 		String selectedBranch = (String) branchesList.getSelectedItem();
-		GitAccess.getInstance().setBranch(selectedBranch);
+		try {
+			GitAccess.getInstance().setBranch(selectedBranch);
+		} catch (RefAlreadyExistsException e) {
+			e.printStackTrace();
+		} catch (RefNotFoundException e) {
+			e.printStackTrace();
+		} catch (InvalidRefNameException e) {
+			e.printStackTrace();
+		} catch (CheckoutConflictException e) {
+			information.setText(translator.getTraslation(Tags.CHANGE_BRANCH_ERROR_MESSAGE));
+			return;
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
 		refresh.call();
 		dispose();
 	}

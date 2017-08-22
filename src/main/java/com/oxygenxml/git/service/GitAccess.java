@@ -1027,20 +1027,9 @@ public class GitAccess {
 		return "";
 	}
 
-	public void setBranch(String selectedBranch) {
-		try {
+	public void setBranch(String selectedBranch) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException {
 			git.checkout().setName(selectedBranch).call();
-		} catch (RefAlreadyExistsException e) {
-			e.printStackTrace();
-		} catch (RefNotFoundException e) {
-			e.printStackTrace();
-		} catch (InvalidRefNameException e) {
-			e.printStackTrace();
-		} catch (CheckoutConflictException e) {
-			e.printStackTrace();
-		} catch (GitAPIException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 }

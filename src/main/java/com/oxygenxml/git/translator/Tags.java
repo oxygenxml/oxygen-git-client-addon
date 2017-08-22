@@ -255,7 +255,12 @@ public class Tags {
 	public static final String BRANCH_SELECTION_LABEL = "Branch_Selection_Label";
 	
 	/**
-	 * The tooltip for the push button
+	 * The tooltip for the change branch button
 	 */
 	public static final String CHANGE_BRANCH_BUTTON_TOOLTIP = "Change_Branch_Button_Tooltip";
+	
+	/**
+	 * The the message displayed when branch selection fails
+	 */
+	public static final String CHANGE_BRANCH_ERROR_MESSAGE = "Change_Branch_Error_Message";
 }
