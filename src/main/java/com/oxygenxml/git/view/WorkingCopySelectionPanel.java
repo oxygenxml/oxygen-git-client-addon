@@ -43,12 +43,41 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
+/**
+ * Panel containing a label with showing the current working copy, a combo box
+ * used for selected other working copies and a browse button to add new working
+ * copies
+ * 
+ * @author Beniamin Savu
+ *
+ */
 public class WorkingCopySelectionPanel extends JPanel {
 
+	/**
+	 * Label for the working copy selector, informing the user on what working
+	 * copy he is
+	 */
 	private JLabel label;
+
+	/**
+	 * A combo box for the user to change his working copy
+	 */
 	private JComboBox<String> workingCopySelector;
+
+	/**
+	 * A file system browser for the user to add new git repositories to the combo
+	 * box
+	 */
 	private JButton browseButton;
+
+	/**
+	 * The git API, containing the commands
+	 */
 	private GitAccess gitAccess;
+
+	/**
+	 * The translator for the messages that are displayed in this panel
+	 */
 	private Translator translator;
 
 	public WorkingCopySelectionPanel(GitAccess gitAccess, Translator translator) {
@@ -60,18 +89,14 @@ public class WorkingCopySelectionPanel extends JPanel {
 		return workingCopySelector;
 	}
 
-	public void setWorkingCopySelector(JComboBox<String> workingCopySelector) {
-		this.workingCopySelector = workingCopySelector;
-	}
-
 	public JButton getBrowseButton() {
 		return browseButton;
 	}
 
-	public void setBrowseButton(JButton browseButton) {
-		this.browseButton = browseButton;
-	}
-
+	/**
+	 * Creates the components and adds listeners to some of them. Basically this
+	 * creates the panel
+	 */
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
 
@@ -87,6 +112,10 @@ public class WorkingCopySelectionPanel extends JPanel {
 		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.WORKINGCOPY_PANEL_HEIGHT));
 	}
 
+	/**
+	 * Adds a state change listener on the working copy selector combo box. When a
+	 * new working copy is selected this listener will execute
+	 */
 	private void addWorkingCopySelectorListener() {
 
 		final StagingPanel parent = (StagingPanel) this.getParent();
@@ -114,7 +143,10 @@ public class WorkingCopySelectionPanel extends JPanel {
 						parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
 						parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
 
+						// whan a new working copy is selected clear the commit text area
 						parent.getCommitPanel().clearCommitMessage();
+
+						// checks what buttons to keep active and what buttons to deactivate
 						if (gitAccess.getStagedFile().size() > 0) {
 							parent.getCommitPanel().getCommitButton().setEnabled(true);
 						} else {
@@ -123,6 +155,9 @@ public class WorkingCopySelectionPanel extends JPanel {
 						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
 						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
 
+						// calculate the how many pushes ahead and pulls behind the current
+						// selected working copy is from the base. It is on thread because
+						// the fetch command takes a longer time
 						SwingUtilities.invokeLater(new Runnable() {
 
 							public void run() {
@@ -133,6 +168,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 							}
 						});
 					} catch (RepositoryNotFoundException ex) {
+						// We are here if the selected Repository doesn't exists anymore
 						OptionsManager.getInstance().removeSelectedRepository(path);
 						if (workingCopySelector.getItemCount() > 0) {
 							workingCopySelector.setSelectedItem(0);
@@ -149,12 +185,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 						// clear content from TREE_VIEW
 						parent.getUnstagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
 						parent.getStagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
+
 						SwingUtilities.invokeLater(new Runnable() {
-
 							public void run() {
-								JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-										"The selected repository was not found");
-
+								PluginWorkspaceProvider.getPluginWorkspace()
+										.showInformationMessage(translator.getTraslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
 							}
 						});
 					} catch (IOException e1) {
@@ -168,6 +203,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 	}
 
+	/**
+	 * Adds a file chooser on a button
+	 * 
+	 * @param button
+	 *          - the button to add a file chooser on
+	 */
 	private void addFileChooserOn(JButton button) {
 		button.addActionListener(new ActionListener() {
 
@@ -183,8 +224,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 						}
 						workingCopySelector.setSelectedItem(directoryPath);
 					} else {
-						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								"Please select a git directory");
+						PluginWorkspaceProvider.getPluginWorkspace()
+								.showInformationMessage(translator.getTraslation(Tags.WORKINGCOPY_NOT_GIT_DIRECTORY));
 					}
 				}
 			}
@@ -192,6 +233,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 	}
 
+	/**
+	 * Adds the label to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -206,6 +253,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 	}
 
+	/**
+	 * Adds the combo box to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addWorkingCopySelector(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -222,6 +275,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 		int height = (int) workingCopySelector.getPreferredSize().getHeight();
 		workingCopySelector.setMinimumSize(new Dimension(10, height));
 
+		// Populates the combo box with the previously added repositories. Basically
+		// restore the state before the application was closed
 		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryEntry);
 		}
@@ -230,11 +285,17 @@ public class WorkingCopySelectionPanel extends JPanel {
 			if (!repositoryPath.equals("")) {
 				workingCopySelector.setSelectedItem(repositoryPath);
 				gitAccess.setRepository(repositoryPath);
-			} else if(workingCopySelector.getItemCount() > 0){
+			} else if (workingCopySelector.getItemCount() > 0) {
 				workingCopySelector.setSelectedIndex(0);
 				gitAccess.setRepository((String) workingCopySelector.getSelectedItem());
 			}
 		} catch (IOException e) {
+			// We are here if between the starts of the application the last selected
+			// repository has been deleted
+
+			// Removes that repository from the combo box and the option file. If the
+			// combo box still has some repositories, it will select the one
+			// positioned on index 0, otherwise it will clear everything.
 			OptionsManager.getInstance().removeSelectedRepository(repositoryPath);
 			workingCopySelector.removeItem(repositoryPath);
 			if (workingCopySelector.getItemCount() > 0) {
@@ -251,14 +312,19 @@ public class WorkingCopySelectionPanel extends JPanel {
 				gitAccess.close();
 			}
 			OptionsManager.getInstance().saveSelectedRepository("");
-
-			JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-					"Last selected repository not found. It may have been deleted");
+			PluginWorkspaceProvider.getPluginWorkspace()
+					.showInformationMessage(translator.getTraslation(Tags.WORKINGCOPY_LAST_SELECTED_REPOSITORY_DELETED));
 		}
-
 		this.add(workingCopySelector, gbc);
 	}
 
+	/**
+	 * Adds the browse button to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 * 
+	 */
 	private void addBrowseButton(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -278,6 +344,14 @@ public class WorkingCopySelectionPanel extends JPanel {
 		this.add(browswtoolbar, gbc);
 	}
 
+	/**
+	 * 
+	 * Renderer for the combo box. Displaying only the folder project. Not the
+	 * full path to the folder project
+	 * 
+	 * @author Beniamin Savu
+	 *
+	 */
 	class ComboboxToolTipRenderer extends DefaultListCellRenderer {
 
 		@Override
@@ -285,7 +359,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 				boolean cellHasFocus) {
 
 			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			
+
 			if (value != null) {
 				comp.setToolTipText((String) value);
 				String path = (String) value;

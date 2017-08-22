@@ -2,7 +2,12 @@ package com.oxygenxml.git.view;
 
 import java.util.Comparator;
 
-
+/**
+ * Comparator for the tree node
+ * 
+ * @author Beniamin Savu
+ *
+ */
 public class NodeTreeComparator implements Comparator<MyNode> {
 
 	public int compare(MyNode a, MyNode b) {

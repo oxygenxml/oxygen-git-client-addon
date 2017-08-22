@@ -18,6 +18,7 @@ import javax.swing.table.TableModel;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.StageController;
 
 public class TableRendererEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
@@ -101,9 +102,9 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 				editedButton.addActionListener(new ActionListener() {
 					
 					public void actionPerformed(ActionEvent e) {
-						DiffPresenter diff = new DiffPresenter(file, stageController);
+						/*DiffPresenter diff = new DiffPresenter(file, stageController, translator);
 						diff.showDiff();
-						fireEditingStopped();
+						fireEditingStopped();*/
 					}
 				});
 			} else {

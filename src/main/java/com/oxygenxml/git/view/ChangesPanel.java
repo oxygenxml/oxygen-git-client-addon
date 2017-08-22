@@ -64,56 +64,96 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
-public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent> {
+/**
+ * This is the staging or the unstaging area, depending on the forStaging
+ * variable (<code>true</code> if this model presents un-staged resources that
+ * will be staged. <code>false</code> if this model presents staged resources
+ * that will be unstaged).
+ * 
+ * @author Beniamin Savu
+ *
+ */
+public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
+	/**
+	 * constant that specifies the flat view
+	 */
 	private static final int FLAT_VIEW = 1;
+
+	/**
+	 * constant that specifies the tree view
+	 */
 	private static final int TREE_VIEW = 2;
 
-	private JPopupMenu contextualMenu = new JPopupMenu();
-	private JButton stageAllButton;
-	private JButton stageSelectedButton;
+	/**
+	 * Contextual menu when you right click on a file. Works for both views
+	 */
+	private CustomContextualMenu contextualMenu;
+
+	/**
+	 * Button that stages/unstages all files
+	 */
+	private JButton changeAllButton;
+
+	/**
+	 * Button that stages/unstages selected files
+	 */
+	private JButton changeSelectedButton;
+
+	/**
+	 * Button that switches the view form flat to tree or from tree to flat
+	 */
 	private JButton switchViewButton;
+
+	/**
+	 * Used to present either the tree view or the flat view
+	 */
 	private JScrollPane scrollPane;
+
+	/**
+	 * Table that stores the files
+	 */
 	private JTable filesTable;
+
+	/**
+	 * Tree that stores the files
+	 */
 	private JTree tree = new JTree(new StagingResourcesTreeModel(null, false, null));
+
+	/**
+	 * Used to fire an event
+	 */
 	private StageController stageController;
 
-	private boolean staging;
+	/**
+	 * Shows wheter or not this is the staging panel or the unstaging panel
+	 */
+	private boolean forStaging;
 
+	/**
+	 * The git API, containg the commands
+	 */
 	private GitAccess gitAccess;
 
-	private int currentView = 0;
+	/**
+	 * The active view in the scroll pane
+	 */
+	private int currentView;
 
+	/**
+	 * The translator for the messages that are displayed in this panel
+	 */
 	private Translator translator;
 
-	public UnstagedChangesPanel(GitAccess gitAccess, StageController observer, boolean staging, Translator translator) {
-		this.staging = staging;
+	public ChangesPanel(GitAccess gitAccess, StageController observer, boolean forStaging, Translator translator) {
+		this.contextualMenu = new CustomContextualMenu(translator, observer, gitAccess);
+		this.forStaging = forStaging;
 		this.stageController = observer;
 		this.stageController.addTree(this.tree);
 		this.gitAccess = gitAccess;
 		this.translator = translator;
-		tree.addTreeExpansionListener(new TreeExpansionListener() {
-
-			public void treeExpanded(TreeExpansionEvent event) {
-				TreePath path = event.getPath();
-				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-				MyNode node = (MyNode) path.getLastPathComponent();
-				if (!model.isLeaf(node)) {
-					int children = node.getChildCount();
-					if (children == 1) {
-						MyNode child = (MyNode) node.getChildAt(0);
-						TreePath childPath = new TreePath(child.getPath());
-						tree.expandPath(childPath);
-					}
-				}
-			}
-
-			public void treeCollapsed(TreeExpansionEvent event) {
-			}
-		});
 		ToolTipManager.sharedInstance().registerComponent(tree);
-
-		currentView = FLAT_VIEW;
+		this.currentView = FLAT_VIEW;
 
 	}
 
@@ -121,6 +161,17 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		return filesTable;
 	}
 
+	/**
+	 * Generate a tree structure with the given files. The given path is used to
+	 * get the root for the structure that will be generated from the files. An
+	 * example will be: if path = "C:/test/repository" the root node name will be
+	 * "repository", then the files will pe placed under this root
+	 * 
+	 * @param path
+	 *          - the root
+	 * @param filesStatus
+	 *          - files to generate the nodes
+	 */
 	public void createTreeView(String path, List<FileStatus> filesStatus) {
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 		MyNode rootNode = (MyNode) treeModel.getRoot();
@@ -134,7 +185,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 			MyNode root = new MyNode(rootFolder);
 			// Create the tree model and add the root node to it
 			treeModel = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(filesStatus));
-			if (staging) {
+			if (forStaging) {
 				treeModel = new StagingResourcesTreeModel(root, true, new ArrayList<FileStatus>(filesStatus));
 			}
 
@@ -154,6 +205,11 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
 	}
 
+	/**
+	 * Returns all the current expanded paths
+	 * 
+	 * @return - the current expanded paths
+	 */
 	private Enumeration<TreePath> getLastExpandedPaths() {
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 		MyNode rootNode = (MyNode) treeModel.getRoot();
@@ -165,17 +221,32 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		return expandedPaths;
 	}
 
+	/**
+	 * Updates the flat view with the given files. Also if in the view some of the
+	 * files were selected, the selection is preserved.
+	 * 
+	 * @param unstagedFiles
+	 *          - the new files to update the flat view
+	 */
 	public void updateFlatView(List<FileStatus> unstagedFiles) {
 		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
-		List<FileStatus> selectedFiles = getSelectedFilesBeforeModelChange();
+		List<FileStatus> selectedFiles = getTableSelectedFiles();
 		modelTable.setFilesStatus(unstagedFiles);
 
-		restoreSelectionAfterModelChange(modelTable, selectedFiles);
+		restoreTableSelection(modelTable, selectedFiles);
 		selectedFiles.clear();
 	}
 
-	private void restoreSelectionAfterModelChange(StagingResourcesTableModel model, List<FileStatus> s) {
-		for (FileStatus fileStatus : s) {
+	/**
+	 * Restores the last selected files in the table view
+	 * 
+	 * @param model
+	 *          - the table model
+	 * @param previouslySelectedFiles
+	 *          - previously selected files to restore
+	 */
+	private void restoreTableSelection(StagingResourcesTableModel model, List<FileStatus> previouslySelectedFiles) {
+		for (FileStatus fileStatus : previouslySelectedFiles) {
 			int row = model.getRow(fileStatus.getFileLocation());
 			if (row != -1) {
 				filesTable.addRowSelectionInterval(row, row);
@@ -183,7 +254,12 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		}
 	}
 
-	private List<FileStatus> getSelectedFilesBeforeModelChange() {
+	/**
+	 * Return the table selected files
+	 * 
+	 * @return table selected files
+	 */
+	private List<FileStatus> getTableSelectedFiles() {
 		List<FileStatus> selectedFiles = new ArrayList<FileStatus>();
 		int[] selectedRows = null;
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
@@ -197,21 +273,26 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		return selectedFiles;
 	}
 
+	/**
+	 * Creates the components and adds listeners to some of them. Basically this
+	 * creates the panel
+	 */
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		addStageAllButton(gbc);
-		addStageSelectedButton(gbc);
+		addChangeAllButton(gbc);
+		addChangeSelectedButton(gbc);
 		addSwitchViewButton(gbc);
 		addFilesPanel(gbc);
 
 		addSwitchButtonListener();
-		addStageSelectedButtonListener();
-		addStageAllButtonListener();
+		addChangeSelectedButtonListener();
+		addChangeAllButtonListener();
 		addTreeMouseListener();
+		addTreeExpandListener();
 
-		if (!staging) {
+		if (!forStaging) {
 			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 			updateFlatView(unstagedFiles);
 			createTreeView(OptionsManager.getInstance().getSelectedRepository(), unstagedFiles);
@@ -224,6 +305,39 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.STAGING_PANEl_HEIGHT));
 	}
 
+	/**
+	 * Adds an expand listener to the tree: When the user expands a node the node
+	 * will expand as long as it has only one child.
+	 */
+	private void addTreeExpandListener() {
+		tree.addTreeExpansionListener(new TreeExpansionListener() {
+
+			public void treeExpanded(TreeExpansionEvent event) {
+				TreePath path = event.getPath();
+				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+				MyNode node = (MyNode) path.getLastPathComponent();
+				if (!model.isLeaf(node)) {
+					int children = node.getChildCount();
+					if (children == 1) {
+						MyNode child = (MyNode) node.getChildAt(0);
+						TreePath childPath = new TreePath(child.getPath());
+						tree.expandPath(childPath);
+					}
+				}
+			}
+
+			public void treeCollapsed(TreeExpansionEvent event) {
+			}
+		});
+	}
+
+	/**
+	 * Adds a mouse listener to the tree: When the user right clicks on a node, a
+	 * contextual menu will pop. Also when the user double clicks on a leaf node
+	 * an action will occur depending on it's file status. If the status is MODIFY
+	 * the open in compare editor will be executed, if the status is Add the file
+	 * will be opened in the Oxygen
+	 */
 	private void addTreeMouseListener() {
 		tree.addMouseListener(new MouseAdapter() {
 
@@ -232,14 +346,16 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
 				if (treePath != null) {
 					String stringPath = TreeFormatter.getStringPath(treePath);
+					// double click event
 					if (model.isLeaf(TreeFormatter.getTreeNodeFromString(model, stringPath))) {
 						if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
 							FileStatus file = model.getFileByPath(stringPath);
-							DiffPresenter diff = new DiffPresenter(file, stageController);
+							DiffPresenter diff = new DiffPresenter(file, stageController, translator);
 							diff.showDiff();
 						}
 
 					}
+					// right click event
 					if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
 						boolean treeInSelection = false;
 						TreePath[] paths = tree.getSelectionPaths();
@@ -257,7 +373,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 						}
 						List<String> selectedPaths = TreeFormatter.getStringComonAncestor(tree);
 						contextualMenu.removeAll();
-						addContextualMenu(model.getFilesByPaths(selectedPaths));
+						contextualMenu.createContextualMenuFor(model.getFilesByPaths(selectedPaths), forStaging);
 						contextualMenu.show(tree, e.getX(), e.getY());
 					}
 				} else {
@@ -270,8 +386,12 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 	}
 
-	private void addStageAllButtonListener() {
-		stageAllButton.addActionListener(new ActionListener() {
+	/**
+	 * Adds a listener on the changeAll button: When clicked all the files will go
+	 * in the staging or unstaging area, depending on the forStaging variable
+	 */
+	private void addChangeAllButtonListener() {
+		changeAllButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
@@ -280,8 +400,13 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		});
 	}
 
-	private void addStageSelectedButtonListener() {
-		stageSelectedButton.addActionListener(new ActionListener() {
+	/**
+	 * Adds a listener on the changeSelected button: When clicked all the files
+	 * selected will go in the staging or unstaging area, depending on the
+	 * forStaging variable
+	 */
+	private void addChangeSelectedButtonListener() {
+		changeSelectedButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
@@ -297,12 +422,17 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 					fileTreeModel.switchFilesStageState(selectedFiles);
 
 				}
-				stageSelectedButton.setEnabled(false);
+				changeSelectedButton.setEnabled(false);
 			}
 
 		});
 	}
 
+	/**
+	 * Adds a listener on the switchView button: When clicked the current view
+	 * will change. Also the selected files will be selected in the new view (the
+	 * selection is preserved between the view changes)
+	 */
 	private void addSwitchButtonListener() {
 
 		switchViewButton.addActionListener(new ActionListener() {
@@ -340,6 +470,13 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		});
 	}
 
+	/**
+	 * Calculates the treePaths from the table selected files and return the
+	 * treePaths
+	 * 
+	 * @return TreePath array containing the the files selected from the table
+	 *         view
+	 */
 	private TreePath[] restoreSelectedPathsFromTableToTree() {
 		int[] selectedRows = filesTable.getSelectedRows();
 		StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
@@ -364,7 +501,13 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		return selectedPaths;
 	}
 
-	private void addStageAllButton(GridBagConstraints gbc) {
+	/**
+	 * Adds the changeAll button to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
+	private void addChangeAllButton(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -373,15 +516,21 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		if (staging) {
-			stageAllButton = new JButton(translator.getTraslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
+		if (forStaging) {
+			changeAllButton = new JButton(translator.getTraslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
 		} else {
-			stageAllButton = new JButton(translator.getTraslation(Tags.STAGE_ALL_BUTTON_TEXT));
+			changeAllButton = new JButton(translator.getTraslation(Tags.STAGE_ALL_BUTTON_TEXT));
 		}
-		this.add(stageAllButton, gbc);
+		this.add(changeAllButton, gbc);
 	}
 
-	private void addStageSelectedButton(GridBagConstraints gbc) {
+	/**
+	 * Adds the changeSelected button to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
+	private void addChangeSelectedButton(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -390,16 +539,22 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-		if (staging) {
-			stageSelectedButton = new JButton(translator.getTraslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
+		if (forStaging) {
+			changeSelectedButton = new JButton(translator.getTraslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
 		} else {
-			stageSelectedButton = new JButton(translator.getTraslation(Tags.STAGE_SELECTED_BUTTON_TEXT));
+			changeSelectedButton = new JButton(translator.getTraslation(Tags.STAGE_SELECTED_BUTTON_TEXT));
 		}
-		stageSelectedButton.setEnabled(false);
-		this.add(stageSelectedButton, gbc);
+		changeSelectedButton.setEnabled(false);
+		this.add(changeSelectedButton, gbc);
 
 	}
 
+	/**
+	 * Adds the switchView button the the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addSwitchViewButton(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -420,6 +575,12 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 	}
 
+	/**
+	 * Adds the scollPane to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addFilesPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -431,7 +592,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		gbc.weighty = 1;
 		gbc.gridwidth = 3;
 		StagingResourcesTableModel fileTableModel = new StagingResourcesTableModel(false);
-		if (staging) {
+		if (forStaging) {
 			fileTableModel = new StagingResourcesTableModel(true);
 		}
 		stageController.registerObserver(fileTableModel);
@@ -443,64 +604,22 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 		// set the checkbox column width
 		filesTable.getColumnModel().getColumn(0).setMaxWidth(30);
+
 		// set the button column width
 		// filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(100);
-
 		// TableRendererEditor.install(filesTable, stageController);
 
-		filesTable.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
+		filesTable.getColumnModel().getColumn(0).setCellRenderer(new TableIconCellRenderer());
+		filesTable.getColumnModel().getColumn(1).setCellRenderer(new TableFileLocationTextCellRenderer());
 
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-					int row, int column) {
-				ImageIcon icon = null;
-				String toolTip = "";
-				if (GitChangeType.ADD == value) {
-					icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-					toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
-				} else if (GitChangeType.MODIFY == value) {
-					icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
-					toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
-				} else if (GitChangeType.DELETE == value) {
-					icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
-					toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
-				} else if (GitChangeType.CONFLICT == value) {
-					icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
-					toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
-				}
-				JLabel iconLabel = new JLabel(icon);
-				iconLabel.setToolTipText(toolTip);
-				return iconLabel;
-			}
-		});
-
-		filesTable.getColumnModel().getColumn(1).setCellRenderer(new TableCellRenderer() {
-
-			public Component getTableCellRendererComponent(final JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-
-				String toRender = (String) value;
-				String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
-				if (!fileName.equals(toRender)) {
-					toRender = toRender.replace("/" + fileName, "");
-					toRender = fileName + " - " + toRender;
-				}
-				JTextField label = new JTextField(toRender);
-				label.setBorder(null);
-
-				if (isSelected) {
-					label.setForeground(table.getSelectionForeground());
-					label.setBackground(table.getSelectionBackground());
-
-				} else {
-					label.setForeground(table.getForeground());
-
-				}
-				label.setToolTipText(toRender);
-				return label;
-
-			}
-		});
-
+		// Adds mouse listener on the table: When the user right clicks on an item
+		// in the table, a
+		// contextual menu will pop. Also when the user double clicks on a leaf node
+		// an action will occur depending on it's file status. If the status is
+		// MODIFY,
+		// the open in compare editor will be executed, if the status is Add the
+		// file
+		// will be opened in the Oxygen.
 		filesTable.addMouseListener(new MouseAdapter() {
 
 			public void mousePressed(MouseEvent e) {
@@ -514,7 +633,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 						StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 						int convertedRow = filesTable.convertRowIndexToModel(row);
 						FileStatus file = model.getUnstageFile(convertedRow);
-						DiffPresenter diff = new DiffPresenter(file, stageController);
+						DiffPresenter diff = new DiffPresenter(file, stageController, translator);
 						diff.showDiff();
 					}
 					if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && row != -1) {
@@ -543,7 +662,7 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 								FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
 								files.add(file);
 							}
-							addContextualMenu(files);
+							contextualMenu.createContextualMenuFor(files, forStaging);
 							contextualMenu.show(filesTable, e.getX(), e.getY());
 						} else {
 							filesTable.clearSelection();
@@ -562,275 +681,35 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 		this.add(scrollPane, gbc);
 	}
 
-	private void addContextualMenu(final List<FileStatus> files) {
-		final FileStatus fileStatus = files.get(0);
-
-		// Show Diff menu
-		JMenuItem showDiff = new JMenuItem();
-		showDiff.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				DiffPresenter diff = new DiffPresenter(fileStatus, stageController);
-				diff.showDiff();
-			}
-		});
-		showDiff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
-
-		// Open menu
-		JMenuItem open = new JMenuItem();
-		open.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				DiffPresenter diff = new DiffPresenter(fileStatus, stageController);
-				for (FileStatus file : files) {
-					diff.setFile(file);
-					diff.openFile();
-				}
-			}
-
-		});
-		open.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN));
-
-		JMenuItem changeState = new JMenuItem();
-		changeState.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
-				if (staging) {
-					oldState = StageState.STAGED;
-					newState = StageState.UNSTAGED;
-				}
-				List<FileStatus> resolveUsingMineFiles = new ArrayList<FileStatus>(files);
-				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, resolveUsingMineFiles);
-				stageController.stateChanged(changeEvent);
-			}
-		});
-		if (staging) {
-			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_UNSTAGE));
-		} else {
-			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_STAGE));
-		}
-
-		JMenuItem resolveMine = new JMenuItem();
-		resolveMine.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.DISCARD;
-				List<FileStatus> resolveUsingMineFiles = new ArrayList<FileStatus>(files);
-				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, resolveUsingMineFiles);
-				stageController.stateChanged(changeEvent);
-			}
-		});
-		resolveMine.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE));
-		
-		
-		JMenuItem resolveTheirs = new JMenuItem("Resolve Using \"Theirs\"");
-		resolveTheirs.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				for (FileStatus file : files) {
-					gitAccess.remove(file);
-					gitAccess.updateWithRemoteFile(file.getFileLocation());
-				}
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
-				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
-				stageController.stateChanged(changeEvent);
-			}
-		});
-		resolveTheirs.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS));
-
-		JMenuItem diff = new JMenuItem();
-		diff.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				DiffPresenter diff = new DiffPresenter(fileStatus, stageController);
-				diff.showDiff();
-			}
-		});
-		diff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
-
-		JMenuItem markResolved = new JMenuItem();
-		markResolved.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
-				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
-				stageController.stateChanged(changeEvent);
-			}
-		});
-		markResolved.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED));
-
-		JMenuItem restartMerge = new JMenuItem();
-		restartMerge.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				gitAccess.restartMerge();
-				ChangeEvent changeEvent = new ChangeEvent(StageState.UNDEFINED, StageState.UNDEFINED,
-						new ArrayList<FileStatus>());
-				stageController.stateChanged(changeEvent);
-			}
-		});
-		restartMerge.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE));
-
-		JMenu resolveConflict = new JMenu();
-		resolveConflict.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
-		resolveConflict.add(diff);
-		resolveConflict.addSeparator();
-		resolveConflict.add(resolveMine);
-		resolveConflict.add(resolveTheirs);
-		resolveConflict.add(markResolved);
-		resolveConflict.addSeparator();
-		resolveConflict.add(restartMerge);
-
-		// Discard Menu
-		JMenuItem discard = new JMenuItem();
-		discard.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				String[] options = new String[] { "   Yes   ", "   No   " };
-				int[] optonsId = new int[] { 0, 1 };
-				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD),
-						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
-				if (response == 0) {
-					for (FileStatus file : files) {
-						if (file.getChangeType() == GitChangeType.ADD) {
-							try {
-								FileUtils.forceDelete(
-										new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
-						}
-					}
-
-					StageState oldState = StageState.UNDEFINED;
-					StageState newState = StageState.DISCARD;
-					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
-					stageController.stateChanged(changeEvent);
-				}
-			}
-		});
-		discard.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD));
-		contextualMenu.add(showDiff);
-		contextualMenu.add(open);
-		contextualMenu.add(changeState);
-		contextualMenu.add(resolveConflict);
-		contextualMenu.add(discard);
-
-		boolean sameChangeType = true;
-		boolean containsConflicts = false;
-		if (files.size() > 1) {
-			GitChangeType gitChangeType = files.get(0).getChangeType();
-			for (FileStatus file : files) {
-				if (gitChangeType != file.getChangeType()) {
-					sameChangeType = false;
-				}
-				if (GitChangeType.CONFLICT == file.getChangeType()) {
-					containsConflicts = true;
-				}
-			}
-			showDiff.setEnabled(false);
-			diff.setEnabled(false);
-		} else {
-			showDiff.setEnabled(true);
-			diff.setEnabled(true);
-		}
-		if (files.size() > 1 && containsConflicts && !sameChangeType) {
-			showDiff.setEnabled(false);
-			open.setEnabled(true);
-			changeState.setEnabled(false);
-			resolveConflict.setEnabled(true);
-			diff.setEnabled(false);
-			resolveMine.setEnabled(false);
-			resolveTheirs.setEnabled(false);
-			restartMerge.setEnabled(true);
-			markResolved.setEnabled(false);
-			discard.setEnabled(false);
-		} else {
-			if (fileStatus.getChangeType() == GitChangeType.ADD && sameChangeType) {
-				showDiff.setEnabled(false);
-				open.setEnabled(true);
-				changeState.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				diff.setEnabled(false);
-				resolveMine.setEnabled(false);
-				resolveTheirs.setEnabled(false);
-				restartMerge.setEnabled(true);
-				markResolved.setEnabled(false);
-				discard.setEnabled(true);
-			} else if (fileStatus.getChangeType() == GitChangeType.DELETE && sameChangeType) {
-				showDiff.setEnabled(false);
-				open.setEnabled(false);
-				changeState.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				resolveMine.setEnabled(false);
-				resolveTheirs.setEnabled(false);
-				restartMerge.setEnabled(true);
-				markResolved.setEnabled(false);
-				discard.setEnabled(true);
-			} else if (fileStatus.getChangeType() == GitChangeType.MODIFY && sameChangeType) {
-				open.setEnabled(true);
-				changeState.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				resolveMine.setEnabled(false);
-				resolveTheirs.setEnabled(false);
-				restartMerge.setEnabled(true);
-				markResolved.setEnabled(false);
-				discard.setEnabled(true);
-			} else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
-				open.setEnabled(true);
-				changeState.setEnabled(false);
-				resolveConflict.setEnabled(true);
-				resolveMine.setEnabled(true);
-				resolveTheirs.setEnabled(true);
-				restartMerge.setEnabled(true);
-				markResolved.setEnabled(true);
-				discard.setEnabled(false);
-			} else {
-				showDiff.setEnabled(false);
-				open.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				resolveMine.setEnabled(false);
-				resolveTheirs.setEnabled(false);
-				restartMerge.setEnabled(false);
-				markResolved.setEnabled(false);
-				discard.setEnabled(true);
-			}
-		}
-		try {
-			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-					|| gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
-				resolveConflict.setEnabled(true);
-				restartMerge.setEnabled(true);
-			}
-		} catch (NoRepositorySelected e1) {
-			resolveConflict.setEnabled(false);
-		}
-
-	}
-
 	public void stateChanged(ChangeEvent changeEvent) {
 		toggleSelectedButton();
 
 	}
 
+	/**
+	 * Enable or disable the changeSelected button depending wheter or not
+	 * something is selected in the current view(flat or tree)
+	 */
 	private void toggleSelectedButton() {
 		if (currentView == FLAT_VIEW && filesTable.getSelectedRowCount() > 0
 				|| currentView == TREE_VIEW && tree.getSelectionCount() > 0) {
-			stageSelectedButton.setEnabled(true);
+			changeSelectedButton.setEnabled(true);
 		} else {
-			stageSelectedButton.setEnabled(false);
+			changeSelectedButton.setEnabled(false);
 		}
 	}
 
 	public JButton getStageSelectedButton() {
-		return stageSelectedButton;
+		return changeSelectedButton;
 	}
 
+	/**
+	 * Renderer for the leafs icon in the tree, based on the git change type file
+	 * status.
+	 * 
+	 * @author Beniamin Savu
+	 *
+	 */
 	class CustomTreeIconRenderer extends DefaultTreeCellRenderer {
 
 		@Override
@@ -870,6 +749,74 @@ public class UnstagedChangesPanel extends JPanel implements Observer<ChangeEvent
 
 			return label;
 		}
+	}
+
+	/**
+	 * Renderer for the text displayed in the table. For exaple the text is
+	 * src/main/java/oxygenxml/App.java, the renderer will display "App.java -
+	 * src/main/java/oxygen".
+	 * 
+	 * @author Beniamin Savu
+	 *
+	 */
+	class TableFileLocationTextCellRenderer implements TableCellRenderer {
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+
+			String toRender = (String) value;
+			String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
+			if (!fileName.equals(toRender)) {
+				toRender = toRender.replace("/" + fileName, "");
+				toRender = fileName + " - " + toRender;
+			}
+			JTextField label = new JTextField(toRender);
+			label.setBorder(null);
+
+			if (isSelected) {
+				label.setForeground(table.getSelectionForeground());
+				label.setBackground(table.getSelectionBackground());
+
+			} else {
+				label.setForeground(table.getForeground());
+
+			}
+			label.setToolTipText(toRender);
+			return label;
+		}
+
+	}
+
+	/**
+	 * Table icon renderer based on the git change file status
+	 * 
+	 * @author Beniamin Savu
+	 *
+	 */
+	class TableIconCellRenderer implements TableCellRenderer {
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			ImageIcon icon = null;
+			String toolTip = "";
+			if (GitChangeType.ADD == value) {
+				icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
+				toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
+			} else if (GitChangeType.MODIFY == value) {
+				icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
+				toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
+			} else if (GitChangeType.DELETE == value) {
+				icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
+				toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
+			} else if (GitChangeType.CONFLICT == value) {
+				icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
+				toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
+			}
+			JLabel iconLabel = new JLabel(icon);
+			iconLabel.setToolTipText(toolTip);
+			return iconLabel;
+		}
+
 	}
 
 }

@@ -13,18 +13,29 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
-public class PullWithConflictsDialog extends OKCancelDialog{
+/**
+ * A dialog that is shown when the pull is successful but has conflicts. It
+ * shows an infromation message and the files that are in conflict
+ * 
+ * @author Beniamin Savu
+ *
+ */
+public class PullWithConflictsDialog extends OKCancelDialog {
 
-	public PullWithConflictsDialog(JFrame frame, String title, boolean modal, Set<String> conflictFiles) {
+	public PullWithConflictsDialog(JFrame frame, String title, boolean modal, Set<String> conflictFiles,
+			Translator translator) {
 		super(frame, title, modal);
-		
-		JLabel label = new JLabel("Pull Successful with conflicts: ");
+
+		JLabel label = new JLabel(translator.getTraslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
 		Border border = label.getBorder();
-		Border margin = new EmptyBorder(0,7,7,0);
+		Border margin = new EmptyBorder(0, 7, 7, 0);
 		label.setBorder(new CompoundBorder(border, margin));
-		
+
 		DefaultListModel<String> model = new DefaultListModel<String>();
 		for (String file : conflictFiles) {
 			model.addElement(file);
@@ -32,8 +43,7 @@ public class PullWithConflictsDialog extends OKCancelDialog{
 		JList<String> filesInConflictList = new JList<String>(model);
 		JScrollPane scollPane = new JScrollPane(filesInConflictList);
 		scollPane.setPreferredSize(new Dimension(300, 100));
-		
-		
+
 		getContentPane().add(label, BorderLayout.NORTH);
 		getContentPane().add(scollPane, BorderLayout.SOUTH);
 		getCancelButton().setVisible(false);

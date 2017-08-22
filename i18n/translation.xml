@@ -125,7 +125,7 @@
     </key>
 
     <key value="Commit_Message_Label">
-        <comment>The massage displayed above the previouslt committed messages combo box</comment>
+        <comment>The massage displayed above the previously committed messages combo box</comment>
         <val lang="en_US">Message for the commit: </val>
         <val lang="de_DE">Commit-Nachricht: </val>
         <val lang="fr_FR">fr_FR_translation</val>
@@ -268,6 +268,15 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
+    <key value="Pull_Successful_Conflicts">
+        <comment>The massage displayed when your pull is successful but has conflicts</comment>
+        <val lang="en_US">Pull Successful with conflicts: </val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
     <key value="Contextual_Menu_Open_In_Compare">
         <comment>The text displayed for the "Open in compare editor" contextual menu item </comment>
         <val lang="en_US">Open in compare editor</val>
@@ -361,6 +370,51 @@
     <key value="Contextual_Menu_Mark_Resolved">
         <comment>The text displayed for the "Mark Resolved" contextual menu item</comment>
         <val lang="en_US">Mark Resolved</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Workingcopy_Repository_Not_Found">
+        <comment>The text displayed when the user selects a repository from the working copy selector and it doesn't exists anymore</comment>
+        <val lang="en_US">The selected repository was not found</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Workingcopy_Not_Git_Directory">
+        <comment>The text displayed when the user selects a non git folder(It doesn't contain the ".git" folder)</comment>
+        <val lang="en_US">Please select a git directory</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Workingcopy_Last_Selected_Repository_Deleted">
+        <comment>The text displayed when the application starts and the last selected repository doesn't exists</comment>
+        <val lang="en_US">Last selected repository not found. It may have been deleted</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Check_If_Conflict_Resolved">
+        <comment>The text displayed after exiting the diff for a conflict file and you don't modify anithing</comment>
+        <val lang="en_US">You haven't modified the local version. Do you want to resolve the conflict by keeping your version?</val>
+        <val lang="de_DE">de_DE translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Title_Check_If_Conflict_Resolved">
+        <comment>The text displayed in the title for the dialog that appears after exiting the diff for a conflict file and you don't modify anithing</comment>
+        <val lang="en_US">Conflict Resolution</val>
         <val lang="de_DE">de_DE translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>

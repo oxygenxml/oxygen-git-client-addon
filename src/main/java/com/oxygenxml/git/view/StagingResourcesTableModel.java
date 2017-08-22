@@ -20,18 +20,39 @@ import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
 
 /**
+ * Custom table model
  * 
+ * @author Beniamin Savu
+ *
  */
 public class StagingResourcesTableModel extends AbstractTableModel
 		implements Subject<ChangeEvent>, Observer<ChangeEvent> {
 
+	/**
+	 * Constant for the index representing the file status
+	 */
 	private static final int FILE_STATUS_COLUMN = 0;
+
+	/**
+	 * Constant for the index representing the file location
+	 */
 	private static final int FILE_LOCATION_COLUMN = 1;
+
+	/**
+	 * Constant for the index representing the button for stage/unstage
+	 */
 	private static final int BUTTON_COLUMN = 2;
 
+	/**
+	 * The internal representation of the model
+	 */
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
+	/**
+	 * Observer to delegate the event
+	 */
 	private Observer<ChangeEvent> observer;
+
 	/**
 	 * <code>true</code> if this model presents un-staged resources that will be
 	 * staged. <code>false</code> if this model presents staged resources that
@@ -100,13 +121,25 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		return temp;
 	}
 
+	/**
+	 * Sets the model with the given files, and also sorts it
+	 * 
+	 * @param filesStatus
+	 *          - the files
+	 */
 	public void setFilesStatus(List<FileStatus> filesStatus) {
 		this.filesStatus = filesStatus;
-		Collections.sort(this.filesStatus, new FileStatusComparator());
 		removeDuplicates();
+		Collections.sort(this.filesStatus, new FileStatusComparator());
 		fireTableDataChanged();
 	}
 
+	/**
+	 * Changet the stage state of the file located at the given row
+	 * 
+	 * @param convertedRow
+	 *          - row for the file to change its state
+	 */
 	public void switchFileStageState(int convertedRow) {
 		if (filesStatus.get(convertedRow).getChangeType() == GitChangeType.CONFLICT) {
 			return;
@@ -126,6 +159,13 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		notifyObservers(changeEvent);
 	}
 
+	/**
+	 * Returns the file from the given row
+	 * 
+	 * @param convertedRow
+	 *          - the row
+	 * @return the file
+	 */
 	public FileStatus getUnstageFile(int convertedRow) {
 		return filesStatus.get(convertedRow);
 	}
@@ -141,6 +181,12 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		observer = null;
 	}
 
+	/**
+	 * Delegate the given event to the observer
+	 * 
+	 * @param changeEvent
+	 *          - the event to delegate
+	 */
 	public void notifyObservers(ChangeEvent changeEvent) {
 		observer.stateChanged(changeEvent);
 	}
@@ -149,6 +195,13 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		return filesStatus;
 	}
 
+	/**
+	 * Change the files stage state from unstaged to staged or from staged to
+	 * unstaged
+	 * 
+	 * @param selectedFiles
+	 *          - the files to change their stage state
+	 */
 	public void switchAllFilesStageState() {
 
 		StageState newSTate = StageState.UNSTAGED;
@@ -190,9 +243,13 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			deleteRows(fileToBeUpdated);
 		}
 		removeDuplicates();
+		Collections.sort(filesStatus, new FileStatusComparator());
 		fireTableDataChanged();
 	}
 
+	/**
+	 * Removes any duplicate entries
+	 */
 	private void removeDuplicates() {
 		Set<FileStatus> set = new HashSet<FileStatus>();
 		set.addAll(this.filesStatus);
@@ -200,11 +257,22 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		this.filesStatus.addAll(set);
 	}
 
+	/**
+	 * Delete the given files from the model
+	 * 
+	 * @param fileToBeUpdated
+	 *          - the files to be deleted from the model
+	 */
 	private void deleteRows(List<FileStatus> fileToBeUpdated) {
 		filesStatus.removeAll(fileToBeUpdated);
-		Collections.sort(filesStatus, new FileStatusComparator());
 	}
 
+	/**
+	 * Insert the given files to the model
+	 * 
+	 * @param fileToBeUpdated
+	 *          - the files to be inserted in the model
+	 */
 	private void insertRows(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
 			if (fileStatus.getChangeType() == GitChangeType.CONFLICT) {
@@ -212,7 +280,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			}
 		}
 		filesStatus.addAll(fileToBeUpdated);
-		Collections.sort(filesStatus, new FileStatusComparator());
+
 	}
 
 	public GitChangeType getChangeType(String fullPath) {
@@ -247,6 +315,13 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		return rows;
 	}
 
+	/**
+	 * Return the row from the given file location
+	 * 
+	 * @param fileLocation
+	 *          - the file location
+	 * @return the row
+	 */
 	public int getRow(String fileLocation) {
 		for (int i = 0; i < filesStatus.size(); i++) {
 			if (filesStatus.get(i).getFileLocation().equals(fileLocation)) {

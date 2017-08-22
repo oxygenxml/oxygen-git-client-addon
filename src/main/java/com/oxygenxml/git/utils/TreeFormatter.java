@@ -195,7 +195,15 @@ public class TreeFormatter {
 		}
 		return selectedFiles;
 	}
-	
+
+	/**
+	 * Expand all the path from the given expandedPaths and the given tree
+	 * 
+	 * @param expandedPaths
+	 *          - the paths to expand
+	 * @param tree
+	 *          - the tree on which the paths has to be expanded
+	 */
 	public static void restoreLastExpandedPaths(Enumeration<TreePath> expandedPaths, JTree tree) {
 		if (expandedPaths != null) {
 			List<TreePath> paths = Collections.list(expandedPaths);

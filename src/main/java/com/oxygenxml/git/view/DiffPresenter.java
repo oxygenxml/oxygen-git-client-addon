@@ -22,6 +22,8 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.StageController;
@@ -35,10 +37,12 @@ public class DiffPresenter {
 	private FileStatus file;
 	private Component diffFrame;
 	private StageController stageController;
+	private Translator translator;
 
-	public DiffPresenter(FileStatus file, StageController stageController) {
+	public DiffPresenter(FileStatus file, StageController stageController, Translator translator) {
 		this.stageController = stageController;
 		this.file = file;
+		this.translator = translator;
 	}
 
 	public void showDiff() {
@@ -114,8 +118,10 @@ public class DiffPresenter {
 
 						String[] options = new String[] { "   Yes   ", "   No   " };
 						int[] optonsId = new int[] { 0, 1 };
-						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-								.showConfirmDialog("Conflict Resolution", "You haven't modified the local version. Do you want to resolve the conflict by keeping your version?", options, optonsId);
+						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+								translator.getTraslation(Tags.TITLE_CHECK_IF_CONFLICT_RESOLVED),
+								translator.getTraslation(Tags.CHECK_IF_CONFLICT_RESOLVED),
+								options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().remove(file);
 							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());

@@ -46,20 +46,51 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
- * Main panel containing all the other panels.
+ * Main panel containing all the other panels. It also creates them
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
+	/**
+	 * The tool bar panel used for the push and pull
+	 */
 	private ToolbarPanel toolbarPanel;
+
+	/**
+	 * The working copy panel used for selecting and adding a working copy
+	 */
 	private WorkingCopySelectionPanel workingCopySelectionPanel;
-	private UnstagedChangesPanel unstagedChangesPanel;
-	private UnstagedChangesPanel stagedChangesPanel;
+
+	/**
+	 * The unsatging area
+	 */
+	private ChangesPanel unstagedChangesPanel;
+
+	/**
+	 * The staging area
+	 */
+	private ChangesPanel stagedChangesPanel;
+
+	/**
+	 * The commit panel
+	 */
 	private CommitPanel commitPanel;
+
+	/**
+	 * List of listeners for this panel
+	 */
 	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
+
+	/**
+	 * The translator for the messages that are displayed in this panel
+	 */
 	private Translator translator;
+
+	/**
+	 * Panel refresh
+	 */
 	private Refresh refresh;
 
 	public StagingPanel(Translator translator, Refresh refresh) {
@@ -72,11 +103,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		return workingCopySelectionPanel;
 	}
 
-	public UnstagedChangesPanel getUnstagedChangesPanel() {
+	public ChangesPanel getUnstagedChangesPanel() {
 		return unstagedChangesPanel;
 	}
 
-	public UnstagedChangesPanel getStagedChangesPanel() {
+	public ChangesPanel getStagedChangesPanel() {
 		return stagedChangesPanel;
 	}
 
@@ -95,8 +126,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		StageController observer = new StageController(gitAccess);
 		PushPullController pushPullController = new PushPullController(gitAccess, translator);
 
-		unstagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, false, translator);
-		stagedChangesPanel = new UnstagedChangesPanel(gitAccess, observer, true, translator);
+		unstagedChangesPanel = new ChangesPanel(gitAccess, observer, false, translator);
+		stagedChangesPanel = new ChangesPanel(gitAccess, observer, true, translator);
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
 		splitPane.add(stagedChangesPanel);
@@ -124,9 +155,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		registerSubject(pushPullController);
 		registerSubject(commitPanel);
-		
+
 		addRefreshF5();
 
+		// Listens on the save event in the Oxygen editor and updates the unstaging
+		// area
 		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 				.addEditorChangeListener(new WSEditorChangeListener() {
 					@Override
@@ -180,11 +213,13 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		});
 	}
 
+	/**
+	 * Adds the refresh call on the F5 keyboard button
+	 */
 	private void addRefreshF5() {
 		Action action = new AbstractAction() {
-			
+
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Refresh on F5");
 				refresh.call(StagingPanel.this);
 			}
 		};
@@ -213,6 +248,14 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		}
 	}
 
+	/**
+	 * Adds the given split pane to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 * @param splitPane
+	 *          - the splitPane to add
+	 */
 	private void addSplitPanel(GridBagConstraints gbc, Component splitPane) {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -224,6 +267,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.add(splitPane, gbc);
 	}
 
+	/**
+	 * Adds the tool bar to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addToolbatPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -235,6 +284,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.add(toolbarPanel, gbc);
 	}
 
+	/**
+	 * Adds the working copy area to the panel
+	 * 
+	 * @param gbc-
+	 *          the constraints used for this component
+	 */
 	private void addWorkingCopySelectionPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -246,6 +301,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.add(workingCopySelectionPanel, gbc);
 	}
 
+	/**
+	 * Adds the commit area to the panel
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addCommitPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.anchor = GridBagConstraints.WEST;

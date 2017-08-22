@@ -32,7 +32,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.LoginDialog;
 import com.oxygenxml.git.view.PullWithConflictsDialog;
-import com.oxygenxml.git.view.StatusMessages;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -187,13 +186,13 @@ public class PushPullController implements Subject<PushPullEvent> {
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					// prompts a dialog showing the files in conflict
 					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-							"Information", true, response.getConflictingFiles());
+							"Information", true, response.getConflictingFiles(), translator);
 
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
 					// ((StandalonePluginWorkspace)
 					// PluginWorkspaceProvider.getPluginWorkspace())
 					// .showInformationMessage("Repository is already up to date");
-					message = StatusMessages.PULL_UP_TO_DATE;
+					message = translator.getTraslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage(translator.getTraslation(Tags.PULL_UP_TO_DATE));

@@ -3,11 +3,12 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.Authenticator;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,9 +43,6 @@ import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffEntry.ChangeType;
-import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
@@ -57,7 +55,6 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.Config;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -76,19 +73,14 @@ import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.util.io.NullOutputStream;
 
-import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.translator.TranslatorExtensionImpl;
-import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.StatusMessages;
 
 import de.schlichtherle.io.FileInputStream;
 
@@ -112,7 +104,7 @@ public class GitAccess {
 	private static GitAccess instance;
 
 	private Translator translator = new TranslatorExtensionImpl();
-	
+
 	private GitAccess() {
 
 	}
@@ -172,13 +164,14 @@ public class GitAccess {
 	 */
 	public List<FileStatus> getUnstagedFiles() {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
-		/*List<FileStatus> stagedFiles = getStagedFile();
-		List<FileStatus> conflictingFiles = getConflictingFiles();
-		List<String> conflictingPaths = new ArrayList<String>();
-		for (FileStatus conflictingFile : conflictingFiles) {
-			conflictingPaths.add(conflictingFile.getFileLocation());
-		}*/
-		if(git !=null){
+		/*
+		 * List<FileStatus> stagedFiles = getStagedFile(); List<FileStatus>
+		 * conflictingFiles = getConflictingFiles(); List<String> conflictingPaths =
+		 * new ArrayList<String>(); for (FileStatus conflictingFile :
+		 * conflictingFiles) {
+		 * conflictingPaths.add(conflictingFile.getFileLocation()); }
+		 */
+		if (git != null) {
 			try {
 
 				Status status = git.status().call();
@@ -201,66 +194,50 @@ public class GitAccess {
 		}
 		return unstagedFiles;
 		// TODO Check if these are the staged files
-//		git.status().call().getChanged()
+		// git.status().call().getChanged()
 		// TODO Check if we can get the unstaged files like this.
-//		git.status().call().getModified()
+		// git.status().call().getModified()
 		// needed only to pass it to the formatter
-		/*OutputStream out = NullOutputStream.INSTANCE;
-
-		DiffFormatter formatter = new DiffFormatter(out);
-		if (git != null) {
-			formatter.setRepository(git.getRepository());
-			try {
-				AbstractTreeIterator commitTreeIterator = getLastCommitTreeIterator(git.getRepository(), Constants.HEAD);
-				if (commitTreeIterator != null) {
-					FileTreeIterator workTreeIterator = new FileTreeIterator(git.getRepository());
-					List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator, workTreeIterator);
-					for (DiffEntry entry : diffEntries) {
-						GitChangeType changeType = null;
-						if (entry.getChangeType() == ChangeType.ADD) {
-							changeType = GitChangeType.ADD;
-						} else if (entry.getChangeType() == ChangeType.MODIFY) {
-							changeType = GitChangeType.MODIFY;
-						} else if (entry.getChangeType() == ChangeType.DELETE) {
-							changeType = GitChangeType.DELETE;
-						}
-
-						String filePath = null;
-						if (entry.getChangeType().equals(ChangeType.ADD) || entry.getChangeType().equals(ChangeType.COPY)
-								|| entry.getChangeType().equals(ChangeType.RENAME)) {
-							filePath = entry.getNewPath();
-						} else {
-							filePath = entry.getOldPath();
-						}
-						
-						FileStatus unstageFile = new FileStatus(changeType, filePath);
-						if (!stagedFiles.contains(unstageFile)) {
-						  if (!conflictingPaths.contains(filePath)) {
-						    unstagedFiles.add(unstageFile);
-						  }
-						}
-					}
-					unstagedFiles.addAll(conflictingFiles);
-				} else {
-					String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
-					List<String> fileNames = FileHelper.search(selectedRepository);
-					for (String fileName : fileNames) {
-						selectedRepository = selectedRepository.replace("\\", "/");
-						int cut = selectedRepository.substring(selectedRepository.lastIndexOf("/") + 1).length();
-						String file = fileName.substring(cut + 1);
-						FileStatus unstageFile = new FileStatus(GitChangeType.ADD, file);
-						unstagedFiles.add(unstageFile);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		formatter.close();
-
-		return unstagedFiles;
-*/
+		/*
+		 * OutputStream out = NullOutputStream.INSTANCE;
+		 * 
+		 * DiffFormatter formatter = new DiffFormatter(out); if (git != null) {
+		 * formatter.setRepository(git.getRepository()); try { AbstractTreeIterator
+		 * commitTreeIterator = getLastCommitTreeIterator(git.getRepository(),
+		 * Constants.HEAD); if (commitTreeIterator != null) { FileTreeIterator
+		 * workTreeIterator = new FileTreeIterator(git.getRepository());
+		 * List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator,
+		 * workTreeIterator); for (DiffEntry entry : diffEntries) { GitChangeType
+		 * changeType = null; if (entry.getChangeType() == ChangeType.ADD) {
+		 * changeType = GitChangeType.ADD; } else if (entry.getChangeType() ==
+		 * ChangeType.MODIFY) { changeType = GitChangeType.MODIFY; } else if
+		 * (entry.getChangeType() == ChangeType.DELETE) { changeType =
+		 * GitChangeType.DELETE; }
+		 * 
+		 * String filePath = null; if (entry.getChangeType().equals(ChangeType.ADD)
+		 * || entry.getChangeType().equals(ChangeType.COPY) ||
+		 * entry.getChangeType().equals(ChangeType.RENAME)) { filePath =
+		 * entry.getNewPath(); } else { filePath = entry.getOldPath(); }
+		 * 
+		 * FileStatus unstageFile = new FileStatus(changeType, filePath); if
+		 * (!stagedFiles.contains(unstageFile)) { if
+		 * (!conflictingPaths.contains(filePath)) { unstagedFiles.add(unstageFile);
+		 * } } } unstagedFiles.addAll(conflictingFiles); } else { String
+		 * selectedRepository =
+		 * OptionsManager.getInstance().getSelectedRepository(); List<String>
+		 * fileNames = FileHelper.search(selectedRepository); for (String fileName :
+		 * fileNames) { selectedRepository = selectedRepository.replace("\\", "/");
+		 * int cut =
+		 * selectedRepository.substring(selectedRepository.lastIndexOf("/") +
+		 * 1).length(); String file = fileName.substring(cut + 1); FileStatus
+		 * unstageFile = new FileStatus(GitChangeType.ADD, file);
+		 * unstagedFiles.add(unstageFile); } } } catch (Exception e) {
+		 * e.printStackTrace(); } }
+		 * 
+		 * formatter.close();
+		 * 
+		 * return unstagedFiles;
+		 */
 	}
 
 	/**
@@ -972,7 +949,9 @@ public class GitAccess {
 	 */
 	public void fetch() {
 		try {
+
 			git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
+
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
 		} catch (TransportException e) {

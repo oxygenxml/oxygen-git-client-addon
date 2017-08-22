@@ -18,11 +18,16 @@ import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
 
 /**
- *
+ * Custom tree model
+ * 
+ * @author Beniamin Savu
  *
  */
 public class StagingResourcesTreeModel extends DefaultTreeModel implements Subject<ChangeEvent>, Observer<ChangeEvent> {
 
+	/**
+	 * The files in the model
+	 */
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
 	/**
@@ -31,6 +36,10 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	 * will be unstaged.
 	 */
 	private boolean forStaging;
+
+	/**
+	 * Observer to delegate the event
+	 */
 	private Observer<ChangeEvent> observer;
 
 	public StagingResourcesTreeModel(TreeNode root, boolean forStaging, List<FileStatus> filesStatus) {
@@ -65,6 +74,12 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		fireTreeStructureChanged(this, null, null, null);
 	}
 
+	/**
+	 * Insert nodes to the tree based on the given files
+	 * 
+	 * @param fileToBeUpdated
+	 *          - the files on which the nodes will be created
+	 */
 	private void insertNodes(List<FileStatus> fileToBeUpdated) {
 
 		for (FileStatus fileStatus : fileToBeUpdated) {
@@ -74,6 +89,12 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		sortTree();
 	}
 
+	/**
+	 * Delete nodes from the tree based on the given files
+	 * 
+	 * @param fileToBeUpdated
+	 *          - the files on which the nodes will be deleted
+	 */
 	private void deleteNodes(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
 			MyNode node = TreeFormatter.getTreeNodeFromString(this, fileStatus.getFileLocation());
@@ -103,6 +124,13 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		observer = null;
 	}
 
+	/**
+	 * Change the given files stage state from unstaged to staged or from staged
+	 * to unstaged
+	 * 
+	 * @param selectedFiles
+	 *          - the files to change their stage state
+	 */
 	public void switchFilesStageState(List<String> selectedFiles) {
 
 		List<FileStatus> filesToRemove = new ArrayList<FileStatus>();
@@ -125,10 +153,23 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		notifyObservers(changeEvent);
 	}
 
+	/**
+	 * Delegate the given event to the observer
+	 * 
+	 * @param changeEvent
+	 *          - the event to delegate
+	 */
 	private void notifyObservers(ChangeEvent changeEvent) {
 		observer.stateChanged(changeEvent);
 	}
 
+	/**
+	 * Return the file from the given path
+	 * 
+	 * @param path
+	 *          - the path
+	 * @return the file
+	 */
 	public FileStatus getFileByPath(String path) {
 		for (FileStatus fileStatus : filesStatus) {
 			if (path.equals(fileStatus.getFileLocation())) {
@@ -138,6 +179,13 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		return null;
 	}
 
+	/**
+	 * Return the files from the given paths
+	 * 
+	 * @param selectedPaths
+	 *          - the paths
+	 * @return a list containing the files from the path
+	 */
 	public List<FileStatus> getFilesByPaths(List<String> selectedPaths) {
 		List<FileStatus> containingPaths = new ArrayList<FileStatus>();
 		for (String path : selectedPaths) {
@@ -150,6 +198,13 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		return containingPaths;
 	}
 
+	/**
+	 * Sets the files in the model also resets the internal node structure and
+	 * creates a new one based on the given files
+	 * 
+	 * @param filesStatus
+	 *          - the files on which the node structure will be created
+	 */
 	public void setFilesStatus(List<FileStatus> filesStatus) {
 		deleteNodes(this.filesStatus);
 		this.filesStatus.clear();
@@ -157,6 +212,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		fireTreeStructureChanged(this, null, null, null);
 	}
 
+	/**
+	 * Sorts the entire tree
+	 */
 	private void sortTree() {
 		MyNode root = (MyNode) getRoot();
 		Enumeration e = root.depthFirstEnumeration();
@@ -168,13 +226,19 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		}
 	}
 
+	/**
+	 * Sorts the given node
+	 * 
+	 * @param parent
+	 *          - the node to be sorted
+	 */
 	private void sort(MyNode parent) {
 		int n = parent.getChildCount();
 		List<MyNode> children = new ArrayList<MyNode>(n);
 		for (int i = 0; i < n; i++) {
 			children.add((MyNode) parent.getChildAt(i));
 		}
-		Collections.sort(children, new NodeTreeComparator()); // iterative merge sort
+		Collections.sort(children, new NodeTreeComparator());
 		parent.removeAllChildren();
 		for (MutableTreeNode node : children) {
 			parent.add(node);
