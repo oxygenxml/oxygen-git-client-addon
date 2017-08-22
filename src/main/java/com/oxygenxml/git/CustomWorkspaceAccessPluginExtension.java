@@ -8,7 +8,10 @@ import java.awt.event.WindowEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.utils.Refresh;
@@ -26,6 +29,12 @@ import ro.sync.ui.Icons;
  * Plugin extension - workspace access extension.
  */
 public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPluginExtension {
+  
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(CustomWorkspaceAccessPluginExtension.class);
+  
 	/**
 	 * ID of the view.
 	 */
@@ -37,59 +46,66 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
-		//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
-		Translator translator = new TranslatorExtensionImpl();
-		final Refresh refresh = new StagingPanelRefresh();
-		final StagingPanel stagingPanel = new StagingPanel(translator, refresh);
-		refresh.setPanel(stagingPanel);
-		refresh.call();
+	  try {
 
-		
+	    //PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
+	    Translator translator = new TranslatorExtensionImpl();
+	    final Refresh refresh = new StagingPanelRefresh();
+	    final StagingPanel stagingPanel = new StagingPanel(translator, refresh);
+	    refresh.setPanel(stagingPanel);
+	    refresh.call();
 
-		pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
-			/**
-			 * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)
-			 */
-			public void customizeView(ViewInfo viewInfo) {
 
-				if (
-				// The view ID defined in the "plugin.xml"
-				GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
 
-					viewInfo.setComponent(stagingPanel);
-					viewInfo.setIcon(Icons.getIcon(ImageConstants.GIT_ICON));
-					viewInfo.setTitle("Git Staging");
-				}
-			}
-		});
+	    pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
+	      /**
+	       * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)
+	       */
+	      public void customizeView(ViewInfo viewInfo) {
 
-		final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
+	        if (
+	            // The view ID defined in the "plugin.xml"
+	            GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
 
-		// Present the view to the user if it is the first run of the plugin
-		parentFrame.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentShown(ComponentEvent e) {
-				parentFrame.removeComponentListener(this);
-				String key = "view.presented.on.first.run";
-				String firstRun = pluginWorkspaceAccess.getOptionsStorage().getOption(key, null);
-				if (firstRun == null) {
-					// This is the first run of the plugin.
-					pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, false);
-					pluginWorkspaceAccess.getOptionsStorage().setOption(key, "true");
-				}
-			}
+	          viewInfo.setComponent(stagingPanel);
+	          viewInfo.setIcon(Icons.getIcon(ImageConstants.GIT_ICON));
+	          viewInfo.setTitle("Git Staging");
+	        }
+	      }
+	    });
 
-		});
+	    final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
 
-		// Call the refresh command when the Oxygen window is activated
-		parentFrame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowActivated(WindowEvent e) {
-				super.windowActivated(e);
-				refresh.call();
-			}
-		});
+	    // Present the view to the user if it is the first run of the plugin
+	    parentFrame.addComponentListener(new ComponentAdapter() {
+	      @Override
+	      public void componentShown(ComponentEvent e) {
+	        parentFrame.removeComponentListener(this);
+	        String key = "view.presented.on.first.run";
+	        String firstRun = pluginWorkspaceAccess.getOptionsStorage().getOption(key, null);
+	        if (firstRun == null) {
+	          // This is the first run of the plugin.
+	          pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, false);
+	          pluginWorkspaceAccess.getOptionsStorage().setOption(key, "true");
+	        }
+	      }
 
+	    });
+
+	    // Call the refresh command when the Oxygen window is activated
+	    parentFrame.addWindowListener(new WindowAdapter() {
+	      @Override
+	      public void windowActivated(WindowEvent e) {
+	        super.windowActivated(e);
+	        refresh.call();
+	      }
+	    });
+
+	  } catch (Throwable t) {
+	    // Runtime exceptions shouldn't affect Oxygen.
+	    pluginWorkspaceAccess.showErrorMessage(t.getMessage());
+	    logger.fatal(t, t);
+	  }
 	}
 
 	/**
