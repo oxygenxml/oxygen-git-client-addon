@@ -242,25 +242,67 @@ public class Tags {
 	 * The text displayed in the title for the dialog that appears after exiting
 	 * the diff for a conflict file and you don't modify anithing
 	 */
-	public static final String TITLE_CHECK_IF_CONFLICT_RESOLVED = "Title_Check_If_Conflict_Resolved";
-	
+	public static final String CHECK_IF_CONFLICT_RESOLVED_TITLE = "Title_Check_If_Conflict_Resolved";
+
 	/**
-	 * The text displayed in the title for the dialog that appears when you select your current branch
+	 * The text displayed in the title for the dialog that appears when you select
+	 * your current branch
 	 */
 	public static final String BRANCH_SELECTION_DIALOG_TITLE = "Branch_Selection_Dialog_Title";
 
 	/**
 	 * The text displayed in the dialog that appears near the combo box
 	 */
-	public static final String BRANCH_SELECTION_LABEL = "Branch_Selection_Label";
-	
+	public static final String BRANCH_DIALOG_BRANCH_SELECTION_LABEL = "Branch_Dialog_Branch_Selection_Label";
+
 	/**
 	 * The tooltip for the change branch button
 	 */
 	public static final String CHANGE_BRANCH_BUTTON_TOOLTIP = "Change_Branch_Button_Tooltip";
-	
+
 	/**
 	 * The the message displayed when branch selection fails
 	 */
 	public static final String CHANGE_BRANCH_ERROR_MESSAGE = "Change_Branch_Error_Message";
+
+	/**
+	 * The text displayed in the title for the dialog that appears when you pull
+	 * and bring conflicts
+	 */
+	public static final String PULL_WITH_CONFLICTS_DIALOG_TITLE = "Pull_With_Conflicts_Dialog_Title";
+
+	/**
+	 * The text displayed in the title for the dialog that appears when you push
+	 * while having no remote set
+	 */
+	public static final String ADD_REMOTE_DIALOG_TITLE = "Add_Remote_Dialog_Title";
+
+	/**
+	 * The text displayed in the dialog that appears near the text field for
+	 * remote name
+	 */
+	public static final String ADD_REMOTE_DIALOG_ADD_REMOTE_NAME_LABEL = "Add_Remote_Dialog_Add_Remote_Name_Label";
+
+	/**
+	 * The text displayed in the dialog that appears near the text field for
+	 * remote repo
+	 */
+	public static final String ADD_REMOTE_DIALOG_ADD_REMOTE_REPO_LABEL = "Add_Remote_Dialog_Add_Remote_Repo_Label";
+
+	/**
+	 * The text displayed in the dialog that appears at the top of the dialog
+	 */
+	public static final String ADD_REMOTE_DIALOG_INFO_LABEL = "Add_Remote_Dialog_Info_Label";
+
+	/**
+	 * The text displayed in the title for the dialog that appears if the
+	 * project.xpr is not a git repository and has no got repositoriess
+	 */
+	public static final String CHECK_PROJECTXPR_IS_GIT_TITLE = "Check_ProjcetXPR_Is_Git_Title";
+
+	/**
+	 * The text displayed in the dialog that appears if the project.xpr is not a
+	 * git repository and has no got repositories
+	 */
+	public static final String CHECK_PROJECTXPR_IS_GIT = "Check_ProjcetXPR_Is_Git";
 }

@@ -22,6 +22,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
@@ -62,6 +63,7 @@ import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
@@ -70,6 +72,7 @@ import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
@@ -107,7 +110,7 @@ public class GitAccess {
 	private Translator translator = new TranslatorExtensionImpl();
 
 	private boolean unavailable;
-
+	
 	private GitAccess() {
 
 	}
@@ -415,7 +418,6 @@ public class GitAccess {
 				response.setMessage(translator.getTraslation(Tags.BRANCH_BEHIND));
 				return response;
 			}
-
 			Iterable<PushResult> call = git.push()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 			Iterator<PushResult> results = call.iterator();
@@ -673,11 +675,11 @@ public class GitAccess {
 		try {
 			URL u = new URL(url);
 			url = u.getHost();
+			return url;
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			return "";
 		}
 
-		return url;
 	}
 
 	/**
@@ -963,7 +965,13 @@ public class GitAccess {
 	 */
 	public void fetch() {
 		try {
-			git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
+			StoredConfig config = git.getRepository().getConfig();
+			Set<String> sections = config.getSections();
+			noRemote = false;
+			if (sections.contains("remote")) {
+				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
+				noRemote = true;
+			}
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
 		} catch (TransportException e) {
@@ -975,6 +983,7 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 		unavailable = false;
+		
 	}
 
 	public void updateWithRemoteFile(String filePath) {

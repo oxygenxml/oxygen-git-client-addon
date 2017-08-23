@@ -30,6 +30,7 @@ import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.AddRemoteDialog;
 import com.oxygenxml.git.view.LoginDialog;
 import com.oxygenxml.git.view.PullWithConflictsDialog;
 
@@ -62,7 +63,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	boolean commandExecuted = true;
 
 	private Translator translator;
-	
+
 	public PushPullController(GitAccess gitAccess, Translator translator) {
 		this.translator = translator;
 		this.gitAccess = gitAccess;
@@ -116,9 +117,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 						} else {
 							loginMessage = "Invalid credentials for " + userCredentials.getUsername();
 						}
-						// JOptionPane.showMessageDialog((Component)
-						// PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-						// "Invalid credentials for " + userCredentials.getUsername());
 						UserCredentials loadNewCredentials = loadNewCredentials(loginMessage);
 						if (loadNewCredentials != null) {
 							commandExecuted = false;
@@ -129,6 +127,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 					if (e.getMessage().contains("not permitted")) {
 						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								"You have no rights to push in this repository " + userCredentials.getUsername());
+					}
+					if (e.getMessage().contains("origin: not found")
+							|| e.getMessage().contains("No value for key remote.origin.url found in configuration")) {
+						new AddRemoteDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								translator.getTraslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
 					}
 					e.printStackTrace();
 				} catch (RevisionSyntaxException e) {
@@ -175,23 +178,17 @@ public class PushPullController implements Subject<PushPullEvent> {
 				PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (PullStatus.OK == response.getStatus()) {
-					// JOptionPane.showMessageDialog((Component)
-					// PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-					// "Pull successful");
 					message = translator.getTraslation(Tags.PULL_SUCCESSFUL);
 				} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage(translator.getTraslation(Tags.PULL_WITH_UNCOMMITED_CHANGES));
 
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
-					// prompts a dialog showing the files in conflict
 					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-							"Information", true, response.getConflictingFiles(), translator);
+							translator.getTraslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE), true, response.getConflictingFiles(),
+							translator);
 
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
-					// ((StandalonePluginWorkspace)
-					// PluginWorkspaceProvider.getPluginWorkspace())
-					// .showInformationMessage("Repository is already up to date");
 					message = translator.getTraslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
@@ -216,21 +213,13 @@ public class PushPullController implements Subject<PushPullEvent> {
 				PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (Status.OK == response.getStatus()) {
-					// ((StandalonePluginWorkspace)
-					// PluginWorkspaceProvider.getPluginWorkspace())
-					// .showInformationMessage("Push successful");
-					
 					message = translator.getTraslation(Tags.PUSH_SUCCESSFUL);
 				} else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage("Push failed, please get your repository up to date(PULL)");
 				} else if (Status.UP_TO_DATE == response.getStatus()) {
-					// ((StandalonePluginWorkspace)
-					// PluginWorkspaceProvider.getPluginWorkspace())
-					// .showInformationMessage("There was nothing to push");.
 					message = translator.getTraslation(Tags.PUSH_UP_TO_DATE);
 				} else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
-					// message = response.getMessage();
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage(response.getMessage());
 				}
