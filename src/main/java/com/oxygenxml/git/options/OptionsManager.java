@@ -44,7 +44,7 @@ public class OptionsManager {
 	/**
 	 * Constant for how many project paths that have been tested for git to store
 	 */
-	private static final int MAXIMUM_PROJECTS_TESTED = 3;
+	private static final int MAXIMUM_PROJECTS_TESTED = 10;
 	
 	/**
 	 * All Repositories that were selected by the user with their options

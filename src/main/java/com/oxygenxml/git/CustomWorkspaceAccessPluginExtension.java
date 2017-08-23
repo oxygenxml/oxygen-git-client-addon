@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
+import org.mozilla.javascript.ast.ParenthesizedExpression;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -82,7 +83,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	      @Override
 	      public void componentShown(ComponentEvent e) {
 	        //parentFrame.removeComponentListener(this);
-	      	
 	        String key = "view.presented.on.first.run";
 	        String firstRun = pluginWorkspaceAccess.getOptionsStorage().getOption(key, null);
 	        if (firstRun == null) {
@@ -93,14 +93,16 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	      }
 	      
 	      // Call the refresh command when the Oxygen window is activated
-	      @Override
-	      public void componentResized(ComponentEvent e) {
-	      	super.componentResized(e);
-	      	refresh.call();
-	      }
-
+	     
 	    });
 
+	    parentFrame.addWindowListener(new WindowAdapter() {
+	    	@Override
+	    	public void windowActivated(WindowEvent e) {
+	    		super.windowActivated(e);
+	    		refresh.call();
+	    	}
+			});
 	  } catch (Throwable t) {
 	    // Runtime exceptions shouldn't affect Oxygen.
 	    pluginWorkspaceAccess.showErrorMessage(t.getMessage());

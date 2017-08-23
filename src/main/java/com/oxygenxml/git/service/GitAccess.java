@@ -967,10 +967,8 @@ public class GitAccess {
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
-			noRemote = false;
 			if (sections.contains("remote")) {
 				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
-				noRemote = true;
 			}
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();

@@ -53,7 +53,10 @@ public class StagingPanelRefresh implements Refresh {
 		String projectView = EditorVariables.expandEditorVariables("${pd}", null);
 		if (!projectView.equals(lastSelectedProjectView)) {
 			checkForGitRepositoriesUpAndDownFrom(projectView);
-			lastSelectedProjectView = new String(projectView);
+			//TODO resolve this
+			if(stagingPanel.isInFocus()){
+				lastSelectedProjectView = new String(projectView);
+			}
 			addGitFolder(projectView);
 			if (stagingPanel.isInFocus() && !projectPahtIsGit
 					&& !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectView)) {
@@ -114,7 +117,9 @@ public class StagingPanelRefresh implements Refresh {
 		} catch (SAXException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			//TODO resolve the case when the project xpr doesn't exists
+			return;
+			//e1.printStackTrace();
 		}
 		File file = new File(projectView);
 		while (file.getParent() != null) {

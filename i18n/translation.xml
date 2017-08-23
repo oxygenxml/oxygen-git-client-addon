@@ -3,10 +3,8 @@
     <languageList>
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
-        <language description="French" lang="fr_FR" />
-        <language description="Japanese" lang="ja_JP" />
-        <language description="Dutch" lang="nl_NL" />
     </languageList>
+    
     <key value="Working_Copy_Label">
         <comment>Label displayed on the left of the working copy combo box</comment>
         <val lang="en_US">Working copy: </val>
@@ -504,8 +502,8 @@
     
     <key value="Check_ProjcetXPR_Is_Git">
         <comment>The text displayed in the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
-        <val lang="en_US">Do you want to make this project also a git project ?</val>
-        <val lang="de_DE">Do you want to make this project also a git project ?</val>
+        <val lang="en_US">Do you want to make your current selected project also a git project ?</val>
+        <val lang="de_DE">Do you want to make your current selected project also a git project ?</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
