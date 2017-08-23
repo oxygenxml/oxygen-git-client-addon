@@ -39,6 +39,20 @@ public class Options {
 	 */
 	@XmlElement(name = "commitMessages")
 	private CommitMessages commitMessages = new CommitMessages();
+	
+	/**
+	 * Wrapper for a list of project.xpr that were tested if they want to be a git repository
+	 */
+	@XmlElement(name = "projectsTested")
+	private ProjectsTestedForGit prjectsTestsForGit = new ProjectsTestedForGit();
+
+	public ProjectsTestedForGit getPrjectsTestsForGit() {
+		return prjectsTestsForGit;
+	}
+
+	public void setPrjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) {
+		this.prjectsTestsForGit = prjectsTestsForGit;
+	}
 
 	public RepositoryLocations getRepositoryLocations() {
 		return repositoryLocations;

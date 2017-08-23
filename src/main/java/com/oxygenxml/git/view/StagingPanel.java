@@ -54,6 +54,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
+	boolean gained = false;
 	/**
 	 * The tool bar panel used for the push and pull
 	 */
@@ -194,6 +195,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 			@Override
 			public void focusGained(final FocusEvent e) {
+				gained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
 					refresh.call();
@@ -204,6 +206,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 			@Override
 			public void focusLost(FocusEvent e) {
+				gained = false;
 				// The focus might still be somewhere in the view.
 				if (e.getOppositeComponent() != null) {
 					inTheView = SwingUtilities.isDescendingFrom((Component) e.getOppositeComponent(), StagingPanel.this);
@@ -363,5 +366,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		subject.removeObserver(this);
 	}
-
+	
+	public boolean isInFocus(){
+		return gained;
+	}
 }

@@ -4,6 +4,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -50,10 +51,10 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 	    //PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
 	    Translator translator = new TranslatorExtensionImpl();
-	    final Refresh refresh = new StagingPanelRefresh();
+	    final Refresh refresh = new StagingPanelRefresh(translator);
 	    final StagingPanel stagingPanel = new StagingPanel(translator, refresh);
 	    refresh.setPanel(stagingPanel);
-	    refresh.call();
+	    //refresh.call();
 
 
 
@@ -80,7 +81,8 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	    parentFrame.addComponentListener(new ComponentAdapter() {
 	      @Override
 	      public void componentShown(ComponentEvent e) {
-	        parentFrame.removeComponentListener(this);
+	        //parentFrame.removeComponentListener(this);
+	      	
 	        String key = "view.presented.on.first.run";
 	        String firstRun = pluginWorkspaceAccess.getOptionsStorage().getOption(key, null);
 	        if (firstRun == null) {
@@ -89,16 +91,14 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	          pluginWorkspaceAccess.getOptionsStorage().setOption(key, "true");
 	        }
 	      }
-
-	    });
-
-	    // Call the refresh command when the Oxygen window is activated
-	    parentFrame.addWindowListener(new WindowAdapter() {
+	      
+	      // Call the refresh command when the Oxygen window is activated
 	      @Override
-	      public void windowActivated(WindowEvent e) {
-	        super.windowActivated(e);
-	        refresh.call();
+	      public void componentResized(ComponentEvent e) {
+	      	super.componentResized(e);
+	      	refresh.call();
 	      }
+
 	    });
 
 	  } catch (Throwable t) {

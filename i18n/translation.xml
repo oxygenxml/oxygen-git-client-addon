@@ -430,7 +430,7 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
-    <key value="Branch_Selection_Label">
+    <key value="Branch_Dialog_Branch_Selection_Label">
         <comment>The text displayed in the dialog that appears near the combo box</comment>
         <val lang="en_US">Branch: </val>
         <val lang="de_DE">Branch: </val>
@@ -452,6 +452,69 @@
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">Please commit your changes before you switch branches.</val>
         <val lang="de_DE">Bitte committen Sie die Änderungen bevor Sie den Branch wechseln.</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Pull_With_Conflicts_Dialog_Title">
+        <comment>The text displayed in the title for the dialog that appears when you pull and bring conflicts</comment>
+        <val lang="en_US">Information</val>
+        <val lang="de_DE">Information</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Add_Remote_Dialog_Title">
+        <comment>The text displayed in the title for the dialog that appears when you push while having no remote set</comment>
+        <val lang="en_US">Add Remote</val>
+        <val lang="de_DE">Add Remote</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Add_Remote_Dialog_Add_Remote_Name_Label">
+        <comment>The text displayed in the dialog that appears near the text field for remote name</comment>
+        <val lang="en_US">Remote Name: </val>
+        <val lang="de_DE">Remote Name: </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Add_Remote_Dialog_Add_Remote_Repo_Label">
+        <comment>The text displayed in the dialog that appears near the text field for remote repo</comment>
+        <val lang="en_US">Remote Repo URL: </val>
+        <val lang="de_DE">Remote Repo URL: </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Add_Remote_Dialog_Info_Label">
+        <comment>The text displayed in the dialog that appears at the top of the dialog</comment>
+        <val lang="en_US">This repository has no remote. Please insert one</val>
+        <val lang="de_DE">This repository has no remote. Please insert one</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Check_ProjcetXPR_Is_Git">
+        <comment>The text displayed in the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
+        <val lang="en_US">Do you want to make this project also a git project ?</val>
+        <val lang="de_DE">Do you want to make this project also a git project ?</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Check_ProjcetXPR_Is_Git_Title">
+        <comment>The text displayed in the title for the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
+        <val lang="en_US">Git</val>
+        <val lang="de_DE">Git</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>

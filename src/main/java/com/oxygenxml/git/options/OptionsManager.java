@@ -42,6 +42,11 @@ public class OptionsManager {
 	private static final int PREVIOUSLY_COMMITED_MESSAGES = 7;
 
 	/**
+	 * Constant for how many project paths that have been tested for git to store
+	 */
+	private static final int MAXIMUM_PROJECTS_TESTED = 3;
+	
+	/**
 	 * All Repositories that were selected by the user with their options
 	 */
 	private Options options = null;
@@ -280,5 +285,23 @@ public class OptionsManager {
 
 		saveOptions();
 	}
+	
+	public List<String> getProjectsTestedForGit() {
+		loadOptions();
+		
+		return options.getPrjectsTestsForGit().getPaths();
+	}
 
+	public void saveProjectTestedForGit(String projectPath) {
+		loadOptions();
+
+		List<String> projectsPath = options.getPrjectsTestsForGit().getPaths();
+		projectsPath.add(projectPath);
+		if (projectsPath.size() > MAXIMUM_PROJECTS_TESTED) {
+			projectsPath.remove(0);
+		}
+		options.getPrjectsTestsForGit().setPaths(projectsPath);
+
+		saveOptions();
+	}
 }

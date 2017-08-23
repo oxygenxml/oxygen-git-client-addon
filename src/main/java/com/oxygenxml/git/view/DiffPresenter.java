@@ -119,7 +119,7 @@ public class DiffPresenter {
 						String[] options = new String[] { "   Yes   ", "   No   " };
 						int[] optonsId = new int[] { 0, 1 };
 						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-								translator.getTraslation(Tags.TITLE_CHECK_IF_CONFLICT_RESOLVED),
+								translator.getTraslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
 								translator.getTraslation(Tags.CHECK_IF_CONFLICT_RESOLVED),
 								options, optonsId);
 						if (response == 0) {

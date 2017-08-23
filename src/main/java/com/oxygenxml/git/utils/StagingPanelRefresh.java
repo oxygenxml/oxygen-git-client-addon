@@ -14,17 +14,21 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+import com.oxygenxml.git.options.Options;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
-import com.oxygenxml.git.view.WorkingCopySelectionPanel;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.StageState;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.util.editorvars.EditorVariables;
 
 public class StagingPanelRefresh implements Refresh {
@@ -32,13 +36,16 @@ public class StagingPanelRefresh implements Refresh {
 	private StagingPanel stagingPanel;
 	private GitAccess gitAccess;
 	private String lastSelectedProjectView = "";
+	private Translator translator;
+	private boolean projectPahtIsGit = false;
 
-	public StagingPanelRefresh() {
+	public StagingPanelRefresh(Translator translator) {
 		this.gitAccess = GitAccess.getInstance();
+		this.translator = translator;
 	}
 
 	public void call() {
-		
+		projectPahtIsGit = false;
 		execute();
 	}
 
@@ -48,6 +55,23 @@ public class StagingPanelRefresh implements Refresh {
 			checkForGitRepositoriesUpAndDownFrom(projectView);
 			lastSelectedProjectView = new String(projectView);
 			addGitFolder(projectView);
+			if (stagingPanel.isInFocus() && !projectPahtIsGit
+					&& !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectView)) {
+				String[] options = new String[] { "   Yes   ", "   No   " };
+				int[] optonsId = new int[] { 0, 1 };
+				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+						translator.getTraslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
+						translator.getTraslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
+				if (response == 0) {
+					gitAccess.createNewRepository(projectView);
+					OptionsManager.getInstance().addRepository(projectView);
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(projectView);
+					OptionsManager.getInstance().saveSelectedRepository(projectView);
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(projectView);
+				}
+				OptionsManager.getInstance().saveProjectTestedForGit(projectView);
+			}
+
 		}
 		try {
 			if (gitAccess.getRepository() != null) {
@@ -78,8 +102,8 @@ public class StagingPanelRefresh implements Refresh {
 					file = new File(path);
 				} else if (!".".equals(path)) {
 					file = new File(projectView, path);
-				} 
-				if(file != null){
+				}
+				if (file != null) {
 					String pathToCheck = file.getAbsolutePath();
 					addGitFolder(pathToCheck);
 				}
@@ -93,7 +117,7 @@ public class StagingPanelRefresh implements Refresh {
 			e1.printStackTrace();
 		}
 		File file = new File(projectView);
-		while(file.getParent() != null){
+		while (file.getParent() != null) {
 			String projectParent = file.getParent();
 			addGitFolder(projectParent);
 			file = file.getParentFile();
@@ -102,6 +126,7 @@ public class StagingPanelRefresh implements Refresh {
 
 	private void addGitFolder(String pathToCheck) {
 		if (FileHelper.isGitRepository(pathToCheck)) {
+			projectPahtIsGit = true;
 			if (!OptionsManager.getInstance().getRepositoryEntries().contains(pathToCheck)) {
 				OptionsManager.getInstance().addRepository(pathToCheck);
 				stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(pathToCheck);
@@ -116,7 +141,7 @@ public class StagingPanelRefresh implements Refresh {
 			protected Integer doInBackground() throws Exception {
 				if (command == Command.PULL) {
 					GitAccess.getInstance().fetch();
-					if(GitAccess.getInstance().isUnavailable()){
+					if (GitAccess.getInstance().isUnavailable()) {
 						stagingPanel.getCommitPanel().setStatus("unavailable");
 					} else {
 						stagingPanel.getCommitPanel().setStatus("availbale");
