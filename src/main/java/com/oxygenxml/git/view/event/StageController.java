@@ -104,12 +104,12 @@ public class StageController implements Observer<ChangeEvent> {
 		} else if (changeEvent.getOldState() == StageState.UNDEFINED && changeEvent.getNewState() == StageState.DISCARD){
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
 			for (FileStatus file : changeEvent.getFileToBeUpdated()) {				
-				gitAccess.restoreLastCommit(file.getFileLocation());
+				gitAccess.restoreLastCommitFile(file.getFileLocation());
 			}
 		} else if (changeEvent.getOldState() == StageState.UNSTAGED && changeEvent.getNewState() == StageState.DISCARD){
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
 			for (FileStatus file : changeEvent.getFileToBeUpdated()) {				
-				gitAccess.restoreLastCommit(file.getFileLocation());
+				gitAccess.restoreLastCommitFile(file.getFileLocation());
 			}
 			gitAccess.addAll(changeEvent.getFileToBeUpdated());
 		}

@@ -33,13 +33,13 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessPullTest {
-	private final static String LOCAL_TEST_REPOSITPRY = "src/test/resources/local";
-	private final static String SECOND_LOCAL_TEST_REPOSITORY = "src/test/resources/local2";
+	protected final static String LOCAL_TEST_REPOSITPRY = "src/test/resources/local";
+	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "src/test/resources/local2";
 	private final static String REMOTE_TEST_REPOSITPRY = "src/test/resources/remote";
 	private Repository db1;
 	private Repository db2;
 	private Repository db3;
-	private GitAccess gitAccess;
+	protected GitAccess gitAccess;
 
 	@Before
 	public void init()
@@ -130,6 +130,28 @@ public class GitAccessPullTest {
 		PullStatus pullExpected = PullStatus.CONFLICTS;
 		assertEquals(pullExpected, pullActual);
 	}
+	
+	@Test
+	public void testNoPullsBehind() throws RepositoryNotFoundException, IOException{
+		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		
+		int actual = gitAccess.getPullsBehind();
+		int expected = 0;
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testPullsBehind() throws RepositoryNotFoundException, IOException, InvalidRemoteException, TransportException, GitAPIException{
+		pushOneFileToRemote();
+		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.fetch();
+		
+		int actual = gitAccess.getPullsBehind();
+		int expected = 1;
+		
+		assertEquals(expected, actual);
+	}
 
 	@After
 	public void freeResources() {
@@ -149,7 +171,7 @@ public class GitAccessPullTest {
 		}
 	}
 
-	private void pushOneFileToRemote() throws IOException, RepositoryNotFoundException, FileNotFoundException,
+	protected void pushOneFileToRemote() throws IOException, RepositoryNotFoundException, FileNotFoundException,
 			InvalidRemoteException, TransportException, GitAPIException {
 		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
 		OptionsManager.getInstance().saveSelectedRepository(LOCAL_TEST_REPOSITPRY);

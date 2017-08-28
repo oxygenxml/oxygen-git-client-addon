@@ -124,7 +124,7 @@ public class DiffPresenter {
 								options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().remove(file);
-							GitAccess.getInstance().restoreLastCommit(file.getFileLocation());
+							GitAccess.getInstance().restoreLastCommitFile(file.getFileLocation());
 							GitAccess.getInstance().add(file);
 							StageState oldState = StageState.UNSTAGED;
 							StageState newState = StageState.DISCARD;

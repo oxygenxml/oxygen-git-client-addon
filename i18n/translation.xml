@@ -502,8 +502,8 @@
     
     <key value="Check_ProjcetXPR_Is_Git">
         <comment>The text displayed in the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
-        <val lang="en_US">Do you want to make your current selected project also a git project ?</val>
-        <val lang="de_DE">Do you want to make your current selected project also a git project ?</val>
+        <val lang="en_US">Do you want your current project to be a git project ?</val>
+        <val lang="de_DE">Do you want your current project to be a git project ?</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>

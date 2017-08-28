@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.commons.io.input.SwappedDataInputStream;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
@@ -274,7 +275,7 @@ public class GitAccess {
 		}
 	}
 
-	private AbstractTreeIterator getLastCommitTreeIterator(Repository repository, String branch) throws Exception {
+	/*private AbstractTreeIterator getLastCommitTreeIterator(Repository repository, String branch) throws Exception {
 		Ref head = repository.findRef(branch);
 
 		if (head.getObjectId() != null) {
@@ -290,7 +291,7 @@ public class GitAccess {
 		} else {
 			return null;
 		}
-	}
+	}*/
 
 	/**
 	 * Frees resources associated with the git instance.
@@ -842,7 +843,7 @@ public class GitAccess {
 	 * @param fileLocation
 	 *          - the path to the file you want to restore
 	 */
-	public void restoreLastCommit(String fileLocation) {
+	public void restoreLastCommitFile(String fileLocation) {
 		try {
 			git.checkout().addPath(fileLocation).call();
 		} catch (RefAlreadyExistsException e) {
@@ -934,7 +935,11 @@ public class GitAccess {
 				}
 				if (getBaseCommit() == null) {
 					if (repository.resolve("remotes/origin/" + git.getRepository().getBranch()) != null) {
-						Iterable<RevCommit> logs = git.log().not(repository.resolve("HEAD"))
+						LogCommand log = git.log();
+						if(repository.resolve("HEAD") != null){
+							log.not(repository.resolve("HEAD"));
+						}
+						Iterable<RevCommit> logs = git.log()
 								.add(repository.resolve("remotes/origin/" + git.getRepository().getBranch())).call();
 						for (RevCommit revCommit : logs) {
 							numberOfCommits++;

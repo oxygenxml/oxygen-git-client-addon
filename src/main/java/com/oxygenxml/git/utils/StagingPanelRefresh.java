@@ -1,6 +1,7 @@
 package com.oxygenxml.git.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import com.oxygenxml.git.options.Options;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
@@ -53,7 +53,6 @@ public class StagingPanelRefresh implements Refresh {
 		String projectView = EditorVariables.expandEditorVariables("${pd}", null);
 		if (!projectView.equals(lastSelectedProjectView)) {
 			checkForGitRepositoriesUpAndDownFrom(projectView);
-			//TODO resolve this
 			if(stagingPanel.isInFocus()){
 				lastSelectedProjectView = new String(projectView);
 			}
@@ -117,9 +116,10 @@ public class StagingPanelRefresh implements Refresh {
 		} catch (SAXException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			//TODO resolve the case when the project xpr doesn't exists
-			return;
-			//e1.printStackTrace();
+			if(e1 instanceof FileNotFoundException){
+				return;
+			}
+			e1.printStackTrace();
 		}
 		File file = new File(projectView);
 		while (file.getParent() != null) {

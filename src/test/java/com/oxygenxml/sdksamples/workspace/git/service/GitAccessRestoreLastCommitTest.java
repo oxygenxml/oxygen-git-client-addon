@@ -51,7 +51,7 @@ public class GitAccessRestoreLastCommitTest {
 		out.println("hellllo");
 		out.close();
 
-		gitAccess.restoreLastCommit("test.txt");
+		gitAccess.restoreLastCommitFile("test.txt");
 		String expected = getFileContent();
 		assertEquals(actual, expected);
 	}

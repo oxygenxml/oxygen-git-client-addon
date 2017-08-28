@@ -2,30 +2,27 @@ package com.oxygenxml.sdksamples.workspace.git.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.MyNode;
-import com.oxygenxml.git.view.StagingResourcesTreeModel;
 
 public class TreeFormatterTest {
-
 
 	@Test
 	public void testGetNodeFromString() {
 		URL resource = getClass().getClassLoader().getResource(com.oxygenxml.git.constants.ImageConstants.GIT_PUSH_ICON);
 		System.out.println(resource);
-		
+
 		List<String> paths = new ArrayList<String>();
 		paths.add("src/add/poc.txt");
 		paths.add("src/add/hello.txt");
@@ -58,10 +55,10 @@ public class TreeFormatterTest {
 		p.add(new Object[] { "src", "add", "poc5.txt" });
 		p.add(new Object[] { "src", "add" });
 		p.add(new Object[] { "resources", "java" });
-		p.add(new Object[] { "resources", "java","fisier1.xml" });
-		p.add(new Object[] { "resources", "java","fisier2.xml" });
-		p.add(new Object[] { "resources", "java","fisier3.xml" });
-		p.add(new Object[] { "resources", "java","fisier4.xml" });
+		p.add(new Object[] { "resources", "java", "fisier1.xml" });
+		p.add(new Object[] { "resources", "java", "fisier2.xml" });
+		p.add(new Object[] { "resources", "java", "fisier3.xml" });
+		p.add(new Object[] { "resources", "java", "fisier4.xml" });
 		p.add(new Object[] { "src" });
 		p.add(new Object[] { "test", "remove", "file.txt" });
 		p.add(new Object[] { "test", "remove", "all", "main.smt" });
@@ -80,9 +77,10 @@ public class TreeFormatterTest {
 		expected.add(new TreePath(new Object[] { "test", "remove", "all", "main.smt" }));
 		expected.add(new TreePath(new Object[] { "test", "remove", "all", "main2.smt" }));
 		expected.add(new TreePath(new Object[] { "test", "remove", "all", "main3.smt" }));
-		
 
 		assertEquals(actual, expected);
 
 	}
+
+
 }
