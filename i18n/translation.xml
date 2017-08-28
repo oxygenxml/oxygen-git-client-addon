@@ -159,7 +159,7 @@
     </key>
     
     <key value="Commit_With_Conflicts">
-        <comment>The massage displayed when you have conflicts</comment>
+        <comment>The massage displayed when you commit with conflicts conflicts</comment>
         <val lang="en_US">Cannot commit while having conflicts</val>
         <val lang="de_DE">Commit nicht möglich während ungelöste Konflikte bestehen</val>
         <val lang="fr_FR">fr_FR_translation</val>
