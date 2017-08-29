@@ -87,6 +87,20 @@ public class FileHelper {
 		}
 		return false;
 	}
+	
+	public static boolean isGitSubmodule(String path){
+		File rootFolder = new File(path);
+		File[] listOfFiles = rootFolder.listFiles();
+
+		if (listOfFiles != null) {
+			for (int i = 0; i < listOfFiles.length; i++) {
+				if (!listOfFiles[i].isDirectory() && ".git".equals(listOfFiles[i].getName())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	public static String findXPR(String projectViewPath) {
 		File rootFolder = new File(projectViewPath);

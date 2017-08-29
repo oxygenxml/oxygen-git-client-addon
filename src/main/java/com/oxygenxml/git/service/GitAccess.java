@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.Authenticator;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,14 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.input.SwappedDataInputStream;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
-import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
@@ -60,7 +56,6 @@ import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -71,13 +66,12 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
+import org.eclipse.jgit.submodule.SubmoduleStatus;
+import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.eclipse.jgit.treewalk.AbstractTreeIterator;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
@@ -111,7 +105,7 @@ public class GitAccess {
 	private Translator translator = new TranslatorExtensionImpl();
 
 	private boolean unavailable;
-	
+
 	private GitAccess() {
 
 	}
@@ -180,11 +174,15 @@ public class GitAccess {
 		 */
 		if (git != null) {
 			try {
-				List<FileStatus> submodules = new ArrayList<FileStatus>();
 				Status status = git.status().call();
-				for (String string : git.submoduleStatus().call().keySet()) {
-					submodules.add(new FileStatus(GitChangeType.SUBMODULE, string));
+				Set<String> submodules = getSubmodules();
+				for (String string : submodules) {
+					SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
+					if (!submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
+						unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
+					}
 				}
+
 				for (String string : status.getUntracked()) {
 					if (!submodules.contains(string)) {
 						unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
@@ -201,7 +199,6 @@ public class GitAccess {
 					}
 				}
 				unstagedFiles.addAll(getConflictingFiles());
-				unstagedFiles.addAll(submodules);
 
 			} catch (NoWorkTreeException e1) {
 				e1.printStackTrace();
@@ -257,6 +254,59 @@ public class GitAccess {
 		 */
 	}
 
+	public Set<String> getSubmodules() {
+		try {
+			return git.submoduleStatus().call().keySet();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		return new HashSet<String>();
+	}
+
+	public void setSubmodule(String submodule) throws IOException {
+		Repository parentRepository = git.getRepository();
+		Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
+		git = Git.wrap(submoduleRepository);
+	}
+
+	public List<FileStatus> getSubmodules2() throws GitAPIException {
+		List<FileStatus> submodules = new ArrayList<FileStatus>();
+		List<String> submodulesNames = new ArrayList<String>();
+		for (String string : git.submoduleStatus().call().keySet()) {
+			submodulesNames.add(string);
+			submodules.add(new FileStatus(GitChangeType.SUBMODULE, string));
+		}
+		submodules.clear();
+		int submoduleCount = 0;
+		Repository parentRepository = git.getRepository();
+		try {
+			SubmoduleWalk walk = SubmoduleWalk.forIndex(parentRepository);
+			while (walk.next()) {
+				Repository submoduleRepository = walk.getRepository();
+				Git git2 = Git.wrap(submoduleRepository);
+				Status status = git2.status().call();
+				for (String string : status.getUntracked()) {
+					submodules.add(new FileStatus(GitChangeType.ADD, submodulesNames.get(0) + "/" + string));
+				}
+				for (String string : status.getModified()) {
+					System.out.println(string);
+					submodules.add(new FileStatus(GitChangeType.MODIFY, submodulesNames.get(0) + "/" + string));
+				}
+				for (String string : status.getMissing()) {
+					submodules.add(new FileStatus(GitChangeType.DELETE, submodulesNames.get(0) + "/" + string));
+				}
+				System.out.println(submoduleRepository.getWorkTree().getAbsolutePath());
+				submoduleRepository.close();
+				submoduleCount++;
+			}
+			walk.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println(submoduleCount);
+		return submodules;
+	}
+
 	/**
 	 * Commits a single file locally
 	 * 
@@ -275,23 +325,20 @@ public class GitAccess {
 		}
 	}
 
-	/*private AbstractTreeIterator getLastCommitTreeIterator(Repository repository, String branch) throws Exception {
-		Ref head = repository.findRef(branch);
-
-		if (head.getObjectId() != null) {
-			RevWalk walk = new RevWalk(repository);
-			RevCommit commit = walk.parseCommit(head.getObjectId());
-			RevTree tree = walk.parseTree(commit.getTree().getId());
-
-			CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
-			ObjectReader oldReader = repository.newObjectReader();
-			oldTreeParser.reset(oldReader, tree.getId());
-			walk.close();
-			return oldTreeParser;
-		} else {
-			return null;
-		}
-	}*/
+	/*
+	 * private AbstractTreeIterator getLastCommitTreeIterator(Repository
+	 * repository, String branch) throws Exception { Ref head =
+	 * repository.findRef(branch);
+	 * 
+	 * if (head.getObjectId() != null) { RevWalk walk = new RevWalk(repository);
+	 * RevCommit commit = walk.parseCommit(head.getObjectId()); RevTree tree =
+	 * walk.parseTree(commit.getTree().getId());
+	 * 
+	 * CanonicalTreeParser oldTreeParser = new CanonicalTreeParser(); ObjectReader
+	 * oldReader = repository.newObjectReader(); oldTreeParser.reset(oldReader,
+	 * tree.getId()); walk.close(); return oldTreeParser; } else { return null; }
+	 * }
+	 */
 
 	/**
 	 * Frees resources associated with the git instance.
@@ -580,14 +627,29 @@ public class GitAccess {
 			try {
 				Status status = git.status().call();
 				List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+
+				Set<String> submodules = getSubmodules();
+
 				for (String fileName : status.getChanged()) {
-					stagedFiles.add(new FileStatus(GitChangeType.MODIFY, fileName));
+					if (submodules.contains(fileName)) {
+						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
+					} else {
+						stagedFiles.add(new FileStatus(GitChangeType.MODIFY, fileName));
+					}
 				}
 				for (String fileName : status.getAdded()) {
-					stagedFiles.add(new FileStatus(GitChangeType.ADD, fileName));
+					if (submodules.contains(fileName)) {
+						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
+					} else {
+						stagedFiles.add(new FileStatus(GitChangeType.ADD, fileName));
+					}
 				}
 				for (String fileName : status.getRemoved()) {
-					stagedFiles.add(new FileStatus(GitChangeType.DELETE, fileName));
+					if (submodules.contains(fileName)) {
+						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
+					} else { 
+						stagedFiles.add(new FileStatus(GitChangeType.DELETE, fileName));
+					}
 				}
 				return stagedFiles;
 			} catch (NoWorkTreeException e) {
@@ -936,7 +998,7 @@ public class GitAccess {
 				if (getBaseCommit() == null) {
 					if (repository.resolve("remotes/origin/" + git.getRepository().getBranch()) != null) {
 						LogCommand log = git.log();
-						if(repository.resolve("HEAD") != null){
+						if (repository.resolve("HEAD") != null) {
 							log.not(repository.resolve("HEAD"));
 						}
 						Iterable<RevCommit> logs = git.log()
@@ -986,7 +1048,7 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 		unavailable = false;
-		
+
 	}
 
 	public void updateWithRemoteFile(String filePath) {
@@ -1061,4 +1123,30 @@ public class GitAccess {
 	public boolean isUnavailable() {
 		return unavailable;
 	}
+	
+	public void discardSubmodule(String path){
+		try {
+			git.submoduleSync().call();
+			git.submoduleUpdate().setStrategy(MergeStrategy.RECURSIVE).call();
+		} catch (InvalidConfigurationException e) {
+			e.printStackTrace();
+		} catch (NoHeadException e) {
+			e.printStackTrace();
+		} catch (ConcurrentRefUpdateException e) {
+			e.printStackTrace();
+		} catch (CheckoutConflictException e) {
+			e.printStackTrace();
+		} catch (InvalidMergeHeadsException e) {
+			e.printStackTrace();
+		} catch (WrongRepositoryStateException e) {
+			e.printStackTrace();
+		} catch (NoMessageException e) {
+			e.printStackTrace();
+		} catch (RefNotFoundException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

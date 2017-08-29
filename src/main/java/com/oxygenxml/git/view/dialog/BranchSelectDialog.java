@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view;
+package com.oxygenxml.git.view.dialog;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

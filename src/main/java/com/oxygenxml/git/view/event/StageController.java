@@ -10,6 +10,7 @@ import javax.swing.tree.TreePath;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.MyNode;
 
@@ -26,15 +27,15 @@ public class StageController implements Observer<ChangeEvent> {
 	 * the git API
 	 */
 	private GitAccess gitAccess;
-	
+
 	/**
 	 * List of all subjects registered
 	 */
 	private List<Subject<ChangeEvent>> subjects = new ArrayList<Subject<ChangeEvent>>();
 
 	/**
-	 * List of all observers registered being controlled by this controller(the controller will
-	 * delegate some work to them)
+	 * List of all observers registered being controlled by this controller(the
+	 * controller will delegate some work to them)
 	 */
 	private List<Observer<ChangeEvent>> observers = new ArrayList<Observer<ChangeEvent>>();
 
@@ -101,19 +102,21 @@ public class StageController implements Observer<ChangeEvent> {
 			gitAccess.addAll(changeEvent.getFileToBeUpdated());
 		} else if (changeEvent.getNewState() == StageState.UNSTAGED) {
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
-		} else if (changeEvent.getOldState() == StageState.UNDEFINED && changeEvent.getNewState() == StageState.DISCARD){
+		} else if (changeEvent.getOldState() == StageState.UNDEFINED && changeEvent.getNewState() == StageState.DISCARD) {
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
-			for (FileStatus file : changeEvent.getFileToBeUpdated()) {				
-				gitAccess.restoreLastCommitFile(file.getFileLocation());
+			for (FileStatus file : changeEvent.getFileToBeUpdated()) {
+				if (file.getChangeType() != GitChangeType.SUBMODULE) {
+					gitAccess.restoreLastCommitFile(file.getFileLocation());
+				}
 			}
-		} else if (changeEvent.getOldState() == StageState.UNSTAGED && changeEvent.getNewState() == StageState.DISCARD){
+		} else if (changeEvent.getOldState() == StageState.UNSTAGED && changeEvent.getNewState() == StageState.DISCARD) {
 			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
-			for (FileStatus file : changeEvent.getFileToBeUpdated()) {				
+			for (FileStatus file : changeEvent.getFileToBeUpdated()) {
 				gitAccess.restoreLastCommitFile(file.getFileLocation());
 			}
 			gitAccess.addAll(changeEvent.getFileToBeUpdated());
 		}
-		
+
 		List<Enumeration<TreePath>> treePathsToRestore = new ArrayList<Enumeration<TreePath>>();
 		for (JTree tree : trees) {
 			MyNode rootNode = (MyNode) tree.getModel().getRoot();
@@ -123,13 +126,13 @@ public class StageController implements Observer<ChangeEvent> {
 		for (Observer<ChangeEvent> observer : observers) {
 			observer.stateChanged(changeEvent);
 		}
-		for(int i = 0; i<trees.size(); i++){
+		for (int i = 0; i < trees.size(); i++) {
 			TreeFormatter.restoreLastExpandedPaths(treePathsToRestore.get(i), trees.get(i));
 		}
 	}
 
 	public void addTree(JTree tree) {
-		trees .add(tree);
+		trees.add(tree);
 	}
 
 }

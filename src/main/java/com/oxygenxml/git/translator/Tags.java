@@ -296,7 +296,7 @@ public class Tags {
 
 	/**
 	 * The text displayed in the title for the dialog that appears if the
-	 * project.xpr is not a git repository and has no got repositoriess
+	 * project.xpr is not a git repository and has no got repositories
 	 */
 	public static final String CHECK_PROJECTXPR_IS_GIT_TITLE = "Check_ProjcetXPR_Is_Git_Title";
 
@@ -305,4 +305,26 @@ public class Tags {
 	 * git repository and has no got repositories
 	 */
 	public static final String CHECK_PROJECTXPR_IS_GIT = "Check_ProjcetXPR_Is_Git";
+
+	/**
+	 * The tooltip for the select submodule button
+	 */
+	public static final String SELECT_SUBMODULE_BUTTON_TOOLTIP = "Select_Submodule_Button_Tooltip";
+
+	/**
+	 * The text displayed in the dialog that appears near the combo box
+	 */
+	public static final String SUBMODULE_DIALOG_SUBMODULE_SELECTION_LABEL = "Submodule_Dialog_Submodule_Selection_Label";
+
+	/**
+	 * The text displayed in the title for the dialog that appears when you select
+	 * a submodule
+	 */
+	public static final String SUBMODULE_DIALOG_TITLE = "Submodule_Dialog_Title";
+
+	/**
+	 * The tooltip for the submodule icon that appears on the left side of the
+	 * file
+	 */
+	public static final String SUBMODULE_ICON_TOOLTIP = "Submodule_Icon_Tooltip";
 }

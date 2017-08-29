@@ -53,7 +53,7 @@ public class StagingPanelRefresh implements Refresh {
 		String projectView = EditorVariables.expandEditorVariables("${pd}", null);
 		if (!projectView.equals(lastSelectedProjectView)) {
 			checkForGitRepositoriesUpAndDownFrom(projectView);
-			if(stagingPanel.isInFocus()){
+			if (stagingPanel.isInFocus()) {
 				lastSelectedProjectView = new String(projectView);
 			}
 			addGitFolder(projectView);
@@ -81,6 +81,14 @@ public class StagingPanelRefresh implements Refresh {
 				updateFiles(StageState.STAGED);
 				updateCounter(Command.PULL);
 				updateCounter(Command.PUSH);
+				String path = gitAccess.getRepository().getWorkTree().getAbsolutePath();
+
+				if (FileHelper.isGitSubmodule(path)) {
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(true);
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(false);
+					stagingPanel.requestFocus();
+				}
 			}
 		} catch (NoRepositorySelected e1) {
 			return;
@@ -116,7 +124,7 @@ public class StagingPanelRefresh implements Refresh {
 		} catch (SAXException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			if(e1 instanceof FileNotFoundException){
+			if (e1 instanceof FileNotFoundException) {
 				return;
 			}
 			e1.printStackTrace();

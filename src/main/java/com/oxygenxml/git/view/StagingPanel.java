@@ -157,7 +157,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		registerSubject(pushPullController);
 		registerSubject(commitPanel);
-
+		
 		addRefreshF5();
 
 		// Listens on the save event in the Oxygen editor and updates the unstaging
@@ -198,6 +198,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				gained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
+					System.out.println(inTheView);
 					refresh.call();
 				}
 

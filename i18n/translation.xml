@@ -518,4 +518,40 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
+    <key value="Select_Submodule_Button_Tooltip">
+        <comment>The tooltip for the select submodule button</comment>
+        <val lang="en_US">Submodules</val>
+        <val lang="de_DE">Submodules</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Submodule_Dialog_Submodule_Selection_Label">
+        <comment>The text displayed in the dialog that appears near the combo box</comment>
+        <val lang="en_US">Submodule: </val>
+        <val lang="de_DE">Submodule: </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Submodule_Dialog_Title">
+        <comment>The text displayed in the title for the dialog that appears when you select a submodule</comment>
+        <val lang="en_US">Submodules</val>
+        <val lang="de_DE">Submodules</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Submodule_Icon_Tooltip">
+        <comment>The tooltip for the submodule icon that appears on the left side of the file</comment>
+        <val lang="en_US">Submodule</val>
+        <val lang="de_DE">Submodule</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
 </translation>

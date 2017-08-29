@@ -15,6 +15,8 @@ public class ImageConstants {
 	public static final String GIT_PUSH_ICON = "/images/GitPush16.png";
 	public static final String GIT_PULL_ICON = "/images/GitPull16.png";
 	public static final String GIT_BRANCH_ICON = "/images/GitBranch16.png";
+	public static final String GIT_SUBMODULE_ICON = "/images/GitSubmodule16.png";
+	public static final String GIT_SUBMODULE_FILE_ICON = "/images/GitSubmodule10.png";
 	public static final String GIT_ICON = "/images/DockableFrameGitStaging16.png";
 	public static final String FILE_CHOOSER_ICON = "/images/Open16.png";
 	public static final String TREE_VIEW = "/images/GitTreeMode16.png";

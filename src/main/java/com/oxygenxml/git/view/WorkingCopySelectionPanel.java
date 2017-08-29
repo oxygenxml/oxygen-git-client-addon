@@ -124,9 +124,13 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
+					
 					// get and save the selected Option so that at restart the same
 					// repository will be selected
 					String path = (String) workingCopySelector.getSelectedItem();
+					if(FileHelper.isGitSubmodule(path)){
+						return;
+					}
 
 					try {
 

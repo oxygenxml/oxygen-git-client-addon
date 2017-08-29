@@ -30,9 +30,9 @@ import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.AddRemoteDialog;
-import com.oxygenxml.git.view.LoginDialog;
-import com.oxygenxml.git.view.PullWithConflictsDialog;
+import com.oxygenxml.git.view.dialog.AddRemoteDialog;
+import com.oxygenxml.git.view.dialog.LoginDialog;
+import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;

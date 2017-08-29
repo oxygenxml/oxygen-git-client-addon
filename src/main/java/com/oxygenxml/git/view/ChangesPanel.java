@@ -739,6 +739,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					} else if (GitChangeType.CONFLICT == file.getChangeType()) {
 						icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
 						toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
+					} else if (GitChangeType.SUBMODULE == file.getChangeType()) {
+						icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
+						toolTip = translator.getTraslation(Tags.SUBMODULE_ICON_TOOLTIP);
 					}
 
 				}
@@ -811,6 +814,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 			} else if (GitChangeType.CONFLICT == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
 				toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
+			} else if (GitChangeType.SUBMODULE == value) {
+				icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
+				toolTip = translator.getTraslation(Tags.SUBMODULE_ICON_TOOLTIP);
 			}
 			JLabel iconLabel = new JLabel(icon);
 			iconLabel.setToolTipText(toolTip);

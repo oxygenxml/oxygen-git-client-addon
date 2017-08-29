@@ -26,6 +26,8 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Refresh;
+import com.oxygenxml.git.view.dialog.BranchSelectDialog;
+import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 
@@ -71,6 +73,11 @@ public class ToolbarPanel extends JPanel {
 	 * Button for selecting a branch
 	 */
 	private ToolbarButton branchSelectButton;
+
+	/**
+	 * Button for selecting the submodules
+	 */
+	private ToolbarButton submoduleSelectButton;
 
 	/**
 	 * Counter for how many pushes the local copy is ahead of the base
@@ -136,6 +143,7 @@ public class ToolbarPanel extends JPanel {
 		gbc.weighty = 0;
 		addPushAndPullButtons();
 		addBranchSelectButton();
+		addSubmoduleSelectButton();
 		this.add(gitToolbar, gbc);
 
 		gbc.insets = new Insets(0, 0, 0, 0);
@@ -149,6 +157,27 @@ public class ToolbarPanel extends JPanel {
 		this.add(statusInformationLabel, gbc);
 
 		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.TOOLBAR_PANEL_HEIGHT));
+	}
+
+	private void addSubmoduleSelectButton() {
+		Action branchSelectAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (GitAccess.getInstance().getRepository() != null) {
+						new SubmoduleSelectDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								translator.getTraslation(Tags.SUBMODULE_DIALOG_TITLE), true, refresh, translator);
+					}
+				} catch (NoRepositorySelected e1) {
+				}
+			}
+		};
+		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
+		submoduleSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_SUBMODULE_ICON));
+		submoduleSelectButton.setToolTipText(translator.getTraslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
+		setCustomWidthOn(submoduleSelectButton);
+		
+		gitToolbar.add(submoduleSelectButton);
 	}
 
 	private void addBranchSelectButton() {
