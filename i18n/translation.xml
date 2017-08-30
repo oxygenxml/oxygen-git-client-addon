@@ -206,7 +206,7 @@
     <key value="Push_Up_To_Date">
         <comment>The massage displayed when you push with no changes</comment>
         <val lang="en_US">There was nothing to push</val>
-        <val lang="de_DE">Es wurde nichts gepusht.</val>
+        <val lang="de_DE">Es wurde nichts gepusht</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -224,7 +224,7 @@
     <key value="Pull_With_Uncommitted_Changes">
         <comment>The massage displayed when you pull with uncommitted files</comment>
         <val lang="en_US">Cannot pull with uncommitted changes</val>
-        <val lang="de_DE">Pull kann nicht ausgeführt werden solange es uncommittete Änderungen gibt</val>
+        <val lang="de_DE">Pull kann nicht ausgeführt werden solange es nicht-committete Änderungen gibt</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -467,7 +467,7 @@
     <key value="Add_Remote_Dialog_Title">
         <comment>The text displayed in the title for the dialog that appears when you push while having no remote set</comment>
         <val lang="en_US">Add Remote</val>
-        <val lang="de_DE">Add Remote</val>
+        <val lang="de_DE">Remote hinzufügen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -476,7 +476,7 @@
     <key value="Add_Remote_Dialog_Add_Remote_Name_Label">
         <comment>The text displayed in the dialog that appears near the text field for remote name</comment>
         <val lang="en_US">Remote Name: </val>
-        <val lang="de_DE">Remote Name: </val>
+        <val lang="de_DE">Remote-Name: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -485,7 +485,7 @@
     <key value="Add_Remote_Dialog_Add_Remote_Repo_Label">
         <comment>The text displayed in the dialog that appears near the text field for remote repo</comment>
         <val lang="en_US">Remote Repo URL: </val>
-        <val lang="de_DE">Remote Repo URL: </val>
+        <val lang="de_DE">Remote-URL: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -494,7 +494,7 @@
     <key value="Add_Remote_Dialog_Info_Label">
         <comment>The text displayed in the dialog that appears at the top of the dialog</comment>
         <val lang="en_US">This repository has no remote. Please insert one</val>
-        <val lang="de_DE">This repository has no remote. Please insert one</val>
+        <val lang="de_DE">Dieses Repository hat keine Remote-Verbindung. Bitte ergänzen Sie eine.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -503,7 +503,7 @@
     <key value="Check_ProjcetXPR_Is_Git">
         <comment>The text displayed in the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
         <val lang="en_US">Do you want your current project to be a git project ?</val>
-        <val lang="de_DE">Do you want your current project to be a git project ?</val>
+        <val lang="de_DE">Soll das aktuelle Projekt als Git-Projekt aufgesetzt werden?</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -557,7 +557,7 @@
     <key value="Login_Dilaog_Username_Label">
         <comment>The text displayed on the label for the username</comment>
         <val lang="en_US">Username: </val>
-        <val lang="de_DE">Username: </val>
+        <val lang="de_DE">Benutzername: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -566,7 +566,7 @@
     <key value="Login_Dilaog_Password_Label">
         <comment>The text displayed on the label for the password</comment>
         <val lang="en_US">Password: </val>
-        <val lang="de_DE">Password: </val>
+        <val lang="de_DE">Passwort: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -584,7 +584,7 @@
     <key value="Login_Dilaog">
         <comment>The text displayed above the text fields</comment>
         <val lang="en_US">Enter account for </val>
-        <val lang="de_DE">Enter account for </val>
+        <val lang="de_DE">Account angeben für </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -593,7 +593,7 @@
     <key value="Login_Dilaog_Credentials_Not_Found_Message">
         <comment>The text displayed on the first row of the login dialog if there are no credentials stored</comment>
         <val lang="en_US">No credentials found</val>
-        <val lang="de_DE">No credentials found</val>
+        <val lang="de_DE">Keine Zugangsdaten gefunden</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -602,7 +602,7 @@
     <key value="Login_Dilaog_Credentials_Invalid_Message">
         <comment>The text displayed on the first row of the login dialog if the credentials are invalid</comment>
         <val lang="en_US">Invalid credentials for </val>
-        <val lang="de_DE">Invalid credentials for </val>
+        <val lang="de_DE">Ungültige Zugangsdaten für </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -620,7 +620,7 @@
     <key value="Toolbar_Panel_Information_Status_Single_Commit">
         <comment>The text displayed on the right side of the toolbar buttons if the repository is one commit behind</comment>
         <val lang="en_US">commit behind</val>
-        <val lang="de_DE">commit behind</val>
+        <val lang="de_DE">Commit zurück</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -629,7 +629,7 @@
     <key value="Toolbar_Panel_Information_Status_Multiple_Commits">
         <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits behind </comment>
         <val lang="en_US">commits behind</val>
-        <val lang="de_DE">commits behind</val>
+        <val lang="de_DE">Commits zurück</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -638,7 +638,7 @@
     <key value="Toolbar_Panel_Information_Status_Up_To_Date">
         <comment>The text displayed on the right side of the toolbar buttons if the repository is up to date </comment>
         <val lang="en_US">Up to date</val>
-        <val lang="de_DE">Up to date</val>
+        <val lang="de_DE">Aktuell</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
