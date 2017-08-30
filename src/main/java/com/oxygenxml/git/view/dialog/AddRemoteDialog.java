@@ -24,25 +24,38 @@ import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
-public class AddRemoteDialog extends OKCancelDialog{
+/**
+ * Dialog that appears when a repository has no remote and the user tries to
+ * push or pull and asks the user for a remote repository
+ * 
+ * @author Beniamin Savu
+ *
+ */
+public class AddRemoteDialog extends OKCancelDialog {
 
+	/**
+	 * The translator for the messages that are displayed in this dialog
+	 */
 	private Translator translator;
-	
+
+	/**
+	 * The thext filed to enter the remote URL
+	 */
 	private JTextField remoteNameTextField;
-	
+
 	private JTextField remoteRepoTextField;
-	
+
 	public AddRemoteDialog(JFrame parentFrame, String title, boolean modal, Translator translator) {
 		super(parentFrame, title, modal);
 		this.translator = translator;
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		addInformationLabel(gbc);
-		//addRemoteNameLabel(gbc);
-		//addRemoteNameTextField(gbc);
+		// addRemoteNameLabel(gbc);
+		// addRemoteNameTextField(gbc);
 		addRemoteRepoLabel(gbc);
 		addRemoteRepoTextField(gbc);
-		
+
 		this.pack();
 		this.setLocationRelativeTo(parentFrame);
 		this.setMinimumSize(new Dimension(320, 130));
@@ -51,6 +64,12 @@ public class AddRemoteDialog extends OKCancelDialog{
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
 	}
 
+	/**
+	 * Some information message displayed above the text filed
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addInformationLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -65,6 +84,12 @@ public class AddRemoteDialog extends OKCancelDialog{
 		getContentPane().add(label, gbc);
 	}
 
+	/**
+	 * Adds the text field to the dialog
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addRemoteRepoTextField(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -79,6 +104,12 @@ public class AddRemoteDialog extends OKCancelDialog{
 		getContentPane().add(remoteRepoTextField, gbc);
 	}
 
+	/**
+	 * Adds a label on the left side of the text filed
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addRemoteRepoLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -121,6 +152,9 @@ public class AddRemoteDialog extends OKCancelDialog{
 		getContentPane().add(label, gbc);
 	}
 
+	/**
+	 * Adds the remote as origin to the repository
+	 */
 	@Override
 	protected void doOK() {
 		super.doOK();

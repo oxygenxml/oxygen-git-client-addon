@@ -292,8 +292,12 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			statusLabel.setText("Cannot reach host");
 			statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
 		}else if("availbale".equals(message)){
-			statusLabel.setText(null);
-			statusLabel.setIcon(null);
+			synchronized (this) {
+				if(messagesActive == 0){
+					statusLabel.setText(null);
+					statusLabel.setIcon(null);
+				}
+			}
 		}else {
 			new Thread(new Runnable() {
 				
@@ -301,10 +305,13 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 					try {
 						synchronized (this) {
 							messagesActive++;
+							System.out.println("message Active " + messagesActive);
 							statusLabel.setText(message);
 						}
+						
 						TimeUnit.SECONDS.sleep(3);
 						synchronized (this) {
+							System.out.println("message Active " + messagesActive);
 							messagesActive--;
 							if (messagesActive == 0) {
 								statusLabel.setText("");

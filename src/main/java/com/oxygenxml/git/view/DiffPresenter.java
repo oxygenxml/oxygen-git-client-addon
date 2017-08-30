@@ -32,11 +32,32 @@ import com.oxygenxml.git.view.event.StageState;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+/**
+ * Displays the diff depending on the what change type the file is.
+ * 
+ * @author Beniamin Savu
+ *
+ */
 public class DiffPresenter {
 
+	/**
+	 * The file on which the diffPresenter works
+	 */
 	private FileStatus file;
+
+	/**
+	 * The frame of the oxygen's diff
+	 */
 	private Component diffFrame;
+
+	/**
+	 * Controller used for staging and unstaging
+	 */
 	private StageController stageController;
+
+	/**
+	 * The translator used for the messages that are displayed to the user
+	 */
 	private Translator translator;
 
 	public DiffPresenter(FileStatus file, StageController stageController, Translator translator) {
@@ -45,6 +66,12 @@ public class DiffPresenter {
 		this.translator = translator;
 	}
 
+	/**
+	 * Perform different actions depending on the file change type. If the file is
+	 * a conflict file then a 3-way diff is presented. If the file is a modified
+	 * one then a 2-way diff is presented. And if a file is added then the file is
+	 * opened
+	 */
 	public void showDiff() {
 		switch (file.getChangeType()) {
 		case CONFLICT:
@@ -61,11 +88,17 @@ public class DiffPresenter {
 		}
 	}
 
+	/**
+	 * Opens the file in the Oxygen
+	 */
 	public void openFile() {
 		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 				.open(FileHelper.getFileURL(file.getFileLocation()));
 	}
 
+	/**
+	 * Presents a 2-way diff
+	 */
 	private void diffView() {
 		URL fileURL = FileHelper.getFileURL(file.getFileLocation());
 		URL lastCommitedFileURL = null;
@@ -81,17 +114,25 @@ public class DiffPresenter {
 
 	}
 
+	/**
+	 * Presents a 3-way diff
+	 */
 	private void conflictDiff() {
 		try {
+			// builds the URL for the files
 			URL local = GitRevisionURLHandler.buildURL(GitFile.LOCAL, file.getFileLocation());
 			URL remote = GitRevisionURLHandler.buildURL(GitFile.REMOTE, file.getFileLocation());
 			URL base = GitRevisionURLHandler.buildURL(GitFile.BASE, file.getFileLocation());
 
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
 			final File localCopy = new File(selectedRepository, file.getFileLocation());
+
+			// time stamp used for detecting if the file was changed in the diff view
 			final long diffStartedTimeStamp = localCopy.lastModified();
 
 			try {
+				// checks whether a base commit exists or not. If not, then the a 2-way
+				// diff is presented
 				if (GitAccess.getInstance().getLoaderFrom(GitAccess.getInstance().getBaseCommit(),
 						file.getFileLocation()) == null) {
 					diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
@@ -109,6 +150,8 @@ public class DiffPresenter {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			// checks if the file in conflict has been resolved or not after the diff
+			// view was closed
 			diffFrame.addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentHidden(ComponentEvent e) {
@@ -120,8 +163,7 @@ public class DiffPresenter {
 						int[] optonsId = new int[] { 0, 1 };
 						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
 								translator.getTraslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
-								translator.getTraslation(Tags.CHECK_IF_CONFLICT_RESOLVED),
-								options, optonsId);
+								translator.getTraslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().remove(file);
 							GitAccess.getInstance().restoreLastCommitFile(file.getFileLocation());

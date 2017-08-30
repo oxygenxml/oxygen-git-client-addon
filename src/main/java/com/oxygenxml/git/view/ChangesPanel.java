@@ -346,8 +346,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
 				if (treePath != null) {
 					String stringPath = TreeFormatter.getStringPath(treePath);
+					MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 					// double click event
-					if (model.isLeaf(TreeFormatter.getTreeNodeFromString(model, stringPath))) {
+					if (model.isLeaf(node) && !model.getRoot().equals(node)) {
 						if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
 							FileStatus file = model.getFileByPath(stringPath);
 							DiffPresenter diff = new DiffPresenter(file, stageController, translator);

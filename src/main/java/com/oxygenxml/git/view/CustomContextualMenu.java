@@ -28,10 +28,28 @@ import com.oxygenxml.git.view.event.StageState;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+/**
+ * Custom contextual menu that appears when you right click on the slected files
+ * in the flat or tree view
+ * 
+ * @author Beniamin Savu
+ *
+ */
 public class CustomContextualMenu extends JPopupMenu {
 
+	/**
+	 * The translator used for the contextual menu names
+	 */
 	private Translator translator;
+
+	/**
+	 * Controller used for staging and unstaging
+	 */
 	private StageController stageController;
+
+	/**
+	 * The git API, containg the commands
+	 */
 	private GitAccess gitAccess;
 
 	public CustomContextualMenu(Translator translator, StageController stageController, GitAccess gitAccess) {
@@ -41,6 +59,14 @@ public class CustomContextualMenu extends JPopupMenu {
 
 	}
 
+	/**
+	 * Adds the contextual menu items and creates for each of them an action. The
+	 * action will apply for the given files. Some action may be different
+	 * depending on the given staging state
+	 * 
+	 * @param files
+	 * @param staging
+	 */
 	public void createContextualMenuFor(final List<FileStatus> files, final boolean staging) {
 		final FileStatus fileStatus = files.get(0);
 
@@ -70,6 +96,7 @@ public class CustomContextualMenu extends JPopupMenu {
 		});
 		open.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN));
 
+		// Stage/Unstage
 		JMenuItem changeState = new JMenuItem();
 		changeState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -90,6 +117,7 @@ public class CustomContextualMenu extends JPopupMenu {
 			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_STAGE));
 		}
 
+		// Resolve "mine"
 		JMenuItem resolveMine = new JMenuItem();
 		resolveMine.addActionListener(new ActionListener() {
 
@@ -103,6 +131,7 @@ public class CustomContextualMenu extends JPopupMenu {
 		});
 		resolveMine.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE));
 
+		// Resolve "theirs"
 		JMenuItem resolveTheirs = new JMenuItem();
 		resolveTheirs.addActionListener(new ActionListener() {
 
@@ -119,6 +148,7 @@ public class CustomContextualMenu extends JPopupMenu {
 		});
 		resolveTheirs.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS));
 
+		// show diff
 		JMenuItem diff = new JMenuItem();
 		diff.addActionListener(new ActionListener() {
 
@@ -129,6 +159,7 @@ public class CustomContextualMenu extends JPopupMenu {
 		});
 		diff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
 
+		// Mark resolved
 		JMenuItem markResolved = new JMenuItem();
 		markResolved.addActionListener(new ActionListener() {
 
@@ -141,6 +172,7 @@ public class CustomContextualMenu extends JPopupMenu {
 		});
 		markResolved.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED));
 
+		// Restart Merge
 		JMenuItem restartMerge = new JMenuItem();
 		restartMerge.addActionListener(new ActionListener() {
 
@@ -153,6 +185,7 @@ public class CustomContextualMenu extends JPopupMenu {
 		});
 		restartMerge.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE));
 
+		// Resolve Conflict
 		JMenu resolveConflict = new JMenu();
 		resolveConflict.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
 		resolveConflict.add(diff);
@@ -182,7 +215,7 @@ public class CustomContextualMenu extends JPopupMenu {
 							} catch (IOException e1) {
 								e1.printStackTrace();
 							}
-						} else if (file.getChangeType() == GitChangeType.SUBMODULE){
+						} else if (file.getChangeType() == GitChangeType.SUBMODULE) {
 							gitAccess.discardSubmodule(file.getFileLocation());
 						}
 					}
@@ -219,6 +252,7 @@ public class CustomContextualMenu extends JPopupMenu {
 			showDiff.setEnabled(true);
 			diff.setEnabled(true);
 		}
+		// the active actions for all selected files that contain each type
 		if (files.size() > 1 && containsConflicts && !sameChangeType) {
 			showDiff.setEnabled(false);
 			open.setEnabled(true);
@@ -231,6 +265,7 @@ public class CustomContextualMenu extends JPopupMenu {
 			markResolved.setEnabled(false);
 			discard.setEnabled(false);
 		} else {
+			// the active actions for all the selected files that are added
 			if (fileStatus.getChangeType() == GitChangeType.ADD && sameChangeType) {
 				showDiff.setEnabled(false);
 				open.setEnabled(true);
@@ -242,6 +277,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				restartMerge.setEnabled(true);
 				markResolved.setEnabled(false);
 				discard.setEnabled(true);
+				// the active actions for all the selected files that are deleted
 			} else if (fileStatus.getChangeType() == GitChangeType.DELETE && sameChangeType) {
 				showDiff.setEnabled(false);
 				open.setEnabled(false);
@@ -252,6 +288,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				restartMerge.setEnabled(true);
 				markResolved.setEnabled(false);
 				discard.setEnabled(true);
+				// the active actions for all the selected files that are modified
 			} else if (fileStatus.getChangeType() == GitChangeType.MODIFY && sameChangeType) {
 				open.setEnabled(true);
 				changeState.setEnabled(true);
@@ -261,6 +298,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				restartMerge.setEnabled(true);
 				markResolved.setEnabled(false);
 				discard.setEnabled(true);
+				// the active actions for all the selected files that are in conflict
 			} else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
 				open.setEnabled(true);
 				changeState.setEnabled(false);
@@ -270,6 +308,8 @@ public class CustomContextualMenu extends JPopupMenu {
 				restartMerge.setEnabled(true);
 				markResolved.setEnabled(true);
 				discard.setEnabled(false);
+				// the active actions for all the selected files that contain each type
+				// without conflict
 			} else {
 				showDiff.setEnabled(false);
 				open.setEnabled(true);

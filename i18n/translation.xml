@@ -554,4 +554,58 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
+    <key value="Login_Dilaog_Username_Label">
+        <comment>The text displayed on the label for the username</comment>
+        <val lang="en_US">Username: </val>
+        <val lang="de_DE">Username: </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Login_Dilaog_Password_Label">
+        <comment>The text displayed on the label for the password</comment>
+        <val lang="en_US">Password: </val>
+        <val lang="de_DE">Password: </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Login_Dilaog_Title">
+        <comment>The text displayed on the title for the login dialog</comment>
+        <val lang="en_US">Git Account</val>
+        <val lang="de_DE">Git Account</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Login_Dilaog">
+        <comment>The text displayed above the text fields</comment>
+        <val lang="en_US">Enter account for </val>
+        <val lang="de_DE">Enter account for </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Login_Dilaog_Credentials_Not_Found_Message">
+        <comment>The text displayed on the first row of the login dialog if there are no credentials stored</comment>
+        <val lang="en_US">No credentials found</val>
+        <val lang="de_DE">No credentials found</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Login_Dilaog_Credentials_Invalid_Message">
+        <comment>The text displayed on the first row of the login dialog if the credentials are invalid</comment>
+        <val lang="en_US">Invalid credentials for </val>
+        <val lang="de_DE">Invalid credentials for </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
 </translation>

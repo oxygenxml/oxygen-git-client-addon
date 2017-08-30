@@ -30,12 +30,13 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 	public PullWithConflictsDialog(JFrame frame, String title, boolean modal, Set<String> conflictFiles,
 			Translator translator) {
 		super(frame, title, modal);
-
+		
 		JLabel label = new JLabel(translator.getTraslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
 		Border border = label.getBorder();
 		Border margin = new EmptyBorder(0, 7, 7, 0);
 		label.setBorder(new CompoundBorder(border, margin));
 
+		// populating the JList with the conflict files
 		DefaultListModel<String> model = new DefaultListModel<String>();
 		for (String file : conflictFiles) {
 			model.addElement(file);

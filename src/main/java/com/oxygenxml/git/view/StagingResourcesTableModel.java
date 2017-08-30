@@ -283,15 +283,6 @@ public class StagingResourcesTableModel extends AbstractTableModel
 
 	}
 
-	public GitChangeType getChangeType(String fullPath) {
-		for (FileStatus fileStatus : filesStatus) {
-			if (fileStatus.getFileLocation().equals(fullPath)) {
-				return fileStatus.getChangeType();
-			}
-		}
-		return null;
-	}
-
 	public String getFileLocation(int convertedRow) {
 		return filesStatus.get(convertedRow).getFileLocation();
 	}

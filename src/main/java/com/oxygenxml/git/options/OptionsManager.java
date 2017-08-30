@@ -20,7 +20,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
- * Used to save and load different user options
+ * Used to save and load different plugin options
  * 
  * @author Beniamin Savu
  *
@@ -45,7 +45,7 @@ public class OptionsManager {
 	 * Constant for how many project paths that have been tested for git to store
 	 */
 	private static final int MAXIMUM_PROJECTS_TESTED = 10;
-	
+
 	/**
 	 * All Repositories that were selected by the user with their options
 	 */
@@ -285,13 +285,25 @@ public class OptionsManager {
 
 		saveOptions();
 	}
-	
+
+	/**
+	 * Gets the last MAXIMUM_PROJECTS_TESTED from the project view tested to be
+	 * git repositories
+	 * 
+	 * @return a list with the last MAXIMUM_PROJECTS_TESTED paths
+	 */
 	public List<String> getProjectsTestedForGit() {
 		loadOptions();
-		
+
 		return options.getPrjectsTestsForGit().getPaths();
 	}
 
+	/**
+	 * Saves the given project path from the project view
+	 * 
+	 * @param projectPath
+	 *          - the project path to be saved
+	 */
 	public void saveProjectTestedForGit(String projectPath) {
 		loadOptions();
 

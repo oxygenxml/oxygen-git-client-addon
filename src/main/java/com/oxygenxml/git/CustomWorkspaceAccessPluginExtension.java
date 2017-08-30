@@ -53,8 +53,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 		try {
 
-			// PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS",
-			// "");
+			//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
 			Translator translator = new TranslatorExtensionImpl();
 			final Refresh refresh = new StagingPanelRefresh(translator);
 			final StagingPanel stagingPanel = new StagingPanel(translator, refresh);
@@ -98,6 +97,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 			});
 
+			// refresh activates when the the oxygen window gains again focus
 			parentFrame.addWindowListener(new WindowAdapter() {
 
 				private boolean toRefresh = true;

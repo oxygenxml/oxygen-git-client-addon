@@ -124,11 +124,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					
+
 					// get and save the selected Option so that at restart the same
 					// repository will be selected
 					String path = (String) workingCopySelector.getSelectedItem();
-					if(FileHelper.isGitSubmodule(path)){
+					if (FileHelper.isGitSubmodule(path)) {
 						return;
 					}
 
@@ -221,11 +221,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 				if (directory != null) {
 					String directoryPath = directory.getAbsolutePath();
 					if (FileHelper.isGitRepository(directoryPath) && directoryPath != null) {
-
+						// adds the directory path to the combo box if it doesn't already exists
 						if (!OptionsManager.getInstance().getRepositoryEntries().contains(directoryPath)) {
 							workingCopySelector.addItem(directoryPath);
 							OptionsManager.getInstance().addRepository(directoryPath);
 						}
+						//sets the directory path as the selected repository
 						workingCopySelector.setSelectedItem(directoryPath);
 					} else {
 						PluginWorkspaceProvider.getPluginWorkspace()

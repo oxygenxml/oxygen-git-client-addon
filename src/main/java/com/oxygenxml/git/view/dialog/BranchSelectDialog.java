@@ -1,18 +1,13 @@
 package com.oxygenxml.git.view.dialog;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -29,14 +24,33 @@ import com.oxygenxml.git.utils.Refresh;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
+/**
+ * Dialog used for detecting and selecting git branches
+ * 
+ * @author Beniamin Savu
+ *
+ */
 public class BranchSelectDialog extends OKCancelDialog {
 
+	/**
+	 * Shows the user a combo box with all the branches for that repository
+	 */
 	private JComboBox<String> branchesList;
-	
+
+	/**
+	 * An information label that is displayed in case of some errors to let the
+	 * user know what to do
+	 */
 	private JLabel information;
 
+	/**
+	 * Main panel refresh
+	 */
 	private Refresh refresh;
-	
+
+	/**
+	 * The translator for the messages that are displayed in this dialog
+	 */
 	private Translator translator;
 
 	public BranchSelectDialog(JFrame parentFrame, String title, boolean modal, Refresh refresh, Translator translator) {
@@ -58,6 +72,12 @@ public class BranchSelectDialog extends OKCancelDialog {
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
 	}
 
+	/**
+	 * Adds the information label to the dialog
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addInformationLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -72,6 +92,12 @@ public class BranchSelectDialog extends OKCancelDialog {
 		getContentPane().add(information, gbc);
 	}
 
+	/**
+	 * Populates the combo box with data and adds it to the dialog
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addBranchSelectCombo(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -92,6 +118,12 @@ public class BranchSelectDialog extends OKCancelDialog {
 		getContentPane().add(branchesList, gbc);
 	}
 
+	/**
+	 * Adds the label on the left side of the combo box
+	 * 
+	 * @param gbc
+	 *          - the constraints used for this component
+	 */
 	private void addLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
@@ -105,6 +137,9 @@ public class BranchSelectDialog extends OKCancelDialog {
 		getContentPane().add(label, gbc);
 	}
 
+	/**
+	 * Sets as current branch the branch that the user selects from the combo box
+	 */
 	protected void doOK() {
 		String selectedBranch = (String) branchesList.getSelectedItem();
 		try {

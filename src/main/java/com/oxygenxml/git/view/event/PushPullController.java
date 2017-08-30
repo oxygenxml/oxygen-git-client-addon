@@ -31,6 +31,7 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
+import com.oxygenxml.git.view.dialog.BranchSelectDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
 
@@ -60,7 +61,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 */
 	private GitAccess gitAccess;
 
-	boolean commandExecuted = true;
+	volatile boolean commandExecuted = true;
 
 	private Translator translator;
 
@@ -77,7 +78,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * @return the new credentials
 	 */
 	public UserCredentials loadNewCredentials(String loginMessage) {
-		return new LoginDialog(gitAccess.getHostName(), loginMessage).getUserCredentials();
+		return new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+				translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage, translator)
+						.getUserCredentials();
 	}
 
 	/**
@@ -101,21 +104,23 @@ public class PushPullController implements Subject<PushPullEvent> {
 		new Thread(new Runnable() {
 
 			public void run() {
+
 				String message = "";
 				try {
+					commandExecuted = true;
 					if (command == Command.PUSH) {
 						message = push(userCredentials);
 					} else {
 						message = pull(userCredentials);
 					}
-					commandExecuted = true;
 				} catch (GitAPIException e) {
 					if (e.getMessage().contains("not authorized")) {
 						String loginMessage = "";
 						if ("".equals(userCredentials.getUsername())) {
-							loginMessage = "Invalid credentials";
+							loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
 						} else {
-							loginMessage = "Invalid credentials for " + userCredentials.getUsername();
+							loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+									+ userCredentials.getUsername();
 						}
 						UserCredentials loadNewCredentials = loadNewCredentials(loginMessage);
 						if (loadNewCredentials != null) {
@@ -127,11 +132,13 @@ public class PushPullController implements Subject<PushPullEvent> {
 					if (e.getMessage().contains("not permitted")) {
 						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								"You have no rights to push in this repository " + userCredentials.getUsername());
+						return;
 					}
 					if (e.getMessage().contains("origin: not found")
 							|| e.getMessage().contains("No value for key remote.origin.url found in configuration")) {
 						new AddRemoteDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								translator.getTraslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
+						return;
 					}
 					e.printStackTrace();
 				} catch (RevisionSyntaxException e) {

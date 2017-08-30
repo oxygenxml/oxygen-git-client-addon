@@ -42,6 +42,7 @@ import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
@@ -182,7 +183,7 @@ public class GitAccess {
 						unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
 					}
 				}
-
+				
 				for (String string : status.getUntracked()) {
 					if (!submodules.contains(string)) {
 						unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
@@ -256,6 +257,7 @@ public class GitAccess {
 
 	public Set<String> getSubmodules() {
 		try {
+			
 			return git.submoduleStatus().call().keySet();
 		} catch (GitAPIException e) {
 			e.printStackTrace();

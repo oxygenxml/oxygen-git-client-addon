@@ -36,7 +36,8 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 /**
- * Contains additional support buttons like push and pull
+ * Contains additional support buttons like push, pull, branch select, submodule
+ * select
  * 
  * @author Beniamin Savu
  *
@@ -159,6 +160,11 @@ public class ToolbarPanel extends JPanel {
 		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.TOOLBAR_PANEL_HEIGHT));
 	}
 
+	/**
+	 * Adds to the tool bar a button for selecting submodules. When clicked, a new
+	 * dialog appears that shows all the submodules for the current repository and
+	 * allows the user to select one of them
+	 */
 	private void addSubmoduleSelectButton() {
 		Action branchSelectAction = new AbstractAction() {
 
@@ -176,10 +182,15 @@ public class ToolbarPanel extends JPanel {
 		submoduleSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_SUBMODULE_ICON));
 		submoduleSelectButton.setToolTipText(translator.getTraslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
 		setCustomWidthOn(submoduleSelectButton);
-		
+
 		gitToolbar.add(submoduleSelectButton);
 	}
 
+	/**
+	 * Adds to the tool bar a button for selecting branches. When clicked, a new
+	 * dialog appears that shows all the branches for the current repository and
+	 * allows the user to select one of them
+	 */
 	private void addBranchSelectButton() {
 		Action branchSelectAction = new AbstractAction() {
 
@@ -210,7 +221,7 @@ public class ToolbarPanel extends JPanel {
 			if (pullsBehind == 0) {
 				message += "Up to date";
 			} else {
-				message += pullsBehind + " pulls behind";
+				message += pullsBehind + " behind";
 			}
 			message += "</html>";
 		}

@@ -128,8 +128,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		StageController observer = new StageController(gitAccess);
 		PushPullController pushPullController = new PushPullController(gitAccess, translator);
 
+		//Creates the panels objects that will be in the staging panel
 		unstagedChangesPanel = new ChangesPanel(gitAccess, observer, false, translator);
 		stagedChangesPanel = new ChangesPanel(gitAccess, observer, true, translator);
+		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
 		splitPane.add(stagedChangesPanel);
@@ -137,18 +139,18 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		splitPane.setContinuousLayout(true);
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setBorder(null);
-
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
 		commitPanel = new CommitPanel(gitAccess, observer, translator);
 		toolbarPanel = new ToolbarPanel(pushPullController, translator, refresh);
 
+		//adds the panels to the staging panel using gird bag constraints
 		GridBagConstraints gbc = new GridBagConstraints();
-
 		addToolbatPanel(gbc);
 		addWorkingCopySelectionPanel(gbc);
 		addSplitPanel(gbc, splitPane);
 		addCommitPanel(gbc);
 
+		//creates the actual GUI for each panel
 		workingCopySelectionPanel.createGUI();
 		toolbarPanel.createGUI();
 		commitPanel.createGUI();
@@ -157,7 +159,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		registerSubject(pushPullController);
 		registerSubject(commitPanel);
-		
+
 		addRefreshF5();
 
 		// Listens on the save event in the Oxygen editor and updates the unstaging
@@ -198,7 +200,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				gained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
-					System.out.println(inTheView);
 					refresh.call();
 				}
 
@@ -367,8 +368,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		subject.removeObserver(this);
 	}
-	
-	public boolean isInFocus(){
+
+	public boolean isInFocus() {
 		return gained;
 	}
 }

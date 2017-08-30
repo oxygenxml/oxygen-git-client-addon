@@ -327,4 +327,37 @@ public class Tags {
 	 * file
 	 */
 	public static final String SUBMODULE_ICON_TOOLTIP = "Submodule_Icon_Tooltip";
+
+	/**
+	 * The text displayed on the label for the username
+	 */
+	public static final String LOGIN_DIALOG_USERNAME_LABEL = "Login_Dilaog_Username_Label";
+
+	/**
+	 * The text displayed on the label for the password
+	 */
+	public static final String LOGIN_DIALOG_PASSWORD_LABEL = "Login_Dilaog_Password_Label";
+
+	/**
+	 * The text displayed on the title for the login dialog
+	 */
+	public static final String LOGIN_DIALOG_TITLE = "Login_Dilaog_Title";
+
+	/**
+	 * The text displayed above the text fields
+	 */
+	public static final String LOGIN_DIALOG = "Login_Dilaog";
+
+	/**
+	 * The text displayed on the first row of the login dialog if there are no
+	 * credentials stored
+	 */
+	public static final String LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE = "Login_Dilaog_Credentials_Not_Found_Message";
+
+	/**
+	 * The text displayed on the first row of the login dialog if the credentials
+	 * are invalid
+	 */
+	public static final String LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE = "Login_Dilaog_Credentials_Invalid_Message";
+
 }
