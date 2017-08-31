@@ -1,17 +1,24 @@
 package com.oxygenxml.git.protocol;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.lib.ObjectId;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.utils.FileHelper;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Handler for the "git" protocol. Can be used to for the three way diff on the
@@ -57,7 +64,6 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		protected GitRevisionConnection(URL url) throws IOException {
 			super(url);
 			setDoOutput(true);
-
 			try {
 				GitAccess gitAccess = GitAccess.getInstance();
 				String host = getHost(url);
@@ -73,6 +79,12 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				} else if (GitFile.BASE.equals(host)) {
 					fileObject = gitAccess.getBaseCommit();
 					currentHost = GitFile.BASE;
+				} else if (GitFile.CURRENT_SUBMODULE.equals(host)) {
+					fileObject = gitAccess.submoduleCompare(path, false);
+					currentHost = GitFile.CURRENT_SUBMODULE;
+				} else if (GitFile.PREVIOUSLY_SUBMODULE.equals(host)) {
+					fileObject = gitAccess.submoduleCompare(path, true);
+					currentHost = GitFile.PREVIOUSLY_SUBMODULE;
 				} else {
 					throw new Exception("Bad syntax: " + path);
 				}
@@ -104,6 +116,16 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the input stream
 		 */
 		public InputStream getInputStream() throws IOException {
+			if (GitFile.CURRENT_SUBMODULE.equals(currentHost) || GitFile.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
+				String commit = "Subproject commit " + fileObject.getName();
+				File temp = File.createTempFile("submodule", ".txt");
+				PrintWriter printWriter = new PrintWriter(temp);
+				printWriter.println(commit);
+				printWriter.close();
+				return new FileInputStream(temp);
+				//return IOUtils.toInputStream(commit, "UTF-8");
+				//return new ByteArrayInputStream(commit.getBytes(StandardCharsets.UTF_8));
+			}
 			GitAccess gitAccess = GitAccess.getInstance();
 			return gitAccess.getInputStream(fileObject, path);
 		}
@@ -165,8 +187,8 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 * @throws MalformedURLException
 	 */
 	public static URL buildURL(String gitFile, String fileLocation) throws MalformedURLException {
-		URL url = null;
-		if (gitFile.equals(GitFile.LOCAL)) {
+		URL url = new URL ("git://" + gitFile + "/" + fileLocation);
+		/*if (gitFile.equals(GitFile.LOCAL)) {
 			url = new URL("git://Local/" + fileLocation);
 		} else if (gitFile.equals(GitFile.REMOTE)) {
 			url = new URL("git://Remote/" + fileLocation);
@@ -174,9 +196,13 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			url = new URL("git://Base/" + fileLocation);
 		} else if (gitFile.equals(GitFile.LAST_COMMIT)) {
 			url = new URL("git://LastCommit/" + fileLocation);
+		} else if (gitFile.equals(GitFile.CURRENT_SUBMODULE)) {
+			url = new URL("git://CurrentSubmodule/" + fileLocation);
+		} else if (gitFile.equals(GitFile.PREVIOUSLY_SUBMODULE)) {
+			url = new URL("git://PreviousSubmodule/" + fileLocation);
 		} else {
 			url = new URL("");
-		}
+		}*/
 
 		return url;
 	}

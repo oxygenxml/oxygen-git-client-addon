@@ -83,8 +83,23 @@ public class DiffPresenter {
 		case ADD:
 			openFile();
 			break;
+		case SUBMODULE:
+			submoduleDiff();
+			break;
 		default:
 			break;
+		}
+	}
+
+	private void submoduleDiff() {
+		GitAccess.getInstance().submoduleCompare(file.getFileLocation(), true);
+		try {
+			URL currentSubmoduleCommit = GitRevisionURLHandler.buildURL(GitFile.CURRENT_SUBMODULE, file.getFileLocation());
+			URL previouslySubmoduleCommit = GitRevisionURLHandler.buildURL(GitFile.PREVIOUSLY_SUBMODULE, file.getFileLocation());
+			((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(currentSubmoduleCommit,
+					previouslySubmoduleCommit);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
 	}
 

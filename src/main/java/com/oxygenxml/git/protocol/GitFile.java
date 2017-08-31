@@ -31,4 +31,8 @@ public class GitFile {
 	 * from the last commit
 	 */
 	public static final String LAST_COMMIT = "LastCommit";
+
+	public static final String CURRENT_SUBMODULE = "CurrentSubmodule";
+
+	public static final String PREVIOUSLY_SUBMODULE = "PreviousSubmodule";
 }
