@@ -273,7 +273,7 @@ public class CustomContextualMenu extends JPopupMenu {
 			restartMerge.setEnabled(true);
 			markResolved.setEnabled(false);
 			discard.setEnabled(false);
-			if(containsSubmodule){
+			if(containsSubmodule || containsDelete){
 				open.setEnabled(false);
 			}
 		} else {
@@ -295,6 +295,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				open.setEnabled(false);
 				changeState.setEnabled(true);
 				resolveConflict.setEnabled(false);
+				diff.setEnabled(false);
 				resolveMine.setEnabled(false);
 				resolveTheirs.setEnabled(false);
 				restartMerge.setEnabled(true);

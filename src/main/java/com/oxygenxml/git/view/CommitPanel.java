@@ -305,13 +305,11 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 					try {
 						synchronized (this) {
 							messagesActive++;
-							System.out.println("message Active " + messagesActive);
 							statusLabel.setText(message);
 						}
 						
 						TimeUnit.SECONDS.sleep(3);
 						synchronized (this) {
-							System.out.println("message Active " + messagesActive);
 							messagesActive--;
 							if (messagesActive == 0) {
 								statusLabel.setText("");
