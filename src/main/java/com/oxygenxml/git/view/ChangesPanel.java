@@ -357,7 +357,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
 					}
 					// right click event
-					if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
+					if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && rootHasChilds(node)) {
 						boolean treeInSelection = false;
 						TreePath[] paths = tree.getSelectionPaths();
 						if (paths != null) {
@@ -369,7 +369,6 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 							}
 						}
 						if (!treeInSelection) {
-							System.out.println("in if " + treePath);
 							tree.setSelectionPath(treePath);
 						}
 						List<String> selectedPaths = TreeFormatter.getStringComonAncestor(tree);
@@ -381,6 +380,10 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					tree.clearSelection();
 				}
 				toggleSelectedButton();
+			}
+
+			public boolean rootHasChilds(MyNode node) {
+				return !(node.isRoot() && !node.children().hasMoreElements());
 			}
 
 		});
