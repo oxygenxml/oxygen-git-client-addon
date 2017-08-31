@@ -137,7 +137,7 @@ public class ToolbarPanel extends JPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 0;
@@ -217,11 +217,13 @@ public class ToolbarPanel extends JPanel {
 		String message = "";
 		if (!"".equals(currentBranch)) {
 			message += "<html>";
-			message += "Branch: " + "<b>" + currentBranch + "</b> - ";
+			message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch + "</b> - ";
 			if (pullsBehind == 0) {
-				message += "Up to date";
+				message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+			} else if (pullsBehind == 1){
+				message += pullsBehind + " " + translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
 			} else {
-				message += pullsBehind + " behind";
+				message += pullsBehind + " " + translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
 			}
 			message += "</html>";
 		}

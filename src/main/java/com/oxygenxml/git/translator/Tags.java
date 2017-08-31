@@ -360,4 +360,27 @@ public class Tags {
 	 */
 	public static final String LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE = "Login_Dilaog_Credentials_Invalid_Message";
 
+	/**
+	 * The text displayed on the right side of the toolbar buttons for the branch
+	 * text
+	 */
+	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH = "Toolbar_Panel_Information_Status_Branch";
+
+	/**
+	 * The text displayed on the right side of the toolbar buttons if the
+	 * repository is one commit behind
+	 */
+	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT = "Toolbar_Panel_Information_Status_Single_Commit";
+
+	/**
+	 * The text displayed on the right side of the toolbar buttons if the
+	 * repository is 2 or more commits behind
+	 */
+	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS = "Toolbar_Panel_Information_Status_Multiple_Commits";
+
+	/**
+	 * The text displayed on the right side of the toolbar buttons if the
+	 * repository is up to date
+	 */
+	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE = "Toolbar_Panel_Information_Status_Up_To_Date";
 }

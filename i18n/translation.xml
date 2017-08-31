@@ -608,4 +608,40 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
+    <key value="Toolbar_Panel_Information_Status_Branch">
+        <comment>The text displayed on the right side of the toolbar buttons for the branch text</comment>
+        <val lang="en_US">Branch: </val>
+        <val lang="de_DE">Branch: </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Toolbar_Panel_Information_Status_Single_Commit">
+        <comment>The text displayed on the right side of the toolbar buttons if the repository is one commit behind</comment>
+        <val lang="en_US">commit behind</val>
+        <val lang="de_DE">commit behind</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Toolbar_Panel_Information_Status_Multiple_Commits">
+        <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits behind </comment>
+        <val lang="en_US">commits behind</val>
+        <val lang="de_DE">commits behind</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Toolbar_Panel_Information_Status_Up_To_Date">
+        <comment>The text displayed on the right side of the toolbar buttons if the repository is up to date </comment>
+        <val lang="en_US">Up to date</val>
+        <val lang="de_DE">Up to date</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
 </translation>
