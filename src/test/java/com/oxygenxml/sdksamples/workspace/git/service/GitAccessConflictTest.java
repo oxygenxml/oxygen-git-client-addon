@@ -21,7 +21,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
-public class GitAccessConflict extends GitAccessPullTest {
+public class GitAccessConflictTest extends GitAccessPullTest {
 
 	@Test
 	public void testResolveUsingTheirs() throws RepositoryNotFoundException, FileNotFoundException,
