@@ -236,6 +236,8 @@ public class CustomContextualMenu extends JPopupMenu {
 
 		boolean sameChangeType = true;
 		boolean containsConflicts = false;
+		boolean containsSubmodule = false;
+		boolean containsDelete = false;
 		if (files.size() > 1) {
 			GitChangeType gitChangeType = files.get(0).getChangeType();
 			for (FileStatus file : files) {
@@ -244,6 +246,12 @@ public class CustomContextualMenu extends JPopupMenu {
 				}
 				if (GitChangeType.CONFLICT == file.getChangeType()) {
 					containsConflicts = true;
+				}
+				if (GitChangeType.SUBMODULE == file.getChangeType()) {
+					containsSubmodule = true;
+				}
+				if (GitChangeType.DELETE == file.getChangeType()) {
+					containsDelete = true;
 				}
 			}
 			showDiff.setEnabled(false);
@@ -254,6 +262,7 @@ public class CustomContextualMenu extends JPopupMenu {
 		}
 		// the active actions for all selected files that contain each type
 		if (files.size() > 1 && containsConflicts && !sameChangeType) {
+			
 			showDiff.setEnabled(false);
 			open.setEnabled(true);
 			changeState.setEnabled(false);
@@ -264,6 +273,9 @@ public class CustomContextualMenu extends JPopupMenu {
 			restartMerge.setEnabled(true);
 			markResolved.setEnabled(false);
 			discard.setEnabled(false);
+			if(containsSubmodule){
+				open.setEnabled(false);
+			}
 		} else {
 			// the active actions for all the selected files that are added
 			if (fileStatus.getChangeType() == GitChangeType.ADD && sameChangeType) {
@@ -298,8 +310,18 @@ public class CustomContextualMenu extends JPopupMenu {
 				restartMerge.setEnabled(true);
 				markResolved.setEnabled(false);
 				discard.setEnabled(true);
+				// the active actions for all the selected files that are submodules
+			} else if (fileStatus.getChangeType() == GitChangeType.SUBMODULE && sameChangeType) {
+				open.setEnabled(false);
+				changeState.setEnabled(true);
+				resolveConflict.setEnabled(false);
+				resolveMine.setEnabled(false);
+				resolveTheirs.setEnabled(false);
+				restartMerge.setEnabled(true);
+				markResolved.setEnabled(false);
+				discard.setEnabled(true);
 				// the active actions for all the selected files that are in conflict
-			} else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
+			}else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
 				open.setEnabled(true);
 				changeState.setEnabled(false);
 				resolveConflict.setEnabled(true);
@@ -319,6 +341,10 @@ public class CustomContextualMenu extends JPopupMenu {
 				restartMerge.setEnabled(false);
 				markResolved.setEnabled(false);
 				discard.setEnabled(true);
+				if(containsSubmodule || containsDelete){
+					open.setEnabled(false);
+				}
+				
 			}
 		}
 		try {
