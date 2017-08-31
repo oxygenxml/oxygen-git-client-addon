@@ -37,7 +37,8 @@ public class StagingPanelRefresh implements Refresh {
 	private GitAccess gitAccess;
 	private String lastSelectedProjectView = "";
 	private Translator translator;
-	private boolean projectPahtIsGit = false;
+	private boolean projectPahtIsGit;
+	private boolean projectXprExists;
 
 	public StagingPanelRefresh(Translator translator) {
 		this.gitAccess = GitAccess.getInstance();
@@ -46,6 +47,7 @@ public class StagingPanelRefresh implements Refresh {
 
 	public void call() {
 		projectPahtIsGit = false;
+		projectXprExists = true;
 		execute();
 	}
 
@@ -58,7 +60,7 @@ public class StagingPanelRefresh implements Refresh {
 			}
 			addGitFolder(projectView);
 			if (stagingPanel.isInFocus() && !projectPahtIsGit
-					&& !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectView)) {
+					&& !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectView) && projectXprExists) {
 				String[] options = new String[] { "   Yes   ", "   No   " };
 				int[] optonsId = new int[] { 0, 1 };
 				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
@@ -125,6 +127,7 @@ public class StagingPanelRefresh implements Refresh {
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			if (e1 instanceof FileNotFoundException) {
+				projectXprExists = false;
 				return;
 			}
 			e1.printStackTrace();

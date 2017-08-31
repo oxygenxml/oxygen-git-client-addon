@@ -37,3 +37,5 @@ After staging the files, on the bottom of the view you can input the commit mess
 Push/Pull
 =========
 To push your local repository changes to the remote one you must click on the *Push* button from the view's toolbar. To bring the changes from the remote repository into your local one you must click on the *Pull* button from the same toolbar.
+To push or pull you need to acces the remote, and for that you need to provide some credentials. If no credentials are found , the addon will ask for an account and password. If you have a two-factor authentication for: 
+-GitHub: You must go to your *Account Settings* -> *Personal access tokens* -> *Generate new token*. After that you have to use the generated token as the password back in Oxygen when you are asked to enter your credentials

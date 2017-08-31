@@ -132,6 +132,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 					if (e.getMessage().contains("not permitted")) {
 						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								"You have no rights to push in this repository " + userCredentials.getUsername());
+						UserCredentials loadNewCredentials = loadNewCredentials("");
+						if (loadNewCredentials != null) {
+							commandExecuted = false;
+							execute(command);
+						}
 						return;
 					}
 					if (e.getMessage().contains("origin: not found")

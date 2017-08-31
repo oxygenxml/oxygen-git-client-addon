@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -183,7 +184,6 @@ public class GitAccess {
 						unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
 					}
 				}
-				
 				for (String string : status.getUntracked()) {
 					if (!submodules.contains(string)) {
 						unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
@@ -255,6 +255,20 @@ public class GitAccess {
 		 */
 	}
 
+	public ObjectId submoduleCompare(String submodulePath, boolean index){
+		try {
+			SubmoduleStatus submoduleStatus = git.submoduleStatus().addPath(submodulePath).call().get(submodulePath);
+			if(index){
+				return submoduleStatus.getIndexId();
+			} else {
+				return submoduleStatus.getHeadId();
+			}
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public Set<String> getSubmodules() {
 		try {
 			
