@@ -432,114 +432,12 @@ public class GitAccess {
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 
 		PushResponse response = new PushResponse();
-		final Authenticator[] oldAuth = new Authenticator[1];
+
 
 		try {
-			try {
-
-				final Field requestingHost = Authenticator.class.getDeclaredField("requestingHost");
-				final Field requestingSite = Authenticator.class.getDeclaredField("requestingSite");
-				final Field requestingPort = Authenticator.class.getDeclaredField("requestingPort");
-				final Field requestingProtocol = Authenticator.class.getDeclaredField("requestingProtocol");
-				final Field requestingPrompt = Authenticator.class.getDeclaredField("requestingPrompt");
-				final Field requestingScheme = Authenticator.class.getDeclaredField("requestingScheme");
-				final Field requestingURL = Authenticator.class.getDeclaredField("requestingURL");
-				final Field requestingAuthType = Authenticator.class.getDeclaredField("requestingAuthType");
-
-				requestingHost.setAccessible(true);
-				requestingSite.setAccessible(true);
-				requestingPort.setAccessible(true);
-				requestingProtocol.setAccessible(true);
-				requestingPrompt.setAccessible(true);
-				requestingScheme.setAccessible(true);
-				requestingURL.setAccessible(true);
-				requestingAuthType.setAccessible(true);
-
-				
-				
-				
-				Field declaredField = Authenticator.class.getDeclaredField("theAuthenticator");
-				declaredField.setAccessible(true);
-				oldAuth[0] = (Authenticator) declaredField.get(null);
-				
-//				final String oldRequestingHost = (String) requestingHost.get(oldAuth);
-//				final InetAddress oldRequestingSite = (InetAddress) requestingSite.get(oldAuth);
-//				final int oldRequestingPort = (Integer) requestingPort.get(oldAuth);
-//				final String oldRequestingProtocol = (String) requestingProtocol.get(oldAuth);
-//				final String oldRequestingPrompt = (String) requestingPrompt.get(oldAuth);
-//				final String oldRequestingScheme = (String) requestingScheme.get(oldAuth);
-//				final URL oldRequestingURL = (URL) requestingURL.get(oldAuth);
-//				final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(oldAuth);
-
-				Authenticator.setDefault(new Authenticator() {
-					int count = 1;
-
-					@Override
-					protected PasswordAuthentication getPasswordAuthentication() {
-						
-						try {
-							final String oldRequestingHost = (String) requestingHost.get(this);
-							final InetAddress oldRequestingSite = (InetAddress) requestingSite.get(this);
-							final int oldRequestingPort = (Integer) requestingPort.get(this);
-							final String oldRequestingProtocol = (String) requestingProtocol.get(this);
-							final String oldRequestingPrompt = (String) requestingPrompt.get(this);
-							final String oldRequestingScheme = (String) requestingScheme.get(this);
-							final URL oldRequestingURL = (URL) requestingURL.get(this);
-							final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(this);
-							
-							if (getHostName().equals(getRequestingHost())) {
-								//beacuse of the Authorization-requierd refs dialog
-								return null;
-								/*if (count == 1) {
-								count++;
-								return new PasswordAuthentication(username, password.toCharArray());
-							}
-							count++;
-							String loginMessage = "";
-							if ("".equals(username)) {
-								loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
-							} else {
-								loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-										+ username;
-							}
-							LoginDialog loginDialog = new LoginDialog(
-									(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, getHostName(), loginMessage, translator);
-							if(loginDialog.getResult() == OKCancelDialog.RESULT_OK){
-  							UserCredentials userCredentials = loginDialog.getUserCredentials();
-  							String username2 = userCredentials.getUsername();
-  							String password2 = userCredentials.getPassword();
-  							return new PasswordAuthentication(username2, password2.toCharArray());
-							} else {
-								return null;
-							}*/
-							} else {
-								Method reset = Authenticator.class.getDeclaredMethod("reset");
-								reset.setAccessible(true);
-								reset.invoke(oldAuth[0]);
-								requestingHost.set(oldAuth[0], oldRequestingHost);
-								requestingSite.set(oldAuth[0], oldRequestingSite);
-								requestingPort.set(oldAuth[0], oldRequestingPort);
-								requestingProtocol.set(oldAuth[0], oldRequestingProtocol);
-								requestingPrompt.set(oldAuth[0], oldRequestingPrompt);
-								requestingScheme.set(oldAuth[0], oldRequestingScheme);
-								requestingURL.set(oldAuth[0], oldRequestingURL);
-								requestingAuthType.set(oldAuth[0], oldRequestingURL);
-  							
-								Method getPasswordAuthentication = Authenticator.class.getDeclaredMethod("getPasswordAuthentication");
-								getPasswordAuthentication.setAccessible(true);
-								return (PasswordAuthentication) getPasswordAuthentication.invoke(oldAuth[0]);
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						return null;
-					}
-				});
-
-				//Authenticator.setDefault(null);
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+	
+			
+			
 			RepositoryState repositoryState = git.getRepository().getRepositoryState();
 
 			if (repositoryState == RepositoryState.MERGING) {
@@ -563,9 +461,9 @@ public class GitAccess {
 				}
 			}
 		} finally {
-			if (oldAuth[0] != null) {
-				Authenticator.setDefault(oldAuth[0]);
-			}
+//			if (oldAuth[0] != null) {
+//				Authenticator.setDefault(oldAuth[0]);
+//			}
 		}
 		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 		response.setMessage(translator.getTraslation(Tags.PUSH_FAILED_UNKNOWN));
