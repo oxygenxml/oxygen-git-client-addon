@@ -206,7 +206,7 @@ public class OptionsManager {
 		
 		UserCredentials uc = new UserCredentials();
 		String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-				.getUtilAccess().encrypt(uc.getPassword());
+				.getUtilAccess().encrypt(userCredentials.getPassword());
 		uc.setPassword(encryptedPassword);
 		uc.setUsername(userCredentials.getUsername());
 		uc.setHost(userCredentials.getHost());
