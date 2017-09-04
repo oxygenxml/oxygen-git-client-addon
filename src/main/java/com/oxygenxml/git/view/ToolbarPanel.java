@@ -231,13 +231,15 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 	public void updateInformationLabel() {
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
 		String message = "";
-		if(branchInfo.isDetached()){
+		if (branchInfo.isDetached()) {
 			message += "<html>";
-			message += "Commit: <b>" + branchInfo.getShortBranchName() +"</b></html>";
-			statusInformationLabel.setToolTipText("Detached HEAD on commit " + branchInfo.getBranchName());
+			message += "Commit: <b>" + branchInfo.getShortBranchName() + "</b></html>";
+			statusInformationLabel
+					.setToolTipText(translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD) + " "
+							+ branchInfo.getBranchName());
 		} else {
-		String currentBranch = branchInfo.getBranchName();
-		if (!"".equals(currentBranch)) {
+			String currentBranch = branchInfo.getBranchName();
+			if (!"".equals(currentBranch)) {
 				message += "<html>";
 				message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch
 						+ "</b> - ";
@@ -251,7 +253,7 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 				}
 				message += "</html>";
 			}
-		statusInformationLabel.setToolTipText("");
+			statusInformationLabel.setToolTipText("");
 		}
 		statusInformationLabel.setText(message);
 	}

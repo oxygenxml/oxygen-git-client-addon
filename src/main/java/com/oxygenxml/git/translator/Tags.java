@@ -383,4 +383,10 @@ public class Tags {
 	 * repository is up to date
 	 */
 	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE = "Toolbar_Panel_Information_Status_Up_To_Date";
+
+	/**
+	 * The text displayed on the right side of the toolbar buttons if the
+	 * repository has a detached head
+	 */
+	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD = "Toolbar_Panel_Information_Status_Detached_Head";
 }

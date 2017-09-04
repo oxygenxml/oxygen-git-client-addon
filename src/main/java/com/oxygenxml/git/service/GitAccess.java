@@ -433,11 +433,8 @@ public class GitAccess {
 
 		PushResponse response = new PushResponse();
 
-
 		try {
-	
-			
-			
+
 			RepositoryState repositoryState = git.getRepository().getRepositoryState();
 
 			if (repositoryState == RepositoryState.MERGING) {
@@ -461,9 +458,7 @@ public class GitAccess {
 				}
 			}
 		} finally {
-//			if (oldAuth[0] != null) {
-//				Authenticator.setDefault(oldAuth[0]);
-//			}
+
 		}
 		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 		response.setMessage(translator.getTraslation(Tags.PUSH_FAILED_UNKNOWN));
@@ -717,15 +712,18 @@ public class GitAccess {
 	 * @return the host name
 	 */
 	public String getHostName() {
-		Config storedConfig = git.getRepository().getConfig();
-		String url = storedConfig.getString("remote", "origin", "url");
-		try {
-			URL u = new URL(url);
-			url = u.getHost();
-			return url;
-		} catch (MalformedURLException e) {
-			return "";
+		if (git != null) {
+			Config storedConfig = git.getRepository().getConfig();
+			String url = storedConfig.getString("remote", "origin", "url");
+			try {
+				URL u = new URL(url);
+				url = u.getHost();
+				return url;
+			} catch (MalformedURLException e) {
+				return "";
+			}
 		}
+		return "";
 
 	}
 
@@ -929,11 +927,6 @@ public class GitAccess {
 		int numberOfCommits = 0;
 
 		if (git != null) {
-			try {
-				System.out.println(git.getRepository().getBranch());
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
 			Repository repository = git.getRepository();
 			RevWalk walk = new RevWalk(repository);
 			walk.reset();
@@ -950,7 +943,6 @@ public class GitAccess {
 					for (RevCommit revCommit : results) {
 						if (revCommit.getId().name().equals(git.getRepository().getBranch())) {
 							numberOfCommits = 0;
-
 							break;
 						}
 						numberOfCommits++;

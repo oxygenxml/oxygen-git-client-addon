@@ -111,7 +111,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					if (command == Command.PUSH) {
 						message = push(userCredentials);
 					} else {
-						message = pull(userCredentials);
+						message = pull(userCredentials); 
 					}
 				} catch (GitAPIException e) {
 					if (e.getMessage().contains("not authorized")) {

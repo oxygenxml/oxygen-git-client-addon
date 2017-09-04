@@ -80,21 +80,9 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
         requestingURL.setAccessible(true);
         requestingAuthType.setAccessible(true);
 
-        
-        
-        
         Field declaredField = Authenticator.class.getDeclaredField("theAuthenticator");
         declaredField.setAccessible(true);
         oldAuth[0] = (Authenticator) declaredField.get(null);
-        
-//        final String oldRequestingHost = (String) requestingHost.get(oldAuth);
-//        final InetAddress oldRequestingSite = (InetAddress) requestingSite.get(oldAuth);
-//        final int oldRequestingPort = (Integer) requestingPort.get(oldAuth);
-//        final String oldRequestingProtocol = (String) requestingProtocol.get(oldAuth);
-//        final String oldRequestingPrompt = (String) requestingPrompt.get(oldAuth);
-//        final String oldRequestingScheme = (String) requestingScheme.get(oldAuth);
-//        final URL oldRequestingURL = (URL) requestingURL.get(oldAuth);
-//        final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(oldAuth);
 
         Authenticator.setDefault(new Authenticator() {
           int count = 1;
@@ -115,28 +103,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
               if (GitAccess.getInstance().getHostName().equals(getRequestingHost())) {
                 //beacuse of the Authorization-requierd refs dialog
                 return null;
-                /*if (count == 1) {
-                count++;
-                return new PasswordAuthentication(username, password.toCharArray());
-              }
-              count++;
-              String loginMessage = "";
-              if ("".equals(username)) {
-                loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
-              } else {
-                loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-                    + username;
-              }
-              LoginDialog loginDialog = new LoginDialog(
-                  (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, getHostName(), loginMessage, translator);
-              if(loginDialog.getResult() == OKCancelDialog.RESULT_OK){
-                UserCredentials userCredentials = loginDialog.getUserCredentials();
-                String username2 = userCredentials.getUsername();
-                String password2 = userCredentials.getPassword();
-                return new PasswordAuthentication(username2, password2.toCharArray());
-              } else {
-                return null;
-              }*/
               } else {
                 Method reset = Authenticator.class.getDeclaredMethod("reset");
                 reset.setAccessible(true);
@@ -161,7 +127,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
           }
         });
 
-        //Authenticator.setDefault(null);
       } catch (Throwable e) {
         e.printStackTrace();
       }
