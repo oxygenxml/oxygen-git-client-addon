@@ -106,7 +106,9 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				path = path.substring(1);
 			}
 			String host = url.getHost();
-
+			if(host.equals("CurrentSubmodule") || host.equals("PreviousSubmodule")){
+				path = path.replace(".txt", "");
+			}
 			return host;
 		}
 
@@ -188,6 +190,9 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 */
 	public static URL buildURL(String gitFile, String fileLocation) throws MalformedURLException {
 		URL url = new URL ("git://" + gitFile + "/" + fileLocation);
+		if(gitFile.equals(GitFile.CURRENT_SUBMODULE) || gitFile.equals(GitFile.PREVIOUSLY_SUBMODULE)){
+			url = new URL("git://" + gitFile + "/" + fileLocation +".txt");
+		}
 		/*if (gitFile.equals(GitFile.LOCAL)) {
 			url = new URL("git://Local/" + fileLocation);
 		} else if (gitFile.equals(GitFile.REMOTE)) {

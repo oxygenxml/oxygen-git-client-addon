@@ -113,7 +113,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 			name = name.substring(name.lastIndexOf("/") + 1);
 			branchesList.addItem(name);
 		}
-		branchesList.setSelectedItem(GitAccess.getInstance().getCurrentBranch());
+		branchesList.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
 
 		getContentPane().add(branchesList, gbc);
 	}

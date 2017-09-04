@@ -9,6 +9,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -21,6 +23,7 @@ import javax.swing.SwingConstants;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -28,8 +31,11 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.view.dialog.BranchSelectDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
+import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Command;
+import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -42,7 +48,7 @@ import ro.sync.ui.Icons;
  * @author Beniamin Savu
  *
  */
-public class ToolbarPanel extends JPanel {
+public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 
 	/**
 	 * Toolbar in which the button will be placed
@@ -100,6 +106,8 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private Refresh refresh;
 
+	private List<Subject<ChangeEvent>> subjects = new ArrayList<Subject<ChangeEvent>>();
+
 	public ToolbarPanel(PushPullController pushPullController, Translator translator, Refresh refresh) {
 		this.pushPullController = pushPullController;
 		this.statusInformationLabel = new JLabel();
@@ -130,6 +138,9 @@ public class ToolbarPanel extends JPanel {
 	 * making them visible
 	 */
 	public void createGUI() {
+		gitToolbar = new JToolBar();
+		gitToolbar.setOpaque(false);
+		gitToolbar.setFloatable(false);
 		this.setLayout(new GridBagLayout());
 		this.pushesAhead = GitAccess.getInstance().getPushesAhead();
 		this.pullsBehind = GitAccess.getInstance().getPullsBehind();
@@ -145,6 +156,11 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton();
 		addSubmoduleSelectButton();
+		if (GitAccess.getInstance().getSubmodules().size() > 0) {
+			submoduleSelectButton.setEnabled(true);
+		} else {
+			submoduleSelectButton.setEnabled(false);
+		}
 		this.add(gitToolbar, gbc);
 
 		gbc.insets = new Insets(0, 0, 0, 0);
@@ -213,19 +229,29 @@ public class ToolbarPanel extends JPanel {
 	}
 
 	public void updateInformationLabel() {
-		String currentBranch = GitAccess.getInstance().getCurrentBranch();
+		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
 		String message = "";
-		if (!"".equals(currentBranch)) {
+		if(branchInfo.isDetached()){
 			message += "<html>";
-			message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch + "</b> - ";
-			if (pullsBehind == 0) {
-				message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
-			} else if (pullsBehind == 1){
-				message += pullsBehind + " " + translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
-			} else {
-				message += pullsBehind + " " + translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
+			message += "Commit: <b>" + branchInfo.getShortBranchName() +"</b></html>";
+			statusInformationLabel.setToolTipText("Detached HEAD on commit " + branchInfo.getBranchName());
+		} else {
+		String currentBranch = branchInfo.getBranchName();
+		if (!"".equals(currentBranch)) {
+				message += "<html>";
+				message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch
+						+ "</b> - ";
+				if (pullsBehind == 0) {
+					message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+				} else if (pullsBehind == 1) {
+					message += pullsBehind + " " + translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
+				} else {
+					message += pullsBehind + " "
+							+ translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
+				}
+				message += "</html>";
 			}
-			message += "</html>";
+		statusInformationLabel.setToolTipText("");
 		}
 		statusInformationLabel.setText(message);
 	}
@@ -234,9 +260,6 @@ public class ToolbarPanel extends JPanel {
 	 * Adds to the tool bar the Push and Pull Buttons
 	 */
 	private void addPushAndPullButtons() {
-		gitToolbar = new JToolBar();
-		gitToolbar.setOpaque(false);
-		gitToolbar.setFloatable(false);
 
 		// PUSH button
 		Action pushAction = new AbstractAction() {
@@ -344,5 +367,25 @@ public class ToolbarPanel extends JPanel {
 		button.setPreferredSize(d);
 		button.setMinimumSize(d);
 		button.setMaximumSize(d);
+	}
+
+	public void stateChanged(ChangeEvent changeEvent) {
+		if (GitAccess.getInstance().getSubmodules().size() > 0) {
+			submoduleSelectButton.setEnabled(true);
+		} else {
+			submoduleSelectButton.setEnabled(false);
+		}
+	}
+
+	public void registerSubject(Subject<ChangeEvent> subject) {
+		subjects.add(subject);
+
+		subject.addObserver(this);
+	}
+
+	public void unregisterSubject(Subject<ChangeEvent> subject) {
+		subjects.remove(subject);
+
+		subject.removeObserver(this);
 	}
 }

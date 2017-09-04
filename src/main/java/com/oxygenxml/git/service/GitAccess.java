@@ -4,16 +4,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.Authenticator;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.net.Authenticator.RequestorType;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
@@ -43,7 +48,6 @@ import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
-import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
@@ -77,13 +81,19 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
+import com.google.common.net.InetAddresses;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.translator.TranslatorExtensionImpl;
+import com.oxygenxml.git.view.dialog.LoginDialog;
 
 import de.schlichtherle.io.FileInputStream;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -255,10 +265,10 @@ public class GitAccess {
 		 */
 	}
 
-	public ObjectId submoduleCompare(String submodulePath, boolean index){
+	public ObjectId submoduleCompare(String submodulePath, boolean index) {
 		try {
 			SubmoduleStatus submoduleStatus = git.submoduleStatus().addPath(submodulePath).call().get(submodulePath);
-			if(index){
+			if (index) {
 				return submoduleStatus.getIndexId();
 			} else {
 				return submoduleStatus.getHeadId();
@@ -268,60 +278,48 @@ public class GitAccess {
 		}
 		return null;
 	}
-	
+
 	public Set<String> getSubmodules() {
 		try {
-			
-			return git.submoduleStatus().call().keySet();
+			if (git != null) {
+				return git.submoduleStatus().call().keySet();
+			}
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
 		return new HashSet<String>();
 	}
 
-	public void setSubmodule(String submodule) throws IOException {
+	public void setSubmodule(String submodule) throws IOException, GitAPIException {
+		git.submoduleUpdate().addPath(submodule).call();
 		Repository parentRepository = git.getRepository();
 		Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		git = Git.wrap(submoduleRepository);
 	}
 
-	public List<FileStatus> getSubmodules2() throws GitAPIException {
-		List<FileStatus> submodules = new ArrayList<FileStatus>();
-		List<String> submodulesNames = new ArrayList<String>();
-		for (String string : git.submoduleStatus().call().keySet()) {
-			submodulesNames.add(string);
-			submodules.add(new FileStatus(GitChangeType.SUBMODULE, string));
-		}
-		submodules.clear();
-		int submoduleCount = 0;
-		Repository parentRepository = git.getRepository();
-		try {
-			SubmoduleWalk walk = SubmoduleWalk.forIndex(parentRepository);
-			while (walk.next()) {
-				Repository submoduleRepository = walk.getRepository();
-				Git git2 = Git.wrap(submoduleRepository);
-				Status status = git2.status().call();
-				for (String string : status.getUntracked()) {
-					submodules.add(new FileStatus(GitChangeType.ADD, submodulesNames.get(0) + "/" + string));
-				}
-				for (String string : status.getModified()) {
-					System.out.println(string);
-					submodules.add(new FileStatus(GitChangeType.MODIFY, submodulesNames.get(0) + "/" + string));
-				}
-				for (String string : status.getMissing()) {
-					submodules.add(new FileStatus(GitChangeType.DELETE, submodulesNames.get(0) + "/" + string));
-				}
-				System.out.println(submoduleRepository.getWorkTree().getAbsolutePath());
-				submoduleRepository.close();
-				submoduleCount++;
-			}
-			walk.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		System.out.println(submoduleCount);
-		return submodules;
-	}
+	/*
+	 * public List<FileStatus> getSubmodules2() throws GitAPIException {
+	 * List<FileStatus> submodules = new ArrayList<FileStatus>(); List<String>
+	 * submodulesNames = new ArrayList<String>(); for (String string :
+	 * git.submoduleStatus().call().keySet()) { submodulesNames.add(string);
+	 * submodules.add(new FileStatus(GitChangeType.SUBMODULE, string)); }
+	 * submodules.clear(); int submoduleCount = 0; Repository parentRepository =
+	 * git.getRepository(); try { SubmoduleWalk walk =
+	 * SubmoduleWalk.forIndex(parentRepository); while (walk.next()) { Repository
+	 * submoduleRepository = walk.getRepository(); Git git2 =
+	 * Git.wrap(submoduleRepository); Status status = git2.status().call(); for
+	 * (String string : status.getUntracked()) { submodules.add(new
+	 * FileStatus(GitChangeType.ADD, submodulesNames.get(0) + "/" + string)); }
+	 * for (String string : status.getModified()) { System.out.println(string);
+	 * submodules.add(new FileStatus(GitChangeType.MODIFY, submodulesNames.get(0)
+	 * + "/" + string)); } for (String string : status.getMissing()) {
+	 * submodules.add(new FileStatus(GitChangeType.DELETE, submodulesNames.get(0)
+	 * + "/" + string)); }
+	 * System.out.println(submoduleRepository.getWorkTree().getAbsolutePath());
+	 * submoduleRepository.close(); submoduleCount++; } walk.close(); } catch
+	 * (IOException e) { e.printStackTrace(); }
+	 * System.out.println(submoduleCount); return submodules; }
+	 */
 
 	/**
 	 * Commits a single file locally
@@ -434,39 +432,111 @@ public class GitAccess {
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 
 		PushResponse response = new PushResponse();
-		Authenticator oldAuth = null;
+		final Authenticator[] oldAuth = new Authenticator[1];
+
 		try {
 			try {
+
+				final Field requestingHost = Authenticator.class.getDeclaredField("requestingHost");
+				final Field requestingSite = Authenticator.class.getDeclaredField("requestingSite");
+				final Field requestingPort = Authenticator.class.getDeclaredField("requestingPort");
+				final Field requestingProtocol = Authenticator.class.getDeclaredField("requestingProtocol");
+				final Field requestingPrompt = Authenticator.class.getDeclaredField("requestingPrompt");
+				final Field requestingScheme = Authenticator.class.getDeclaredField("requestingScheme");
+				final Field requestingURL = Authenticator.class.getDeclaredField("requestingURL");
+				final Field requestingAuthType = Authenticator.class.getDeclaredField("requestingAuthType");
+
+				requestingHost.setAccessible(true);
+				requestingSite.setAccessible(true);
+				requestingPort.setAccessible(true);
+				requestingProtocol.setAccessible(true);
+				requestingPrompt.setAccessible(true);
+				requestingScheme.setAccessible(true);
+				requestingURL.setAccessible(true);
+				requestingAuthType.setAccessible(true);
+
+				
+				
+				
 				Field declaredField = Authenticator.class.getDeclaredField("theAuthenticator");
 				declaredField.setAccessible(true);
+				oldAuth[0] = (Authenticator) declaredField.get(null);
+				
+//				final String oldRequestingHost = (String) requestingHost.get(oldAuth);
+//				final InetAddress oldRequestingSite = (InetAddress) requestingSite.get(oldAuth);
+//				final int oldRequestingPort = (Integer) requestingPort.get(oldAuth);
+//				final String oldRequestingProtocol = (String) requestingProtocol.get(oldAuth);
+//				final String oldRequestingPrompt = (String) requestingPrompt.get(oldAuth);
+//				final String oldRequestingScheme = (String) requestingScheme.get(oldAuth);
+//				final URL oldRequestingURL = (URL) requestingURL.get(oldAuth);
+//				final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(oldAuth);
 
-				oldAuth = (Authenticator) declaredField.get(null);
+				Authenticator.setDefault(new Authenticator() {
+					int count = 1;
 
-				/*
-				 * Authenticator.setDefault(new Authenticator() { int count = 1;
-				 * 
-				 * 
-				 * @Override protected PasswordAuthentication
-				 * getPasswordAuthentication() { logger.info("ours " + getHostName());
-				 * logger.info("requesting " + getRequestingHost());
-				 * 
-				 * if (getHostName().equals(getRequestingHost())) {
-				 * logger.info("Get credentials " + count); if (count == 1) {
-				 * logger.info("Return " + username); count++; return new
-				 * PasswordAuthentication(username, password.toCharArray()); } count++;
-				 * LoginDialog loginDialog = new
-				 * LoginDialog(GitAccess.getInstance().getHostName());
-				 * 
-				 * UserCredentials userCredentials = loginDialog.getUserCredentials();
-				 * String username2 = userCredentials.getUsername(); String password2 =
-				 * userCredentials.getPassword(); logger.info("Return " + username2);
-				 * 
-				 * return new PasswordAuthentication(username2,
-				 * password2.toCharArray()); } else { // TODO We could delegate to the
-				 * default implementation. return null; } } });
-				 */
+					@Override
+					protected PasswordAuthentication getPasswordAuthentication() {
+						
+						try {
+							final String oldRequestingHost = (String) requestingHost.get(this);
+							final InetAddress oldRequestingSite = (InetAddress) requestingSite.get(this);
+							final int oldRequestingPort = (Integer) requestingPort.get(this);
+							final String oldRequestingProtocol = (String) requestingProtocol.get(this);
+							final String oldRequestingPrompt = (String) requestingPrompt.get(this);
+							final String oldRequestingScheme = (String) requestingScheme.get(this);
+							final URL oldRequestingURL = (URL) requestingURL.get(this);
+							final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(this);
+							
+							if (getHostName().equals(getRequestingHost())) {
+								//beacuse of the Authorization-requierd refs dialog
+								return null;
+								/*if (count == 1) {
+								count++;
+								return new PasswordAuthentication(username, password.toCharArray());
+							}
+							count++;
+							String loginMessage = "";
+							if ("".equals(username)) {
+								loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
+							} else {
+								loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+										+ username;
+							}
+							LoginDialog loginDialog = new LoginDialog(
+									(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, getHostName(), loginMessage, translator);
+							if(loginDialog.getResult() == OKCancelDialog.RESULT_OK){
+  							UserCredentials userCredentials = loginDialog.getUserCredentials();
+  							String username2 = userCredentials.getUsername();
+  							String password2 = userCredentials.getPassword();
+  							return new PasswordAuthentication(username2, password2.toCharArray());
+							} else {
+								return null;
+							}*/
+							} else {
+								Method reset = Authenticator.class.getDeclaredMethod("reset");
+								reset.setAccessible(true);
+								reset.invoke(oldAuth[0]);
+								requestingHost.set(oldAuth[0], oldRequestingHost);
+								requestingSite.set(oldAuth[0], oldRequestingSite);
+								requestingPort.set(oldAuth[0], oldRequestingPort);
+								requestingProtocol.set(oldAuth[0], oldRequestingProtocol);
+								requestingPrompt.set(oldAuth[0], oldRequestingPrompt);
+								requestingScheme.set(oldAuth[0], oldRequestingScheme);
+								requestingURL.set(oldAuth[0], oldRequestingURL);
+								requestingAuthType.set(oldAuth[0], oldRequestingURL);
+  							
+								Method getPasswordAuthentication = Authenticator.class.getDeclaredMethod("getPasswordAuthentication");
+								getPasswordAuthentication.setAccessible(true);
+								return (PasswordAuthentication) getPasswordAuthentication.invoke(oldAuth[0]);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						return null;
+					}
+				});
 
-				Authenticator.setDefault(null);
+				//Authenticator.setDefault(null);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -493,8 +563,8 @@ public class GitAccess {
 				}
 			}
 		} finally {
-			if (oldAuth != null) {
-				Authenticator.setDefault(oldAuth);
+			if (oldAuth[0] != null) {
+				Authenticator.setDefault(oldAuth[0]);
 			}
 		}
 		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
@@ -663,7 +733,7 @@ public class GitAccess {
 				for (String fileName : status.getRemoved()) {
 					if (submodules.contains(fileName)) {
 						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
-					} else { 
+					} else {
 						stagedFiles.add(new FileStatus(GitChangeType.DELETE, fileName));
 					}
 				}
@@ -792,7 +862,7 @@ public class GitAccess {
 		Repository repo = git.getRepository();
 		ObjectId remoteCommit = null;
 		try {
-			remoteCommit = repo.resolve("origin/" + getCurrentBranch() + "^{commit}");
+			remoteCommit = repo.resolve("origin/" + getBranchInfo().getBranchName() + "^{commit}");
 			return remoteCommit;
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
@@ -818,7 +888,7 @@ public class GitAccess {
 		ObjectId remoteCommit = null;
 		ObjectId baseCommit = null;
 		try {
-			remoteCommit = repository.resolve("origin/" + getCurrentBranch() + "^{commit}");
+			remoteCommit = repository.resolve("origin/" + getBranchInfo().getBranchName() + "^{commit}");
 			localCommit = repository.resolve("HEAD^{commit}");
 			if (remoteCommit != null && localCommit != null) {
 				RevCommit base = getCommonAncestor(walk, walk.parseCommit(localCommit), walk.parseCommit(remoteCommit));
@@ -959,7 +1029,13 @@ public class GitAccess {
 	 */
 	public int getPushesAhead() {
 		int numberOfCommits = 0;
+
 		if (git != null) {
+			try {
+				System.out.println(git.getRepository().getBranch());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			Repository repository = git.getRepository();
 			RevWalk walk = new RevWalk(repository);
 			walk.reset();
@@ -974,6 +1050,11 @@ public class GitAccess {
 				if (base == null) {
 					Iterable<RevCommit> results = git.log().call();
 					for (RevCommit revCommit : results) {
+						if (revCommit.getId().name().equals(git.getRepository().getBranch())) {
+							numberOfCommits = 0;
+
+							break;
+						}
 						numberOfCommits++;
 					}
 				}
@@ -1119,15 +1200,31 @@ public class GitAccess {
 		}
 	}
 
-	public String getCurrentBranch() {
+	public BranchInfo getBranchInfo() {
 		if (git != null) {
+			BranchInfo branchInfo = new BranchInfo();
+			String branchName = "";
 			try {
-				return git.getRepository().getBranch();
+				branchName = git.getRepository().getBranch();
+				branchInfo.setBranchName(branchName);
+				Iterable<RevCommit> results = git.log().call();
+				for (RevCommit revCommit : results) {
+					if (revCommit.getId().name().equals(branchName)) {
+						branchInfo.setDetached(true);
+						branchInfo.setShortBranchName(revCommit.getId().abbreviate(7).name());
+						break;
+					}
+				}
+				return branchInfo;
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NoHeadException e) {
+				return new BranchInfo(branchName, false);
+			} catch (GitAPIException e) {
 				e.printStackTrace();
 			}
 		}
-		return "";
+		return new BranchInfo("", false);
 	}
 
 	public void setBranch(String selectedBranch) throws RefAlreadyExistsException, RefNotFoundException,
@@ -1139,8 +1236,8 @@ public class GitAccess {
 	public boolean isUnavailable() {
 		return unavailable;
 	}
-	
-	public void discardSubmodule(String path){
+
+	public void discardSubmodule(String path) {
 		try {
 			git.submoduleSync().call();
 			git.submoduleUpdate().setStrategy(MergeStrategy.RECURSIVE).call();

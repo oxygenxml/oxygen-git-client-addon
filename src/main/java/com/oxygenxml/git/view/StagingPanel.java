@@ -142,6 +142,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
 		commitPanel = new CommitPanel(gitAccess, observer, translator);
 		toolbarPanel = new ToolbarPanel(pushPullController, translator, refresh);
+		toolbarPanel.registerSubject(workingCopySelectionPanel);
+		
 
 		//adds the panels to the staging panel using gird bag constraints
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -149,16 +151,19 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		addWorkingCopySelectionPanel(gbc);
 		addSplitPanel(gbc, splitPane);
 		addCommitPanel(gbc);
-
+		
 		//creates the actual GUI for each panel
 		workingCopySelectionPanel.createGUI();
 		toolbarPanel.createGUI();
 		commitPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
-
+		
+		
+		
 		registerSubject(pushPullController);
 		registerSubject(commitPanel);
+		
 
 		addRefreshF5();
 

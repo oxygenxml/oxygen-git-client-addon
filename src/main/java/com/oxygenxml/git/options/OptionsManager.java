@@ -203,21 +203,25 @@ public class OptionsManager {
 	 */
 	public void saveGitCredentials(UserCredentials userCredentials) {
 		loadOptions();
-
+		
+		UserCredentials uc = new UserCredentials();
 		String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-				.getUtilAccess().encrypt(userCredentials.getPassword());
-		userCredentials.setPassword(encryptedPassword);
+				.getUtilAccess().encrypt(uc.getPassword());
+		uc.setPassword(encryptedPassword);
+		uc.setUsername(userCredentials.getUsername());
+		uc.setHost(userCredentials.getHost());
+		
 		List<UserCredentials> credentials = options.getUserCredentialsList().getCredentials();
 		for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
 			UserCredentials alreadyHere = (UserCredentials) iterator.next();
-			if (alreadyHere.getHost().equals(userCredentials.getHost())) {
+			if (alreadyHere.getHost().equals(uc.getHost())) {
 				// Replace.
 				iterator.remove();
 				break;
 			}
 		}
 
-		credentials.add(userCredentials);
+		credentials.add(uc);
 
 		saveOptions();
 

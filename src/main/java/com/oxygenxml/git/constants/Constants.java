@@ -15,7 +15,7 @@ public class Constants {
 	public static final int STAGE_BUTTON_COLUMN = 2;
 	
 	public static final int PANEL_WIDTH = 320;
-	public static final int TOOLBAR_PANEL_HEIGHT = 35;
+	public static final int TOOLBAR_PANEL_HEIGHT = 40;
 	public static final int WORKINGCOPY_PANEL_HEIGHT = 40;
 	public static final int STAGING_PANEl_HEIGHT = 0;
 	public static final int COMMIT_PANEL_HEIGHT = 140;

@@ -10,6 +10,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
@@ -111,6 +113,8 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 		try {
 			GitAccess.getInstance().setSubmodule(submodule);
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
 		refresh.call();
