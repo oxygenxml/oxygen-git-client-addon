@@ -31,7 +31,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.util.editorvars.EditorVariables;
 
-public class StagingPanelRefresh implements Refresh {
+public class PanelRefresh implements Refresh {
 
 	private StagingPanel stagingPanel;
 	private GitAccess gitAccess;
@@ -40,7 +40,7 @@ public class StagingPanelRefresh implements Refresh {
 	private boolean projectPahtIsGit;
 	private boolean projectXprExists;
 
-	public StagingPanelRefresh(Translator translator) {
+	public PanelRefresh(Translator translator) {
 		this.gitAccess = GitAccess.getInstance();
 		this.translator = translator;
 	}

@@ -30,7 +30,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Refresh;
-import com.oxygenxml.git.utils.StagingPanelRefresh;
+import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -94,10 +94,13 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * Main panel refresh
 	 */
 	private Refresh refresh;
+	
+	private StageController stageController;
 
-	public StagingPanel(Translator translator, Refresh refresh) {
+	public StagingPanel(Translator translator, Refresh refresh, StageController stageController) {
 		this.translator = translator;
 		this.refresh = refresh;
+		this.stageController = stageController;
 		createGUI();
 	}
 
@@ -125,12 +128,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.setLayout(new GridBagLayout());
 
 		final GitAccess gitAccess = GitAccess.getInstance();
-		StageController observer = new StageController(gitAccess);
 		PushPullController pushPullController = new PushPullController(gitAccess, translator);
 
 		//Creates the panels objects that will be in the staging panel
-		unstagedChangesPanel = new ChangesPanel(gitAccess, observer, false, translator);
-		stagedChangesPanel = new ChangesPanel(gitAccess, observer, true, translator);
+		unstagedChangesPanel = new ChangesPanel(gitAccess, stageController, false, translator);
+		stagedChangesPanel = new ChangesPanel(gitAccess, stageController, true, translator);
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
@@ -140,7 +142,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setBorder(null);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
-		commitPanel = new CommitPanel(gitAccess, observer, translator);
+		commitPanel = new CommitPanel(gitAccess, stageController, translator);
 		toolbarPanel = new ToolbarPanel(pushPullController, translator, refresh);
 		toolbarPanel.registerSubject(workingCopySelectionPanel);
 		

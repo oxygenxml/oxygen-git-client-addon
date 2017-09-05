@@ -35,21 +35,20 @@ public class FileHelper {
 	 */
 	public static List<String> search(String path) {
 		File rootFolder = new File(path);
-		File[] listOfFiles = rootFolder.listFiles();
-
-		String tempPrefixPath = prefixPath;
-		prefixPath += rootFolder.getName() + "/";
-
 		List<String> fileNames = new ArrayList<String>();
+		if(rootFolder.isFile()){
+			fileNames.add(rootFolder.getAbsolutePath().replace("\\", "/"));
+			return fileNames;
+		}
+		File[] listOfFiles = rootFolder.listFiles();
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isDirectory() && (!listOfFiles[i].getName().equals(".git"))) {
 				fileNames.addAll(search(listOfFiles[i].getAbsolutePath()));
 			} else if (listOfFiles[i].isFile()) {
-				fileNames.add(prefixPath + listOfFiles[i].getName());
+				fileNames.add(listOfFiles[i].getAbsolutePath().replace("\\", "/"));
 			}
 		}
-		prefixPath = tempPrefixPath;
 		return fileNames;
 	}
 

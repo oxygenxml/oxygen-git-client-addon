@@ -63,9 +63,13 @@ public class OptionsManager {
 	 */
 	public static OptionsManager getInstance() {
 		if (instance == null) {
-			instance = new OptionsManager();
-		}
-		return instance;
+      synchronized (OptionsManager.class) {
+        if (instance == null) {
+          instance = new OptionsManager();
+        }
+      }
+    }
+    return instance;
 	}
 
 	/**
