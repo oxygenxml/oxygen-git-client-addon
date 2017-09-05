@@ -204,7 +204,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					message = translator.getTraslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showWarningMessage(translator.getTraslation(Tags.PULL_UP_TO_DATE));
+							.showWarningMessage(translator.getTraslation(Tags.PULL_WITH_CONFLICTS));
 				}
 				return message;
 			}

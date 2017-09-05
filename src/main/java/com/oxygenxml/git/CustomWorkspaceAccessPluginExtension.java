@@ -79,7 +79,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
 		try {
-			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
+			//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
 
 			final Authenticator[] oldAuth = new Authenticator[1];
 			try {
