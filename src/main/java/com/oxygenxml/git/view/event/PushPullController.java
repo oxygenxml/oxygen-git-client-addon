@@ -31,7 +31,6 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
-import com.oxygenxml.git.view.dialog.BranchSelectDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
 
@@ -111,7 +110,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					if (command == Command.PUSH) {
 						message = push(userCredentials);
 					} else {
-						message = pull(userCredentials); 
+						message = pull(userCredentials);
 					}
 				} catch (GitAPIException e) {
 					if (e.getMessage().contains("not authorized")) {
@@ -126,13 +125,15 @@ public class PushPullController implements Subject<PushPullEvent> {
 						if (loadNewCredentials != null) {
 							commandExecuted = false;
 							execute(command);
-							return;
 						}
+						return;
 					}
 					if (e.getMessage().contains("not permitted")) {
-						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								"You have no rights to push in this repository " + userCredentials.getUsername());
-						UserCredentials loadNewCredentials = loadNewCredentials("");
+						((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+								.showWarningMessage(translator.getTraslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
+						UserCredentials loadNewCredentials = loadNewCredentials(
+								translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
+										+ userCredentials.getUsername());
 						if (loadNewCredentials != null) {
 							commandExecuted = false;
 							execute(command);

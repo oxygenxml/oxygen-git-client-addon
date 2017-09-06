@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -17,6 +19,7 @@ import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.Ref;
 
 import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -108,12 +111,22 @@ public class BranchSelectDialog extends OKCancelDialog {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		branchesList = new JComboBox<String>();
+		List<String> branches = new ArrayList<String>();
 		for (Ref branch : GitAccess.getInstance().getBrachList()) {
 			String name = branch.getName();
 			name = name.substring(name.lastIndexOf("/") + 1);
 			branchesList.addItem(name);
+			branches.add(name);
 		}
-		branchesList.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
+		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
+		if(!branchInfo.isDetached()){
+			if(branches.contains(branchInfo.getBranchName())){
+				branchesList.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
+			} else {
+				branchesList.addItem(GitAccess.getInstance().getBranchInfo().getBranchName());
+				branchesList.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
+			}
+		}
 
 		getContentPane().add(branchesList, gbc);
 	}

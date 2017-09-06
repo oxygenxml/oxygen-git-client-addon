@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.event;
 
-import java.awt.Container;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;

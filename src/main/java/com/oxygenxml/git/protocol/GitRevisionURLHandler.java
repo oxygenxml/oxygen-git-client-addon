@@ -11,14 +11,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.lib.ObjectId;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.utils.FileHelper;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Handler for the "git" protocol. Can be used to for the three way diff on the

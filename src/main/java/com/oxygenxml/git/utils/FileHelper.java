@@ -6,8 +6,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.batik.svggen.font.table.Os2Table;
-
 import com.oxygenxml.git.options.OptionsManager;
 
 /**
@@ -17,13 +15,6 @@ import com.oxygenxml.git.options.OptionsManager;
  *
  */
 public class FileHelper {
-
-	/**
-	 * Saves the upper path from the current path. For Example having the current
-	 * path "C:/test/folder1/folder2", the prefixPath will be "C:/test/folder1"
-	 * TODO Statics are bad! Let's pass this path as a parameter.
-	 */
-	private static String prefixPath = "";
 
 	/**
 	 * Searches a given path for all files in that path. Generates the files path

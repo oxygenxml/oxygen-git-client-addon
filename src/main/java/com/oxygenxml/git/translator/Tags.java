@@ -389,4 +389,33 @@ public class Tags {
 	 * repository has a detached head
 	 */
 	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD = "Toolbar_Panel_Information_Status_Detached_Head";
+
+	/**
+	 * The text displayed for the "Git" contextual menu item in the project view
+	 */
+	public static final String PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM = "Project_View_Git_Contextual_Menu_Item";
+
+	/**
+	 * The text displayed for the "Git Diff" contextual menu item in the project
+	 * view
+	 */
+	public static final String PROJECT_VIEW_GIT_DIFF_CONTEXTUAL_MENU_ITEM = "Project_View_Git_Diff_Contextual_Menu_Item";
+
+	/**
+	 * The text displayed for the "Commit" contextual menu item in the project
+	 * view
+	 */
+	public static final String PROJECT_VIEW_COMMIT_CONTEXTUAL_MENU_ITEM = "Project_View_Commit_Contextual_Menu_Item";
+
+	/**
+	 * The text displayed when you push but don't have rights for that repository
+	 */
+	public static final String NO_RIGHTS_TO_PUSH_MESSAGE = "No_Right_To_Push_Message";
+
+	/**
+	 * The text displayed on the first row of the login dialog if the user eneterd
+	 * doesn't have rights for that repository
+	 */
+	public static final String LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS = "Login_Dialog_Credentials_Doesnt_Have_Rights";
+
 }

@@ -653,4 +653,49 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
+    
+    <key value="Project_View_Git_Contextual_Menu_Item">
+        <comment>The text displayed for the "Git" contextual menu item in the project view </comment>
+        <val lang="en_US">Git</val>
+        <val lang="de_DE">Git</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Project_View_Git_Diff_Contextual_Menu_Item">
+        <comment>The text displayed for the "Git Diff" contextual menu item in the project view </comment>
+        <val lang="en_US">Git Diff</val>
+        <val lang="de_DE">Git Diff</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Project_View_Commit_Contextual_Menu_Item">
+        <comment>The text displayed for the "Commit" contextual menu item in the project view </comment>
+        <val lang="en_US">Commit</val>
+        <val lang="de_DE">Commit</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="No_Right_To_Push_Message">
+        <comment>The text displayed when you push but don't have rights for that repository</comment>
+        <val lang="en_US">You have no rights to push in this repository</val>
+        <val lang="de_DE">You have no rights to push in this repository</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Login_Dialog_Credentials_Doesnt_Have_Rights">
+        <comment>The text displayed on the first row of the login dialog if the user eneterd doesn't have rights for that repository</comment>
+        <val lang="en_US">You don't have rigths to push</val>
+        <val lang="de_DE">You don't have rigths to push</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
 </translation>

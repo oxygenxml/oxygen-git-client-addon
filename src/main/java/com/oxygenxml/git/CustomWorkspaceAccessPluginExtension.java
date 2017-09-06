@@ -1,60 +1,48 @@
 package com.oxygenxml.git;
 
-import java.awt.Component;
 import java.awt.KeyboardFocusManager;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.InetAddress;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.net.Authenticator.RequestorType;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.mozilla.javascript.ast.ParenthesizedExpression;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.utils.PanelRefresh;
+import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
 
-import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
-import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
 import ro.sync.ui.Icons;
 
 /**
@@ -237,8 +225,8 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	private void createProjectViewContextualMenu(final StandalonePluginWorkspace pluginWorkspaceAccess,
 			final Translator translator, final StageController stageController, final StagingPanel stagingPanel) {
 
-		JMenu git = new JMenu("Git");
-		JMenuItem gitDiff = new JMenuItem("Git Diff");
+		JMenu git = new JMenu(translator.getTraslation(Tags.PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM));
+		JMenuItem gitDiff = new JMenuItem(translator.getTraslation(Tags.PROJECT_VIEW_GIT_DIFF_CONTEXTUAL_MENU_ITEM));
 		gitDiff.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -271,10 +259,11 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 				}
 			}
 		});
-		JMenuItem commit = new JMenuItem("Commit");
+		JMenuItem commit = new JMenuItem(translator.getTraslation(Tags.PROJECT_VIEW_COMMIT_CONTEXTUAL_MENU_ITEM));
 		commit.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
+				pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, true);
 				boolean filesStaged = false;
 				File[] selectedFiles = ProjectManagerEditor.getSelectedFiles(pluginWorkspaceAccess);
 				File repository = new File(selectedFiles[0].getAbsolutePath());
@@ -298,7 +287,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 					}
 					
 					if(filesStaged){
-						pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, true);
 						if(OptionsManager.getInstance().getRepositoryEntries().contains(repository.getAbsolutePath())){
 							stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(repository.getAbsolutePath());
 						} else {

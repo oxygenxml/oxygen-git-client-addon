@@ -1,6 +1,9 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -12,12 +15,15 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToolTip;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.UndoableEditEvent;
@@ -26,7 +32,6 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
@@ -159,6 +164,8 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
 		previouslyMessages = new JComboBox<String>();
+		PreviouslyMessagesToolTipRenderer renderer = new PreviouslyMessagesToolTipRenderer();
+		previouslyMessages.setRenderer(renderer);
 
 		for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
 			previouslyMessages.addItem(previouslyCommitMessage);
@@ -288,26 +295,26 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	public void setStatus(final String message) {
-		if("unavailable".equals(message)){
+		if ("unavailable".equals(message)) {
 			statusLabel.setText("Cannot reach host");
 			statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
-		}else if("availbale".equals(message)){
+		} else if ("availbale".equals(message)) {
 			synchronized (this) {
-				if(messagesActive == 0){
+				if (messagesActive == 0) {
 					statusLabel.setText(null);
 					statusLabel.setIcon(null);
 				}
 			}
-		}else {
+		} else {
 			new Thread(new Runnable() {
-				
+
 				public void run() {
 					try {
 						synchronized (this) {
 							messagesActive++;
 							statusLabel.setText(message);
 						}
-						
+
 						TimeUnit.SECONDS.sleep(3);
 						synchronized (this) {
 							messagesActive--;
@@ -442,6 +449,28 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			return edits.size() > 0 && pointer < edits.size() - 1;
 		}
 
+	}
+
+	class PreviouslyMessagesToolTipRenderer extends DefaultListCellRenderer {
+
+		private final int MAX_TOOL_TIP_WIDTH = 700;
+		
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			JToolTip createToolTip = comp.createToolTip();
+			Font font = createToolTip.getFont();
+			FontMetrics fontMetrics = getFontMetrics(font);
+			int length =fontMetrics.stringWidth((String) value);
+			if (length < MAX_TOOL_TIP_WIDTH) {
+				comp.setToolTipText("<html><p width=\""+ length +"\">" + value + "</p></html>");
+			} else {
+				comp.setToolTipText("<html><p width=\"" + MAX_TOOL_TIP_WIDTH + "\">" + value + "</p></html>");
+			}
+			return comp;
+		}
 	}
 
 }

@@ -135,6 +135,7 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 					// repository will be selected
 					String path = (String) workingCopySelector.getSelectedItem();
 					if (FileHelper.isGitSubmodule(path)) {
+						observer.stateChanged(null);
 						return;
 					}
 
@@ -282,7 +283,7 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 		gbc.weighty = 1;
 
 		workingCopySelector = new JComboBox<String>();
-		ComboboxToolTipRenderer renderer = new ComboboxToolTipRenderer();
+		WoekingCopyToolTipRenderer renderer = new WoekingCopyToolTipRenderer();
 		workingCopySelector.setRenderer(renderer);
 		int height = (int) workingCopySelector.getPreferredSize().getHeight();
 		workingCopySelector.setMinimumSize(new Dimension(10, height));
@@ -364,7 +365,7 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 	 * @author Beniamin Savu
 	 *
 	 */
-	class ComboboxToolTipRenderer extends DefaultListCellRenderer {
+	class WoekingCopyToolTipRenderer extends DefaultListCellRenderer {
 
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
