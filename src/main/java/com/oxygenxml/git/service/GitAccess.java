@@ -1155,14 +1155,29 @@ public class GitAccess {
 
 	public ObjectId getCommit(Commit commit, String path) {
 		List<DiffEntry> entries;
+		boolean baseIsNull = false;
+		int index = 0;
 		try {
 			entries = git.diff().setPathFilter(PathFilter.create(path)).call();
+			if(entries.size() == 2){
+				baseIsNull = true;
+			}
 			if(commit == Commit.MINE){
-				return entries.get(1).getOldId().toObjectId();
+				if(baseIsNull){
+					index = 0;
+				} else {
+					index = 1;
+				}
+				return entries.get(index).getOldId().toObjectId();
 			} else if (commit == Commit.THEIRS){
-				return entries.get(2).getOldId().toObjectId();
+				if(baseIsNull){
+					index = 1;
+				} else {
+					index = 2;
+				}
+				return entries.get(index).getOldId().toObjectId();
 			} else if(commit == Commit.BASE){
-				return entries.get(0).getOldId().toObjectId();
+				return entries.get(index).getOldId().toObjectId();
 			} else if (commit == Commit.LOCAL){
 				ObjectId lastLocalCommit = getLastLocalCommit();
 				RevWalk revWalk = new RevWalk(git.getRepository());

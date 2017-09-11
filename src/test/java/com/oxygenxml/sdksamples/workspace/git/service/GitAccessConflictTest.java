@@ -41,7 +41,6 @@ public class GitAccessConflictTest extends GitAccessPullTest {
 		gitAccess.commit("conflict");
 		gitAccess.pull("", "");
 		gitAccess.updateWithRemoteFile("test.txt");
-
 		String expected = "hellllo";
 		String actual = getFileContent();
 		assertEquals(expected, actual);
@@ -63,10 +62,18 @@ public class GitAccessConflictTest extends GitAccessPullTest {
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
 		gitAccess.pull("", "");
-		gitAccess.addAll(gitAccess.getUnstagedFiles());
-		gitAccess.restartMerge();
+		for (FileStatus fileStatus : gitAccess.getUnstagedFiles()) {
+			if(fileStatus.getChangeType() == GitChangeType.CONFLICT){
+				gitAccess.add(fileStatus);
+			}
+		}
 		RepositoryState actual = gitAccess.getRepository().getRepositoryState();
-		RepositoryState expected = RepositoryState.MERGING;
+		RepositoryState expected = RepositoryState.MERGING_RESOLVED;
+		assertEquals(expected, actual);
+		
+		gitAccess.restartMerge();
+		actual = gitAccess.getRepository().getRepositoryState();
+		expected = RepositoryState.MERGING;
 		assertEquals(expected, actual);
 	}
 
