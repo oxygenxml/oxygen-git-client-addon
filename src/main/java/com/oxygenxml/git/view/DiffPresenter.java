@@ -135,8 +135,8 @@ public class DiffPresenter {
 	private void conflictDiff() {
 		try {
 			// builds the URL for the files
-			URL local = GitRevisionURLHandler.buildURL(GitFile.LOCAL, file.getFileLocation());
-			URL remote = GitRevisionURLHandler.buildURL(GitFile.REMOTE, file.getFileLocation());
+			URL local = GitRevisionURLHandler.buildURL(GitFile.MINE, file.getFileLocation());
+			URL remote = GitRevisionURLHandler.buildURL(GitFile.THEIRS, file.getFileLocation());
 			URL base = GitRevisionURLHandler.buildURL(GitFile.BASE, file.getFileLocation());
 
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();

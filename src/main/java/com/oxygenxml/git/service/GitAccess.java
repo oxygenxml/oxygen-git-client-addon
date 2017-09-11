@@ -40,6 +40,8 @@ import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
@@ -172,6 +174,14 @@ public class GitAccess {
 		 */
 		if (git != null) {
 			try {
+				/*System.out.println();
+				List<DiffEntry> call = git.diff().setPathFilter(PathFilter.create("asd.txt")).call();
+				for (DiffEntry diffEntry : call) {
+					System.out.println(diffEntry.getChangeType());
+					ObjectLoader open = git.getRepository().open(diffEntry.getOldId().toObjectId());
+					open.copyTo(System.out);
+					System.out.println();
+				}*/
 				Status status = git.status().call();
 				Set<String> submodules = getSubmodules();
 				for (String string : submodules) {
@@ -841,10 +851,9 @@ public class GitAccess {
 	 * @throws CorruptObjectException
 	 * @throws IOException
 	 */
-	public InputStream getInputStream(ObjectId commit, String path)
+	public InputStream getInputStream(ObjectId commit)
 			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
-		ObjectLoader loader = getLoaderFrom(commit, path);
-
+		ObjectLoader loader = git.getRepository().open(commit);
 		if (loader == null) {
 			File file = File.createTempFile("test", "poc");
 			InputStream input = new FileInputStream(file);
@@ -1136,6 +1145,23 @@ public class GitAccess {
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public ObjectId getCommit(Commit commit, String path) {
+		List<DiffEntry> entries;
+		try {
+			entries = git.diff().setPathFilter(PathFilter.create(path)).call();
+			if(commit == Commit.MINE){
+				return entries.get(1).getOldId().toObjectId();
+			} else if (commit == Commit.THEIRS){
+				return entries.get(2).getOldId().toObjectId();
+			} else if(commit == Commit.BASE){
+				return entries.get(0).getOldId().toObjectId();
+			}
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

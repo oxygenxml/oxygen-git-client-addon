@@ -13,6 +13,7 @@ import java.net.URLStreamHandler;
 
 import org.eclipse.jgit.lib.ObjectId;
 
+import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.utils.FileHelper;
 
@@ -63,17 +64,17 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			try {
 				GitAccess gitAccess = GitAccess.getInstance();
 				String host = getHost(url);
-				if (GitFile.LOCAL.equals(host)) {
-					fileObject = gitAccess.getLastLocalCommit();
-					currentHost = GitFile.LOCAL;
+				if (GitFile.MINE.equals(host)) {
+					fileObject = gitAccess.getCommit(Commit.MINE, path);
+					currentHost = GitFile.MINE;
 				} else if (GitFile.LAST_COMMIT.equals(host)) {
 					fileObject = gitAccess.getLastLocalCommit();
 					currentHost = GitFile.LAST_COMMIT;
-				} else if (GitFile.REMOTE.equals(host)) {
-					fileObject = gitAccess.getRemoteCommit();
-					currentHost = GitFile.REMOTE;
+				} else if (GitFile.THEIRS.equals(host)) {
+					fileObject = gitAccess.getCommit(Commit.THEIRS, path);
+					currentHost = GitFile.THEIRS;
 				} else if (GitFile.BASE.equals(host)) {
-					fileObject = gitAccess.getBaseCommit();
+					fileObject = gitAccess.getCommit(Commit.BASE, path);
 					currentHost = GitFile.BASE;
 				} else if (GitFile.CURRENT_SUBMODULE.equals(host)) {
 					fileObject = gitAccess.submoduleCompare(path, false);
@@ -125,7 +126,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				//return new ByteArrayInputStream(commit.getBytes(StandardCharsets.UTF_8));
 			}
 			GitAccess gitAccess = GitAccess.getInstance();
-			return gitAccess.getInputStream(fileObject, path);
+			return gitAccess.getInputStream(fileObject);
 		}
 
 		/**
@@ -134,7 +135,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the output stream
 		 */
 		public OutputStream getOutputStream() throws IOException {
-			if (GitFile.LOCAL.equals(currentHost)) {
+			if (GitFile.MINE.equals(currentHost)) {
 				URL fileContent = FileHelper.getFileURL(path);
 				return fileContent.openConnection().getOutputStream();
 			}

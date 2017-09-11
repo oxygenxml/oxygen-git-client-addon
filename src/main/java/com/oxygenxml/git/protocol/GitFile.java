@@ -12,13 +12,13 @@ public class GitFile {
 	 * The file having the LOCAL constant shows that this file content is located
 	 * in the user repository
 	 */
-	public static final String LOCAL = "Local";
+	public static final String MINE = "Mine";
 
 	/**
 	 * The file having the REMOTE constant shows that this file content is located
 	 * in the remote reposiory
 	 */
-	public static final String REMOTE = "Remote";
+	public static final String THEIRS = "Theirs";
 
 	/**
 	 * The file having the BASE constant shows that this file content is from the
