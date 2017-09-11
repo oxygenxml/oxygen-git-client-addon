@@ -1060,9 +1060,9 @@ public class GitAccess {
 	public void restartMerge() {
 
 		try {
+			AnyObjectId commitToMerge = git.getRepository().resolve("MERGE_HEAD");//getRemoteCommit();
 			git.clean().call();
 			git.reset().setMode(ResetType.HARD).call();
-			AnyObjectId commitToMerge = getRemoteCommit();
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 		} catch (RevisionSyntaxException e) {
 			e.printStackTrace();
@@ -1081,6 +1081,12 @@ public class GitAccess {
 		} catch (NoMessageException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
+			e.printStackTrace();
+		} catch (AmbiguousObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -1157,8 +1163,32 @@ public class GitAccess {
 				return entries.get(2).getOldId().toObjectId();
 			} else if(commit == Commit.BASE){
 				return entries.get(0).getOldId().toObjectId();
+			} else if (commit == Commit.LOCAL){
+				ObjectId lastLocalCommit = getLastLocalCommit();
+				RevWalk revWalk = new RevWalk(git.getRepository());
+				RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
+				RevTree tree = revCommit.getTree();
+				TreeWalk treeWalk = new TreeWalk(git.getRepository());
+				treeWalk.addTree(tree);
+				treeWalk.setRecursive(true);
+				treeWalk.setFilter(PathFilter.create(path));
+
+				ObjectId objectId = null;
+				if (treeWalk.next()) {
+					objectId = treeWalk.getObjectId(0);
+				}
+
+				treeWalk.close();
+				revWalk.close();
+				return objectId;
 			}
 		} catch (GitAPIException e) {
+			e.printStackTrace();
+		} catch (MissingObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;

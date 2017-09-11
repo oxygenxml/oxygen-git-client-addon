@@ -40,6 +40,7 @@ import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
@@ -110,6 +111,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 							final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(this);
 
 							if (GitAccess.getInstance().getHostName().equals(getRequestingHost())) {
+								System.out.println("works ??");
 								// we need to return null to let our own authentication dialog
 								// (LoginDialog)
 								// appear for git related hosts. Thus preventing the Oxygen's

@@ -68,7 +68,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 					fileObject = gitAccess.getCommit(Commit.MINE, path);
 					currentHost = GitFile.MINE;
 				} else if (GitFile.LAST_COMMIT.equals(host)) {
-					fileObject = gitAccess.getLastLocalCommit();
+					fileObject = gitAccess.getCommit(Commit.LOCAL, path);
 					currentHost = GitFile.LAST_COMMIT;
 				} else if (GitFile.THEIRS.equals(host)) {
 					fileObject = gitAccess.getCommit(Commit.THEIRS, path);
