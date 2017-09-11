@@ -75,6 +75,7 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
+import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -427,8 +428,9 @@ public class GitAccess {
 	public PushResponse push(final String username, final String password)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 
+		CustomAuthenticator.install();
 		PushResponse response = new PushResponse();
-
+		
 		try {
 
 			RepositoryState repositoryState = git.getRepository().getRepositoryState();
@@ -489,6 +491,7 @@ public class GitAccess {
 			InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException,
 			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException,
 			RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+		CustomAuthenticator.install();
 
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
 		if (getConflictingFiles().size() > 0) {
@@ -1013,6 +1016,7 @@ public class GitAccess {
 	 * Brings all the commits to the local repository but does not merge them
 	 */
 	public void fetch() {
+		CustomAuthenticator.install();
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
