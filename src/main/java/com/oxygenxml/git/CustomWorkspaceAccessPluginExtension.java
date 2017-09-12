@@ -72,7 +72,6 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 			
 			CustomAuthenticator.install();
 			
-
 			Translator translator = new TranslatorExtensionImpl();
 			StageController stageController = new StageController(GitAccess.getInstance());
 			final Refresh refresh = new PanelRefresh(translator);
@@ -162,7 +161,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 			public void actionPerformed(ActionEvent e) {
 
 				File[] selectedFiles = ProjectManagerEditor.getSelectedFiles(pluginWorkspaceAccess);
-				// in the diff action is enabled only for one file
+				// the diff action is enabled only for one file
 				File repository = new File(selectedFiles[0].getAbsolutePath());
 				while (repository.getParent() != null) {
 					if (FileHelper.isGitRepository(repository.getAbsolutePath())) {
@@ -173,6 +172,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 				try {
 					String previousRepository = OptionsManager.getInstance().getSelectedRepository();
 					GitAccess.getInstance().setRepository(repository.getAbsolutePath());
+					OptionsManager.getInstance().saveSelectedRepository(repository.getAbsolutePath());
 					List<FileStatus> gitFiles = GitAccess.getInstance().getUnstagedFiles();
 					gitFiles.addAll(GitAccess.getInstance().getStagedFile());
 					String selectedFilePath = selectedFiles[0].getAbsolutePath().replace("\\", "/");
@@ -183,7 +183,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 							break;
 						}
 					}
-					GitAccess.getInstance().setRepository(previousRepository);
+					OptionsManager.getInstance().saveSelectedRepository(previousRepository);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -245,6 +245,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 	public boolean applicationClosing() {
 		// You can reject the application closing here
+		GitAccess.getInstance().close();
 		return true;
 	}
 

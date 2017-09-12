@@ -125,6 +125,9 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
+		if (git != null) {
+			git.close();
+		}
 		git = Git.open(new File(path + "/.git"));
 	}
 
@@ -175,14 +178,14 @@ public class GitAccess {
 		 */
 		if (git != null) {
 			try {
-				/*System.out.println();
-				List<DiffEntry> call = git.diff().setPathFilter(PathFilter.create("asd.txt")).call();
-				for (DiffEntry diffEntry : call) {
-					System.out.println(diffEntry.getChangeType());
-					ObjectLoader open = git.getRepository().open(diffEntry.getOldId().toObjectId());
-					open.copyTo(System.out);
-					System.out.println();
-				}*/
+				/*
+				 * System.out.println(); List<DiffEntry> call =
+				 * git.diff().setPathFilter(PathFilter.create("asd.txt")).call(); for
+				 * (DiffEntry diffEntry : call) {
+				 * System.out.println(diffEntry.getChangeType()); ObjectLoader open =
+				 * git.getRepository().open(diffEntry.getOldId().toObjectId());
+				 * open.copyTo(System.out); System.out.println(); }
+				 */
 				Status status = git.status().call();
 				Set<String> submodules = getSubmodules();
 				for (String string : submodules) {
@@ -262,6 +265,17 @@ public class GitAccess {
 		 */
 	}
 
+	/**
+	 * Returns for the given submodule the SHA-1 commit id for the Index if the
+	 * given index boolean is <code>true</code> or the SHA-1 commit id for the
+	 * HEAD if the given index boolean is <code>false</code>
+	 * 
+	 * @param submodulePath
+	 *          - the path to get the submodule
+	 * @param index
+	 *          - boolean to determine what commit id to return
+	 * @return the SHA-1 id
+	 */
 	public ObjectId submoduleCompare(String submodulePath, boolean index) {
 		try {
 			SubmoduleStatus submoduleStatus = git.submoduleStatus().addPath(submodulePath).call().get(submodulePath);
@@ -276,6 +290,11 @@ public class GitAccess {
 		return null;
 	}
 
+	/**
+	 * Returns a list with all the submodules name for the current repository
+	 * 
+	 * @return a list containing all the submodules
+	 */
 	public Set<String> getSubmodules() {
 		try {
 			if (git != null) {
@@ -287,6 +306,14 @@ public class GitAccess {
 		return new HashSet<String>();
 	}
 
+	/**
+	 * Sets the given submodule as the current repository
+	 * 
+	 * @param submodule
+	 *          - the name of the submodule
+	 * @throws IOException
+	 * @throws GitAPIException
+	 */
 	public void setSubmodule(String submodule) throws IOException, GitAPIException {
 		git.submoduleUpdate().addPath(submodule).call();
 		Repository parentRepository = git.getRepository();
@@ -430,7 +457,7 @@ public class GitAccess {
 
 		CustomAuthenticator.install();
 		PushResponse response = new PushResponse();
-		
+
 		try {
 
 			RepositoryState repositoryState = git.getRepository().getRepositoryState();
@@ -774,7 +801,7 @@ public class GitAccess {
 	/**
 	 * Finds the base commit from the last local commit and the remote commit
 	 * 
-	 * @return the base commitF
+	 * @return the base commit
 	 */
 	public ObjectId getBaseCommit() {
 		Repository repository = git.getRepository();
@@ -866,7 +893,7 @@ public class GitAccess {
 	}
 
 	/**
-	 * Performs a git reset. The equivalent of the git command "git reset"
+	 * Performs a git reset. The equivalent of the "git reset" command
 	 */
 	public void reset() {
 		try {
@@ -1061,10 +1088,14 @@ public class GitAccess {
 		}
 	}
 
+	/**
+	 * Restore to the initial state of the repository. Only applicable if the
+	 * repository has conflicts
+	 */
 	public void restartMerge() {
 
 		try {
-			AnyObjectId commitToMerge = git.getRepository().resolve("MERGE_HEAD");//getRemoteCommit();
+			AnyObjectId commitToMerge = git.getRepository().resolve("MERGE_HEAD");// getRemoteCommit();
 			git.clean().call();
 			git.reset().setMode(ResetType.HARD).call();
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
@@ -1095,6 +1126,14 @@ public class GitAccess {
 		}
 	}
 
+	/**
+	 * Checks whether or not he branch is detached. If the branch is detached it
+	 * stores the state and the name of the commit on which it is. If the branch
+	 * is not detached then it stores the branch name. After this it returns this
+	 * information
+	 * 
+	 * @return An object specifying the branch name and if it is detached or not
+	 */
 	public BranchInfo getBranchInfo() {
 		if (git != null) {
 			BranchInfo branchInfo = new BranchInfo();
@@ -1122,17 +1161,35 @@ public class GitAccess {
 		return new BranchInfo("", false);
 	}
 
+	/**
+	 * Sets the given branch as the current branch
+	 * 
+	 * @param selectedBranch
+	 * @throws RefAlreadyExistsException
+	 * @throws RefNotFoundException
+	 * @throws InvalidRefNameException
+	 * @throws CheckoutConflictException
+	 * @throws GitAPIException
+	 */
 	public void setBranch(String selectedBranch) throws RefAlreadyExistsException, RefNotFoundException,
 			InvalidRefNameException, CheckoutConflictException, GitAPIException {
 		git.checkout().setName(selectedBranch).call();
 
 	}
 
+	/**
+	 * Shows if the remote repository is available or not
+	 * 
+	 * @return true if the repository is up, and false if the repository is down
+	 */
 	public boolean isUnavailable() {
 		return unavailable;
 	}
 
-	public void discardSubmodule(String path) {
+	/**
+	 * Return the submodule head commit to the previously one
+	 */
+	public void discardSubmodule() {
 		try {
 			git.submoduleSync().call();
 			git.submoduleUpdate().setStrategy(MergeStrategy.RECURSIVE).call();
@@ -1157,32 +1214,42 @@ public class GitAccess {
 		}
 	}
 
+	/**
+	 * Returns the SHA-1 commit id for a file by specifying what commit to get for
+	 * that file and it's path
+	 * 
+	 * @param commit
+	 *          - specifies the commit to return(MINE, THEIRS, BASE, LOCAL)
+	 * @param path
+	 *          - the file path for the specified commit
+	 * @return the SHA-1 commit id
+	 */
 	public ObjectId getCommit(Commit commit, String path) {
 		List<DiffEntry> entries;
 		boolean baseIsNull = false;
 		int index = 0;
 		try {
 			entries = git.diff().setPathFilter(PathFilter.create(path)).call();
-			if(entries.size() == 2){
+			if (entries.size() == 2) {
 				baseIsNull = true;
 			}
-			if(commit == Commit.MINE){
-				if(baseIsNull){
+			if (commit == Commit.MINE) {
+				if (baseIsNull) {
 					index = 0;
 				} else {
 					index = 1;
 				}
 				return entries.get(index).getOldId().toObjectId();
-			} else if (commit == Commit.THEIRS){
-				if(baseIsNull){
+			} else if (commit == Commit.THEIRS) {
+				if (baseIsNull) {
 					index = 1;
 				} else {
 					index = 2;
 				}
 				return entries.get(index).getOldId().toObjectId();
-			} else if(commit == Commit.BASE){
+			} else if (commit == Commit.BASE) {
 				return entries.get(index).getOldId().toObjectId();
-			} else if (commit == Commit.LOCAL){
+			} else if (commit == Commit.LOCAL) {
 				ObjectId lastLocalCommit = getLastLocalCommit();
 				RevWalk revWalk = new RevWalk(git.getRepository());
 				RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
@@ -1191,12 +1258,10 @@ public class GitAccess {
 				treeWalk.addTree(tree);
 				treeWalk.setRecursive(true);
 				treeWalk.setFilter(PathFilter.create(path));
-
 				ObjectId objectId = null;
 				if (treeWalk.next()) {
 					objectId = treeWalk.getObjectId(0);
 				}
-
 				treeWalk.close();
 				revWalk.close();
 				return objectId;

@@ -216,7 +216,7 @@ public class CustomContextualMenu extends JPopupMenu {
 								e1.printStackTrace();
 							}
 						} else if (file.getChangeType() == GitChangeType.SUBMODULE) {
-							gitAccess.discardSubmodule(file.getFileLocation());
+							gitAccess.discardSubmodule();
 						}
 					}
 

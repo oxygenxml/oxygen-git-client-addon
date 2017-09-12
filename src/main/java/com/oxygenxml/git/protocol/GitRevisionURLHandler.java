@@ -11,10 +11,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
 
 /**
@@ -29,6 +32,8 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 * The git protocol
 	 */
 	public static final String GIT_PROTOCOL = "git";
+	
+	private static String repositoryPath;
 
 	/**
 	 * Connection class for XML files in archives.
@@ -126,7 +131,9 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				//return new ByteArrayInputStream(commit.getBytes(StandardCharsets.UTF_8));
 			}
 			GitAccess gitAccess = GitAccess.getInstance();
-			return gitAccess.getInputStream(fileObject);
+			InputStream inputStream = gitAccess.getInputStream(fileObject);
+			gitAccess.setRepository(OptionsManager.getInstance().getSelectedRepository());
+			return inputStream;
 		}
 
 		/**
@@ -163,6 +170,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		}
 	}
 
+
 	/**
 	 * Creates and opens the connection
 	 * 
@@ -186,6 +194,14 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 * @throws MalformedURLException
 	 */
 	public static URL buildURL(String gitFile, String fileLocation) throws MalformedURLException {
+		try {
+			repositoryPath = GitAccess.getInstance().getRepository().getWorkTree().getAbsolutePath();
+		} catch (NoWorkTreeException e) {
+			e.printStackTrace();
+		} catch (NoRepositorySelected e) {
+			e.printStackTrace();
+		}
+		
 		URL url = new URL ("git://" + gitFile + "/" + fileLocation);
 		if(gitFile.equals(GitFile.CURRENT_SUBMODULE) || gitFile.equals(GitFile.PREVIOUSLY_SUBMODULE)){
 			url = new URL("git://" + gitFile + "/" + fileLocation +".txt");
