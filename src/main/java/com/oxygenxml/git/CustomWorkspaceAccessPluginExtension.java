@@ -68,7 +68,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
 		try {
-			//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS", "");
+			//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
 			
 			CustomAuthenticator.install();
 			
@@ -245,6 +245,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 	public boolean applicationClosing() {
 		// You can reject the application closing here
+		OptionsManager.getInstance().saveOptions();
 		GitAccess.getInstance().close();
 		return true;
 	}

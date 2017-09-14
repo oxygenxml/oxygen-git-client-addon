@@ -31,6 +31,30 @@ public class RepositoryLocations {
 	public void setLocations(Set<String> locations) {
 		this.locations = locations;
 	}
-	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((locations == null) ? 0 : locations.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RepositoryLocations other = (RepositoryLocations) obj;
+		if (locations == null) {
+			if (other.locations != null)
+				return false;
+		} else if (!locations.equals(other.locations))
+			return false;
+		return true;
+	}
 
 }

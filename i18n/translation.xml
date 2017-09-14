@@ -331,7 +331,7 @@
     
     <key value="Contextual_Menu_Discard_Confirmation_Message">
         <comment>The text displayed when you click on the "Discard" contextual menu item</comment>
-        <val lang="en_US">Are you sure you want to discard your changes ?</val>
+        <val lang="en_US">Are you sure you want to discard your changes?</val>
         <val lang="de_DE">Sind Sie sicher, dass Sie die Änderungen verwerfen wollen?</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -502,7 +502,7 @@
     
     <key value="Check_ProjcetXPR_Is_Git">
         <comment>The text displayed in the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
-        <val lang="en_US">Do you want your current project to be a git project ?</val>
+        <val lang="en_US">Do you want your current project to be a git project?</val>
         <val lang="de_DE">Soll das aktuelle Projekt als Git-Projekt aufgesetzt werden?</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -712,6 +712,15 @@
         <comment>The tooltip for the ChangeView button when the icon shows the flat view icon</comment>
         <val lang="en_US">Switch to flat view</val>
         <val lang="de_DE">Switch to flat view</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Login_Dialog_Private_Repository_Message">
+        <comment>The text displayed on the first row of the login dialog if the repositroy is private</comment>
+        <val lang="en_US">This is a private repository. We need your credentials.</val>
+        <val lang="de_DE">This is a private repository. We need your credentials.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>

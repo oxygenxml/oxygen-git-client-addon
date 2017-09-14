@@ -26,6 +26,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  */
 public class OptionsManager {
+
+	private static final String OLD_GIT_PLUGIN_OPTIONS = "MY_PLUGIN_OPTIONS";
+
+	private static final String GIT_PLUGIN_OPTIONS = "GIT_PLUGIN_OPTIONS";
+
 	/**
 	 * Logger for logging.
 	 */
@@ -63,13 +68,13 @@ public class OptionsManager {
 	 */
 	public static OptionsManager getInstance() {
 		if (instance == null) {
-      synchronized (OptionsManager.class) {
-        if (instance == null) {
-          instance = new OptionsManager();
-        }
-      }
-    }
-    return instance;
+			synchronized (OptionsManager.class) {
+				if (instance == null) {
+					instance = new OptionsManager();
+				}
+			}
+		}
+		return instance;
 	}
 
 	/**
@@ -91,12 +96,27 @@ public class OptionsManager {
 					}
 				} else {
 					String option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage()
-							.getOption("MY_PLUGIN_OPTIONS", null);
+							.getOption(OLD_GIT_PLUGIN_OPTIONS, null);
 
 					if (option != null) {
+						// Backwards.
+						// 1. Load
 						options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
 								PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
+						// 2. Reset
+						PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(OLD_GIT_PLUGIN_OPTIONS, null);
+						// 3. Save with the new option
+						saveOptions();
+					} else {
+						option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().getOption(GIT_PLUGIN_OPTIONS, null);
+						// Load the new key if exists.
+						if (option != null) {
+							options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
+									PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().unescapeAttributeValue(option)));
+						}
 					}
+
+			
 				}
 			} catch (JAXBException e) {
 				logger.warn("Options not loaded: " + e, e);
@@ -124,7 +144,7 @@ public class OptionsManager {
 	 * Uses JAXB to save all the selected repositories from the users in the
 	 * repositoryOptions variable
 	 */
-	private void saveOptions() {
+	public void saveOptions() {
 		try {
 
 			JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
@@ -135,7 +155,10 @@ public class OptionsManager {
 			} else {
 				StringWriter stringWriter = new StringWriter();
 				jaxbMarshaller.marshal(options, stringWriter);
-				PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("MY_PLUGIN_OPTIONS",
+
+				// TODO Make a constant. Pick a better name. Backwards compatibility.
+
+				PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(GIT_PLUGIN_OPTIONS,
 						PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().escapeTextValue(stringWriter.toString()));
 			}
 		} catch (JAXBException e1) {
@@ -207,14 +230,14 @@ public class OptionsManager {
 	 */
 	public void saveGitCredentials(UserCredentials userCredentials) {
 		loadOptions();
-		
+
 		UserCredentials uc = new UserCredentials();
 		String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 				.getUtilAccess().encrypt(userCredentials.getPassword());
 		uc.setPassword(encryptedPassword);
 		uc.setUsername(userCredentials.getUsername());
 		uc.setHost(userCredentials.getHost());
-		
+
 		List<UserCredentials> credentials = options.getUserCredentialsList().getCredentials();
 		for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
 			UserCredentials alreadyHere = (UserCredentials) iterator.next();

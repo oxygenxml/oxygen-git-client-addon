@@ -413,7 +413,7 @@ public class Tags {
 	public static final String NO_RIGHTS_TO_PUSH_MESSAGE = "No_Right_To_Push_Message";
 
 	/**
-	 * The text displayed on the first row of the login dialog if the user eneterd
+	 * The text displayed on the first row of the login dialog if the user entered
 	 * doesn't have rights for that repository
 	 */
 	public static final String LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS = "Login_Dialog_Credentials_Doesnt_Have_Rights";
@@ -429,4 +429,10 @@ public class Tags {
 	 * icon
 	 */
 	public static final String CHANGE_FLAT_VIEW_BUTTON_TOOLTIP = "Change_Flat_View_Button_ToolTip";
+
+	/**
+	 * The text displayed on the first row of the login dialog if the repository
+	 * is private
+	 */
+	public static final String LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE = "Login_Dialog_Private_Repository_Message";
 }

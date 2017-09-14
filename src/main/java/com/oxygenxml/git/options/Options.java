@@ -39,9 +39,10 @@ public class Options {
 	 */
 	@XmlElement(name = "commitMessages")
 	private CommitMessages commitMessages = new CommitMessages();
-	
+
 	/**
-	 * Wrapper for a list of project.xpr that were tested if they want to be a git repository
+	 * Wrapper for a list of project.xpr that were tested if they want to be a git
+	 * repository
 	 */
 	@XmlElement(name = "projectsTested")
 	private ProjectsTestedForGit prjectsTestsForGit = new ProjectsTestedForGit();
@@ -84,6 +85,55 @@ public class Options {
 
 	public void setCommitMessages(CommitMessages commitMessages) {
 		this.commitMessages = commitMessages;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((commitMessages == null) ? 0 : commitMessages.hashCode());
+		result = prime * result + ((prjectsTestsForGit == null) ? 0 : prjectsTestsForGit.hashCode());
+		result = prime * result + ((repositoryLocations == null) ? 0 : repositoryLocations.hashCode());
+		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
+		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Options other = (Options) obj;
+		if (commitMessages == null) {
+			if (other.commitMessages != null)
+				return false;
+		} else if (!commitMessages.equals(other.commitMessages))
+			return false;
+		if (prjectsTestsForGit == null) {
+			if (other.prjectsTestsForGit != null)
+				return false;
+		} else if (!prjectsTestsForGit.equals(other.prjectsTestsForGit))
+			return false;
+		if (repositoryLocations == null) {
+			if (other.repositoryLocations != null)
+				return false;
+		} else if (!repositoryLocations.equals(other.repositoryLocations))
+			return false;
+		if (selectedRepository == null) {
+			if (other.selectedRepository != null)
+				return false;
+		} else if (!selectedRepository.equals(other.selectedRepository))
+			return false;
+		if (userCredentialsList == null) {
+			if (other.userCredentialsList != null)
+				return false;
+		} else if (!userCredentialsList.equals(other.userCredentialsList))
+			return false;
+		return true;
 	}
 
 }

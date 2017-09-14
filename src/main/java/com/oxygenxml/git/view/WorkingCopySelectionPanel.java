@@ -19,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -32,11 +33,13 @@ import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
@@ -165,14 +168,29 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 						}
 						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
 						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
-
-						// calculate the how many pushes ahead and pulls behind the current
+						
+						// calculate how many pushes ahead and pulls behind the current
 						// selected working copy is from the base. It is on thread because
 						// the fetch command takes a longer time
 						new Thread(new Runnable() {
 
 							public void run() {
 								gitAccess.fetch();
+								if(gitAccess.isPrivateRepository()){
+									//String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+									//new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+									//		translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage, translator);
+								}
+								/*while (gitAccess.isPrivateRepository()) {
+									String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+									UserCredentials userCredentials = new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+											translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage, translator).getUserCredentials();
+									if(userCredentials != null){
+										gitAccess.fetch();
+									} else {
+										break;
+									}
+								}*/
 								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
 								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
 								parent.getToolbarPanel().updateInformationLabel();

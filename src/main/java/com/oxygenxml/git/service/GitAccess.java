@@ -76,6 +76,8 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import com.oxygenxml.git.CustomAuthenticator;
+import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -106,6 +108,8 @@ public class GitAccess {
 	private Translator translator = new TranslatorExtensionImpl();
 
 	private boolean unavailable;
+
+	private boolean privateRepository = false;
 
 	private GitAccess() {
 
@@ -382,7 +386,9 @@ public class GitAccess {
 	 * Frees resources associated with the git instance.
 	 */
 	public void close() {
-		git.close();
+		if (git != null) {
+			git.close();
+		}
 
 	}
 
@@ -1043,17 +1049,29 @@ public class GitAccess {
 	 * Brings all the commits to the local repository but does not merge them
 	 */
 	public void fetch() {
+
 		CustomAuthenticator.install();
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
+			UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
+			String username = gitCredentials.getUsername();
+			String password = gitCredentials.getPassword();
+			System.out.println(username);
+			System.out.println(password);
 			if (sections.contains("remote")) {
-				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).call();
+				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
+						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 			}
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
 		} catch (TransportException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+			if (e.getMessage().contains("Authentication is required but no CredentialsProvider has been registered")
+					|| e.getMessage().contains("not authorized")) {
+				privateRepository = true;
+				return;
+			}
 			unavailable = true;
 			return;
 		} catch (GitAPIException e) {
@@ -1062,6 +1080,7 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 		unavailable = false;
+		privateRepository = false;
 	}
 
 	public void updateWithRemoteFile(String filePath) {
@@ -1276,6 +1295,10 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public boolean isPrivateRepository() {
+		return privateRepository;
 	}
 
 }

@@ -18,6 +18,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -26,11 +27,14 @@ import org.apache.http.impl.auth.UnsupportedDigestAlgorithmException;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.utils.PanelRefresh;
+import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -94,7 +98,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * Main panel refresh
 	 */
 	private Refresh refresh;
-	
+
 	private StageController stageController;
 
 	public StagingPanel(Translator translator, Refresh refresh, StageController stageController) {
@@ -130,7 +134,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		final GitAccess gitAccess = GitAccess.getInstance();
 		PushPullController pushPullController = new PushPullController(gitAccess, translator);
 
-		//Creates the panels objects that will be in the staging panel
+		// Creates the panels objects that will be in the staging panel
 		unstagedChangesPanel = new ChangesPanel(gitAccess, stageController, false, translator);
 		stagedChangesPanel = new ChangesPanel(gitAccess, stageController, true, translator);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
@@ -145,29 +149,25 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		splitPane.setContinuousLayout(true);
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setBorder(null);
-		
-		toolbarPanel.registerSubject(workingCopySelectionPanel);
-		
 
-		//adds the panels to the staging panel using gird bag constraints
+		toolbarPanel.registerSubject(workingCopySelectionPanel);
+
+		// adds the panels to the staging panel using gird bag constraints
 		GridBagConstraints gbc = new GridBagConstraints();
 		addToolbatPanel(gbc);
 		addWorkingCopySelectionPanel(gbc);
 		addSplitPanel(gbc, splitPane);
-		//addCommitPanel(gbc);
-		
-		//creates the actual GUI for each panel
+		// addCommitPanel(gbc);
+
+		// creates the actual GUI for each panel
 		workingCopySelectionPanel.createGUI();
 		toolbarPanel.createGUI();
 		commitPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
-		
-		
-		
+
 		registerSubject(pushPullController);
 		registerSubject(commitPanel);
-		
 
 		addRefreshF5();
 
@@ -209,6 +209,16 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				gained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
+					while (gitAccess.isPrivateRepository()) {
+						String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+						UserCredentials userCredentials = new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage, translator).getUserCredentials();
+						if(userCredentials != null){
+							gitAccess.fetch();
+						} else {
+							break;
+						}
+					}
 					refresh.call();
 				}
 
@@ -321,7 +331,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * 
 	 * @param gbc
 	 *          - the constraints used for this component
-	 * @param splitPane 
+	 * @param splitPane
 	 */
 	private void addCommitPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, 5, 0, 5);

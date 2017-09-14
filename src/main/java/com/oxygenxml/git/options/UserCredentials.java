@@ -19,19 +19,19 @@ public class UserCredentials {
 	 * The host for which the username and password are validF
 	 */
 	@XmlElement(name = "host")
-	private String host="";
+	private String host = "";
 
 	/**
 	 * Git username
 	 */
 	@XmlElement(name = "username")
-	private String username="";
+	private String username = "";
 
 	/**
 	 * Git Password
 	 */
 	@XmlElement(name = "password")
-	private String password="";
+	private String password = "";
 
 	public UserCredentials() {
 
@@ -71,7 +71,42 @@ public class UserCredentials {
 	public String toString() {
 		return "UserCredentials [host=" + host + ", username=" + username + ", password=" + password + "]";
 	}
-	
-	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((host == null) ? 0 : host.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserCredentials other = (UserCredentials) obj;
+		if (host == null) {
+			if (other.host != null)
+				return false;
+		} else if (!host.equals(other.host))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		return true;
+	}
 
 }
