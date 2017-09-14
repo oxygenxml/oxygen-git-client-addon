@@ -133,17 +133,19 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		//Creates the panels objects that will be in the staging panel
 		unstagedChangesPanel = new ChangesPanel(gitAccess, stageController, false, translator);
 		stagedChangesPanel = new ChangesPanel(gitAccess, stageController, true, translator);
+		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
+		commitPanel = new CommitPanel(gitAccess, stageController, translator);
+		toolbarPanel = new ToolbarPanel(pushPullController, translator, refresh);
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
 		splitPane.add(stagedChangesPanel);
+		splitPane.add(commitPanel);
 		splitPane.setDividerSize(5);
 		splitPane.setContinuousLayout(true);
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setBorder(null);
-		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
-		commitPanel = new CommitPanel(gitAccess, stageController, translator);
-		toolbarPanel = new ToolbarPanel(pushPullController, translator, refresh);
+		
 		toolbarPanel.registerSubject(workingCopySelectionPanel);
 		
 
@@ -152,7 +154,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		addToolbatPanel(gbc);
 		addWorkingCopySelectionPanel(gbc);
 		addSplitPanel(gbc, splitPane);
-		addCommitPanel(gbc);
+		//addCommitPanel(gbc);
 		
 		//creates the actual GUI for each panel
 		workingCopySelectionPanel.createGUI();
@@ -319,15 +321,16 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * 
 	 * @param gbc
 	 *          - the constraints used for this component
+	 * @param splitPane 
 	 */
 	private void addCommitPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		gbc.weightx = 1;
-		gbc.weighty = 0;
+		gbc.weighty = 1;
 		this.add(commitPanel, gbc);
 	}
 

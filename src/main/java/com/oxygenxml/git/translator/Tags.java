@@ -418,4 +418,15 @@ public class Tags {
 	 */
 	public static final String LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS = "Login_Dialog_Credentials_Doesnt_Have_Rights";
 
+	/**
+	 * The tooltip for the ChangeView button when the icon shows the tree view
+	 * icon
+	 */
+	public static final String CHANGE_TREE_VIEW_BUTTON_TOOLTIP = "Change_Tree_View_Button_ToolTip";
+
+	/**
+	 * The tooltip for the ChangeView button when the icon shows the flat view
+	 * icon
+	 */
+	public static final String CHANGE_FLAT_VIEW_BUTTON_TOOLTIP = "Change_Flat_View_Button_ToolTip";
 }

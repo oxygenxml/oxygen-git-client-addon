@@ -92,6 +92,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 		addCommitButtonListener();
 		addPreviouslyMessagesComboBoxListener();
+		this.setPreferredSize(new Dimension(Constants.PANEL_WIDTH, Constants.COMMIT_PANEL_HEIGHT));
 		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.COMMIT_PANEL_HEIGHT));
 	}
 
@@ -184,17 +185,17 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.weightx = 1;
-		gbc.weighty = 0;
+		gbc.weighty = 1;
 		gbc.gridwidth = 2;
 		commitMessage = new JTextArea();
 		commitMessage.setLineWrap(true);
 		// Around 3 lines of text.
 		int fontH = commitMessage.getFontMetrics(commitMessage.getFont()).getHeight();
-		commitMessage.setPreferredSize(new Dimension(200, 30 * fontH));
+		//commitMessage.setPreferredSize(new Dimension(200, 30 * fontH));
 		commitMessage.setWrapStyleWord(true);
 		JScrollPane scrollPane = new JScrollPane(commitMessage);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);

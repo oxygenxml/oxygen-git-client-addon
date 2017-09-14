@@ -1053,6 +1053,7 @@ public class GitAccess {
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
 		} catch (TransportException e) {
+			e.printStackTrace();
 			unavailable = true;
 			return;
 		} catch (GitAPIException e) {
@@ -1061,7 +1062,6 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 		unavailable = false;
-
 	}
 
 	public void updateWithRemoteFile(String filePath) {

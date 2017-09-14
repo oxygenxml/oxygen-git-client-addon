@@ -434,9 +434,11 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					scrollPane.setViewportView(tree);
 					currentView = TREE_VIEW;
 					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TABLE_VIEW));
+					switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
 				} else {
 					currentView = FLAT_VIEW;
 					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
+					switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 					filesTable.clearSelection();
 					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
@@ -554,7 +556,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		gbc.weighty = 0;
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
-		switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_VIEW_BUTTON_TOOLTIP));
+		switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 		switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);

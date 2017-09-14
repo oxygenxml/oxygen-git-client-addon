@@ -64,7 +64,6 @@ public class CustomAuthenticator {
 							final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(this);
 
 							if (GitAccess.getInstance().getHostName().equals(getRequestingHost())) {
-								System.out.println("works ??");
 								// we need to return null to let our own authentication dialog
 								// (LoginDialog)
 								// appear for git related hosts. Thus preventing the Oxygen's
