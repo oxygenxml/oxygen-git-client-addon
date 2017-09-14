@@ -719,8 +719,8 @@
     
     <key value="Login_Dialog_Private_Repository_Message">
         <comment>The text displayed on the first row of the login dialog if the repositroy is private</comment>
-        <val lang="en_US">This is a private repository. We need your credentials.</val>
-        <val lang="de_DE">This is a private repository. We need your credentials.</val>
+        <val lang="en_US">This is a private repository. We need your credentials for synchronization.</val>
+        <val lang="de_DE">This is a private repository. We need your credentials for synchronization.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>

@@ -209,16 +209,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				gained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
-					while (gitAccess.isPrivateRepository()) {
-						String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
-						UserCredentials userCredentials = new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage, translator).getUserCredentials();
-						if(userCredentials != null){
-							gitAccess.fetch();
-						} else {
-							break;
-						}
-					}
 					refresh.call();
 				}
 

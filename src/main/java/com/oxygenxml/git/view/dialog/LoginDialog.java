@@ -61,7 +61,7 @@ public class LoginDialog extends OKCancelDialog {
 
 		this.pack();
 		this.setLocationRelativeTo(frame);
-		this.setMinimumSize(new Dimension(320, 180));
+		this.setMinimumSize(new Dimension(340, 200));
 		this.setResizable(true);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);

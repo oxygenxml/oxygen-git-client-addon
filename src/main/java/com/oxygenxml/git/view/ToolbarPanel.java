@@ -268,7 +268,7 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (GitAccess.getInstance().getRepository() != null) {
+					if (GitAccess.getInstance().getRepository() != null && !GitAccess.getInstance().isUnavailable()) {
 						pushPullController.execute(Command.PUSH);
 						if (pullsBehind == 0) {
 							pushesAhead = 0;
@@ -315,9 +315,10 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (GitAccess.getInstance().getRepository() != null)
+					if (GitAccess.getInstance().getRepository() != null && !GitAccess.getInstance().isUnavailable()) {
 						pushPullController.execute(Command.PULL);
-					pullsBehind = 0;
+						pullsBehind = 0;
+					}
 				} catch (NoRepositorySelected e1) {
 
 				}

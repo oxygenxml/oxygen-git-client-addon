@@ -168,7 +168,7 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 						}
 						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
 						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
-						
+
 						// calculate how many pushes ahead and pulls behind the current
 						// selected working copy is from the base. It is on thread because
 						// the fetch command takes a longer time
@@ -176,21 +176,18 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 
 							public void run() {
 								gitAccess.fetch();
-								if(gitAccess.isPrivateRepository()){
-									//String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
-									//new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-									//		translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage, translator);
-								}
-								/*while (gitAccess.isPrivateRepository()) {
-									String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+								String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+								while (gitAccess.isPrivateRepository()) {
 									UserCredentials userCredentials = new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-											translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage, translator).getUserCredentials();
+											translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage,
+											translator).getUserCredentials();
 									if(userCredentials != null){
 										gitAccess.fetch();
 									} else {
 										break;
 									}
-								}*/
+									loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE) + userCredentials.getUsername();
+								}
 								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
 								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
 								parent.getToolbarPanel().updateInformationLabel();
@@ -247,12 +244,13 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 				if (directory != null) {
 					String directoryPath = directory.getAbsolutePath();
 					if (FileHelper.isGitRepository(directoryPath) && directoryPath != null) {
-						// adds the directory path to the combo box if it doesn't already exists
+						// adds the directory path to the combo box if it doesn't already
+						// exists
 						if (!OptionsManager.getInstance().getRepositoryEntries().contains(directoryPath)) {
 							workingCopySelector.addItem(directoryPath);
 							OptionsManager.getInstance().addRepository(directoryPath);
 						}
-						//sets the directory path as the selected repository
+						// sets the directory path as the selected repository
 						workingCopySelector.setSelectedItem(directoryPath);
 					} else {
 						PluginWorkspaceProvider.getPluginWorkspace()
