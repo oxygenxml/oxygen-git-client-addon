@@ -1057,8 +1057,8 @@ public class GitAccess {
 			UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
 			String username = gitCredentials.getUsername();
 			String password = gitCredentials.getPassword();
-			System.out.println(username);
-			System.out.println(password);
+			//System.out.println(username);
+			//System.out.println(password);
 			if (sections.contains("remote")) {
 				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
 						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
