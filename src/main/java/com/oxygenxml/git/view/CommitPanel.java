@@ -195,7 +195,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		commitMessage.setLineWrap(true);
 		// Around 3 lines of text.
 		int fontH = commitMessage.getFontMetrics(commitMessage.getFont()).getHeight();
-		//commitMessage.setPreferredSize(new Dimension(200, 30 * fontH));
+		// commitMessage.setPreferredSize(new Dimension(200, 30 * fontH));
 		commitMessage.setWrapStyleWord(true);
 		JScrollPane scrollPane = new JScrollPane(commitMessage);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -313,6 +313,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 					try {
 						synchronized (this) {
 							messagesActive++;
+							statusLabel.setIcon(null);
 							statusLabel.setText(message);
 						}
 
@@ -320,7 +321,12 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 						synchronized (this) {
 							messagesActive--;
 							if (messagesActive == 0) {
-								statusLabel.setText("");
+								if (gitAccess.isUnavailable()) {
+									statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
+									statusLabel.setText("Cannot reach host");
+								} else {
+									statusLabel.setText("");
+								}
 							}
 						}
 					} catch (InterruptedException e) {
@@ -455,7 +461,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	class PreviouslyMessagesToolTipRenderer extends DefaultListCellRenderer {
 
 		private final int MAX_TOOL_TIP_WIDTH = 700;
-		
+
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
@@ -464,9 +470,9 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			JToolTip createToolTip = comp.createToolTip();
 			Font font = createToolTip.getFont();
 			FontMetrics fontMetrics = getFontMetrics(font);
-			int length =fontMetrics.stringWidth((String) value);
+			int length = fontMetrics.stringWidth((String) value);
 			if (length < MAX_TOOL_TIP_WIDTH) {
-				comp.setToolTipText("<html><p width=\""+ length +"\">" + value + "</p></html>");
+				comp.setToolTipText("<html><p width=\"" + length + "\">" + value + "</p></html>");
 			} else {
 				comp.setToolTipText("<html><p width=\"" + MAX_TOOL_TIP_WIDTH + "\">" + value + "</p></html>");
 			}
