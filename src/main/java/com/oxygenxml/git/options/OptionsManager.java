@@ -108,7 +108,8 @@ public class OptionsManager {
 						// 3. Save with the new option
 						saveOptions();
 					} else {
-						option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().getOption(GIT_PLUGIN_OPTIONS, null);
+						option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().getOption(GIT_PLUGIN_OPTIONS,
+								null);
 						// Load the new key if exists.
 						if (option != null) {
 							options = (Options) jaxbUnmarshaller.unmarshal(new StringReader(
@@ -116,7 +117,6 @@ public class OptionsManager {
 						}
 					}
 
-			
 				}
 			} catch (JAXBException e) {
 				logger.warn("Options not loaded: " + e, e);
@@ -272,9 +272,11 @@ public class OptionsManager {
 				break;
 			}
 		}
-
-		String decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-				.getUtilAccess().decrypt(password);
+		String decryptedPassword = null;
+		if (WorkspaceAccessPlugin.getInstance() != null) {
+			decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+					.getUtilAccess().decrypt(password);
+		}
 		if (decryptedPassword == null) {
 			decryptedPassword = "";
 		}
