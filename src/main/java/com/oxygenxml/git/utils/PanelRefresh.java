@@ -92,6 +92,7 @@ public class PanelRefresh implements Refresh {
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(false);
 					stagingPanel.requestFocus();
 				} else if (FileHelper.isGitRepository(path) && !path.equals(workingCopyCurrentPath)){
+					OptionsManager.getInstance().addRepository(path);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(path);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
 				}

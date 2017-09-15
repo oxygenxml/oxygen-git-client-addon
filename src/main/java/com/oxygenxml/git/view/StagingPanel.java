@@ -342,6 +342,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(false);
 			toolbarPanel.getPushButton().setEnabled(false);
 			toolbarPanel.getPullButton().setEnabled(false);
+			toolbarPanel.getCloneRepositoryButton().setEnabled(false);
 			commitPanel.getCommitButton().setEnabled(false);
 		} else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
 			commitPanel.setStatus(pushPullEvent.getMessage());
@@ -353,6 +354,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(true);
 			toolbarPanel.getPushButton().setEnabled(true);
 			toolbarPanel.getPullButton().setEnabled(true);
+			toolbarPanel.getCloneRepositoryButton().setEnabled(true);
 			unstagedChangesPanel.updateFlatView(GitAccess.getInstance().getUnstagedFiles());
 			unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(),
 					GitAccess.getInstance().getUnstagedFiles());

@@ -129,6 +129,10 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 		return pullButton;
 	}
 
+	public JButton getCloneRepositoryButton(){
+		return cloneRepositoryButton;
+	}
+	
 	public void setPullsBehind(int pullsBehind) {
 		this.pullsBehind = pullsBehind;
 		pullButton.repaint();
