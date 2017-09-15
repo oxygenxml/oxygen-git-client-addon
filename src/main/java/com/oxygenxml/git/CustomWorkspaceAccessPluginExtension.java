@@ -68,7 +68,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
 		try {
-			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
+			//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
 			
 			CustomAuthenticator.install();
 			
