@@ -18,6 +18,7 @@ public class ImageConstants {
 	public static final String GIT_SUBMODULE_ICON = "/images/GitSubmodule16.png";
 	public static final String GIT_SUBMODULE_FILE_ICON = "/images/GitStorage12.png";
 	public static final String GIT_ICON = "/images/DockableFrameGitStaging16.png";
+	public static final String GIT_CLONE_REPOSITORY_ICON = "/images/Add16.png";
 	public static final String FILE_CHOOSER_ICON = "/images/Open16.png";
 	public static final String TREE_VIEW = "/images/GitTreeMode16.png";
 	public static final String TABLE_VIEW = "/images/GitFlatMode16.png";

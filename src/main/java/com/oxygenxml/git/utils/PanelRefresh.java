@@ -84,12 +84,16 @@ public class PanelRefresh implements Refresh {
 				updateCounter(Command.PULL);
 				updateCounter(Command.PUSH);
 				String path = gitAccess.getRepository().getWorkTree().getAbsolutePath();
+				String workingCopyCurrentPath = (String) stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().getSelectedItem();
 
 				if (FileHelper.isGitSubmodule(path)) {
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(true);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(false);
 					stagingPanel.requestFocus();
+				} else if (FileHelper.isGitRepository(path) && !path.equals(workingCopyCurrentPath)){
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(path);
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
 				}
 			}
 		} catch (NoRepositorySelected e1) {
@@ -244,5 +248,5 @@ public class PanelRefresh implements Refresh {
 	public void setPanel(JComponent stagingPanel) {
 		this.stagingPanel = (StagingPanel) stagingPanel;
 	}
-
+	
 }

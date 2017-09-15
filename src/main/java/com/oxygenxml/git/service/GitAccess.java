@@ -122,6 +122,13 @@ public class GitAccess {
 		return instance;
 	}
 
+	public void clone(String url, File directory) throws GitAPIException {
+		if (git != null) {
+			git.close();
+		}
+		git = Git.cloneRepository().setURI(url).setDirectory(directory).setCloneSubmodules(true).call();
+	}
+
 	/**
 	 * Sets the git repository. File path must exist
 	 * 

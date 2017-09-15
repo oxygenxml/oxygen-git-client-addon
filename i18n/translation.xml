@@ -725,4 +725,22 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
+    
+    <key value="Clone_Repository_Button_Tooltip">
+        <comment>The tooltip for the clone repository button</comment>
+        <val lang="en_US">Clone new repository</val>
+        <val lang="de_DE">Clone new repository</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Clone_Repository_Dialog_Title">
+        <comment>The text displayed in the title for the dialog that appears when you clone a new repository</comment>
+        <val lang="en_US">Clone Repository</val>
+        <val lang="de_DE">Clone Repository</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
 </translation>

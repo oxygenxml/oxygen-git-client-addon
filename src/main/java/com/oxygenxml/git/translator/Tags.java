@@ -435,4 +435,15 @@ public class Tags {
 	 * is private
 	 */
 	public static final String LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE = "Login_Dialog_Private_Repository_Message";
+
+	/**
+	 * The tooltip for the clone repository button
+	 */
+	public static final String CLONE_REPOSITORY_BUTTON_TOOLTIP = "Clone_Repository_Button_Tooltip";
+
+	/**
+	 * The text displayed in the title for the dialog that appears when you clone
+	 * a new repository
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_TITLE = "Clone_Repository_Dialog_Title";
 }

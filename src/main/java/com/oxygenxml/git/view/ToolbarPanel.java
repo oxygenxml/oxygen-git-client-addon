@@ -30,6 +30,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.view.dialog.BranchSelectDialog;
+import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Command;
@@ -85,6 +86,11 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 	 * Button for selecting the submodules
 	 */
 	private ToolbarButton submoduleSelectButton;
+	
+	/**
+	 * Button for cloning a new repository
+	 */
+	private ToolbarButton cloneRepositoryButton;
 
 	/**
 	 * Counter for how many pushes the local copy is ahead of the base
@@ -153,6 +159,7 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
+		addCloneRepositoryButton();
 		addPushAndPullButtons();
 		addBranchSelectButton();
 		addSubmoduleSelectButton();
@@ -174,6 +181,23 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 		this.add(statusInformationLabel, gbc);
 
 		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.TOOLBAR_PANEL_HEIGHT));
+	}
+
+	private void addCloneRepositoryButton() {
+		Action cloneRepositoryAction = new AbstractAction() {
+			
+			public void actionPerformed(ActionEvent e) {
+				new CloneRepositoryDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+						translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true, translator, refresh);
+			}
+		};
+		
+		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false); 
+		cloneRepositoryButton.setIcon(Icons.getIcon(ImageConstants.GIT_CLONE_REPOSITORY_ICON));
+		cloneRepositoryButton.setToolTipText(translator.getTraslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
+		setCustomWidthOn(cloneRepositoryButton);
+		
+		gitToolbar.add(cloneRepositoryButton);
 	}
 
 	/**
