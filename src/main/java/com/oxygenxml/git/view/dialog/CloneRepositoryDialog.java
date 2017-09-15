@@ -187,7 +187,14 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 					return;
 				}
 			}
-			GitAccess.getInstance().clone(uri.toString(), file);
+			
+			CustomAuthenticator.bind(url.getHost());
+			try {
+			  GitAccess.getInstance().clone(uri.toString(), file);
+			} finally {
+			  CustomAuthenticator.unbind(url.getHost());
+			}
+			
 			refresh.call();
 		} catch (MalformedURLException e) {
 			this.setMinimumSize(new Dimension(400, 180));
