@@ -53,12 +53,13 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 * Main panel refresh
 	 */
 	private Refresh refresh;
-	
-	public CloneRepositoryDialog(JFrame parentFrame, String title, boolean modal, Translator translator, Refresh refresh) {
+
+	public CloneRepositoryDialog(JFrame parentFrame, String title, boolean modal, Translator translator,
+			Refresh refresh) {
 		super(parentFrame, title, modal);
 		this.translator = translator;
 		this.refresh = refresh;
-		
+
 		createGUI();
 
 		this.pack();
@@ -73,7 +74,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
-		JLabel lblURL = new JLabel("URL: ");
+		JLabel lblURL = new JLabel(translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -95,7 +96,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		panel.add(tfURL, gbc);
 
-		JLabel lblPath = new JLabel("Destination Path: ");
+		JLabel lblPath = new JLabel(translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -167,21 +168,22 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				if (file.list().length > 0) {
 					this.setMinimumSize(new Dimension(400, 190));
 					information.setText(
-							"<html>The destination path already exists and is not an empty folder. Please choose an empty or a new folder into which to clone</html>");
+							"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) + "</html>");
 					return;
 				}
 			} else {
 				File tempFile = file.getParentFile();
-				while(tempFile != null){
-					if(tempFile.exists()){
+				while (tempFile != null) {
+					if (tempFile.exists()) {
 						file.mkdirs();
 						break;
 					}
 					tempFile = tempFile.getParentFile();
 				}
-				if(tempFile == null){
+				if (tempFile == null) {
 					this.setMinimumSize(new Dimension(400, 180));
-					information.setText("<html>Destination path is invalid</html>");
+					information.setText(
+							"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) + "</html>");
 					return;
 				}
 			}
@@ -189,13 +191,13 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			refresh.call();
 		} catch (MalformedURLException e) {
 			this.setMinimumSize(new Dimension(400, 180));
-			information.setText("<html>URL is invalid</html>");
+			information.setText("<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL) + "</html>");
 			return;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} catch (GitAPIException e) {
 			this.setMinimumSize(new Dimension(400, 180));
-			information.setText("<html>We could not clone the repository</html>");
+			information.setText("<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_CLONE_ERROR) + "</html>");
 			return;
 		}
 		dispose();

@@ -446,4 +446,35 @@ public class Tags {
 	 * a new repository
 	 */
 	public static final String CLONE_REPOSITORY_DIALOG_TITLE = "Clone_Repository_Dialog_Title";
+
+	/**
+	 * The text displayed for the "URL" label in the clone repository dialog
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_URL_LABEL = "Clone_Repository_Dialog_Url_Label";
+
+	/**
+	 * The text displayed for the "Destination Path" label in the clone repository
+	 * dialog
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL = "Clone_Repository_Dialog_Destination_Path_Label";
+
+	/**
+	 * The text displayed if the url is invalid
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_INVALID_URL = "Clone_Repository_Dialog_Invalid_Url";
+
+	/**
+	 * The text displayed if the destination path is invalid
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH = "Clone_Repository_Dialog_Invalid_Destination_Path";
+
+	/**
+	 * The text displayed if an error occured during cloning
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_CLONE_ERROR = "Clone_Repository_Dialog_Clone_Error";
+
+	/**
+	 * The text displayed if an error occured during cloning
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY = "Clone_Repository_Dialog_Destination_Path_Not_Empty";
 }

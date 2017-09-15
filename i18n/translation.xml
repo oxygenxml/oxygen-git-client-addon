@@ -743,4 +743,58 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
+    
+    <key value="Clone_Repository_Dialog_Url_Label">
+        <comment>The text displayed for the "URL" label in the clone repository dialog</comment>
+        <val lang="en_US">URL</val>
+        <val lang="de_DE">URL</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Clone_Repository_Dialog_Destination_Path_Label">
+        <comment>The text displayed for the "Destination Path" label in the clone repository dialog</comment>
+        <val lang="en_US">Destination Path</val>
+        <val lang="de_DE">Destination Path</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Clone_Repository_Dialog_Invalid_Url">
+        <comment>The text displayed if the url is invalid</comment>
+        <val lang="en_US">URL is invalid</val>
+        <val lang="de_DE">URL is invalid</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Clone_Repository_Dialog_Invalid_Destination_Path">
+        <comment>The text displayed if the destination path is invalid</comment>
+        <val lang="en_US">Destination path is invalid</val>
+        <val lang="de_DE">Destination path is invalid</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Clone_Repository_Dialog_Clone_Error">
+        <comment>The text displayed if an error occured during cloning</comment>
+        <val lang="en_US">We could not clone the repository</val>
+        <val lang="de_DE">We could not clone the repository</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Clone_Repository_Dialog_Destination_Path_Not_Empty">
+        <comment>The text displayed if an error occured during cloning</comment>
+        <val lang="en_US">The destination path already exists and is not an empty folder. Please choose an empty or a new folder into which to clone</val>
+        <val lang="de_DE">The destination path already exists and is not an empty folder. Please choose an empty or a new folder into which to clone</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
 </translation>
