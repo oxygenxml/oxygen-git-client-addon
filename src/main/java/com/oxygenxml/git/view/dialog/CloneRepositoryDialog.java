@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -159,7 +160,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 	@Override
 	protected void doOK() {
-
 		try {
 			URL url = new URL(tfURL.getText());
 			URI uri = url.toURI();

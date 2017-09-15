@@ -326,7 +326,7 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void setSubmodule(String submodule) throws IOException, GitAPIException {
-		git.submoduleUpdate().addPath(submodule).call();
+//		git.submoduleUpdate().addPath(submodule).call();
 		Repository parentRepository = git.getRepository();
 		Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		git = Git.wrap(submoduleRepository);
