@@ -488,4 +488,9 @@ public class Tags {
 	 * the repository
 	 */
 	public static final String CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE = "Clone_Repository_Dialog_Login_Message";
+
+	/**
+	 * The text in the title of the cloning progress dialog
+	 */
+	public static final String CLONE_PROGRESS_DIALOG_TITLE = "Cloning_Progress_Dialog_TItle";
 }

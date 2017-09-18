@@ -816,4 +816,13 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
+    Cloning repository
+    <key value="Cloning_Progress_Dialog_TItle">
+        <comment>The text in the title of the cloning progress dialog </comment>
+        <val lang="en_US">Cloning repository</val>
+        <val lang="de_DE">Cloning repository</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
 </translation>

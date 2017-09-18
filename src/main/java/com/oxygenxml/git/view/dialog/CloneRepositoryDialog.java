@@ -233,7 +233,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 							e.printStackTrace();
 						} catch (ExecutionException e) {
 							progressDialog.dispose();
-							e.printStackTrace();
 							Throwable cause = e.getCause();
 							while (cause != null) {
 								if(cause.getMessage().contains("Download cancelled")){
@@ -242,7 +241,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 										} catch (IOException e1) {
 											e1.printStackTrace();
 										}
-									progressDialog.dispose();
 									break;
 								}
 								if (cause instanceof NoRemoteRepositoryException) {

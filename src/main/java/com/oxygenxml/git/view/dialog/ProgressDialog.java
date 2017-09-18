@@ -4,13 +4,15 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
+
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 
 import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
 
@@ -19,10 +21,13 @@ public class ProgressDialog extends OKCancelDialog {
 	private JProgressBar progressBar;
 	private JLabel noteLabel;
 	private boolean isCanceled;
+	private Translator translator;
 
 	public ProgressDialog(JFrame parentFrame) {
-		super(parentFrame, "Progress", true);
-
+		super(parentFrame, "", true);
+		translator = new TranslatorExtensionImpl();
+		setTitle(translator.getTraslation(Tags.CLONE_PROGRESS_DIALOG_TITLE));
+		
 		noteLabel = new JLabel();
 
 		progressBar = new JProgressBar();
@@ -54,7 +59,7 @@ public class ProgressDialog extends OKCancelDialog {
 		add(panel);
 
 		getOkButton().setVisible(false);
-		
+
 		pack();
 		setLocationRelativeTo(parentFrame);
 		setMinimumSize(new Dimension(370, 150));
