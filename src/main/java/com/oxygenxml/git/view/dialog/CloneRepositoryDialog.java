@@ -7,24 +7,29 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 
 import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -44,7 +49,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 	private JTextField tfURL;
 
-	private JTextField tfPath;
+	private JComboBox<String> comboBoxPath;
 
 	private ToolbarButton browseButton;
 
@@ -108,7 +113,12 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.gridy = 1;
 		panel.add(lblPath, gbc);
 
-		tfPath = new JTextField();
+		comboBoxPath = new JComboBox<String>();
+		comboBoxPath.setEditable(true);
+		Set<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
+		for (String string : destinationPaths) {
+			comboBoxPath.addItem(string);
+		}
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -117,14 +127,14 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.weighty = 0;
 		gbc.gridx = 1;
 		gbc.gridy = 1;
-		panel.add(tfPath, gbc);
+		panel.add(comboBoxPath, gbc);
 
 		Action browseButtonAction = new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
 				File directory = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).chooseDirectory();
 				if (directory != null) {
-					tfPath.setText(directory.getAbsolutePath());
+					comboBoxPath.setSelectedItem(directory.getAbsolutePath());
 				}
 			}
 		};
@@ -160,12 +170,16 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 	@Override
 	protected void doOK() {
+		
+		final String selectedPath = (String) comboBoxPath.getSelectedItem();
+		String host = null;
 		try {
-			URL url = new URL(tfURL.getText());
-			URI uri = url.toURI();
-			File file = new File(tfPath.getText());
+			final URL url = new URL(tfURL.getText());
+			host = url.getHost();
+			final File file = new File(selectedPath);
 			if (file.exists()) {
 				if (file.list().length > 0) {
+					CloneRepositoryDialog.this.setVisible(true);
 					this.setMinimumSize(new Dimension(400, 190));
 					information.setText(
 							"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) + "</html>");
@@ -181,33 +195,93 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 					tempFile = tempFile.getParentFile();
 				}
 				if (tempFile == null) {
+					CloneRepositoryDialog.this.setVisible(true);
 					this.setMinimumSize(new Dimension(400, 180));
 					information.setText(
 							"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) + "</html>");
 					return;
 				}
 			}
-			
-			CustomAuthenticator.bind(url.getHost());
+
 			try {
-			  GitAccess.getInstance().clone(uri.toString(), file);
+				final ProgressDialog progressDialog = new ProgressDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+				new Thread(new Runnable() {
+					
+					public void run() {
+						progressDialog.setVisible(true);
+					}
+				}).start();
+				new SwingWorker<Void, Void>(){
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						CloneRepositoryDialog.this.setVisible(false);
+						CustomAuthenticator.bind(url.getHost());
+						GitAccess.getInstance().clone(url, file, progressDialog);
+						progressDialog.dispose();
+						return null;
+					}
+					
+					@Override
+					protected void done() {
+						try {
+							get();
+							refresh.call();
+							OptionsManager.getInstance().saveDestinationPath(selectedPath);
+							dispose();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							progressDialog.dispose();
+							e.printStackTrace();
+							Throwable cause = e.getCause();
+							while (cause != null) {
+								if(cause.getMessage().contains("Download cancelled")){
+										try {
+											FileUtils.cleanDirectory(file);
+										} catch (IOException e1) {
+											e1.printStackTrace();
+										}
+									progressDialog.dispose();
+									break;
+								}
+								if (cause instanceof NoRemoteRepositoryException) {
+									CloneRepositoryDialog.this.setVisible(true);
+									CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
+									information.setText(
+											"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) + "</html>");
+									break;
+								}
+								if (cause instanceof org.eclipse.jgit.errors.TransportException) {
+									UserCredentials userCredentials = new LoginDialog(
+											(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+											translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, url.getHost(),
+											translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE), translator).getUserCredentials();
+									if (userCredentials != null) {
+										doOK();
+									}
+									break;
+								}
+								cause = cause.getCause();
+							}
+							return;
+						}
+					}
+				}.execute();;
+				
+				
 			} finally {
-			  CustomAuthenticator.unbind(url.getHost());
+				CustomAuthenticator.unbind(url.getHost());
 			}
+
 			
-			refresh.call();
 		} catch (MalformedURLException e) {
+			CloneRepositoryDialog.this.setVisible(true);
 			this.setMinimumSize(new Dimension(400, 180));
 			information.setText("<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL) + "</html>");
 			return;
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		} catch (GitAPIException e) {
-			this.setMinimumSize(new Dimension(400, 180));
-			information.setText("<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_CLONE_ERROR) + "</html>");
-			return;
-		}
-		dispose();
+		} 
+		
 	}
 
 }

@@ -47,6 +47,20 @@ public class Options {
 	@XmlElement(name = "projectsTested")
 	private ProjectsTestedForGit prjectsTestsForGit = new ProjectsTestedForGit();
 
+	/**
+	 * Wrapper for a list of previously selected destination paths
+	 */
+	@XmlElement(name = "destinationPaths")
+	private DestinationPaths destinationPaths = new DestinationPaths();
+
+	public DestinationPaths getDestinationPaths() {
+		return destinationPaths;
+	}
+
+	public void setDestinationPaths(DestinationPaths destinationPaths) {
+		this.destinationPaths = destinationPaths;
+	}
+
 	public ProjectsTestedForGit getPrjectsTestsForGit() {
 		return prjectsTestsForGit;
 	}
@@ -92,6 +106,7 @@ public class Options {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((commitMessages == null) ? 0 : commitMessages.hashCode());
+		result = prime * result + ((destinationPaths == null) ? 0 : destinationPaths.hashCode());
 		result = prime * result + ((prjectsTestsForGit == null) ? 0 : prjectsTestsForGit.hashCode());
 		result = prime * result + ((repositoryLocations == null) ? 0 : repositoryLocations.hashCode());
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
@@ -112,6 +127,11 @@ public class Options {
 			if (other.commitMessages != null)
 				return false;
 		} else if (!commitMessages.equals(other.commitMessages))
+			return false;
+		if (destinationPaths == null) {
+			if (other.destinationPaths != null)
+				return false;
+		} else if (!destinationPaths.equals(other.destinationPaths))
 			return false;
 		if (prjectsTestsForGit == null) {
 			if (other.prjectsTestsForGit != null)
@@ -134,6 +154,13 @@ public class Options {
 		} else if (!userCredentialsList.equals(other.userCredentialsList))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Options [repositoryLocations=" + repositoryLocations + ", selectedRepository=" + selectedRepository
+				+ ", userCredentialsList=" + userCredentialsList + ", commitMessages=" + commitMessages
+				+ ", prjectsTestsForGit=" + prjectsTestsForGit + ", destinationPaths=" + destinationPaths + "]";
 	}
 
 }

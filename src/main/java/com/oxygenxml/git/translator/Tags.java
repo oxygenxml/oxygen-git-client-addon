@@ -474,7 +474,18 @@ public class Tags {
 	public static final String CLONE_REPOSITORY_DIALOG_CLONE_ERROR = "Clone_Repository_Dialog_Clone_Error";
 
 	/**
-	 * The text displayed if an error occured during cloning
+	 * The text displayed if the chosen destionation path is not an empty folder
 	 */
 	public static final String CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY = "Clone_Repository_Dialog_Destination_Path_Not_Empty";
+
+	/**
+	 * The text displayed if the URL doesn't point to a remote repository
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY = "Clone_Repository_Dialog_Url_Is_Not_A_Repository";
+
+	/**
+	 * The text displayed in the login dialog if you are not authorized to clone
+	 * the repository
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE = "Clone_Repository_Dialog_Login_Message";
 }

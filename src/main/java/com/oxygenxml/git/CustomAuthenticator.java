@@ -62,8 +62,6 @@ public class CustomAuthenticator {
     		final URL oldRequestingURL = (URL) requestingURL.get(this);
     		final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(this);
 
-    		System.out.println("getRequestingHost()                   " + getRequestingHost());
-    		
     		if (isBinded(getRequestingHost())) {
     			// we need to return null to let our own authentication dialog
     			// (LoginDialog)
@@ -71,8 +69,6 @@ public class CustomAuthenticator {
     			// dialog appear
     			return null;
     		} else {
-    		  
-    		  System.out.println("Delegate to Oxygen");
     		  
     			Method reset = Authenticator.class.getDeclaredMethod("reset");
     			reset.setAccessible(true);
@@ -97,11 +93,6 @@ public class CustomAuthenticator {
     }
 
     private boolean isBinded(String requestingHost2) {
-      
-      
-      System.out.println("requestingHost " + requestingHost2);
-      System.out.println("Loaded " + GitAccess.getInstance().getHostName());
-      System.out.println("Binded " + binded);
       
       return 
           GitAccess.getInstance().getHostName().equals(requestingHost2)

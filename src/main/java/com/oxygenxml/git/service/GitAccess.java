@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -11,6 +13,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.JFrame;
+import javax.swing.JProgressBar;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
@@ -56,6 +61,7 @@ import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -83,8 +89,10 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.translator.TranslatorExtensionImpl;
+import com.oxygenxml.git.view.dialog.ProgressDialog;
 
 import de.schlichtherle.io.FileInputStream;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -92,7 +100,7 @@ import de.schlichtherle.io.FileInputStream;
  * 
  * TODO Beni Add monitors and progress.
  * 
- * @author intern2
+ * @author Beniamin Savu
  *
  */
 public class GitAccess {
@@ -122,11 +130,58 @@ public class GitAccess {
 		return instance;
 	}
 
-	public void clone(String url, File directory) throws GitAPIException {
+	public void clone(URL url, File directory, final ProgressDialog progressDialog)
+			throws GitAPIException, URISyntaxException {
 		if (git != null) {
 			git.close();
 		}
-		git = Git.cloneRepository().setURI(url).setDirectory(directory).setCloneSubmodules(true).call();
+		URI uri = url.toURI();
+		UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(url.getHost());
+		String username = gitCredentials.getUsername();
+		String password = gitCredentials.getPassword();
+
+		ProgressMonitor p = new ProgressMonitor() {
+			String taskTitle;
+			float totalWork;
+			float currentWork = 0;
+
+			public void update(int completed) {
+				currentWork += completed;
+				String text = "";
+				if (totalWork != 0) {
+					float percentFloat = currentWork / totalWork * 100;
+					int percent = (int) percentFloat;
+					text = taskTitle + " " + percent + "% completed";
+				} else {
+					text = taskTitle + "100% completed";
+				}
+				progressDialog.setNote(text);
+			}
+
+			public void start(int totalTasks) {
+				currentWork = 0;
+			}
+
+			public boolean isCancelled() {
+				if (progressDialog.isCanceled()) {
+					progressDialog.setNote("Canceling...");
+				}
+				return progressDialog.isCanceled();
+			}
+
+			public void endTask() {
+				currentWork = 0;
+			}
+
+			public void beginTask(String title, int totalWork) {
+				currentWork = 0;
+				this.taskTitle = title;
+				this.totalWork = totalWork;
+			}
+		};
+		git = Git.cloneRepository().setURI(uri.toString()).setDirectory(directory).setCloneSubmodules(true)
+				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).setProgressMonitor(p)
+				.call();
 	}
 
 	/**
@@ -180,23 +235,8 @@ public class GitAccess {
 	 */
 	public List<FileStatus> getUnstagedFiles() {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
-		/*
-		 * List<FileStatus> stagedFiles = getStagedFile(); List<FileStatus>
-		 * conflictingFiles = getConflictingFiles(); List<String> conflictingPaths =
-		 * new ArrayList<String>(); for (FileStatus conflictingFile :
-		 * conflictingFiles) {
-		 * conflictingPaths.add(conflictingFile.getFileLocation()); }
-		 */
 		if (git != null) {
 			try {
-				/*
-				 * System.out.println(); List<DiffEntry> call =
-				 * git.diff().setPathFilter(PathFilter.create("asd.txt")).call(); for
-				 * (DiffEntry diffEntry : call) {
-				 * System.out.println(diffEntry.getChangeType()); ObjectLoader open =
-				 * git.getRepository().open(diffEntry.getOldId().toObjectId());
-				 * open.copyTo(System.out); System.out.println(); }
-				 */
 				Status status = git.status().call();
 				Set<String> submodules = getSubmodules();
 				for (String string : submodules) {
@@ -229,51 +269,6 @@ public class GitAccess {
 			}
 		}
 		return unstagedFiles;
-		// TODO Check if these are the staged files
-		// git.status().call().getChanged()
-		// TODO Check if we can get the unstaged files like this.
-		// git.status().call().getModified()
-		// needed only to pass it to the formatter
-		/*
-		 * OutputStream out = NullOutputStream.INSTANCE;
-		 * 
-		 * DiffFormatter formatter = new DiffFormatter(out); if (git != null) {
-		 * formatter.setRepository(git.getRepository()); try { AbstractTreeIterator
-		 * commitTreeIterator = getLastCommitTreeIterator(git.getRepository(),
-		 * Constants.HEAD); if (commitTreeIterator != null) { FileTreeIterator
-		 * workTreeIterator = new FileTreeIterator(git.getRepository());
-		 * List<DiffEntry> diffEntries = formatter.scan(commitTreeIterator,
-		 * workTreeIterator); for (DiffEntry entry : diffEntries) { GitChangeType
-		 * changeType = null; if (entry.getChangeType() == ChangeType.ADD) {
-		 * changeType = GitChangeType.ADD; } else if (entry.getChangeType() ==
-		 * ChangeType.MODIFY) { changeType = GitChangeType.MODIFY; } else if
-		 * (entry.getChangeType() == ChangeType.DELETE) { changeType =
-		 * GitChangeType.DELETE; }
-		 * 
-		 * String filePath = null; if (entry.getChangeType().equals(ChangeType.ADD)
-		 * || entry.getChangeType().equals(ChangeType.COPY) ||
-		 * entry.getChangeType().equals(ChangeType.RENAME)) { filePath =
-		 * entry.getNewPath(); } else { filePath = entry.getOldPath(); }
-		 * 
-		 * FileStatus unstageFile = new FileStatus(changeType, filePath); if
-		 * (!stagedFiles.contains(unstageFile)) { if
-		 * (!conflictingPaths.contains(filePath)) { unstagedFiles.add(unstageFile);
-		 * } } } unstagedFiles.addAll(conflictingFiles); } else { String
-		 * selectedRepository =
-		 * OptionsManager.getInstance().getSelectedRepository(); List<String>
-		 * fileNames = FileHelper.search(selectedRepository); for (String fileName :
-		 * fileNames) { selectedRepository = selectedRepository.replace("\\", "/");
-		 * int cut =
-		 * selectedRepository.substring(selectedRepository.lastIndexOf("/") +
-		 * 1).length(); String file = fileName.substring(cut + 1); FileStatus
-		 * unstageFile = new FileStatus(GitChangeType.ADD, file);
-		 * unstagedFiles.add(unstageFile); } } } catch (Exception e) {
-		 * e.printStackTrace(); } }
-		 * 
-		 * formatter.close();
-		 * 
-		 * return unstagedFiles;
-		 */
 	}
 
 	/**
@@ -326,35 +321,11 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void setSubmodule(String submodule) throws IOException, GitAPIException {
-//		git.submoduleUpdate().addPath(submodule).call();
+		// git.submoduleUpdate().addPath(submodule).call();
 		Repository parentRepository = git.getRepository();
 		Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		git = Git.wrap(submoduleRepository);
 	}
-
-	/*
-	 * public List<FileStatus> getSubmodules2() throws GitAPIException {
-	 * List<FileStatus> submodules = new ArrayList<FileStatus>(); List<String>
-	 * submodulesNames = new ArrayList<String>(); for (String string :
-	 * git.submoduleStatus().call().keySet()) { submodulesNames.add(string);
-	 * submodules.add(new FileStatus(GitChangeType.SUBMODULE, string)); }
-	 * submodules.clear(); int submoduleCount = 0; Repository parentRepository =
-	 * git.getRepository(); try { SubmoduleWalk walk =
-	 * SubmoduleWalk.forIndex(parentRepository); while (walk.next()) { Repository
-	 * submoduleRepository = walk.getRepository(); Git git2 =
-	 * Git.wrap(submoduleRepository); Status status = git2.status().call(); for
-	 * (String string : status.getUntracked()) { submodules.add(new
-	 * FileStatus(GitChangeType.ADD, submodulesNames.get(0) + "/" + string)); }
-	 * for (String string : status.getModified()) { System.out.println(string);
-	 * submodules.add(new FileStatus(GitChangeType.MODIFY, submodulesNames.get(0)
-	 * + "/" + string)); } for (String string : status.getMissing()) {
-	 * submodules.add(new FileStatus(GitChangeType.DELETE, submodulesNames.get(0)
-	 * + "/" + string)); }
-	 * System.out.println(submoduleRepository.getWorkTree().getAbsolutePath());
-	 * submoduleRepository.close(); submoduleCount++; } walk.close(); } catch
-	 * (IOException e) { e.printStackTrace(); }
-	 * System.out.println(submoduleCount); return submodules; }
-	 */
 
 	/**
 	 * Commits a single file locally
@@ -373,21 +344,6 @@ public class GitAccess {
 			e.printStackTrace();
 		}
 	}
-
-	/*
-	 * private AbstractTreeIterator getLastCommitTreeIterator(Repository
-	 * repository, String branch) throws Exception { Ref head =
-	 * repository.findRef(branch);
-	 * 
-	 * if (head.getObjectId() != null) { RevWalk walk = new RevWalk(repository);
-	 * RevCommit commit = walk.parseCommit(head.getObjectId()); RevTree tree =
-	 * walk.parseTree(commit.getTree().getId());
-	 * 
-	 * CanonicalTreeParser oldTreeParser = new CanonicalTreeParser(); ObjectReader
-	 * oldReader = repository.newObjectReader(); oldTreeParser.reset(oldReader,
-	 * tree.getId()); walk.close(); return oldTreeParser; } else { return null; }
-	 * }
-	 */
 
 	/**
 	 * Frees resources associated with the git instance.

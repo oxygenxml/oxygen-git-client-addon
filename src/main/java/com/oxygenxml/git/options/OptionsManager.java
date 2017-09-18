@@ -249,7 +249,6 @@ public class OptionsManager {
 		}
 
 		credentials.add(uc);
-
 		saveOptions();
 
 	}
@@ -274,8 +273,8 @@ public class OptionsManager {
 		}
 		String decryptedPassword = null;
 		if (WorkspaceAccessPlugin.getInstance() != null) {
-			decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-					.getUtilAccess().decrypt(password);
+			decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess()
+					.decrypt(password);
 		}
 		if (decryptedPassword == null) {
 			decryptedPassword = "";
@@ -348,5 +347,32 @@ public class OptionsManager {
 		options.getPrjectsTestsForGit().setPaths(projectsPath);
 
 		saveOptions();
+	}
+
+	/**
+	 * Save the last destination path entered by the user when he successfully
+	 * clones a repository
+	 * 
+	 * @param destinationPath
+	 *          - the destination path entered by the user
+	 */
+	public void saveDestinationPath(String destinationPath) {
+		loadOptions();
+
+		Set<String> destinationPaths = options.getDestinationPaths().getPaths();
+		destinationPaths.add(destinationPath);
+
+		saveOptions();
+	}
+
+	/**
+	 * Loads and returns all the destination paths entered by the user
+	 * 
+	 * @return a list containing the destinations paths
+	 */
+	public Set<String> getDestinationPaths() {
+		loadOptions();
+
+		return options.getDestinationPaths().getPaths();
 	}
 }

@@ -21,7 +21,6 @@ public class TreeFormatterTest {
 	@Test
 	public void testGetNodeFromString() {
 		URL resource = getClass().getClassLoader().getResource(com.oxygenxml.git.constants.ImageConstants.GIT_PUSH_ICON);
-		System.out.println(resource);
 
 		List<String> paths = new ArrayList<String>();
 		paths.add("src/add/poc.txt");
