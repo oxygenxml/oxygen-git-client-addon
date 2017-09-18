@@ -746,8 +746,8 @@
     
     <key value="Clone_Repository_Dialog_Url_Label">
         <comment>The text displayed for the "URL" label in the clone repository dialog</comment>
-        <val lang="en_US">URL</val>
-        <val lang="de_DE">URL</val>
+        <val lang="en_US">URL:</val>
+        <val lang="de_DE">URL:</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -755,8 +755,8 @@
     
     <key value="Clone_Repository_Dialog_Destination_Path_Label">
         <comment>The text displayed for the "Destination Path" label in the clone repository dialog</comment>
-        <val lang="en_US">Destination Path</val>
-        <val lang="de_DE">Destination Path</val>
+        <val lang="en_US">Destination Path:</val>
+        <val lang="de_DE">Destination Path:</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
