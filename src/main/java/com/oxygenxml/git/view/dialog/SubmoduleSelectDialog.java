@@ -10,6 +10,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.constants.Constants;
@@ -28,6 +29,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class SubmoduleSelectDialog extends OKCancelDialog {
+
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(SubmoduleSelectDialog.class);
 
 	/**
 	 * Combo box for showing and selectind the submodule
@@ -113,9 +119,13 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 		try {
 			GitAccess.getInstance().setSubmodule(submodule);
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		refresh.call();
 		dispose();

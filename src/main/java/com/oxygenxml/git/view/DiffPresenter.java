@@ -12,10 +12,12 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 
+import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitFile;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
@@ -39,6 +41,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  */
 public class DiffPresenter {
+
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(DiffPresenter.class);
 
 	/**
 	 * The file on which the diffPresenter works
@@ -95,11 +102,14 @@ public class DiffPresenter {
 		GitAccess.getInstance().submoduleCompare(file.getFileLocation(), true);
 		try {
 			URL currentSubmoduleCommit = GitRevisionURLHandler.buildURL(GitFile.CURRENT_SUBMODULE, file.getFileLocation());
-			URL previouslySubmoduleCommit = GitRevisionURLHandler.buildURL(GitFile.PREVIOUSLY_SUBMODULE, file.getFileLocation());
-			((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(currentSubmoduleCommit,
-					previouslySubmoduleCommit);
+			URL previouslySubmoduleCommit = GitRevisionURLHandler.buildURL(GitFile.PREVIOUSLY_SUBMODULE,
+					file.getFileLocation());
+			((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+					.openDiffFilesApplication(currentSubmoduleCommit, previouslySubmoduleCommit);
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -121,7 +131,9 @@ public class DiffPresenter {
 		try {
 			lastCommitedFileURL = GitRevisionURLHandler.buildURL(GitFile.LAST_COMMIT, file.getFileLocation());
 		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e1, e1);
+			}
 		}
 
 		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(fileURL,
@@ -156,14 +168,10 @@ public class DiffPresenter {
 					diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.openDiffFilesApplication(local, remote, base);
 				}
-			} catch (MissingObjectException e1) {
-				e1.printStackTrace();
-			} catch (IncorrectObjectTypeException e1) {
-				e1.printStackTrace();
-			} catch (CorruptObjectException e1) {
-				e1.printStackTrace();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e1, e1);
+				}
 			}
 			// checks if the file in conflict has been resolved or not after the diff
 			// view was closed
@@ -204,7 +212,9 @@ public class DiffPresenter {
 			});
 
 		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e1, e1);
+			}
 		}
 	}
 

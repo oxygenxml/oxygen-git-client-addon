@@ -13,8 +13,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
+import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
@@ -33,6 +35,11 @@ import ro.sync.util.editorvars.EditorVariables;
 
 public class PanelRefresh implements Refresh {
 
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(PanelRefresh.class);
+
 	private StagingPanel stagingPanel;
 	private GitAccess gitAccess;
 	private String lastSelectedProjectView = "";
@@ -46,9 +53,15 @@ public class PanelRefresh implements Refresh {
 	}
 
 	public void call() {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Refresh Started");
+		}
 		projectPahtIsGit = false;
 		projectXprExists = true;
 		execute();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Refresh Ended");
+		}
 	}
 
 	private void execute() {
@@ -84,14 +97,15 @@ public class PanelRefresh implements Refresh {
 				updateCounter(Command.PULL);
 				updateCounter(Command.PUSH);
 				String path = gitAccess.getRepository().getWorkTree().getAbsolutePath();
-				String workingCopyCurrentPath = (String) stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().getSelectedItem();
+				String workingCopyCurrentPath = (String) stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector()
+						.getSelectedItem();
 
 				if (FileHelper.isGitSubmodule(path)) {
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(true);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(false);
 					stagingPanel.requestFocus();
-				} else if (FileHelper.isGitRepository(path) && !path.equals(workingCopyCurrentPath)){
+				} else if (FileHelper.isGitRepository(path) && !path.equals(workingCopyCurrentPath)) {
 					OptionsManager.getInstance().addRepository(path);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(path);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
@@ -127,15 +141,21 @@ public class PanelRefresh implements Refresh {
 			}
 
 		} catch (ParserConfigurationException e1) {
-			e1.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e1, e1);
+			}
 		} catch (SAXException e1) {
-			e1.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e1, e1);
+			}
 		} catch (IOException e1) {
 			if (e1 instanceof FileNotFoundException) {
 				projectXprExists = false;
 				return;
 			}
-			e1.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e1, e1);
+			}
 		}
 		File file = new File(projectView);
 		while (file.getParent() != null) {
@@ -185,9 +205,13 @@ public class PanelRefresh implements Refresh {
 						stagingPanel.getToolbarPanel().setPushesAhead(counter);
 					}
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					if (logger.isDebugEnabled()) {
+						logger.debug(e, e);
+					}
 				} catch (ExecutionException e) {
-					e.printStackTrace();
+					if (logger.isDebugEnabled()) {
+						logger.debug(e, e);
+					}
 				}
 			}
 		}.execute();
@@ -226,9 +250,13 @@ public class PanelRefresh implements Refresh {
 					}
 					newFiles.addAll(files);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					if (logger.isDebugEnabled()) {
+						logger.debug(e, e);
+					}
 				} catch (ExecutionException e) {
-					e.printStackTrace();
+					if (logger.isDebugEnabled()) {
+						logger.debug(e, e);
+					}
 				}
 				if (!newFiles.equals(filesInModel)) {
 					if (state == StageState.UNSTAGED) {
@@ -249,5 +277,5 @@ public class PanelRefresh implements Refresh {
 	public void setPanel(JComponent stagingPanel) {
 		this.stagingPanel = (StagingPanel) stagingPanel;
 	}
-	
+
 }

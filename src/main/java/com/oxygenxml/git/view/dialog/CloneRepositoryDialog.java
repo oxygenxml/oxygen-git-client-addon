@@ -24,9 +24,11 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 
 import com.oxygenxml.git.CustomAuthenticator;
+import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -43,7 +45,12 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
 public class CloneRepositoryDialog extends OKCancelDialog {
-	
+
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(CloneRepositoryDialog.class);
+
 	private class CloneWorker extends SwingWorker<Void, Void> {
 		private final ProgressDialog progressDialog;
 		private final URL url;
@@ -81,23 +88,24 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 						try {
 							FileUtils.cleanDirectory(file);
 						} catch (IOException e1) {
-							e1.printStackTrace();
+							if (logger.isDebugEnabled()) {
+								logger.debug(e1, e1);
+							}
 						}
 						break;
 					}
 					if (cause instanceof NoRemoteRepositoryException) {
 						CloneRepositoryDialog.this.setVisible(true);
 						CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
-						information.setText("<html>"
-								+ translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) + "</html>");
+						information.setText(
+								"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) + "</html>");
 						break;
 					}
 					if (cause instanceof org.eclipse.jgit.errors.TransportException) {
 						UserCredentials userCredentials = new LoginDialog(
 								(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, url.getHost(),
-								translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE), translator)
-										.getUserCredentials();
+								translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE), translator).getUserCredentials();
 						if (userCredentials != null) {
 							doOK();
 						}
@@ -246,7 +254,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		try {
 			final URL url = new URL(tfURL.getText());
 			final File file = new File(selectedPath);
-			if (destinationPathIsValid(file)) {
+			if (!destinationPathIsValid(file)) {
 				return;
 			}
 			cloneRepository(url, file);

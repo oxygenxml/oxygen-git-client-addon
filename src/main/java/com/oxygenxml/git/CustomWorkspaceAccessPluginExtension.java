@@ -168,8 +168,8 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 		JMenu git = new JMenu(translator.getTraslation(Tags.PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM));
 		JMenuItem gitDiff = new JMenuItem(translator.getTraslation(Tags.PROJECT_VIEW_GIT_DIFF_CONTEXTUAL_MENU_ITEM));
-		
-		//THE DIFF MENU ITEM
+
+		// THE DIFF MENU ITEM
 		gitDiff.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -177,6 +177,8 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 				File[] selectedFiles = ProjectManagerEditor.getSelectedFiles(pluginWorkspaceAccess);
 				// the diff action is enabled only for one file
 				File repository = new File(selectedFiles[0].getAbsolutePath());
+
+				// We try and find the
 				while (repository.getParent() != null) {
 					if (FileHelper.isGitRepository(repository.getAbsolutePath())) {
 						break;
@@ -199,7 +201,9 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 					}
 					OptionsManager.getInstance().saveSelectedRepository(previousRepository);
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					if (logger.isDebugEnabled()) {
+						logger.debug(e1, e1);
+					}
 				}
 			}
 		});
@@ -246,7 +250,9 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 					GitAccess.getInstance().setRepository(previousRepository);
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					if (logger.isDebugEnabled()) {
+						logger.debug(e1, e1);
+					}
 				}
 			}
 		});

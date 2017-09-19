@@ -11,11 +11,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 
+import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -32,6 +34,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class AddRemoteDialog extends OKCancelDialog {
+	
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(AddRemoteDialog.class);
 
 	/**
 	 * The translator for the messages that are displayed in this dialog
@@ -169,11 +176,17 @@ public class AddRemoteDialog extends OKCancelDialog {
 			remoteConfig.update(config);
 			config.save();
 		} catch (NoRepositorySelected e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		dispose();
 	}

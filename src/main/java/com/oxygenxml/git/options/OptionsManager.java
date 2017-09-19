@@ -161,8 +161,10 @@ public class OptionsManager {
 				PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(GIT_PLUGIN_OPTIONS,
 						PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().escapeTextValue(stringWriter.toString()));
 			}
-		} catch (JAXBException e1) {
-			e1.printStackTrace();
+		} catch (JAXBException e) {
+			if (logger.isDebugEnabled()) {
+			  logger.debug(e, e);
+			}
 		}
 
 	}

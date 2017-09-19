@@ -107,12 +107,19 @@ public class PushPullController implements Subject<PushPullEvent> {
 				String message = "";
 				try {
 					commandExecuted = true;
+					
+					if (logger.isDebugEnabled()) {
+						logger.debug("Preapring for push/pull command");
+					}
 					if (command == Command.PUSH) {
 						message = push(userCredentials);
 					} else {
 						message = pull(userCredentials);
 					}
 				} catch (GitAPIException e) {
+					if (logger.isDebugEnabled()) {
+						logger.debug(e, e);
+					}
 					if (e.getMessage().contains("not authorized")) {
 						String loginMessage = "";
 						if ("".equals(userCredentials.getUsername())) {
@@ -146,15 +153,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 								translator.getTraslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
 						return;
 					}
-					e.printStackTrace();
-				} catch (RevisionSyntaxException e) {
-					e.printStackTrace();
-				} catch (AmbiguousObjectException e) {
-					e.printStackTrace();
-				} catch (IncorrectObjectTypeException e) {
-					e.printStackTrace();
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (logger.isDebugEnabled()) {
+						logger.debug(e, e);
+					}
 				} finally {
 					if (commandExecuted) {
 						PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);

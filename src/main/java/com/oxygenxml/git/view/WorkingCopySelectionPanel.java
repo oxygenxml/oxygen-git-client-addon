@@ -28,8 +28,10 @@ import javax.swing.JToolBar;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
+import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -59,6 +61,11 @@ import ro.sync.ui.Icons;
  *
  */
 public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeEvent> {
+	
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(WorkingCopySelectionPanel.class);
 
 	/**
 	 * Label for the working copy selector, informing the user on what working
@@ -137,6 +144,9 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 					// get and save the selected Option so that at restart the same
 					// repository will be selected
 					String path = (String) workingCopySelector.getSelectedItem();
+					if (logger.isDebugEnabled()) {
+		        logger.debug("Working copy " + path);
+		      }
 					if (FileHelper.isGitSubmodule(path)) {
 						observer.stateChanged(null);
 						return;

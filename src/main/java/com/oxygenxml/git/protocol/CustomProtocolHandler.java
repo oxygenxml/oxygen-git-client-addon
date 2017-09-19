@@ -13,10 +13,20 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.apache.log4j.Logger;
+
+import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
+
 /**
  * Handler for the file2 protocol
  */
 public class CustomProtocolHandler extends URLStreamHandler {
+	
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(CustomProtocolHandler.class);
+	
   /**
    * Connection class for file2
    */
@@ -150,7 +160,9 @@ public class CustomProtocolHandler extends URLStreamHandler {
       URI uri = new URI(url.toString().replace("cproto", "file"));
       file = new File(uri);
     } catch (URISyntaxException e) {
-      e.printStackTrace();
+    	if (logger.isDebugEnabled()) {
+			  logger.debug(e, e);
+			}
     }
     return file;
   }

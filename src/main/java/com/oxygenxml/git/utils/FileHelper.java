@@ -6,6 +6,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.options.OptionsManager;
 
 /**
@@ -15,6 +18,11 @@ import com.oxygenxml.git.options.OptionsManager;
  *
  */
 public class FileHelper {
+
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(FileHelper.class);
 
 	/**
 	 * Searches a given path for all files in that path. Generates the files path
@@ -27,7 +35,7 @@ public class FileHelper {
 	public static List<String> search(String path) {
 		File rootFolder = new File(path);
 		List<String> fileNames = new ArrayList<String>();
-		if(rootFolder.isFile()){
+		if (rootFolder.isFile()) {
 			fileNames.add(rootFolder.getAbsolutePath().replace("\\", "/"));
 			return fileNames;
 		}
@@ -59,7 +67,9 @@ public class FileHelper {
 		try {
 			url = file.toURI().toURL();
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		return url;
 	}
@@ -77,8 +87,8 @@ public class FileHelper {
 		}
 		return false;
 	}
-	
-	public static boolean isGitSubmodule(String path){
+
+	public static boolean isGitSubmodule(String path) {
 		File rootFolder = new File(path);
 		File[] listOfFiles = rootFolder.listFiles();
 

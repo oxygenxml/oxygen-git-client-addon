@@ -184,7 +184,9 @@ public class CustomAuthenticator {
 			}
 
 		} catch (Throwable e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -212,7 +214,9 @@ public class CustomAuthenticator {
 				((MyAuth) previousAuthenticator).unbind(hostName);
 			}
 		} catch (Throwable e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 

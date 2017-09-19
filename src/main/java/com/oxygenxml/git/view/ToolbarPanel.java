@@ -21,6 +21,9 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
+import org.apache.log4j.Logger;
+
+import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.BranchInfo;
@@ -50,6 +53,11 @@ import ro.sync.ui.Icons;
  *
  */
 public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
+
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(ToolbarPanel.class);
 
 	/**
 	 * Toolbar in which the button will be placed
@@ -86,7 +94,7 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 	 * Button for selecting the submodules
 	 */
 	private ToolbarButton submoduleSelectButton;
-	
+
 	/**
 	 * Button for cloning a new repository
 	 */
@@ -129,10 +137,10 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 		return pullButton;
 	}
 
-	public JButton getCloneRepositoryButton(){
+	public JButton getCloneRepositoryButton() {
 		return cloneRepositoryButton;
 	}
-	
+
 	public void setPullsBehind(int pullsBehind) {
 		this.pullsBehind = pullsBehind;
 		pullButton.repaint();
@@ -189,18 +197,18 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 
 	private void addCloneRepositoryButton() {
 		Action cloneRepositoryAction = new AbstractAction() {
-			
+
 			public void actionPerformed(ActionEvent e) {
 				new CloneRepositoryDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 						translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true, translator, refresh);
 			}
 		};
-		
-		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false); 
+
+		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
 		cloneRepositoryButton.setIcon(Icons.getIcon(ImageConstants.GIT_CLONE_REPOSITORY_ICON));
 		cloneRepositoryButton.setToolTipText(translator.getTraslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
 		setCustomWidthOn(cloneRepositoryButton);
-		
+
 		gitToolbar.add(cloneRepositoryButton);
 	}
 
@@ -297,6 +305,10 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
+						if (logger.isDebugEnabled()) {
+							logger.debug("Push Button Clicked");
+						}
+
 						pushPullController.execute(Command.PUSH);
 						if (pullsBehind == 0) {
 							pushesAhead = 0;
@@ -344,6 +356,9 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
+						if (logger.isDebugEnabled()) {
+							logger.debug("Pull Button Clicked");
+						}
 						pushPullController.execute(Command.PULL);
 						pullsBehind = 0;
 					}

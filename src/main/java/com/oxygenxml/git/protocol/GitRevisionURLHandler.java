@@ -11,9 +11,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
 
+import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
@@ -28,6 +30,11 @@ import com.oxygenxml.git.utils.FileHelper;
  */
 public class GitRevisionURLHandler extends URLStreamHandler {
 
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(GitRevisionURLHandler.class);
+	
 	/**
 	 * The git protocol
 	 */
@@ -91,7 +98,9 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 					throw new Exception("Bad syntax: " + path);
 				}
 			} catch (Throwable t) {
-				t.printStackTrace();
+				if (logger.isDebugEnabled()) {
+				  logger.debug(t, t);
+				}
 			}
 		}
 
@@ -197,9 +206,13 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		try {
 			repositoryPath = GitAccess.getInstance().getRepository().getWorkTree().getAbsolutePath();
 		} catch (NoWorkTreeException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+			  logger.debug(e, e);
+			}
 		} catch (NoRepositorySelected e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+			  logger.debug(e, e);
+			}
 		}
 		
 		URL url = new URL ("git://" + gitFile + "/" + fileLocation);

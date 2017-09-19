@@ -220,9 +220,13 @@ public class GitAccess {
 		try {
 			git = Git.init().setBare(false).setDirectory(new File(path)).call();
 		} catch (IllegalStateException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 
 	}
@@ -263,9 +267,13 @@ public class GitAccess {
 				unstagedFiles.addAll(getConflictingFiles());
 
 			} catch (NoWorkTreeException e1) {
-				e1.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e1, e1);
+				}
 			} catch (GitAPIException e1) {
-				e1.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e1, e1);
+				}
 			}
 		}
 		return unstagedFiles;
@@ -291,7 +299,9 @@ public class GitAccess {
 				return submoduleStatus.getHeadId();
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		return null;
 	}
@@ -307,7 +317,9 @@ public class GitAccess {
 				return git.submoduleStatus().call().keySet();
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		return new HashSet<String>();
 	}
@@ -338,10 +350,10 @@ public class GitAccess {
 	public void commit(String message) {
 		try {
 			git.commit().setMessage(message).call();
-		} catch (NoFilepatternException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -365,7 +377,9 @@ public class GitAccess {
 		try {
 			branches = git.branchList().call();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		return branches;
 	}
@@ -379,14 +393,10 @@ public class GitAccess {
 	public void createBranch(String branchName) {
 		try {
 			git.branchCreate().setName(branchName).call();
-		} catch (RefAlreadyExistsException e) {
-			e.printStackTrace();
-		} catch (RefNotFoundException e) {
-			e.printStackTrace();
-		} catch (InvalidRefNameException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 
 	}
@@ -400,12 +410,10 @@ public class GitAccess {
 	public void deleteBranch(String branchName) {
 		try {
 			git.branchDelete().setBranchNames(branchName).call();
-		} catch (NotMergedException e) {
-			e.printStackTrace();
-		} catch (CannotDeleteCurrentBranchException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -441,9 +449,11 @@ public class GitAccess {
 				response.setMessage(translator.getTraslation(Tags.BRANCH_BEHIND));
 				return response;
 			}
+			logger.debug("Push Started");
 			Iterable<PushResult> call = git.push()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 			Iterator<PushResult> results = call.iterator();
+			logger.debug("Push Ended");
 			while (results.hasNext()) {
 				PushResult result = results.next();
 				for (RemoteRefUpdate info : result.getRemoteUpdates()) {
@@ -496,8 +506,10 @@ public class GitAccess {
 			response.setStatus(PullStatus.UNCOMITED_FILES);
 		} else {
 			git.reset().call();
+			logger.debug("Pull Started");
 			PullResult call = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
 					.call();
+			logger.debug("Pull Started");
 			MergeResult mergeResult = call.getMergeResult();
 			if (mergeResult != null) {
 				if (mergeResult.getConflicts() != null) {
@@ -560,10 +572,10 @@ public class GitAccess {
 			} else {
 				git.add().addFilepattern(file.getFileLocation()).call();
 			}
-		} catch (NoFilepatternException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -583,10 +595,10 @@ public class GitAccess {
 					git.add().addFilepattern(file.getFileLocation()).call();
 				}
 			}
-		} catch (NoFilepatternException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -626,10 +638,10 @@ public class GitAccess {
 					}
 				}
 				return stagedFiles;
-			} catch (NoWorkTreeException e) {
-				e.printStackTrace();
 			} catch (GitAPIException e) {
-				e.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 			}
 		}
 		return new ArrayList<FileStatus>();
@@ -650,10 +662,10 @@ public class GitAccess {
 				}
 
 				return stagedFiles;
-			} catch (NoWorkTreeException e) {
-				e.printStackTrace();
 			} catch (GitAPIException e) {
-				e.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 			}
 		}
 
@@ -671,10 +683,10 @@ public class GitAccess {
 			ResetCommand reset = git.reset();
 			reset.addPath(file.getFileLocation());
 			reset.call();
-		} catch (NoFilepatternException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -694,10 +706,10 @@ public class GitAccess {
 				}
 				reset.call();
 			}
-		} catch (NoFilepatternException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -732,14 +744,10 @@ public class GitAccess {
 		try {
 			ObjectId localCommit = repo.resolve("HEAD^{commit}");
 			return localCommit;
-		} catch (RevisionSyntaxException e) {
-			e.printStackTrace();
-		} catch (AmbiguousObjectException e) {
-			e.printStackTrace();
-		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		return null;
 	}
@@ -755,14 +763,10 @@ public class GitAccess {
 		try {
 			remoteCommit = repo.resolve("origin/" + getBranchInfo().getBranchName() + "^{commit}");
 			return remoteCommit;
-		} catch (RevisionSyntaxException e) {
-			e.printStackTrace();
-		} catch (AmbiguousObjectException e) {
-			e.printStackTrace();
-		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		return remoteCommit;
 	}
@@ -787,14 +791,10 @@ public class GitAccess {
 					baseCommit = base.toObjectId();
 				}
 			}
-		} catch (RevisionSyntaxException e) {
-			e.printStackTrace();
-		} catch (AmbiguousObjectException e) {
-			e.printStackTrace();
-		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		walk.close();
 		return baseCommit;
@@ -867,10 +867,10 @@ public class GitAccess {
 	public void reset() {
 		try {
 			git.reset().call();
-		} catch (CheckoutConflictException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -884,31 +884,11 @@ public class GitAccess {
 	public void restoreLastCommitFile(String fileLocation) {
 		try {
 			git.checkout().addPath(fileLocation).call();
-		} catch (RefAlreadyExistsException e) {
-			e.printStackTrace();
-		} catch (RefNotFoundException e) {
-			e.printStackTrace();
-		} catch (InvalidRefNameException e) {
-			e.printStackTrace();
-		} catch (CheckoutConflictException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
-		/*
-		 * File file = new File(OptionsManager.getInstance().getSelectedRepository()
-		 * + "/" + fileLocation); OutputStream out = null; try { if (!file.exists())
-		 * { file.getParentFile().mkdirs(); file.createNewFile(); } out = new
-		 * FileOutputStream(file); } catch (FileNotFoundException e) {
-		 * e.printStackTrace(); } catch (IOException e) { e.printStackTrace(); }
-		 * ObjectId lastCommitId = getLastLocalCommit(); ObjectLoader loader; try {
-		 * loader = getLoaderFrom(lastCommitId, fileLocation); loader.copyTo(out);
-		 * 
-		 * } catch (MissingObjectException e) { e.printStackTrace(); } catch
-		 * (IncorrectObjectTypeException e) { e.printStackTrace(); } catch
-		 * (IOException e) { e.printStackTrace(); } finally { try { out.close(); }
-		 * catch (IOException e) { e.printStackTrace(); } }
-		 */
 	}
 
 	/**
@@ -942,16 +922,14 @@ public class GitAccess {
 						numberOfCommits++;
 					}
 				}
-			} catch (MissingObjectException e) {
-				e.printStackTrace();
-			} catch (IncorrectObjectTypeException e) {
-				e.printStackTrace();
 			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (NoHeadException e) {
-				numberOfCommits = 0;
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 			} catch (GitAPIException e) {
-				e.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 			}
 			walk.close();
 		}
@@ -989,18 +967,14 @@ public class GitAccess {
 						}
 					}
 				}
-			} catch (RevisionSyntaxException e) {
-				e.printStackTrace();
-			} catch (AmbiguousObjectException e) {
-				e.printStackTrace();
-			} catch (IncorrectObjectTypeException e) {
-				e.printStackTrace();
 			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (NoHeadException e) {
-				e.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 			} catch (GitAPIException e) {
-				e.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 			}
 			walk.close();
 		}
@@ -1012,9 +986,9 @@ public class GitAccess {
 	 * Brings all the commits to the local repository but does not merge them
 	 */
 	public void fetch() {
-	  if (logger.isDebugEnabled()) {
-      logger.debug("Begin fetch");
-    }
+		if (logger.isDebugEnabled()) {
+			logger.debug("Begin fetch");
+		}
 		CustomAuthenticator.install();
 		try {
 			StoredConfig config = git.getRepository().getConfig();
@@ -1027,36 +1001,36 @@ public class GitAccess {
 						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 			}
 			unavailable = false;
-	    privateRepository = false;
+			privateRepository = false;
 		} catch (InvalidRemoteException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (TransportException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
-    
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
+
 			if (e.getMessage().contains("Authentication is required but no CredentialsProvider has been registered")
 					|| e.getMessage().contains("not authorized")) {
 				privateRepository = true;
 				unavailable = false;
 			} else {
-			  unavailable = true;
+				unavailable = true;
 			}
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
-			  logger.debug(e, e);
+				logger.debug(e, e);
 			}
 		} catch (RevisionSyntaxException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
-    }
-		
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
+		}
+
 		if (logger.isDebugEnabled()) {
-      logger.debug("End fetch");
-    }
+			logger.debug("End fetch");
+		}
 	}
 
 	public void updateWithRemoteFile(String filePath) {
@@ -1067,19 +1041,33 @@ public class GitAccess {
 			git.checkout().setStartPoint(commit).addPath(filePath).call();
 			walk.close();
 		} catch (CheckoutConflictException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (RevisionSyntaxException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (MissingObjectException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (AmbiguousObjectException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 	}
 
@@ -1094,30 +1082,14 @@ public class GitAccess {
 			git.clean().call();
 			git.reset().setMode(ResetType.HARD).call();
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
-		} catch (RevisionSyntaxException e) {
-			e.printStackTrace();
-		} catch (NoWorkTreeException e) {
-			e.printStackTrace();
-		} catch (NoHeadException e) {
-			e.printStackTrace();
-		} catch (ConcurrentRefUpdateException e) {
-			e.printStackTrace();
-		} catch (CheckoutConflictException e) {
-			e.printStackTrace();
-		} catch (InvalidMergeHeadsException e) {
-			e.printStackTrace();
-		} catch (WrongRepositoryStateException e) {
-			e.printStackTrace();
-		} catch (NoMessageException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
-		} catch (AmbiguousObjectException e) {
-			e.printStackTrace();
-		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug("End fetch");
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug("End fetch");
+			}
 		}
 	}
 
@@ -1146,11 +1118,18 @@ public class GitAccess {
 				}
 				return branchInfo;
 			} catch (IOException e) {
-				e.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 			} catch (NoHeadException e) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 				return new BranchInfo(branchName, false);
 			} catch (GitAPIException e) {
-				e.printStackTrace();
+				if (logger.isDebugEnabled()) {
+					logger.debug(e, e);
+				}
 			}
 		}
 		return new BranchInfo("", false);
@@ -1188,24 +1167,10 @@ public class GitAccess {
 		try {
 			git.submoduleSync().call();
 			git.submoduleUpdate().setStrategy(MergeStrategy.RECURSIVE).call();
-		} catch (InvalidConfigurationException e) {
-			e.printStackTrace();
-		} catch (NoHeadException e) {
-			e.printStackTrace();
-		} catch (ConcurrentRefUpdateException e) {
-			e.printStackTrace();
-		} catch (CheckoutConflictException e) {
-			e.printStackTrace();
-		} catch (InvalidMergeHeadsException e) {
-			e.printStackTrace();
-		} catch (WrongRepositoryStateException e) {
-			e.printStackTrace();
-		} catch (NoMessageException e) {
-			e.printStackTrace();
-		} catch (RefNotFoundException e) {
-			e.printStackTrace();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug("End fetch");
+			}
 		}
 	}
 
@@ -1262,13 +1227,13 @@ public class GitAccess {
 				return objectId;
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
-		} catch (MissingObjectException e) {
-			e.printStackTrace();
-		} catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		return null;
 	}
