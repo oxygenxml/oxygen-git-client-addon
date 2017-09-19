@@ -11,6 +11,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
@@ -18,6 +19,7 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.Ref;
 
+import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
@@ -34,6 +36,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class BranchSelectDialog extends OKCancelDialog {
+
+	/**
+	 * Logger for logging.
+	 */
+	private static Logger logger = Logger.getLogger(BranchSelectDialog.class);
 
 	/**
 	 * Shows the user a combo box with all the branches for that repository
@@ -114,13 +121,13 @@ public class BranchSelectDialog extends OKCancelDialog {
 		List<String> branches = new ArrayList<String>();
 		for (Ref branch : GitAccess.getInstance().getBrachList()) {
 			String name = branch.getName();
-			name = name.substring(name.lastIndexOf("/") + 1);
+			name = name.replace("refs/heads/", "");
 			branchesList.addItem(name);
 			branches.add(name);
 		}
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
-		if(!branchInfo.isDetached()){
-			if(branches.contains(branchInfo.getBranchName())){
+		if (!branchInfo.isDetached()) {
+			if (branches.contains(branchInfo.getBranchName())) {
 				branchesList.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
 			} else {
 				branchesList.addItem(GitAccess.getInstance().getBranchInfo().getBranchName());
@@ -157,17 +164,16 @@ public class BranchSelectDialog extends OKCancelDialog {
 		String selectedBranch = (String) branchesList.getSelectedItem();
 		try {
 			GitAccess.getInstance().setBranch(selectedBranch);
-		} catch (RefAlreadyExistsException e) {
-			e.printStackTrace();
-		} catch (RefNotFoundException e) {
-			e.printStackTrace();
-		} catch (InvalidRefNameException e) {
-			e.printStackTrace();
 		} catch (CheckoutConflictException e) {
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 			information.setText(translator.getTraslation(Tags.CHANGE_BRANCH_ERROR_MESSAGE));
 			return;
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		refresh.call();
 		dispose();
