@@ -131,7 +131,7 @@ public class CustomAuthenticator {
 		}
 
 		/**
-		 * Adds a temporary host on which my Authenticator will be active
+		 * Adds a temporary host on which MyAuthenticator will be active
 		 * 
 		 * @param hostName
 		 *          - the host to add
@@ -141,6 +141,7 @@ public class CustomAuthenticator {
 		}
 
 		/**
+		 * Removes the temporary host on which MyAuthenticator will be active
 		 * 
 		 * @param hostName
 		 */
@@ -187,12 +188,24 @@ public class CustomAuthenticator {
 		}
 	}
 
+	/**
+	 * Binds the host to MyAuthenticator
+	 * 
+	 * @param hostName
+	 *          - the host to bind
+	 */
 	public static void bind(String hostName) {
 		install();
 
 		((MyAuth) previousAuthenticator).bind(hostName);
 	}
 
+	/**
+	 * Unbinds the host from MyAuthenticator
+	 * 
+	 * @param hostName
+	 *          - the host to unbind
+	 */
 	public static void unbind(String hostName) {
 		try {
 			if (previousAuthenticator != null) {

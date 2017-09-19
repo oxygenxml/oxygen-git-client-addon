@@ -68,10 +68,11 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
 		try {
-			//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
-			
+			// PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS",
+			// null);
+
 			CustomAuthenticator.install();
-			
+
 			Translator translator = new TranslatorExtensionImpl();
 			StageController stageController = new StageController(GitAccess.getInstance());
 			final Refresh refresh = new PanelRefresh(translator);
@@ -151,11 +152,24 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 		}
 	}
 
+	/**
+	 * Creates the contextual menu in the project view
+	 * 
+	 * @param pluginWorkspaceAccess
+	 * @param translator
+	 *          - the translator used to translate the menu items
+	 * @param stageController
+	 *          - used to stage, unstage and commit the files
+	 * @param stagingPanel
+	 *          - the main view
+	 */
 	private void createProjectViewContextualMenu(final StandalonePluginWorkspace pluginWorkspaceAccess,
 			final Translator translator, final StageController stageController, final StagingPanel stagingPanel) {
 
 		JMenu git = new JMenu(translator.getTraslation(Tags.PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM));
 		JMenuItem gitDiff = new JMenuItem(translator.getTraslation(Tags.PROJECT_VIEW_GIT_DIFF_CONTEXTUAL_MENU_ITEM));
+		
+		//THE DIFF MENU ITEM
 		gitDiff.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -215,18 +229,21 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 							GitAccess.getInstance().add(fileStatus);
 						}
 					}
-					
-					if(filesStaged){
-						if(OptionsManager.getInstance().getRepositoryEntries().contains(repository.getAbsolutePath())){
-							stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(repository.getAbsolutePath());
+
+					if (filesStaged) {
+						if (OptionsManager.getInstance().getRepositoryEntries().contains(repository.getAbsolutePath())) {
+							stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector()
+									.setSelectedItem(repository.getAbsolutePath());
 						} else {
 							OptionsManager.getInstance().addRepository(repository.getAbsolutePath());
-							stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(repository.getAbsolutePath());
-							stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(repository.getAbsolutePath());
+							stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector()
+									.addItem(repository.getAbsolutePath());
+							stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector()
+									.setSelectedItem(repository.getAbsolutePath());
 						}
 						return;
 					}
-					
+
 					GitAccess.getInstance().setRepository(previousRepository);
 				} catch (Exception e1) {
 					e1.printStackTrace();
