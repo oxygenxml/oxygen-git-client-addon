@@ -1012,6 +1012,9 @@ public class GitAccess {
 	 * Brings all the commits to the local repository but does not merge them
 	 */
 	public void fetch() {
+	  if (logger.isDebugEnabled()) {
+      logger.debug("Begin fetch");
+    }
 		CustomAuthenticator.install();
 		try {
 			StoredConfig config = git.getRepository().getConfig();
@@ -1026,9 +1029,14 @@ public class GitAccess {
 			unavailable = false;
 	    privateRepository = false;
 		} catch (InvalidRemoteException e) {
-			e.printStackTrace();
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
 		} catch (TransportException e) {
-		  e.printStackTrace();
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    
 			if (e.getMessage().contains("Authentication is required but no CredentialsProvider has been registered")
 					|| e.getMessage().contains("not authorized")) {
 				privateRepository = true;
@@ -1037,11 +1045,18 @@ public class GitAccess {
 			  unavailable = true;
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			if (logger.isDebugEnabled()) {
+			  logger.debug(e, e);
+			}
 		} catch (RevisionSyntaxException e) {
-			e.printStackTrace();
-		}
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
 		
+		if (logger.isDebugEnabled()) {
+      logger.debug("End fetch");
+    }
 	}
 
 	public void updateWithRemoteFile(String filePath) {
