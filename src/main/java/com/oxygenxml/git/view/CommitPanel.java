@@ -101,10 +101,12 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					if (!previouslyMessages.getSelectedItem().equals("Previously Commit Messages")) {
+
+					if (!previouslyMessages.getSelectedItem()
+							.equals(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE))) {
 						commitMessage.setText((String) previouslyMessages.getSelectedItem());
 						previouslyMessages.setEditable(true);
-						previouslyMessages.setSelectedItem("Previously Commit Messages");
+						previouslyMessages.setSelectedItem(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
 						previouslyMessages.setEditable(false);
 					}
 				}
@@ -268,7 +270,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
 					&& gitAccess.getStagedFile().size() == 0 && gitAccess.getUnstagedFiles().size() == 0) {
 				commitButton.setEnabled(true);
-				commitMessage.setText("All conflicts fixed but you are still merging. Commit to conclude the merge.");
+				commitMessage.setText(translator.getTraslation(Tags.CONCLUDE_MERGE_MESSAGE));
 			} else if (gitAccess.getStagedFile().size() > 0) {
 				commitButton.setEnabled(true);
 			} else {
@@ -297,7 +299,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 	public void setStatus(final String message) {
 		if ("unavailable".equals(message)) {
-			statusLabel.setText("Cannot reach host");
+			statusLabel.setText(translator.getTraslation(Tags.CANNOT_REACH_HOST));
 			statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
 		} else if ("availbale".equals(message)) {
 			synchronized (this) {
@@ -323,7 +325,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 							if (messagesActive == 0) {
 								if (gitAccess.isUnavailable()) {
 									statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
-									statusLabel.setText("Cannot reach host");
+									statusLabel.setText(translator.getTraslation(Tags.CANNOT_REACH_HOST));
 								} else {
 									statusLabel.setText("");
 								}

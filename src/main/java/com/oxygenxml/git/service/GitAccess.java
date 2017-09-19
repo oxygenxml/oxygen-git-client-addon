@@ -14,9 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JFrame;
-import javax.swing.JProgressBar;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
@@ -26,27 +23,21 @@ import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.CanceledException;
-import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
-import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
-import org.eclipse.jgit.api.errors.InvalidMergeHeadsException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.NoMessageException;
-import org.eclipse.jgit.api.errors.NotMergedException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
@@ -74,13 +65,19 @@ import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
+import org.eclipse.jgit.transport.JschConfigSessionFactory;
+import org.eclipse.jgit.transport.OpenSshConfig.Host;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
+import org.eclipse.jgit.transport.SshSessionFactory;
+import org.eclipse.jgit.transport.SshTransport;
+import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
+import com.jcraft.jsch.Session;
 import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -92,7 +89,6 @@ import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 
 import de.schlichtherle.io.FileInputStream;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -991,6 +987,9 @@ public class GitAccess {
 		}
 		CustomAuthenticator.install();
 		try {
+
+			unavailable = false;
+			privateRepository = false;
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
 			UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
@@ -1000,13 +999,12 @@ public class GitAccess {
 				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
 						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
 			}
-			unavailable = false;
-			privateRepository = false;
 		} catch (InvalidRemoteException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
 		} catch (TransportException e) {
+			e.printStackTrace();
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}

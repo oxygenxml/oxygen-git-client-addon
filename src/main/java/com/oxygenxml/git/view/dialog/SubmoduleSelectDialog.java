@@ -115,6 +115,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	 * combo box
 	 */
 	protected void doOK() {
+		this.setVisible(false);
 		String submodule = (String) submoduleList.getSelectedItem();
 		try {
 			GitAccess.getInstance().setSubmodule(submodule);

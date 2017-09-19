@@ -61,7 +61,7 @@ import ro.sync.ui.Icons;
  *
  */
 public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeEvent> {
-	
+
 	/**
 	 * Logger for logging.
 	 */
@@ -139,14 +139,20 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 		workingCopySelector.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
+				
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-
 					// get and save the selected Option so that at restart the same
 					// repository will be selected
 					String path = (String) workingCopySelector.getSelectedItem();
 					if (logger.isDebugEnabled()) {
-		        logger.debug("Working copy " + path);
-		      }
+						logger.debug("Working copy " + path);
+					}
+					
+					if (GitAccess.getInstance().getBranchInfo().isDetached()) {
+						PluginWorkspaceProvider.getPluginWorkspace()
+								.showInformationMessage(translator.getTraslation(Tags.DETACHED_HEAD_MESSAGE));
+					}
+					
 					if (FileHelper.isGitSubmodule(path)) {
 						observer.stateChanged(null);
 						return;
@@ -188,15 +194,17 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 								gitAccess.fetch();
 								String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
 								while (gitAccess.isPrivateRepository()) {
-									UserCredentials userCredentials = new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+									UserCredentials userCredentials = new LoginDialog(
+											(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 											translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage,
 											translator).getUserCredentials();
-									if(userCredentials != null){
+									if (userCredentials != null) {
 										gitAccess.fetch();
 									} else {
 										break;
 									}
-									loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE) + userCredentials.getUsername();
+									loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+											+ userCredentials.getUsername();
 								}
 								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
 								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());

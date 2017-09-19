@@ -68,8 +68,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
 
 		try {
-			// PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS",
-			// null);
+			//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
 
 			CustomAuthenticator.install();
 
@@ -119,7 +118,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 			// Call the refresh command when the Oxygen window is activated
 			parentFrame.addWindowListener(new WindowAdapter() {
 
-				private boolean toRefresh = true;
+				private boolean toRefresh = false;
 
 				@Override
 				public void windowActivated(WindowEvent e) {

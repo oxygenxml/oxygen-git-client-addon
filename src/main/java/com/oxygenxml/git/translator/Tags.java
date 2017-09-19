@@ -493,4 +493,20 @@ public class Tags {
 	 * The text in the title of the cloning progress dialog
 	 */
 	public static final String CLONE_PROGRESS_DIALOG_TITLE = "Cloning_Progress_Dialog_TItle";
+
+	/**
+	 * The text is displayed in the bottom left corner in the commit panel when
+	 * the host is down
+	 */
+	public static final String CANNOT_REACH_HOST = "Cannot_Reach_Host";
+
+	/**
+	 * The text is displayed when your repository is on a detached head
+	 */
+	public static final String DETACHED_HEAD_MESSAGE = "Detached_Head_Message";
+
+	/**
+	 * The text is displayed you fix all conflicts and there is nothing to commit
+	 */
+	public static final String CONCLUDE_MERGE_MESSAGE = "Conclude_Merge_Message";
 }

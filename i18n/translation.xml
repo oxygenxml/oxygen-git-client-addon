@@ -816,11 +816,37 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
-    Cloning repository
     <key value="Cloning_Progress_Dialog_TItle">
         <comment>The text in the title of the cloning progress dialog </comment>
         <val lang="en_US">Cloning repository</val>
         <val lang="de_DE">Cloning repository</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Cannot_Reach_Host">
+        <comment>The text is displayed in the bottom left corner in the commit panel when the host is down</comment>
+        <val lang="en_US">Cannot reach host</val>
+        <val lang="de_DE">Host nicht erreichbar</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Detached_Head_Message">
+        <comment>The text is displayed when your repository is on a detached head</comment>
+        <val lang="en_US">You are on a detached HEAD. We suggest you checkout to a branch</val>
+        <val lang="de_DE">You are on a detached HEAD. We suggest you checkout to a branch</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="Conclude_Merge_Message">
+        <comment>The text is displayed you fix all conflicts and there is nothing to commit</comment>
+        <val lang="en_US">All conflicts fixed but you are still merging. Commit to conclude the merge.</val>
+        <val lang="de_DE">All conflicts fixed but you are still merging. Commit to conclude the merge.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
