@@ -4,12 +4,12 @@
 	xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
 	<xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
 		id="com.oxygenxml.git">
-		<xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/1.1.9/git.support-1.1.9-plugin.jar" />
-		<xt:version>1.1.9</xt:version> 
+		<xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/1.2.0/git.support-1.2.0-plugin.jar" />
+		<xt:version>1.2.0</xt:version> 
 		<xt:oxy_version>17.0+</xt:oxy_version>
 		<xt:type>plugin</xt:type>
 		<xt:author>Oxygen XML Editor</xt:author>
-		<xt:name>Git Support</xt:name>
+		<xt:name>Git Support (Experimental)</xt:name>
 		<xt:description>
 			<html xmlns="http://www.w3.org/1999/xhtml">
 				<head>
