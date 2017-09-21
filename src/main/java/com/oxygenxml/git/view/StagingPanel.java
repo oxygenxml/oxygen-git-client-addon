@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -35,6 +36,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.dialog.LoginDialog;
+import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -209,6 +211,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				gained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
+					System.out.println("Panel activated");
 					refresh.call();
 				}
 
@@ -218,12 +221,24 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			@Override
 			public void focusLost(FocusEvent e) {
 				gained = false;
+				
 				// The focus might still be somewhere in the view.
-				if (e.getOppositeComponent() != null) {
+				if(e.getOppositeComponent() != null){
+					Window windowAncestor = SwingUtilities.getWindowAncestor(e.getOppositeComponent());
+					boolean contains = windowAncestor.toString().contains("MainFrame");
+					if(contains && !SwingUtilities.isDescendingFrom((Component) e.getOppositeComponent(), StagingPanel.this)){
+						inTheView = false;
+					} else {
+						inTheView = true;
+					}
+				} else {
+					inTheView = true;
+				}
+				/*if (e.getOppositeComponent() != null) {
 					inTheView = SwingUtilities.isDescendingFrom((Component) e.getOppositeComponent(), StagingPanel.this);
 				} else {
 					inTheView = false;
-				}
+				}*/
 			}
 		});
 	}

@@ -842,7 +842,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    
+
     <key value="Conclude_Merge_Message">
         <comment>The text is displayed you fix all conflicts and there is nothing to commit</comment>
         <val lang="en_US">All conflicts fixed but you are still merging. Commit to conclude the merge.</val>
@@ -851,4 +851,15 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
+    
+    <key value="Pull_Checkout_Conflict_Message">
+        <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
+        <val lang="en_US">Cannot pull. Your local changes to the following files would be overwritten by merge: </val>
+        <val lang="de_DE">Cannot pull. Your local changes to the following files would be overwritten by merge: </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    
 </translation>

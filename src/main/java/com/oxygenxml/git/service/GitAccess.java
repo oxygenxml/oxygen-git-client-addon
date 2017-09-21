@@ -23,7 +23,6 @@ import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
@@ -65,19 +64,13 @@ import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
-import org.eclipse.jgit.transport.JschConfigSessionFactory;
-import org.eclipse.jgit.transport.OpenSshConfig.Host;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
-import org.eclipse.jgit.transport.SshSessionFactory;
-import org.eclipse.jgit.transport.SshTransport;
-import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import com.jcraft.jsch.Session;
 import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -111,12 +104,24 @@ public class GitAccess {
 
 	private Translator translator = new TranslatorExtensionImpl();
 
-	private boolean unavailable;
+	private boolean unavailable = false;
 
 	private boolean privateRepository = false;
 
+	private boolean sshChecked = false;
+
+	private boolean ssh;
+
 	private GitAccess() {
 
+	}
+
+	public boolean isSshChecked() {
+		return sshChecked;
+	}
+
+	public void setSshChecked(boolean sshChecked) {
+		this.sshChecked = sshChecked;
 	}
 
 	public static GitAccess getInstance() {
@@ -189,6 +194,8 @@ public class GitAccess {
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
 		if (git != null) {
 			git.close();
+			sshChecked = false;
+			CustomUserCredentials.passphraseChecked = false;
 		}
 		git = Git.open(new File(path + "/.git"));
 	}
@@ -428,6 +435,12 @@ public class GitAccess {
 	public PushResponse push(final String username, final String password)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 
+		// List<TransportProtocol> transportProtocols =
+		// Transport.getTransportProtocols();
+		// for (TransportProtocol transportProtocol : transportProtocols) {
+		// transportProtocol.
+		// }
+
 		CustomAuthenticator.install();
 		PushResponse response = new PushResponse();
 
@@ -445,9 +458,9 @@ public class GitAccess {
 				response.setMessage(translator.getTraslation(Tags.BRANCH_BEHIND));
 				return response;
 			}
-			logger.debug("Push Started");
+			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 			Iterable<PushResult> call = git.push()
-					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+					.setCredentialsProvider(new CustomUserCredentials(username, password, sshPassphrase)).call();
 			Iterator<PushResult> results = call.iterator();
 			logger.debug("Push Ended");
 			while (results.hasNext()) {
@@ -498,14 +511,14 @@ public class GitAccess {
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
 		if (getConflictingFiles().size() > 0) {
 			response.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
-		} else if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0) {
-			response.setStatus(PullStatus.UNCOMITED_FILES);
+			// } else if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0)
+			// {
+			// response.setStatus(PullStatus.UNCOMITED_FILES);
 		} else {
 			git.reset().call();
-			logger.debug("Pull Started");
-			PullResult call = git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+			PullResult call = git.pull().setCredentialsProvider(new CustomUserCredentials(username, password, sshPassphrase))
 					.call();
-			logger.debug("Pull Started");
 			MergeResult mergeResult = call.getMergeResult();
 			if (mergeResult != null) {
 				if (mergeResult.getConflicts() != null) {
@@ -987,19 +1000,23 @@ public class GitAccess {
 		}
 		CustomAuthenticator.install();
 		try {
-
 			unavailable = false;
 			privateRepository = false;
+			ssh = false;
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
 			UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
 			String username = gitCredentials.getUsername();
 			String password = gitCredentials.getPassword();
 			if (sections.contains("remote")) {
-				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
-						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+				System.out.println("fetching");
+				String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).setCheckFetchedObjects(true)
+						.setCredentialsProvider(new CustomUserCredentials(username, password, sshPassphrase)).call();
+				System.out.println("done fetching");
 			}
 		} catch (InvalidRemoteException e) {
+			e.printStackTrace();
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -1013,10 +1030,13 @@ public class GitAccess {
 					|| e.getMessage().contains("not authorized")) {
 				privateRepository = true;
 				unavailable = false;
+			} else if (e.getMessage().contains("Auth fail")){
+				ssh = true;
 			} else {
 				unavailable = true;
 			}
 		} catch (GitAPIException e) {
+			e.printStackTrace();
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -1025,7 +1045,7 @@ public class GitAccess {
 				logger.debug(e, e);
 			}
 		}
-
+		System.out.println("end fetch");
 		if (logger.isDebugEnabled()) {
 			logger.debug("End fetch");
 		}
@@ -1238,6 +1258,10 @@ public class GitAccess {
 
 	public boolean isPrivateRepository() {
 		return privateRepository;
+	}
+
+	public boolean isSSh() {
+		return ssh;
 	}
 
 }

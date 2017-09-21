@@ -49,14 +49,15 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- JGIT uses slf4j. We will distribute an implementation to avoid class loader issues. -->
+		<!-- JGIT uses slf4j. We will distribute an implementation to avoid class 
+			loader issues. -->
 		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-log4j12</artifactId>
-		    <version>1.7.25</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.25</version>
 		</dependency>
-		
-		
+
+
 	</dependencies>
 
 	<build>
@@ -108,22 +109,22 @@
 							</descriptors>
 						</configuration>
 					</execution>
-					
-					<!--  Put the images into a separate JAR -->
+
+					<!-- Put the images into a separate JAR -->
 					<execution>
 						<phase>process-classes</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
-			            <id>build-images-jar</id>
-			            <configuration>
+						<id>build-images-jar</id>
+						<configuration>
 							<descriptors>
 								<descriptor>assembly-images.xml</descriptor>
 							</descriptors>
 						</configuration>
-			          </execution>
-					
-					
+					</execution>
+
+
 				</executions>
 			</plugin>
 

@@ -163,7 +163,7 @@ public class OptionsManager {
 			}
 		} catch (JAXBException e) {
 			if (logger.isDebugEnabled()) {
-			  logger.debug(e, e);
+				logger.debug(e, e);
 			}
 		}
 
@@ -376,5 +376,37 @@ public class OptionsManager {
 		loadOptions();
 
 		return options.getDestinationPaths().getPaths();
+	}
+
+	/**
+	 * Saves and encrypts the SSH pass phrase entered by the user
+	 * 
+	 * @param passphrase
+	 *          - the SSH pass phrase
+	 */
+	public void saveSshPassphare(String passphrase) {
+		loadOptions();
+
+		String encryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+				.getUtilAccess().encrypt(passphrase);
+		options.setPassphrase(encryptPassphrase);
+	}
+
+	/**
+	 * Loads the SSH pass phrase that was entered by the user
+	 * 
+	 * @return the SSH pass phrase
+	 */
+	public String getSshPassphrase() {
+		loadOptions();
+
+		String decryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+				.getUtilAccess().decrypt(options.getPassphrase());
+		
+		if(decryptPassphrase == null){
+			decryptPassphrase = "";
+		}
+
+		return decryptPassphrase;
 	}
 }

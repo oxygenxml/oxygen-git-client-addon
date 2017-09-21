@@ -124,6 +124,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 				public void windowActivated(WindowEvent e) {
 					super.windowActivated(e);
 					if (toRefresh) {
+						System.out.println("Window activated");
 						refresh.call();
 						toRefresh = false;
 					}

@@ -53,6 +53,12 @@ public class Options {
 	@XmlElement(name = "destinationPaths")
 	private DestinationPaths destinationPaths = new DestinationPaths();
 
+	/**
+	 * The passphrase for the SSH
+	 */
+	@XmlElement(name = "passphrase")
+	private String passphrase = "";
+
 	public DestinationPaths getDestinationPaths() {
 		return destinationPaths;
 	}
@@ -101,12 +107,21 @@ public class Options {
 		this.commitMessages = commitMessages;
 	}
 
+	public String getPassphrase() {
+		return passphrase;
+	}
+
+	public void setPassphrase(String passphrase) {
+		this.passphrase = passphrase;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((commitMessages == null) ? 0 : commitMessages.hashCode());
 		result = prime * result + ((destinationPaths == null) ? 0 : destinationPaths.hashCode());
+		result = prime * result + ((passphrase == null) ? 0 : passphrase.hashCode());
 		result = prime * result + ((prjectsTestsForGit == null) ? 0 : prjectsTestsForGit.hashCode());
 		result = prime * result + ((repositoryLocations == null) ? 0 : repositoryLocations.hashCode());
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
@@ -132,6 +147,11 @@ public class Options {
 			if (other.destinationPaths != null)
 				return false;
 		} else if (!destinationPaths.equals(other.destinationPaths))
+			return false;
+		if (passphrase == null) {
+			if (other.passphrase != null)
+				return false;
+		} else if (!passphrase.equals(other.passphrase))
 			return false;
 		if (prjectsTestsForGit == null) {
 			if (other.prjectsTestsForGit != null)
@@ -160,7 +180,8 @@ public class Options {
 	public String toString() {
 		return "Options [repositoryLocations=" + repositoryLocations + ", selectedRepository=" + selectedRepository
 				+ ", userCredentialsList=" + userCredentialsList + ", commitMessages=" + commitMessages
-				+ ", prjectsTestsForGit=" + prjectsTestsForGit + ", destinationPaths=" + destinationPaths + "]";
+				+ ", prjectsTestsForGit=" + prjectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase="
+				+ passphrase + "]";
 	}
 
 }

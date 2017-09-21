@@ -42,6 +42,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.dialog.LoginDialog;
+import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
@@ -193,6 +194,29 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 							public void run() {
 								gitAccess.fetch();
 								String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+								checkForPrivateRepository(loginMessage);
+								
+								String message = "Please enter your SSH passphrase";
+								checkForSsh(message);
+								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
+								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
+								parent.getToolbarPanel().updateInformationLabel();
+							}
+							
+							private void checkForSsh(String message) {
+								while(gitAccess.isSSh()){
+									String passphrase = new PassphraseDialog(message).getPassphrase();
+									if(passphrase != null){
+										gitAccess.fetch();
+									} else {
+										break;
+									}
+									message = "The previous passphrase is invalid. Please enter your SSH passphrase";
+								}
+								
+							}
+
+							private void checkForPrivateRepository(String loginMessage){
 								while (gitAccess.isPrivateRepository()) {
 									UserCredentials userCredentials = new LoginDialog(
 											(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
@@ -206,9 +230,6 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 									loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
 											+ userCredentials.getUsername();
 								}
-								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
-								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
-								parent.getToolbarPanel().updateInformationLabel();
 							}
 						}).start();
 						observer.stateChanged(null);

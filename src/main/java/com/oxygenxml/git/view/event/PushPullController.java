@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CanceledException;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
@@ -32,6 +33,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
+import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -107,7 +109,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 				String message = "";
 				try {
 					commandExecuted = true;
-					
+
 					if (logger.isDebugEnabled()) {
 						logger.debug("Preapring for push/pull command");
 					}
@@ -117,8 +119,17 @@ public class PushPullController implements Subject<PushPullEvent> {
 						message = pull(userCredentials);
 					}
 				} catch (GitAPIException e) {
+
+					e.printStackTrace();
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
+					}
+					if (e instanceof CheckoutConflictException) {
+						new PullWithConflictsDialog(
+								(JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
+								"Pull Status", true, ((CheckoutConflictException) e).getConflictingPaths(), translator,
+								translator.getTraslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
+						System.out.println(((CheckoutConflictException) e).getConflictingPaths());
 					}
 					if (e.getMessage().contains("not authorized")) {
 						String loginMessage = "";
@@ -152,6 +163,18 @@ public class PushPullController implements Subject<PushPullEvent> {
 						new AddRemoteDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								translator.getTraslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
 						return;
+					}
+
+					if (e.getMessage().contains("Auth fail")) {
+						String passPhraseMessage = "Please enter your SSH passphrase";
+						String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
+						if (passphrase != null) {
+							commandExecuted = false;
+							execute(command);
+						} else {
+							message = "Command aborted";
+							return;
+						}
 					}
 				} catch (IOException e) {
 					if (logger.isDebugEnabled()) {
@@ -194,15 +217,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 				String message = "";
 				if (PullStatus.OK == response.getStatus()) {
 					message = translator.getTraslation(Tags.PULL_SUCCESSFUL);
-				} else if (PullStatus.UNCOMITED_FILES == response.getStatus()) {
-					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showWarningMessage(translator.getTraslation(Tags.PULL_WITH_UNCOMMITED_CHANGES));
-
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 							translator.getTraslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE), true, response.getConflictingFiles(),
-							translator);
-
+							translator, translator.getTraslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
 					message = translator.getTraslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {

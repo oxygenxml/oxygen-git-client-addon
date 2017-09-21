@@ -9,7 +9,7 @@
 		<xt:oxy_version>17.0+</xt:oxy_version>
 		<xt:type>plugin</xt:type>
 		<xt:author>Oxygen XML Editor</xt:author>
-		<xt:name>Git Support</xt:name>
+		<xt:name>Git Support (Experimental)</xt:name>
 		<xt:description>
 			<html xmlns="http://www.w3.org/1999/xhtml">
 				<head>

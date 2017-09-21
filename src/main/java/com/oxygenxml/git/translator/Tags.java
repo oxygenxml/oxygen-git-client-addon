@@ -509,4 +509,10 @@ public class Tags {
 	 * The text is displayed you fix all conflicts and there is nothing to commit
 	 */
 	public static final String CONCLUDE_MERGE_MESSAGE = "Conclude_Merge_Message";
+
+	/**
+	 * The text is displayed when you pull but it fails because the files that are
+	 * modified might become in conflict
+	 */
+	public static final String PULL_CHECKOUT_CONFLICT_MESSAGE = "Pull_Checkout_Conflict_Message";
 }
