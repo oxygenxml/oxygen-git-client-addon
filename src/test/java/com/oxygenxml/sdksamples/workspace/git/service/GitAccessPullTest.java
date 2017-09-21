@@ -100,7 +100,7 @@ public class GitAccessPullTest {
 
 		PullResponse response = gitAccess.pull("", "");
 		PullStatus actual = response.getStatus();
-		PullStatus expected = PullStatus.UNCOMITED_FILES;
+		PullStatus expected = PullStatus.OK;
 		assertEquals(expected, actual);
 	}
 	

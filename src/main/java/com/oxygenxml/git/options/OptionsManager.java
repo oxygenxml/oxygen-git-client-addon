@@ -400,10 +400,12 @@ public class OptionsManager {
 	public String getSshPassphrase() {
 		loadOptions();
 
-		String decryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-				.getUtilAccess().decrypt(options.getPassphrase());
-		
-		if(decryptPassphrase == null){
+		String decryptPassphrase = null;
+		if (WorkspaceAccessPlugin.getInstance() != null) {
+			decryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+					.getUtilAccess().decrypt(options.getPassphrase());
+		}
+		if (decryptPassphrase == null) {
 			decryptPassphrase = "";
 		}
 
