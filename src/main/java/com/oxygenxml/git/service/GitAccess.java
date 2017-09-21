@@ -70,6 +70,7 @@ import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.eclipse.jgit.util.FS;
 
 import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.options.OptionsManager;
@@ -198,6 +199,22 @@ public class GitAccess {
 			CustomUserCredentials.passphraseChecked = false;
 		}
 		git = Git.open(new File(path + "/.git"));
+		
+		if (logger.isDebugEnabled()) {
+		  logger.debug("Load repository " + path);
+		  try {
+		    FS fs = getRepository().getFS();
+		    if (fs != null) {
+		      File userHome = fs.userHome();
+		      logger.debug("User home " + userHome);
+		    } else {
+		      logger.debug("Null FS");
+		    }
+		  } catch (NoRepositorySelected e) {
+		    logger.debug(e, e);
+		  }
+		}
+		
 	}
 
 	/**
