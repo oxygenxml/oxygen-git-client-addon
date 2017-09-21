@@ -201,12 +201,24 @@ public class GitAccess {
 		git = Git.open(new File(path + "/.git"));
 		
 		if (logger.isDebugEnabled()) {
+		  logger.debug("Java env user home: " + System.getProperty("user.home"));
 		  logger.debug("Load repository " + path);
 		  try {
 		    FS fs = getRepository().getFS();
 		    if (fs != null) {
 		      File userHome = fs.userHome();
 		      logger.debug("User home " + userHome);
+		      
+		      File sshDir = new File(userHome, ".ssh");
+		      
+		      boolean exists = sshDir.exists();
+          logger.debug("SSH dir exists " + exists);
+		      if (exists) {
+		        File[] listFiles = sshDir.listFiles();
+		        for (int i = 0; i < listFiles.length; i++) {
+              logger.debug("SSH resource path " + listFiles[i]);
+            }
+		      }
 		    } else {
 		      logger.debug("Null FS");
 		    }
