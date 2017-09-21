@@ -211,7 +211,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				gained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
-					System.out.println("Panel activated");
 					refresh.call();
 				}
 

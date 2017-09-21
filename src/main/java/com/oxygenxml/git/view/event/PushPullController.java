@@ -120,7 +120,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 					}
 				} catch (GitAPIException e) {
 
-					e.printStackTrace();
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
 					}

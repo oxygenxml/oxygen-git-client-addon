@@ -1045,12 +1045,10 @@ public class GitAccess {
 						.setCredentialsProvider(credentialsProvider).call();
 			}
 		} catch (InvalidRemoteException e) {
-			e.printStackTrace();
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
 		} catch (TransportException e) {
-			e.printStackTrace();
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -1067,7 +1065,6 @@ public class GitAccess {
 				unavailable = true;
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -1076,7 +1073,6 @@ public class GitAccess {
 				logger.debug(e, e);
 			}
 		}
-		System.out.println("end fetch");
 		if (logger.isDebugEnabled()) {
 			logger.debug("End fetch");
 		}
