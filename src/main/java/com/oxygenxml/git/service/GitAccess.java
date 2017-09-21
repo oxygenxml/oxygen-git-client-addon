@@ -110,7 +110,7 @@ public class GitAccess {
 
 	private boolean sshChecked = false;
 
-	private boolean ssh;
+	private boolean isSSHPassphrase;
 
 	private GitAccess() {
 
@@ -999,21 +999,21 @@ public class GitAccess {
 			logger.debug("Begin fetch");
 		}
 		CustomAuthenticator.install();
+		
+		UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
+		String username = gitCredentials.getUsername();
+		String password = gitCredentials.getPassword();
+		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+		CustomUserCredentials credentialsProvider = new CustomUserCredentials(username, password, sshPassphrase);
 		try {
 			unavailable = false;
 			privateRepository = false;
-			ssh = false;
+			isSSHPassphrase = false;
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
-			UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
-			String username = gitCredentials.getUsername();
-			String password = gitCredentials.getPassword();
 			if (sections.contains("remote")) {
-				System.out.println("fetching");
-				String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-				git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).setCheckFetchedObjects(true)
-						.setCredentialsProvider(new CustomUserCredentials(username, password, sshPassphrase)).call();
-				System.out.println("done fetching");
+        git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).setCheckFetchedObjects(true)
+						.setCredentialsProvider(credentialsProvider).call();
 			}
 		} catch (InvalidRemoteException e) {
 			e.printStackTrace();
@@ -1030,8 +1030,10 @@ public class GitAccess {
 					|| e.getMessage().contains("not authorized")) {
 				privateRepository = true;
 				unavailable = false;
-			} else if (e.getMessage().contains("Auth fail")){
-				ssh = true;
+			} else if (e.getMessage().contains("Auth fail")
+			    // A SSH pass phase was requested.
+			    && credentialsProvider.isPassphaseRequested()) {
+				isSSHPassphrase = true;
 			} else {
 				unavailable = true;
 			}
@@ -1260,8 +1262,8 @@ public class GitAccess {
 		return privateRepository;
 	}
 
-	public boolean isSSh() {
-		return ssh;
+	public boolean isSShPassphrase() {
+		return isSSHPassphrase;
 	}
 
 }

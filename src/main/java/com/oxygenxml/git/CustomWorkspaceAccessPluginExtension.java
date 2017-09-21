@@ -145,6 +145,19 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 					});
 				}
 			});
+			
+			// Redirect logging to the Log4J instance.
+			com.jcraft.jsch.JSch.setLogger(new com.jcraft.jsch.Logger() {
+        public void log(int level, String message) {
+          if (logger.isDebugEnabled()) {
+            logger.debug(message);
+          }
+        }
+        public boolean isEnabled(int level) {
+          return logger.isDebugEnabled();
+        }
+      });
+			
 		} catch (Throwable t) {
 			// Runtime exceptions shouldn't affect Oxygen.
 			pluginWorkspaceAccess.showErrorMessage(t.getMessage());

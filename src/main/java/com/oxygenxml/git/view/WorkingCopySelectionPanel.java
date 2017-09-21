@@ -204,7 +204,7 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 							}
 							
 							private void checkForSsh(String message) {
-								while(gitAccess.isSSh()){
+								while(gitAccess.isSShPassphrase()){
 									String passphrase = new PassphraseDialog(message).getPassphrase();
 									if(passphrase != null){
 										gitAccess.fetch();

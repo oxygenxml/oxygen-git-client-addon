@@ -6,7 +6,6 @@ import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -17,19 +16,37 @@ public class CustomUserCredentials extends UsernamePasswordCredentialsProvider {
 	private boolean firstTry = true;
 
 	public static boolean passphraseChecked = false;
-
+	/**
+	 * The pass phase to be used for SSH connections.
+	 */
 	private String passphrase;
+	/**
+	 * <code>true</code> if the pass phase was requested (for SSH).
+	 */
+	private boolean passphaseRequested = false;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param username User name.
+	 * @param password Password.
+	 * @param passphrase SSH pass phase.
+	 */
 	public CustomUserCredentials(String username, String password, String passphrase) {
 		super(username, password);
 		this.passphrase = passphrase;
 	}
+	
+	
 
 	@Override
 	public boolean get(URIish uri, CredentialItem... items) throws UnsupportedCredentialItem {
 		for (CredentialItem i : items) {
 			if (i instanceof CredentialItem.StringType) {
 				if (i.getPromptText().startsWith("Passphrase")) {
+				  // A not so great method to check that the pass phrase is requested.
+				  passphaseRequested = true;
+				  
 					((CredentialItem.StringType) i).setValue(new String(passphrase));
 					return true;
 				}
@@ -52,6 +69,14 @@ public class CustomUserCredentials extends UsernamePasswordCredentialsProvider {
 		}
 		return super.get(uri, items);
 	}
+	
+	/**
+	 * @return <code>true</code> if the pass phase was requested (for SSH).
+	 */
+	public boolean isPassphaseRequested() {
+    return passphaseRequested;
+  }
+	
 
 	private boolean passphraseIsValid(CredentialItem i) {
 		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
