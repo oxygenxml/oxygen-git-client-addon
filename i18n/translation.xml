@@ -648,7 +648,7 @@
     <key value="Toolbar_Panel_Information_Status_Detached_Head">
         <comment>The text displayed on the right side of the toolbar buttons if the repository has a detached head </comment>
         <val lang="en_US">Detached HEAD on commit</val>
-        <val lang="de_DE">Detached HEAD on commit</val>
+        <val lang="de_DE">Detached HEAD an Commit</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -684,16 +684,16 @@
     <key value="No_Right_To_Push_Message">
         <comment>The text displayed when you push but don't have rights for that repository</comment>
         <val lang="en_US">You have no rights to push in this repository</val>
-        <val lang="de_DE">You have no rights to push in this repository</val>
+        <val lang="de_DE">Sie haben keine Push-Berechtigung in diesem Repository</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     
     <key value="Login_Dialog_Credentials_Doesnt_Have_Rights">
-        <comment>The text displayed on the first row of the login dialog if the user eneterd doesn't have rights for that repository</comment>
-        <val lang="en_US">You don't have rigths to push</val>
-        <val lang="de_DE">You don't have rigths to push</val>
+        <comment>The text displayed on the first row of the login dialog if the user entered doesn't have rights for that repository</comment>
+        <val lang="en_US">You don't have rights to push</val>
+        <val lang="de_DE">Keine Push-Berechtigung</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -702,7 +702,7 @@
     <key value="Change_Tree_View_Button_ToolTip">
         <comment>The tooltip for the ChangeView button when the icon shows the tree view icon</comment>
         <val lang="en_US">Switch to tree view</val>
-        <val lang="de_DE">Switch to tree view</val>
+        <val lang="de_DE">Zur Baumansicht wechseln</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -711,7 +711,7 @@
     <key value="Change_Flat_View_Button_ToolTip">
         <comment>The tooltip for the ChangeView button when the icon shows the flat view icon</comment>
         <val lang="en_US">Switch to flat view</val>
-        <val lang="de_DE">Switch to flat view</val>
+        <val lang="de_DE">Zur Pfadansicht wechseln</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -720,7 +720,7 @@
     <key value="Login_Dialog_Private_Repository_Message">
         <comment>The text displayed on the first row of the login dialog if the repositroy is private</comment>
         <val lang="en_US">This is a private repository. We need your credentials for synchronization.</val>
-        <val lang="de_DE">This is a private repository. We need your credentials for synchronization.</val>
+        <val lang="de_DE">Dies ist ein privates Repository. Es werden Zugangsdaten benötigt um zu synchronisieren.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -729,7 +729,7 @@
     <key value="Clone_Repository_Button_Tooltip">
         <comment>The tooltip for the clone repository button</comment>
         <val lang="en_US">Clone new repository</val>
-        <val lang="de_DE">Clone new repository</val>
+        <val lang="de_DE">Neues Repository klonen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -738,7 +738,7 @@
     <key value="Clone_Repository_Dialog_Title">
         <comment>The text displayed in the title for the dialog that appears when you clone a new repository</comment>
         <val lang="en_US">Clone Repository</val>
-        <val lang="de_DE">Clone Repository</val>
+        <val lang="de_DE">Repository klonen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -756,7 +756,7 @@
     <key value="Clone_Repository_Dialog_Destination_Path_Label">
         <comment>The text displayed for the "Destination Path" label in the clone repository dialog</comment>
         <val lang="en_US">Destination Path:</val>
-        <val lang="de_DE">Destination Path:</val>
+        <val lang="de_DE">Zielverzeichnis:</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -765,7 +765,7 @@
     <key value="Clone_Repository_Dialog_Invalid_Url">
         <comment>The text displayed if the url is invalid</comment>
         <val lang="en_US">URL is invalid</val>
-        <val lang="de_DE">URL is invalid</val>
+        <val lang="de_DE">URL ist ungültig</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -774,7 +774,7 @@
     <key value="Clone_Repository_Dialog_Invalid_Destination_Path">
         <comment>The text displayed if the destination path is invalid</comment>
         <val lang="en_US">Destination path is invalid</val>
-        <val lang="de_DE">Destination path is invalid</val>
+        <val lang="de_DE">Zielverzeichnis ist ungültig</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -783,7 +783,7 @@
     <key value="Clone_Repository_Dialog_Clone_Error">
         <comment>The text displayed if an error occured during cloning</comment>
         <val lang="en_US">We could not clone the repository</val>
-        <val lang="de_DE">We could not clone the repository</val>
+        <val lang="de_DE">Dieses Repository konnte nicht geklont werden</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -792,7 +792,7 @@
     <key value="Clone_Repository_Dialog_Destination_Path_Not_Empty">
         <comment>The text displayed if the chosen destionation path is not an empty folder</comment>
         <val lang="en_US">The destination path already exists and is not an empty folder. Please choose an empty or a new folder into which to clone</val>
-        <val lang="de_DE">The destination path already exists and is not an empty folder. Please choose an empty or a new folder into which to clone</val>
+        <val lang="de_DE">Das Zielverzeichnis existiert bereits und ist nicht leer. Bitte wähle ein leeres oder neues Verzeichnis</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -801,7 +801,7 @@
     <key value="Clone_Repository_Dialog_Url_Is_Not_A_Repository">
         <comment>The text displayed if the URL doesn't point to a remote repository</comment>
         <val lang="en_US">The remote URL may be invalid. We could not find the repository from the URL</val>
-        <val lang="de_DE">The remote URL may be invalid. We could not find the repository from the URL</val>
+        <val lang="de_DE">Die Remote-URL ist möglicherweise ungültig. Es konnte dort kein Git-Repository gefunden werden</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -810,7 +810,7 @@
     <key value="Clone_Repository_Dialog_Login_Message">
         <comment>The text displayed in the login dialog if you are not authorized to clone the repository</comment>
         <val lang="en_US">You are not authorized to clone this repository</val>
-        <val lang="de_DE">You are not authorized to clone this repository</val>
+        <val lang="de_DE">Sie haben keine Berechtigung dieses Repository zu klonen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -819,7 +819,7 @@
     <key value="Cloning_Progress_Dialog_TItle">
         <comment>The text in the title of the cloning progress dialog </comment>
         <val lang="en_US">Cloning repository</val>
-        <val lang="de_DE">Cloning repository</val>
+        <val lang="de_DE">Repository wird geklont</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -837,7 +837,7 @@
     <key value="Detached_Head_Message">
         <comment>The text is displayed when your repository is on a detached head</comment>
         <val lang="en_US">You are on a detached HEAD. We suggest you checkout to a branch</val>
-        <val lang="de_DE">You are on a detached HEAD. We suggest you checkout to a branch</val>
+        <val lang="de_DE">Das Repository befindet sich im "detached HEAD" Status. Wir empfehlen einen Branch auszuchecken</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -846,7 +846,7 @@
     <key value="Conclude_Merge_Message">
         <comment>The text is displayed you fix all conflicts and there is nothing to commit</comment>
         <val lang="en_US">All conflicts fixed but you are still merging. Commit to conclude the merge.</val>
-        <val lang="de_DE">All conflicts fixed but you are still merging. Commit to conclude the merge.</val>
+        <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte commiten um den Merge abzuschließen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -855,7 +855,7 @@
     <key value="Pull_Checkout_Conflict_Message">
         <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
         <val lang="en_US">Cannot pull. Your local changes to the following files would be overwritten by merge: </val>
-        <val lang="de_DE">Cannot pull. Your local changes to the following files would be overwritten by merge: </val>
+        <val lang="de_DE">Pull nicht möglich. Die folgenden lokalen Änderungen würden bei einem Pull überschrieben werden: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
