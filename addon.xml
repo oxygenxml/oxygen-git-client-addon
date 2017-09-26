@@ -6,7 +6,7 @@
 		id="com.oxygenxml.git">
 		<xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/${project.version}/${project.build.finalName}-plugin.jar" />
 		<xt:version>${project.version}</xt:version> 
-		<xt:oxy_version>17.1+</xt:oxy_version>
+		<xt:oxy_version>18.1+</xt:oxy_version>
 		<xt:type>plugin</xt:type>
 		<xt:author>Oxygen XML Editor</xt:author>
 		<xt:name>Git Support (Experimental)</xt:name>
