@@ -6,7 +6,7 @@
 		id="com.oxygenxml.git">
 		<xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/1.2.1/git.support-1.2.1-plugin.jar" />
 		<xt:version>1.2.1</xt:version> 
-		<xt:oxy_version>17.0+</xt:oxy_version>
+		<xt:oxy_version>18.1+</xt:oxy_version>
 		<xt:type>plugin</xt:type>
 		<xt:author>Oxygen XML Editor</xt:author>
 		<xt:name>Git Support (Experimental)</xt:name>
