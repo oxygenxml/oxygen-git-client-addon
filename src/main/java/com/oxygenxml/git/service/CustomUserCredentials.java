@@ -61,6 +61,9 @@ public class CustomUserCredentials extends UsernamePasswordCredentialsProvider {
 				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 						.showConfirmDialog("Connection", i.getPromptText(), options, optonsId);
 				if (response == 0) {
+				  // Apparently JGIT also checks the value from the given item.
+				  // org.eclipse.jgit.transport.CredentialsProviderUserInfo.promptYesNo(String)
+				  ((CredentialItem.YesNoType) i).setValue(true);
 					return true;
 				} else {
 					return false;
