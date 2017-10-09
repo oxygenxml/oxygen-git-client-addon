@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 
 import com.oxygenxml.git.CustomAuthenticator;
-import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;

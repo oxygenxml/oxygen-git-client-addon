@@ -73,6 +73,7 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
 
 import com.oxygenxml.git.CustomAuthenticator;
+import com.oxygenxml.git.auth.SSHUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -109,20 +110,10 @@ public class GitAccess {
 
 	private boolean privateRepository = false;
 
-	private boolean sshChecked = false;
-
 	private boolean isSSHPassphrase;
 
 	private GitAccess() {
 
-	}
-
-	public boolean isSshChecked() {
-		return sshChecked;
-	}
-
-	public void setSshChecked(boolean sshChecked) {
-		this.sshChecked = sshChecked;
 	}
 
 	public static GitAccess getInstance() {
@@ -195,8 +186,6 @@ public class GitAccess {
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
 		if (git != null) {
 			git.close();
-			sshChecked = false;
-			CustomUserCredentials.passphraseChecked = false;
 		}
 		git = Git.open(new File(path + "/.git"));
 		
@@ -489,7 +478,7 @@ public class GitAccess {
 			}
 			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 			Iterable<PushResult> call = git.push()
-					.setCredentialsProvider(new CustomUserCredentials(username, password, sshPassphrase)).call();
+					.setCredentialsProvider(new SSHUserCredentialsProvider(username, password, sshPassphrase)).call();
 			Iterator<PushResult> results = call.iterator();
 			logger.debug("Push Ended");
 			while (results.hasNext()) {
@@ -546,7 +535,7 @@ public class GitAccess {
 		} else {
 			git.reset().call();
 			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-			PullResult call = git.pull().setCredentialsProvider(new CustomUserCredentials(username, password, sshPassphrase))
+			PullResult call = git.pull().setCredentialsProvider(new SSHUserCredentialsProvider(username, password, sshPassphrase))
 					.call();
 			MergeResult mergeResult = call.getMergeResult();
 			if (mergeResult != null) {
@@ -1033,7 +1022,7 @@ public class GitAccess {
 		String username = gitCredentials.getUsername();
 		String password = gitCredentials.getPassword();
 		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		CustomUserCredentials credentialsProvider = new CustomUserCredentials(username, password, sshPassphrase);
+		SSHUserCredentialsProvider credentialsProvider = new SSHUserCredentialsProvider(username, password, sshPassphrase);
 		try {
 			unavailable = false;
 			privateRepository = false;

@@ -7,14 +7,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Git user credentials POJO for the JAXB
- * 
- * @author intern2
- *
  */
 @XmlRootElement(name = "credential")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserCredentials {
-
 	/**
 	 * The host for which the username and password are validF
 	 */
@@ -33,10 +29,18 @@ public class UserCredentials {
 	@XmlElement(name = "password")
 	private String password = "";
 
-	public UserCredentials() {
+	/**
+	 * Default constructor.
+	 */
+	public UserCredentials() {}
 
-	}
-
+	/**
+	 * Constructor.
+	 * 
+	 * @param username User name.
+	 * @param password password.
+	 * @param host Host name.
+	 */
 	public UserCredentials(String username, String password, String host) {
 		this.host = host;
 		this.username = username;

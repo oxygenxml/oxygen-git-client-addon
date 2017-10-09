@@ -15,23 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
-import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -45,7 +41,6 @@ import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

@@ -26,9 +26,13 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  */
 public class OptionsManager {
-
+  /**
+   * The initial key used to saved options.
+   */
 	private static final String OLD_GIT_PLUGIN_OPTIONS = "MY_PLUGIN_OPTIONS";
-
+	/**
+	 * A proper name for the options.
+	 */
 	private static final String GIT_PLUGIN_OPTIONS = "GIT_PLUGIN_OPTIONS";
 
 	/**
@@ -88,6 +92,7 @@ public class OptionsManager {
 				JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
 				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 				if (WorkspaceAccessPlugin.getInstance() == null) {
+				  // Running outside Oxygen, for example from tests.
 					File optionsFile = getOptionsFile();
 					if (optionsFile.exists()) {
 						options = (Options) jaxbUnmarshaller.unmarshal(optionsFile);
@@ -95,6 +100,7 @@ public class OptionsManager {
 						logger.warn("Options file doesn't exist:" + optionsFile.getAbsolutePath());
 					}
 				} else {
+				  // Running in Oxygen's context. Save inside Oxygen's options. 
 					String option = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage()
 							.getOption(OLD_GIT_PLUGIN_OPTIONS, null);
 
@@ -252,7 +258,6 @@ public class OptionsManager {
 
 		credentials.add(uc);
 		saveOptions();
-
 	}
 
 	/**
@@ -377,6 +382,27 @@ public class OptionsManager {
 
 		return options.getDestinationPaths().getPaths();
 	}
+	
+	 /**
+	  * Returns the stored answer for the given prompt.
+   * @return The stored answer for the given prompt or <code>null</code> if this question was never asked.
+   */
+  public Boolean getSshPromptAnswer(String prompt) {
+    loadOptions();
+    
+    return options.getSshPromptAnswers().get(prompt);
+  }
+  
+  /**
+   * @return A cache for asking the user for connection message.
+   */
+  public void saveSshPrompt(String prompt, boolean answer) {
+    loadOptions();
+
+    options.getSshPromptAnswers().put(prompt, answer);
+    
+    saveOptions();
+  }
 
 	/**
 	 * Saves and encrypts the SSH pass phrase entered by the user

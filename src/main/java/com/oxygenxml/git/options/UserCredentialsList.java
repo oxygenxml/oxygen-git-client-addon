@@ -23,7 +23,11 @@ public class UserCredentialsList {
 	 */
 	@XmlElement(name = "credential")
 	private List<UserCredentials> credentials = new ArrayList<UserCredentials>();
-
+	/**
+	 * The list with user credentials. The actual list, not a copy.
+	 * 
+	 * @return The user credentials.
+	 */
 	public List<UserCredentials> getCredentials() {
 		return credentials;
 	}

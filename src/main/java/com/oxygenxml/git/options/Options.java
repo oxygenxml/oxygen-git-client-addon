@@ -1,5 +1,8 @@
 package com.oxygenxml.git.options;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -14,6 +17,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Options")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Options {
+  
+  /**
+   * A cache for the SSH questions and the user answer.
+   */
+  @XmlElement(name = "sshPromptAnswers")
+  private Map<String, Boolean> sshPromptAnswers = new HashMap<String, Boolean>();
 
 	/**
 	 * Wrapper for a list with the repository locations
@@ -91,10 +100,19 @@ public class Options {
 		this.selectedRepository = selectedRepository;
 	}
 
+	 /**
+   * The list with user credentials. The actual list, not a copy.
+   * 
+   * @return The user credentials.
+   */
 	public UserCredentialsList getUserCredentialsList() {
 		return userCredentialsList;
 	}
 
+	/**
+	 * The list with user credentials.
+	 * @param userCredentialsList
+	 */
 	public void setUserCredentialsList(UserCredentialsList userCredentialsList) {
 		this.userCredentialsList = userCredentialsList;
 	}
@@ -114,6 +132,20 @@ public class Options {
 	public void setPassphrase(String passphrase) {
 		this.passphrase = passphrase;
 	}
+	
+	/**
+	 * @param sshPromptAnswers A cache for asking the user for connection message.
+	 */
+	public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) {
+    this.sshPromptAnswers = sshPromptAnswers;
+  }
+	
+	/**
+	 * @return A cache for asking the user for connection message.
+	 */
+	public Map<String, Boolean> getSshPromptAnswers() {
+    return sshPromptAnswers;
+  }
 
 	@Override
 	public int hashCode() {
@@ -126,6 +158,7 @@ public class Options {
 		result = prime * result + ((repositoryLocations == null) ? 0 : repositoryLocations.hashCode());
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
+		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
 		return result;
 	}
 
@@ -168,11 +201,21 @@ public class Options {
 				return false;
 		} else if (!selectedRepository.equals(other.selectedRepository))
 			return false;
+		
+		// Check user credentials.
 		if (userCredentialsList == null) {
 			if (other.userCredentialsList != null)
 				return false;
 		} else if (!userCredentialsList.equals(other.userCredentialsList))
 			return false;
+		
+		// Check the ssq questions.
+		if (sshPromptAnswers != null && other.sshPromptAnswers != null) {
+		  return sshPromptAnswers.equals(other.sshPromptAnswers);
+		} else if (sshPromptAnswers == null || other.sshPromptAnswers == null) {
+		  return false;
+		}
+		
 		return true;
 	}
 
