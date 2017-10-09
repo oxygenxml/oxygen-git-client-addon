@@ -1,4 +1,4 @@
-package com.oxygenxml.git;
+package com.oxygenxml.git.auth;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

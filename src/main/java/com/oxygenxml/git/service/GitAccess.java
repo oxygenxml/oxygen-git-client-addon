@@ -72,7 +72,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
 
-import com.oxygenxml.git.CustomAuthenticator;
+import com.oxygenxml.git.auth.CustomAuthenticator;
 import com.oxygenxml.git.auth.SSHUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;

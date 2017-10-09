@@ -8,12 +8,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.Authenticator;
-import java.net.InetAddress;
-import java.net.PasswordAuthentication;
-import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +18,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.git.auth.CustomAuthenticator;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -40,7 +35,6 @@ import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
