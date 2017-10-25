@@ -879,13 +879,17 @@ public class GitAccess {
 	 */
 	public InputStream getInputStream(ObjectId commit)
 			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
-		ObjectLoader loader = git.getRepository().open(commit);
-		if (loader == null) {
-			File file = File.createTempFile("test", "poc");
-			InputStream input = new FileInputStream(file);
-			return input;
-		}
-		return loader.openStream();
+		InputStream toReturn = null;
+		if (commit != null) {
+			ObjectLoader loader = git.getRepository().open(commit);
+			if (loader == null) {
+				File file = File.createTempFile("test", "poc");
+				toReturn = new FileInputStream(file);
+			} else {
+				toReturn = loader.openStream();
+			}
+		} 
+		return toReturn;
 	}
 
 	/**
