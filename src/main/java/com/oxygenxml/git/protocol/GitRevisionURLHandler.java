@@ -12,14 +12,11 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
 
-import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
 
 /**
@@ -40,8 +37,6 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 */
 	public static final String GIT_PROTOCOL = "git";
 	
-	private static String repositoryPath;
-
 	/**
 	 * Connection class for XML files in archives.
 	 */
@@ -73,54 +68,47 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		protected GitRevisionConnection(URL url) throws IOException {
 			super(url);
 			setDoOutput(true);
-			try {
-				GitAccess gitAccess = GitAccess.getInstance();
-				String host = getHost(url);
-				if (GitFile.MINE.equals(host)) {
-					fileObject = gitAccess.getCommit(Commit.MINE, path);
-					currentHost = GitFile.MINE;
-				} else if (GitFile.LAST_COMMIT.equals(host)) {
-					fileObject = gitAccess.getCommit(Commit.LOCAL, path);
-					currentHost = GitFile.LAST_COMMIT;
-				} else if (GitFile.THEIRS.equals(host)) {
-					fileObject = gitAccess.getCommit(Commit.THEIRS, path);
-					currentHost = GitFile.THEIRS;
-				} else if (GitFile.BASE.equals(host)) {
-					fileObject = gitAccess.getCommit(Commit.BASE, path);
-					currentHost = GitFile.BASE;
-				} else if (GitFile.CURRENT_SUBMODULE.equals(host)) {
-					fileObject = gitAccess.submoduleCompare(path, false);
-					currentHost = GitFile.CURRENT_SUBMODULE;
-				} else if (GitFile.PREVIOUSLY_SUBMODULE.equals(host)) {
-					fileObject = gitAccess.submoduleCompare(path, true);
-					currentHost = GitFile.PREVIOUSLY_SUBMODULE;
-				} else {
-					throw new Exception("Bad syntax: " + path);
-				}
-			} catch (Throwable t) {
-				if (logger.isDebugEnabled()) {
-				  logger.debug(t, t);
-				}
-			}
+				
+			decode(url);
 		}
 
 		/**
-		 * Retrieves the host from the given URL
+		 * Extracts the Git identifiers from the URL.
 		 * 
 		 * @param url
 		 *          - URL to get the host
 		 * @return the URL host
 		 */
-		private String getHost(URL url) {
+		private void decode(URL url) throws IOException {
 			path = url.getPath();
 			if (path.startsWith("/")) {
 				path = path.substring(1);
 			}
-			String host = url.getHost();
-			if(host.equals("CurrentSubmodule") || host.equals("PreviousSubmodule")){
+			currentHost = url.getHost();
+			if(currentHost.equals("CurrentSubmodule") || currentHost.equals("PreviousSubmodule")) {
 				path = path.replace(".txt", "");
 			}
-			return host;
+			
+			GitAccess gitAccess = GitAccess.getInstance();
+			if (VersionIdentifier.MINE.equals(currentHost)) {
+				fileObject = gitAccess.getCommit(Commit.MINE, path);
+			} else if (VersionIdentifier.LAST_COMMIT.equals(currentHost)) {
+				fileObject = gitAccess.getCommit(Commit.LOCAL, path);
+			} else if (VersionIdentifier.THEIRS.equals(currentHost)) {
+				fileObject = gitAccess.getCommit(Commit.THEIRS, path);
+			} else if (VersionIdentifier.BASE.equals(currentHost)) {
+				fileObject = gitAccess.getCommit(Commit.BASE, path);
+			} else if (VersionIdentifier.CURRENT_SUBMODULE.equals(currentHost)) {
+				fileObject = gitAccess.submoduleCompare(path, false);
+			} else if (VersionIdentifier.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
+				fileObject = gitAccess.submoduleCompare(path, true);
+			} else {
+				throw new IOException("Not able to extract GIT data from: " + getURL());
+			}
+			
+			if (fileObject == null) {
+				throw new IOException("Unable to obtain commit ID for: " + getURL());
+			}
 		}
 
 		/**
@@ -129,7 +117,8 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the input stream
 		 */
 		public InputStream getInputStream() throws IOException {
-			if (GitFile.CURRENT_SUBMODULE.equals(currentHost) || GitFile.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
+			if (VersionIdentifier.CURRENT_SUBMODULE.equals(currentHost) 
+					|| VersionIdentifier.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
 				String commit = "Subproject commit " + fileObject.getName();
 				File temp = File.createTempFile("submodule", ".txt");
 				PrintWriter printWriter = new PrintWriter(temp);
@@ -139,6 +128,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				//return IOUtils.toInputStream(commit, "UTF-8");
 				//return new ByteArrayInputStream(commit.getBytes(StandardCharsets.UTF_8));
 			}
+			
 			GitAccess gitAccess = GitAccess.getInstance();
 			InputStream inputStream = gitAccess.getInputStream(fileObject);
 			gitAccess.setRepository(OptionsManager.getInstance().getSelectedRepository());
@@ -151,7 +141,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the output stream
 		 */
 		public OutputStream getOutputStream() throws IOException {
-			if (GitFile.MINE.equals(currentHost)) {
+			if (VersionIdentifier.MINE.equals(currentHost)) {
 				URL fileContent = FileHelper.getFileURL(path);
 				return fileContent.openConnection().getOutputStream();
 			}
@@ -195,47 +185,19 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	/**
 	 * Constructs an URL for the diff tool
 	 * 
-	 * @param gitFile
-	 *          - what file is used (Local, Last Commit, Base, Remote)
-	 * @param fileLocation
-	 *          - the file location relative to the repository
+	 * @param locationHint A constant from {@link GitFile}
+	 * @param fileLocation The file location relative to the repository
 	 * @return the URL of the form git://gitFile/fileLocation
-	 * @throws MalformedURLException
+	 * 
+	 * @throws MalformedURLException Unnable to build the URL.
 	 */
-	public static URL buildURL(String gitFile, String fileLocation) throws MalformedURLException {
-		try {
-			repositoryPath = GitAccess.getInstance().getRepository().getWorkTree().getAbsolutePath();
-		} catch (NoWorkTreeException e) {
-			if (logger.isDebugEnabled()) {
-			  logger.debug(e, e);
-			}
-		} catch (NoRepositorySelected e) {
-			if (logger.isDebugEnabled()) {
-			  logger.debug(e, e);
-			}
+	public static URL encodeURL(String locationHint, String fileLocation) throws MalformedURLException {
+		URL url = new URL ("git://" + locationHint + "/" + fileLocation);
+		if(locationHint.equals(VersionIdentifier.CURRENT_SUBMODULE) || locationHint.equals(VersionIdentifier.PREVIOUSLY_SUBMODULE)) {
+			// Add an extension to mimic a file. The content of this file will be the commit ID linked with the SUBMODULE.
+			url = new URL("git://" + locationHint + "/" + fileLocation +".txt");
 		}
-		
-		URL url = new URL ("git://" + gitFile + "/" + fileLocation);
-		if(gitFile.equals(GitFile.CURRENT_SUBMODULE) || gitFile.equals(GitFile.PREVIOUSLY_SUBMODULE)){
-			url = new URL("git://" + gitFile + "/" + fileLocation +".txt");
-		}
-		/*if (gitFile.equals(GitFile.LOCAL)) {
-			url = new URL("git://Local/" + fileLocation);
-		} else if (gitFile.equals(GitFile.REMOTE)) {
-			url = new URL("git://Remote/" + fileLocation);
-		} else if (gitFile.equals(GitFile.BASE)) {
-			url = new URL("git://Base/" + fileLocation);
-		} else if (gitFile.equals(GitFile.LAST_COMMIT)) {
-			url = new URL("git://LastCommit/" + fileLocation);
-		} else if (gitFile.equals(GitFile.CURRENT_SUBMODULE)) {
-			url = new URL("git://CurrentSubmodule/" + fileLocation);
-		} else if (gitFile.equals(GitFile.PREVIOUSLY_SUBMODULE)) {
-			url = new URL("git://PreviousSubmodule/" + fileLocation);
-		} else {
-			url = new URL("");
-		}*/
 
 		return url;
 	}
-
 }

@@ -13,14 +13,10 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.CorruptObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 
-import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.protocol.GitFile;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
+import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -101,8 +97,8 @@ public class DiffPresenter {
 	private void submoduleDiff() {
 		GitAccess.getInstance().submoduleCompare(file.getFileLocation(), true);
 		try {
-			URL currentSubmoduleCommit = GitRevisionURLHandler.buildURL(GitFile.CURRENT_SUBMODULE, file.getFileLocation());
-			URL previouslySubmoduleCommit = GitRevisionURLHandler.buildURL(GitFile.PREVIOUSLY_SUBMODULE,
+			URL currentSubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.CURRENT_SUBMODULE, file.getFileLocation());
+			URL previouslySubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.PREVIOUSLY_SUBMODULE,
 					file.getFileLocation());
 			((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 					.openDiffFilesApplication(currentSubmoduleCommit, previouslySubmoduleCommit);
@@ -129,7 +125,7 @@ public class DiffPresenter {
 		URL lastCommitedFileURL = null;
 
 		try {
-			lastCommitedFileURL = GitRevisionURLHandler.buildURL(GitFile.LAST_COMMIT, file.getFileLocation());
+			lastCommitedFileURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.LAST_COMMIT, file.getFileLocation());
 		} catch (MalformedURLException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
@@ -147,9 +143,9 @@ public class DiffPresenter {
 	private void conflictDiff() {
 		try {
 			// builds the URL for the files
-			URL local = GitRevisionURLHandler.buildURL(GitFile.MINE, file.getFileLocation());
-			URL remote = GitRevisionURLHandler.buildURL(GitFile.THEIRS, file.getFileLocation());
-			URL base = GitRevisionURLHandler.buildURL(GitFile.BASE, file.getFileLocation());
+			URL local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());
+			URL remote = GitRevisionURLHandler.encodeURL(VersionIdentifier.THEIRS, file.getFileLocation());
+			URL base = GitRevisionURLHandler.encodeURL(VersionIdentifier.BASE, file.getFileLocation());
 
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
 			final File localCopy = new File(selectedRepository, file.getFileLocation());
