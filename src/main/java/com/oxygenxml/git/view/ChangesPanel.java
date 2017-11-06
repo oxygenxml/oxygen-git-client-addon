@@ -756,26 +756,29 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
+			
+			if (value != null && value instanceof String) {
+				String toRender = (String) value;
+				String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
+				if (!fileName.equals(toRender)) {
+					toRender = toRender.replace("/" + fileName, "");
+					toRender = fileName + " - " + toRender;
+				}
+				JTextField label = new JTextField(toRender);
+				label.setBorder(null);
 
-			String toRender = (String) value;
-			String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
-			if (!fileName.equals(toRender)) {
-				toRender = toRender.replace("/" + fileName, "");
-				toRender = fileName + " - " + toRender;
-			}
-			JTextField label = new JTextField(toRender);
-			label.setBorder(null);
+				if (isSelected) {
+					label.setForeground(table.getSelectionForeground());
+					label.setBackground(table.getSelectionBackground());
 
-			if (isSelected) {
-				label.setForeground(table.getSelectionForeground());
-				label.setBackground(table.getSelectionBackground());
-
+				} else {
+					label.setForeground(table.getForeground());
+				}
+				label.setToolTipText(toRender);
+				return label;
 			} else {
-				label.setForeground(table.getForeground());
-
+				return new JTextField();
 			}
-			label.setToolTipText(toRender);
-			return label;
 		}
 
 	}
