@@ -8,15 +8,19 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,6 +28,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
@@ -275,6 +280,32 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		addChangeAllButtonListener();
 		addTreeMouseListener();
 		addTreeExpandListener();
+		
+		// Compare file with last commit when enter is pressed.
+		tree.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					TreePath pathForRow = null;
+					StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+					int[] selectionRows = tree.getSelectionRows();
+					if (selectionRows.length >= 0) {
+						pathForRow = tree.getPathForRow(selectionRows[selectionRows.length - 1]);
+					}
+					if (pathForRow != null) {
+						String stringPath = TreeFormatter.getStringPath(pathForRow);
+						MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+						if (model != null && node != null) {
+							if (model.isLeaf(node) && !model.getRoot().equals(node)) {
+								FileStatus file = model.getFileByPath(stringPath);
+								DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+								diff.showDiff();
+							}
+						}
+					}
+				}
+			}
+		});
 
 		if (!forStaging) {
 			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
@@ -620,11 +651,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					filesTable.clearSelection();
 				} else {
 					if (column == 1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-						StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-						int convertedRow = filesTable.convertRowIndexToModel(row);
-						FileStatus file = model.getUnstageFile(convertedRow);
-						DiffPresenter diff = new DiffPresenter(file, stageController, translator);
-						diff.showDiff();
+						openFileInCompareEditor(row);
 					}
 					if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && row != -1) {
 						boolean inSelection = false;
@@ -662,13 +689,37 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				toggleSelectedButton();
 			}
 		});
-
+		
+		// Compare files on enter.
+		filesTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
+		filesTable.getActionMap().put("Enter", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				int row = filesTable.convertRowIndexToModel(filesTable.getSelectedRow());
+				if (row != -1) {
+					openFileInCompareEditor(row);
+				}
+			}
+		});
+		
 		scrollPane = new JScrollPane(filesTable);
 		scrollPane.add(tree);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		filesTable.setFillsViewportHeight(true);
 		this.add(scrollPane, gbc);
+	}
+	
+	/**
+	 * Open an instance of diff presenter and compares current file with the last commit.
+	 * 
+	 * @param row Selection index of file in the current table.
+	 */
+	private void openFileInCompareEditor(int row) {
+		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+		int convertedRow = filesTable.convertRowIndexToModel(row);
+		FileStatus file = model.getUnstageFile(convertedRow);
+		DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+		diff.showDiff();
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
@@ -733,10 +784,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 						icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
 						toolTip = translator.getTraslation(Tags.SUBMODULE_ICON_TOOLTIP);
 					}
-
 				}
 			}
-
 			label.setIcon(icon);
 			label.setToolTipText(toolTip);
 
@@ -756,7 +805,6 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
-			
 			if (value != null && value instanceof String) {
 				String toRender = (String) value;
 				String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
@@ -770,7 +818,6 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				if (isSelected) {
 					label.setForeground(table.getSelectionForeground());
 					label.setBackground(table.getSelectionBackground());
-
 				} else {
 					label.setForeground(table.getForeground());
 				}
@@ -780,7 +827,6 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				return new JTextField();
 			}
 		}
-
 	}
 
 	/**
@@ -815,7 +861,6 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 			iconLabel.setToolTipText(toolTip);
 			return iconLabel;
 		}
-
 	}
 
 }
