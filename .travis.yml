@@ -29,12 +29,4 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-  provider: nightly
-  api_key: ${MY_GH_TOKEN_OXYGEN}
-  file:
-    - target/git.support-1.0.0-plugin.jar
-    - target/addon.xml
-  skip_cleanup: true
-  on:
-    tags: false
     
