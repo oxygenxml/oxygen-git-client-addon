@@ -143,7 +143,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setBorder(null);
 
-		toolbarPanel.registerSubject(workingCopySelectionPanel);
+		toolbarPanel.install(workingCopySelectionPanel);
 
 		// adds the panels to the staging panel using gird bag constraints
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -378,12 +378,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		subjects.add(subject);
 
 		subject.addObserver(this);
-	}
-
-	public void unregisterSubject(Subject<PushPullEvent> subject) {
-		subjects.remove(subject);
-
-		subject.removeObserver(this);
 	}
 
 	public boolean isInFocus() {

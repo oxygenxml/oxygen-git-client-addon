@@ -119,9 +119,10 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 	 */
 	private GitRefreshSupport refresh;
 
-	private List<Subject<ChangeEvent>> subjects = new ArrayList<Subject<ChangeEvent>>();
-
-	public ToolbarPanel(PushPullController pushPullController, Translator translator, GitRefreshSupport refresh) {
+	public ToolbarPanel(
+	    PushPullController pushPullController, 
+	    Translator translator, 
+	    GitRefreshSupport refresh) {
 		this.pushPullController = pushPullController;
 		this.statusInformationLabel = new JLabel();
 		this.translator = translator;
@@ -422,15 +423,21 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 		}
 	}
 
-	public void registerSubject(Subject<ChangeEvent> subject) {
-		subjects.add(subject);
-
+	/**
+	 * Install required listeners on the given target.
+	 * 
+	 * @param subject Target that notifies observers.
+	 */
+	public void install(Subject<ChangeEvent> subject) {
 		subject.addObserver(this);
 	}
 
-	public void unregisterSubject(Subject<ChangeEvent> subject) {
-		subjects.remove(subject);
-
+	/**
+   * Uninstall required listeners on the given target.
+   * 
+   * @param subject Target that notifies observers.
+   */
+	public void uninstall(Subject<ChangeEvent> subject) {
 		subject.removeObserver(this);
 	}
 }

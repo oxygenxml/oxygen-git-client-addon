@@ -88,9 +88,16 @@ import com.oxygenxml.git.view.dialog.ProgressDialog;
  * Implements some basic git functionality like commit, push, pull, retrieve
  * File status(staged, unstaged)
  * 
- * TODO Beni Add monitors and progress.
- * 
  * @author Beniamin Savu
+ * 
+ * TODO We need a number of notifications:
+ * 
+ * 1. repositoryChanged(String newRepos, boolean isSubmodule) fired by setRepository() and setSubmodule(), createNewRepository()
+ *   - all places that change the git variable.
+ * 2. push/pull
+ * 3. commit
+ * 4. branchChanged
+ * 5. fileStateChanged (the stuff from the observer)
  *
  */
 public class GitAccess {

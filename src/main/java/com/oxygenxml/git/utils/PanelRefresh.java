@@ -105,6 +105,9 @@ public class PanelRefresh implements GitRefreshSupport {
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(false);
 					stagingPanel.requestFocus();
 				} else if (FileHelper.isGitRepository(path) && !path.equals(workingCopyCurrentPath)) {
+				  // TODO THis can happen when the submodule is chosen from the toolbar action. A previous
+				  // WC is loaded.
+				  
 					OptionsManager.getInstance().addRepository(path);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(path);
 					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);

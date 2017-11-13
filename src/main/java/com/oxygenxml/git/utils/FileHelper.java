@@ -88,18 +88,32 @@ public class FileHelper {
 		return false;
 	}
 
+	/**
+	 * Checks is the given path represents a submodule. A submodule contains a file named .git that 
+	 * contains the path to the git dir:
+	 * <pre>
+	 * gitdir: ../.git/modules/js
+	 * </pre>
+	 * 
+	 * @param path The path to check.
+	 * @return
+	 */
 	public static boolean isGitSubmodule(String path) {
 		File rootFolder = new File(path);
 		File[] listOfFiles = rootFolder.listFiles();
 
+		boolean isSubmodule = false;
 		if (listOfFiles != null) {
 			for (int i = 0; i < listOfFiles.length; i++) {
-				if (!listOfFiles[i].isDirectory() && ".git".equals(listOfFiles[i].getName())) {
-					return true;
+				File child = listOfFiles[i];
+        if (!child.isDirectory() 
+				    && ".git".equals(child.getName())) {
+					isSubmodule = true;
 				}
 			}
 		}
-		return false;
+		
+		return isSubmodule;
 	}
 
 	public static String findXPR(String projectViewPath) {

@@ -153,6 +153,9 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 					}
 					
 					if (FileHelper.isGitSubmodule(path)) {
+					  // TODO This selection event probably comes from using the Submodules action on the toolbar.
+					  // That action loads a different repository and directly updates the WCPanel. That would be
+					  // an explanation on why we have a return afterwards (the GITAccess is already initialized).
 						observer.stateChanged(null);
 						return;
 					}
