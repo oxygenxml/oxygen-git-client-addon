@@ -39,3 +39,24 @@ Push/Pull
 To push your local repository changes to the remote one you must click on the *Push* button from the view's toolbar. To bring the changes from the remote repository into your local one you must click on the *Pull* button from the same toolbar.
 To push or pull you need to acces the remote, and for that you need to provide some credentials. If no credentials are found , the addon will ask for an account and password. If you have a two-factor authentication for: 
 -GitHub: You must go to your *Account Settings* -> *Personal access tokens* -> *Generate new token*. After that you have to use the generated token as the password back in Oxygen when you are asked to enter your credentials
+
+
+File conflicts solving flow
+===========================
+How to solve github conflicts with oXygen GitHub plugin
+
+You edit your file and commit it in the local repository. After you try to push it to the public repository a warning informing you about not being up-to-date with the repository will appear.
+
+Steps to fix this:
+
+Pull the data from the repository using the "Pull" button.
+
+In the "Unstaged Files" view can select each conflicted file and open it the compare editor. Choose what changes you want to keep/discard and save the document.
+
+After you close the compare editor the file will be staged automatically and moved to the "Staged Files" view.
+
+When all conflicts are resolved and no more files are left in the "Unstaged Files" view, the changes can be commited.
+
+Enter a message and commit. You will a new "Push" available
+
+Push the changes to public repository.
