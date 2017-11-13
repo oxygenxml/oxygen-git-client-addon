@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -16,11 +15,11 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
-import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -33,7 +32,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.util.editorvars.EditorVariables;
 
-public class PanelRefresh implements Refresh {
+public class PanelRefresh implements GitRefreshSupport {
 
 	/**
 	 * Logger for logging.
@@ -181,12 +180,17 @@ public class PanelRefresh implements Refresh {
 		new SwingWorker<Integer, Integer>() {
 			protected Integer doInBackground() throws Exception {
 				if (command == Command.PULL) {
+				  // Connect to the remote.
+				  String status = "available";
+				  try { 
 					GitAccess.getInstance().fetch();
-					if (GitAccess.getInstance().isUnavailable()) {
-						stagingPanel.getCommitPanel().setStatus("unavailable");
-					} else {
-						stagingPanel.getCommitPanel().setStatus("availbale");
-					}
+				  } catch (RepositoryUnavailableException e) {
+				    status = "unavailable";
+				  } catch (Exception e) {
+				    // Ignore other causes why the fetch might fail.
+				  }
+				  stagingPanel.getCommitPanel().setStatus(status);
+					
 					return GitAccess.getInstance().getPullsBehind();
 				} else {
 					return GitAccess.getInstance().getPushesAhead();
@@ -274,8 +278,7 @@ public class PanelRefresh implements Refresh {
 		}.execute();
 	}
 
-	public void setPanel(JComponent stagingPanel) {
-		this.stagingPanel = (StagingPanel) stagingPanel;
+	public void setPanel(StagingPanel stagingPanel) {
+		this.stagingPanel = stagingPanel;
 	}
-
 }

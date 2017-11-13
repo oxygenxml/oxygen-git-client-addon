@@ -19,30 +19,21 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import org.apache.http.impl.auth.UnsupportedDigestAlgorithmException;
-
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.Refresh;
-import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.dialog.LoginDialog;
-import com.oxygenxml.git.view.dialog.PassphraseDialog;
+import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
-import com.oxygenxml.git.view.event.StageState;
 import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -99,11 +90,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
 	 * Main panel refresh
 	 */
-	private Refresh refresh;
+	private GitRefreshSupport refresh;
 
 	private StageController stageController;
 
-	public StagingPanel(Translator translator, Refresh refresh, StageController stageController) {
+	public StagingPanel(Translator translator, GitRefreshSupport refresh, StageController stageController) {
 		this.translator = translator;
 		this.refresh = refresh;
 		this.stageController = stageController;

@@ -30,7 +30,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.Refresh;
+import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.dialog.BranchSelectDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
@@ -117,11 +117,11 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 	/**
 	 * Main panel refresh
 	 */
-	private Refresh refresh;
+	private GitRefreshSupport refresh;
 
 	private List<Subject<ChangeEvent>> subjects = new ArrayList<Subject<ChangeEvent>>();
 
-	public ToolbarPanel(PushPullController pushPullController, Translator translator, Refresh refresh) {
+	public ToolbarPanel(PushPullController pushPullController, Translator translator, GitRefreshSupport refresh) {
 		this.pushPullController = pushPullController;
 		this.statusInformationLabel = new JLabel();
 		this.translator = translator;

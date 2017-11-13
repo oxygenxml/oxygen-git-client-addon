@@ -65,7 +65,6 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	private JComboBox<String> previouslyMessages;
 	private JLabel statusLabel;
 	private Observer<PushPullEvent> observer;
-	private volatile int messagesActive = 0;
 	private Translator translator;
 
 	public CommitPanel(GitAccess gitAccess, StageController observer, Translator translator) {
@@ -297,45 +296,22 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		observer = null;
 	}
 
+	/**
+	 * Update status.
+	 * 
+	 * @param message The message to present in the status field.
+	 */
 	public void setStatus(final String message) {
+	  // TODO Create constants for the messages.
 		if ("unavailable".equals(message)) {
 			statusLabel.setText(translator.getTraslation(Tags.CANNOT_REACH_HOST));
 			statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
-		} else if ("availbale".equals(message)) {
-			synchronized (this) {
-				if (messagesActive == 0) {
-					statusLabel.setText(null);
-					statusLabel.setIcon(null);
-				}
-			}
+		} else if ("available".equals(message)) {
+		  statusLabel.setText(null);
+		  statusLabel.setIcon(null);
 		} else {
-			new Thread(new Runnable() {
-
-				public void run() {
-					try {
-						synchronized (this) {
-							messagesActive++;
-							statusLabel.setIcon(null);
-							statusLabel.setText(message);
-						}
-
-						TimeUnit.SECONDS.sleep(3);
-						synchronized (this) {
-							messagesActive--;
-							if (messagesActive == 0) {
-								if (gitAccess.isUnavailable()) {
-									statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
-									statusLabel.setText(translator.getTraslation(Tags.CANNOT_REACH_HOST));
-								} else {
-									statusLabel.setText("");
-								}
-							}
-						}
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}).start();
+		  statusLabel.setIcon(null);
+      statusLabel.setText(message);
 		}
 	}
 

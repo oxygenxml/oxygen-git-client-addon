@@ -105,12 +105,6 @@ public class GitAccess {
 
 	private Translator translator = new TranslatorExtensionImpl();
 
-	private boolean unavailable = false;
-
-	private boolean privateRepository = false;
-
-	private boolean isSSHPassphrase;
-
 	private GitAccess() {
 
 	}
@@ -1025,9 +1019,11 @@ public class GitAccess {
 	}
 
 	/**
-	 * Brings all the commits to the local repository but does not merge them
+	 * Brings all the commits to the local repository but does not merge them.
+	 * 
+	 * @throws PrivateRepositoryException 
 	 */
-	public void fetch() {
+	public void fetch() throws SSHPassphraseRequiredException, PrivateRepositoryException, RepositoryUnavailableException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Begin fetch");
 		}
@@ -1039,9 +1035,6 @@ public class GitAccess {
 		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 		SSHUserCredentialsProvider credentialsProvider = new SSHUserCredentialsProvider(username, password, sshPassphrase);
 		try {
-			unavailable = false;
-			privateRepository = false;
-			isSSHPassphrase = false;
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
 			if (sections.contains("remote")) {
@@ -1059,14 +1052,13 @@ public class GitAccess {
 
 			if (e.getMessage().contains("Authentication is required but no CredentialsProvider has been registered")
 					|| e.getMessage().contains("not authorized")) {
-				privateRepository = true;
-				unavailable = false;
+				throw new PrivateRepositoryException(e);
 			} else if (e.getMessage().contains("Auth fail")
 			    // A SSH pass phase was requested.
 			    && credentialsProvider.isPassphaseRequested()) {
-				isSSHPassphrase = true;
+			  throw new SSHPassphraseRequiredException(e);
 			} else {
-				unavailable = true;
+			  throw new RepositoryUnavailableException(e);
 			}
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
@@ -1201,15 +1193,6 @@ public class GitAccess {
 	}
 
 	/**
-	 * Shows if the remote repository is available or not
-	 * 
-	 * @return true if the repository is up, and false if the repository is down
-	 */
-	public boolean isUnavailable() {
-		return unavailable;
-	}
-
-	/**
 	 * Return the submodule head commit to the previously one
 	 */
 	public void discardSubmodule() {
@@ -1286,13 +1269,4 @@ public class GitAccess {
 		}
 		return null;
 	}
-
-	public boolean isPrivateRepository() {
-		return privateRepository;
-	}
-
-	public boolean isSShPassphrase() {
-		return isSSHPassphrase;
-	}
-
 }

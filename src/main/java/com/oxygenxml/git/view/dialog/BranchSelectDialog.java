@@ -14,18 +14,14 @@ import javax.swing.JLabel;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
-import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.Ref;
 
-import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.Refresh;
+import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
@@ -56,14 +52,14 @@ public class BranchSelectDialog extends OKCancelDialog {
 	/**
 	 * Main panel refresh
 	 */
-	private Refresh refresh;
+	private GitRefreshSupport refresh;
 
 	/**
 	 * The translator for the messages that are displayed in this dialog
 	 */
 	private Translator translator;
 
-	public BranchSelectDialog(JFrame parentFrame, String title, boolean modal, Refresh refresh, Translator translator) {
+	public BranchSelectDialog(JFrame parentFrame, String title, boolean modal, GitRefreshSupport refresh, Translator translator) {
 		super(parentFrame, title, modal);
 		this.refresh = refresh;
 		this.translator = translator;

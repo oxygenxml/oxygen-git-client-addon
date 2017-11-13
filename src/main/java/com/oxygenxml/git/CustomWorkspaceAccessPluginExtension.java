@@ -18,12 +18,6 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
-import ro.sync.exml.workspace.api.standalone.ViewInfo;
-import ro.sync.ui.Icons;
-
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -34,11 +28,17 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
+
+import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
+import ro.sync.exml.workspace.api.standalone.ViewInfo;
+import ro.sync.ui.Icons;
 
 /**
  * Plugin extension - workspace access extension.
@@ -68,7 +68,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 			Translator translator = new TranslatorExtensionImpl();
 			StageController stageController = new StageController(GitAccess.getInstance());
-			final Refresh refresh = new PanelRefresh(translator);
+			final GitRefreshSupport refresh = new PanelRefresh(translator);
 			final StagingPanel stagingPanel = new StagingPanel(translator, refresh, stageController);
 			refresh.setPanel(stagingPanel);
 
@@ -218,6 +218,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 
 			public void actionPerformed(ActionEvent e) {
 				pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, true);
+				// TODO Alex This INIT can be done in the view itself.
 				boolean filesStaged = false;
 				File[] selectedFiles = ProjectManagerEditor.getSelectedFiles(pluginWorkspaceAccess);
 				File repository = new File(selectedFiles[0].getAbsolutePath());

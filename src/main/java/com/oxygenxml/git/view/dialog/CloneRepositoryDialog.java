@@ -35,7 +35,7 @@ import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.Refresh;
+import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -136,10 +136,10 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	/**
 	 * Main panel refresh
 	 */
-	private Refresh refresh;
+	private GitRefreshSupport refresh;
 
 	public CloneRepositoryDialog(JFrame parentFrame, String title, boolean modal, Translator translator,
-			Refresh refresh) {
+	    GitRefreshSupport refresh) {
 		super(parentFrame, title, modal);
 		this.translator = translator;
 		this.refresh = refresh;

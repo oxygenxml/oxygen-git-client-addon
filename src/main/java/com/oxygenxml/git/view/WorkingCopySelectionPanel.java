@@ -33,6 +33,9 @@ import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.PrivateRepositoryException;
+import com.oxygenxml.git.service.RepositoryUnavailableException;
+import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -185,46 +188,57 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 						// selected working copy is from the base. It is on thread because
 						// the fetch command takes a longer time
 						new Thread(new Runnable() {
+						  
+						  private void fetch(boolean firstRun) {
+						    try {
+                  gitAccess.fetch();
+						    } catch (SSHPassphraseRequiredException e) {
+						      String message = null;
+						      // TODO i18n
+						      if (firstRun) {
+						        message = "Please enter your SSH passphrase";
+						      } else {
+						        message = "The previous passphrase is invalid. Please enter your SSH passphrase";
+						      }
+						      
+						      String passphrase = new PassphraseDialog(message).getPassphrase();
+						      if(passphrase != null){
+						        // A new pass phase was given. Try again.
+						        fetch(false);
+						      }
+						    } catch (PrivateRepositoryException e) {
+						      String loginMessage = null;
+						      if (firstRun) {
+						        loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+						      } else {
+						        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
+						        loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+                        + gitCredentials.getUsername();
+						      }
+						      
+						      UserCredentials userCredentials = new LoginDialog(
+                      (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+                      translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), 
+                      true, 
+                      gitAccess.getHostName(), 
+                      loginMessage,
+                      translator).getUserCredentials();
+                  if (userCredentials != null) {
+                    // New credentials were specified. Try again.
+                    fetch(false);
+                  }
+                } catch (RepositoryUnavailableException e) {
+                  // Nothing we can do about it...
+                }
+						  }
 
 							public void run() {
-								gitAccess.fetch();
-								String loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
-								checkForPrivateRepository(loginMessage);
+							  fetch(true);
 								
-								String message = "Please enter your SSH passphrase";
-								checkForSsh(message);
+							  // Update.
 								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
 								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
 								parent.getToolbarPanel().updateInformationLabel();
-							}
-							
-							private void checkForSsh(String message) {
-								while(gitAccess.isSShPassphrase()){
-									String passphrase = new PassphraseDialog(message).getPassphrase();
-									if(passphrase != null){
-										gitAccess.fetch();
-									} else {
-										break;
-									}
-									message = "The previous passphrase is invalid. Please enter your SSH passphrase";
-								}
-								
-							}
-
-							private void checkForPrivateRepository(String loginMessage){
-								while (gitAccess.isPrivateRepository()) {
-									UserCredentials userCredentials = new LoginDialog(
-											(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-											translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage,
-											translator).getUserCredentials();
-									if (userCredentials != null) {
-										gitAccess.fetch();
-									} else {
-										break;
-									}
-									loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-											+ userCredentials.getUsername();
-								}
 							}
 						}).start();
 						observer.stateChanged(null);

@@ -142,7 +142,7 @@ public class GitAccessPullTest {
 	}
 	
 	@Test
-	public void testPullsBehind() throws RepositoryNotFoundException, IOException, InvalidRemoteException, TransportException, GitAPIException{
+	public void testPullsBehind() throws Exception {
 		pushOneFileToRemote();
 		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		gitAccess.fetch();
