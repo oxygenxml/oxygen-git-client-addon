@@ -23,7 +23,6 @@ import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.CustomAuthenticator;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.BranchInfo;

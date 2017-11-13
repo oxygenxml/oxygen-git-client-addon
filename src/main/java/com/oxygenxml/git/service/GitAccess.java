@@ -1,5 +1,6 @@
 package com.oxygenxml.git.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.http.util.ByteArrayBuffer;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
@@ -879,13 +881,22 @@ public class GitAccess {
 	 */
 	public InputStream getInputStream(ObjectId commit)
 			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
-		ObjectLoader loader = git.getRepository().open(commit);
-		if (loader == null) {
-			File file = File.createTempFile("test", "poc");
-			InputStream input = new FileInputStream(file);
-			return input;
+		InputStream toReturn = null;
+		if (commit != null) {
+			ObjectLoader loader = git.getRepository().open(commit);
+			if (loader == null) {
+				// TODO Can this be null???? 
+				// org.eclipse.jgit.lib.Repository.open(AnyObjectId) is annotated that it never returns null. 
+				toReturn = new ByteArrayInputStream(new byte[0]);
+//				File file = File.createTempFile("test", "poc");
+//				toReturn = new FileInputStream(file);
+			} else {
+				toReturn = loader.openStream();
+			}
+		} else {
+			throw new IOException("The commit ID can't be null");
 		}
-		return loader.openStream();
+		return toReturn;
 	}
 
 	/**
