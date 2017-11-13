@@ -18,7 +18,13 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.auth.CustomAuthenticator;
+import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
+import ro.sync.exml.workspace.api.standalone.ViewInfo;
+import ro.sync.ui.Icons;
+
+import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -33,12 +39,6 @@ import com.oxygenxml.git.utils.Refresh;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
-
-import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
-import ro.sync.exml.workspace.api.standalone.ViewInfo;
-import ro.sync.ui.Icons;
 
 /**
  * Plugin extension - workspace access extension.
@@ -64,7 +64,7 @@ public class CustomWorkspaceAccessPluginExtension implements WorkspaceAccessPlug
 		try {
 			//PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
 
-			CustomAuthenticator.install();
+		  AuthenticationInterceptor.install();
 
 			Translator translator = new TranslatorExtensionImpl();
 			StageController stageController = new StageController(GitAccess.getInstance());

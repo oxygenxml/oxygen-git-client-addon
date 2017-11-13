@@ -11,25 +11,25 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.service.GitAccess;
-
 /**
  * Custom authenticator used when accessing git related hosts, also to get over
  * the Oxygen's own authenticator. In other words, when accessing git related
- * hosts this overrides the Oxigen's authenticator
+ * hosts this overrides the Oxigen's authenticator.
+ * 
+ * It is still thread safe since {@link Authenticator#requestPasswordAuthentication(InetAddress, int, String, String, String)}
+ * uses a synchronized block when getting the data.
  * 
  * @author Beniamin savu
  *
  */
-public class CustomAuthenticator {
+public class AuthenticationInterceptor {
 
 	/**
 	 * 
 	 * The custom Authenticator. Replaces the Oxygen's Authenticator only for git
-	 * related hosts otherwise it delegates back to the Oxygen's Authenticator
+	 * related hosts otherwise it delegates back to the Oxygen's Authenticator.
 	 * 
 	 * @author Beniamin Savu
-	 *
 	 */
 	private static final class MyAuth extends Authenticator {
 
@@ -45,8 +45,19 @@ public class CustomAuthenticator {
 		private final Field requestingAuthType;
 		private final Authenticator oldAuth;
 
-		private Set<String> binded = new HashSet<String>();
+		/**
+		 * The lists of hosts for which to intercept the authentication.
+		 */
+		private Set<String> boundHosts = new HashSet<String>();
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param oldAuth The wrapped authenticator.
+		 * 
+		 * @throws NoSuchFieldException Unable to access wrapped authenticator data.
+		 * @throws SecurityException Unable to access wrapped authenticator data.
+		 */
 		private MyAuth(Authenticator oldAuth) throws NoSuchFieldException, SecurityException {
 			this.oldAuth = oldAuth;
 
@@ -84,7 +95,7 @@ public class CustomAuthenticator {
 				final URL oldRequestingURL = (URL) requestingURL.get(this);
 				final RequestorType oldRequestingAuthType = (RequestorType) requestingAuthType.get(this);
 
-				if (isBinded(getRequestingHost())) {
+				if (isBound(getRequestingHost())) {
 					// we need to return null to let our own authentication dialog
 					// (LoginDialog)
 					// appear for git related hosts. Thus preventing the Oxygen's
@@ -125,9 +136,8 @@ public class CustomAuthenticator {
 		 *          - the host to check
 		 * @return true if the host is a git host and false otherwise
 		 */
-		private boolean isBinded(String requestingHost) {
-
-			return GitAccess.getInstance().getHostName().equals(requestingHost) || binded.contains(requestingHost);
+		private boolean isBound(String requestingHost) {
+			return boundHosts.contains(requestingHost);
 		}
 
 		/**
@@ -137,7 +147,7 @@ public class CustomAuthenticator {
 		 *          - the host to add
 		 */
 		public void bind(String hostName) {
-			binded.add(hostName);
+			boundHosts.add(hostName);
 		}
 
 		/**
@@ -146,21 +156,21 @@ public class CustomAuthenticator {
 		 * @param hostName
 		 */
 		public void unbind(String hostName) {
-			binded.remove(hostName);
+			boundHosts.remove(hostName);
 		}
 	}
 
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(CustomAuthenticator.class);
+	private static Logger logger = Logger.getLogger(AuthenticationInterceptor.class);
 
 	/**
 	 * This is used to check if the authenticator has been set by Oxygen, and if
 	 * this is true, then on the install() method my authenticator will be used
 	 * instead of Oxygen's authenticator
 	 */
-	private static Authenticator previousAuthenticator;
+	private static Authenticator installedAuthenticator;
 
 	/**
 	 * Installs my custom authenticator. Gets the current authenticator by
@@ -176,11 +186,11 @@ public class CustomAuthenticator {
 			declaredField.setAccessible(true);
 			oldAuth[0] = (Authenticator) declaredField.get(null);
 
-			if (oldAuth[0] != previousAuthenticator) {
+			if (oldAuth[0] != installedAuthenticator) {
 
-				previousAuthenticator = new MyAuth(oldAuth[0]);
+				installedAuthenticator = new MyAuth(oldAuth[0]);
 
-				Authenticator.setDefault(previousAuthenticator);
+				Authenticator.setDefault(installedAuthenticator);
 			}
 
 		} catch (Throwable e) {
@@ -199,7 +209,7 @@ public class CustomAuthenticator {
 	public static void bind(String hostName) {
 		install();
 
-		((MyAuth) previousAuthenticator).bind(hostName);
+		((MyAuth) installedAuthenticator).bind(hostName);
 	}
 
 	/**
@@ -210,8 +220,8 @@ public class CustomAuthenticator {
 	 */
 	public static void unbind(String hostName) {
 		try {
-			if (previousAuthenticator != null) {
-				((MyAuth) previousAuthenticator).unbind(hostName);
+			if (installedAuthenticator != null) {
+				((MyAuth) installedAuthenticator).unbind(hostName);
 			}
 		} catch (Throwable e) {
 			if (logger.isDebugEnabled()) {

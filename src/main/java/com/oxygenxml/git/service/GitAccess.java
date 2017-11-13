@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.http.util.ByteArrayBuffer;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
@@ -74,7 +73,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
 
-import com.oxygenxml.git.auth.CustomAuthenticator;
+import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.SSHUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -84,8 +83,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
-
-import de.schlichtherle.io.FileInputStream;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -187,11 +184,18 @@ public class GitAccess {
 	 */
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
 		if (git != null) {
+			// Stop intercepting authentication requests.
+		  AuthenticationInterceptor.unbind(getHostName());
+			
 			git.close();
 		}
 		git = Git.open(new File(path + "/.git"));
 		
+    // Start intercepting authentication requests.
+		AuthenticationInterceptor.bind(getHostName());
+		
 		if (logger.isDebugEnabled()) {
+		  // Debug data for the SSH key load location.
 		  logger.debug("Java env user home: " + System.getProperty("user.home"));
 		  logger.debug("Load repository " + path);
 		  try {
@@ -461,7 +465,7 @@ public class GitAccess {
 		// transportProtocol.
 		// }
 
-		CustomAuthenticator.install();
+	  AuthenticationInterceptor.install();
 		PushResponse response = new PushResponse();
 
 		try {
@@ -526,7 +530,7 @@ public class GitAccess {
 			InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException,
 			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException,
 			RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
-		CustomAuthenticator.install();
+	  AuthenticationInterceptor.install();
 
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
 		if (getConflictingFiles().size() > 0) {
@@ -745,7 +749,7 @@ public class GitAccess {
 	/**
 	 * Gets the host name from the repositoryURL
 	 * 
-	 * @return the host name
+	 * @return The host name. An empty string if not connected. Never <code>null</code>.
 	 */
 	public String getHostName() {
 		if (git != null) {
@@ -1027,7 +1031,7 @@ public class GitAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Begin fetch");
 		}
-		CustomAuthenticator.install();
+		AuthenticationInterceptor.install();
 		
 		UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
 		String username = gitCredentials.getUsername();

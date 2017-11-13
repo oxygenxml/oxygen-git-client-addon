@@ -1,10 +1,8 @@
 package com.oxygenxml.git.view.event;
 
-import java.awt.Component;
 import java.io.IOException;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CanceledException;
@@ -20,8 +18,10 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -35,9 +35,6 @@ import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * 
@@ -62,8 +59,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 */
 	private GitAccess gitAccess;
 
-	volatile boolean commandExecuted = true;
-
 	private Translator translator;
 
 	public PushPullController(GitAccess gitAccess, Translator translator) {
@@ -76,12 +71,17 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * 
 	 * @param loginMessage
 	 * 
-	 * @return the new credentials
+	 * @return the new credentials or <code>null</code> if the user canceled.
 	 */
-	public UserCredentials loadNewCredentials(String loginMessage) {
-		return new LoginDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-				translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, gitAccess.getHostName(), loginMessage, translator)
-						.getUserCredentials();
+	public UserCredentials requestNewCredentials(String loginMessage) {
+		return 
+		    new LoginDialog(
+		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		        translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), 
+		        true, 
+		        gitAccess.getHostName(), 
+		        loginMessage, 
+		        translator).getUserCredentials();
 	}
 
 	/**
@@ -100,16 +100,19 @@ public class PushPullController implements Subject<PushPullEvent> {
 		} else {
 			message = translator.getTraslation(Tags.PULL_IN_PROGRESS);
 		}
+		
+		// Notify push about to start.
+		// TODO This method recursively calls itself. This means we could fire this event multiple times.
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
 		notifyObservers(pushPullEvent);
+		
 		new Thread(new Runnable() {
 
 			public void run() {
 
 				String message = "";
-				try {
-					commandExecuted = true;
-
+				boolean notifyFinish = true;
+        try {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Preapring for push/pull command");
 					}
@@ -119,60 +122,76 @@ public class PushPullController implements Subject<PushPullEvent> {
 						message = pull(userCredentials);
 					}
 				} catch (GitAPIException e) {
-
+				  // Exception handling.
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
 					}
 					if (e instanceof CheckoutConflictException) {
+					  // Notify that there are conflicts that should be resolved in the staging area.
 						new PullWithConflictsDialog(
 								(JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
-								"Pull Status", true, ((CheckoutConflictException) e).getConflictingPaths(), translator,
+								// TODO i18n.
+								"Pull Status", 
+								true, 
+								((CheckoutConflictException) e).getConflictingPaths(), 
+								translator,
 								translator.getTraslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
-						System.out.println(((CheckoutConflictException) e).getConflictingPaths());
-					}
-					if (e.getMessage().contains("not authorized")) {
+						
+						if (logger.isDebugEnabled()) {
+						  logger.info(((CheckoutConflictException) e).getConflictingPaths());
+						}
+					} else if (e.getMessage().contains("not authorized")) {
+					  // Authorization problems.
 						String loginMessage = "";
 						if ("".equals(userCredentials.getUsername())) {
+						  // No credentials were used but they are required.
 							loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
 						} else {
+						  // Invalid credentails.
 							loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
 									+ userCredentials.getUsername();
 						}
-						UserCredentials loadNewCredentials = loadNewCredentials(loginMessage);
+						// Request new credentials.
+						UserCredentials loadNewCredentials = requestNewCredentials(loginMessage);
+						
 						if (loadNewCredentials != null) {
-							commandExecuted = false;
+						  // Skip notification now. We try again.
+							notifyFinish = false;
+							// Try again.
 							execute(command);
 						}
-						return;
-					}
-					if (e.getMessage().contains("not permitted")) {
+					} else if (e.getMessage().contains("not permitted")) {
+					  // The user doesn't have permissions.
 						((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 								.showWarningMessage(translator.getTraslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
-						UserCredentials loadNewCredentials = loadNewCredentials(
+						// Request new credentials.
+						UserCredentials loadNewCredentials = requestNewCredentials(
 								translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
 										+ userCredentials.getUsername());
 						if (loadNewCredentials != null) {
-							commandExecuted = false;
+						  // Avoid notification now. We try again.
+							notifyFinish = false;
+							// Try again.
 							execute(command);
 						}
-						return;
-					}
-					if (e.getMessage().contains("origin: not found")
+					} else if (e.getMessage().contains("origin: not found")
 							|| e.getMessage().contains("No value for key remote.origin.url found in configuration")) {
+					  // No remote.
 						new AddRemoteDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 								translator.getTraslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
-						return;
-					}
-
-					if (e.getMessage().contains("Auth fail")) {
+					} else if (e.getMessage().contains("Auth fail")) {
+					  // This message is thrown for SSH.
+					  // TODO i18n.
 						String passPhraseMessage = "Please enter your SSH passphrase";
 						String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
 						if (passphrase != null) {
-							commandExecuted = false;
+						  // Avoid notification now. We try again.
+							notifyFinish = false;
+							// Try again.
 							execute(command);
 						} else {
+						  // TODO i18n
 							message = "Command aborted";
-							return;
 						}
 					}
 				} catch (IOException e) {
@@ -180,12 +199,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 						logger.debug(e, e);
 					}
 				} finally {
-					if (commandExecuted) {
+					if (notifyFinish) {
 						PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);
 						notifyObservers(pushPullEvent);
 					}
 				}
-
 			}
 
 			/**

@@ -27,7 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 
-import com.oxygenxml.git.auth.CustomAuthenticator;
+import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -64,7 +64,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		@Override
 		protected Void doInBackground() throws Exception {
 			CloneRepositoryDialog.this.setVisible(false);
-			CustomAuthenticator.bind(url.getHost());
+			// Intercept all authentication requests.
+			AuthenticationInterceptor.bind(url.getHost());
 			GitAccess.getInstance().clone(url, file, progressDialog);
 			progressDialog.dispose();
 			return null;
@@ -114,7 +115,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				}
 				return;
 			} finally {
-				CustomAuthenticator.unbind(url.getHost());
+			  AuthenticationInterceptor.unbind(url.getHost());
 			}
 		}
 	}
