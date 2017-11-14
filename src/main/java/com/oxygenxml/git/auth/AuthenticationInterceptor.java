@@ -186,7 +186,7 @@ public class AuthenticationInterceptor {
 			declaredField.setAccessible(true);
 			oldAuth[0] = (Authenticator) declaredField.get(null);
 
-			if (oldAuth[0] != installedAuthenticator) {
+			if (oldAuth[0] == null || oldAuth[0] != installedAuthenticator) {
 
 				installedAuthenticator = new MyAuth(oldAuth[0]);
 
