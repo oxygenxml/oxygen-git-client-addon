@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.text.JTextComponent;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -36,6 +37,7 @@ import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.UndoSupportInstaller;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -170,6 +172,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		panel.add(lblURL, gbc);
 
 		tfURL = new JTextField();
+		UndoSupportInstaller.installUndoManager(tfURL);
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -192,6 +195,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		panel.add(lblPath, gbc);
 
 		comboBoxPath = new JComboBox<String>();
+		UndoSupportInstaller.installUndoManager(((JTextComponent) comboBoxPath.getEditor().getEditorComponent()));
 		comboBoxPath.setEditable(true);
 		List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
 		for (String string : destinationPaths) {
