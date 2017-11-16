@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -162,8 +162,6 @@ public class OptionsManager {
 				StringWriter stringWriter = new StringWriter();
 				jaxbMarshaller.marshal(options, stringWriter);
 
-				// TODO Make a constant. Pick a better name. Backwards compatibility.
-
 				PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(GIT_PLUGIN_OPTIONS,
 						PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().escapeTextValue(stringWriter.toString()));
 			}
@@ -180,7 +178,7 @@ public class OptionsManager {
 	 * 
 	 * @return a set with the repository options
 	 */
-	public Set<String> getRepositoryEntries() {
+	public List<String> getRepositoryEntries() {
 		loadOptions();
 
 		return options.getRepositoryLocations().getLocations();
@@ -195,8 +193,13 @@ public class OptionsManager {
 	public void addRepository(String repositoryOption) {
 		loadOptions();
 
-		// TODO This should be added first. Using a SET will give a random order.
-		options.getRepositoryLocations().getLocations().add(repositoryOption);
+		LinkedList<String> locations = options.getRepositoryLocations().getLocations();
+		locations.remove(repositoryOption);
+		locations.addFirst(repositoryOption);
+		if(locations.size() > 20) {
+		  locations.removeLast();
+		}
+		
 		saveOptions();
 	}
 
@@ -224,7 +227,7 @@ public class OptionsManager {
 		return options.getSelectedRepository();
 	}
 
-	public void removeSelectedRepository(String path) {
+	public void removeRepositoryLocation(String path) {
 		loadOptions();
 		options.getRepositoryLocations().getLocations().remove(path);
 
@@ -367,9 +370,12 @@ public class OptionsManager {
 	public void saveDestinationPath(String destinationPath) {
 		loadOptions();
 
-		// TODO This should be added first. This way the most recent is the first one presented.
-		Set<String> destinationPaths = options.getDestinationPaths().getPaths();
-		destinationPaths.add(destinationPath);
+		LinkedList<String> destinationPaths = options.getDestinationPaths().getPaths();
+		destinationPaths.remove(destinationPath);
+		destinationPaths.add(0, destinationPath);
+		if (destinationPaths.size() > 20) {
+		  destinationPaths.removeLast();
+		}
 
 		saveOptions();
 	}
@@ -379,7 +385,7 @@ public class OptionsManager {
 	 * 
 	 * @return a list containing the destinations paths
 	 */
-	public Set<String> getDestinationPaths() {
+	public List<String> getDestinationPaths() {
 		loadOptions();
 
 		return options.getDestinationPaths().getPaths();

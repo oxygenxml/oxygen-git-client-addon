@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
@@ -36,7 +36,6 @@ import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -132,17 +131,18 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	private ToolbarButton browseButton;
 
 	private JLabel information;
-
+	
 	/**
-	 * Main panel refresh
+	 * Constructor.
+	 *  
+	 * @param parentFrame Parent frame.
+	 * @param translator Translation support.
 	 */
-	private GitRefreshSupport refresh;
-
-	public CloneRepositoryDialog(JFrame parentFrame, String title, boolean modal, Translator translator,
-	    GitRefreshSupport refresh) {
-		super(parentFrame, title, modal);
+	public CloneRepositoryDialog(
+	    JFrame parentFrame, 
+	    Translator translator) {
+		super(parentFrame, translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
 		this.translator = translator;
-		this.refresh = refresh;
 
 		createGUI();
 
@@ -193,7 +193,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 		comboBoxPath = new JComboBox<String>();
 		comboBoxPath.setEditable(true);
-		Set<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
+		List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
 		for (String string : destinationPaths) {
 			comboBoxPath.addItem(string);
 		}

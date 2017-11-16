@@ -149,7 +149,7 @@ public class ToolbarPanel extends JPanel {
         // TODO This might stay well in the Refresh support... When a new repository is 
         // selected this is triggered.
         // TODO Maybe the change of repository should triggered a fetch and a notification should
-        // be fired when the fetch information is brought. Doesn't make sense to use a coalescing for the fetch.
+        // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
         new Thread(new Runnable() {
 
           private void fetch(boolean firstRun) {
@@ -276,10 +276,13 @@ public class ToolbarPanel extends JPanel {
 
 	private void addCloneRepositoryButton() {
 		Action cloneRepositoryAction = new AbstractAction() {
-
+		  /**
+		   * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		   */
 			public void actionPerformed(ActionEvent e) {
-				new CloneRepositoryDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-						translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true, translator, refresh);
+				new CloneRepositoryDialog(
+				    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+						translator);
 			}
 		};
 

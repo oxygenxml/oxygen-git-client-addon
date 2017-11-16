@@ -1,7 +1,6 @@
 package com.oxygenxml.git.options;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -22,13 +21,13 @@ public class DestinationPaths {
 	 * The list with the previous destination paths
 	 */
 	@XmlElement(name = "path")
-	private Set<String> paths = new HashSet<String>();
+	private LinkedList<String> paths = new LinkedList<String>();
 
-	public Set<String> getPaths() {
+	public LinkedList<String> getPaths() {
 		return paths;
 	}
 
-	public void setPaths(Set<String> paths) {
+	public void setPaths(LinkedList<String> paths) {
 		this.paths = paths;
 	}
 

@@ -12,6 +12,7 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -44,11 +45,6 @@ import ro.sync.ui.Icons;
  * Panel containing a label with showing the current working copy, a combo box
  * used for selected other working copies and a browse button to add new working
  * copies.
- * 
- * TODO Add a GitEventListener and, on the repositoryChanged, if it was not 
- * started by this view, get the working copy from the new repository and set it in the combo box:
- * 
- * String path = gitAccess.getRepository().getWorkTree().getAbsolutePath();
  * 
  * @author Beniamin Savu
  *
@@ -124,7 +120,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 		addBrowseButton(gbc);
 
 		addFileChooserOn(browseButton);
-		addWorkingCopySelectorListener();
 		
 		GitAccess.getInstance().addGitListener(new GitEventListener() {
       public void repositoryChanged() {
@@ -133,10 +128,8 @@ public class WorkingCopySelectionPanel extends JPanel {
           File wc = GitAccess.getInstance().getWorkingCopy();
           String absolutePath = wc.getAbsolutePath();
           
-          if (!OptionsManager.getInstance().getRepositoryEntries().contains(absolutePath)) {
-            OptionsManager.getInstance().addRepository(absolutePath);
-            OptionsManager.getInstance().saveSelectedRepository(absolutePath);
-          }
+          OptionsManager.getInstance().addRepository(absolutePath);
+          OptionsManager.getInstance().saveSelectedRepository(absolutePath);
           
           if (!inhibitRepoUpdate) {
             inhibitRepoUpdate = true;
@@ -149,7 +142,12 @@ public class WorkingCopySelectionPanel extends JPanel {
                 workingCopySelector.setSelectedItem(absolutePath);
                 workingCopySelector.setEditable(false);
               } else {
-                workingCopySelector.addItem(absolutePath);
+                // Add it on the first position. 
+                DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopySelector.getModel();
+                defaultComboBoxModel.removeElement(absolutePath);
+                defaultComboBoxModel.insertElementAt(absolutePath, 0);
+                
+                // Select it.
                 workingCopySelector.setSelectedItem(absolutePath);
               }
             } finally {
@@ -205,7 +203,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		        } catch (RepositoryNotFoundException ex) {
 		          logger.error(ex, ex);
 		          // We are here if the selected Repository doesn't exists anymore
-		          OptionsManager.getInstance().removeSelectedRepository(path);
+		          OptionsManager.getInstance().removeRepositoryLocation(path);
 		          if (workingCopySelector.getItemCount() > 0) {
 		            workingCopySelector.setSelectedItem(0);
 		          } else {
@@ -250,10 +248,13 @@ public class WorkingCopySelectionPanel extends JPanel {
 					if (FileHelper.isGitRepository(directoryPath) && directoryPath != null) {
 						// adds the directory path to the combo box if it doesn't already
 						// exists
-						if (!OptionsManager.getInstance().getRepositoryEntries().contains(directoryPath)) {
-							workingCopySelector.addItem(directoryPath);
-							OptionsManager.getInstance().addRepository(directoryPath);
-						}
+					  OptionsManager.getInstance().addRepository(directoryPath);
+					  
+					  // Insert it first.
+						DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopySelector.getModel();
+						defaultComboBoxModel.removeElement(directoryPath);
+            defaultComboBoxModel.insertElementAt(directoryPath, 0);
+            
 						// sets the directory path as the selected repository
 						workingCopySelector.setSelectedItem(directoryPath);
 					} else {
@@ -293,63 +294,44 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 *          - the constraints used for this component
 	 */
 	private void addWorkingCopySelector(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 1;
-		gbc.gridy = 0;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
+	  gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
+	      Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+	  gbc.anchor = GridBagConstraints.WEST;
+	  gbc.fill = GridBagConstraints.HORIZONTAL;
+	  gbc.gridx = 1;
+	  gbc.gridy = 0;
+	  gbc.weightx = 1;
+	  gbc.weighty = 1;
 
-		workingCopySelector = new JComboBox<String>();
-		WoekingCopyToolTipRenderer renderer = new WoekingCopyToolTipRenderer();
-		workingCopySelector.setRenderer(renderer);
-		int height = (int) workingCopySelector.getPreferredSize().getHeight();
-		workingCopySelector.setMinimumSize(new Dimension(10, height));
+	  workingCopySelector = new JComboBox<String>();
+	  WoekingCopyToolTipRenderer renderer = new WoekingCopyToolTipRenderer();
+	  workingCopySelector.setRenderer(renderer);
+	  int height = (int) workingCopySelector.getPreferredSize().getHeight();
+	  workingCopySelector.setMinimumSize(new Dimension(10, height));
 
-		// Populates the combo box with the previously added repositories. Basically
-		// restore the state before the application was closed
-		for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
+	  addWorkingCopySelectorListener();
+	  
+	  // Populates the combo box with the previously added repositories. Basically
+	  // restore the state before the application was closed
+	  loadEntries();
+	  this.add(workingCopySelector, gbc);
+	}
+
+	/**
+	 * Load the recorded workinf copy locations into the combo.
+	 */
+  private void loadEntries() {
+    for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
 			workingCopySelector.addItem(repositoryEntry);
 		}
-		String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
-		try {
-			if (!repositoryPath.equals("")) {
-				workingCopySelector.setSelectedItem(repositoryPath);
-				gitAccess.setRepository(repositoryPath);
-			} else if (workingCopySelector.getItemCount() > 0) {
-				workingCopySelector.setSelectedIndex(0);
-				gitAccess.setRepository((String) workingCopySelector.getSelectedItem());
-			}
-		} catch (IOException e) {
-			// We are here if between the starts of the application the last selected
-			// repository has been deleted
-
-			// Removes that repository from the combo box and the option file. If the
-			// combo box still has some repositories, it will select the one
-			// positioned on index 0, otherwise it will clear everything.
-			OptionsManager.getInstance().removeSelectedRepository(repositoryPath);
-			workingCopySelector.removeItem(repositoryPath);
-			if (workingCopySelector.getItemCount() > 0) {
-				workingCopySelector.setSelectedIndex(0);
-				try {
-					gitAccess.setRepository((String) workingCopySelector.getSelectedItem());
-				} catch (RepositoryNotFoundException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			} else {
-				workingCopySelector.setSelectedItem(null);
-				gitAccess.close();
-			}
-			OptionsManager.getInstance().saveSelectedRepository("");
-			PluginWorkspaceProvider.getPluginWorkspace()
-					.showInformationMessage(translator.getTraslation(Tags.WORKINGCOPY_LAST_SELECTED_REPOSITORY_DELETED));
-		}
-		this.add(workingCopySelector, gbc);
-	}
+    
+    String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
+    if (!repositoryPath.equals("")) {
+      workingCopySelector.setSelectedItem(repositoryPath);
+    } else if (workingCopySelector.getItemCount() > 0) {
+      workingCopySelector.setSelectedIndex(0);
+    }
+  }
 
 	/**
 	 * Adds the browse button to the panel

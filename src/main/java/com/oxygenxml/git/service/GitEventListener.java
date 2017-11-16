@@ -15,11 +15,6 @@ package com.oxygenxml.git.service;
  */
 public interface GitEventListener {
   /**
-   * TODO The WCPanel, the clone action and the select submodule action (both on toolbar)
-   * are the ones that change the repository. This means that both the WCPanel and the Toolbar 
-   * must listen for repository changes and update if they are not the ones that initiated the event. 
-   * 
-   * 
    * A new repository was loaded.
    * 
    * @param repository The path of the new repository.
