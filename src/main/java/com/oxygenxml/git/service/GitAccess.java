@@ -12,6 +12,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -92,7 +93,8 @@ import com.oxygenxml.git.view.dialog.ProgressDialog;
  * 
  * TODO We need a number of notifications:
  * 
- * 1. repositoryChanged(String newRepos, boolean isSubmodule) fired by setRepository() and setSubmodule(), createNewRepository()
+ * 1. repositoryChanged(String newRepos, boolean isSubmodule) fired by:
+ *   - setRepository() and setSubmodule(), createNewRepository(), clone()
  *   - all places that change the git variable.
  * 2. push/pull
  * 3. commit
@@ -105,17 +107,31 @@ public class GitAccess {
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(GitAccess.class);
-
+	/**
+	 * The GIT repository.
+	 */
 	private Git git;
-
+	/**
+	 * Singleton instance.
+	 */
 	private static GitAccess instance;
-
+	/**
+	 * Translation support.
+	 */
 	private Translator translator = new TranslatorExtensionImpl();
+	/**
+	 * Receive notifications when things change.
+	 */
+	private Set<GitEventListener> listeners = new LinkedHashSet<GitEventListener>();
 
-	private GitAccess() {
+	 /**
+   * Singleton instance.
+   */
+	private GitAccess() {}
 
-	}
-
+	 /**
+   * Singleton instance.
+   */
 	public static GitAccess getInstance() {
 		if (instance == null) {
 			instance = new GitAccess();
@@ -123,6 +139,16 @@ public class GitAccess {
 		return instance;
 	}
 
+	/**
+	 * Creates a local clone of the given repository and loads it.
+	 * 
+	 * @param url Remote repository to clone.
+	 * @param directory Local directory in which to create the clone.
+	 * @param progressDialog Progress support.
+	 * 
+	 * @throws GitAPIException
+	 * @throws URISyntaxException
+	 */
 	public void clone(URL url, File directory, final ProgressDialog progressDialog)
 			throws GitAPIException, URISyntaxException {
 		if (git != null) {
@@ -175,6 +201,8 @@ public class GitAccess {
 		git = Git.cloneRepository().setURI(uri.toString()).setDirectory(directory).setCloneSubmodules(true)
 				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).setProgressMonitor(p)
 				.call();
+		
+		fireRepositoryChanged();
 	}
 
 	/**
@@ -184,6 +212,8 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
+	  // TODO Perhaps check that this repository is not the already loaded one.
+	  // We could compare new File(path + "/.git") with the git.getDirectory()
 		if (git != null) {
 			// Stop intercepting authentication requests.
 		  AuthenticationInterceptor.unbind(getHostName());
@@ -223,9 +253,26 @@ public class GitAccess {
 		  }
 		}
 		
+		// Save the new option.
+		OptionsManager.getInstance().saveSelectedRepository(path);
+		
+		fireRepositoryChanged();
 	}
 
 	/**
+	 * Notify that the loaded repository changed.
+	 */
+	private void fireRepositoryChanged() {
+	  for (GitEventListener gitEventListener : listeners) {
+      gitEventListener.repositoryChanged();
+    }
+  }
+	
+	public void addGitListener(GitEventListener l) {
+	  listeners.add(l);
+  }
+
+  /**
 	 * 
 	 * @return the git Repository
 	 * @throws NoRepositorySelected
@@ -235,6 +282,18 @@ public class GitAccess {
 			throw new NoRepositorySelected("Repository is empty");
 		}
 		return git.getRepository();
+	}
+	
+	/**
+	 * Gets the Working copy location.
+	 * 
+	 * @return The working copy location.
+	 * 
+	 * @throws NoWorkTreeException
+	 * @throws NoRepositorySelected
+	 */
+	public File getWorkingCopy() throws NoWorkTreeException, NoRepositorySelected {
+	  return getRepository().getWorkTree();
 	}
 
 	/**
@@ -256,7 +315,8 @@ public class GitAccess {
 				logger.debug(e, e);
 			}
 		}
-
+		
+		fireRepositoryChanged();
 	}
 
 	/**
@@ -365,6 +425,8 @@ public class GitAccess {
 		Repository parentRepository = git.getRepository();
 		Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		git = Git.wrap(submoduleRepository);
+		
+		fireRepositoryChanged();
 	}
 
 	/**

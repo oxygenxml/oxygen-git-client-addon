@@ -195,6 +195,7 @@ public class OptionsManager {
 	public void addRepository(String repositoryOption) {
 		loadOptions();
 
+		// TODO This should be added first. Using a SET will give a random order.
 		options.getRepositoryLocations().getLocations().add(repositoryOption);
 		saveOptions();
 	}
@@ -366,6 +367,7 @@ public class OptionsManager {
 	public void saveDestinationPath(String destinationPath) {
 		loadOptions();
 
+		// TODO This should be added first. This way the most recent is the first one presented.
 		Set<String> destinationPaths = options.getDestinationPaths().getPaths();
 		destinationPaths.add(destinationPath);
 

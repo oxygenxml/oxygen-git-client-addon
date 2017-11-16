@@ -9,8 +9,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -25,20 +23,25 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.PrivateRepositoryException;
+import com.oxygenxml.git.service.RepositoryUnavailableException;
+import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.dialog.BranchSelectDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
+import com.oxygenxml.git.view.dialog.LoginDialog;
+import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
-import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Command;
-import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -51,7 +54,7 @@ import ro.sync.ui.Icons;
  * @author Beniamin Savu
  *
  */
-public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
+public class ToolbarPanel extends JPanel {
 
 	/**
 	 * Logger for logging.
@@ -121,12 +124,88 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 
 	public ToolbarPanel(
 	    PushPullController pushPullController, 
-	    Translator translator, 
+	    final Translator translator, 
 	    GitRefreshSupport refresh) {
 		this.pushPullController = pushPullController;
 		this.statusInformationLabel = new JLabel();
 		this.translator = translator;
 		this.refresh = refresh;
+		
+		createGUI();
+		
+		GitAccess.getInstance().addGitListener(new GitEventListener() {
+      public void repositoryChanged() {
+        // Repository changed. Update the toolbar buttons.
+        if (GitAccess.getInstance().getSubmodules().size() > 0) {
+          submoduleSelectButton.setEnabled(true);
+        } else {
+          submoduleSelectButton.setEnabled(false);
+        }
+        
+        // Update the toobars.
+        // calculate how many pushes ahead and pulls behind the current
+        // selected working copy is from the base. It is on thread because
+        // the fetch command takes a longer time
+        // TODO This might stay well in the Refresh support... When a new repository is 
+        // selected this is triggered.
+        // TODO Maybe the change of repository should triggered a fetch and a notification should
+        // be fired when the fetch information is brought. Doesn't make sense to use a coalescing for the fetch.
+        new Thread(new Runnable() {
+
+          private void fetch(boolean firstRun) {
+            try {
+              GitAccess.getInstance().fetch();
+            } catch (SSHPassphraseRequiredException e) {
+              String message = null;
+              // TODO i18n
+              if (firstRun) {
+                message = "Please enter your SSH passphrase";
+              } else {
+                message = "The previous passphrase is invalid. Please enter your SSH passphrase";
+              }
+
+              String passphrase = new PassphraseDialog(message).getPassphrase();
+              if(passphrase != null){
+                // A new pass phase was given. Try again.
+                fetch(false);
+              }
+            } catch (PrivateRepositoryException e) {
+              String loginMessage = null;
+              if (firstRun) {
+                loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+              } else {
+                UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(GitAccess.getInstance().getHostName());
+                loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+                    + gitCredentials.getUsername();
+              }
+
+              UserCredentials userCredentials = new LoginDialog(
+                  (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+                  translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), 
+                  true, 
+                  GitAccess.getInstance().getHostName(), 
+                  loginMessage,
+                  translator).getUserCredentials();
+              if (userCredentials != null) {
+                // New credentials were specified. Try again.
+                fetch(false);
+              }
+            } catch (RepositoryUnavailableException e) {
+              // Nothing we can do about it...
+            }
+          }
+
+          public void run() {
+            fetch(true);
+
+            // After the fetch is done, update the toolbar icons.
+            setPullsBehind(GitAccess.getInstance().getPullsBehind());
+            setPushesAhead(GitAccess.getInstance().getPushesAhead());
+            updateInformationLabel();
+          }
+        }).start();
+      }
+    });
 	}
 
 	public JButton getPushButton() {
@@ -223,8 +302,9 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						new SubmoduleSelectDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTraslation(Tags.SUBMODULE_DIALOG_TITLE), true, refresh, translator);
+						new SubmoduleSelectDialog(
+						    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+								translator);
 					}
 				} catch (NoRepositorySelected e1) {
 				}
@@ -413,31 +493,5 @@ public class ToolbarPanel extends JPanel implements Observer<ChangeEvent> {
 		button.setPreferredSize(d);
 		button.setMinimumSize(d);
 		button.setMaximumSize(d);
-	}
-
-	public void stateChanged(ChangeEvent changeEvent) {
-		if (GitAccess.getInstance().getSubmodules().size() > 0) {
-			submoduleSelectButton.setEnabled(true);
-		} else {
-			submoduleSelectButton.setEnabled(false);
-		}
-	}
-
-	/**
-	 * Install required listeners on the given target.
-	 * 
-	 * @param subject Target that notifies observers.
-	 */
-	public void install(Subject<ChangeEvent> subject) {
-		subject.addObserver(this);
-	}
-
-	/**
-   * Uninstall required listeners on the given target.
-   * 
-   * @param subject Target that notifies observers.
-   */
-	public void uninstall(Subject<ChangeEvent> subject) {
-		subject.removeObserver(this);
 	}
 }

@@ -32,6 +32,16 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.util.editorvars.EditorVariables;
 
+/**
+ * TODO This should be used more rarely, as we implement and use the GitEventListener
+ *      It makes sense for this object to just check things that are not covered by the notifications events,
+ *      like external changes to the working copy. 
+ * 
+ * 
+ * 
+ * @author alex_jitianu
+ *
+ */
 public class PanelRefresh implements GitRefreshSupport {
 
 	/**
@@ -95,23 +105,23 @@ public class PanelRefresh implements GitRefreshSupport {
 				updateFiles(StageState.STAGED);
 				updateCounter(Command.PULL);
 				updateCounter(Command.PUSH);
-				String path = gitAccess.getRepository().getWorkTree().getAbsolutePath();
+				String path = gitAccess.getWorkingCopy().getAbsolutePath();
 				String workingCopyCurrentPath = (String) stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector()
 						.getSelectedItem();
 
-				if (FileHelper.isGitSubmodule(path)) {
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(true);
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(false);
-					stagingPanel.requestFocus();
-				} else if (FileHelper.isGitRepository(path) && !path.equals(workingCopyCurrentPath)) {
-				  // TODO THis can happen when the submodule is chosen from the toolbar action. A previous
-				  // WC is loaded.
-				  
-					OptionsManager.getInstance().addRepository(path);
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(path);
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
-				}
+//				if (FileHelper.isGitSubmodule(path)) {
+//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(true);
+//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
+//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(false);
+//					stagingPanel.requestFocus();
+//				} else if (FileHelper.isGitRepository(path) && !path.equals(workingCopyCurrentPath)) {
+//				  // TODO THis can happen when the submodule is chosen from the toolbar action. A previous
+//				  // WC is loaded.
+//				  
+//					OptionsManager.getInstance().addRepository(path);
+//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(path);
+//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
+//				}
 			}
 		} catch (NoRepositorySelected e1) {
 			return;

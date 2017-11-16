@@ -17,7 +17,6 @@ import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
@@ -41,19 +40,20 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	private JComboBox<String> submoduleList;
 
 	/**
-	 * Main panel refresh
-	 */
-	private GitRefreshSupport refresh;
-
-	/**
 	 * The translator for the messages that are displayed in this dialog
 	 */
 	private Translator translator;
 
-	public SubmoduleSelectDialog(JFrame parentFrame, String title, boolean modal, GitRefreshSupport refresh,
+	/**
+	 * Constructor.
+	 * 
+	 * @param parentFrame Parent frame.
+	 * @param translator Translation support.
+	 */
+	public SubmoduleSelectDialog(
+	    JFrame parentFrame, 
 			Translator translator) {
-		super(parentFrame, title, modal);
-		this.refresh = refresh;
+		super(parentFrame, translator.getTraslation(Tags.SUBMODULE_DIALOG_TITLE), true);
 		this.translator = translator;
 
 		this.setLayout(new GridBagLayout());
@@ -128,7 +128,5 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 				logger.debug(e, e);
 			}
 		}
-		refresh.call();
-		dispose();
 	}
 }

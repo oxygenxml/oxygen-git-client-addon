@@ -23,9 +23,14 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.Repository;
+
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitEventListener;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitRefreshSupport;
@@ -50,6 +55,10 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  */
 public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(StagingPanel.class);
 
 	boolean gained = false;
 	/**
@@ -99,6 +108,52 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.refresh = refresh;
 		this.stageController = stageController;
 		createGUI();
+		
+		GitAccess.getInstance().addGitListener(new GitEventListener() {
+      public void repositoryChanged() {
+        GitAccess gitAccess = GitAccess.getInstance();
+        Repository repository;
+        try {
+          repository = gitAccess.getRepository();
+          if (repository != null) {
+            String path = gitAccess.getWorkingCopy().getAbsolutePath();
+
+            List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+            List<FileStatus> stagedFiles = gitAccess.getStagedFile();
+
+            // generate content for FLAT_VIEW
+            getUnstagedChangesPanel().updateFlatView(unstagedFiles);
+            getStagedChangesPanel().updateFlatView(stagedFiles);
+
+            // generate content for TREE_VIEW
+            getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
+            getStagedChangesPanel().createTreeView(path, stagedFiles);
+
+            // whan a new working copy is selected clear the commit text area
+            getCommitPanel().clearCommitMessage();
+
+            // checks what buttons to keep active and what buttons to deactivate
+            if (gitAccess.getStagedFile().size() > 0) {
+              getCommitPanel().getCommitButton().setEnabled(true);
+            } else {
+              getCommitPanel().getCommitButton().setEnabled(false);
+            }
+            getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
+            getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
+          }
+        } catch (NoRepositorySelected e) {
+          logger.debug(e, e);
+          
+          // clear content from FLAT_VIEW
+          getUnstagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
+          getStagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
+
+          // clear content from TREE_VIEW
+          getUnstagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
+          getStagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
+        }
+      }
+    });
 	}
 
 	public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
@@ -143,8 +198,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setBorder(null);
 
-		toolbarPanel.install(workingCopySelectionPanel);
-
 		// adds the panels to the staging panel using gird bag constraints
 		GridBagConstraints gbc = new GridBagConstraints();
 		addToolbatPanel(gbc);
@@ -153,8 +206,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		// addCommitPanel(gbc);
 
 		// creates the actual GUI for each panel
-		workingCopySelectionPanel.createGUI();
-		toolbarPanel.createGUI();
 		commitPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
@@ -319,24 +370,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(workingCopySelectionPanel, gbc);
-	}
-
-	/**
-	 * Adds the commit area to the panel
-	 * 
-	 * @param gbc
-	 *          - the constraints used for this component
-	 * @param splitPane
-	 */
-	private void addCommitPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(0, 5, 0, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.gridx = 0;
-		gbc.gridy = 3;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		this.add(commitPanel, gbc);
 	}
 
 	public void stateChanged(PushPullEvent pushPullEvent) {

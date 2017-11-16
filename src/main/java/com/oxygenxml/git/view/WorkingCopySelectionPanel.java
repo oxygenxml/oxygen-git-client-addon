@@ -11,13 +11,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -31,20 +28,12 @@ import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.PrivateRepositoryException;
-import com.oxygenxml.git.service.RepositoryUnavailableException;
-import com.oxygenxml.git.service.SSHPassphraseRequiredException;
-import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.GitEventListener;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.dialog.LoginDialog;
-import com.oxygenxml.git.view.dialog.PassphraseDialog;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -54,12 +43,17 @@ import ro.sync.ui.Icons;
 /**
  * Panel containing a label with showing the current working copy, a combo box
  * used for selected other working copies and a browse button to add new working
- * copies
+ * copies.
+ * 
+ * TODO Add a GitEventListener and, on the repositoryChanged, if it was not 
+ * started by this view, get the working copy from the new repository and set it in the combo box:
+ * 
+ * String path = gitAccess.getRepository().getWorkTree().getAbsolutePath();
  * 
  * @author Beniamin Savu
  *
  */
-public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeEvent> {
+public class WorkingCopySelectionPanel extends JPanel {
 
 	/**
 	 * Logger for logging.
@@ -93,11 +87,19 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 	 */
 	private Translator translator;
 
-	private Observer<ChangeEvent> observer;
-
-	public WorkingCopySelectionPanel(GitAccess gitAccess, Translator translator) {
+  /**
+   * Constructor.
+   * 
+   * @param gitAccess
+   * @param translator
+   */
+	public WorkingCopySelectionPanel(
+	    GitAccess gitAccess, 
+	    Translator translator) {
 		this.translator = translator;
 		this.gitAccess = gitAccess;
+		
+		createGUI();
 	}
 
 	public JComboBox<String> getWorkingCopySelector() {
@@ -112,7 +114,7 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 	 * Creates the components and adds listeners to some of them. Basically this
 	 * creates the panel
 	 */
-	public void createGUI() {
+	private void createGUI() {
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -123,160 +125,111 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 
 		addFileChooserOn(browseButton);
 		addWorkingCopySelectorListener();
+		
+		GitAccess.getInstance().addGitListener(new GitEventListener() {
+      public void repositoryChanged() {
+          // The event was not triggered by the combo.
+        try {
+          File wc = GitAccess.getInstance().getWorkingCopy();
+          String absolutePath = wc.getAbsolutePath();
+          
+          if (!OptionsManager.getInstance().getRepositoryEntries().contains(absolutePath)) {
+            OptionsManager.getInstance().addRepository(absolutePath);
+            OptionsManager.getInstance().saveSelectedRepository(absolutePath);
+          }
+          
+          if (!inhibitRepoUpdate) {
+            inhibitRepoUpdate = true;
+            try {
+              if (FileHelper.isGitSubmodule(absolutePath)) {
+                // An ugly hack to select the path in the combo without keeping it
+                // in the model. We want to avoid adding it in the model because 
+                // this path is not exactly an working copy (no .git in it)
+                workingCopySelector.setEditable(true);
+                workingCopySelector.setSelectedItem(absolutePath);
+                workingCopySelector.setEditable(false);
+              } else {
+                workingCopySelector.addItem(absolutePath);
+                workingCopySelector.setSelectedItem(absolutePath);
+              }
+            } finally {
+              inhibitRepoUpdate = false;
+            }
+          }
+        } catch (NoRepositorySelected e) {
+            logger.debug(e, e);
+          }
+        }
+    });
 
 		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.WORKINGCOPY_PANEL_HEIGHT));
 	}
+	
+	/**
+	 * <code>true</code> to inhibit repository update when the selection changes in the combo.
+	 * <code>false</code> to update the repository when the selection changes in the combo.
+	 */
+	private boolean inhibitRepoUpdate = false;
 
 	/**
 	 * Adds a state change listener on the working copy selector combo box. When a
 	 * new working copy is selected this listener will execute
 	 */
 	private void addWorkingCopySelectorListener() {
-
-		final StagingPanel parent = (StagingPanel) this.getParent();
-
 		workingCopySelector.addItemListener(new ItemListener() {
 
-			public void itemStateChanged(ItemEvent e) {
-				
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					// get and save the selected Option so that at restart the same
-					// repository will be selected
-					String path = (String) workingCopySelector.getSelectedItem();
-					if (logger.isDebugEnabled()) {
-						logger.debug("Working copy " + path);
-					}
-					
-					if (GitAccess.getInstance().getBranchInfo().isDetached()) {
-						PluginWorkspaceProvider.getPluginWorkspace()
-								.showInformationMessage(translator.getTraslation(Tags.DETACHED_HEAD_MESSAGE));
-					}
-					
-					if (FileHelper.isGitSubmodule(path)) {
-					  // TODO This selection event probably comes from using the Submodules action on the toolbar.
-					  // That action loads a different repository and directly updates the WCPanel. That would be
-					  // an explanation on why we have a return afterwards (the GITAccess is already initialized).
-						observer.stateChanged(null);
-						return;
-					}
+		  public void itemStateChanged(ItemEvent e) {
+		    if (
+		        // Don't do anything if the event was originated by us.
+		        !inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
+		      inhibitRepoUpdate = true;
+		      try {
+		        // get and save the selected Option so that at restart the same
+		        // repository will be selected
+		        String path = (String) workingCopySelector.getSelectedItem();
+		        if (logger.isDebugEnabled()) {
+		          logger.debug("Working copy " + path);
+		        }
 
-					try {
+		        if (GitAccess.getInstance().getBranchInfo().isDetached()) {
+		          PluginWorkspaceProvider.getPluginWorkspace()
+		          .showInformationMessage(translator.getTraslation(Tags.DETACHED_HEAD_MESSAGE));
+		        }
 
-						gitAccess.setRepository(path);
-						OptionsManager.getInstance().saveSelectedRepository(path);
-						List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-						List<FileStatus> stagedFiles = gitAccess.getStagedFile();
 
-						// generate content for FLAT_VIEW
-						parent.getUnstagedChangesPanel().updateFlatView(unstagedFiles);
-						parent.getStagedChangesPanel().updateFlatView(stagedFiles);
 
-						// generate content for TREE_VIEW
-						parent.getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
-						parent.getStagedChangesPanel().createTreeView(path, stagedFiles);
+		        try {
+		          gitAccess.setRepository(path);
+		          
+		          OptionsManager.getInstance().saveSelectedRepository(path);
+		        } catch (RepositoryNotFoundException ex) {
+		          logger.error(ex, ex);
+		          // We are here if the selected Repository doesn't exists anymore
+		          OptionsManager.getInstance().removeSelectedRepository(path);
+		          if (workingCopySelector.getItemCount() > 0) {
+		            workingCopySelector.setSelectedItem(0);
+		          } else {
+		            workingCopySelector.setSelectedItem(null);
+		            gitAccess.close();
+		          }
+		          workingCopySelector.removeItem(path);
 
-						// whan a new working copy is selected clear the commit text area
-						parent.getCommitPanel().clearCommitMessage();
-
-						// checks what buttons to keep active and what buttons to deactivate
-						if (gitAccess.getStagedFile().size() > 0) {
-							parent.getCommitPanel().getCommitButton().setEnabled(true);
-						} else {
-							parent.getCommitPanel().getCommitButton().setEnabled(false);
-						}
-						parent.getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
-						parent.getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
-
-						// calculate how many pushes ahead and pulls behind the current
-						// selected working copy is from the base. It is on thread because
-						// the fetch command takes a longer time
-						new Thread(new Runnable() {
-						  
-						  private void fetch(boolean firstRun) {
-						    try {
-                  gitAccess.fetch();
-						    } catch (SSHPassphraseRequiredException e) {
-						      String message = null;
-						      // TODO i18n
-						      if (firstRun) {
-						        message = "Please enter your SSH passphrase";
-						      } else {
-						        message = "The previous passphrase is invalid. Please enter your SSH passphrase";
-						      }
-						      
-						      String passphrase = new PassphraseDialog(message).getPassphrase();
-						      if(passphrase != null){
-						        // A new pass phase was given. Try again.
-						        fetch(false);
-						      }
-						    } catch (PrivateRepositoryException e) {
-						      String loginMessage = null;
-						      if (firstRun) {
-						        loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
-						      } else {
-						        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
-						        loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-                        + gitCredentials.getUsername();
-						      }
-						      
-						      UserCredentials userCredentials = new LoginDialog(
-                      (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-                      translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), 
-                      true, 
-                      gitAccess.getHostName(), 
-                      loginMessage,
-                      translator).getUserCredentials();
-                  if (userCredentials != null) {
-                    // New credentials were specified. Try again.
-                    fetch(false);
-                  }
-                } catch (RepositoryUnavailableException e) {
-                  // Nothing we can do about it...
-                }
-						  }
-
-							public void run() {
-							  fetch(true);
-								
-							  // Update.
-								parent.getToolbarPanel().setPullsBehind(GitAccess.getInstance().getPullsBehind());
-								parent.getToolbarPanel().setPushesAhead(GitAccess.getInstance().getPushesAhead());
-								parent.getToolbarPanel().updateInformationLabel();
-							}
-						}).start();
-						observer.stateChanged(null);
-					} catch (RepositoryNotFoundException ex) {
-						// We are here if the selected Repository doesn't exists anymore
-						OptionsManager.getInstance().removeSelectedRepository(path);
-						if (workingCopySelector.getItemCount() > 0) {
-							workingCopySelector.setSelectedItem(0);
-						} else {
-							workingCopySelector.setSelectedItem(null);
-							gitAccess.close();
-						}
-						workingCopySelector.removeItem(path);
-
-						// clear content from FLAT_VIEW
-						parent.getUnstagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
-						parent.getStagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
-
-						// clear content from TREE_VIEW
-						parent.getUnstagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
-						parent.getStagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
-
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								PluginWorkspaceProvider.getPluginWorkspace()
-										.showInformationMessage(translator.getTraslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
-							}
-						});
-					} catch (IOException e1) {
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								"Could not load the repository");
-					}
-				}
-			}
+		          SwingUtilities.invokeLater(new Runnable() {
+		            public void run() {
+		              PluginWorkspaceProvider.getPluginWorkspace()
+		              .showInformationMessage(translator.getTraslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
+		            }
+		          });
+		        } catch (IOException e1) {
+		          e1.printStackTrace();
+		          JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		              "Could not load the repository");
+		        }
+		      } finally {
+		        inhibitRepoUpdate = false;
+		      }
+		    }
+		  }
 		});
 
 	}
@@ -450,15 +403,4 @@ public class WorkingCopySelectionPanel extends JPanel implements Subject<ChangeE
 			return comp;
 		}
 	}
-
-	public void addObserver(Observer<ChangeEvent> observer) {
-		if (observer == null)
-			throw new NullPointerException("Null Observer");
-		this.observer = observer;
-	}
-
-	public void removeObserver(Observer<ChangeEvent> observer) {
-		observer = null;
-	}
-
 }

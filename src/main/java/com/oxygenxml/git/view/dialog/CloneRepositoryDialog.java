@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
@@ -74,10 +75,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		@Override
 		protected void done() {
 			try {
+			  // TODO Strange...when done is called, the entire processing should be done.
 				get();
-				refresh.call();
 				OptionsManager.getInstance().saveDestinationPath(file.getAbsolutePath());
-				dispose();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (ExecutionException e) {
@@ -249,7 +249,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 	@Override
 	protected void doOK() {
-
+	  boolean ok = false;
 		final String selectedPath = (String) comboBoxPath.getSelectedItem();
 		try {
 			final URL url = new URL(tfURL.getText());
@@ -257,27 +257,34 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			if (!destinationPathIsValid(file)) {
 				return;
 			}
-			cloneRepository(url, file);
+			
+			// Progress dialog.
+	    final ProgressDialog progressDialog = new ProgressDialog(
+	        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 
+	    new CloneWorker(progressDialog, url, file).execute();
+	    
+	    // Make sure we present the dialog after this one is closed.
+	    // TODO There is a progress dialog support in Java. Maybe is better to use that.
+	    SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          progressDialog.setVisible(true);
+        }
+      });
+	    
+	    ok = true;
 		} catch (MalformedURLException e) {
-			CloneRepositoryDialog.this.setVisible(true);
+		  // TODO THis minimum size is needed, probably, because of the new label.
+		  // Perhaps a new pack???
 			this.setMinimumSize(new Dimension(400, 180));
 			information.setText("<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL) + "</html>");
 			return;
 		}
-
-	}
-
-	private void cloneRepository(final URL url, final File file) {
-		final ProgressDialog progressDialog = new ProgressDialog(
-				(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
-		new Thread(new Runnable() {
-
-			public void run() {
-				progressDialog.setVisible(true);
-			}
-		}).start();
-		new CloneWorker(progressDialog, url, file).execute();
+		
+		if (ok) {
+		  // Close the dialog.
+		  super.doOK();
+		}
 
 	}
 
