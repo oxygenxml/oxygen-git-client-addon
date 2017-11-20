@@ -12,11 +12,13 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
 
 /**
@@ -92,9 +94,19 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			GitAccess gitAccess = GitAccess.getInstance();
 			if (VersionIdentifier.MINE.equals(currentHost)) {
 				fileObject = gitAccess.getCommit(Commit.MINE, path);
+			} else if (VersionIdentifier.INDEX_OR_LAST_COMMIT.equals(currentHost)) {
+			  try {
+			  fileObject = gitAccess.locateObjectIdInIndex(path);
+			  } catch (Exception ex) {
+			    logger.error(ex, ex);
+			  }
+			  
+			  if (fileObject == null) {
+			    fileObject = gitAccess.getCommit(Commit.LOCAL, path);
+			  }
 			} else if (VersionIdentifier.LAST_COMMIT.equals(currentHost)) {
-				fileObject = gitAccess.getCommit(Commit.LOCAL, path);
-			} else if (VersionIdentifier.THEIRS.equals(currentHost)) {
+			  fileObject = gitAccess.getCommit(Commit.LOCAL, path);
+      } else if (VersionIdentifier.THEIRS.equals(currentHost)) {
 				fileObject = gitAccess.getCommit(Commit.THEIRS, path);
 			} else if (VersionIdentifier.BASE.equals(currentHost)) {
 				fileObject = gitAccess.getCommit(Commit.BASE, path);
@@ -131,6 +143,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			
 			GitAccess gitAccess = GitAccess.getInstance();
 			InputStream inputStream = gitAccess.getInputStream(fileObject);
+			logger.info("Finally " + inputStream);
 			gitAccess.setRepository(OptionsManager.getInstance().getSelectedRepository());
 			return inputStream;
 		}

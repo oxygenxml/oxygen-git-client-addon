@@ -208,7 +208,8 @@ public class CustomContextualMenu extends JPopupMenu {
 						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
 				if (response == 0) {
 					for (FileStatus file : files) {
-						if (file.getChangeType() == GitChangeType.ADD) {
+						if (file.getChangeType() == GitChangeType.ADD
+						    || file.getChangeType() == GitChangeType.UNTRACKED) {
 							try {
 								FileUtils.forceDelete(
 										new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
@@ -250,7 +251,8 @@ public class CustomContextualMenu extends JPopupMenu {
 				if (GitChangeType.SUBMODULE == file.getChangeType()) {
 					containsSubmodule = true;
 				}
-				if (GitChangeType.DELETE == file.getChangeType()) {
+				if (GitChangeType.MISSING == file.getChangeType()
+				    || GitChangeType.REMOVED == file.getChangeType()) {
 					containsDelete = true;
 				}
 			}
@@ -290,7 +292,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				markResolved.setEnabled(false);
 				discard.setEnabled(true);
 				// the active actions for all the selected files that are deleted
-			} else if (fileStatus.getChangeType() == GitChangeType.DELETE && sameChangeType) {
+			} else if (fileStatus.getChangeType() == GitChangeType.MISSING && sameChangeType) {
 				showDiff.setEnabled(false);
 				open.setEnabled(false);
 				changeState.setEnabled(true);
@@ -302,7 +304,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				markResolved.setEnabled(false);
 				discard.setEnabled(true);
 				// the active actions for all the selected files that are modified
-			} else if (fileStatus.getChangeType() == GitChangeType.MODIFY && sameChangeType) {
+			} else if (fileStatus.getChangeType() == GitChangeType.MODIFIED && sameChangeType) {
 				open.setEnabled(true);
 				changeState.setEnabled(true);
 				resolveConflict.setEnabled(false);

@@ -36,9 +36,15 @@ public class VersionIdentifier {
 	 * The last commit in the local repository. HEAD.
 	 * 
 	 * The file having the LAST_COMMIT constant shows that the file content is
-	 * from the last commit
+	 * from the last commit in the local repository.
 	 */
 	public static final String LAST_COMMIT = "LastCommit";
+	
+	/**
+	 * Will first search for the file in the index and, if not found,
+	 * will search in the last commit.
+	 */
+	public static final String INDEX_OR_LAST_COMMIT = "IndexLastCommit";
 
 	public static final String CURRENT_SUBMODULE = "CurrentSubmodule";
 

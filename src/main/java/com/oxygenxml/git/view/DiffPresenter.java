@@ -76,14 +76,19 @@ public class DiffPresenter {
 	 * opened
 	 */
 	public void showDiff() {
-		switch (file.getChangeType()) {
+		GitChangeType changeType = file.getChangeType();
+    switch (changeType) {
 		case CONFLICT:
 			conflictDiff();
 			break;
-		case MODIFY:
-			diffView();
+		case CHANGED:
+		  diffIndexWithHead();
+		  break;
+		case MODIFIED:
+			diffView(changeType);
 			break;
 		case ADD:
+		case UNTRACKED:
 			openFile();
 			break;
 		case SUBMODULE:
@@ -119,13 +124,16 @@ public class DiffPresenter {
 
 	/**
 	 * Presents a 2-way diff
+	 * 
+	 * @param changeType The type of change. 
 	 */
-	private void diffView() {
+	private void diffView(GitChangeType changeType) {
+	  // The local (WC) version.
 		URL fileURL = FileHelper.getFileURL(file.getFileLocation());
 		URL lastCommitedFileURL = null;
 
 		try {
-			lastCommitedFileURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.LAST_COMMIT, file.getFileLocation());
+			lastCommitedFileURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
 		} catch (MalformedURLException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
@@ -136,6 +144,31 @@ public class DiffPresenter {
 				lastCommitedFileURL);
 
 	}
+	
+  /**
+   * Presents a 2-way diff
+   * 
+   * @param changeType The type of change. 
+   */
+  private void diffIndexWithHead() {    
+    // The local (WC) version.
+    URL leftSideURL = FileHelper.getFileURL(file.getFileLocation());
+    URL rightSideURL = null;
+
+    try {
+      leftSideURL  = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
+      
+      rightSideURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.LAST_COMMIT, file.getFileLocation());
+    } catch (MalformedURLException e1) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e1, e1);
+      }
+    }
+
+    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(leftSideURL,
+        rightSideURL);
+
+  }
 
 	/**
 	 * Presents a 3-way diff
@@ -195,7 +228,7 @@ public class DiffPresenter {
 							stageController.stateChanged(changeEvent);
 						}
 					} else {
-						file.setChangeType(GitChangeType.MODIFY);
+						file.setChangeType(GitChangeType.MODIFIED);
 						StageState oldState = StageState.UNSTAGED;
 						StageState newState = StageState.STAGED;
 						List<FileStatus> files = new ArrayList<FileStatus>();

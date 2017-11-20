@@ -63,6 +63,7 @@ public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.re
 				}
 
 				if (isGit) {
+				  // TODO It is hard to understand which actions are handled here. It is also error prone as the order might change.
 					git.getItem(0).setEnabled(true);
 					git.getItem(1).setEnabled(true);
 					// disable the diff action if there are 2 or more files selected or if
@@ -83,8 +84,12 @@ public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.re
 								break;
 							}
 						}
-						if (selectedFile == null || selectedFile != null && (selectedFile.getChangeType() == GitChangeType.ADD
-								|| selectedFile.getChangeType() == GitChangeType.DELETE)) {
+						if (selectedFile == null 
+						    || selectedFile != null && (
+						        selectedFile.getChangeType() == GitChangeType.ADD 
+						        || selectedFile.getChangeType() == GitChangeType.UNTRACKED
+						        || selectedFile.getChangeType() == GitChangeType.MISSING
+						        || selectedFile.getChangeType() == GitChangeType.REMOVED)) {
 							JMenuItem item = git.getItem(1);
 							item.setEnabled(false);
 						}

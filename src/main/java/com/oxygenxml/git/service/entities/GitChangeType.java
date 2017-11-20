@@ -7,19 +7,45 @@ package com.oxygenxml.git.service.entities;
  *
  */
 public enum GitChangeType {
-	
-	/**This file is a submodule*/
+	/**
+	 * This file is a submodule
+	 */
 	SUBMODULE,
+
+  // Staged files (files that are in the index) types.
 	
 	/** File is in conflict */
 	CONFLICT,
 
-	/** Add a new file to the project */
+	/** 
+	 * Newly created files added in the INDEX.
+	 */
 	ADD,
+	
+	 /**
+   * File from INDEX, modified compared to HEAD
+   */
+  CHANGED,
+  
+  /**
+   * A delete added in the INDEX, file is present in HEAD.
+   */
+  REMOVED,
+  
+  // Unstaged files types.
 
-	/** Modify an existing file in the project (content and/or mode) */
-	MODIFY,
+	/**
+   * A newly created file, not yet in the INDEX.
+   */
+  UNTRACKED,
+  
+	/** 
+	 *  A file that was modified compared to the one from INDEX. 
+	 */
+	MODIFIED,
 
-	/** Delete an existing file from the project */
-	DELETE,
+	/**
+	 * A file that is missing on the FS but is present in the INDEX.
+	 */
+	MISSING,
 }

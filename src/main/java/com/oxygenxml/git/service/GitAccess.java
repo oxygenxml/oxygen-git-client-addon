@@ -39,6 +39,7 @@ import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
@@ -327,18 +328,21 @@ public class GitAccess {
 					}
 				}
 				for (String string : status.getUntracked()) {
+				  // A newly created file, not yet in the INDEX.
 					if (!submodules.contains(string)) {
-						unstagedFiles.add(new FileStatus(GitChangeType.ADD, string));
+						unstagedFiles.add(new FileStatus(GitChangeType.UNTRACKED, string));
 					}
 				}
 				for (String string : status.getModified()) {
+				  // A file that was modified compared to the one from INDEX.
 					if (!submodules.contains(string)) {
-						unstagedFiles.add(new FileStatus(GitChangeType.MODIFY, string));
+						unstagedFiles.add(new FileStatus(GitChangeType.MODIFIED, string));
 					}
 				}
 				for (String string : status.getMissing()) {
+				  // A missing file that is present in the INDEX.
 					if (!submodules.contains(string)) {
-						unstagedFiles.add(new FileStatus(GitChangeType.DELETE, string));
+						unstagedFiles.add(new FileStatus(GitChangeType.MISSING, string));
 					}
 				}
 				unstagedFiles.addAll(getConflictingFiles());
@@ -674,7 +678,7 @@ public class GitAccess {
 
 		try {
 			for (FileStatus file : files) {
-				if (file.getChangeType() == GitChangeType.DELETE) {
+				if (file.getChangeType() == GitChangeType.MISSING) {
 					git.rm().addFilepattern(file.getFileLocation()).call();
 				} else {
 					git.add().addFilepattern(file.getFileLocation()).call();
@@ -702,13 +706,15 @@ public class GitAccess {
 				Set<String> submodules = getSubmodules();
 
 				for (String fileName : status.getChanged()) {
+				  // File from INDEX, modified from HEAD
 					if (submodules.contains(fileName)) {
 						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
 					} else {
-						stagedFiles.add(new FileStatus(GitChangeType.MODIFY, fileName));
+						stagedFiles.add(new FileStatus(GitChangeType.CHANGED, fileName));
 					}
 				}
 				for (String fileName : status.getAdded()) {
+				  // Newly created files added in the INDEX
 					if (submodules.contains(fileName)) {
 						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
 					} else {
@@ -716,10 +722,11 @@ public class GitAccess {
 					}
 				}
 				for (String fileName : status.getRemoved()) {
+				  // A delete added in the INDEX, file is present in HEAD.
 					if (submodules.contains(fileName)) {
 						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
 					} else {
-						stagedFiles.add(new FileStatus(GitChangeType.DELETE, fileName));
+						stagedFiles.add(new FileStatus(GitChangeType.REMOVED, fileName));
 					}
 				}
 				return stagedFiles;
@@ -1262,6 +1269,29 @@ public class GitAccess {
 				logger.debug("End fetch");
 			}
 		}
+	}
+
+	/**
+	 * TODO Create tests.
+	 * 
+	 * Locates the file with the given path in the index.
+	 * 
+	 * @param path File path.
+	 * 
+	 * @return The ID or null if not found.
+	 * 
+	 * @throws IOException Unable to read the index.
+	 */
+	public ObjectId locateObjectIdInIndex(String path)  throws IOException {
+	  DirCache dc = git.getRepository().readDirCache();
+	  int firstIndex = dc.findEntry(path);
+	  if (firstIndex < 0) {
+	    return null;
+	  }
+
+	  org.eclipse.jgit.dircache.DirCacheEntry firstEntry = dc.getEntry(firstIndex);
+	  
+	  return firstEntry.getObjectId();
 	}
 
 	/**

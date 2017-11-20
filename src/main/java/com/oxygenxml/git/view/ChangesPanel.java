@@ -768,19 +768,22 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				String path = TreeFormatter.getStringPath(treePath);
 				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
 					FileStatus file = model.getFileByPath(path);
-					if (GitChangeType.ADD == file.getChangeType()) {
+					GitChangeType changeType = file.getChangeType();
+          if (GitChangeType.ADD == changeType
+					    || GitChangeType.UNTRACKED == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
 						toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
-					} else if (GitChangeType.MODIFY == file.getChangeType()) {
+					} else if (GitChangeType.MODIFIED == changeType 
+					    || GitChangeType.CHANGED == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
 						toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
-					} else if (GitChangeType.DELETE == file.getChangeType()) {
+					} else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
 						toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
-					} else if (GitChangeType.CONFLICT == file.getChangeType()) {
+					} else if (GitChangeType.CONFLICT == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
 						toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
-					} else if (GitChangeType.SUBMODULE == file.getChangeType()) {
+					} else if (GitChangeType.SUBMODULE == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
 						toolTip = translator.getTraslation(Tags.SUBMODULE_ICON_TOOLTIP);
 					}
@@ -841,13 +844,16 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				int row, int column) {
 			ImageIcon icon = null;
 			String toolTip = "";
-			if (GitChangeType.ADD == value) {
+			
+			// TODO Extract a common code to be used here and in the com.oxygenxml.git.view.ChangesPanel.CustomTreeIconRenderer
+			
+			if (GitChangeType.ADD == value || GitChangeType.UNTRACKED == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
 				toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
-			} else if (GitChangeType.MODIFY == value) {
+			} else if (GitChangeType.MODIFIED == value || GitChangeType.CHANGED == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
 				toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
-			} else if (GitChangeType.DELETE == value) {
+			} else if (GitChangeType.MISSING == value || GitChangeType.REMOVED == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
 				toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
 			} else if (GitChangeType.CONFLICT == value) {

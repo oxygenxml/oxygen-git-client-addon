@@ -276,7 +276,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	private void insertRows(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
 			if (fileStatus.getChangeType() == GitChangeType.CONFLICT) {
-				fileStatus.setChangeType(GitChangeType.MODIFY);
+				fileStatus.setChangeType(GitChangeType.MODIFIED);
 			}
 		}
 		filesStatus.addAll(fileToBeUpdated);

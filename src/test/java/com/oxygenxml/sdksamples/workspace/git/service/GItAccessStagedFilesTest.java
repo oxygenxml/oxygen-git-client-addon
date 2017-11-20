@@ -50,7 +50,7 @@ public class GItAccessStagedFilesTest {
 		gitAccess.addAll(gitAccess.getUnstagedFiles());
 		List<FileStatus> actual = gitAccess.getStagedFile();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
-		expected.add(new FileStatus(GitChangeType.MODIFY, "test.txt"));
+		expected.add(new FileStatus(GitChangeType.CHANGED, "test.txt"));
 		assertEquals(actual, expected);
 	}
 	
@@ -77,7 +77,7 @@ public class GItAccessStagedFilesTest {
 		gitAccess.addAll(gitAccess.getUnstagedFiles());
 		List<FileStatus> actual = gitAccess.getStagedFile();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
-		expected.add(new FileStatus(GitChangeType.DELETE, "test.txt"));
+		expected.add(new FileStatus(GitChangeType.REMOVED, "test.txt"));
 		assertEquals(actual, expected);
 	}
 

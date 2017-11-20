@@ -117,7 +117,7 @@ public class GitAccessCommitFileContentTest {
 		out.println("teeeeeest");
 		out.close();
 
-		gitAccess.add(new FileStatus(GitChangeType.MODIFY, "test.txt"));
+		gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
 		gitAccess.commit("conflict");
 		gitAccess.pull("", "");
 
