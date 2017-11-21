@@ -13,11 +13,13 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.errors.NoWorkTreeException;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -74,8 +76,10 @@ public class DiffPresenter {
 	 * a conflict file then a 3-way diff is presented. If the file is a modified
 	 * one then a 2-way diff is presented. And if a file is added then the file is
 	 * opened
+	 * 
 	 */
 	public void showDiff() {
+	  try {
 		GitChangeType changeType = file.getChangeType();
     switch (changeType) {
 		case CONFLICT:
@@ -97,6 +101,13 @@ public class DiffPresenter {
 		default:
 			break;
 		}
+	  } catch (Exception ex) {
+	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage());
+	    
+	    if (logger.isDebugEnabled()) {
+	      logger.debug(ex, ex);
+	    }
+	  }
 	}
 
 	private void submoduleDiff() {
@@ -116,18 +127,33 @@ public class DiffPresenter {
 
 	/**
 	 * Opens the file in the Oxygen
+	 * 
+	 * @throws NoRepositorySelected 
+	 * @throws NoWorkTreeException 
+	 * @throws MalformedURLException 
 	 */
-	public void openFile() {
-		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-				.open(FileHelper.getFileURL(file.getFileLocation()));
+	public void openFile() throws NoWorkTreeException, NoRepositorySelected, MalformedURLException {
+	  URL fileURL = null;
+	  GitChangeType changeType = file.getChangeType();
+	  if (changeType == GitChangeType.ADD) {
+	      fileURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
+	  } else {
+	    fileURL = FileHelper.getFileURL(file.getFileLocation());  
+	  }
+	  
+    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+				.open(fileURL);
 	}
 
 	/**
 	 * Presents a 2-way diff
 	 * 
-	 * @param changeType The type of change. 
+	 * @param changeType The type of change.
+	 *  
+	 * @throws NoRepositorySelected 
+	 * @throws NoWorkTreeException 
 	 */
-	private void diffView(GitChangeType changeType) {
+	private void diffView(GitChangeType changeType) throws NoWorkTreeException, NoRepositorySelected {
 	  // The local (WC) version.
 		URL fileURL = FileHelper.getFileURL(file.getFileLocation());
 		URL lastCommitedFileURL = null;
@@ -139,18 +165,21 @@ public class DiffPresenter {
 				logger.debug(e1, e1);
 			}
 		}
-
-		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(fileURL,
-				lastCommitedFileURL);
+		
+		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(
+		    fileURL, lastCommitedFileURL);
 
 	}
 	
   /**
    * Presents a 2-way diff
    * 
-   * @param changeType The type of change. 
+   * @param changeType The type of change.
+   *  
+   * @throws NoRepositorySelected 
+   * @throws NoWorkTreeException 
    */
-  private void diffIndexWithHead() {    
+  private void diffIndexWithHead() throws NoWorkTreeException, NoRepositorySelected {    
     // The local (WC) version.
     URL leftSideURL = FileHelper.getFileURL(file.getFileLocation());
     URL rightSideURL = null;

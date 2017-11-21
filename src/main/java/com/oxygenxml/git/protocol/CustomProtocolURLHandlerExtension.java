@@ -55,6 +55,6 @@ public class CustomProtocolURLHandlerExtension
 	 * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#isReadOnly(java.net.URL)
 	 */
 	public boolean isReadOnly(URL url) {
-		return !CustomProtocolHandler.getCanonicalFileFromFileUrl(url).canWrite();
+		return false;
 	}
 }

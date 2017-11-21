@@ -12,6 +12,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -36,6 +38,10 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  */
 public class CustomContextualMenu extends JPopupMenu {
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(CustomContextualMenu.class);
 
 	/**
 	 * The translator used for the contextual menu names
@@ -89,7 +95,11 @@ public class CustomContextualMenu extends JPopupMenu {
 				DiffPresenter diff = new DiffPresenter(fileStatus, stageController, translator);
 				for (FileStatus file : files) {
 					diff.setFile(file);
-					diff.openFile();
+					try {
+            diff.openFile();
+          } catch (Exception e1) {
+            logger.error(e1, e1);
+          }
 				}
 			}
 

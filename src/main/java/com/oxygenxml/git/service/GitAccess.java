@@ -1063,7 +1063,7 @@ public class GitAccess {
 						}
 						Iterable<RevCommit> logs = git.log()
 								.add(repository.resolve("remotes/origin/" + git.getRepository().getBranch())).call();
-						for (RevCommit revCommit : logs) {
+						for (@SuppressWarnings("unused") RevCommit revCommit : logs) {
 							numberOfCommits++;
 						}
 					}

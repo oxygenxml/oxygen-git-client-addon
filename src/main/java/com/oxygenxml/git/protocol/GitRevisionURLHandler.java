@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
 
-import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -99,8 +98,8 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			  fileObject = gitAccess.locateObjectIdInIndex(path);
 			  } catch (Exception ex) {
 			    logger.error(ex, ex);
+			    ex.printStackTrace();
 			  }
-			  
 			  if (fileObject == null) {
 			    fileObject = gitAccess.getCommit(Commit.LOCAL, path);
 			  }
@@ -143,8 +142,6 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			
 			GitAccess gitAccess = GitAccess.getInstance();
 			InputStream inputStream = gitAccess.getInputStream(fileObject);
-			logger.info("Finally " + inputStream);
-			gitAccess.setRepository(OptionsManager.getInstance().getSelectedRepository());
 			return inputStream;
 		}
 
@@ -155,8 +152,14 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 */
 		public OutputStream getOutputStream() throws IOException {
 			if (VersionIdentifier.MINE.equals(currentHost)) {
-				URL fileContent = FileHelper.getFileURL(path);
-				return fileContent.openConnection().getOutputStream();
+        try {
+          URL fileContent = FileHelper.getFileURL(path);
+          return fileContent.openConnection().getOutputStream();
+        } catch (NoWorkTreeException e) {
+          throw new IOException(e);
+        } catch (NoRepositorySelected e) {
+          throw new IOException(e);
+        }
 			}
 			throw new IOException("Writing is permitted only in the local file.");
 		}
@@ -198,7 +201,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	/**
 	 * Constructs an URL for the diff tool
 	 * 
-	 * @param locationHint A constant from {@link GitFile}
+	 * @param locationHint A constant from {@link VersionIdentifier}
 	 * @param fileLocation The file location relative to the repository
 	 * @return the URL of the form git://gitFile/fileLocation
 	 * 

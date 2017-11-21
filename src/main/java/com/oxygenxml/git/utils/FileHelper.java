@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.errors.NoWorkTreeException;
 
 import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 
 /**
  * An utility class for files
@@ -57,10 +60,12 @@ public class FileHelper {
 	 * @param path
 	 *          - the path to get the URL
 	 * @return the URL from the given path
+	 * 
+	 * @throws NoRepositorySelected 
+	 * @throws NoWorkTreeException 
 	 */
-	public static URL getFileURL(String path) {
-
-		String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+	public static URL getFileURL(String path) throws NoWorkTreeException, NoRepositorySelected {
+		String selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
 		selectedRepository = selectedRepository.replace("\\", "/");
 		URL url = null;
 		File file = new File(selectedRepository + "/" + path);

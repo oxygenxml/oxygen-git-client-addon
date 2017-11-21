@@ -44,7 +44,7 @@ public class VersionIdentifier {
 	 * Will first search for the file in the index and, if not found,
 	 * will search in the last commit.
 	 */
-	public static final String INDEX_OR_LAST_COMMIT = "IndexLastCommit";
+	public static final String INDEX_OR_LAST_COMMIT = "IndexOrLastCommit";
 
 	public static final String CURRENT_SUBMODULE = "CurrentSubmodule";
 

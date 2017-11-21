@@ -1,4 +1,4 @@
-package com.oxygenxml.sdksamples.workspace.git.service;
+package com.oxygenxml.git.service;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -26,9 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.service.Commit;
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 

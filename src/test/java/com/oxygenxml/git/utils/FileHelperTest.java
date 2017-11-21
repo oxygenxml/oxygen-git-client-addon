@@ -1,4 +1,4 @@
-package com.oxygenxml.sdksamples.workspace.git.utils;
+package com.oxygenxml.git.utils;
 
 import static org.junit.Assert.assertEquals;
 

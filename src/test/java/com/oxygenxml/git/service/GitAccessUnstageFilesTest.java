@@ -1,4 +1,4 @@
-package com.oxygenxml.sdksamples.workspace.git.service;
+package com.oxygenxml.git.service;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +18,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
-public class GitAccessRemoveTest {
+public class GitAccessUnstageFilesTest {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "src/test/resources";
 	private GitAccess gitAccess;
@@ -38,7 +38,7 @@ public class GitAccessRemoveTest {
 	}
 
 	@Test
-	public void testRemoveModifyFile() {
+	public void testGetUnstagedFilesForModifyFiles() {
 		try {
 			PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
 			out.println("modificare");
@@ -47,44 +47,36 @@ public class GitAccessRemoveTest {
 			e.printStackTrace();
 		}
 
-		List<FileStatus> files = gitAccess.getUnstagedFiles();
-		gitAccess.addAll(files);
-		gitAccess.removeAll(files);
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
 		expected.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-		assertEquals(expected, actual);
+		assertEquals(actual.toString(), expected.toString());
 	}
 
 	@Test
-	public void testRemoveAddFile() {
+	public void testGetUnstagedFilesForAddedFiles() {
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/add.txt");
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		List<FileStatus> files = gitAccess.getUnstagedFiles();
-		gitAccess.addAll(files);
-		gitAccess.removeAll(files);
+		
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
 		expected.add(new FileStatus(GitChangeType.UNTRACKED, "add.txt"));
-		assertEquals(expected, actual);
+		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testRemoveDeleteFile() {
+	public void testGetUnstagedFilesForDeletedFiles() {
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		file.delete();
 
-		List<FileStatus> files = gitAccess.getUnstagedFiles();
-		gitAccess.addAll(files);
-		gitAccess.removeAll(files);
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
 		expected.add(new FileStatus(GitChangeType.MISSING, "test.txt"));
-		assertEquals(expected, actual);
+		assertEquals(actual, expected);
 	}
 
 	@After
@@ -97,4 +89,5 @@ public class GitAccessRemoveTest {
 			e.printStackTrace();
 		}
 	}
+
 }
