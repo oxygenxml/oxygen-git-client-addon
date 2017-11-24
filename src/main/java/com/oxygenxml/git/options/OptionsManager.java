@@ -338,7 +338,7 @@ public class OptionsManager {
 	public List<String> getProjectsTestedForGit() {
 		loadOptions();
 
-		return options.getPrjectsTestsForGit().getPaths();
+		return options.getProjectsTestsForGit().getPaths();
 	}
 
 	/**
@@ -350,12 +350,12 @@ public class OptionsManager {
 	public void saveProjectTestedForGit(String projectPath) {
 		loadOptions();
 
-		List<String> projectsPath = options.getPrjectsTestsForGit().getPaths();
+		List<String> projectsPath = options.getProjectsTestsForGit().getPaths();
 		projectsPath.add(projectPath);
 		if (projectsPath.size() > MAXIMUM_PROJECTS_TESTED) {
 			projectsPath.remove(0);
 		}
-		options.getPrjectsTestsForGit().setPaths(projectsPath);
+		options.getProjectsTestsForGit().setPaths(projectsPath);
 
 		saveOptions();
 	}

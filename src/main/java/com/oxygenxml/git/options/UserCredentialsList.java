@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ro.sync.util.Equaler;
+
 /**
  * Enitity for the JAXB to store the user credentials
  * 
@@ -46,19 +48,12 @@ public class UserCredentialsList {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		UserCredentialsList other = (UserCredentialsList) obj;
-		if (credentials == null) {
-			if (other.credentials != null)
-				return false;
-		} else if (!credentials.equals(other.credentials))
-			return false;
-		return true;
+	  boolean toReturn = false;
+	  if (obj instanceof UserCredentialsList) {
+	    UserCredentialsList ucl = (UserCredentialsList) obj;
+	    toReturn = Equaler.verifyListEquals(credentials, ucl.getCredentials());
+	  }
+	  return toReturn;
 	}
 
 }

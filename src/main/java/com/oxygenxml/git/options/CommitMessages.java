@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ro.sync.util.Equaler;
+
 /**
  * Entity for the JAXB to store the list of commit messages. Stores last 7
  * committed messages
@@ -43,19 +45,12 @@ public class CommitMessages {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		CommitMessages other = (CommitMessages) obj;
-		if (messages == null) {
-			if (other.messages != null)
-				return false;
-		} else if (!messages.equals(other.messages))
-			return false;
-		return true;
+	  boolean toReturn = false;
+	  if (obj instanceof CommitMessages) {
+	    CommitMessages mess = (CommitMessages) obj;
+	    toReturn = Equaler.verifyListEquals(messages, mess.getMessages());
+	  }
+	  return toReturn;
 	}
 
 }

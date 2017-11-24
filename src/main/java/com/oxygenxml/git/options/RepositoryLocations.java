@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ro.sync.util.Equaler;
+
 /**
  * Entity for the JAXB to store the list of repository locations
  * 
@@ -41,19 +43,12 @@ public class RepositoryLocations {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		RepositoryLocations other = (RepositoryLocations) obj;
-		if (locations == null) {
-			if (other.locations != null)
-				return false;
-		} else if (!locations.equals(other.locations))
-			return false;
-		return true;
+	  boolean toReturn = false;
+	  if (obj instanceof RepositoryLocations) {
+	    RepositoryLocations locs = (RepositoryLocations) obj;
+	    toReturn = Equaler.verifyListEquals(locations, locs.getLocations());
+	  }
+	  return toReturn;
 	}
 
 }

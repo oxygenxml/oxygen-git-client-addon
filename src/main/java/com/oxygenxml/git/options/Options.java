@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ro.sync.util.Equaler;
+
 /**
  * Entity for the JAXB to store the plugin options
  * 
@@ -54,7 +56,7 @@ public class Options {
 	 * repository
 	 */
 	@XmlElement(name = "projectsTested")
-	private ProjectsTestedForGit prjectsTestsForGit = new ProjectsTestedForGit();
+	private ProjectsTestedForGit projectsTestsForGit = new ProjectsTestedForGit();
 
 	/**
 	 * Wrapper for a list of previously selected destination paths
@@ -76,12 +78,12 @@ public class Options {
 		this.destinationPaths = destinationPaths;
 	}
 
-	public ProjectsTestedForGit getPrjectsTestsForGit() {
-		return prjectsTestsForGit;
+	public ProjectsTestedForGit getProjectsTestsForGit() {
+		return projectsTestsForGit;
 	}
 
 	public void setPrjectsTestsForGit(ProjectsTestedForGit prjectsTestsForGit) {
-		this.prjectsTestsForGit = prjectsTestsForGit;
+		this.projectsTestsForGit = prjectsTestsForGit;
 	}
 
 	public RepositoryLocations getRepositoryLocations() {
@@ -154,7 +156,7 @@ public class Options {
 		result = prime * result + ((commitMessages == null) ? 0 : commitMessages.hashCode());
 		result = prime * result + ((destinationPaths == null) ? 0 : destinationPaths.hashCode());
 		result = prime * result + ((passphrase == null) ? 0 : passphrase.hashCode());
-		result = prime * result + ((prjectsTestsForGit == null) ? 0 : prjectsTestsForGit.hashCode());
+		result = prime * result + ((projectsTestsForGit == null) ? 0 : projectsTestsForGit.hashCode());
 		result = prime * result + ((repositoryLocations == null) ? 0 : repositoryLocations.hashCode());
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
@@ -164,66 +166,26 @@ public class Options {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Options other = (Options) obj;
-		if (commitMessages == null) {
-			if (other.commitMessages != null)
-				return false;
-		} else if (!commitMessages.equals(other.commitMessages))
-			return false;
-		if (destinationPaths == null) {
-			if (other.destinationPaths != null)
-				return false;
-		} else if (!destinationPaths.equals(other.destinationPaths))
-			return false;
-		if (passphrase == null) {
-			if (other.passphrase != null)
-				return false;
-		} else if (!passphrase.equals(other.passphrase))
-			return false;
-		if (prjectsTestsForGit == null) {
-			if (other.prjectsTestsForGit != null)
-				return false;
-		} else if (!prjectsTestsForGit.equals(other.prjectsTestsForGit))
-			return false;
-		if (repositoryLocations == null) {
-			if (other.repositoryLocations != null)
-				return false;
-		} else if (!repositoryLocations.equals(other.repositoryLocations))
-			return false;
-		if (selectedRepository == null) {
-			if (other.selectedRepository != null)
-				return false;
-		} else if (!selectedRepository.equals(other.selectedRepository))
-			return false;
-		
-		// Check user credentials.
-		if (userCredentialsList == null) {
-			if (other.userCredentialsList != null)
-				return false;
-		} else if (!userCredentialsList.equals(other.userCredentialsList))
-			return false;
-		
-		// Check the ssq questions.
-		if (sshPromptAnswers != null && other.sshPromptAnswers != null) {
-		  return sshPromptAnswers.equals(other.sshPromptAnswers);
-		} else if (sshPromptAnswers == null || other.sshPromptAnswers == null) {
-		  return false;
-		}
-		
-		return true;
+	  boolean toReturn = false;
+	  if (obj instanceof Options) {
+	    Options opt = (Options) obj;
+	    toReturn = Equaler.verifyEquals(commitMessages, opt.getCommitMessages())
+	        && Equaler.verifyEquals(destinationPaths, opt.getDestinationPaths())
+	        && Equaler.verifyEquals(passphrase, opt.getPassphrase())
+	        && Equaler.verifyEquals(projectsTestsForGit, opt.getProjectsTestsForGit())
+	        && Equaler.verifyEquals(repositoryLocations, opt.getRepositoryLocations())
+	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
+	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
+	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList());
+	  }
+	  return toReturn;
 	}
 
 	@Override
 	public String toString() {
 		return "Options [repositoryLocations=" + repositoryLocations + ", selectedRepository=" + selectedRepository
 				+ ", userCredentialsList=" + userCredentialsList + ", commitMessages=" + commitMessages
-				+ ", prjectsTestsForGit=" + prjectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase="
+				+ ", prjectsTestsForGit=" + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase="
 				+ passphrase + "]";
 	}
 
