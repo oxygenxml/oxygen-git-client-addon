@@ -85,7 +85,7 @@ public class GitActionsProvider {
       commitAction = new AbstractAction(translator.getTraslation(Tags.PROJECT_VIEW_COMMIT_CONTEXTUAL_MENU_ITEM)) {
         @Override
         public void actionPerformed(ActionEvent e) {
-          pluginWorkspaceAccess.showView(CustomWorkspaceAccessPluginExtension.GIT_STAGING_VIEW, true);
+          pluginWorkspaceAccess.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true);
           // TODO Alex This INIT can be done in the view itself.
           boolean filesStaged = false;
           File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);

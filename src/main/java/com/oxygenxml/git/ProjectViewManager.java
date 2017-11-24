@@ -4,7 +4,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,7 +15,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 /**
  * Manager for the Project view.
  * 
- * @author sorin_carbunaru
+ * @author Beniamin Savu
  */
 public class ProjectViewManager {
 

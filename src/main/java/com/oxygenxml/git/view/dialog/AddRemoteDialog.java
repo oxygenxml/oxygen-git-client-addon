@@ -17,7 +17,7 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 
-import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
+import com.oxygenxml.git.OxygenGitPluginExtension;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;

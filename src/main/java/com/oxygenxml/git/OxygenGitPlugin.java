@@ -6,18 +6,18 @@ import ro.sync.exml.plugin.PluginDescriptor;
 /**
  * Workspace access plugin. 
  */
-public class WorkspaceAccessPlugin extends Plugin {
+public class OxygenGitPlugin extends Plugin {
   /**
    * The static plugin instance.
    */
-  private static WorkspaceAccessPlugin instance = null;
+  private static OxygenGitPlugin instance = null;
 
   /**
    * Constructs the plugin.
    * 
    * @param descriptor The plugin descriptor 
    */
-  public WorkspaceAccessPlugin(PluginDescriptor descriptor) {
+  public OxygenGitPlugin(PluginDescriptor descriptor) {
     super(descriptor);
 
     if (instance != null) {
@@ -31,7 +31,7 @@ public class WorkspaceAccessPlugin extends Plugin {
    * 
    * @return the shared plugin instance.
    */
-  public static WorkspaceAccessPlugin getInstance() {
+  public static OxygenGitPlugin getInstance() {
     return instance;
   }
 }
