@@ -465,11 +465,11 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					scrollPane.setViewportView(tree);
 					currentView = TREE_VIEW;
 					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TABLE_VIEW));
-					switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
+					switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
 				} else {
 					currentView = FLAT_VIEW;
 					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
-					switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+					switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 					filesTable.clearSelection();
 					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
@@ -538,9 +538,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		if (forStaging) {
-			changeAllButton = new JButton(translator.getTraslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
+			changeAllButton = new JButton(translator.getTranslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
 		} else {
-			changeAllButton = new JButton(translator.getTraslation(Tags.STAGE_ALL_BUTTON_TEXT));
+			changeAllButton = new JButton(translator.getTranslation(Tags.STAGE_ALL_BUTTON_TEXT));
 		}
 		this.add(changeAllButton, gbc);
 	}
@@ -561,9 +561,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		if (forStaging) {
-			changeSelectedButton = new JButton(translator.getTraslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
+			changeSelectedButton = new JButton(translator.getTranslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
 		} else {
-			changeSelectedButton = new JButton(translator.getTraslation(Tags.STAGE_SELECTED_BUTTON_TEXT));
+			changeSelectedButton = new JButton(translator.getTranslation(Tags.STAGE_SELECTED_BUTTON_TEXT));
 		}
 		changeSelectedButton.setEnabled(false);
 		this.add(changeSelectedButton, gbc);
@@ -587,7 +587,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		gbc.weighty = 0;
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
-		switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+		switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 		switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
@@ -772,20 +772,20 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
           if (GitChangeType.ADD == changeType
 					    || GitChangeType.UNTRACKED == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-						toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
+						toolTip = translator.getTranslation(Tags.ADD_ICON_TOOLTIP);
 					} else if (GitChangeType.MODIFIED == changeType 
 					    || GitChangeType.CHANGED == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
-						toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
+						toolTip = translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP);
 					} else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
-						toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
+						toolTip = translator.getTranslation(Tags.DELETE_ICON_TOOLTIP);
 					} else if (GitChangeType.CONFLICT == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
-						toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
+						toolTip = translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP);
 					} else if (GitChangeType.SUBMODULE == changeType) {
 						icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
-						toolTip = translator.getTraslation(Tags.SUBMODULE_ICON_TOOLTIP);
+						toolTip = translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP);
 					}
 				}
 			}
@@ -849,19 +849,19 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 			
 			if (GitChangeType.ADD == value || GitChangeType.UNTRACKED == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-				toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
+				toolTip = translator.getTranslation(Tags.ADD_ICON_TOOLTIP);
 			} else if (GitChangeType.MODIFIED == value || GitChangeType.CHANGED == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
-				toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
+				toolTip = translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP);
 			} else if (GitChangeType.MISSING == value || GitChangeType.REMOVED == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
-				toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
+				toolTip = translator.getTranslation(Tags.DELETE_ICON_TOOLTIP);
 			} else if (GitChangeType.CONFLICT == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
-				toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
+				toolTip = translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP);
 			} else if (GitChangeType.SUBMODULE == value) {
 				icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
-				toolTip = translator.getTraslation(Tags.SUBMODULE_ICON_TOOLTIP);
+				toolTip = translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP);
 			}
 			JLabel iconLabel = new JLabel(icon);
 			iconLabel.setToolTipText(toolTip);

@@ -53,7 +53,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	public SubmoduleSelectDialog(
 	    JFrame parentFrame, 
 			Translator translator) {
-		super(parentFrame, translator.getTraslation(Tags.SUBMODULE_DIALOG_TITLE), true);
+		super(parentFrame, translator.getTranslation(Tags.SUBMODULE_DIALOG_TITLE), true);
 		this.translator = translator;
 
 		this.setLayout(new GridBagLayout());
@@ -106,7 +106,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		JLabel label = new JLabel(translator.getTraslation(Tags.SUBMODULE_DIALOG_SUBMODULE_SELECTION_LABEL));
+		JLabel label = new JLabel(translator.getTranslation(Tags.SUBMODULE_DIALOG_SUBMODULE_SELECTION_LABEL));
 		getContentPane().add(label, gbc);
 	}
 

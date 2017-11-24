@@ -99,14 +99,14 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 						CloneRepositoryDialog.this.setVisible(true);
 						CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
 						information.setText(
-								"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) + "</html>");
+								"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) + "</html>");
 						break;
 					}
 					if (cause instanceof org.eclipse.jgit.errors.TransportException) {
 						UserCredentials userCredentials = new LoginDialog(
 								(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), true, url.getHost(),
-								translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE), translator).getUserCredentials();
+								translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true, url.getHost(),
+								translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE), translator).getUserCredentials();
 						if (userCredentials != null) {
 							doOK();
 						}
@@ -143,7 +143,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	public CloneRepositoryDialog(
 	    JFrame parentFrame, 
 	    Translator translator) {
-		super(parentFrame, translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
+		super(parentFrame, translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
 		this.translator = translator;
 
 		createGUI();
@@ -160,7 +160,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
-		JLabel lblURL = new JLabel(translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL));
+		JLabel lblURL = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -183,7 +183,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		panel.add(tfURL, gbc);
 
-		JLabel lblPath = new JLabel(translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
+		JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -222,7 +222,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		};
 		browseButton = new ToolbarButton(browseButtonAction, false);
 		browseButton.setIcon(Icons.getIcon(ImageConstants.FILE_CHOOSER_ICON));
-		browseButton.setToolTipText(translator.getTraslation(Tags.BROWSE_BUTTON_TOOLTIP));
+		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		browseButton.setOpaque(false);
 
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
@@ -281,7 +281,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		  // TODO THis minimum size is needed, probably, because of the new label.
 		  // Perhaps a new pack???
 			this.setMinimumSize(new Dimension(400, 180));
-			information.setText("<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL) + "</html>");
+			information.setText("<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL) + "</html>");
 			return;
 		}
 		
@@ -298,7 +298,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				CloneRepositoryDialog.this.setVisible(true);
 				this.setMinimumSize(new Dimension(400, 190));
 				information.setText(
-						"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) + "</html>");
+						"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) + "</html>");
 				return false;
 			}
 		} else {
@@ -314,7 +314,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				CloneRepositoryDialog.this.setVisible(true);
 				this.setMinimumSize(new Dimension(400, 180));
 				information.setText(
-						"<html>" + translator.getTraslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) + "</html>");
+						"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) + "</html>");
 				return false;
 			}
 		}

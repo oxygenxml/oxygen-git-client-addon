@@ -77,7 +77,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
 		JLabel lblGitRemote = new JLabel(
-				"<html>" + message + "<br>" + translator.getTraslation(Tags.LOGIN_DIALOG) + "<b>" + host + "</b></html>");
+				"<html>" + message + "<br>" + translator.getTranslation(Tags.LOGIN_DIALOG) + "<b>" + host + "</b></html>");
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -89,7 +89,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridwidth = 3;
 		panel.add(lblGitRemote, gbc);
 
-		JLabel lbUsername = new JLabel(translator.getTraslation(Tags.LOGIN_DIALOG_USERNAME_LABEL));
+		JLabel lbUsername = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_USERNAME_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -113,7 +113,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridwidth = 2;
 		panel.add(tfUsername, gbc);
 
-		JLabel lbPassword = new JLabel(translator.getTraslation(Tags.LOGIN_DIALOG_PASSWORD_LABEL));
+		JLabel lbPassword = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_PASSWORD_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;

@@ -115,7 +115,7 @@ public class DiffPresenterTest extends GitTestBase {
     StageController stageController = Mockito.mock(StageController.class);
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
-    Mockito.when(translator.getTraslation(Mockito.anyString())).then(new Answer<String>() {
+    Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
       public String answer(InvocationOnMock invocation) throws Throwable {
         return (String) invocation.getArguments()[0];
       }
@@ -207,7 +207,7 @@ public class DiffPresenterTest extends GitTestBase {
     StageController stageController = Mockito.mock(StageController.class);
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
-    Mockito.when(translator.getTraslation(Mockito.anyString())).then(new Answer<String>() {
+    Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
       public String answer(InvocationOnMock invocation) throws Throwable {
         return (String) invocation.getArguments()[0];
       }

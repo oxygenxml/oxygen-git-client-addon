@@ -87,7 +87,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
-		JLabel label = new JLabel(translator.getTraslation(Tags.ADD_REMOTE_DIALOG_INFO_LABEL));
+		JLabel label = new JLabel(translator.getTranslation(Tags.ADD_REMOTE_DIALOG_INFO_LABEL));
 		getContentPane().add(label, gbc);
 	}
 
@@ -127,7 +127,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		JLabel label = new JLabel(translator.getTraslation(Tags.ADD_REMOTE_DIALOG_ADD_REMOTE_REPO_LABEL));
+		JLabel label = new JLabel(translator.getTranslation(Tags.ADD_REMOTE_DIALOG_ADD_REMOTE_REPO_LABEL));
 		getContentPane().add(label, gbc);
 	}
 
@@ -155,7 +155,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		JLabel label = new JLabel(translator.getTraslation(Tags.ADD_REMOTE_DIALOG_ADD_REMOTE_NAME_LABEL));
+		JLabel label = new JLabel(translator.getTranslation(Tags.ADD_REMOTE_DIALOG_ADD_REMOTE_NAME_LABEL));
 		getContentPane().add(label, gbc);
 	}
 

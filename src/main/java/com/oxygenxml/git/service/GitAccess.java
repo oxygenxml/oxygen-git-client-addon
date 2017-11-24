@@ -530,12 +530,12 @@ public class GitAccess {
 
 			if (repositoryState == RepositoryState.MERGING) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-				response.setMessage(translator.getTraslation(Tags.PUSH_WITH_CONFLICTS));
+				response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
 				return response;
 			}
 			if (getPullsBehind() > 0) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-				response.setMessage(translator.getTraslation(Tags.BRANCH_BEHIND));
+				response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
 				return response;
 			}
 			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
@@ -554,7 +554,7 @@ public class GitAccess {
 
 		}
 		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-		response.setMessage(translator.getTraslation(Tags.PUSH_FAILED_UNKNOWN));
+		response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 		return response;
 	}
 

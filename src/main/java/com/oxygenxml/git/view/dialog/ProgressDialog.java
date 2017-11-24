@@ -26,7 +26,7 @@ public class ProgressDialog extends OKCancelDialog {
 	public ProgressDialog(JFrame parentFrame) {
 		super(parentFrame, "", true);
 		translator = new TranslatorExtensionImpl();
-		setTitle(translator.getTraslation(Tags.CLONE_PROGRESS_DIALOG_TITLE));
+		setTitle(translator.getTranslation(Tags.CLONE_PROGRESS_DIALOG_TITLE));
 		
 		noteLabel = new JLabel();
 

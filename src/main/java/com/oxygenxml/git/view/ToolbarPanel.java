@@ -172,16 +172,16 @@ public class ToolbarPanel extends JPanel {
             } catch (PrivateRepositoryException e) {
               String loginMessage = null;
               if (firstRun) {
-                loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+                loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
               } else {
                 UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(GitAccess.getInstance().getHostName());
-                loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+                loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
                     + gitCredentials.getUsername();
               }
 
               UserCredentials userCredentials = new LoginDialog(
                   (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-                  translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), 
+                  translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), 
                   true, 
                   GitAccess.getInstance().getHostName(), 
                   loginMessage,
@@ -288,7 +288,7 @@ public class ToolbarPanel extends JPanel {
 
 		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
 		cloneRepositoryButton.setIcon(Icons.getIcon(ImageConstants.GIT_CLONE_REPOSITORY_ICON));
-		cloneRepositoryButton.setToolTipText(translator.getTraslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
+		cloneRepositoryButton.setToolTipText(translator.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
 		setCustomWidthOn(cloneRepositoryButton);
 
 		gitToolbar.add(cloneRepositoryButton);
@@ -315,7 +315,7 @@ public class ToolbarPanel extends JPanel {
 		};
 		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
 		submoduleSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_SUBMODULE_ICON));
-		submoduleSelectButton.setToolTipText(translator.getTraslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
+		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
 		setCustomWidthOn(submoduleSelectButton);
 
 		gitToolbar.add(submoduleSelectButton);
@@ -333,7 +333,7 @@ public class ToolbarPanel extends JPanel {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
 						new BranchSelectDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTraslation(Tags.BRANCH_SELECTION_DIALOG_TITLE), true, refresh, translator);
+								translator.getTranslation(Tags.BRANCH_SELECTION_DIALOG_TITLE), true, refresh, translator);
 					}
 				} catch (NoRepositorySelected e1) {
 				}
@@ -341,7 +341,7 @@ public class ToolbarPanel extends JPanel {
 		};
 		branchSelectButton = new ToolbarButton(branchSelectAction, false);
 		branchSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_BRANCH_ICON));
-		branchSelectButton.setToolTipText(translator.getTraslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
+		branchSelectButton.setToolTipText(translator.getTranslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
 		setCustomWidthOn(branchSelectButton);
 
 		gitToolbar.add(branchSelectButton);
@@ -354,21 +354,21 @@ public class ToolbarPanel extends JPanel {
 			message += "<html>";
 			message += "Commit: <b>" + branchInfo.getShortBranchName() + "</b></html>";
 			statusInformationLabel
-					.setToolTipText(translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD) + " "
+					.setToolTipText(translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD) + " "
 							+ branchInfo.getBranchName());
 		} else {
 			String currentBranch = branchInfo.getBranchName();
 			if (!"".equals(currentBranch)) {
 				message += "<html>";
-				message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch
+				message += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch
 						+ "</b> - ";
 				if (pullsBehind == 0) {
-					message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+					message += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
 				} else if (pullsBehind == 1) {
-					message += pullsBehind + " " + translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
+					message += pullsBehind + " " + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
 				} else {
 					message += pullsBehind + " "
-							+ translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
+							+ translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
 				}
 				message += "</html>";
 			}
@@ -430,7 +430,7 @@ public class ToolbarPanel extends JPanel {
 		};
 
 		pushButton.setIcon(Icons.getIcon(ImageConstants.GIT_PUSH_ICON));
-		pushButton.setToolTipText(translator.getTraslation(Tags.PUSH_BUTTON_TOOLTIP));
+		pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
 		setCustomWidthOn(pushButton);
 
 		// PULL button
@@ -477,7 +477,7 @@ public class ToolbarPanel extends JPanel {
 
 		};
 		pullButton.setIcon(Icons.getIcon(ImageConstants.GIT_PULL_ICON));
-		pullButton.setToolTipText(translator.getTraslation(Tags.PULL_BUTTON_TOOLTIP));
+		pullButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		setCustomWidthOn(pullButton);
 
 		gitToolbar.add(pushButton);

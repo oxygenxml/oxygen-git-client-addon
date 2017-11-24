@@ -90,10 +90,10 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 
 					if (!previouslyMessages.getSelectedItem()
-							.equals(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE))) {
+							.equals(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE))) {
 						commitMessage.setText((String) previouslyMessages.getSelectedItem());
 						previouslyMessages.setEditable(true);
-						previouslyMessages.setSelectedItem(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
+						previouslyMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
 						previouslyMessages.setEditable(false);
 					}
 				}
@@ -108,9 +108,9 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			public void actionPerformed(ActionEvent e) {
 				String message = "";
 				if (gitAccess.getConflictingFiles().size() > 0) {
-					message = translator.getTraslation(Tags.COMMIT_WITH_CONFLICTS);
+					message = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
 				} else {
-					message = translator.getTraslation(Tags.COMMIT_SUCCESS);
+					message = translator.getTranslation(Tags.COMMIT_SUCCESS);
 					ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile());
 					stageController.stateChanged(changeEvent);
 					gitAccess.commit(commitMessage.getText());
@@ -139,7 +139,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
-		label = new JLabel(translator.getTraslation(Tags.COMMIT_MESSAGE_LABEL));
+		label = new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL));
 		this.add(label, gbc);
 	}
 
@@ -161,7 +161,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			previouslyMessages.addItem(previouslyCommitMessage);
 		}
 		previouslyMessages.setEditable(true);
-		previouslyMessages.setSelectedItem(translator.getTraslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
+		previouslyMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
 		previouslyMessages.setEditable(false);
 
 		int height = (int) previouslyMessages.getPreferredSize().getHeight();
@@ -216,7 +216,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.gridy = 3;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-		commitButton = new JButton(translator.getTraslation(Tags.COMMIT_BUTTON_TEXT));
+		commitButton = new JButton(translator.getTranslation(Tags.COMMIT_BUTTON_TEXT));
 		toggleCommitButton();
 		this.add(commitButton, gbc);
 	}
@@ -230,7 +230,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
 					&& gitAccess.getStagedFile().size() == 0 && gitAccess.getUnstagedFiles().size() == 0) {
 				commitButton.setEnabled(true);
-				commitMessage.setText(translator.getTraslation(Tags.CONCLUDE_MERGE_MESSAGE));
+				commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
 			} else if (gitAccess.getStagedFile().size() > 0) {
 				commitButton.setEnabled(true);
 			} else {
@@ -265,7 +265,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	public void setStatus(final String message) {
 	  // TODO Create constants for the messages.
 		if ("unavailable".equals(message)) {
-			statusLabel.setText(translator.getTraslation(Tags.CANNOT_REACH_HOST));
+			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
 			statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
 		} else if ("available".equals(message)) {
 		  statusLabel.setText(null);

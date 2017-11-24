@@ -243,8 +243,8 @@ public class DiffPresenter {
 						String[] options = new String[] { "   Yes   ", "   No   " };
 						int[] optonsId = new int[] { 0, 1 };
 						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-								translator.getTraslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
-								translator.getTraslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
+								translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
+								translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
 						if (response == 0) {
 							GitAccess.getInstance().remove(file);
 							GitAccess.getInstance().restoreLastCommitFile(file.getFileLocation());

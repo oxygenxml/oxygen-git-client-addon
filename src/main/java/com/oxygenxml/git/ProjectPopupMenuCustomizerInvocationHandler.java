@@ -66,7 +66,7 @@ public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.re
 	    // Proceed only if the selected file pertain to a Git repository
 	    if (areSelectedFilesFromGitRepo()) {
 	      projectContextMenu.addSeparator();
-	      JMenu gitMenu = new JMenu(translator.getTraslation(Tags.PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM));
+	      JMenu gitMenu = new JMenu(translator.getTranslation(Tags.PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM));
 	      gitMenu.setIcon(Icons.getIcon(ImageConstants.GIT_ICON));
 	      for (AbstractAction action : gitActionsProvider.getActionsForProjectViewSelection()) {
           gitMenu.add(action);

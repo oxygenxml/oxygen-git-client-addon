@@ -86,8 +86,8 @@ public class PanelRefresh implements GitRefreshSupport {
 				String[] options = new String[] { "   Yes   ", "   No   " };
 				int[] optonsId = new int[] { 0, 1 };
 				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-						translator.getTraslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-						translator.getTraslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
+						translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
+						translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
 				if (response == 0) {
 					gitAccess.createNewRepository(projectView);
 					OptionsManager.getInstance().addRepository(projectView);

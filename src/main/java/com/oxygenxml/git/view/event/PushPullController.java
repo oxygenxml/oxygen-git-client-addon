@@ -77,7 +77,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 		return 
 		    new LoginDialog(
 		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		        translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), 
+		        translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), 
 		        true, 
 		        gitAccess.getHostName(), 
 		        loginMessage, 
@@ -96,9 +96,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		String message = "";
 		if (command == Command.PUSH) {
-			message = translator.getTraslation(Tags.PUSH_IN_PROGRESS);
+			message = translator.getTranslation(Tags.PUSH_IN_PROGRESS);
 		} else {
-			message = translator.getTraslation(Tags.PULL_IN_PROGRESS);
+			message = translator.getTranslation(Tags.PULL_IN_PROGRESS);
 		}
 		
 		// Notify push about to start.
@@ -135,7 +135,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 								true, 
 								((CheckoutConflictException) e).getConflictingPaths(), 
 								translator,
-								translator.getTraslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
+								translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
 						
 						if (logger.isDebugEnabled()) {
 						  logger.info(((CheckoutConflictException) e).getConflictingPaths());
@@ -145,10 +145,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 						String loginMessage = "";
 						if ("".equals(userCredentials.getUsername())) {
 						  // No credentials were used but they are required.
-							loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
+							loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
 						} else {
 						  // Invalid credentails.
-							loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+							loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
 									+ userCredentials.getUsername();
 						}
 						// Request new credentials.
@@ -163,10 +163,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 					} else if (e.getMessage().contains("not permitted")) {
 					  // The user doesn't have permissions.
 						((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-								.showWarningMessage(translator.getTraslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
+								.showWarningMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
 						// Request new credentials.
 						UserCredentials loadNewCredentials = requestNewCredentials(
-								translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
+								translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
 										+ userCredentials.getUsername());
 						if (loadNewCredentials != null) {
 						  // Avoid notification now. We try again.
@@ -178,7 +178,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 							|| e.getMessage().contains("No value for key remote.origin.url found in configuration")) {
 					  // No remote.
 						new AddRemoteDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTraslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
+								translator.getTranslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
 					} else if (e.getMessage().contains("Auth fail")) {
 					  // This message is thrown for SSH.
 					  // TODO i18n.
@@ -233,16 +233,16 @@ public class PushPullController implements Subject<PushPullEvent> {
 				PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (PullStatus.OK == response.getStatus()) {
-					message = translator.getTraslation(Tags.PULL_SUCCESSFUL);
+					message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-							translator.getTraslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE), true, response.getConflictingFiles(),
-							translator, translator.getTraslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
+							translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE), true, response.getConflictingFiles(),
+							translator, translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
-					message = translator.getTraslation(Tags.PULL_UP_TO_DATE);
+					message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showWarningMessage(translator.getTraslation(Tags.PULL_WITH_CONFLICTS));
+							.showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
 				}
 				return message;
 			}
@@ -263,12 +263,12 @@ public class PushPullController implements Subject<PushPullEvent> {
 				PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (Status.OK == response.getStatus()) {
-					message = translator.getTraslation(Tags.PUSH_SUCCESSFUL);
+					message = translator.getTranslation(Tags.PUSH_SUCCESSFUL);
 				} else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage("Push failed, please get your repository up to date(PULL)");
 				} else if (Status.UP_TO_DATE == response.getStatus()) {
-					message = translator.getTraslation(Tags.PUSH_UP_TO_DATE);
+					message = translator.getTranslation(Tags.PUSH_UP_TO_DATE);
 				} else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage(response.getMessage());

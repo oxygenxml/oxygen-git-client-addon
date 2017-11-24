@@ -82,7 +82,7 @@ public class GitActionsProvider {
     
     // Create the Git actions, if not already created
     if (commitAction == null) {
-      commitAction = new AbstractAction(translator.getTraslation(Tags.PROJECT_VIEW_COMMIT_CONTEXTUAL_MENU_ITEM)) {
+      commitAction = new AbstractAction(translator.getTranslation(Tags.PROJECT_VIEW_COMMIT_CONTEXTUAL_MENU_ITEM)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           pluginWorkspaceAccess.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true);
@@ -137,7 +137,7 @@ public class GitActionsProvider {
       };
     }
     if (gitDiffAction == null) {
-      gitDiffAction = new AbstractAction(translator.getTraslation(Tags.PROJECT_VIEW_GIT_DIFF_CONTEXTUAL_MENU_ITEM)) {
+      gitDiffAction = new AbstractAction(translator.getTranslation(Tags.PROJECT_VIEW_GIT_DIFF_CONTEXTUAL_MENU_ITEM)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);

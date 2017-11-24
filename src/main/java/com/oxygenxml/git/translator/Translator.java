@@ -15,5 +15,5 @@ public interface Translator {
 	 *          - the key.
 	 * @return the translation.
 	 */
-	public String getTraslation(String key);
+	public String getTranslation(String key);
 }

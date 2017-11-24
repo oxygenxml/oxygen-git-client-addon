@@ -191,7 +191,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		        if (GitAccess.getInstance().getBranchInfo().isDetached()) {
 		          PluginWorkspaceProvider.getPluginWorkspace()
-		          .showInformationMessage(translator.getTraslation(Tags.DETACHED_HEAD_MESSAGE));
+		          .showInformationMessage(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
 		        }
 
 
@@ -215,7 +215,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		          SwingUtilities.invokeLater(new Runnable() {
 		            public void run() {
 		              PluginWorkspaceProvider.getPluginWorkspace()
-		              .showInformationMessage(translator.getTraslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
+		              .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
 		            }
 		          });
 		        } catch (IOException e1) {
@@ -259,7 +259,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 						workingCopySelector.setSelectedItem(directoryPath);
 					} else {
 						PluginWorkspaceProvider.getPluginWorkspace()
-								.showInformationMessage(translator.getTraslation(Tags.WORKINGCOPY_NOT_GIT_DIRECTORY));
+								.showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_NOT_GIT_DIRECTORY));
 					}
 				}
 			}
@@ -282,7 +282,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		label = new JLabel(translator.getTraslation(Tags.WORKING_COPY_LABEL));
+		label = new JLabel(translator.getTranslation(Tags.WORKING_COPY_LABEL));
 		this.add(label, gbc);
 
 	}
@@ -351,7 +351,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weighty = 0;
 		browseButton = new ToolbarButton(null, false);
 		browseButton.setIcon(Icons.getIcon(ImageConstants.FILE_CHOOSER_ICON));
-		browseButton.setToolTipText(translator.getTraslation(Tags.BROWSE_BUTTON_TOOLTIP));
+		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);
 		browswtoolbar.setFloatable(false);

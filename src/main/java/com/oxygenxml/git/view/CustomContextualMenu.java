@@ -85,7 +85,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				diff.showDiff();
 			}
 		});
-		showDiff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
+		showDiff.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
 
 		// Open menu
 		JMenuItem open = new JMenuItem();
@@ -104,7 +104,7 @@ public class CustomContextualMenu extends JPopupMenu {
 			}
 
 		});
-		open.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN));
+		open.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN));
 
 		// Stage/Unstage
 		JMenuItem changeState = new JMenuItem();
@@ -122,9 +122,9 @@ public class CustomContextualMenu extends JPopupMenu {
 			}
 		});
 		if (staging) {
-			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_UNSTAGE));
+			changeState.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE));
 		} else {
-			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_STAGE));
+			changeState.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_STAGE));
 		}
 
 		// Resolve "mine"
@@ -139,7 +139,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				stageController.stateChanged(changeEvent);
 			}
 		});
-		resolveMine.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE));
+		resolveMine.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE));
 
 		// Resolve "theirs"
 		JMenuItem resolveTheirs = new JMenuItem();
@@ -156,7 +156,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				stageController.stateChanged(changeEvent);
 			}
 		});
-		resolveTheirs.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS));
+		resolveTheirs.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS));
 
 		// show diff
 		JMenuItem diff = new JMenuItem();
@@ -167,7 +167,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				diff.showDiff();
 			}
 		});
-		diff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
+		diff.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
 
 		// Mark resolved
 		JMenuItem markResolved = new JMenuItem();
@@ -180,7 +180,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				stageController.stateChanged(changeEvent);
 			}
 		});
-		markResolved.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED));
+		markResolved.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED));
 
 		// Restart Merge
 		JMenuItem restartMerge = new JMenuItem();
@@ -193,11 +193,11 @@ public class CustomContextualMenu extends JPopupMenu {
 				stageController.stateChanged(changeEvent);
 			}
 		});
-		restartMerge.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE));
+		restartMerge.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE));
 
 		// Resolve Conflict
 		JMenu resolveConflict = new JMenu();
-		resolveConflict.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
+		resolveConflict.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
 		resolveConflict.add(diff);
 		resolveConflict.addSeparator();
 		resolveConflict.add(resolveMine);
@@ -214,8 +214,8 @@ public class CustomContextualMenu extends JPopupMenu {
 				String[] options = new String[] { "   Yes   ", "   No   " };
 				int[] optonsId = new int[] { 0, 1 };
 				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD),
-						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
+						translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD),
+						translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
 				if (response == 0) {
 					for (FileStatus file : files) {
 						if (file.getChangeType() == GitChangeType.ADD
@@ -238,7 +238,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				}
 			}
 		});
-		discard.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD));
+		discard.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD));
 		this.add(showDiff);
 		this.add(open);
 		this.add(changeState);
