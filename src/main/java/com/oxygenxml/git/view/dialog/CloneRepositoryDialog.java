@@ -103,10 +103,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 						break;
 					}
 					if (cause instanceof org.eclipse.jgit.errors.TransportException) {
-						UserCredentials userCredentials = new LoginDialog(
-								(JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true, url.getHost(),
-								translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE), translator).getUserCredentials();
+						UserCredentials userCredentials = new LoginDialog(url.getHost(),
+								translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE),
+								translator).getUserCredentials();
 						if (userCredentials != null) {
 							doOK();
 						}
@@ -140,16 +139,15 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 * @param parentFrame Parent frame.
 	 * @param translator Translation support.
 	 */
-	public CloneRepositoryDialog(
-	    JFrame parentFrame, 
-	    Translator translator) {
-		super(parentFrame, translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
+	public CloneRepositoryDialog(Translator translator) {
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
 		this.translator = translator;
 
 		createGUI();
 
 		this.pack();
-		this.setLocationRelativeTo(parentFrame);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(400, 160));
 		this.setResizable(true);
 		this.setVisible(true);

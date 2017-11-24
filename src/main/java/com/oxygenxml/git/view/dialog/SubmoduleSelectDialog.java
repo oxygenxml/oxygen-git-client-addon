@@ -18,6 +18,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -47,13 +48,11 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	/**
 	 * Constructor.
 	 * 
-	 * @param parentFrame Parent frame.
 	 * @param translator Translation support.
 	 */
-	public SubmoduleSelectDialog(
-	    JFrame parentFrame, 
-			Translator translator) {
-		super(parentFrame, translator.getTranslation(Tags.SUBMODULE_DIALOG_TITLE), true);
+	public SubmoduleSelectDialog(Translator translator) {
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.SUBMODULE_DIALOG_TITLE), true);
 		this.translator = translator;
 
 		this.setLayout(new GridBagLayout());
@@ -62,7 +61,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 		addSubmoduleSelectCombo(gbc);
 
 		this.pack();
-		this.setLocationRelativeTo(parentFrame);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(320, 140));
 		this.setResizable(true);
 		this.setVisible(true);

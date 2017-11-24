@@ -180,9 +180,6 @@ public class ToolbarPanel extends JPanel {
               }
 
               UserCredentials userCredentials = new LoginDialog(
-                  (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-                  translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), 
-                  true, 
                   GitAccess.getInstance().getHostName(), 
                   loginMessage,
                   translator).getUserCredentials();
@@ -280,9 +277,7 @@ public class ToolbarPanel extends JPanel {
 		   * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		   */
 			public void actionPerformed(ActionEvent e) {
-				new CloneRepositoryDialog(
-				    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-						translator);
+				new CloneRepositoryDialog(translator);
 			}
 		};
 
@@ -305,9 +300,7 @@ public class ToolbarPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						new SubmoduleSelectDialog(
-						    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator);
+						new SubmoduleSelectDialog(translator);
 					}
 				} catch (NoRepositorySelected e1) {
 				}
@@ -332,8 +325,7 @@ public class ToolbarPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						new BranchSelectDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTranslation(Tags.BRANCH_SELECTION_DIALOG_TITLE), true, refresh, translator);
+						new BranchSelectDialog(refresh, translator);
 					}
 				} catch (NoRepositorySelected e1) {
 				}

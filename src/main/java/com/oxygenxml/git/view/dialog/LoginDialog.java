@@ -18,6 +18,7 @@ import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 public class LoginDialog extends OKCancelDialog {
@@ -51,16 +52,16 @@ public class LoginDialog extends OKCancelDialog {
 	 */
 	private Translator translator;
 
-	public LoginDialog(JFrame frame, String title, boolean modal, String host, String loginMessage,
-			Translator translator) {
-		super(frame, title, modal);
+	public LoginDialog(String host, String loginMessage, Translator translator) {
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true);
 		this.host = host;
 		this.message = loginMessage;
 		this.translator = translator;
 		createGUI();
 
 		this.pack();
-		this.setLocationRelativeTo(frame);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(340, 200));
 		this.setResizable(true);
 		this.setVisible(true);

@@ -76,9 +76,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 	public UserCredentials requestNewCredentials(String loginMessage) {
 		return 
 		    new LoginDialog(
-		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		        translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), 
-		        true, 
 		        gitAccess.getHostName(), 
 		        loginMessage, 
 		        translator).getUserCredentials();
@@ -129,10 +126,8 @@ public class PushPullController implements Subject<PushPullEvent> {
 					if (e instanceof CheckoutConflictException) {
 					  // Notify that there are conflicts that should be resolved in the staging area.
 						new PullWithConflictsDialog(
-								(JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
 								// TODO i18n.
 								"Pull Status", 
-								true, 
 								((CheckoutConflictException) e).getConflictingPaths(), 
 								translator,
 								translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
@@ -177,8 +172,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					} else if (e.getMessage().contains("origin: not found")
 							|| e.getMessage().contains("No value for key remote.origin.url found in configuration")) {
 					  // No remote.
-						new AddRemoteDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTranslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
+						new AddRemoteDialog(translator);
 					} else if (e.getMessage().contains("Auth fail")) {
 					  // This message is thrown for SSH.
 					  // TODO i18n.
@@ -235,9 +229,8 @@ public class PushPullController implements Subject<PushPullEvent> {
 				if (PullStatus.OK == response.getStatus()) {
 					message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
-					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-							translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE), true, response.getConflictingFiles(),
-							translator, translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
+					new PullWithConflictsDialog(translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
+					    response.getConflictingFiles(), translator, translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
 					message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {

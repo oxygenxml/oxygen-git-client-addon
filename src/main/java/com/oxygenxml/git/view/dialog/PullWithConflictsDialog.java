@@ -14,6 +14,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.ui.Icons;
 
@@ -30,9 +31,9 @@ import com.oxygenxml.git.translator.Translator;
  */
 public class PullWithConflictsDialog extends OKCancelDialog {
 
-	public PullWithConflictsDialog(JFrame frame, String title, boolean modal, Collection<String> conflictFiles,
+	public PullWithConflictsDialog(String title, Collection<String> conflictFiles,
 			Translator translator, String message) {
-		super(frame, title, modal);
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), title, true);
 		JLabel label = new JLabel("<html>" + message + "</html>");
 
 
@@ -97,7 +98,7 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 		getContentPane().add(panel);
 		getCancelButton().setVisible(false);
 		this.pack();
-		this.setLocationRelativeTo(frame);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setResizable(true);
 		this.setMinimumSize(new Dimension(420, 220));
 		this.setVisible(true);

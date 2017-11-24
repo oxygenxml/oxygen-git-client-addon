@@ -23,10 +23,11 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
- * Dialog used for detecting and selecting git branches
+ * Dialog used for detecting and selecting Git branches.
  * 
  * @author Beniamin Savu
  *
@@ -39,29 +40,35 @@ public class BranchSelectDialog extends OKCancelDialog {
 	private static Logger logger = Logger.getLogger(BranchSelectDialog.class);
 
 	/**
-	 * Shows the user a combo box with all the branches for that repository
+	 * The combo box with all the branches for a repository.
 	 */
-	private JComboBox<String> branchesList;
+	private JComboBox<String> branchesCombo;
 
 	/**
-	 * An information label that is displayed in case of some errors to let the
-	 * user know what to do
+	 * An information label is displayed when some errors occur.
 	 */
-	private JLabel information;
+	private JLabel informationLabel;
 
 	/**
-	 * Main panel refresh
+	 * Git refresh support.
 	 */
-	private GitRefreshSupport refresh;
+	private GitRefreshSupport gitRefreshSupport;
 
 	/**
-	 * The translator for the messages that are displayed in this dialog
+	 * The translator for i18n.
 	 */
 	private Translator translator;
 
-	public BranchSelectDialog(JFrame parentFrame, String title, boolean modal, GitRefreshSupport refresh, Translator translator) {
-		super(parentFrame, title, modal);
-		this.refresh = refresh;
+	/**
+	 * Constructor.
+	 * 
+	 * @param parentFrame  The parent frame.
+	 * @param title        The dialog's title.
+	 */
+	public BranchSelectDialog(GitRefreshSupport refresh, Translator translator) {
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.BRANCH_SELECTION_DIALOG_TITLE), true);
+		this.gitRefreshSupport = refresh;
 		this.translator = translator;
 
 		this.setLayout(new GridBagLayout());
@@ -71,7 +78,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 		addInformationLabel(gbc);
 
 		this.pack();
-		this.setLocationRelativeTo(parentFrame);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(320, 140));
 		this.setResizable(true);
 		this.setVisible(true);
@@ -94,8 +101,8 @@ public class BranchSelectDialog extends OKCancelDialog {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
-		information = new JLabel();
-		getContentPane().add(information, gbc);
+		informationLabel = new JLabel();
+		getContentPane().add(informationLabel, gbc);
 	}
 
 	/**
@@ -113,25 +120,25 @@ public class BranchSelectDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-		branchesList = new JComboBox<String>();
+		branchesCombo = new JComboBox<String>();
 		List<String> branches = new ArrayList<String>();
 		for (Ref branch : GitAccess.getInstance().getBrachList()) {
 			String name = branch.getName();
 			name = name.replace("refs/heads/", "");
-			branchesList.addItem(name);
+			branchesCombo.addItem(name);
 			branches.add(name);
 		}
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
 		if (!branchInfo.isDetached()) {
 			if (branches.contains(branchInfo.getBranchName())) {
-				branchesList.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
+				branchesCombo.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
 			} else {
-				branchesList.addItem(GitAccess.getInstance().getBranchInfo().getBranchName());
-				branchesList.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
+				branchesCombo.addItem(GitAccess.getInstance().getBranchInfo().getBranchName());
+				branchesCombo.setSelectedItem(GitAccess.getInstance().getBranchInfo().getBranchName());
 			}
 		}
 
-		getContentPane().add(branchesList, gbc);
+		getContentPane().add(branchesCombo, gbc);
 	}
 
 	/**
@@ -157,21 +164,21 @@ public class BranchSelectDialog extends OKCancelDialog {
 	 * Sets as current branch the branch that the user selects from the combo box
 	 */
 	protected void doOK() {
-		String selectedBranch = (String) branchesList.getSelectedItem();
+		String selectedBranch = (String) branchesCombo.getSelectedItem();
 		try {
 			GitAccess.getInstance().setBranch(selectedBranch);
 		} catch (CheckoutConflictException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
-			information.setText(translator.getTranslation(Tags.CHANGE_BRANCH_ERROR_MESSAGE));
+			informationLabel.setText(translator.getTranslation(Tags.CHANGE_BRANCH_ERROR_MESSAGE));
 			return;
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
 		}
-		refresh.call();
+		gitRefreshSupport.call();
 		dispose();
 	}
 

@@ -23,6 +23,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -51,8 +52,14 @@ public class AddRemoteDialog extends OKCancelDialog {
 
 	private JTextField remoteRepoTextField;
 
-	public AddRemoteDialog(JFrame parentFrame, String title, boolean modal, Translator translator) {
-		super(parentFrame, title, modal);
+	/**
+	 * Constructor.
+	 * 
+	 * @param translator Translator for i18n.
+	 */
+	public AddRemoteDialog(Translator translator) {
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.ADD_REMOTE_DIALOG_TITLE), true);
 		this.translator = translator;
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -63,7 +70,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 		addRemoteRepoTextField(gbc);
 
 		this.pack();
-		this.setLocationRelativeTo(parentFrame);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(320, 130));
 		this.setResizable(true);
 		this.setVisible(true);
