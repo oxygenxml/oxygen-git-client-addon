@@ -113,14 +113,16 @@ public class ProjectViewManager {
 	 * @return the selected files and all the files from inside the selected directories in the Project view.
 	 */
 	public static Set<String> getSelectedFilesDeep(StandalonePluginWorkspace pluginWorkspaceAccess){
-		File[] selectedFiles = getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
-		Set<String> files = new HashSet<String>();
-		
-		for (int i = 0; i < selectedFiles.length; i++) {
-			files.addAll(FileHelper.getAllFilesFromPath(selectedFiles[i].getAbsolutePath()));
-		}
-		
-		return files;
+	  Set<String> files = new HashSet<String>();
+
+	  File[] selectedFiles = getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
+	  if (selectedFiles != null) {
+	    for (int i = 0; i < selectedFiles.length; i++) {
+	      files.addAll(FileHelper.getAllFilesFromPath(selectedFiles[i].getAbsolutePath()));
+	    }
+	  }
+
+	  return files;
 	}
 
 }

@@ -38,7 +38,7 @@ import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
-import com.oxygenxml.git.view.event.StageState;
+import com.oxygenxml.git.view.event.FileState;
 import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.ui.Icons;
@@ -111,7 +111,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 					message = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
 				} else {
 					message = translator.getTranslation(Tags.COMMIT_SUCCESS);
-					ChangeEvent changeEvent = new ChangeEvent(StageState.COMMITED, StageState.STAGED, gitAccess.getStagedFile());
+					ChangeEvent changeEvent = new ChangeEvent(FileState.COMMITED, FileState.STAGED, gitAccess.getStagedFile());
 					stageController.stateChanged(changeEvent);
 					gitAccess.commit(commitMessage.getText());
 					OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());

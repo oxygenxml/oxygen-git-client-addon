@@ -16,30 +16,30 @@ public class ChangeEvent {
 	/**
 	 * The new state in which the files will be
 	 */
-	private StageState newState;
+	private FileState newState;
 	
 	/**
 	 * The old state in which the files were
 	 */
-	private StageState oldState;
+	private FileState oldState;
 	
 	/**
 	 * The files that are changing their state
 	 */
 	private List<FileStatus> fileToBeUpdated;
 
-	public ChangeEvent(StageState newState, StageState oldState, List<FileStatus> fileToBeUpdated) {
+	public ChangeEvent(FileState newState, FileState oldState, List<FileStatus> fileToBeUpdated) {
 		super();
 		this.newState = newState;
 		this.oldState = oldState;
 		this.fileToBeUpdated = fileToBeUpdated;
 	}
 
-	public StageState getNewState() {
+	public FileState getNewState() {
 		return newState;
 	}
 
-	public StageState getOldState() {
+	public FileState getOldState() {
 		return oldState;
 	}
 

@@ -1,11 +1,11 @@
 package com.oxygenxml.git.view.event;
 
 /**
- * The state of a file at a given moment is defined by this enum
+ * The state of a file at a given moment.
  *  
  * @author Beniamin Savu
  *
  */
-public enum StageState {
+public enum FileState {
 	STAGED, UNSTAGED, COMMITED, UNDEFINED, DISCARD, RESOLVED
 }

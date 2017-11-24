@@ -26,7 +26,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.event.Command;
-import com.oxygenxml.git.view.event.StageState;
+import com.oxygenxml.git.view.event.FileState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -101,8 +101,8 @@ public class PanelRefresh implements GitRefreshSupport {
 		}
 		try {
 			if (gitAccess.getRepository() != null) {
-				updateFiles(StageState.UNSTAGED);
-				updateFiles(StageState.STAGED);
+				updateFiles(FileState.UNSTAGED);
+				updateFiles(FileState.STAGED);
 				updateCounter(Command.PULL);
 				updateCounter(Command.PUSH);
 				String path = gitAccess.getWorkingCopy().getAbsolutePath();
@@ -234,12 +234,12 @@ public class PanelRefresh implements GitRefreshSupport {
 		}.execute();
 	}
 
-	private void updateFiles(final StageState state) {
+	private void updateFiles(final FileState state) {
 		new SwingWorker<List<FileStatus>, Integer>() {
 
 			@Override
 			protected List<FileStatus> doInBackground() throws Exception {
-				if (state == StageState.UNSTAGED) {
+				if (state == FileState.UNSTAGED) {
 					return GitAccess.getInstance().getUnstagedFiles();
 				} else {
 					return GitAccess.getInstance().getStagedFile();
@@ -251,7 +251,7 @@ public class PanelRefresh implements GitRefreshSupport {
 				List<FileStatus> files = new ArrayList<FileStatus>();
 				List<FileStatus> newFiles = new ArrayList<FileStatus>();
 				StagingResourcesTableModel model = null;
-				if (state == StageState.UNSTAGED) {
+				if (state == FileState.UNSTAGED) {
 					model = (StagingResourcesTableModel) stagingPanel.getUnstagedChangesPanel().getFilesTable().getModel();
 				} else {
 					model = (StagingResourcesTableModel) stagingPanel.getStagedChangesPanel().getFilesTable().getModel();
@@ -276,7 +276,7 @@ public class PanelRefresh implements GitRefreshSupport {
 					}
 				}
 				if (!newFiles.equals(filesInModel)) {
-					if (state == StageState.UNSTAGED) {
+					if (state == FileState.UNSTAGED) {
 						stagingPanel.getUnstagedChangesPanel().updateFlatView(newFiles);
 						stagingPanel.getUnstagedChangesPanel().createTreeView(OptionsManager.getInstance().getSelectedRepository(),
 								newFiles);

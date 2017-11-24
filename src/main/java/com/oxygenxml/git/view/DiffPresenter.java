@@ -27,7 +27,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.StageController;
-import com.oxygenxml.git.view.event.StageState;
+import com.oxygenxml.git.view.event.FileState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -249,8 +249,8 @@ public class DiffPresenter {
 							GitAccess.getInstance().remove(file);
 							GitAccess.getInstance().restoreLastCommitFile(file.getFileLocation());
 							GitAccess.getInstance().add(file);
-							StageState oldState = StageState.UNSTAGED;
-							StageState newState = StageState.DISCARD;
+							FileState oldState = FileState.UNSTAGED;
+							FileState newState = FileState.DISCARD;
 							List<FileStatus> files = new ArrayList<FileStatus>();
 							files.add(file);
 							ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
@@ -258,8 +258,8 @@ public class DiffPresenter {
 						}
 					} else {
 						file.setChangeType(GitChangeType.MODIFIED);
-						StageState oldState = StageState.UNSTAGED;
-						StageState newState = StageState.STAGED;
+						FileState oldState = FileState.UNSTAGED;
+						FileState newState = FileState.STAGED;
 						List<FileStatus> files = new ArrayList<FileStatus>();
 						files.add(file);
 						ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);

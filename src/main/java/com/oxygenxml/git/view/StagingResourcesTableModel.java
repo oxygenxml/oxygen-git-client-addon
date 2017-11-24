@@ -16,7 +16,7 @@ import com.oxygenxml.git.service.entities.FileStatusComparator;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.StageState;
+import com.oxygenxml.git.view.event.FileState;
 import com.oxygenxml.git.view.event.Subject;
 
 /**
@@ -147,11 +147,11 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		// Update the table model. remove the file.
 		FileStatus fileStatus = filesStatus.remove(convertedRow);
 
-		StageState newSTate = StageState.UNSTAGED;
-		StageState oldState = StageState.STAGED;
+		FileState newSTate = FileState.UNSTAGED;
+		FileState oldState = FileState.STAGED;
 		if (!forStaging) {
-			newSTate = StageState.STAGED;
-			oldState = StageState.UNSTAGED;
+			newSTate = FileState.STAGED;
+			oldState = FileState.UNSTAGED;
 		}
 
 		List<FileStatus> fileToBeUpdated = Arrays.asList(new FileStatus[] { fileStatus });
@@ -204,11 +204,11 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	 */
 	public void switchAllFilesStageState() {
 
-		StageState newSTate = StageState.UNSTAGED;
-		StageState oldState = StageState.STAGED;
+		FileState newSTate = FileState.UNSTAGED;
+		FileState oldState = FileState.STAGED;
 		if (!forStaging) {
-			newSTate = StageState.STAGED;
-			oldState = StageState.UNSTAGED;
+			newSTate = FileState.STAGED;
+			oldState = FileState.UNSTAGED;
 		}
 
 		List<FileStatus> filesToBeUpdated = new ArrayList<FileStatus>();
@@ -223,23 +223,23 @@ public class StagingResourcesTableModel extends AbstractTableModel
 
 	public void stateChanged(ChangeEvent changeEvent) {
 		List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
-		if (changeEvent.getNewState() == StageState.STAGED) {
+		if (changeEvent.getNewState() == FileState.STAGED) {
 			if (forStaging) {
 				insertRows(fileToBeUpdated);
 			} else {
 				deleteRows(fileToBeUpdated);
 			}
-		} else if (changeEvent.getNewState() == StageState.UNSTAGED) {
+		} else if (changeEvent.getNewState() == FileState.UNSTAGED) {
 			if (forStaging) {
 				deleteRows(fileToBeUpdated);
 			} else {
 				insertRows(fileToBeUpdated);
 			}
-		} else if (changeEvent.getNewState() == StageState.COMMITED) {
+		} else if (changeEvent.getNewState() == FileState.COMMITED) {
 			if (forStaging) {
 				filesStatus.clear();
 			}
-		} else if (changeEvent.getNewState() == StageState.DISCARD) {
+		} else if (changeEvent.getNewState() == FileState.DISCARD) {
 			deleteRows(fileToBeUpdated);
 		}
 		removeDuplicates();

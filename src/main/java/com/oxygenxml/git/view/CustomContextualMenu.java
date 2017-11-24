@@ -25,7 +25,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.StageController;
-import com.oxygenxml.git.view.event.StageState;
+import com.oxygenxml.git.view.event.FileState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -110,11 +110,11 @@ public class CustomContextualMenu extends JPopupMenu {
 		JMenuItem changeState = new JMenuItem();
 		changeState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
+				FileState oldState = FileState.UNSTAGED;
+				FileState newState = FileState.STAGED;
 				if (staging) {
-					oldState = StageState.STAGED;
-					newState = StageState.UNSTAGED;
+					oldState = FileState.STAGED;
+					newState = FileState.UNSTAGED;
 				}
 				List<FileStatus> resolveUsingMineFiles = new ArrayList<FileStatus>(files);
 				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, resolveUsingMineFiles);
@@ -132,8 +132,8 @@ public class CustomContextualMenu extends JPopupMenu {
 		resolveMine.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.DISCARD;
+				FileState oldState = FileState.UNSTAGED;
+				FileState newState = FileState.DISCARD;
 				List<FileStatus> resolveUsingMineFiles = new ArrayList<FileStatus>(files);
 				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, resolveUsingMineFiles);
 				stageController.stateChanged(changeEvent);
@@ -150,8 +150,8 @@ public class CustomContextualMenu extends JPopupMenu {
 					gitAccess.remove(file);
 					gitAccess.updateWithRemoteFile(file.getFileLocation());
 				}
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
+				FileState oldState = FileState.UNSTAGED;
+				FileState newState = FileState.STAGED;
 				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
 				stageController.stateChanged(changeEvent);
 			}
@@ -174,8 +174,8 @@ public class CustomContextualMenu extends JPopupMenu {
 		markResolved.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
+				FileState oldState = FileState.UNSTAGED;
+				FileState newState = FileState.STAGED;
 				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
 				stageController.stateChanged(changeEvent);
 			}
@@ -188,7 +188,7 @@ public class CustomContextualMenu extends JPopupMenu {
 
 			public void actionPerformed(ActionEvent e) {
 				gitAccess.restartMerge();
-				ChangeEvent changeEvent = new ChangeEvent(StageState.UNDEFINED, StageState.UNDEFINED,
+				ChangeEvent changeEvent = new ChangeEvent(FileState.UNDEFINED, FileState.UNDEFINED,
 						new ArrayList<FileStatus>());
 				stageController.stateChanged(changeEvent);
 			}
@@ -231,8 +231,8 @@ public class CustomContextualMenu extends JPopupMenu {
 						}
 					}
 
-					StageState oldState = StageState.UNDEFINED;
-					StageState newState = StageState.DISCARD;
+					FileState oldState = FileState.UNDEFINED;
+					FileState newState = FileState.DISCARD;
 					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
 					stageController.stateChanged(changeEvent);
 				}
