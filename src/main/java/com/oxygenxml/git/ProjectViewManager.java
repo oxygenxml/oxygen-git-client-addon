@@ -4,27 +4,36 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.JMenu;
-
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-public class ProjectManagerEditor {
+/**
+ * Manager for the Project view.
+ * 
+ * @author sorin_carbunaru
+ */
+public class ProjectViewManager {
 
 	/**
-	 * For 19.1 oxygen version add a MenuItem with given action in contextual menu
-	 * of project manager. For older version than 19.1 do nothing.
+	 * Add a pop-up menu customizer to the Project view's contextual menu. Add git specific actions.
+	 * <br/><br/>
+	 * oXygen 19.1+. For older versions, do nothing.
 	 * 
 	 * @param pluginWorkspaceAccess
 	 *          The StandalonePluginWorkspace.
 	 * @param menuItem
 	 *          The item to be added
 	 */
-	public static void addPopUpMenuCustomizer(StandalonePluginWorkspace pluginWorkspaceAccess, JMenu menuItem) {
+	public static void addPopUpMenuCustomizer(
+	    StandalonePluginWorkspace pluginWorkspaceAccess,
+	    Translator translator,
+	    GitActionsProvider gitActionsProvider) {
 		// try to get method from 19.1 version
 		try {
 			// get the getProjectManager method
@@ -34,13 +43,13 @@ public class ProjectManagerEditor {
 			Class projectManagerClass = getProjectManager.getReturnType();
 
 			// get the projectPopupMenuCustomizer interface
-			Class projectPopupMenuCustomizerClass = Class
-					.forName("ro.sync.exml.workspace.api.standalone.project.ProjectPopupMenuCustomizer");
+			Class projectPopupMenuCustomizerClass = 
+			    Class.forName("ro.sync.exml.workspace.api.standalone.project.ProjectPopupMenuCustomizer");
 			
 			// create a ProxyInstance of projectPopupMenuCustomizer
 			Object proxyProjectPopupMenuCustomizerImpl = Proxy.newProxyInstance(
 					projectPopupMenuCustomizerClass.getClassLoader(), new Class[] { projectPopupMenuCustomizerClass },
-					new ProjectPopupMenuCustomizerInvocationHandler(menuItem, pluginWorkspaceAccess));
+					new ProjectPopupMenuCustomizerInvocationHandler(pluginWorkspaceAccess, translator, gitActionsProvider));
 
 			// get the project manager object
 			Object projectManager = getProjectManager.invoke(pluginWorkspaceAccess);
@@ -54,15 +63,23 @@ public class ProjectManagerEditor {
 		} catch (IllegalAccessException e2) {
 		} catch (IllegalArgumentException e2) {
 		} catch (InvocationTargetException e2) {
-		}
-		// The method wasn't found because it's used a older version
-		catch (ClassNotFoundException e) {
+		}	catch (ClassNotFoundException e) {
+		  // The method wasn't found because it's used a older version
 		} catch (NoSuchMethodException e) {
 		} catch (SecurityException e) {
 		}
 	}
 
-	public static File[] getSelectedFiles(StandalonePluginWorkspace pluginWorkspaceAccess) {
+	/**
+	 * Get the selected files and directories from the Project view. This method does not
+	 * return the files from inside the selected directories.
+	 * 
+	 * @param pluginWorkspaceAccess  Plug-in workspace access.
+	 * 
+	 * @return the selected files.
+	 */
+	public static File[] getSelectedFilesAndDirsShallow(StandalonePluginWorkspace pluginWorkspaceAccess) {
+	  File[] toReturn = null;
 		try {
 			// get the getProjectManager method
 			Method getProjectManager = pluginWorkspaceAccess.getClass().getMethod("getProjectManager");
@@ -77,8 +94,7 @@ public class ProjectManagerEditor {
 			Method getSelectedFiles = projectManagerClass.getMethod("getSelectedFiles");
 
 			// get the selected files
-			File[] selectedFiles = (File[]) getSelectedFiles.invoke(projectManager);
-			return selectedFiles;
+			toReturn = (File[]) getSelectedFiles.invoke(projectManager);
 			
 		} catch (IllegalAccessException e2) {
 		} catch (IllegalArgumentException e2) {
@@ -86,15 +102,23 @@ public class ProjectManagerEditor {
 		} catch (NoSuchMethodException e) {
 		} catch (SecurityException e) {
 		}
-		return null;
+		
+		return toReturn;
 	}
 	
-	public static Set<String> getAllFiles(StandalonePluginWorkspace pluginWorkspaceAccess){
-		File[] selectedFiles = getSelectedFiles(pluginWorkspaceAccess);
+	/**
+	 * Get all the selected files + the files from inside the selected directories in the Project view.
+	 * 
+	 * @param pluginWorkspaceAccess  Plug-in workspace access.
+	 * 
+	 * @return the selected files and all the files from inside the selected directories in the Project view.
+	 */
+	public static Set<String> getSelectedFilesDeep(StandalonePluginWorkspace pluginWorkspaceAccess){
+		File[] selectedFiles = getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
 		Set<String> files = new HashSet<String>();
 		
-		for (int i = 0; i < selectedFiles.length; i++) {			
-			files.addAll(FileHelper.search(selectedFiles[i].getAbsolutePath()));
+		for (int i = 0; i < selectedFiles.length; i++) {
+			files.addAll(FileHelper.getAllFilesFromPath(selectedFiles[i].getAbsolutePath()));
 		}
 		
 		return files;

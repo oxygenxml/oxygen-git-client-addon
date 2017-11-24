@@ -103,7 +103,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 	private StageController stageController;
 
-	public StagingPanel(Translator translator, GitRefreshSupport refresh, StageController stageController) {
+  public StagingPanel(Translator translator, GitRefreshSupport refresh, StageController stageController) {
 		this.translator = translator;
 		this.refresh = refresh;
 		this.stageController = stageController;
@@ -416,4 +416,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	public boolean isInFocus() {
 		return gained;
 	}
+	
+	/**
+   * @return the stageController
+   */
+  public StageController getStageController() {
+    return stageController;
+  }
 }
