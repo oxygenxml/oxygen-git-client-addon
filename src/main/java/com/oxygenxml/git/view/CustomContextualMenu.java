@@ -13,7 +13,6 @@ import javax.swing.JPopupMenu;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -24,8 +23,8 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.FileState;
+import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;

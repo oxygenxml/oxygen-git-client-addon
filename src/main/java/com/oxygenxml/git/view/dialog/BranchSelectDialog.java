@@ -163,6 +163,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 	/**
 	 * Sets as current branch the branch that the user selects from the combo box
 	 */
+	@Override
 	protected void doOK() {
 		String selectedBranch = (String) branchesCombo.getSelectedItem();
 		try {

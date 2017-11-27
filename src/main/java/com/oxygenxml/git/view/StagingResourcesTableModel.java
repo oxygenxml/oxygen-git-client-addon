@@ -76,19 +76,21 @@ public class StagingResourcesTableModel extends AbstractTableModel
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		Class clazz = null;
-		switch (columnIndex) {
-		case FILE_STATUS_COLUMN:
-			clazz = ChangeType.class;
-			break;
-		case FILE_LOCATION_COLUMN:
-			clazz = String.class;
-			break;
-		case BUTTON_COLUMN:
-			clazz = String.class;
-			break;
-		}
-		return clazz;
+	  Class clazz = null;
+	  switch (columnIndex) {
+	    case FILE_STATUS_COLUMN:
+	      clazz = ChangeType.class;
+	      break;
+	    case FILE_LOCATION_COLUMN:
+	      clazz = String.class;
+	      break;
+	    case BUTTON_COLUMN:
+	      clazz = String.class;
+	      break;
+	    default:
+	      break;
+	  }
+	  return clazz;
 	}
 
 	@Override
@@ -103,19 +105,21 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object temp = null;
 		switch (columnIndex) {
-		case FILE_STATUS_COLUMN:
-			temp = filesStatus.get(rowIndex).getChangeType();
-			break;
-		case FILE_LOCATION_COLUMN:
-			temp = filesStatus.get(rowIndex).getFileLocation();
-			break;
-		case BUTTON_COLUMN:
-			if (forStaging) {
-				temp = "Unstage";
-			} else {
-				temp = "Stage";
-			}
-			break;
+		  case FILE_STATUS_COLUMN:
+		    temp = filesStatus.get(rowIndex).getChangeType();
+		    break;
+		  case FILE_LOCATION_COLUMN:
+		    temp = filesStatus.get(rowIndex).getFileLocation();
+		    break;
+		  case BUTTON_COLUMN:
+		    if (forStaging) {
+		      temp = "Unstage";
+		    } else {
+		      temp = "Stage";
+		    }
+		    break;
+		  default:
+		    break;
 
 		}
 		return temp;
@@ -154,8 +158,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			oldState = FileState.UNSTAGED;
 		}
 
-		List<FileStatus> fileToBeUpdated = Arrays.asList(new FileStatus[] { fileStatus });
-		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, fileToBeUpdated);
+		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, Arrays.asList(fileStatus));
 		notifyObservers(changeEvent);
 	}
 

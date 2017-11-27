@@ -22,10 +22,9 @@ public class CustomProtocolURLHandlerExtension
 	 * Gets the handler for the custom protocol
 	 */
 	public URLStreamHandler getURLStreamHandler(String protocol) {
-		// If the protocol is cproto return its handler
+		// If the protocol is "git" return its handler
 		if (protocol.equals(GIT)) {
-			URLStreamHandler handler = new GitRevisionURLHandler();
-			return handler;
+			return new GitRevisionURLHandler();
 		}
 		return null;
 	}

@@ -128,7 +128,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 						new PullWithConflictsDialog(
 								translator.getTranslation(Tags.PULL_STATUS), 
 								((CheckoutConflictException) e).getConflictingPaths(), 
-								translator,
 								translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
 						
 						if (logger.isDebugEnabled()) {
@@ -218,16 +217,14 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * @throws IOException
 			 */
 			private String pull(final UserCredentials userCredentials)
-					throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException,
-					InvalidRemoteException, CanceledException, RefNotFoundException, RefNotAdvertisedException, NoHeadException,
-					TransportException, GitAPIException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+					throws GitAPIException, IOException {
 				PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (PullStatus.OK == response.getStatus()) {
 					message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
 					new PullWithConflictsDialog(translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
-					    response.getConflictingFiles(), translator, translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
+					    response.getConflictingFiles(), translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
 					message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
@@ -249,7 +246,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * @throws IOException
 			 */
 			private String push(final UserCredentials userCredentials)
-					throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+					throws GitAPIException, IOException {
 				PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (Status.OK == response.getStatus()) {

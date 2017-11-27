@@ -46,7 +46,6 @@ import ro.sync.ui.Icons;
 public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subject<PushPullEvent> {
 
 	private StageController stageController;
-	private JLabel label;
 	private JTextArea commitMessage;
 	private JButton commitButton;
 	private GitAccess gitAccess;
@@ -85,17 +84,15 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 	private void addPreviouslyMessagesComboBoxListener() {
 		previouslyMessages.addItemListener(new ItemListener() {
-
+		  @Override
 			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-
-					if (!previouslyMessages.getSelectedItem()
-							.equals(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE))) {
+				if (e.getStateChange() == ItemEvent.SELECTED
+				    && !previouslyMessages.getSelectedItem().equals(
+				        translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE))) {
 						commitMessage.setText((String) previouslyMessages.getSelectedItem());
 						previouslyMessages.setEditable(true);
 						previouslyMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
 						previouslyMessages.setEditable(false);
-					}
 				}
 			}
 		});
@@ -107,7 +104,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 			public void actionPerformed(ActionEvent e) {
 				String message = "";
-				if (gitAccess.getConflictingFiles().size() > 0) {
+				if (!gitAccess.getConflictingFiles().isEmpty()) {
 					message = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
 				} else {
 					message = translator.getTranslation(Tags.COMMIT_SUCCESS);
@@ -139,8 +136,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
-		label = new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL));
-		this.add(label, gbc);
+		this.add(new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)), gbc);
 	}
 
 	private void addPreviouslyMessagesComboBox(GridBagConstraints gbc) {
@@ -184,7 +180,6 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		commitMessage.setLineWrap(true);
 		// Around 3 lines of text.
 		int fontH = commitMessage.getFontMetrics(commitMessage.getFont()).getHeight();
-		// commitMessage.setPreferredSize(new Dimension(200, 30 * fontH));
 		commitMessage.setWrapStyleWord(true);
 		JScrollPane scrollPane = new JScrollPane(commitMessage);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -228,10 +223,10 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	private void toggleCommitButton() {
 		try {
 			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-					&& gitAccess.getStagedFile().size() == 0 && gitAccess.getUnstagedFiles().size() == 0) {
+					&& gitAccess.getStagedFile().isEmpty() && gitAccess.getUnstagedFiles().isEmpty()) {
 				commitButton.setEnabled(true);
 				commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
-			} else if (gitAccess.getStagedFile().size() > 0) {
+			} else if (!gitAccess.getStagedFile().isEmpty()) {
 				commitButton.setEnabled(true);
 			} else {
 				commitButton.setEnabled(false);
@@ -280,9 +275,9 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		commitMessage.setText(null);
 	}
 
-	class PreviouslyMessagesToolTipRenderer extends DefaultListCellRenderer {
+	private static final class PreviouslyMessagesToolTipRenderer extends DefaultListCellRenderer {
 
-		private final int MAX_TOOL_TIP_WIDTH = 700;
+		private final int MAX_TOOLTIP_WIDTH = 700;
 
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -293,10 +288,10 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			Font font = createToolTip.getFont();
 			FontMetrics fontMetrics = getFontMetrics(font);
 			int length = fontMetrics.stringWidth((String) value);
-			if (length < MAX_TOOL_TIP_WIDTH) {
+			if (length < MAX_TOOLTIP_WIDTH) {
 				comp.setToolTipText("<html><p width=\"" + length + "\">" + value + "</p></html>");
 			} else {
-				comp.setToolTipText("<html><p width=\"" + MAX_TOOL_TIP_WIDTH + "\">" + value + "</p></html>");
+				comp.setToolTipText("<html><p width=\"" + MAX_TOOLTIP_WIDTH + "\">" + value + "</p></html>");
 			}
 			return comp;
 		}

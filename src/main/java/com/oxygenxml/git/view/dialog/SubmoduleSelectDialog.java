@@ -113,6 +113,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	 * Sets as the current working copy the submodule repository selected from the
 	 * combo box
 	 */
+	@Override
 	protected void doOK() {
 		super.doOK();
 		String submodule = (String) submoduleList.getSelectedItem();

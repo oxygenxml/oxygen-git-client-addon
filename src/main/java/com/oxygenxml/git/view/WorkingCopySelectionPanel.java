@@ -57,12 +57,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 	private static Logger logger = Logger.getLogger(WorkingCopySelectionPanel.class);
 
 	/**
-	 * Label for the working copy selector, informing the user on what working
-	 * copy he is
-	 */
-	private JLabel label;
-
-	/**
 	 * A combo box for the user to change his working copy
 	 */
 	private JComboBox<String> workingCopySelector;
@@ -284,8 +278,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		label = new JLabel(translator.getTranslation(Tags.WORKING_COPY_LABEL));
-		this.add(label, gbc);
+		this.add(new JLabel(translator.getTranslation(Tags.WORKING_COPY_LABEL)), gbc);
 
 	}
 
@@ -369,7 +362,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * @author Beniamin Savu
 	 *
 	 */
-	class WoekingCopyToolTipRenderer extends DefaultListCellRenderer {
+	private static final class WoekingCopyToolTipRenderer extends DefaultListCellRenderer {
 
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -381,7 +374,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 				comp.setToolTipText((String) value);
 				String path = (String) value;
 				path = path.replace("\\", "/");
-				String rootFolder = path.substring(path.lastIndexOf("/") + 1);
+				String rootFolder = path.substring(path.lastIndexOf('/') + 1);
 				comp.setText(rootFolder);
 			}
 			return comp;

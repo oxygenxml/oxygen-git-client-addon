@@ -132,8 +132,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 	private JComboBox<String> comboBoxPath;
 
-	private ToolbarButton browseButton;
-
 	private JLabel information;
 	
 	/**
@@ -221,7 +219,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				}
 			}
 		};
-		browseButton = new ToolbarButton(browseButtonAction, false);
+		ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
 		browseButton.setIcon(Icons.getIcon(ImageConstants.FILE_CHOOSER_ICON));
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		browseButton.setOpaque(false);
@@ -254,7 +252,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 	@Override
 	protected void doOK() {
-	  boolean ok = false;
+	  boolean doOK = false;
 		final String selectedPath = (String) comboBoxPath.getSelectedItem();
 		try {
 			final URL url = new URL(tfURL.getText());
@@ -277,7 +275,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
         }
       });
 	    
-	    ok = true;
+	    doOK = true;
 		} catch (MalformedURLException e) {
 		  // TODO THis minimum size is needed, probably, because of the new label.
 		  // Perhaps a new pack???
@@ -286,7 +284,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			return;
 		}
 		
-		if (ok) {
+		if (doOK) {
 		  // Close the dialog.
 		  super.doOK();
 		}

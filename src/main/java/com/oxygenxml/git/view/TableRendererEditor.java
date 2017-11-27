@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.AbstractCellEditor;
@@ -18,13 +19,11 @@ import javax.swing.table.TableModel;
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.StageController;
 
 public class TableRendererEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
 	private JTable table;
-	private StageController stageController;
 	private JButton button;
 	private JButton editedButton;
 	private int[] hovered = null;
@@ -32,7 +31,6 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 	
 
 	private TableRendererEditor(JTable table, StageController stageController) {
-		this.stageController = stageController;
 		this.table = table;
 		this.button = new JButton();
 		this.editedButton = new JButton();
@@ -48,8 +46,8 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 	}
 
 	private void addMouseMotionListener() {
-		table.addMouseMotionListener(new MouseMotionListener() {
-
+		table.addMouseMotionListener(new MouseMotionAdapter() {
+		  @Override
 			public void mouseMoved(MouseEvent e) {
 				Point point = new Point(e.getX(), e.getY());
 				int row = table.convertRowIndexToModel(table.rowAtPoint(point));
@@ -79,9 +77,6 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 					previousHovered = null;
 				}
 			}
-
-			public void mouseDragged(MouseEvent e) {
-			}
 		});
 
 	}
@@ -100,8 +95,9 @@ public class TableRendererEditor extends AbstractCellEditor implements TableCell
 			if (file.getChangeType() == GitChangeType.CONFLICT) {
 				editedButton.setText("Resolve");
 				editedButton.addActionListener(new ActionListener() {
-					
+					@Override
 					public void actionPerformed(ActionEvent e) {
+					  // TODO
 						/*DiffPresenter diff = new DiffPresenter(file, stageController, translator);
 						diff.showDiff();
 						fireEditingStopped();*/

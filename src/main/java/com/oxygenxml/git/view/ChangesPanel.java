@@ -168,7 +168,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		stageController.unregisterSubject(treeModel);
 
 		path = path.replace("\\", "/");
-		String rootFolder = path.substring(path.lastIndexOf("/") + 1);
+		String rootFolder = path.substring(path.lastIndexOf('/') + 1);
 		if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
 			MyNode root = new MyNode(rootFolder);
 			// Create the tree model and add the root node to it
@@ -292,15 +292,14 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 						pathForRow = tree.getPathForRow(selectionRows[selectionRows.length - 1]);
 					}
 					if (pathForRow != null) {
-						String stringPath = TreeFormatter.getStringPath(pathForRow);
-						MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
-						if (model != null && node != null) {
-							if (model.isLeaf(node) && !model.getRoot().equals(node)) {
-								FileStatus file = model.getFileByPath(stringPath);
-								DiffPresenter diff = new DiffPresenter(file, stageController, translator);
-								diff.showDiff();
-							}
-						}
+					  String stringPath = TreeFormatter.getStringPath(pathForRow);
+					  MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+					  if (model != null && node != null
+					      && model.isLeaf(node) && !model.getRoot().equals(node)) {
+					    FileStatus file = model.getFileByPath(stringPath);
+					    DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+					    diff.showDiff();
+					  }
 					}
 				}
 			}
@@ -325,7 +324,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 */
 	private void addTreeExpandListener() {
 		tree.addTreeExpansionListener(new TreeExpansionListener() {
-
+		  @Override
 			public void treeExpanded(TreeExpansionEvent event) {
 				TreePath path = event.getPath();
 				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
@@ -339,8 +338,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					}
 				}
 			}
-
+		  @Override
 			public void treeCollapsed(TreeExpansionEvent event) {
+		    // Nothing
 			}
 		});
 	}
@@ -354,7 +354,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 */
 	private void addTreeMouseListener() {
 		tree.addMouseListener(new MouseAdapter() {
-
+		  @Override
 			public void mousePressed(MouseEvent e) {
 				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
@@ -362,20 +362,18 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					String stringPath = TreeFormatter.getStringPath(treePath);
 					MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 					// double click event
-					if (model.isLeaf(node) && !model.getRoot().equals(node)) {
-						if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-							FileStatus file = model.getFileByPath(stringPath);
-							DiffPresenter diff = new DiffPresenter(file, stageController, translator);
-							diff.showDiff();
-						}
-
+					if (model.isLeaf(node) && !model.getRoot().equals(node)
+					    && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+					  FileStatus file = model.getFileByPath(stringPath);
+					  DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+					  diff.showDiff();
 					}
 					// right click event
 					if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && rootHasChilds(node)) {
-						boolean treeInSelection = false;
-						TreePath[] paths = tree.getSelectionPaths();
-						if (paths != null) {
-							for (int i = 0; i < paths.length; i++) {
+					  boolean treeInSelection = false;
+					  TreePath[] paths = tree.getSelectionPaths();
+					  if (paths != null) {
+					    for (int i = 0; i < paths.length; i++) {
 								if (treePath.equals(paths[i])) {
 									treeInSelection = true;
 									break;
@@ -641,7 +639,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		// file
 		// will be opened in the Oxygen.
 		filesTable.addMouseListener(new MouseAdapter() {
-
+		  @Override
 			public void mousePressed(MouseEvent e) {
 				Point point = new Point(e.getX(), e.getY());
 				int row = filesTable.convertRowIndexToModel(filesTable.rowAtPoint(point));
@@ -801,7 +799,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				int row, int column) {
 			if (value != null && value instanceof String) {
 				String toRender = (String) value;
-				String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
+				String fileName = toRender.substring(toRender.lastIndexOf('/') + 1);
 				if (!fileName.equals(toRender)) {
 					toRender = toRender.replace("/" + fileName, "");
 					toRender = fileName + " - " + toRender;
@@ -883,7 +881,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	/**
 	 * Rendering info.
 	 */
-	private final static class RenderingInfo {
+	private static final class RenderingInfo {
 	  /**
 	   * Icon.
 	   */

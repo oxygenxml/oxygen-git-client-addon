@@ -88,11 +88,6 @@ public class ToolbarPanel extends JPanel {
 	private ToolbarButton pullButton;
 
 	/**
-	 * Button for selecting a branch
-	 */
-	private ToolbarButton branchSelectButton;
-
-	/**
 	 * Button for selecting the submodules
 	 */
 	private ToolbarButton submoduleSelectButton;
@@ -136,7 +131,7 @@ public class ToolbarPanel extends JPanel {
 		GitAccess.getInstance().addGitListener(new GitEventListener() {
       public void repositoryChanged() {
         // Repository changed. Update the toolbar buttons.
-        if (GitAccess.getInstance().getSubmodules().size() > 0) {
+        if (!GitAccess.getInstance().getSubmodules().isEmpty()) {
           submoduleSelectButton.setEnabled(true);
         } else {
           submoduleSelectButton.setEnabled(false);
@@ -252,7 +247,7 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton();
 		addSubmoduleSelectButton();
-		if (GitAccess.getInstance().getSubmodules().size() > 0) {
+		if (!GitAccess.getInstance().getSubmodules().isEmpty()) {
 			submoduleSelectButton.setEnabled(true);
 		} else {
 			submoduleSelectButton.setEnabled(false);
@@ -296,17 +291,18 @@ public class ToolbarPanel extends JPanel {
 	 * allows the user to select one of them
 	 */
 	private void addSubmoduleSelectButton() {
-		Action branchSelectAction = new AbstractAction() {
-
-			public void actionPerformed(ActionEvent e) {
-				try {
-					if (GitAccess.getInstance().getRepository() != null) {
-						new SubmoduleSelectDialog(translator);
-					}
-				} catch (NoRepositorySelected e1) {
-				}
-			}
-		};
+	  Action branchSelectAction = new AbstractAction() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+	      try {
+	        if (GitAccess.getInstance().getRepository() != null) {
+	          new SubmoduleSelectDialog(translator);
+	        }
+	      } catch (NoRepositorySelected e1) {
+	        // TODO
+	      }
+	    }
+	  };
 		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
 		submoduleSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_SUBMODULE_ICON));
 		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
@@ -332,7 +328,7 @@ public class ToolbarPanel extends JPanel {
 				}
 			}
 		};
-		branchSelectButton = new ToolbarButton(branchSelectAction, false);
+		ToolbarButton branchSelectButton = new ToolbarButton(branchSelectAction, false);
 		branchSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_BRANCH_ICON));
 		branchSelectButton.setToolTipText(translator.getTranslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
 		setCustomWidthOn(branchSelectButton);
@@ -391,6 +387,7 @@ public class ToolbarPanel extends JPanel {
 						}
 					}
 				} catch (NoRepositorySelected e1) {
+				  // TODO
 				}
 			}
 
@@ -439,7 +436,7 @@ public class ToolbarPanel extends JPanel {
 						pullsBehind = 0;
 					}
 				} catch (NoRepositorySelected e1) {
-
+				  // TODO
 				}
 			}
 		};

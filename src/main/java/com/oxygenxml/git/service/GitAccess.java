@@ -47,7 +47,6 @@ import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoMergeBaseException;
 import org.eclipse.jgit.errors.NoMergeBaseException.MergeBaseFailureReason;
 import org.eclipse.jgit.errors.NoWorkTreeException;
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
@@ -201,7 +200,7 @@ public class GitAccess {
 	 * @param path
 	 *          - A string that specifies the git Repository folder
 	 */
-	public void setRepository(String path) throws IOException, RepositoryNotFoundException {
+	public void setRepository(String path) throws IOException {
 	  // TODO Perhaps check that this repository is not the already loaded one.
 	  // We could compare new File(path + "/.git") with the git.getDirectory()
 		if (git != null) {
@@ -279,10 +278,9 @@ public class GitAccess {
 	 * 
 	 * @return The working copy location.
 	 * 
-	 * @throws NoWorkTreeException
 	 * @throws NoRepositorySelected
 	 */
-	public File getWorkingCopy() throws NoWorkTreeException, NoRepositorySelected {
+	public File getWorkingCopy() throws NoRepositorySelected {
 	  return getRepository().getWorkTree();
 	}
 
@@ -413,8 +411,7 @@ public class GitAccess {
 	 * @throws IOException
 	 * @throws GitAPIException
 	 */
-	public void setSubmodule(String submodule) throws IOException, GitAPIException {
-		// git.submoduleUpdate().addPath(submodule).call();
+	public void setSubmodule(String submodule) throws IOException {
 		Repository parentRepository = git.getRepository();
 		Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		git = Git.wrap(submoduleRepository);
@@ -513,13 +510,7 @@ public class GitAccess {
 	 * @throws IOException
 	 */
 	public PushResponse push(final String username, final String password)
-			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-
-		// List<TransportProtocol> transportProtocols =
-		// Transport.getTransportProtocols();
-		// for (TransportProtocol transportProtocol : transportProtocols) {
-		// transportProtocol.
-		// }
+			throws GitAPIException {
 
 	  AuthenticationInterceptor.install();
 		PushResponse response = new PushResponse();
@@ -544,6 +535,7 @@ public class GitAccess {
 			Iterator<PushResult> results = call.iterator();
 			logger.debug("Push Ended");
 			while (results.hasNext()) {
+			  // TODO: que esta pasando aqui?
 				PushResult result = results.next();
 				for (RemoteRefUpdate info : result.getRemoteUpdates()) {
 					response.setStatus(info.getStatus());
@@ -582,32 +574,24 @@ public class GitAccess {
 	 * @throws AmbiguousObjectException
 	 * @throws RevisionSyntaxException
 	 */
-	public PullResponse pull(String username, String password) throws WrongRepositoryStateException,
-			InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException,
-			RefNotFoundException, RefNotAdvertisedException, NoHeadException, TransportException, GitAPIException,
-			RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+	public PullResponse pull(String username, String password) throws GitAPIException {
 	  AuthenticationInterceptor.install();
 
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
-		if (getConflictingFiles().size() > 0) {
+		if (!getConflictingFiles().isEmpty()) {
 			response.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
-			// } else if (getUnstagedFiles().size() > 0 || getStagedFile().size() > 0)
-			// {
-			// response.setStatus(PullStatus.UNCOMITED_FILES);
 		} else {
 			git.reset().call();
 			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 			PullResult call = git.pull().setCredentialsProvider(new SSHUserCredentialsProvider(username, password, sshPassphrase))
 					.call();
 			MergeResult mergeResult = call.getMergeResult();
-			if (mergeResult != null) {
-				if (mergeResult.getConflicts() != null) {
-					Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
-					if (conflictingFiles != null) {
-						response.setConflictingFiles(conflictingFiles);
-						response.setStatus(PullStatus.CONFLICTS);
-					}
-				}
+			if (mergeResult != null && mergeResult.getConflicts() != null) {
+			  Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
+			  if (conflictingFiles != null) {
+			    response.setConflictingFiles(conflictingFiles);
+			    response.setStatus(PullStatus.CONFLICTS);
+			  }
 			}
 			if (call.getMergeResult().getMergeStatus() == MergeStatus.ALREADY_UP_TO_DATE) {
 				response.setStatus(PullStatus.UP_TO_DATE);
@@ -632,7 +616,7 @@ public class GitAccess {
 	 * @throws IOException
 	 */
 	private RevCommit getCommonAncestor(RevWalk walk, RevCommit a, RevCommit b)
-			throws IncorrectObjectTypeException, IOException {
+			throws IOException {
 		walk.reset();
 		walk.setRevFilter(RevFilter.MERGE_BASE);
 		walk.markStart(a);
@@ -790,7 +774,7 @@ public class GitAccess {
 	 */
 	public void removeAll(List<FileStatus> files) {
 		try {
-			if (files.size() > 0) {
+			if (!files.isEmpty()) {
 				ResetCommand reset = git.reset();
 				for (FileStatus file : files) {
 					reset.addPath(file.getFileLocation());
@@ -834,8 +818,7 @@ public class GitAccess {
 	public ObjectId getLastLocalCommit() {
 		Repository repo = git.getRepository();
 		try {
-			ObjectId localCommit = repo.resolve("HEAD^{commit}");
-			return localCommit;
+			return repo.resolve("HEAD^{commit}");
 		} catch (IOException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -906,7 +889,7 @@ public class GitAccess {
 	 * @throws IOException
 	 */
 	public ObjectLoader getLoaderFrom(ObjectId commit, String path)
-			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
+			throws IOException {
 		Repository repository = git.getRepository();
 		RevWalk revWalk = new RevWalk(repository);
 		RevCommit revCommit = revWalk.parseCommit(commit);
@@ -943,7 +926,7 @@ public class GitAccess {
 	 * @throws IOException
 	 */
 	public InputStream getInputStream(ObjectId commit)
-			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
+			throws IOException {
 		InputStream toReturn = null;
 		if (commit != null) {
 			ObjectLoader loader = git.getRepository().open(commit);
@@ -1055,8 +1038,8 @@ public class GitAccess {
 					RevCommit baseCommit = walk.parseCommit(getBaseCommit());
 					numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
 				}
-				if (getBaseCommit() == null) {
-					if (repository.resolve("remotes/origin/" + git.getRepository().getBranch()) != null) {
+				if (getBaseCommit() == null
+				    && repository.resolve("remotes/origin/" + git.getRepository().getBranch()) != null) {
 						LogCommand log = git.log();
 						if (repository.resolve("HEAD") != null) {
 							log.not(repository.resolve("HEAD"));
@@ -1067,7 +1050,6 @@ public class GitAccess {
 							numberOfCommits++;
 						}
 					}
-				}
 			} catch (IOException e) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e, e);
@@ -1251,8 +1233,7 @@ public class GitAccess {
 	 * @throws CheckoutConflictException
 	 * @throws GitAPIException
 	 */
-	public void setBranch(String selectedBranch) throws RefAlreadyExistsException, RefNotFoundException,
-			InvalidRefNameException, CheckoutConflictException, GitAPIException {
+	public void setBranch(String selectedBranch) throws GitAPIException {
 		git.checkout().setName(selectedBranch).call();
 
 	}

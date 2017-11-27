@@ -70,7 +70,7 @@ public class OptionsManager {
 	 * 
 	 * @return singleton instance
 	 */
-	public synchronized static OptionsManager getInstance() {
+	public static synchronized OptionsManager getInstance() {
 	  if (instance == null) {
 	    instance = new OptionsManager();
 	  }
@@ -248,7 +248,7 @@ public class OptionsManager {
 
 		List<UserCredentials> credentials = options.getUserCredentialsList().getCredentials();
 		for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
-			UserCredentials alreadyHere = (UserCredentials) iterator.next();
+			UserCredentials alreadyHere = iterator.next();
 			if (alreadyHere.getHost().equals(uc.getHost())) {
 				// Replace.
 				iterator.remove();
@@ -287,8 +287,7 @@ public class OptionsManager {
 			decryptedPassword = "";
 		}
 
-		UserCredentials userCredentials = new UserCredentials(username, decryptedPassword, host);
-		return userCredentials;
+		return new UserCredentials(username, decryptedPassword, host);
 	}
 
 	/**
@@ -366,7 +365,7 @@ public class OptionsManager {
 	public void saveDestinationPath(String destinationPath) {
 		loadOptions();
 
-		LinkedList<String> destinationPaths = options.getDestinationPaths().getPaths();
+		LinkedList<String> destinationPaths = (LinkedList<String>) options.getDestinationPaths().getPaths();
 		destinationPaths.remove(destinationPath);
 		destinationPaths.add(0, destinationPath);
 		if (destinationPaths.size() > 20) {

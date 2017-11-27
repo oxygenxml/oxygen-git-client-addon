@@ -14,13 +14,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.constants.ImageConstants;
+
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.ui.Icons;
-
-import com.oxygenxml.git.constants.Constants;
-import com.oxygenxml.git.constants.ImageConstants;
-import com.oxygenxml.git.translator.Translator;
 
 /**
  * A dialog that is shown when the pull is successful but has conflicts. It
@@ -31,8 +30,7 @@ import com.oxygenxml.git.translator.Translator;
  */
 public class PullWithConflictsDialog extends OKCancelDialog {
 
-	public PullWithConflictsDialog(String title, Collection<String> conflictFiles,
-			Translator translator, String message) {
+	public PullWithConflictsDialog(String title, Collection<String> conflictFiles, String message) {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), title, true);
 		JLabel label = new JLabel("<html>" + message + "</html>");
 
@@ -90,13 +88,9 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 		gbc.gridheight = 1;
 		panel.add(scollPane, gbc);
 		
-		//getContentPane().add(label, BorderLayout.NORTH);
-		//getContentPane().add(scollPane, BorderLayout.SOUTH);
-		
-		
-	//	getContentPane().add(iconLabel , BorderLayout.WEST);
 		getContentPane().add(panel);
 		getCancelButton().setVisible(false);
+		
 		this.pack();
 		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setResizable(true);

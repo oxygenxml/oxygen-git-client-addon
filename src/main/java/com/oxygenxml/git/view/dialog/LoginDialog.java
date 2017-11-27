@@ -141,6 +141,7 @@ public class LoginDialog extends OKCancelDialog {
 		this.add(panel, BorderLayout.CENTER);
 	}
 
+	@Override
 	protected void doOK() {
 		String username = tfUsername.getText().trim();
 		String password = new String(pfPassword.getPassword());

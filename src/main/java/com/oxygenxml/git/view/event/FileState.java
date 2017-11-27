@@ -7,5 +7,10 @@ package com.oxygenxml.git.view.event;
  *
  */
 public enum FileState {
-	STAGED, UNSTAGED, COMMITED, UNDEFINED, DISCARD, RESOLVED
+	STAGED,
+	UNSTAGED,
+	COMMITED,
+	UNDEFINED,
+	DISCARD,
+	RESOLVED
 }

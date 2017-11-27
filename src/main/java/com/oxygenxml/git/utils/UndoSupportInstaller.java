@@ -28,6 +28,13 @@ import ro.sync.util.PlatformDetector;
 public class UndoSupportInstaller {
   
   /**
+   * Hidden constructor. 
+   */
+  private UndoSupportInstaller() {
+    // Nothing
+  }
+
+  /**
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(UndoSupportInstaller.MyCompoundEdit.class.getName());
@@ -39,22 +46,26 @@ public class UndoSupportInstaller {
   		return edits.size();
   	}
   
-  	public void undo() throws CannotUndoException {
+  	@Override
+  	public void undo() {
   		super.undo();
   		isUnDone = true;
   	}
   
-  	public void redo() throws CannotUndoException {
+  	@Override
+  	public void redo() {
   		super.redo();
   		isUnDone = false;
   	}
   
+  	@Override
   	public boolean canUndo() {
-  		return edits.size() > 0 && !isUnDone;
+  		return !edits.isEmpty() && !isUnDone;
   	}
   
+  	@Override
   	public boolean canRedo() {
-  		return edits.size() > 0 && isUnDone;
+  		return !edits.isEmpty() && isUnDone;
   	}
   
   }
@@ -65,7 +76,7 @@ public class UndoSupportInstaller {
   	ArrayList<MyCompoundEdit> edits = new ArrayList<MyCompoundEdit>();
   	MyCompoundEdit current;
   	int pointer = -1;
-  
+  	@Override
   	public void undoableEditHappened(UndoableEditEvent e) {
   		UndoableEdit edit = e.getEdit();
   		if (edit instanceof AbstractDocument.DefaultDocumentEvent) {
@@ -115,7 +126,8 @@ public class UndoSupportInstaller {
   		pointer++;
   	}
   
-  	public void undo() throws CannotUndoException {
+  	@Override
+  	public void undo() {
   		if (!canUndo()) {
   			throw new CannotUndoException();
   		}
@@ -126,7 +138,8 @@ public class UndoSupportInstaller {
   
   	}
   
-  	public void redo() throws CannotUndoException {
+  	@Override
+  	public void redo() {
   		if (!canRedo()) {
   			throw new CannotUndoException();
   		}
@@ -137,12 +150,14 @@ public class UndoSupportInstaller {
   
   	}
   
+  	@Override
   	public boolean canUndo() {
   		return pointer >= 0;
   	}
   
+  	@Override
   	public boolean canRedo() {
-  		return edits.size() > 0 && pointer < edits.size() - 1;
+  		return !edits.isEmpty() && pointer < edits.size() - 1;
   	}
   
   }

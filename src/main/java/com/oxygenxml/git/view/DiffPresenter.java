@@ -89,7 +89,7 @@ public class DiffPresenter {
 		  diffIndexWithHead();
 		  break;
 		case MODIFIED:
-			diffView(changeType);
+			diffView();
 			break;
 		case ADD:
 		case UNTRACKED:
@@ -128,11 +128,10 @@ public class DiffPresenter {
 	/**
 	 * Opens the file in the Oxygen
 	 * 
-	 * @throws NoRepositorySelected 
 	 * @throws NoWorkTreeException 
 	 * @throws MalformedURLException 
 	 */
-	public void openFile() throws NoWorkTreeException, NoRepositorySelected, MalformedURLException {
+	public void openFile() throws NoRepositorySelected, MalformedURLException {
 	  URL fileURL = null;
 	  GitChangeType changeType = file.getChangeType();
 	  if (changeType == GitChangeType.ADD) {
@@ -148,12 +147,10 @@ public class DiffPresenter {
 	/**
 	 * Presents a 2-way diff
 	 * 
-	 * @param changeType The type of change.
-	 *  
 	 * @throws NoRepositorySelected 
 	 * @throws NoWorkTreeException 
 	 */
-	private void diffView(GitChangeType changeType) throws NoWorkTreeException, NoRepositorySelected {
+	private void diffView() throws NoRepositorySelected {
 	  // The local (WC) version.
 		URL fileURL = FileHelper.getFileURL(file.getFileLocation());
 		URL lastCommitedFileURL = null;
@@ -177,9 +174,8 @@ public class DiffPresenter {
    * @param changeType The type of change.
    *  
    * @throws NoRepositorySelected 
-   * @throws NoWorkTreeException 
    */
-  private void diffIndexWithHead() throws NoWorkTreeException, NoRepositorySelected {    
+  private void diffIndexWithHead() throws NoRepositorySelected {    
     // The local (WC) version.
     URL leftSideURL = FileHelper.getFileURL(file.getFileLocation());
     URL rightSideURL = null;
@@ -215,22 +211,7 @@ public class DiffPresenter {
 			// time stamp used for detecting if the file was changed in the diff view
 			final long diffStartedTimeStamp = localCopy.lastModified();
 
-			try {
-				// checks whether a base commit exists or not. If not, then the a 2-way
-				// diff is presented
-				if (GitAccess.getInstance().getLoaderFrom(GitAccess.getInstance().getBaseCommit(),
-						file.getFileLocation()) == null) {
-					diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.openDiffFilesApplication(local, remote);
-				} else {
-					diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.openDiffFilesApplication(local, remote, base);
-				}
-			} catch (IOException e1) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e1, e1);
-				}
-			}
+			createDiffFrame(local, remote, base);
 			// checks if the file in conflict has been resolved or not after the diff
 			// view was closed
 			diffFrame.addComponentListener(new ComponentAdapter() {
@@ -275,6 +256,32 @@ public class DiffPresenter {
 			}
 		}
 	}
+
+	/**
+	 * Create diff frame.
+	 * 
+	 * @param localURL  URL to the local resource.
+	 * @param remoteUL  URL to the remote resource.
+	 * @param baseURL   URL to the base version of the resource.
+	 */
+  private void createDiffFrame(URL localURL, URL remoteUL, URL baseURL) {
+    try {
+    	// checks whether a base commit exists or not. If not, then the a 2-way
+    	// diff is presented
+    	if (GitAccess.getInstance().getLoaderFrom(GitAccess.getInstance().getBaseCommit(),
+    			file.getFileLocation()) == null) {
+    		diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+    				.openDiffFilesApplication(localURL, remoteUL);
+    	} else {
+    		diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+    				.openDiffFilesApplication(localURL, remoteUL, baseURL);
+    	}
+    } catch (IOException e1) {
+    	if (logger.isDebugEnabled()) {
+    		logger.debug(e1, e1);
+    	}
+    }
+  }
 
 	public void setFile(FileStatus fileStatus) {
 		this.file = fileStatus;
