@@ -126,8 +126,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					if (e instanceof CheckoutConflictException) {
 					  // Notify that there are conflicts that should be resolved in the staging area.
 						new PullWithConflictsDialog(
-								// TODO i18n.
-								"Pull Status", 
+								translator.getTranslation(Tags.PULL_STATUS), 
 								((CheckoutConflictException) e).getConflictingPaths(), 
 								translator,
 								translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
@@ -175,8 +174,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 						new AddRemoteDialog(translator);
 					} else if (e.getMessage().contains("Auth fail")) {
 					  // This message is thrown for SSH.
-					  // TODO i18n.
-						String passPhraseMessage = "Please enter your SSH passphrase";
+						String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
 						String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
 						if (passphrase != null) {
 						  // Avoid notification now. We try again.
@@ -184,8 +182,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 							// Try again.
 							execute(command);
 						} else {
-						  // TODO i18n
-							message = "Command aborted";
+							message = translator.getTranslation(Tags.COMMAND_ABORTED);
 						}
 					}
 				} catch (IOException e) {

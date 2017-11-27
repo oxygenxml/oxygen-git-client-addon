@@ -157,11 +157,12 @@ public class ToolbarPanel extends JPanel {
               GitAccess.getInstance().fetch();
             } catch (SSHPassphraseRequiredException e) {
               String message = null;
-              // TODO i18n
               if (firstRun) {
-                message = "Please enter your SSH passphrase";
+                message = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
               } else {
-                message = "The previous passphrase is invalid. Please enter your SSH passphrase";
+                message = translator.getTranslation(Tags.PREVIOUS_PASSPHRASE_INVALID) 
+                    + " " 
+                    + translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
               }
 
               String passphrase = new PassphraseDialog(message).getPassphrase();
