@@ -219,7 +219,9 @@ public class WorkingCopySelectionPanel extends JPanel {
 		            }
 		          });
 		        } catch (IOException e1) {
-		          e1.printStackTrace();
+		          if (logger.isDebugEnabled()) {
+		            logger.debug(e1, e1);
+		          }
 		          JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		              "Could not load the repository");
 		        }

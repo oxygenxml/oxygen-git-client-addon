@@ -230,7 +230,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 								try {
 									fileInWorkPath = URLDecoder.decode(fileInWorkPath, "UTF-8");
 								} catch (UnsupportedEncodingException e) {
-									e.printStackTrace();
+									if (logger.isDebugEnabled()) {
+									  logger.debug(e, e);
+									}
 								}
 								String selectedRepositoryPath = OptionsManager.getInstance().getSelectedRepository();
 								selectedRepositoryPath = selectedRepositoryPath.replace("\\", "/");

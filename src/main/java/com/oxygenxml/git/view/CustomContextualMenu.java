@@ -224,7 +224,7 @@ public class CustomContextualMenu extends JPopupMenu {
 								FileUtils.forceDelete(
 										new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
 							} catch (IOException e1) {
-								e1.printStackTrace();
+							  logger.error(e1, e1);
 							}
 						} else if (file.getChangeType() == GitChangeType.SUBMODULE) {
 							gitAccess.discardSubmodule();

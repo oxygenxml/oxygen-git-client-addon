@@ -92,33 +92,32 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			
 			GitAccess gitAccess = GitAccess.getInstance();
 			if (VersionIdentifier.MINE.equals(currentHost)) {
-				fileObject = gitAccess.getCommit(Commit.MINE, path);
+			  fileObject = gitAccess.getCommit(Commit.MINE, path);
 			} else if (VersionIdentifier.INDEX_OR_LAST_COMMIT.equals(currentHost)) {
 			  try {
-			  fileObject = gitAccess.locateObjectIdInIndex(path);
+			    fileObject = gitAccess.locateObjectIdInIndex(path);
 			  } catch (Exception ex) {
 			    logger.error(ex, ex);
-			    ex.printStackTrace();
 			  }
 			  if (fileObject == null) {
 			    fileObject = gitAccess.getCommit(Commit.LOCAL, path);
 			  }
 			} else if (VersionIdentifier.LAST_COMMIT.equals(currentHost)) {
 			  fileObject = gitAccess.getCommit(Commit.LOCAL, path);
-      } else if (VersionIdentifier.THEIRS.equals(currentHost)) {
-				fileObject = gitAccess.getCommit(Commit.THEIRS, path);
+			} else if (VersionIdentifier.THEIRS.equals(currentHost)) {
+			  fileObject = gitAccess.getCommit(Commit.THEIRS, path);
 			} else if (VersionIdentifier.BASE.equals(currentHost)) {
-				fileObject = gitAccess.getCommit(Commit.BASE, path);
+			  fileObject = gitAccess.getCommit(Commit.BASE, path);
 			} else if (VersionIdentifier.CURRENT_SUBMODULE.equals(currentHost)) {
-				fileObject = gitAccess.submoduleCompare(path, false);
+			  fileObject = gitAccess.submoduleCompare(path, false);
 			} else if (VersionIdentifier.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
-				fileObject = gitAccess.submoduleCompare(path, true);
+			  fileObject = gitAccess.submoduleCompare(path, true);
 			} else {
-				throw new IOException("Not able to extract GIT data from: " + getURL());
+			  throw new IOException("Not able to extract GIT data from: " + getURL());
 			}
-			
+
 			if (fileObject == null) {
-				throw new IOException("Unable to obtain commit ID for: " + getURL());
+			  throw new IOException("Unable to obtain commit ID for: " + getURL());
 			}
 		}
 
