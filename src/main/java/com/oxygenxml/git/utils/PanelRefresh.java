@@ -225,6 +225,7 @@ public class PanelRefresh implements GitRefreshSupport {
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
 					}
+					Thread.currentThread().interrupt();
 				} catch (ExecutionException e) {
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
@@ -270,6 +271,7 @@ public class PanelRefresh implements GitRefreshSupport {
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
 					}
+					Thread.currentThread().interrupt();
 				} catch (ExecutionException e) {
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);

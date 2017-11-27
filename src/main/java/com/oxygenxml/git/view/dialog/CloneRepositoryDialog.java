@@ -80,7 +80,10 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				get();
 				OptionsManager.getInstance().saveDestinationPath(file.getAbsolutePath());
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				if (logger.isDebugEnabled()) {
+				  logger.debug(e, e);
+				}
+				Thread.currentThread().interrupt();
 			} catch (ExecutionException e) {
 				progressDialog.dispose();
 				Throwable cause = e.getCause();
