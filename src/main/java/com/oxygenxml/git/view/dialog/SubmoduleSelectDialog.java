@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
