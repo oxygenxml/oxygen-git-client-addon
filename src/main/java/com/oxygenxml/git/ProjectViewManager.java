@@ -1,11 +1,12 @@
 package com.oxygenxml.git;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
@@ -18,6 +19,18 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author Beniamin Savu
  */
 public class ProjectViewManager {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(ProjectViewManager.class.getName());
+
+  /**
+   * Hiden constructor.
+   */
+  private ProjectViewManager() {
+    // Nothing.
+  }
 
 	/**
 	 * Add a pop-up menu customizer to the Project view's contextual menu. Add git specific actions.
@@ -59,14 +72,11 @@ public class ProjectViewManager {
 			// invoke addPopUpMenuCustomizer method
 			addPopUpMenuCustomizerMethod.invoke(projectManager, proxyProjectPopupMenuCustomizerImpl);
 
-		} catch (IllegalAccessException e2) {
-		} catch (IllegalArgumentException e2) {
-		} catch (InvocationTargetException e2) {
-		}	catch (ClassNotFoundException e) {
-		  // The method wasn't found because it's used a older version
-		} catch (NoSuchMethodException e) {
-		} catch (SecurityException e) {
-		}
+		} catch (Exception e) {
+		  if (logger.isDebugEnabled()) {
+		    logger.debug(e, e);
+		  }
+		} 
 	}
 
 	/**
@@ -95,12 +105,11 @@ public class ProjectViewManager {
 			// get the selected files
 			toReturn = (File[]) getSelectedFiles.invoke(projectManager);
 			
-		} catch (IllegalAccessException e2) {
-		} catch (IllegalArgumentException e2) {
-		} catch (InvocationTargetException e2) {
-		} catch (NoSuchMethodException e) {
-		} catch (SecurityException e) {
-		}
+		} catch (Exception e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    } 
 		
 		return toReturn;
 	}

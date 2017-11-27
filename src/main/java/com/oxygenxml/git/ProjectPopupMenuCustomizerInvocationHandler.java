@@ -96,7 +96,7 @@ public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.re
     		}
     		temp = temp.getParentFile();
     	}
-    	if (isGit == false) {
+    	if (!isGit) {
     		// If one of the selected project files does not pertain to a Git repository,
     		// it means that the project is not a Git one
     		break;

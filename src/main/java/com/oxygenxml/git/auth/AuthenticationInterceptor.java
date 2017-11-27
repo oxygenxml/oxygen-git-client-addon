@@ -26,6 +26,13 @@ import org.apache.log4j.Logger;
 public class AuthenticationInterceptor {
 
 	/**
+   * Hidden constructor.
+   */
+  private AuthenticationInterceptor() {
+    // Nothing.
+  }
+
+  /**
 	 * 
 	 * The custom Authenticator. Replaces the Oxygen's Authenticator only for git
 	 * related hosts otherwise it delegates back to the Oxygen's Authenticator.
@@ -58,9 +65,8 @@ public class AuthenticationInterceptor {
 		 * @param oldAuth The wrapped authenticator.
 		 * 
 		 * @throws NoSuchFieldException Unable to access wrapped authenticator data.
-		 * @throws SecurityException Unable to access wrapped authenticator data.
 		 */
-		private MyAuth(Authenticator oldAuth) throws NoSuchFieldException, SecurityException {
+		private MyAuth(Authenticator oldAuth) throws NoSuchFieldException {
 			this.oldAuth = oldAuth;
 
 			// Getting the fields with java reflection

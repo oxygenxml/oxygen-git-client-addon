@@ -231,10 +231,10 @@ public class GitActionsProvider {
             }
 
             if (selectedFileStatus == null
-                || selectedFileStatus != null && (selectedFileStatus.getChangeType() == GitChangeType.ADD
-                    || selectedFileStatus.getChangeType() == GitChangeType.UNTRACKED
-                    || selectedFileStatus.getChangeType() == GitChangeType.MISSING
-                    || selectedFileStatus.getChangeType() == GitChangeType.REMOVED)) {
+                || selectedFileStatus.getChangeType() == GitChangeType.ADD
+                || selectedFileStatus.getChangeType() == GitChangeType.UNTRACKED
+                || selectedFileStatus.getChangeType() == GitChangeType.MISSING
+                || selectedFileStatus.getChangeType() == GitChangeType.REMOVED) {
 
               isEnabled = false;
             }

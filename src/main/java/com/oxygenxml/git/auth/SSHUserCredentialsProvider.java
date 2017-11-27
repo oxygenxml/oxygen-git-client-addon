@@ -50,16 +50,15 @@ public class SSHUserCredentialsProvider extends UsernamePasswordCredentialsProvi
 	      logger.debug("Message: |" + item.getPromptText() + "|");
 	    }
 
-	    if (item instanceof CredentialItem.StringType) {
-	      if (item.getPromptText().startsWith("Passphrase")) {
-	        // A not so great method to check that the pass phrase is requested.
-	        passphaseRequested = true;
+	    if (item instanceof CredentialItem.StringType
+	        && item.getPromptText().startsWith("Passphrase")) {
+	      // A not so great method to check that the pass phrase is requested.
+	      passphaseRequested = true;
 
-	        ((CredentialItem.StringType) item).setValue(new String(passphrase));
-	        // true tells the engine that we supplied the value.
-	        // The engine will look inside the given item for the response.
-	        return true;
-	      }
+	      ((CredentialItem.StringType) item).setValue(new String(passphrase));
+	      // true tells the engine that we supplied the value.
+	      // The engine will look inside the given item for the response.
+	      return true;
 	    }
 
 	    if (item instanceof CredentialItem.YesNoType) {
