@@ -18,7 +18,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -751,8 +750,10 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 * @author Beniamin Savu
 	 *
 	 */
-	class CustomTreeIconRenderer extends DefaultTreeCellRenderer {
-
+	private final class CustomTreeIconRenderer extends DefaultTreeCellRenderer {
+	  /**
+	   * @see javax.swing.tree.DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
+	   */
 		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
 				int row, boolean hasFocus) {
@@ -769,23 +770,10 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
 					FileStatus file = model.getFileByPath(path);
 					GitChangeType changeType = file.getChangeType();
-          if (GitChangeType.ADD == changeType
-					    || GitChangeType.UNTRACKED == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-						toolTip = translator.getTranslation(Tags.ADD_ICON_TOOLTIP);
-					} else if (GitChangeType.MODIFIED == changeType 
-					    || GitChangeType.CHANGED == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
-						toolTip = translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP);
-					} else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
-						toolTip = translator.getTranslation(Tags.DELETE_ICON_TOOLTIP);
-					} else if (GitChangeType.CONFLICT == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
-						toolTip = translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP);
-					} else if (GitChangeType.SUBMODULE == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
-						toolTip = translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP);
+					RenderingInfo renderingInfo = getRenderingInfo(changeType);
+					if (renderingInfo != null) {
+					  icon = renderingInfo.getIcon();
+					  toolTip = renderingInfo.getTooltip();
 					}
 				}
 			}
@@ -804,8 +792,11 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 * @author Beniamin Savu
 	 *
 	 */
-	class TableFileLocationTextCellRenderer implements TableCellRenderer {
-
+	private final class TableFileLocationTextCellRenderer implements TableCellRenderer {
+	  /**
+	   * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
+	   */
+	  @Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
 			if (value != null && value instanceof String) {
@@ -838,35 +829,94 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 * @author Beniamin Savu
 	 *
 	 */
-	class TableIconCellRenderer implements TableCellRenderer {
-
+	private final class TableIconCellRenderer implements TableCellRenderer {
+	  /**
+	   * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
+	   */
+	  @Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
-			ImageIcon icon = null;
-			String toolTip = "";
-			
-			// TODO Extract a common code to be used here and in the com.oxygenxml.git.view.ChangesPanel.CustomTreeIconRenderer
-			
-			if (GitChangeType.ADD == value || GitChangeType.UNTRACKED == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-				toolTip = translator.getTranslation(Tags.ADD_ICON_TOOLTIP);
-			} else if (GitChangeType.MODIFIED == value || GitChangeType.CHANGED == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
-				toolTip = translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP);
-			} else if (GitChangeType.MISSING == value || GitChangeType.REMOVED == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
-				toolTip = translator.getTranslation(Tags.DELETE_ICON_TOOLTIP);
-			} else if (GitChangeType.CONFLICT == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
-				toolTip = translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP);
-			} else if (GitChangeType.SUBMODULE == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
-				toolTip = translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP);
+		  JLabel iconLabel = null;
+			RenderingInfo renderingInfo = getRenderingInfo((GitChangeType) value);
+			if (renderingInfo != null) {
+			  iconLabel = new JLabel();
+			  iconLabel.setIcon(renderingInfo.getIcon());
+			  iconLabel.setToolTipText(renderingInfo.getTooltip());
 			}
-			JLabel iconLabel = new JLabel(icon);
-			iconLabel.setToolTipText(toolTip);
 			return iconLabel;
 		}
+	}
+	
+	/**
+	 * Get the rendering info (such as icon or tooltip text) for the given Git change type.
+	 * 
+	 * @param changeType The Git change type.
+	 * 
+	 * @return the rendering info.
+	 */
+	private RenderingInfo getRenderingInfo(GitChangeType changeType) {
+	  RenderingInfo renderingInfo = null;
+	  if (GitChangeType.ADD == changeType || GitChangeType.UNTRACKED == changeType) {
+	    renderingInfo = new RenderingInfo(
+	        Icons.getIcon(ImageConstants.GIT_ADD_ICON),
+	        translator.getTranslation(Tags.ADD_ICON_TOOLTIP));
+    } else if (GitChangeType.MODIFIED == changeType || GitChangeType.CHANGED == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON),
+          translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP));
+    } else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(ImageConstants.GIT_DELETE_ICON),
+          translator.getTranslation(Tags.DELETE_ICON_TOOLTIP));
+    } else if (GitChangeType.CONFLICT == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON),
+          translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP));
+    } else if (GitChangeType.SUBMODULE == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON),
+          translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP));
+    }
+	  return renderingInfo;
+	}
+	
+	/**
+	 * Rendering info.
+	 */
+	private final static class RenderingInfo {
+	  /**
+	   * Icon.
+	   */
+	  private Icon icon;
+	  /**
+	   * Tootlip text.
+	   */
+	  private String tooltip;
+	  
+    /**
+     * Constructor.
+     * 
+     * @param icon     Icon.
+     * @param tooltip  Tooltip text.
+     */
+    public RenderingInfo(Icon icon, String tooltip) {
+      this.icon = icon;
+      this.tooltip = tooltip;
+    }
+    
+    /**
+     * @return the icon
+     */
+    public Icon getIcon() {
+      return icon;
+    }
+    
+    /**
+     * @return the tooltip
+     */
+    public String getTooltip() {
+      return tooltip;
+    }
 	}
 
 }
