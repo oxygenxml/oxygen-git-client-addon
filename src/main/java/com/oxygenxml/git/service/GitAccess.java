@@ -510,44 +510,39 @@ public class GitAccess {
 	 * @throws IOException
 	 */
 	public PushResponse push(final String username, final String password)
-			throws GitAPIException {
+	    throws GitAPIException {
 
 	  AuthenticationInterceptor.install();
-		PushResponse response = new PushResponse();
+	  PushResponse response = new PushResponse();
 
-		try {
+	  RepositoryState repositoryState = git.getRepository().getRepositoryState();
 
-			RepositoryState repositoryState = git.getRepository().getRepositoryState();
+	  if (repositoryState == RepositoryState.MERGING) {
+	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	    response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
+	    return response;
+	  }
+	  if (getPullsBehind() > 0) {
+	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	    response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
+	    return response;
+	  }
+	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+	  Iterable<PushResult> call = git.push()
+	      .setCredentialsProvider(new SSHUserCredentialsProvider(username, password, sshPassphrase)).call();
+	  Iterator<PushResult> results = call.iterator();
+	  logger.debug("Push Ended");
+	  while (results.hasNext()) {
+	    PushResult result = results.next();
+	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
+	      response.setStatus(info.getStatus());
+	      return response;
+	    }
+	  }
 
-			if (repositoryState == RepositoryState.MERGING) {
-				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-				response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
-				return response;
-			}
-			if (getPullsBehind() > 0) {
-				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-				response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
-				return response;
-			}
-			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-			Iterable<PushResult> call = git.push()
-					.setCredentialsProvider(new SSHUserCredentialsProvider(username, password, sshPassphrase)).call();
-			Iterator<PushResult> results = call.iterator();
-			logger.debug("Push Ended");
-			while (results.hasNext()) {
-			  // TODO: que esta pasando aqui?
-				PushResult result = results.next();
-				for (RemoteRefUpdate info : result.getRemoteUpdates()) {
-					response.setStatus(info.getStatus());
-					return response;
-				}
-			}
-		} finally {
-
-		}
-		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-		response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
-		return response;
+	  response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	  response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
+	  return response;
 	}
 
 	/**
@@ -919,10 +914,9 @@ public class GitAccess {
 	 *          - the commit in which the file exists
 	 * @param path
 	 *          - the path to the file
+	 *          
 	 * @return the InputStream for the file
-	 * @throws MissingObjectException
-	 * @throws IncorrectObjectTypeException
-	 * @throws CorruptObjectException
+	 * 
 	 * @throws IOException
 	 */
 	public InputStream getInputStream(ObjectId commit)
