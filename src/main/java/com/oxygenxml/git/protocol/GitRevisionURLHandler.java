@@ -126,6 +126,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * 
 		 * @return the input stream
 		 */
+		@Override
 		public InputStream getInputStream() throws IOException {
 			if (VersionIdentifier.CURRENT_SUBMODULE.equals(currentHost) 
 					|| VersionIdentifier.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
@@ -135,13 +136,10 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				printWriter.println(commit);
 				printWriter.close();
 				return new FileInputStream(temp);
-				//return IOUtils.toInputStream(commit, "UTF-8");
-				//return new ByteArrayInputStream(commit.getBytes(StandardCharsets.UTF_8));
 			}
 			
 			GitAccess gitAccess = GitAccess.getInstance();
-			InputStream inputStream = gitAccess.getInputStream(fileObject);
-			return inputStream;
+			return gitAccess.getInputStream(fileObject);
 		}
 
 		/**
@@ -149,6 +147,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * 
 		 * @return the output stream
 		 */
+		@Override
 		public OutputStream getOutputStream() throws IOException {
 			if (VersionIdentifier.MINE.equals(currentHost)) {
         try {
@@ -163,7 +162,9 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			throw new IOException("Writing is permitted only in the local file.");
 		}
 
+		@Override
 		public void connect() throws IOException {
+		  
 		}
 
 		/**
@@ -193,8 +194,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 * @return The connection
 	 */
 	protected URLConnection openConnection(URL u) throws IOException {
-		URLConnection connection = new GitRevisionConnection(u);
-		return connection;
+		return new GitRevisionConnection(u);
 	}
 
 	/**

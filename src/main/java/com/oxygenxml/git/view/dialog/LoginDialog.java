@@ -114,7 +114,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridwidth = 2;
 		panel.add(tfUsername, gbc);
 
-		JLabel lbPassword = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_PASSWORD_LABEL));
+		JLabel lbPassword = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_PASS_WORD_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;

@@ -8,6 +8,12 @@ package com.oxygenxml.git.translator;
  */
 public class Tags {
   /**
+   * Private constructor.
+   */
+  private Tags() {
+    // Nothing.
+  }
+  /**
    * Message shown when a previous SSH passphrase was invalid.
    * 
    * en: The previous passphrase is invalid.
@@ -360,7 +366,7 @@ public class Tags {
 	/**
 	 * The text displayed on the label for the password
 	 */
-	public static final String LOGIN_DIALOG_PASSWORD_LABEL = "Login_Dilaog_Password_Label";
+	public static final String LOGIN_DIALOG_PASS_WORD_LABEL = "Login_Dilaog_Password_Label";
 
 	/**
 	 * The text displayed on the title for the login dialog
