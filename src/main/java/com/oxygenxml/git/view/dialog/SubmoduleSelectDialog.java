@@ -123,10 +123,6 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
-		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
 		}
 	}
 }
