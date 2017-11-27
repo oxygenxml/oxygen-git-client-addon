@@ -70,15 +70,11 @@ public class OptionsManager {
 	 * 
 	 * @return singleton instance
 	 */
-	public static OptionsManager getInstance() {
-		if (instance == null) {
-			synchronized (OptionsManager.class) {
-				if (instance == null) {
-					instance = new OptionsManager();
-				}
-			}
-		}
-		return instance;
+	public synchronized static OptionsManager getInstance() {
+	  if (instance == null) {
+	    instance = new OptionsManager();
+	  }
+	  return instance;
 	}
 
 	/**

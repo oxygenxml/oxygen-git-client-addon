@@ -656,7 +656,7 @@ public class GitAccess {
 	 */
 	public void add(FileStatus file) {
 		try {
-			if (file.getChangeType().equals("DELETE")) {
+			if (file.getChangeType().equals(GitChangeType.REMOVED)) {
 				git.rm().addFilepattern(file.getFileLocation()).call();
 			} else {
 				git.add().addFilepattern(file.getFileLocation()).call();

@@ -71,13 +71,11 @@ public class UndoSupportInstaller {
   					text = event.getDocument().getText(start, len);
   				}
   				boolean isNeedStart = false;
-  				if (current == null) {
-  					isNeedStart = true;
-  				} else if (text.contains("\n") && !"deletion".equals(edit.getPresentationName())) {
-  					isNeedStart = true;
-  				} else if (lastEditName == null || !lastEditName.equals(edit.getPresentationName())) {
-  					isNeedStart = true;
-  				} else if (Math.abs(lastOffset - start) > 1) {
+  				if (current == null
+  				    || lastEditName == null 
+  				    || !lastEditName.equals(edit.getPresentationName())
+  				    || text.contains("\n") && !"deletion".equals(edit.getPresentationName())
+  				    || Math.abs(lastOffset - start) > 1) {
   					isNeedStart = true;
   				}
   
@@ -100,9 +98,7 @@ public class UndoSupportInstaller {
   	}
   
   	public void createCompoundEdit() {
-  		if (current == null) {
-  			current = new MyCompoundEdit();
-  		} else if (current.getLength() > 0) {
+  		if (current == null || current.getLength() > 0) {
   			current = new MyCompoundEdit();
   		}
   
