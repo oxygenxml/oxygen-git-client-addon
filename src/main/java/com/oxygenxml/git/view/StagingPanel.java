@@ -110,6 +110,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		createGUI();
 		
 		GitAccess.getInstance().addGitListener(new GitEventListener() {
+      @Override
       public void repositoryChanged() {
         GitAccess gitAccess = GitAccess.getInstance();
         Repository repository;
@@ -268,7 +269,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				if(e.getOppositeComponent() != null){
 					Window windowAncestor = SwingUtilities.getWindowAncestor(e.getOppositeComponent());
 					boolean contains = windowAncestor.toString().contains("MainFrame");
-					if(contains && !SwingUtilities.isDescendingFrom((Component) e.getOppositeComponent(), StagingPanel.this)){
+					if(contains && !SwingUtilities.isDescendingFrom(e.getOppositeComponent(), StagingPanel.this)){
 						inTheView = false;
 					} else {
 						inTheView = true;
@@ -286,7 +287,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	private void addRefreshF5() {
 		Action action = new AbstractAction() {
 
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				refresh.call();
 			}
 		};
@@ -368,7 +370,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.add(workingCopySelectionPanel, gbc);
 	}
 
-	public void stateChanged(PushPullEvent pushPullEvent) {
+	@Override
+  public void stateChanged(PushPullEvent pushPullEvent) {
 		if (pushPullEvent.getActionStatus() == ActionStatus.STARTED) {
 			commitPanel.setStatus(pushPullEvent.getMessage());
 			commitPanel.clearCommitMessage();
