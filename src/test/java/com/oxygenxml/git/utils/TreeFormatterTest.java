@@ -2,26 +2,20 @@ package com.oxygenxml.git.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.junit.Test;
 
-import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.GitTreeNode;
 
 public class TreeFormatterTest {
 
 	@Test
 	public void testGetNodeFromString() {
-		URL resource = getClass().getClassLoader().getResource(com.oxygenxml.git.constants.ImageConstants.GIT_PUSH_ICON);
-
 		List<String> paths = new ArrayList<String>();
 		paths.add("src/add/poc.txt");
 		paths.add("src/add/hello.txt");
