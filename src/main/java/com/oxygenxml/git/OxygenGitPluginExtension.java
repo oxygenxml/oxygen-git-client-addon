@@ -88,7 +88,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			parentFrame.addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentShown(ComponentEvent e) {
-					// parentFrame.removeComponentListener(this);
 					String key = "view.presented.on.first.run";
 					String firstRun = pluginWorkspaceAccess.getOptionsStorage().getOption(key, null);
 					if (firstRun == null) {
