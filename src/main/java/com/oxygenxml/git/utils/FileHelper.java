@@ -9,8 +9,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
-import com.oxygenxml.git.CustomWorkspaceAccessPluginExtension;
-import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 
@@ -28,14 +26,14 @@ public class FileHelper {
 	private static Logger logger = Logger.getLogger(FileHelper.class);
 
 	/**
-	 * Searches a given path for all files in that path. Generates the files path
-	 * relative to the given path and saves them in a list
+	 * Searches a given path for all files in that path. Generates the files paths
+	 * relative to the given path.
 	 * 
-	 * @param path
-	 *          - the path to the folder you want to search
+	 * @param path The path to the folder you want to search.
+	 * 
 	 * @return list of paths relative to the given path
 	 */
-	public static List<String> search(String path) {
+	public static List<String> getAllFilesFromPath(String path) {
 		File rootFolder = new File(path);
 		List<String> fileNames = new ArrayList<String>();
 		if (rootFolder.isFile()) {
@@ -46,7 +44,7 @@ public class FileHelper {
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isDirectory() && (!listOfFiles[i].getName().equals(".git"))) {
-				fileNames.addAll(search(listOfFiles[i].getAbsolutePath()));
+				fileNames.addAll(getAllFilesFromPath(listOfFiles[i].getAbsolutePath()));
 			} else if (listOfFiles[i].isFile()) {
 				fileNames.add(listOfFiles[i].getAbsolutePath().replace("\\", "/"));
 			}
@@ -57,8 +55,8 @@ public class FileHelper {
 	/**
 	 * Returns the URL from a given path
 	 * 
-	 * @param path
-	 *          - the path to get the URL
+	 * @param path The path to get the URL.
+	 * 
 	 * @return the URL from the given path
 	 * 
 	 * @throws NoRepositorySelected 
@@ -79,6 +77,13 @@ public class FileHelper {
 		return url;
 	}
 
+	/**
+	 * Check if the given path corresponds to a Git repository.
+	 * 
+	 * @param path The path.
+	 * 
+	 * @return <code>true</code> if the path corresponds to a Git repository.
+	 */
 	public static boolean isGitRepository(String path) {
 		File rootFolder = new File(path);
 		File[] listOfFiles = rootFolder.listFiles();
@@ -101,7 +106,8 @@ public class FileHelper {
 	 * </pre>
 	 * 
 	 * @param path The path to check.
-	 * @return
+	 * 
+	 * @return <code>true</code> if the path represents a submodule.
 	 */
 	public static boolean isGitSubmodule(String path) {
 		File rootFolder = new File(path);
@@ -121,11 +127,18 @@ public class FileHelper {
 		return isSubmodule;
 	}
 
+	/**
+	 * Search for the project (.xpr) file.
+	 * 
+	 * @param projectViewPath The directory path to search for.
+	 * 
+	 * @return the file path to the project file, or <code>null</code>.s
+	 */
 	public static String findXPR(String projectViewPath) {
 		File rootFolder = new File(projectViewPath);
 		File[] listOfFiles = rootFolder.listFiles();
 
-		String xprPath = "";
+		String xprPath = null;
 		for (int i = 0; i < listOfFiles.length; i++) {
 			String extension = listOfFiles[i].getName().substring(listOfFiles[i].getName().lastIndexOf(".") + 1);
 			if ("xpr".equals(extension)) {
@@ -136,9 +149,16 @@ public class FileHelper {
 		return xprPath;
 	}
 
-	public static boolean isURL(String path) {
+	/**
+	 * Check if the given argument is a URL.
+	 * 
+	 * @param arg the argument.
+	 * 
+	 * @return <code>true</code> if URL.
+	 */
+	public static boolean isURL(String arg) {
 		try {
-			new URL(path);
+			new URL(arg);
 			return true;
 		} catch (MalformedURLException e) {
 			return false;

@@ -14,7 +14,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.StageState;
+import com.oxygenxml.git.view.event.FileState;
 import com.oxygenxml.git.view.event.Subject;
 
 /**
@@ -50,24 +50,24 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 
 	public void stateChanged(ChangeEvent changeEvent) {
 		List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
-		if (changeEvent.getNewState() == StageState.STAGED) {
+		if (changeEvent.getNewState() == FileState.STAGED) {
 			if (forStaging) {
 				insertNodes(fileToBeUpdated);
 			} else {
 				deleteNodes(fileToBeUpdated);
 			}
-		} else if (changeEvent.getNewState() == StageState.UNSTAGED) {
+		} else if (changeEvent.getNewState() == FileState.UNSTAGED) {
 			if (forStaging) {
 				deleteNodes(fileToBeUpdated);
 			} else {
 				insertNodes(fileToBeUpdated);
 			}
-		} else if (changeEvent.getNewState() == StageState.COMMITED) {
+		} else if (changeEvent.getNewState() == FileState.COMMITED) {
 			if (forStaging) {
 				deleteNodes(filesStatus);
 				filesStatus.clear();
 			}
-		} else if (changeEvent.getNewState() == StageState.DISCARD) {
+		} else if (changeEvent.getNewState() == FileState.DISCARD) {
 			deleteNodes(fileToBeUpdated);
 		}
 
@@ -142,11 +142,11 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 			}
 		}
 
-		StageState newSTate = StageState.UNSTAGED;
-		StageState oldState = StageState.STAGED;
+		FileState newSTate = FileState.UNSTAGED;
+		FileState oldState = FileState.STAGED;
 		if (!forStaging) {
-			newSTate = StageState.STAGED;
-			oldState = StageState.UNSTAGED;
+			newSTate = FileState.STAGED;
+			oldState = FileState.UNSTAGED;
 		}
 
 		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, filesToRemove);

@@ -26,7 +26,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.event.Command;
-import com.oxygenxml.git.view.event.StageState;
+import com.oxygenxml.git.view.event.FileState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -86,8 +86,8 @@ public class PanelRefresh implements GitRefreshSupport {
 				String[] options = new String[] { "   Yes   ", "   No   " };
 				int[] optonsId = new int[] { 0, 1 };
 				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-						translator.getTraslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-						translator.getTraslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
+						translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
+						translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
 				if (response == 0) {
 					gitAccess.createNewRepository(projectView);
 					OptionsManager.getInstance().addRepository(projectView);
@@ -101,8 +101,8 @@ public class PanelRefresh implements GitRefreshSupport {
 		}
 		try {
 			if (gitAccess.getRepository() != null) {
-				updateFiles(StageState.UNSTAGED);
-				updateFiles(StageState.STAGED);
+				updateFiles(FileState.UNSTAGED);
+				updateFiles(FileState.STAGED);
 				updateCounter(Command.PULL);
 				updateCounter(Command.PUSH);
 				String path = gitAccess.getWorkingCopy().getAbsolutePath();
@@ -225,6 +225,7 @@ public class PanelRefresh implements GitRefreshSupport {
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
 					}
+					Thread.currentThread().interrupt();
 				} catch (ExecutionException e) {
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
@@ -234,12 +235,12 @@ public class PanelRefresh implements GitRefreshSupport {
 		}.execute();
 	}
 
-	private void updateFiles(final StageState state) {
+	private void updateFiles(final FileState state) {
 		new SwingWorker<List<FileStatus>, Integer>() {
 
 			@Override
 			protected List<FileStatus> doInBackground() throws Exception {
-				if (state == StageState.UNSTAGED) {
+				if (state == FileState.UNSTAGED) {
 					return GitAccess.getInstance().getUnstagedFiles();
 				} else {
 					return GitAccess.getInstance().getStagedFile();
@@ -251,7 +252,7 @@ public class PanelRefresh implements GitRefreshSupport {
 				List<FileStatus> files = new ArrayList<FileStatus>();
 				List<FileStatus> newFiles = new ArrayList<FileStatus>();
 				StagingResourcesTableModel model = null;
-				if (state == StageState.UNSTAGED) {
+				if (state == FileState.UNSTAGED) {
 					model = (StagingResourcesTableModel) stagingPanel.getUnstagedChangesPanel().getFilesTable().getModel();
 				} else {
 					model = (StagingResourcesTableModel) stagingPanel.getStagedChangesPanel().getFilesTable().getModel();
@@ -270,13 +271,14 @@ public class PanelRefresh implements GitRefreshSupport {
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
 					}
+					Thread.currentThread().interrupt();
 				} catch (ExecutionException e) {
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
 					}
 				}
 				if (!newFiles.equals(filesInModel)) {
-					if (state == StageState.UNSTAGED) {
+					if (state == FileState.UNSTAGED) {
 						stagingPanel.getUnstagedChangesPanel().updateFlatView(newFiles);
 						stagingPanel.getUnstagedChangesPanel().createTreeView(OptionsManager.getInstance().getSelectedRepository(),
 								newFiles);

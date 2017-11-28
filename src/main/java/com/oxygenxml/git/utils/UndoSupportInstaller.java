@@ -17,6 +17,8 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
+import org.apache.log4j.Logger;
+
 import ro.sync.util.PlatformDetector;
 
 /**
@@ -24,6 +26,18 @@ import ro.sync.util.PlatformDetector;
  * @author alex_jitianu
  */
 public class UndoSupportInstaller {
+  
+  /**
+   * Hidden constructor. 
+   */
+  private UndoSupportInstaller() {
+    // Nothing
+  }
+
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(UndoSupportInstaller.MyCompoundEdit.class.getName());
 
   private static class MyCompoundEdit extends CompoundEdit {
   	boolean isUnDone = false;
@@ -32,22 +46,26 @@ public class UndoSupportInstaller {
   		return edits.size();
   	}
   
-  	public void undo() throws CannotUndoException {
+  	@Override
+  	public void undo() {
   		super.undo();
   		isUnDone = true;
   	}
   
-  	public void redo() throws CannotUndoException {
+  	@Override
+  	public void redo() {
   		super.redo();
   		isUnDone = false;
   	}
   
+  	@Override
   	public boolean canUndo() {
-  		return edits.size() > 0 && !isUnDone;
+  		return !edits.isEmpty() && !isUnDone;
   	}
   
+  	@Override
   	public boolean canRedo() {
-  		return edits.size() > 0 && isUnDone;
+  		return !edits.isEmpty() && isUnDone;
   	}
   
   }
@@ -58,7 +76,7 @@ public class UndoSupportInstaller {
   	ArrayList<MyCompoundEdit> edits = new ArrayList<MyCompoundEdit>();
   	MyCompoundEdit current;
   	int pointer = -1;
-  
+  	@Override
   	public void undoableEditHappened(UndoableEditEvent e) {
   		UndoableEdit edit = e.getEdit();
   		if (edit instanceof AbstractDocument.DefaultDocumentEvent) {
@@ -71,13 +89,11 @@ public class UndoSupportInstaller {
   					text = event.getDocument().getText(start, len);
   				}
   				boolean isNeedStart = false;
-  				if (current == null) {
-  					isNeedStart = true;
-  				} else if (text.contains("\n") && !"deletion".equals(edit.getPresentationName())) {
-  					isNeedStart = true;
-  				} else if (lastEditName == null || !lastEditName.equals(edit.getPresentationName())) {
-  					isNeedStart = true;
-  				} else if (Math.abs(lastOffset - start) > 1) {
+  				if (current == null
+  				    || lastEditName == null 
+  				    || !lastEditName.equals(edit.getPresentationName())
+  				    || text.contains("\n") && !"deletion".equals(edit.getPresentationName())
+  				    || Math.abs(lastOffset - start) > 1) {
   					isNeedStart = true;
   				}
   
@@ -94,15 +110,15 @@ public class UndoSupportInstaller {
   				lastOffset = start;
   
   			} catch (BadLocationException e1) {
-  				e1.printStackTrace();
+  				if (logger.isDebugEnabled()) {
+  				  logger.debug(e1, e1);
+  				}
   			}
   		}
   	}
   
   	public void createCompoundEdit() {
-  		if (current == null) {
-  			current = new MyCompoundEdit();
-  		} else if (current.getLength() > 0) {
+  		if (current == null || current.getLength() > 0) {
   			current = new MyCompoundEdit();
   		}
   
@@ -110,7 +126,8 @@ public class UndoSupportInstaller {
   		pointer++;
   	}
   
-  	public void undo() throws CannotUndoException {
+  	@Override
+  	public void undo() {
   		if (!canUndo()) {
   			throw new CannotUndoException();
   		}
@@ -121,7 +138,8 @@ public class UndoSupportInstaller {
   
   	}
   
-  	public void redo() throws CannotUndoException {
+  	@Override
+  	public void redo() {
   		if (!canRedo()) {
   			throw new CannotUndoException();
   		}
@@ -132,12 +150,14 @@ public class UndoSupportInstaller {
   
   	}
   
+  	@Override
   	public boolean canUndo() {
   		return pointer >= 0;
   	}
   
+  	@Override
   	public boolean canRedo() {
-  		return edits.size() > 0 && pointer < edits.size() - 1;
+  		return !edits.isEmpty() && pointer < edits.size() - 1;
   	}
   
   }

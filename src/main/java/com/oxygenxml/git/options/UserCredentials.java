@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ro.sync.util.Equaler;
+
 /**
  * Git user credentials POJO for the JAXB
  */
@@ -88,29 +90,14 @@ public class UserCredentials {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		UserCredentials other = (UserCredentials) obj;
-		if (host == null) {
-			if (other.host != null)
-				return false;
-		} else if (!host.equals(other.host))
-			return false;
-		if (password == null) {
-			if (other.password != null)
-				return false;
-		} else if (!password.equals(other.password))
-			return false;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
-			return false;
-		return true;
+	  boolean toReturn = false;
+	  if (obj instanceof UserCredentials) {
+	    UserCredentials creds = (UserCredentials) obj;
+	    toReturn = Equaler.verifyEquals(host, creds.getHost())
+	        && Equaler.verifyEquals(password, creds.getPassword())
+	        && Equaler.verifyEquals(username, creds.getUsername());
+	  }
+	  return toReturn;
 	}
 
 }

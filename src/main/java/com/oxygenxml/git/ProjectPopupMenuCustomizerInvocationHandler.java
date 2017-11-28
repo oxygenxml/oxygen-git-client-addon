@@ -1,19 +1,15 @@
 package com.oxygenxml.git;
 
-import java.awt.Color;
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import com.oxygenxml.git.constants.ImageConstants;
-import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -26,94 +22,86 @@ import ro.sync.ui.Icons;
  *
  */
 public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.reflect.InvocationHandler {
-	private JMenu git;
-	private Object plugin;
+	/**
+	 * Object giving access to the workspace plug-ins API.
+	 */
+	private StandalonePluginWorkspace pluginWorkspaceAccess;
+	
+	/**
+	 * Translator.
+	 */
+  private Translator translator;
+  
+  /**
+   * Object providing the Git-specific actions.
+   */
+  private GitActionsProvider gitActionsProvider;
 
-	public ProjectPopupMenuCustomizerInvocationHandler(JMenu git, Object plugin) {
-		this.git = git;
-		this.plugin = plugin;
+	/**
+	 * Constructor.
+	 * 
+	 * @param pluginWorkspaceAccess	    Object giving access to the workspace plug-ins API.
+	 * @param translator                Translator.
+	 * @param gitActionsProvider        Object providing the Git-specific actions.
+	 */
+	public ProjectPopupMenuCustomizerInvocationHandler(
+			StandalonePluginWorkspace pluginWorkspaceAccess,
+			Translator translator, GitActionsProvider gitActionsProvider) {
+		this.pluginWorkspaceAccess = pluginWorkspaceAccess;
+    this.translator = translator;
+    this.gitActionsProvider = gitActionsProvider;
 	}
 
+	/**
+	 * @see java.lang.reflect.InvocationHandler.invoke(Object, Method, Object[])
+	 */
+	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		Object result = null;
-		try {
+	  Object result = null;
+	  // Customize pop-up menu
+	  if (method.getName().equals("customizePopUpMenu")) {
+	    // The contextual menu of the project view, where we should add the Git sub-menu.
+	    JPopupMenu projectContextMenu = (JPopupMenu) args[0];
 
-			// if the method name equals with "customizePopUpMenu"
-			if (method.getName().equals("customizePopUpMenu")) {
-				boolean isGit = false;
-				String repository = null;
-				// cast the args[0] at JPopupMenu
-				JPopupMenu popupMenu = (JPopupMenu) args[0];
+	    // Proceed only if the selected file pertain to a Git repository
+	    if (areSelectedFilesFromGitRepo()) {
+	      projectContextMenu.addSeparator();
+	      JMenu gitMenu = new JMenu(translator.getTranslation(Tags.PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM));
+	      gitMenu.setIcon(Icons.getIcon(ImageConstants.GIT_ICON));
+	      for (AbstractAction action : gitActionsProvider.getActionsForProjectViewSelection()) {
+          gitMenu.add(action);
+        }
+	      projectContextMenu.add(gitMenu);
+	    }
+	  }
 
-				// check if the selected files are git files
-				File[] selectedFiles = ProjectManagerEditor.getSelectedFiles((StandalonePluginWorkspace) plugin);
-				for (int i = 0; i < selectedFiles.length; i++) {
-					isGit = false;
-					File temp = new File(selectedFiles[i].getAbsolutePath());
-					while (temp.getParent() != null && !isGit) {
-						if (FileHelper.isGitRepository(temp.getPath())) {
-							repository = temp.getPath();
-							isGit = true;
-						}
-						temp = temp.getParentFile();
-					}
-					if (isGit == false) {
-						break;
-					}
-				}
-
-				if (isGit) {
-				  // TODO It is hard to understand which actions are handled here. It is also error prone as the order might change.
-					git.getItem(0).setEnabled(true);
-					git.getItem(1).setEnabled(true);
-					// disable the diff action if there are 2 or more files selected or if
-					// the files selected is a directory
-					if (selectedFiles.length > 1 || selectedFiles[0].isDirectory()) {
-						JMenuItem item = git.getItem(1);
-						item.setEnabled(false);
-					} else {
-						FileStatus selectedFile = null;
-						String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-						GitAccess.getInstance().setRepository(repository);
-						List<FileStatus> gitFiles = GitAccess.getInstance().getUnstagedFiles();
-						gitFiles.addAll(GitAccess.getInstance().getStagedFile());
-						String selectedFilePath = selectedFiles[0].getAbsolutePath().replace("\\", "/");
-						for (FileStatus fileStatus : gitFiles) {
-							if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-								selectedFile = new FileStatus(fileStatus);
-								break;
-							}
-						}
-						if (selectedFile == null 
-						    || selectedFile != null && (
-						        selectedFile.getChangeType() == GitChangeType.ADD 
-						        || selectedFile.getChangeType() == GitChangeType.UNTRACKED
-						        || selectedFile.getChangeType() == GitChangeType.MISSING
-						        || selectedFile.getChangeType() == GitChangeType.REMOVED)) {
-							JMenuItem item = git.getItem(1);
-							item.setEnabled(false);
-						}
-						
-						GitAccess.getInstance().setRepository(previousRepository);
-					}
-					// set the text and make it visible
-					git.setVisible(true);
-					git.setOpaque(true);
-					git.setBackground(Color.WHITE);
-
-					// set icon on MenuItem
-					git.setIcon(Icons.getIcon(ImageConstants.GIT_ICON));
-
-					// add a separator
-					popupMenu.addSeparator();
-
-					// add menuItem at popupMenu
-					popupMenu.add(git);
-				}
-			}
-
-		} catch (Exception e) {
-		}
-		return result;
+	  return result;
 	}
+
+	/**
+	 * Check if the selected files from the Project view pertain to a Git repository.
+	 * 
+	 * @return <code>true</code> if the selected files pertain to a Git repository,
+	 *  <code>false</code> otherwise.
+	 */
+  private boolean areSelectedFilesFromGitRepo() {
+	  boolean isGit = false;
+    File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
+    for (int i = 0; i < selectedFiles.length; i++) {
+    	isGit = false;
+    	File temp = new File(selectedFiles[i].getAbsolutePath());
+    	while (temp.getParent() != null && !isGit) {
+    		if (FileHelper.isGitRepository(temp.getPath())) {
+    			isGit = true;
+    		}
+    		temp = temp.getParentFile();
+    	}
+    	if (!isGit) {
+    		// If one of the selected project files does not pertain to a Git repository,
+    		// it means that the project is not a Git one
+    		break;
+    	}
+    }
+    return isGit;
+  }
 }

@@ -7,6 +7,36 @@ package com.oxygenxml.git.translator;
  *
  */
 public class Tags {
+  /**
+   * Private constructor.
+   */
+  private Tags() {
+    // Nothing.
+  }
+  /**
+   * Message shown when a previous SSH passphrase was invalid.
+   * 
+   * en: The previous passphrase is invalid.
+   */
+  public static final String PREVIOUS_PASSPHRASE_INVALID = "Previous_passphrase_invalid";
+  /**
+   * Label.
+   * 
+   * en: Pull status
+   */
+  public static final String PULL_STATUS = "Pull_status";
+  /**
+   * Message asking for the SSH passphrase.
+   * 
+   * en: Please enter your SSH passphrase.
+   */
+  public static final String ENTER_SSH_PASSPHRASE = "Enter_ssh_passphrase";
+  /**
+   * Shown when a command is aborted.
+   * 
+   * en: Command aborted.
+   */
+  public static final String COMMAND_ABORTED = "Command_aborted";
 
 	/**
 	 * Label displayed on the left of the working copy combo box
@@ -336,7 +366,7 @@ public class Tags {
 	/**
 	 * The text displayed on the label for the password
 	 */
-	public static final String LOGIN_DIALOG_PASSWORD_LABEL = "Login_Dilaog_Password_Label";
+	public static final String LOGIN_DIALOG_PASS_WORD_LABEL = "Login_Dilaog_Password_Label";
 
 	/**
 	 * The text displayed on the title for the login dialog

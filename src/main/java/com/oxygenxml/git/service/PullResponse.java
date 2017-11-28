@@ -1,6 +1,5 @@
 package com.oxygenxml.git.service;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -21,7 +20,7 @@ public class PullResponse {
 	 */
 	private PullStatus status;
 
-	public PullResponse(PullStatus status, HashSet<String> conflictingFiles) {
+	public PullResponse(PullStatus status, Set<String> conflictingFiles) {
 		this.status = status;
 		this.conflictingFiles = conflictingFiles;
 

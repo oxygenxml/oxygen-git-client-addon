@@ -5,7 +5,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class TranslatorExtensionImpl implements Translator {
 
-	public String getTraslation(String key) {
+	public String getTranslation(String key) {
 		return ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle()
 				.getMessage(key);
 	}

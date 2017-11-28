@@ -12,11 +12,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 /**
- * Custom authenticator used when accessing git related hosts, also to get over
- * the Oxygen's own authenticator. In other words, when accessing git related
- * hosts this overrides the Oxigen's authenticator.
+ * Custom authenticator used when accessing Git-related hosts and also to get over
+ * Oxygen's own authenticator. In other words, when accessing Git-related
+ * hosts, this overrides the Oxigen's authenticator.
  * 
- * It is still thread safe since {@link Authenticator#requestPasswordAuthentication(InetAddress, int, String, String, String)}
+ * It is still thread safe since 
+ * {@link Authenticator#requestPasswordAuthentication(InetAddress, int, String, String, String)}
  * uses a synchronized block when getting the data.
  * 
  * @author Beniamin savu
@@ -25,12 +26,20 @@ import org.apache.log4j.Logger;
 public class AuthenticationInterceptor {
 
 	/**
+   * Hidden constructor.
+   */
+  private AuthenticationInterceptor() {
+    // Nothing.
+  }
+
+  /**
 	 * 
 	 * The custom Authenticator. Replaces the Oxygen's Authenticator only for git
 	 * related hosts otherwise it delegates back to the Oxygen's Authenticator.
 	 * 
 	 * @author Beniamin Savu
 	 */
+  // TODO: change name
 	private static final class MyAuth extends Authenticator {
 
 		// The fields for for the Authenticator. They will be retrieved using java
@@ -56,9 +65,8 @@ public class AuthenticationInterceptor {
 		 * @param oldAuth The wrapped authenticator.
 		 * 
 		 * @throws NoSuchFieldException Unable to access wrapped authenticator data.
-		 * @throws SecurityException Unable to access wrapped authenticator data.
 		 */
-		private MyAuth(Authenticator oldAuth) throws NoSuchFieldException, SecurityException {
+		private MyAuth(Authenticator oldAuth) throws NoSuchFieldException {
 			this.oldAuth = oldAuth;
 
 			// Getting the fields with java reflection

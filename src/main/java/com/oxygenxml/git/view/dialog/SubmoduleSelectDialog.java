@@ -11,13 +11,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -47,13 +47,11 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	/**
 	 * Constructor.
 	 * 
-	 * @param parentFrame Parent frame.
 	 * @param translator Translation support.
 	 */
-	public SubmoduleSelectDialog(
-	    JFrame parentFrame, 
-			Translator translator) {
-		super(parentFrame, translator.getTraslation(Tags.SUBMODULE_DIALOG_TITLE), true);
+	public SubmoduleSelectDialog(Translator translator) {
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.SUBMODULE_DIALOG_TITLE), true);
 		this.translator = translator;
 
 		this.setLayout(new GridBagLayout());
@@ -62,7 +60,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 		addSubmoduleSelectCombo(gbc);
 
 		this.pack();
-		this.setLocationRelativeTo(parentFrame);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(320, 140));
 		this.setResizable(true);
 		this.setVisible(true);
@@ -106,7 +104,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		JLabel label = new JLabel(translator.getTraslation(Tags.SUBMODULE_DIALOG_SUBMODULE_SELECTION_LABEL));
+		JLabel label = new JLabel(translator.getTranslation(Tags.SUBMODULE_DIALOG_SUBMODULE_SELECTION_LABEL));
 		getContentPane().add(label, gbc);
 	}
 
@@ -114,16 +112,13 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	 * Sets as the current working copy the submodule repository selected from the
 	 * combo box
 	 */
+	@Override
 	protected void doOK() {
 		super.doOK();
 		String submodule = (String) submoduleList.getSelectedItem();
 		try {
 			GitAccess.getInstance().setSubmodule(submodule);
 		} catch (IOException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}

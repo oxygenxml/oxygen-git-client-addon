@@ -103,7 +103,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 	private StageController stageController;
 
-	public StagingPanel(Translator translator, GitRefreshSupport refresh, StageController stageController) {
+  public StagingPanel(Translator translator, GitRefreshSupport refresh, StageController stageController) {
 		this.translator = translator;
 		this.refresh = refresh;
 		this.stageController = stageController;
@@ -133,7 +133,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
             getCommitPanel().clearCommitMessage();
 
             // checks what buttons to keep active and what buttons to deactivate
-            if (gitAccess.getStagedFile().size() > 0) {
+            if (!gitAccess.getStagedFile().isEmpty()) {
               getCommitPanel().getCommitButton().setEnabled(true);
             } else {
               getCommitPanel().getCommitButton().setEnabled(false);
@@ -203,7 +203,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		addToolbatPanel(gbc);
 		addWorkingCopySelectionPanel(gbc);
 		addSplitPanel(gbc, splitPane);
-		// addCommitPanel(gbc);
 
 		// creates the actual GUI for each panel
 		commitPanel.createGUI();
@@ -230,7 +229,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 								try {
 									fileInWorkPath = URLDecoder.decode(fileInWorkPath, "UTF-8");
 								} catch (UnsupportedEncodingException e) {
-									e.printStackTrace();
+									if (logger.isDebugEnabled()) {
+									  logger.debug(e, e);
+									}
 								}
 								String selectedRepositoryPath = OptionsManager.getInstance().getSelectedRepository();
 								selectedRepositoryPath = selectedRepositoryPath.replace("\\", "/");
@@ -275,11 +276,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				} else {
 					inTheView = true;
 				}
-				/*if (e.getOppositeComponent() != null) {
-					inTheView = SwingUtilities.isDescendingFrom((Component) e.getOppositeComponent(), StagingPanel.this);
-				} else {
-					inTheView = false;
-				}*/
 			}
 		});
 	}
@@ -385,7 +381,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		} else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
 			commitPanel.setStatus(pushPullEvent.getMessage());
 			commitPanel.clearCommitMessage();
-			if (GitAccess.getInstance().getStagedFile().size() > 0) {
+			if (!GitAccess.getInstance().getStagedFile().isEmpty()) {
 				commitPanel.getCommitButton().setEnabled(true);
 			}
 			workingCopySelectionPanel.getBrowseButton().setEnabled(true);
@@ -416,4 +412,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	public boolean isInFocus() {
 		return gained;
 	}
+	
+	/**
+   * @return the stageController
+   */
+  public StageController getStageController() {
+    return stageController;
+  }
 }

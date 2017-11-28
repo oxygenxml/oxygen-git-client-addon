@@ -18,6 +18,7 @@ import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 public class LoginDialog extends OKCancelDialog {
@@ -51,16 +52,16 @@ public class LoginDialog extends OKCancelDialog {
 	 */
 	private Translator translator;
 
-	public LoginDialog(JFrame frame, String title, boolean modal, String host, String loginMessage,
-			Translator translator) {
-		super(frame, title, modal);
+	public LoginDialog(String host, String loginMessage, Translator translator) {
+		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true);
 		this.host = host;
 		this.message = loginMessage;
 		this.translator = translator;
 		createGUI();
 
 		this.pack();
-		this.setLocationRelativeTo(frame);
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(340, 200));
 		this.setResizable(true);
 		this.setVisible(true);
@@ -77,7 +78,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
 		JLabel lblGitRemote = new JLabel(
-				"<html>" + message + "<br>" + translator.getTraslation(Tags.LOGIN_DIALOG) + "<b>" + host + "</b></html>");
+				"<html>" + message + "<br>" + translator.getTranslation(Tags.LOGIN_DIALOG) + "<b>" + host + "</b></html>");
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -89,7 +90,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridwidth = 3;
 		panel.add(lblGitRemote, gbc);
 
-		JLabel lbUsername = new JLabel(translator.getTraslation(Tags.LOGIN_DIALOG_USERNAME_LABEL));
+		JLabel lbUsername = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_USERNAME_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -113,7 +114,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridwidth = 2;
 		panel.add(tfUsername, gbc);
 
-		JLabel lbPassword = new JLabel(translator.getTraslation(Tags.LOGIN_DIALOG_PASSWORD_LABEL));
+		JLabel lbPassword = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_PASS_WORD_LABEL));
 		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
 				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -140,6 +141,7 @@ public class LoginDialog extends OKCancelDialog {
 		this.add(panel, BorderLayout.CENTER);
 	}
 
+	@Override
 	protected void doOK() {
 		String username = tfUsername.getText().trim();
 		String password = new String(pfPassword.getPassword());

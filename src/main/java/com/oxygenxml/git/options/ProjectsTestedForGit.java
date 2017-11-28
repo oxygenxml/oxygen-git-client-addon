@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ro.sync.util.Equaler;
+
 /**
  * Entity for the JAXB to store the list of tested project.xpr paths
  * 
@@ -42,19 +44,12 @@ public class ProjectsTestedForGit {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ProjectsTestedForGit other = (ProjectsTestedForGit) obj;
-		if (paths == null) {
-			if (other.paths != null)
-				return false;
-		} else if (!paths.equals(other.paths))
-			return false;
-		return true;
+	  boolean toReturn = false;
+	  if (obj instanceof ProjectsTestedForGit) {
+	    ProjectsTestedForGit projects = (ProjectsTestedForGit) obj;
+	    toReturn = Equaler.verifyListEquals(paths, projects.getPaths());
+	  }
+	  return toReturn;
 	}
 
 }

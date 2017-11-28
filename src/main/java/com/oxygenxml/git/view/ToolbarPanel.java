@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -43,7 +42,6 @@ import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.Icons;
 
@@ -88,11 +86,6 @@ public class ToolbarPanel extends JPanel {
 	private ToolbarButton pullButton;
 
 	/**
-	 * Button for selecting a branch
-	 */
-	private ToolbarButton branchSelectButton;
-
-	/**
 	 * Button for selecting the submodules
 	 */
 	private ToolbarButton submoduleSelectButton;
@@ -126,86 +119,84 @@ public class ToolbarPanel extends JPanel {
 	    PushPullController pushPullController, 
 	    final Translator translator, 
 	    GitRefreshSupport refresh) {
-		this.pushPullController = pushPullController;
-		this.statusInformationLabel = new JLabel();
-		this.translator = translator;
-		this.refresh = refresh;
-		
-		createGUI();
-		
-		GitAccess.getInstance().addGitListener(new GitEventListener() {
-      public void repositoryChanged() {
-        // Repository changed. Update the toolbar buttons.
-        if (GitAccess.getInstance().getSubmodules().size() > 0) {
-          submoduleSelectButton.setEnabled(true);
-        } else {
-          submoduleSelectButton.setEnabled(false);
-        }
-        
-        // Update the toobars.
-        // calculate how many pushes ahead and pulls behind the current
-        // selected working copy is from the base. It is on thread because
-        // the fetch command takes a longer time
-        // TODO This might stay well in the Refresh support... When a new repository is 
-        // selected this is triggered.
-        // TODO Maybe the change of repository should triggered a fetch and a notification should
-        // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
-        new Thread(new Runnable() {
+	  this.pushPullController = pushPullController;
+	  this.statusInformationLabel = new JLabel();
+	  this.translator = translator;
+	  this.refresh = refresh;
 
-          private void fetch(boolean firstRun) {
-            try {
-              GitAccess.getInstance().fetch();
-            } catch (SSHPassphraseRequiredException e) {
-              String message = null;
-              // TODO i18n
-              if (firstRun) {
-                message = "Please enter your SSH passphrase";
-              } else {
-                message = "The previous passphrase is invalid. Please enter your SSH passphrase";
-              }
+	  createGUI();
 
-              String passphrase = new PassphraseDialog(message).getPassphrase();
-              if(passphrase != null){
-                // A new pass phase was given. Try again.
-                fetch(false);
-              }
-            } catch (PrivateRepositoryException e) {
-              String loginMessage = null;
-              if (firstRun) {
-                loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
-              } else {
-                UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(GitAccess.getInstance().getHostName());
-                loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-                    + gitCredentials.getUsername();
-              }
+	  GitAccess.getInstance().addGitListener(new GitEventListener() {
+	    public void repositoryChanged() {
+	      // Repository changed. Update the toolbar buttons.
+	      if (!GitAccess.getInstance().getSubmodules().isEmpty()) {
+	        submoduleSelectButton.setEnabled(true);
+	      } else {
+	        submoduleSelectButton.setEnabled(false);
+	      }
 
-              UserCredentials userCredentials = new LoginDialog(
-                  (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-                  translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), 
-                  true, 
-                  GitAccess.getInstance().getHostName(), 
-                  loginMessage,
-                  translator).getUserCredentials();
-              if (userCredentials != null) {
-                // New credentials were specified. Try again.
-                fetch(false);
-              }
-            } catch (RepositoryUnavailableException e) {
-              // Nothing we can do about it...
-            }
-          }
+	      // Update the toobars.
+	      // calculate how many pushes ahead and pulls behind the current
+	      // selected working copy is from the base. It is on thread because
+	      // the fetch command takes a longer time
+	      // TODO This might stay well in the Refresh support... When a new repository is 
+	      // selected this is triggered.
+	      // TODO Maybe the change of repository should triggered a fetch and a notification should
+	      // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
+	      new Thread(new Runnable() {
+	        
+	        private void fetch(boolean firstRun) {
+	          try {
+	            GitAccess.getInstance().fetch();
+	          } catch (SSHPassphraseRequiredException e) {
+	            String message = null;
+	            if (firstRun) {
+	              message = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
+	            } else {
+	              message = translator.getTranslation(Tags.PREVIOUS_PASSPHRASE_INVALID) 
+	                  + " " 
+	                  + translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
+	            }
 
-          public void run() {
-            fetch(true);
+	            String passphrase = new PassphraseDialog(message).getPassphrase();
+	            if(passphrase != null){
+	              // A new pass phase was given. Try again.
+	              fetch(false);
+	            }
+	          } catch (PrivateRepositoryException e) {
+	            String loginMessage = null;
+	            if (firstRun) {
+	              loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+	            } else {
+	              UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(GitAccess.getInstance().getHostName());
+	              loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+	                  + gitCredentials.getUsername();
+	            }
 
-            // After the fetch is done, update the toolbar icons.
-            setPullsBehind(GitAccess.getInstance().getPullsBehind());
-            setPushesAhead(GitAccess.getInstance().getPushesAhead());
-            updateInformationLabel();
-          }
-        }).start();
-      }
-    });
+	            UserCredentials userCredentials = new LoginDialog(
+	                GitAccess.getInstance().getHostName(), 
+	                loginMessage,
+	                translator).getUserCredentials();
+	            if (userCredentials != null) {
+	              // New credentials were specified. Try again.
+	              fetch(false);
+	            }
+	          } catch (RepositoryUnavailableException e) {
+	            // Nothing we can do about it...
+	          }
+	        }
+
+	        public void run() {
+	          fetch(true);
+
+	          // After the fetch is done, update the toolbar icons.
+	          setPullsBehind(GitAccess.getInstance().getPullsBehind());
+	          setPushesAhead(GitAccess.getInstance().getPushesAhead());
+	          updateInformationLabel();
+	        }
+	      }).start();
+	    }
+	  });
 	}
 
 	public JButton getPushButton() {
@@ -254,7 +245,7 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton();
 		addSubmoduleSelectButton();
-		if (GitAccess.getInstance().getSubmodules().size() > 0) {
+		if (!GitAccess.getInstance().getSubmodules().isEmpty()) {
 			submoduleSelectButton.setEnabled(true);
 		} else {
 			submoduleSelectButton.setEnabled(false);
@@ -280,15 +271,13 @@ public class ToolbarPanel extends JPanel {
 		   * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		   */
 			public void actionPerformed(ActionEvent e) {
-				new CloneRepositoryDialog(
-				    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-						translator);
+				new CloneRepositoryDialog(translator);
 			}
 		};
 
 		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
 		cloneRepositoryButton.setIcon(Icons.getIcon(ImageConstants.GIT_CLONE_REPOSITORY_ICON));
-		cloneRepositoryButton.setToolTipText(translator.getTraslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
+		cloneRepositoryButton.setToolTipText(translator.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
 		setCustomWidthOn(cloneRepositoryButton);
 
 		gitToolbar.add(cloneRepositoryButton);
@@ -300,22 +289,23 @@ public class ToolbarPanel extends JPanel {
 	 * allows the user to select one of them
 	 */
 	private void addSubmoduleSelectButton() {
-		Action branchSelectAction = new AbstractAction() {
-
-			public void actionPerformed(ActionEvent e) {
-				try {
-					if (GitAccess.getInstance().getRepository() != null) {
-						new SubmoduleSelectDialog(
-						    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator);
-					}
-				} catch (NoRepositorySelected e1) {
-				}
-			}
-		};
+	  Action branchSelectAction = new AbstractAction() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+	      try {
+	        if (GitAccess.getInstance().getRepository() != null) {
+	          new SubmoduleSelectDialog(translator);
+	        }
+	      } catch (NoRepositorySelected e1) {
+	        if(logger.isDebugEnabled()) {
+	          logger.debug(e1, e1);
+	        }
+	      }
+	    }
+	  };
 		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
 		submoduleSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_SUBMODULE_ICON));
-		submoduleSelectButton.setToolTipText(translator.getTraslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
+		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
 		setCustomWidthOn(submoduleSelectButton);
 
 		gitToolbar.add(submoduleSelectButton);
@@ -332,16 +322,18 @@ public class ToolbarPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						new BranchSelectDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTraslation(Tags.BRANCH_SELECTION_DIALOG_TITLE), true, refresh, translator);
+						new BranchSelectDialog(refresh, translator);
 					}
 				} catch (NoRepositorySelected e1) {
+          if(logger.isDebugEnabled()) {
+            logger.debug(e1, e1);
+          }
 				}
 			}
 		};
-		branchSelectButton = new ToolbarButton(branchSelectAction, false);
+		ToolbarButton branchSelectButton = new ToolbarButton(branchSelectAction, false);
 		branchSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_BRANCH_ICON));
-		branchSelectButton.setToolTipText(translator.getTraslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
+		branchSelectButton.setToolTipText(translator.getTranslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
 		setCustomWidthOn(branchSelectButton);
 
 		gitToolbar.add(branchSelectButton);
@@ -354,21 +346,21 @@ public class ToolbarPanel extends JPanel {
 			message += "<html>";
 			message += "Commit: <b>" + branchInfo.getShortBranchName() + "</b></html>";
 			statusInformationLabel
-					.setToolTipText(translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD) + " "
+					.setToolTipText(translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD) + " "
 							+ branchInfo.getBranchName());
 		} else {
 			String currentBranch = branchInfo.getBranchName();
 			if (!"".equals(currentBranch)) {
 				message += "<html>";
-				message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch
+				message += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch
 						+ "</b> - ";
 				if (pullsBehind == 0) {
-					message += translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+					message += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
 				} else if (pullsBehind == 1) {
-					message += pullsBehind + " " + translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
+					message += pullsBehind + " " + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
 				} else {
 					message += pullsBehind + " "
-							+ translator.getTraslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
+							+ translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
 				}
 				message += "</html>";
 			}
@@ -381,29 +373,88 @@ public class ToolbarPanel extends JPanel {
 	 * Adds to the tool bar the Push and Pull Buttons
 	 */
 	private void addPushAndPullButtons() {
+		// PUSH
+		pushButton = createPushButton();
+		pushButton.setIcon(Icons.getIcon(ImageConstants.GIT_PUSH_ICON));
+		pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
+		setCustomWidthOn(pushButton);
 
-		// PUSH button
-		Action pushAction = new AbstractAction() {
+		// PULL
+		pullButton = createPullButton();
+		pullButton.setIcon(Icons.getIcon(ImageConstants.GIT_PULL_ICON));
+		pullButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
+		setCustomWidthOn(pullButton);
 
+		gitToolbar.add(pushButton);
+		gitToolbar.add(pullButton);
+	}
+
+	/**
+	 * Create "Pull" button.
+	 * 
+	 * @return the "Pull" button.
+	 */
+  private ToolbarButton createPullButton() {
+    return new ToolbarButton(createPullAction(), false) {
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+
+				String str = "";
+				if (pullsBehind > 0) {
+					str = "" + pullsBehind;
+				}
+				if (pullsBehind > 9) {
+					pullButton.setHorizontalAlignment(SwingConstants.LEFT);
+				} else {
+					pullButton.setHorizontalAlignment(SwingConstants.CENTER);
+				}
+				g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
+				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+				int stringWidth = fontMetrics.stringWidth(str);
+				int stringHeight = fontMetrics.getHeight();
+				g.setColor(new Color(255, 255, 255, 100));
+				g.fillRect(pullButton.getWidth() - stringWidth, 0, stringWidth, stringHeight);
+				g.setColor(Color.BLACK);
+				g.drawString(str, pullButton.getWidth() - stringWidth,
+						fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
+			}
+		};
+  }
+
+  /**
+   * Create "Pull" action.
+   * 
+   * @return the "Pull" action.
+   */
+  private AbstractAction createPullAction() {
+    return new AbstractAction() {
+      @Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
 						if (logger.isDebugEnabled()) {
-							logger.debug("Push Button Clicked");
+							logger.debug("Pull Button Clicked");
 						}
-
-						pushPullController.execute(Command.PUSH);
-						if (pullsBehind == 0) {
-							pushesAhead = 0;
-						}
+						pushPullController.execute(Command.PULL);
+						pullsBehind = 0;
 					}
 				} catch (NoRepositorySelected e1) {
+				  if(logger.isDebugEnabled()) {
+            logger.debug(e1, e1);
+          }
 				}
 			}
-
 		};
-		pushButton = new ToolbarButton(pushAction, false) {
+  }
 
+	/**
+	 * Create the "Push" button.
+	 * 
+	 * @return the "Push" button.
+	 */
+  private ToolbarButton createPushButton() {
+    return new ToolbarButton(createPushAction(), false) {
 			@Override
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
@@ -428,61 +479,36 @@ public class ToolbarPanel extends JPanel {
 				g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
 			}
 		};
+  }
 
-		pushButton.setIcon(Icons.getIcon(ImageConstants.GIT_PUSH_ICON));
-		pushButton.setToolTipText(translator.getTraslation(Tags.PUSH_BUTTON_TOOLTIP));
-		setCustomWidthOn(pushButton);
-
-		// PULL button
-		Action pullAction = new AbstractAction() {
-
+	/**
+	 * Create the "Push" action.
+	 * 
+	 * @return the "Push" action
+	 */
+  private Action createPushAction() {
+    return new AbstractAction() {
+		  @Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
 						if (logger.isDebugEnabled()) {
-							logger.debug("Pull Button Clicked");
+							logger.debug("Push Button Clicked");
 						}
-						pushPullController.execute(Command.PULL);
-						pullsBehind = 0;
+
+						pushPullController.execute(Command.PUSH);
+						if (pullsBehind == 0) {
+							pushesAhead = 0;
+						}
 					}
 				} catch (NoRepositorySelected e1) {
-
+				  if(logger.isDebugEnabled()) {
+            logger.debug(e1, e1);
+          }
 				}
 			}
 		};
-		pullButton = new ToolbarButton(pullAction, false) {
-			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-
-				String str = "";
-				if (pullsBehind > 0) {
-					str = "" + pullsBehind;
-				}
-				if (pullsBehind > 9) {
-					pullButton.setHorizontalAlignment(SwingConstants.LEFT);
-				} else {
-					pullButton.setHorizontalAlignment(SwingConstants.CENTER);
-				}
-				g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
-				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
-				int stringWidth = fontMetrics.stringWidth(str);
-				int stringHeight = fontMetrics.getHeight();
-				g.setColor(new Color(255, 255, 255, 100));
-				g.fillRect(pullButton.getWidth() - stringWidth, 0, stringWidth, stringHeight);
-				g.setColor(Color.BLACK);
-				g.drawString(str, pullButton.getWidth() - stringWidth,
-						fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
-			}
-
-		};
-		pullButton.setIcon(Icons.getIcon(ImageConstants.GIT_PULL_ICON));
-		pullButton.setToolTipText(translator.getTraslation(Tags.PULL_BUTTON_TOOLTIP));
-		setCustomWidthOn(pullButton);
-
-		gitToolbar.add(pushButton);
-		gitToolbar.add(pullButton);
-	}
+  }
 
 	/**
 	 * Sets a custom width on the given button

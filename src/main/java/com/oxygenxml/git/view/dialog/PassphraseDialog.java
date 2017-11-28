@@ -9,7 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextField;
 
 import com.oxygenxml.git.constants.Constants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -22,12 +21,10 @@ public class PassphraseDialog extends OKCancelDialog {
 
 	private String passphrase;
 	private JPasswordField tfPassphrase;
-	public static boolean active = false;
 
 	public PassphraseDialog(String message) {
 		super((JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
 				"SSH Passphrase", true);
-		active = true;
 
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -82,7 +79,6 @@ public class PassphraseDialog extends OKCancelDialog {
 	protected void doOK() {
 		passphrase = String.valueOf(tfPassphrase.getPassword());
 		OptionsManager.getInstance().saveSshPassphare(passphrase);
-		active = false;
 		this.dispose();
 	}
 

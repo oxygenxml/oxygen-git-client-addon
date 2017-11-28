@@ -14,7 +14,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.WorkspaceAccessPlugin;
+import com.oxygenxml.git.OxygenGitPlugin;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -70,15 +70,11 @@ public class OptionsManager {
 	 * 
 	 * @return singleton instance
 	 */
-	public static OptionsManager getInstance() {
-		if (instance == null) {
-			synchronized (OptionsManager.class) {
-				if (instance == null) {
-					instance = new OptionsManager();
-				}
-			}
-		}
-		return instance;
+	public static synchronized OptionsManager getInstance() {
+	  if (instance == null) {
+	    instance = new OptionsManager();
+	  }
+	  return instance;
 	}
 
 	/**
@@ -91,7 +87,7 @@ public class OptionsManager {
 			try {
 				JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
 				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-				if (WorkspaceAccessPlugin.getInstance() == null) {
+				if (OxygenGitPlugin.getInstance() == null) {
 				  // Running outside Oxygen, for example from tests.
 					File optionsFile = getOptionsFile();
 					if (optionsFile.exists()) {
@@ -138,8 +134,8 @@ public class OptionsManager {
 	 */
 	private File getOptionsFile() {
 		File baseDir = null;
-		if (WorkspaceAccessPlugin.getInstance() != null) {
-			baseDir = WorkspaceAccessPlugin.getInstance().getDescriptor().getBaseDir();
+		if (OxygenGitPlugin.getInstance() != null) {
+			baseDir = OxygenGitPlugin.getInstance().getDescriptor().getBaseDir();
 		} else {
 			baseDir = new File("src/main/resources");
 		}
@@ -156,7 +152,7 @@ public class OptionsManager {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			if (WorkspaceAccessPlugin.getInstance() == null) {
+			if (OxygenGitPlugin.getInstance() == null) {
 				jaxbMarshaller.marshal(options, getOptionsFile());
 			} else {
 				StringWriter stringWriter = new StringWriter();
@@ -252,7 +248,7 @@ public class OptionsManager {
 
 		List<UserCredentials> credentials = options.getUserCredentialsList().getCredentials();
 		for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
-			UserCredentials alreadyHere = (UserCredentials) iterator.next();
+			UserCredentials alreadyHere = iterator.next();
 			if (alreadyHere.getHost().equals(uc.getHost())) {
 				// Replace.
 				iterator.remove();
@@ -283,7 +279,7 @@ public class OptionsManager {
 			}
 		}
 		String decryptedPassword = null;
-		if (WorkspaceAccessPlugin.getInstance() != null) {
+		if (OxygenGitPlugin.getInstance() != null) {
 			decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess()
 					.decrypt(password);
 		}
@@ -291,8 +287,7 @@ public class OptionsManager {
 			decryptedPassword = "";
 		}
 
-		UserCredentials userCredentials = new UserCredentials(username, decryptedPassword, host);
-		return userCredentials;
+		return new UserCredentials(username, decryptedPassword, host);
 	}
 
 	/**
@@ -338,7 +333,7 @@ public class OptionsManager {
 	public List<String> getProjectsTestedForGit() {
 		loadOptions();
 
-		return options.getPrjectsTestsForGit().getPaths();
+		return options.getProjectsTestsForGit().getPaths();
 	}
 
 	/**
@@ -350,12 +345,12 @@ public class OptionsManager {
 	public void saveProjectTestedForGit(String projectPath) {
 		loadOptions();
 
-		List<String> projectsPath = options.getPrjectsTestsForGit().getPaths();
+		List<String> projectsPath = options.getProjectsTestsForGit().getPaths();
 		projectsPath.add(projectPath);
 		if (projectsPath.size() > MAXIMUM_PROJECTS_TESTED) {
 			projectsPath.remove(0);
 		}
-		options.getPrjectsTestsForGit().setPaths(projectsPath);
+		options.getProjectsTestsForGit().setPaths(projectsPath);
 
 		saveOptions();
 	}
@@ -370,7 +365,7 @@ public class OptionsManager {
 	public void saveDestinationPath(String destinationPath) {
 		loadOptions();
 
-		LinkedList<String> destinationPaths = options.getDestinationPaths().getPaths();
+		LinkedList<String> destinationPaths = (LinkedList<String>) options.getDestinationPaths().getPaths();
 		destinationPaths.remove(destinationPath);
 		destinationPaths.add(0, destinationPath);
 		if (destinationPaths.size() > 20) {
@@ -435,7 +430,7 @@ public class OptionsManager {
 		loadOptions();
 
 		String decryptPassphrase = null;
-		if (WorkspaceAccessPlugin.getInstance() != null) {
+		if (OxygenGitPlugin.getInstance() != null) {
 			decryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 					.getUtilAccess().decrypt(options.getPassphrase());
 		}

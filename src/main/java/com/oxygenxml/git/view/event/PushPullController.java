@@ -76,9 +76,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 	public UserCredentials requestNewCredentials(String loginMessage) {
 		return 
 		    new LoginDialog(
-		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		        translator.getTraslation(Tags.LOGIN_DIALOG_TITLE), 
-		        true, 
 		        gitAccess.getHostName(), 
 		        loginMessage, 
 		        translator).getUserCredentials();
@@ -96,9 +93,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		String message = "";
 		if (command == Command.PUSH) {
-			message = translator.getTraslation(Tags.PUSH_IN_PROGRESS);
+			message = translator.getTranslation(Tags.PUSH_IN_PROGRESS);
 		} else {
-			message = translator.getTraslation(Tags.PULL_IN_PROGRESS);
+			message = translator.getTranslation(Tags.PULL_IN_PROGRESS);
 		}
 		
 		// Notify push about to start.
@@ -129,13 +126,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 					if (e instanceof CheckoutConflictException) {
 					  // Notify that there are conflicts that should be resolved in the staging area.
 						new PullWithConflictsDialog(
-								(JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
-								// TODO i18n.
-								"Pull Status", 
-								true, 
+								translator.getTranslation(Tags.PULL_STATUS), 
 								((CheckoutConflictException) e).getConflictingPaths(), 
-								translator,
-								translator.getTraslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
+								translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
 						
 						if (logger.isDebugEnabled()) {
 						  logger.info(((CheckoutConflictException) e).getConflictingPaths());
@@ -145,10 +138,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 						String loginMessage = "";
 						if ("".equals(userCredentials.getUsername())) {
 						  // No credentials were used but they are required.
-							loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
+							loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
 						} else {
 						  // Invalid credentails.
-							loginMessage = translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+							loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
 									+ userCredentials.getUsername();
 						}
 						// Request new credentials.
@@ -163,10 +156,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 					} else if (e.getMessage().contains("not permitted")) {
 					  // The user doesn't have permissions.
 						((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-								.showWarningMessage(translator.getTraslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
+								.showWarningMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
 						// Request new credentials.
 						UserCredentials loadNewCredentials = requestNewCredentials(
-								translator.getTraslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
+								translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
 										+ userCredentials.getUsername());
 						if (loadNewCredentials != null) {
 						  // Avoid notification now. We try again.
@@ -177,12 +170,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 					} else if (e.getMessage().contains("origin: not found")
 							|| e.getMessage().contains("No value for key remote.origin.url found in configuration")) {
 					  // No remote.
-						new AddRemoteDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-								translator.getTraslation(Tags.ADD_REMOTE_DIALOG_TITLE), true, translator);
+						new AddRemoteDialog(translator);
 					} else if (e.getMessage().contains("Auth fail")) {
 					  // This message is thrown for SSH.
-					  // TODO i18n.
-						String passPhraseMessage = "Please enter your SSH passphrase";
+						String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
 						String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
 						if (passphrase != null) {
 						  // Avoid notification now. We try again.
@@ -190,8 +181,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 							// Try again.
 							execute(command);
 						} else {
-						  // TODO i18n
-							message = "Command aborted";
+							message = translator.getTranslation(Tags.COMMAND_ABORTED);
 						}
 					}
 				} catch (IOException e) {
@@ -227,22 +217,19 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * @throws IOException
 			 */
 			private String pull(final UserCredentials userCredentials)
-					throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException,
-					InvalidRemoteException, CanceledException, RefNotFoundException, RefNotAdvertisedException, NoHeadException,
-					TransportException, GitAPIException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+					throws GitAPIException, IOException {
 				PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (PullStatus.OK == response.getStatus()) {
-					message = translator.getTraslation(Tags.PULL_SUCCESSFUL);
+					message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
-					new PullWithConflictsDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-							translator.getTraslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE), true, response.getConflictingFiles(),
-							translator, translator.getTraslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
+					new PullWithConflictsDialog(translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
+					    response.getConflictingFiles(), translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
-					message = translator.getTraslation(Tags.PULL_UP_TO_DATE);
+					message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-							.showWarningMessage(translator.getTraslation(Tags.PULL_WITH_CONFLICTS));
+							.showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
 				}
 				return message;
 			}
@@ -259,16 +246,16 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * @throws IOException
 			 */
 			private String push(final UserCredentials userCredentials)
-					throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+					throws GitAPIException, IOException {
 				PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (Status.OK == response.getStatus()) {
-					message = translator.getTraslation(Tags.PUSH_SUCCESSFUL);
+					message = translator.getTranslation(Tags.PUSH_SUCCESSFUL);
 				} else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage("Push failed, please get your repository up to date(PULL)");
 				} else if (Status.UP_TO_DATE == response.getStatus()) {
-					message = translator.getTraslation(Tags.PUSH_UP_TO_DATE);
+					message = translator.getTranslation(Tags.PUSH_UP_TO_DATE);
 				} else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
 					((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 							.showWarningMessage(response.getMessage());

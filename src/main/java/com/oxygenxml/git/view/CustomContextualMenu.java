@@ -13,7 +13,6 @@ import javax.swing.JPopupMenu;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -24,8 +23,8 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.FileState;
 import com.oxygenxml.git.view.event.StageController;
-import com.oxygenxml.git.view.event.StageState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -85,7 +84,7 @@ public class CustomContextualMenu extends JPopupMenu {
 				diff.showDiff();
 			}
 		});
-		showDiff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
+		showDiff.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
 
 		// Open menu
 		JMenuItem open = new JMenuItem();
@@ -104,17 +103,17 @@ public class CustomContextualMenu extends JPopupMenu {
 			}
 
 		});
-		open.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN));
+		open.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN));
 
 		// Stage/Unstage
 		JMenuItem changeState = new JMenuItem();
 		changeState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
+				FileState oldState = FileState.UNSTAGED;
+				FileState newState = FileState.STAGED;
 				if (staging) {
-					oldState = StageState.STAGED;
-					newState = StageState.UNSTAGED;
+					oldState = FileState.STAGED;
+					newState = FileState.UNSTAGED;
 				}
 				List<FileStatus> resolveUsingMineFiles = new ArrayList<FileStatus>(files);
 				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, resolveUsingMineFiles);
@@ -122,9 +121,9 @@ public class CustomContextualMenu extends JPopupMenu {
 			}
 		});
 		if (staging) {
-			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_UNSTAGE));
+			changeState.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE));
 		} else {
-			changeState.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_STAGE));
+			changeState.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_STAGE));
 		}
 
 		// Resolve "mine"
@@ -132,14 +131,14 @@ public class CustomContextualMenu extends JPopupMenu {
 		resolveMine.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.DISCARD;
+				FileState oldState = FileState.UNSTAGED;
+				FileState newState = FileState.DISCARD;
 				List<FileStatus> resolveUsingMineFiles = new ArrayList<FileStatus>(files);
 				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, resolveUsingMineFiles);
 				stageController.stateChanged(changeEvent);
 			}
 		});
-		resolveMine.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE));
+		resolveMine.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE));
 
 		// Resolve "theirs"
 		JMenuItem resolveTheirs = new JMenuItem();
@@ -150,13 +149,13 @@ public class CustomContextualMenu extends JPopupMenu {
 					gitAccess.remove(file);
 					gitAccess.updateWithRemoteFile(file.getFileLocation());
 				}
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
+				FileState oldState = FileState.UNSTAGED;
+				FileState newState = FileState.STAGED;
 				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
 				stageController.stateChanged(changeEvent);
 			}
 		});
-		resolveTheirs.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS));
+		resolveTheirs.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS));
 
 		// show diff
 		JMenuItem diff = new JMenuItem();
@@ -167,20 +166,20 @@ public class CustomContextualMenu extends JPopupMenu {
 				diff.showDiff();
 			}
 		});
-		diff.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
+		diff.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE));
 
 		// Mark resolved
 		JMenuItem markResolved = new JMenuItem();
 		markResolved.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				StageState oldState = StageState.UNSTAGED;
-				StageState newState = StageState.STAGED;
+				FileState oldState = FileState.UNSTAGED;
+				FileState newState = FileState.STAGED;
 				ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
 				stageController.stateChanged(changeEvent);
 			}
 		});
-		markResolved.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED));
+		markResolved.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED));
 
 		// Restart Merge
 		JMenuItem restartMerge = new JMenuItem();
@@ -188,16 +187,16 @@ public class CustomContextualMenu extends JPopupMenu {
 
 			public void actionPerformed(ActionEvent e) {
 				gitAccess.restartMerge();
-				ChangeEvent changeEvent = new ChangeEvent(StageState.UNDEFINED, StageState.UNDEFINED,
+				ChangeEvent changeEvent = new ChangeEvent(FileState.UNDEFINED, FileState.UNDEFINED,
 						new ArrayList<FileStatus>());
 				stageController.stateChanged(changeEvent);
 			}
 		});
-		restartMerge.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE));
+		restartMerge.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE));
 
 		// Resolve Conflict
 		JMenu resolveConflict = new JMenu();
-		resolveConflict.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
+		resolveConflict.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
 		resolveConflict.add(diff);
 		resolveConflict.addSeparator();
 		resolveConflict.add(resolveMine);
@@ -214,8 +213,8 @@ public class CustomContextualMenu extends JPopupMenu {
 				String[] options = new String[] { "   Yes   ", "   No   " };
 				int[] optonsId = new int[] { 0, 1 };
 				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD),
-						translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
+						translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD),
+						translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
 				if (response == 0) {
 					for (FileStatus file : files) {
 						if (file.getChangeType() == GitChangeType.ADD
@@ -224,21 +223,21 @@ public class CustomContextualMenu extends JPopupMenu {
 								FileUtils.forceDelete(
 										new File(OptionsManager.getInstance().getSelectedRepository() + "/" + file.getFileLocation()));
 							} catch (IOException e1) {
-								e1.printStackTrace();
+							  logger.error(e1, e1);
 							}
 						} else if (file.getChangeType() == GitChangeType.SUBMODULE) {
 							gitAccess.discardSubmodule();
 						}
 					}
 
-					StageState oldState = StageState.UNDEFINED;
-					StageState newState = StageState.DISCARD;
+					FileState oldState = FileState.UNDEFINED;
+					FileState newState = FileState.DISCARD;
 					ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
 					stageController.stateChanged(changeEvent);
 				}
 			}
 		});
-		discard.setText(translator.getTraslation(Tags.CONTEXTUAL_MENU_DISCARD));
+		discard.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD));
 		this.add(showDiff);
 		this.add(open);
 		this.add(changeState);

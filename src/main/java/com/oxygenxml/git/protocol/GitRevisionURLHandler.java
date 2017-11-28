@@ -92,33 +92,32 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			
 			GitAccess gitAccess = GitAccess.getInstance();
 			if (VersionIdentifier.MINE.equals(currentHost)) {
-				fileObject = gitAccess.getCommit(Commit.MINE, path);
+			  fileObject = gitAccess.getCommit(Commit.MINE, path);
 			} else if (VersionIdentifier.INDEX_OR_LAST_COMMIT.equals(currentHost)) {
 			  try {
-			  fileObject = gitAccess.locateObjectIdInIndex(path);
+			    fileObject = gitAccess.locateObjectIdInIndex(path);
 			  } catch (Exception ex) {
 			    logger.error(ex, ex);
-			    ex.printStackTrace();
 			  }
 			  if (fileObject == null) {
 			    fileObject = gitAccess.getCommit(Commit.LOCAL, path);
 			  }
 			} else if (VersionIdentifier.LAST_COMMIT.equals(currentHost)) {
 			  fileObject = gitAccess.getCommit(Commit.LOCAL, path);
-      } else if (VersionIdentifier.THEIRS.equals(currentHost)) {
-				fileObject = gitAccess.getCommit(Commit.THEIRS, path);
+			} else if (VersionIdentifier.THEIRS.equals(currentHost)) {
+			  fileObject = gitAccess.getCommit(Commit.THEIRS, path);
 			} else if (VersionIdentifier.BASE.equals(currentHost)) {
-				fileObject = gitAccess.getCommit(Commit.BASE, path);
+			  fileObject = gitAccess.getCommit(Commit.BASE, path);
 			} else if (VersionIdentifier.CURRENT_SUBMODULE.equals(currentHost)) {
-				fileObject = gitAccess.submoduleCompare(path, false);
+			  fileObject = gitAccess.submoduleCompare(path, false);
 			} else if (VersionIdentifier.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
-				fileObject = gitAccess.submoduleCompare(path, true);
+			  fileObject = gitAccess.submoduleCompare(path, true);
 			} else {
-				throw new IOException("Not able to extract GIT data from: " + getURL());
+			  throw new IOException("Not able to extract GIT data from: " + getURL());
 			}
-			
+
 			if (fileObject == null) {
-				throw new IOException("Unable to obtain commit ID for: " + getURL());
+			  throw new IOException("Unable to obtain commit ID for: " + getURL());
 			}
 		}
 
@@ -127,6 +126,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * 
 		 * @return the input stream
 		 */
+		@Override
 		public InputStream getInputStream() throws IOException {
 			if (VersionIdentifier.CURRENT_SUBMODULE.equals(currentHost) 
 					|| VersionIdentifier.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
@@ -136,13 +136,10 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				printWriter.println(commit);
 				printWriter.close();
 				return new FileInputStream(temp);
-				//return IOUtils.toInputStream(commit, "UTF-8");
-				//return new ByteArrayInputStream(commit.getBytes(StandardCharsets.UTF_8));
 			}
 			
 			GitAccess gitAccess = GitAccess.getInstance();
-			InputStream inputStream = gitAccess.getInputStream(fileObject);
-			return inputStream;
+			return gitAccess.getInputStream(fileObject);
 		}
 
 		/**
@@ -150,6 +147,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * 
 		 * @return the output stream
 		 */
+		@Override
 		public OutputStream getOutputStream() throws IOException {
 			if (VersionIdentifier.MINE.equals(currentHost)) {
         try {
@@ -164,7 +162,9 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			throw new IOException("Writing is permitted only in the local file.");
 		}
 
+		@Override
 		public void connect() throws IOException {
+		  
 		}
 
 		/**
@@ -194,8 +194,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 * @return The connection
 	 */
 	protected URLConnection openConnection(URL u) throws IOException {
-		URLConnection connection = new GitRevisionConnection(u);
-		return connection;
+		return new GitRevisionConnection(u);
 	}
 
 	/**

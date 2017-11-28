@@ -8,7 +8,7 @@
  description="provides support for working with Git: commit, diff, push, pull"
  version="${project.version}"
  vendor="oXygen XML"
- class="com.oxygenxml.git.WorkspaceAccessPlugin"
+ class="com.oxygenxml.git.OxygenGitPlugin"
  classLoaderType="preferReferencedResources">
  
  <runtime>
@@ -28,7 +28,7 @@
  </runtime>
  
  <extension type="WorkspaceAccess" 
-  class="com.oxygenxml.git.CustomWorkspaceAccessPluginExtension"/>
+  class="com.oxygenxml.git.OxygenGitPluginExtension"/>
  
  <extension type="URLHandler" 
   class="com.oxygenxml.git.protocol.CustomProtocolURLHandlerExtension"/>

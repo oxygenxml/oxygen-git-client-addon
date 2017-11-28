@@ -18,7 +18,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -169,7 +168,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		stageController.unregisterSubject(treeModel);
 
 		path = path.replace("\\", "/");
-		String rootFolder = path.substring(path.lastIndexOf("/") + 1);
+		String rootFolder = path.substring(path.lastIndexOf('/') + 1);
 		if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
 			MyNode root = new MyNode(rootFolder);
 			// Create the tree model and add the root node to it
@@ -289,19 +288,18 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					TreePath pathForRow = null;
 					StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 					int[] selectionRows = tree.getSelectionRows();
-					if (selectionRows.length >= 0) {
+					if (selectionRows != null && selectionRows.length > 0) {
 						pathForRow = tree.getPathForRow(selectionRows[selectionRows.length - 1]);
 					}
 					if (pathForRow != null) {
-						String stringPath = TreeFormatter.getStringPath(pathForRow);
-						MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
-						if (model != null && node != null) {
-							if (model.isLeaf(node) && !model.getRoot().equals(node)) {
-								FileStatus file = model.getFileByPath(stringPath);
-								DiffPresenter diff = new DiffPresenter(file, stageController, translator);
-								diff.showDiff();
-							}
-						}
+					  String stringPath = TreeFormatter.getStringPath(pathForRow);
+					  MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+					  if (model != null && node != null
+					      && model.isLeaf(node) && !model.getRoot().equals(node)) {
+					    FileStatus file = model.getFileByPath(stringPath);
+					    DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+					    diff.showDiff();
+					  }
 					}
 				}
 			}
@@ -326,7 +324,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 */
 	private void addTreeExpandListener() {
 		tree.addTreeExpansionListener(new TreeExpansionListener() {
-
+		  @Override
 			public void treeExpanded(TreeExpansionEvent event) {
 				TreePath path = event.getPath();
 				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
@@ -340,8 +338,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					}
 				}
 			}
-
+		  @Override
 			public void treeCollapsed(TreeExpansionEvent event) {
+		    // Nothing
 			}
 		});
 	}
@@ -355,7 +354,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 */
 	private void addTreeMouseListener() {
 		tree.addMouseListener(new MouseAdapter() {
-
+		  @Override
 			public void mousePressed(MouseEvent e) {
 				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
@@ -363,20 +362,18 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					String stringPath = TreeFormatter.getStringPath(treePath);
 					MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 					// double click event
-					if (model.isLeaf(node) && !model.getRoot().equals(node)) {
-						if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-							FileStatus file = model.getFileByPath(stringPath);
-							DiffPresenter diff = new DiffPresenter(file, stageController, translator);
-							diff.showDiff();
-						}
-
+					if (model.isLeaf(node) && !model.getRoot().equals(node)
+					    && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+					  FileStatus file = model.getFileByPath(stringPath);
+					  DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+					  diff.showDiff();
 					}
 					// right click event
 					if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && rootHasChilds(node)) {
-						boolean treeInSelection = false;
-						TreePath[] paths = tree.getSelectionPaths();
-						if (paths != null) {
-							for (int i = 0; i < paths.length; i++) {
+					  boolean treeInSelection = false;
+					  TreePath[] paths = tree.getSelectionPaths();
+					  if (paths != null) {
+					    for (int i = 0; i < paths.length; i++) {
 								if (treePath.equals(paths[i])) {
 									treeInSelection = true;
 									break;
@@ -465,11 +462,11 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					scrollPane.setViewportView(tree);
 					currentView = TREE_VIEW;
 					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TABLE_VIEW));
-					switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
+					switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
 				} else {
 					currentView = FLAT_VIEW;
 					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
-					switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+					switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 					filesTable.clearSelection();
 					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
@@ -538,9 +535,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		if (forStaging) {
-			changeAllButton = new JButton(translator.getTraslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
+			changeAllButton = new JButton(translator.getTranslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
 		} else {
-			changeAllButton = new JButton(translator.getTraslation(Tags.STAGE_ALL_BUTTON_TEXT));
+			changeAllButton = new JButton(translator.getTranslation(Tags.STAGE_ALL_BUTTON_TEXT));
 		}
 		this.add(changeAllButton, gbc);
 	}
@@ -561,9 +558,9 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		if (forStaging) {
-			changeSelectedButton = new JButton(translator.getTraslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
+			changeSelectedButton = new JButton(translator.getTranslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
 		} else {
-			changeSelectedButton = new JButton(translator.getTraslation(Tags.STAGE_SELECTED_BUTTON_TEXT));
+			changeSelectedButton = new JButton(translator.getTranslation(Tags.STAGE_SELECTED_BUTTON_TEXT));
 		}
 		changeSelectedButton.setEnabled(false);
 		this.add(changeSelectedButton, gbc);
@@ -587,7 +584,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		gbc.weighty = 0;
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
-		switchViewButton.setToolTipText(translator.getTraslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+		switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 		switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
@@ -642,7 +639,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		// file
 		// will be opened in the Oxygen.
 		filesTable.addMouseListener(new MouseAdapter() {
-
+		  @Override
 			public void mousePressed(MouseEvent e) {
 				Point point = new Point(e.getX(), e.getY());
 				int row = filesTable.convertRowIndexToModel(filesTable.rowAtPoint(point));
@@ -751,8 +748,10 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 * @author Beniamin Savu
 	 *
 	 */
-	class CustomTreeIconRenderer extends DefaultTreeCellRenderer {
-
+	private final class CustomTreeIconRenderer extends DefaultTreeCellRenderer {
+	  /**
+	   * @see javax.swing.tree.DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
+	   */
 		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
 				int row, boolean hasFocus) {
@@ -769,23 +768,10 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
 					FileStatus file = model.getFileByPath(path);
 					GitChangeType changeType = file.getChangeType();
-          if (GitChangeType.ADD == changeType
-					    || GitChangeType.UNTRACKED == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-						toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
-					} else if (GitChangeType.MODIFIED == changeType 
-					    || GitChangeType.CHANGED == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
-						toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
-					} else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
-						toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
-					} else if (GitChangeType.CONFLICT == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
-						toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
-					} else if (GitChangeType.SUBMODULE == changeType) {
-						icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
-						toolTip = translator.getTraslation(Tags.SUBMODULE_ICON_TOOLTIP);
+					RenderingInfo renderingInfo = getRenderingInfo(changeType);
+					if (renderingInfo != null) {
+					  icon = renderingInfo.getIcon();
+					  toolTip = renderingInfo.getTooltip();
 					}
 				}
 			}
@@ -804,13 +790,16 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 * @author Beniamin Savu
 	 *
 	 */
-	class TableFileLocationTextCellRenderer implements TableCellRenderer {
-
+	private final class TableFileLocationTextCellRenderer implements TableCellRenderer {
+	  /**
+	   * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
+	   */
+	  @Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
 			if (value != null && value instanceof String) {
 				String toRender = (String) value;
-				String fileName = toRender.substring(toRender.lastIndexOf("/") + 1);
+				String fileName = toRender.substring(toRender.lastIndexOf('/') + 1);
 				if (!fileName.equals(toRender)) {
 					toRender = toRender.replace("/" + fileName, "");
 					toRender = fileName + " - " + toRender;
@@ -838,35 +827,94 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 * @author Beniamin Savu
 	 *
 	 */
-	class TableIconCellRenderer implements TableCellRenderer {
-
+	private final class TableIconCellRenderer implements TableCellRenderer {
+	  /**
+	   * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
+	   */
+	  @Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
-			ImageIcon icon = null;
-			String toolTip = "";
-			
-			// TODO Extract a common code to be used here and in the com.oxygenxml.git.view.ChangesPanel.CustomTreeIconRenderer
-			
-			if (GitChangeType.ADD == value || GitChangeType.UNTRACKED == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-				toolTip = translator.getTraslation(Tags.ADD_ICON_TOOLTIP);
-			} else if (GitChangeType.MODIFIED == value || GitChangeType.CHANGED == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON);
-				toolTip = translator.getTraslation(Tags.MODIFIED_ICON_TOOLTIP);
-			} else if (GitChangeType.MISSING == value || GitChangeType.REMOVED == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_DELETE_ICON);
-				toolTip = translator.getTraslation(Tags.DELETE_ICON_TOOLTIP);
-			} else if (GitChangeType.CONFLICT == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON);
-				toolTip = translator.getTraslation(Tags.CONFLICT_ICON_TOOLTIP);
-			} else if (GitChangeType.SUBMODULE == value) {
-				icon = Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON);
-				toolTip = translator.getTraslation(Tags.SUBMODULE_ICON_TOOLTIP);
+		  JLabel iconLabel = null;
+			RenderingInfo renderingInfo = getRenderingInfo((GitChangeType) value);
+			if (renderingInfo != null) {
+			  iconLabel = new JLabel();
+			  iconLabel.setIcon(renderingInfo.getIcon());
+			  iconLabel.setToolTipText(renderingInfo.getTooltip());
 			}
-			JLabel iconLabel = new JLabel(icon);
-			iconLabel.setToolTipText(toolTip);
 			return iconLabel;
 		}
+	}
+	
+	/**
+	 * Get the rendering info (such as icon or tooltip text) for the given Git change type.
+	 * 
+	 * @param changeType The Git change type.
+	 * 
+	 * @return the rendering info.
+	 */
+	private RenderingInfo getRenderingInfo(GitChangeType changeType) {
+	  RenderingInfo renderingInfo = null;
+	  if (GitChangeType.ADD == changeType || GitChangeType.UNTRACKED == changeType) {
+	    renderingInfo = new RenderingInfo(
+	        Icons.getIcon(ImageConstants.GIT_ADD_ICON),
+	        translator.getTranslation(Tags.ADD_ICON_TOOLTIP));
+    } else if (GitChangeType.MODIFIED == changeType || GitChangeType.CHANGED == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON),
+          translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP));
+    } else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(ImageConstants.GIT_DELETE_ICON),
+          translator.getTranslation(Tags.DELETE_ICON_TOOLTIP));
+    } else if (GitChangeType.CONFLICT == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON),
+          translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP));
+    } else if (GitChangeType.SUBMODULE == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON),
+          translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP));
+    }
+	  return renderingInfo;
+	}
+	
+	/**
+	 * Rendering info.
+	 */
+	private static final class RenderingInfo {
+	  /**
+	   * Icon.
+	   */
+	  private Icon icon;
+	  /**
+	   * Tootlip text.
+	   */
+	  private String tooltip;
+	  
+    /**
+     * Constructor.
+     * 
+     * @param icon     Icon.
+     * @param tooltip  Tooltip text.
+     */
+    public RenderingInfo(Icon icon, String tooltip) {
+      this.icon = icon;
+      this.tooltip = tooltip;
+    }
+    
+    /**
+     * @return the icon
+     */
+    public Icon getIcon() {
+      return icon;
+    }
+    
+    /**
+     * @return the tooltip
+     */
+    public String getTooltip() {
+      return tooltip;
+    }
 	}
 
 }
