@@ -153,7 +153,8 @@ public class GitAccess {
 			float totalWork;
 			float currentWork = 0;
 
-			public void update(int completed) {
+			@Override
+      public void update(int completed) {
 				currentWork += completed;
 				String text = "";
 				if (totalWork != 0) {
@@ -166,22 +167,26 @@ public class GitAccess {
 				progressDialog.setNote(text);
 			}
 
-			public void start(int totalTasks) {
+			@Override
+      public void start(int totalTasks) {
 				currentWork = 0;
 			}
 
-			public boolean isCancelled() {
+			@Override
+      public boolean isCancelled() {
 				if (progressDialog.isCanceled()) {
 					progressDialog.setNote("Canceling...");
 				}
 				return progressDialog.isCanceled();
 			}
 
-			public void endTask() {
+			@Override
+      public void endTask() {
 				currentWork = 0;
 			}
 
-			public void beginTask(String title, int totalWork) {
+			@Override
+      public void beginTask(String title, int totalWork) {
 				currentWork = 0;
 				this.taskTitle = title;
 				this.totalWork = totalWork;
@@ -1124,31 +1129,7 @@ public class GitAccess {
 			RevCommit commit = walk.parseCommit(git.getRepository().resolve("MERGE_HEAD"));
 			git.checkout().setStartPoint(commit).addPath(filePath).call();
 			walk.close();
-		} catch (CheckoutConflictException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (RevisionSyntaxException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (MissingObjectException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (IncorrectObjectTypeException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (AmbiguousObjectException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}

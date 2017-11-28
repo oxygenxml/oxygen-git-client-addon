@@ -26,13 +26,13 @@ public class ChangeEvent {
 	/**
 	 * The files that are changing their state
 	 */
-	private List<FileStatus> fileToBeUpdated;
+	private List<FileStatus> filesToBeUpdated;
 
-	public ChangeEvent(FileState newState, FileState oldState, List<FileStatus> fileToBeUpdated) {
+	public ChangeEvent(FileState newState, FileState oldState, List<FileStatus> filesToBeUpdated) {
 		super();
 		this.newState = newState;
 		this.oldState = oldState;
-		this.fileToBeUpdated = fileToBeUpdated;
+		this.filesToBeUpdated = filesToBeUpdated;
 	}
 
 	public FileState getNewState() {
@@ -43,8 +43,8 @@ public class ChangeEvent {
 		return oldState;
 	}
 
-	public List<FileStatus> getFileToBeUpdated() {
-		return fileToBeUpdated;
+	public List<FileStatus> getFilesToBeUpdated() {
+		return filesToBeUpdated;
 	}
 
 }

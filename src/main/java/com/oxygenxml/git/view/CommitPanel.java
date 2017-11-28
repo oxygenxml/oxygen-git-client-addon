@@ -25,8 +25,8 @@ import javax.swing.ScrollPaneConstants;
 
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -35,10 +35,10 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.FileState;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
-import com.oxygenxml.git.view.event.FileState;
 import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.ui.Icons;
@@ -49,7 +49,7 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	private JTextArea commitMessage;
 	private JButton commitButton;
 	private GitAccess gitAccess;
-	private JComboBox<String> previouslyMessages;
+	private JComboBox<String> previousMessages;
 	private JLabel statusLabel;
 	private Observer<PushPullEvent> observer;
 	private Translator translator;
@@ -83,16 +83,16 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	private void addPreviouslyMessagesComboBoxListener() {
-		previouslyMessages.addItemListener(new ItemListener() {
+		previousMessages.addItemListener(new ItemListener() {
 		  @Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED
-				    && !previouslyMessages.getSelectedItem().equals(
+				    && !previousMessages.getSelectedItem().equals(
 				        translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE))) {
-						commitMessage.setText((String) previouslyMessages.getSelectedItem());
-						previouslyMessages.setEditable(true);
-						previouslyMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
-						previouslyMessages.setEditable(false);
+						commitMessage.setText((String) previousMessages.getSelectedItem());
+						previousMessages.setEditable(true);
+						previousMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
+						previousMessages.setEditable(false);
 				}
 			}
 		});
@@ -102,7 +102,8 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	private void addCommitButtonListener() {
 		commitButton.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				String message = "";
 				if (!gitAccess.getConflictingFiles().isEmpty()) {
 					message = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
@@ -112,9 +113,9 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 					stageController.stateChanged(changeEvent);
 					gitAccess.commit(commitMessage.getText());
 					OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());
-					previouslyMessages.removeAllItems();
+					previousMessages.removeAllItems();
 					for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
-						previouslyMessages.addItem(previouslyCommitMessage);
+						previousMessages.addItem(previouslyCommitMessage);
 					}
 
 					commitButton.setEnabled(false);
@@ -149,21 +150,21 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
-		previouslyMessages = new JComboBox<String>();
-		PreviouslyMessagesToolTipRenderer renderer = new PreviouslyMessagesToolTipRenderer();
-		previouslyMessages.setRenderer(renderer);
+		previousMessages = new JComboBox<String>();
+		PreviousMessagesToolTipRenderer renderer = new PreviousMessagesToolTipRenderer();
+		previousMessages.setRenderer(renderer);
 
 		for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
-			previouslyMessages.addItem(previouslyCommitMessage);
+			previousMessages.addItem(previouslyCommitMessage);
 		}
-		previouslyMessages.setEditable(true);
-		previouslyMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
-		previouslyMessages.setEditable(false);
+		previousMessages.setEditable(true);
+		previousMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
+		previousMessages.setEditable(false);
 
-		int height = (int) previouslyMessages.getPreferredSize().getHeight();
-		previouslyMessages.setMinimumSize(new Dimension(10, height));
+		int height = (int) previousMessages.getPreferredSize().getHeight();
+		previousMessages.setMinimumSize(new Dimension(10, height));
 
-		this.add(previouslyMessages, gbc);
+		this.add(previousMessages, gbc);
 	}
 
 	private void addCommitMessageTextArea(GridBagConstraints gbc) {
@@ -216,24 +217,25 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		this.add(commitButton, gbc);
 	}
 
-	public void stateChanged(ChangeEvent changeEvent) {
+	@Override
+  public void stateChanged(ChangeEvent changeEvent) {
 		toggleCommitButton();
 	}
 
 	private void toggleCommitButton() {
-		try {
-			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-					&& gitAccess.getStagedFile().isEmpty() && gitAccess.getUnstagedFiles().isEmpty()) {
-				commitButton.setEnabled(true);
-				commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
-			} else if (!gitAccess.getStagedFile().isEmpty()) {
-				commitButton.setEnabled(true);
-			} else {
-				commitButton.setEnabled(false);
-			}
-		} catch (NoRepositorySelected e) {
-			commitButton.setEnabled(false);
-		}
+	  boolean enable = false;
+	  try {
+	    if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
+	        && gitAccess.getStagedFile().isEmpty() && gitAccess.getUnstagedFiles().isEmpty()) {
+	      enable = true;
+	      commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
+	    } else if (!gitAccess.getStagedFile().isEmpty()) {
+	      enable = true;
+	    }
+	  } catch (NoRepositorySelected e) {
+	    // Remains disabled
+	  }
+	  commitButton.setEnabled(enable);
 
 	}
 
@@ -241,14 +243,16 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		observer.stateChanged(pushPullEvent);
 	}
 
-	public void addObserver(Observer<PushPullEvent> observer) {
+	@Override
+  public void addObserver(Observer<PushPullEvent> observer) {
 		if (observer == null)
 			throw new NullPointerException("Null Observer");
 
 		this.observer = observer;
 	}
 
-	public void removeObserver(Observer<PushPullEvent> obj) {
+	@Override
+  public void removeObserver(Observer<PushPullEvent> obj) {
 		observer = null;
 	}
 
@@ -275,14 +279,19 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		commitMessage.setText(null);
 	}
 
-	private static final class PreviouslyMessagesToolTipRenderer extends DefaultListCellRenderer {
+	/**
+	 * Renderer for the combo box presenting the previous commit messages. 
+	 */
+	private static final class PreviousMessagesToolTipRenderer extends DefaultListCellRenderer {
 
-		private final int MAX_TOOLTIP_WIDTH = 700;
+	  /**
+	   * Maximum tooltip width.
+	   */
+		private static final int MAX_TOOLTIP_WIDTH = 700;
 
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-
 			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			JToolTip createToolTip = comp.createToolTip();
 			Font font = createToolTip.getFont();

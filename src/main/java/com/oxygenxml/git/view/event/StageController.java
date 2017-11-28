@@ -98,22 +98,22 @@ public class StageController implements Observer<ChangeEvent> {
 	 */
 	public void stateChanged(ChangeEvent changeEvent) {
 		if (changeEvent.getNewState() == FileState.STAGED) {
-			gitAccess.addAll(changeEvent.getFileToBeUpdated());
+			gitAccess.addAll(changeEvent.getFilesToBeUpdated());
 		} else if (changeEvent.getNewState() == FileState.UNSTAGED) {
-			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
+			gitAccess.removeAll(changeEvent.getFilesToBeUpdated());
 		} else if (changeEvent.getOldState() == FileState.UNDEFINED && changeEvent.getNewState() == FileState.DISCARD) {
-			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
-			for (FileStatus file : changeEvent.getFileToBeUpdated()) {
+			gitAccess.removeAll(changeEvent.getFilesToBeUpdated());
+			for (FileStatus file : changeEvent.getFilesToBeUpdated()) {
 				if (file.getChangeType() != GitChangeType.SUBMODULE) {
 					gitAccess.restoreLastCommitFile(file.getFileLocation());
 				}
 			}
 		} else if (changeEvent.getOldState() == FileState.UNSTAGED && changeEvent.getNewState() == FileState.DISCARD) {
-			gitAccess.removeAll(changeEvent.getFileToBeUpdated());
-			for (FileStatus file : changeEvent.getFileToBeUpdated()) {
+			gitAccess.removeAll(changeEvent.getFilesToBeUpdated());
+			for (FileStatus file : changeEvent.getFilesToBeUpdated()) {
 				gitAccess.restoreLastCommitFile(file.getFileLocation());
 			}
-			gitAccess.addAll(changeEvent.getFileToBeUpdated());
+			gitAccess.addAll(changeEvent.getFilesToBeUpdated());
 		}
 
 		List<Enumeration<TreePath>> treePathsToRestore = new ArrayList<Enumeration<TreePath>>();

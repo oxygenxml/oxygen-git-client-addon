@@ -28,11 +28,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * 
  * @author sorin_carbunaru
  */
-public class GitActionsProvider {
+public class GitMenuActionsProvider {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(GitActionsProvider.class.getName());
+  private static final Logger logger = Logger.getLogger(GitMenuActionsProvider.class.getName());
   /**
    * Plug-in workspace access.
    */
@@ -66,7 +66,7 @@ public class GitActionsProvider {
    * @param stagingPanel
    *          The staging panel.
    */
-  public GitActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, Translator translator,
+  public GitMenuActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, Translator translator,
       StagingPanel stagingPanel) {
     this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     this.translator = translator;
@@ -148,7 +148,6 @@ public class GitActionsProvider {
       @Override
       public void actionPerformed(ActionEvent e) {
         pluginWorkspaceAccess.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true);
-        // TODO Alex This INIT can be done in the view itself.
         File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
         String repository = getRepositoryForFiles(selectedFiles);
         if (repository != null) {
@@ -159,16 +158,7 @@ public class GitActionsProvider {
               GitAccess.getInstance().setRepository(repository);
             }
             
-            if (filesStaged(repository)) {
-              if (OptionsManager.getInstance().getRepositoryEntries().contains(repository)) {
-                stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(repository);
-              } else {
-                OptionsManager.getInstance().addRepository(repository);
-                stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(repository);
-                stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(repository);
-              }
-              return;
-            }
+            stageFiles(repository);
           } catch (IOException e1) {
             if (logger.isDebugEnabled()) {
               logger.debug(e1, e1);
@@ -180,24 +170,21 @@ public class GitActionsProvider {
   }
   
   /**
-   * Check if we have staged files.
+   * Stage files.
    * 
    * @param repository The current repository.
    * 
    * @return <code>true</code> if we have staged files.
    */
-  private boolean filesStaged(String repository) {
-    boolean filesStaged = false;
+  private void stageFiles(String repository) {
     List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
     Set<String> allSelectedFiles = ProjectViewManager.getSelectedFilesDeep(pluginWorkspaceAccess);
     for (FileStatus unstagedFileStatus : unstagedFiles) {
       if (allSelectedFiles.contains(repository.replace("\\", "/") + "/" + unstagedFileStatus.getFileLocation())
           && unstagedFileStatus.getChangeType() != GitChangeType.CONFLICT) {
-        filesStaged = true;
         GitAccess.getInstance().add(unstagedFileStatus);
       }
     }
-    return filesStaged;
   }
   
   /**

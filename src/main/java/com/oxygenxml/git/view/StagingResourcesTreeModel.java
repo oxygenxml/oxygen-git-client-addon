@@ -49,7 +49,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
-		List<FileStatus> fileToBeUpdated = changeEvent.getFileToBeUpdated();
+		List<FileStatus> fileToBeUpdated = changeEvent.getFilesToBeUpdated();
 		if (changeEvent.getNewState() == FileState.STAGED) {
 			if (forStaging) {
 				insertNodes(fileToBeUpdated);

@@ -23,6 +23,7 @@ import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
@@ -65,7 +66,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			    pluginWorkspaceAccess,
 			    translator,
 			    // TODO Sorin: I feel like passing the staging panel is not a great idea...
-			    new GitActionsProvider(pluginWorkspaceAccess, translator, stagingPanel));
+			    new GitMenuActionsProvider(pluginWorkspaceAccess, translator, stagingPanel));
 
 			pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 				/**

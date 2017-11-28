@@ -45,7 +45,7 @@ public class ProjectViewManager {
 	public static void addPopUpMenuCustomizer(
 	    StandalonePluginWorkspace pluginWorkspaceAccess,
 	    Translator translator,
-	    GitActionsProvider gitActionsProvider) {
+	    GitMenuActionsProvider gitActionsProvider) {
 		// try to get method from 19.1 version
 		try {
 			// get the getProjectManager method
