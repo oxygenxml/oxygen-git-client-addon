@@ -61,7 +61,8 @@ public class PanelRefresh implements GitRefreshSupport {
 		this.translator = translator;
 	}
 
-	public void call() {
+	@Override
+  public void call() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Refresh Started");
 		}
@@ -78,7 +79,7 @@ public class PanelRefresh implements GitRefreshSupport {
 		if (!projectView.equals(lastSelectedProjectView)) {
 			checkForGitRepositoriesUpAndDownFrom(projectView);
 			if (stagingPanel.isInFocus()) {
-				lastSelectedProjectView = new String(projectView);
+				lastSelectedProjectView = projectView;
 			}
 			addGitFolder(projectView);
 			if (stagingPanel.isInFocus() && !projectPahtIsGit
@@ -179,7 +180,8 @@ public class PanelRefresh implements GitRefreshSupport {
 
 	private void updateCounter(final Command command) {
 		new SwingWorker<Integer, Integer>() {
-			protected Integer doInBackground() throws Exception {
+			@Override
+      protected Integer doInBackground() throws Exception {
 				if (command == Command.PULL) {
 				  // Connect to the remote.
 				  String status = "available";
@@ -281,7 +283,8 @@ public class PanelRefresh implements GitRefreshSupport {
 		}.execute();
 	}
 
-	public void setPanel(StagingPanel stagingPanel) {
+	@Override
+  public void setPanel(StagingPanel stagingPanel) {
 		this.stagingPanel = stagingPanel;
 	}
 }

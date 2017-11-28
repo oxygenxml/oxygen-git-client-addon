@@ -18,6 +18,12 @@ import com.oxygenxml.git.view.GitTreeNode;
  *
  */
 public class TreeFormatter {
+  /**
+   * Hidden constructor.
+   */
+  private TreeFormatter() {
+    // Nothing
+  }
 
 	/**
 	 * Builds a tree from a given forward slash delimited string.
@@ -130,7 +136,7 @@ public class TreeFormatter {
 						newPathToAdd = true;
 					}
 				}
-				if (pathsToRemove.size() != 0) {
+				if (!pathsToRemove.isEmpty()) {
 					commonAncestors.removeAll(pathsToRemove);
 					commonAncestors.add(selectedPaths[i]);
 				} else if (newPathToAdd) {
@@ -169,17 +175,17 @@ public class TreeFormatter {
 	 * @return The String path
 	 */
 	public static String getStringPath(TreePath treePath) {
-		String fullPath = "";
+		StringBuilder fullPath = new StringBuilder();
 		Object[] pathNodes = treePath.getPath();
 		for (int j = 1; j < pathNodes.length; j++) {
 			if (j == pathNodes.length - 1) {
-				fullPath += pathNodes[j];
+				fullPath.append(pathNodes[j]);
 			} else {
-				fullPath += pathNodes[j] + "/";
+				fullPath.append(pathNodes[j]).append("/");
 			}
 
 		}
-		return fullPath;
+		return fullPath.toString();
 	}
 
 	
@@ -190,8 +196,7 @@ public class TreeFormatter {
 		String fullPath = "";
 		for (TreePath treePath : commonAncestors) {
 			fullPath = TreeFormatter.getStringPath(treePath);
-			selectedFiles.add(new String(fullPath));
-			fullPath = "";
+			selectedFiles.add(fullPath);
 		}
 		return selectedFiles;
 	}

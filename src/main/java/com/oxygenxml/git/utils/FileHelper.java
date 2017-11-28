@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.NoWorkTreeException;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -19,6 +18,12 @@ import com.oxygenxml.git.service.NoRepositorySelected;
  *
  */
 public class FileHelper {
+  /**
+   * Hidden constructor.
+   */
+  private FileHelper() {
+    // Nothing
+  }
 
 	/**
 	 * Logger for logging.
@@ -60,13 +65,11 @@ public class FileHelper {
 	 * @return the URL from the given path
 	 * 
 	 * @throws NoRepositorySelected 
-	 * @throws NoWorkTreeException 
 	 */
-	public static URL getFileURL(String path) throws NoWorkTreeException, NoRepositorySelected {
+	public static URL getFileURL(String path) throws NoRepositorySelected {
+	  URL url = null;
 		String selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-		selectedRepository = selectedRepository.replace("\\", "/");
-		URL url = null;
-		File file = new File(selectedRepository + "/" + path);
+		File file = new File(selectedRepository, path);
 		try {
 			url = file.toURI().toURL();
 		} catch (MalformedURLException e) {
@@ -140,7 +143,7 @@ public class FileHelper {
 
 		String xprPath = null;
 		for (int i = 0; i < listOfFiles.length; i++) {
-			String extension = listOfFiles[i].getName().substring(listOfFiles[i].getName().lastIndexOf(".") + 1);
+			String extension = listOfFiles[i].getName().substring(listOfFiles[i].getName().lastIndexOf('.') + 1);
 			if ("xpr".equals(extension)) {
 				xprPath = listOfFiles[i].getAbsolutePath();
 				break;

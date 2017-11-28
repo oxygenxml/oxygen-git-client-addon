@@ -1,7 +1,6 @@
 package com.oxygenxml.git.auth;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.UnsupportedCredentialItem;
 import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
