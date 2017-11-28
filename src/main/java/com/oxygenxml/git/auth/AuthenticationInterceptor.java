@@ -100,6 +100,13 @@ public class AuthenticationInterceptor {
 					// (LoginDialog)
 					// appear for git related hosts. Thus preventing the Oxygen's
 					// dialog appear
+				  
+				  /**
+				   * Ideally, we could just present the dialog here and request for credentials.
+           * We chose to abort and handle the auth later on, on {@link com.oxygenxml.git.view.event.PushPullController#execute}
+           * because, there, we also get a message stating the cause: either the credentials are wrong
+           * or perhaps the user doesn't have permissions on the repository. 
+				   */
 					return null;
 				} else {
 					// Resets the Authenticator, thus making it ready to be restored
