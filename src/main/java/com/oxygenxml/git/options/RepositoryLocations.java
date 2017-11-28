@@ -1,6 +1,7 @@
 package com.oxygenxml.git.options;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,13 +24,13 @@ public class RepositoryLocations {
 	 * The list with the users repositories
 	 */
 	@XmlElement(name = "location")
-	private LinkedList<String> locations = new LinkedList<String>();
+	private List<String> locations = new LinkedList<String>();
 
-	public LinkedList<String> getLocations() {
+	public List<String> getLocations() {
 		return locations;
 	}
 
-	public void setLocations(LinkedList<String> locations) {
+	public void setLocations(List<String> locations) {
 		this.locations = locations;
 	}
 

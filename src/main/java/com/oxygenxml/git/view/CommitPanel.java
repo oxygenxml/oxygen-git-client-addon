@@ -25,7 +25,7 @@ import javax.swing.ScrollPaneConstants;
 
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -78,8 +78,8 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 		addCommitButtonListener();
 		addPreviouslyMessagesComboBoxListener();
-		this.setPreferredSize(new Dimension(Constants.PANEL_WIDTH, Constants.COMMIT_PANEL_HEIGHT));
-		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.COMMIT_PANEL_HEIGHT));
+		this.setPreferredSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_HEIGHT));
 	}
 
 	private void addPreviouslyMessagesComboBoxListener() {
@@ -127,8 +127,8 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	private void addLabel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;
@@ -140,8 +140,8 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	private void addPreviouslyMessagesComboBox(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
@@ -167,8 +167,8 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	private void addCommitMessageTextArea(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
@@ -190,8 +190,8 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	private void addStatusLabel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
@@ -203,8 +203,8 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	}
 
 	private void addCommitButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 1;

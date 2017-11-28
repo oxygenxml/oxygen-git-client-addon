@@ -36,7 +36,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
-import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -162,7 +162,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 */
 	public void createTreeView(String path, List<FileStatus> filesStatus) {
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-		MyNode rootNode = (MyNode) treeModel.getRoot();
+		GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
 		Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
 		stageController.unregisterObserver(treeModel);
 		stageController.unregisterSubject(treeModel);
@@ -170,7 +170,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		path = path.replace("\\", "/");
 		String rootFolder = path.substring(path.lastIndexOf('/') + 1);
 		if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
-			MyNode root = new MyNode(rootFolder);
+			GitTreeNode root = new GitTreeNode(rootFolder);
 			// Create the tree model and add the root node to it
 			treeModel = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(filesStatus));
 			if (forStaging) {
@@ -200,7 +200,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 */
 	private Enumeration<TreePath> getLastExpandedPaths() {
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-		MyNode rootNode = (MyNode) treeModel.getRoot();
+		GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
 		Enumeration<TreePath> expandedPaths = null;
 		if (rootNode != null) {
 			TreePath rootTreePath = new TreePath(rootNode);
@@ -293,7 +293,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 					}
 					if (pathForRow != null) {
 					  String stringPath = TreeFormatter.getStringPath(pathForRow);
-					  MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+					  GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 					  if (model != null && node != null
 					      && model.isLeaf(node) && !model.getRoot().equals(node)) {
 					    FileStatus file = model.getFileByPath(stringPath);
@@ -315,7 +315,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 			createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFiles);
 		}
 		stageController.registerObserver(this);
-		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.STAGING_PANEl_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_HEIGHT));
 	}
 
 	/**
@@ -328,11 +328,11 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 			public void treeExpanded(TreeExpansionEvent event) {
 				TreePath path = event.getPath();
 				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-				MyNode node = (MyNode) path.getLastPathComponent();
+				GitTreeNode node = (GitTreeNode) path.getLastPathComponent();
 				if (!model.isLeaf(node)) {
 					int children = node.getChildCount();
 					if (children == 1) {
-						MyNode child = (MyNode) node.getChildAt(0);
+						GitTreeNode child = (GitTreeNode) node.getChildAt(0);
 						TreePath childPath = new TreePath(child.getPath());
 						tree.expandPath(childPath);
 					}
@@ -360,7 +360,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
 				if (treePath != null) {
 					String stringPath = TreeFormatter.getStringPath(treePath);
-					MyNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+					GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 					// double click event
 					if (model.isLeaf(node) && !model.getRoot().equals(node)
 					    && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
@@ -394,7 +394,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 				toggleSelectedButton();
 			}
 
-			public boolean rootHasChilds(MyNode node) {
+			public boolean rootHasChilds(GitTreeNode node) {
 				return !(node.isRoot() && !node.children().hasMoreElements());
 			}
 
@@ -504,14 +504,14 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 			int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 			String absolutePath = fileTableModel.getFileLocation(convertedRow);
 
-			MyNode nodeBuilder = TreeFormatter.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(),
+			GitTreeNode nodeBuilder = TreeFormatter.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(),
 					absolutePath);
-			MyNode[] selectedPath = new MyNode[absolutePath.split("/").length + 1];
+			GitTreeNode[] selectedPath = new GitTreeNode[absolutePath.split("/").length + 1];
 			int count = selectedPath.length;
 			while (nodeBuilder != null) {
 				count--;
 				selectedPath[count] = nodeBuilder;
-				nodeBuilder = (MyNode) nodeBuilder.getParent();
+				nodeBuilder = (GitTreeNode) nodeBuilder.getParent();
 			}
 
 			selectedPaths[i] = new TreePath(selectedPath);
@@ -526,8 +526,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 *          - the constraints used for this component
 	 */
 	private void addChangeAllButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;
@@ -549,8 +549,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 *          - the constraints used for this component
 	 */
 	private void addChangeSelectedButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 1;
@@ -574,8 +574,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 *          - the constraints used for this component
 	 */
 	private void addSwitchViewButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 2;
@@ -600,8 +600,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	 *          - the constraints used for this component
 	 */
 	private void addFilesPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;

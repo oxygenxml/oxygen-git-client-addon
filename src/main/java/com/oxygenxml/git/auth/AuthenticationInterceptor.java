@@ -39,8 +39,7 @@ public class AuthenticationInterceptor {
 	 * 
 	 * @author Beniamin Savu
 	 */
-  // TODO: change name
-	private static final class MyAuth extends Authenticator {
+	private static final class GitAuth extends Authenticator {
 
 		// The fields for for the Authenticator. They will be retrieved using java
 		// reflection
@@ -66,7 +65,7 @@ public class AuthenticationInterceptor {
 		 * 
 		 * @throws NoSuchFieldException Unable to access wrapped authenticator data.
 		 */
-		private MyAuth(Authenticator oldAuth) throws NoSuchFieldException {
+		private GitAuth(Authenticator oldAuth) throws NoSuchFieldException {
 			this.oldAuth = oldAuth;
 
 			// Getting the fields with java reflection
@@ -203,7 +202,7 @@ public class AuthenticationInterceptor {
 
 			if (oldAuth[0] == null || oldAuth[0] != installedAuthenticator) {
 
-				installedAuthenticator = new MyAuth(oldAuth[0]);
+				installedAuthenticator = new GitAuth(oldAuth[0]);
 
 				Authenticator.setDefault(installedAuthenticator);
 			}
@@ -224,7 +223,7 @@ public class AuthenticationInterceptor {
 	public static void bind(String hostName) {
 		install();
 
-		((MyAuth) installedAuthenticator).bind(hostName);
+		((GitAuth) installedAuthenticator).bind(hostName);
 	}
 
 	/**
@@ -236,7 +235,7 @@ public class AuthenticationInterceptor {
 	public static void unbind(String hostName) {
 		try {
 			if (installedAuthenticator != null) {
-				((MyAuth) installedAuthenticator).unbind(hostName);
+				((GitAuth) installedAuthenticator).unbind(hostName);
 			}
 		} catch (Throwable e) {
 			if (logger.isDebugEnabled()) {

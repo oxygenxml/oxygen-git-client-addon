@@ -3,6 +3,7 @@ package com.oxygenxml.git.view;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,12 +13,13 @@ import javax.swing.table.AbstractTableModel;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.FileStatusComparator;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.FileState;
+import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.Subject;
+
+import ro.sync.util.URLUtil;
 
 /**
  * Custom table model
@@ -52,6 +54,23 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	 * Observer to delegate the event
 	 */
 	private Observer<ChangeEvent> observer;
+	
+	/**
+	 * Compares file statuses.
+	 */
+	private Comparator<FileStatus> fileStatusComparator = new Comparator<FileStatus>() {
+    @Override
+    public int compare(FileStatus f1, FileStatus f2) {
+      int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
+      if(changeTypeCompareResult == 0) {
+        String fileName1 = URLUtil.extractFileName(f1.getFileLocation());
+        String fileName2 = URLUtil.extractFileName(f2.getFileLocation());
+        return fileName1.compareTo(fileName2);
+      } else {
+        return changeTypeCompareResult;
+      }
+    }
+  };
 
 	/**
 	 * <code>true</code> if this model presents un-staged resources that will be
@@ -134,7 +153,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	public void setFilesStatus(List<FileStatus> filesStatus) {
 		this.filesStatus = filesStatus;
 		removeDuplicates();
-		Collections.sort(this.filesStatus, new FileStatusComparator());
+		Collections.sort(this.filesStatus, fileStatusComparator);
 		fireTableDataChanged();
 	}
 
@@ -246,7 +265,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 			deleteRows(fileToBeUpdated);
 		}
 		removeDuplicates();
-		Collections.sort(filesStatus, new FileStatusComparator());
+		Collections.sort(filesStatus, fileStatusComparator);
 		fireTableDataChanged();
 	}
 

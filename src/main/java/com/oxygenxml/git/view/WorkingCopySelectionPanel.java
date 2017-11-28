@@ -26,7 +26,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
-import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -154,7 +154,7 @@ public class WorkingCopySelectionPanel extends JPanel {
         }
     });
 
-		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.WORKINGCOPY_PANEL_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.WORKINGCOPY_PANEL_HEIGHT));
 	}
 	
 	/**
@@ -171,9 +171,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 		workingCopySelector.addItemListener(new ItemListener() {
 
 		  public void itemStateChanged(ItemEvent e) {
-		    if (
-		        // Don't do anything if the event was originated by us.
-		        !inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
+		    // Don't do anything if the event was originated by us.
+		    if (!inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
 		      inhibitRepoUpdate = true;
 		      try {
 		        // get and save the selected Option so that at restart the same
@@ -185,7 +184,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		        if (GitAccess.getInstance().getBranchInfo().isDetached()) {
 		          PluginWorkspaceProvider.getPluginWorkspace()
-		          .showInformationMessage(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+		              .showInformationMessage(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
 		        }
 
 
@@ -270,8 +269,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 *          - the constraints used for this component
 	 */
 	private void addLabel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;
@@ -289,8 +288,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 *          - the constraints used for this component
 	 */
 	private void addWorkingCopySelector(GridBagConstraints gbc) {
-	  gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-	      Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+	  gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+	      UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 	  gbc.anchor = GridBagConstraints.WEST;
 	  gbc.fill = GridBagConstraints.HORIZONTAL;
 	  gbc.gridx = 1;
@@ -336,8 +335,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * 
 	 */
 	private void addBrowseButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 2;

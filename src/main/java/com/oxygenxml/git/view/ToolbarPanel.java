@@ -20,7 +20,7 @@ import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -144,48 +144,7 @@ public class ToolbarPanel extends JPanel {
 	      // TODO Maybe the change of repository should triggered a fetch and a notification should
 	      // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
 	      new Thread(new Runnable() {
-	        
-	        private void fetch(boolean firstRun) {
-	          try {
-	            GitAccess.getInstance().fetch();
-	          } catch (SSHPassphraseRequiredException e) {
-	            String message = null;
-	            if (firstRun) {
-	              message = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
-	            } else {
-	              message = translator.getTranslation(Tags.PREVIOUS_PASSPHRASE_INVALID) 
-	                  + " " 
-	                  + translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
-	            }
-
-	            String passphrase = new PassphraseDialog(message).getPassphrase();
-	            if(passphrase != null){
-	              // A new pass phase was given. Try again.
-	              fetch(false);
-	            }
-	          } catch (PrivateRepositoryException e) {
-	            String loginMessage = null;
-	            if (firstRun) {
-	              loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
-	            } else {
-	              UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(GitAccess.getInstance().getHostName());
-	              loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-	                  + gitCredentials.getUsername();
-	            }
-
-	            UserCredentials userCredentials = new LoginDialog(
-	                GitAccess.getInstance().getHostName(), 
-	                loginMessage,
-	                translator).getUserCredentials();
-	            if (userCredentials != null) {
-	              // New credentials were specified. Try again.
-	              fetch(false);
-	            }
-	          } catch (RepositoryUnavailableException e) {
-	            // Nothing we can do about it...
-	          }
-	        }
-
+	        @Override
 	        public void run() {
 	          fetch(true);
 
@@ -198,6 +157,50 @@ public class ToolbarPanel extends JPanel {
 	    }
 	  });
 	}
+	
+	/**
+	 * Fetch.
+	 */
+  private void fetch(boolean firstRun) {
+    try {
+      GitAccess.getInstance().fetch();
+    } catch (SSHPassphraseRequiredException e) {
+      String message = null;
+      if (firstRun) {
+        message = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
+      } else {
+        message = translator.getTranslation(Tags.PREVIOUS_PASSPHRASE_INVALID) 
+            + " " 
+            + translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
+      }
+
+      String passphrase = new PassphraseDialog(message).getPassphrase();
+      if(passphrase != null){
+        // A new pass phase was given. Try again.
+        fetch(false);
+      }
+    } catch (PrivateRepositoryException e) {
+      String loginMessage = null;
+      if (firstRun) {
+        loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+      } else {
+        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(GitAccess.getInstance().getHostName());
+        loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+            + gitCredentials.getUsername();
+      }
+
+      UserCredentials userCredentials = new LoginDialog(
+          GitAccess.getInstance().getHostName(), 
+          loginMessage,
+          translator).getUserCredentials();
+      if (userCredentials != null) {
+        // New credentials were specified. Try again.
+        fetch(false);
+      }
+    } catch (RepositoryUnavailableException e) {
+      // Nothing we can do about it...
+    }
+  }
 
 	public JButton getPushButton() {
 		return pushButton;
@@ -262,7 +265,7 @@ public class ToolbarPanel extends JPanel {
 		updateInformationLabel();
 		this.add(statusInformationLabel, gbc);
 
-		this.setMinimumSize(new Dimension(Constants.PANEL_WIDTH, Constants.TOOLBAR_PANEL_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
 
 	private void addCloneRepositoryButton() {

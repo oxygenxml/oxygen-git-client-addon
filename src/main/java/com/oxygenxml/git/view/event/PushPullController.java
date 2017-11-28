@@ -1,27 +1,9 @@
 package com.oxygenxml.git.view.event;
 
-import java.io.IOException;
-
-import javax.swing.JFrame;
-
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
-import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidConfigurationException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
-import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -35,6 +17,9 @@ import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * 
@@ -184,10 +169,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 							message = translator.getTranslation(Tags.COMMAND_ABORTED);
 						}
 					}
-				} catch (IOException e) {
-					if (logger.isDebugEnabled()) {
-						logger.debug(e, e);
-					}
 				} finally {
 					if (notifyFinish) {
 						PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);
@@ -202,22 +183,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * 
 			 * @param userCredentials
 			 *          - credentials used to push the changes
-			 * @throws WrongRepositoryStateException
-			 * @throws InvalidConfigurationException
-			 * @throws DetachedHeadException
-			 * @throws InvalidRemoteException
-			 * @throws CanceledException
-			 * @throws RefNotFoundException
-			 * @throws RefNotAdvertisedException
-			 * @throws NoHeadException
-			 * @throws TransportException
+			 *          
 			 * @throws GitAPIException
-			 * @throws AmbiguousObjectException
-			 * @throws IncorrectObjectTypeException
-			 * @throws IOException
 			 */
-			private String pull(final UserCredentials userCredentials)
-					throws GitAPIException, IOException {
+			private String pull(final UserCredentials userCredentials) throws GitAPIException {
 				PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (PullStatus.OK == response.getStatus()) {
@@ -240,13 +209,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 			 * 
 			 * @param userCredentials
 			 *          - credentials used to pull the changes
-			 * @throws InvalidRemoteException
-			 * @throws TransportException
+
 			 * @throws GitAPIException
-			 * @throws IOException
 			 */
-			private String push(final UserCredentials userCredentials)
-					throws GitAPIException, IOException {
+			private String push(final UserCredentials userCredentials) throws GitAPIException {
 				PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
 				String message = "";
 				if (Status.OK == response.getStatus()) {

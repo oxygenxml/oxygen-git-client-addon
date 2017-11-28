@@ -189,7 +189,7 @@ public class OptionsManager {
 	public void addRepository(String repositoryOption) {
 		loadOptions();
 
-		LinkedList<String> locations = options.getRepositoryLocations().getLocations();
+		LinkedList<String> locations = (LinkedList<String>) options.getRepositoryLocations().getLocations();
 		locations.remove(repositoryOption);
 		locations.addFirst(repositoryOption);
 		if(locations.size() > 20) {

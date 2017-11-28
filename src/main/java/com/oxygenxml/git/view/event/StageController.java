@@ -11,7 +11,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
-import com.oxygenxml.git.view.MyNode;
+import com.oxygenxml.git.view.GitTreeNode;
 
 /**
  * Delegates the changing event to all other observers and makes sure that all
@@ -118,7 +118,7 @@ public class StageController implements Observer<ChangeEvent> {
 
 		List<Enumeration<TreePath>> treePathsToRestore = new ArrayList<Enumeration<TreePath>>();
 		for (JTree tree : trees) {
-			MyNode rootNode = (MyNode) tree.getModel().getRoot();
+			GitTreeNode rootNode = (GitTreeNode) tree.getModel().getRoot();
 			TreePath rootTreePath = new TreePath(rootNode);
 			treePathsToRestore.add(tree.getExpandedDescendants(rootTreePath));
 		}

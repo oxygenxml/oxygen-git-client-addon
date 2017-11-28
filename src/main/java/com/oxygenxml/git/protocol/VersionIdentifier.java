@@ -8,6 +8,13 @@ package com.oxygenxml.git.protocol;
  *
  */
 public class VersionIdentifier {
+  /**
+   * Hidden constructor.
+   */
+  private VersionIdentifier() {
+    // Nothing
+  }
+  
 	/**
 	 * Used when a conflict occurs. My own version of the file.
 	 * 

@@ -105,25 +105,11 @@ public class PanelRefresh implements GitRefreshSupport {
 				updateFiles(FileState.STAGED);
 				updateCounter(Command.PULL);
 				updateCounter(Command.PUSH);
-				String path = gitAccess.getWorkingCopy().getAbsolutePath();
-				String workingCopyCurrentPath = (String) stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector()
-						.getSelectedItem();
-
-//				if (FileHelper.isGitSubmodule(path)) {
-//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(true);
-//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
-//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setEditable(false);
-//					stagingPanel.requestFocus();
-//				} else if (FileHelper.isGitRepository(path) && !path.equals(workingCopyCurrentPath)) {
-//				  // THis can happen when the submodule is chosen from the toolbar action. A previous
-//				  // WC is loaded.
-//				  
-//					OptionsManager.getInstance().addRepository(path);
-//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(path);
-//					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(path);
-//				}
 			}
 		} catch (NoRepositorySelected e1) {
+		  if (logger.isDebugEnabled()) {
+		    logger.debug(e1, e1);
+		  }
 			return;
 		}
 	}
@@ -160,11 +146,13 @@ public class PanelRefresh implements GitRefreshSupport {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
+		} catch (FileNotFoundException e1) {
+		  if (logger.isDebugEnabled()) {
+		    logger.debug(e1, e1);
+		  }
+      projectXprExists = false;
+      return;
 		} catch (IOException e1) {
-			if (e1 instanceof FileNotFoundException) {
-				projectXprExists = false;
-				return;
-			}
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
@@ -249,7 +237,7 @@ public class PanelRefresh implements GitRefreshSupport {
 
 			@Override
 			protected void done() {
-				List<FileStatus> files = new ArrayList<FileStatus>();
+				List<FileStatus> files = null;
 				List<FileStatus> newFiles = new ArrayList<FileStatus>();
 				StagingResourcesTableModel model = null;
 				if (state == FileState.UNSTAGED) {

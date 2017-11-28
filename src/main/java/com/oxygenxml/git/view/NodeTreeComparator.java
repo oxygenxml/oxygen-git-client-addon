@@ -8,9 +8,9 @@ import java.util.Comparator;
  * @author Beniamin Savu
  *
  */
-public class NodeTreeComparator implements Comparator<MyNode> {
+public class NodeTreeComparator implements Comparator<GitTreeNode> {
 
-	public int compare(MyNode a, MyNode b) {
+	public int compare(GitTreeNode a, GitTreeNode b) {
 		if (a.isLeaf() && !b.isLeaf()) {
 			return 1;
 		} else if (!a.isLeaf() && b.isLeaf()) {

@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
-import com.oxygenxml.git.constants.Constants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -88,6 +88,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				progressDialog.dispose();
 				Throwable cause = e.getCause();
 				while (cause != null) {
+				  boolean doBreak = false;
 					if (cause.getMessage().contains("Download cancelled")) {
 						try {
 							FileUtils.cleanDirectory(file);
@@ -96,23 +97,24 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 								logger.debug(e1, e1);
 							}
 						}
-						break;
-					}
-					if (cause instanceof NoRemoteRepositoryException) {
+						doBreak = true;
+					} else if (cause instanceof NoRemoteRepositoryException) {
 						CloneRepositoryDialog.this.setVisible(true);
 						CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
 						information.setText(
 								"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) + "</html>");
-						break;
-					}
-					if (cause instanceof org.eclipse.jgit.errors.TransportException) {
+						doBreak = true;
+					} else if (cause instanceof org.eclipse.jgit.errors.TransportException) {
 						UserCredentials userCredentials = new LoginDialog(url.getHost(),
 								translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE),
 								translator).getUserCredentials();
 						if (userCredentials != null) {
 							doOK();
 						}
-						break;
+						doBreak = true;
+					}
+					if (doBreak) {
+					  break;
 					}
 					cause = cause.getCause();
 				}
@@ -160,8 +162,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		JLabel lblURL = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL));
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0;
@@ -172,8 +174,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 		tfURL = new JTextField();
 		UndoSupportInstaller.installUndoManager(tfURL);
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
@@ -183,8 +185,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		panel.add(tfURL, gbc);
 
 		JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0;
@@ -200,8 +202,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		for (String string : destinationPaths) {
 			comboBoxPath.addItem(string);
 		}
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
@@ -224,8 +226,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		browseButton.setOpaque(false);
 
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0;
@@ -236,8 +238,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 		information = new JLabel();
 		information.setForeground(Color.RED);
-		gbc.insets = new Insets(Constants.COMPONENT_TOP_PADDING, Constants.COMPONENT_LEFT_PADDING,
-				Constants.COMPONENT_BOTTOM_PADDING, Constants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;

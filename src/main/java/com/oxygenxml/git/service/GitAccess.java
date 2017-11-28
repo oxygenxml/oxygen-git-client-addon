@@ -1040,7 +1040,9 @@ public class GitAccess {
 						}
 						Iterable<RevCommit> logs = git.log()
 								.add(repository.resolve("remotes/origin/" + git.getRepository().getBranch())).call();
-						for (@SuppressWarnings("unused") RevCommit revCommit : logs) {
+						Iterator<RevCommit> iterator = logs.iterator();
+						while (iterator.hasNext()) {
+						  iterator.next();
 							numberOfCommits++;
 						}
 					}

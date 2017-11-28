@@ -3,14 +3,14 @@ package com.oxygenxml.git.view;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-public class MyNode extends DefaultMutableTreeNode {
+public class GitTreeNode extends DefaultMutableTreeNode {
 	
 	
-	public MyNode(String rootFolder) {
+	public GitTreeNode(String rootFolder) {
 		super(rootFolder);
 	}
 	
-	public MyNode(TreePath path){
+	public GitTreeNode(TreePath path){
 		super(path);
 	}
 
@@ -19,9 +19,9 @@ public class MyNode extends DefaultMutableTreeNode {
 		
 		boolean equals = false;
 		
-		if(obj instanceof MyNode){
+		if(obj instanceof GitTreeNode){
 			String thisUserObgject = (String) this.getUserObject();
-			String objUserObject = (String) ((MyNode) obj).getUserObject();
+			String objUserObject = (String) ((GitTreeNode) obj).getUserObject();
 			equals = thisUserObgject.equals(objUserObject);
 			return equals;
 		} else {

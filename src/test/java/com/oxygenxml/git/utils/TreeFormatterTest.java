@@ -14,7 +14,7 @@ import javax.swing.tree.TreePath;
 import org.junit.Test;
 
 import com.oxygenxml.git.utils.TreeFormatter;
-import com.oxygenxml.git.view.MyNode;
+import com.oxygenxml.git.view.GitTreeNode;
 
 public class TreeFormatterTest {
 
@@ -29,14 +29,14 @@ public class TreeFormatterTest {
 		paths.add("src/main/java/test.java");
 		paths.add("src/main/java/package/file.java");
 		paths.add("resources/java/find.txt");
-		MyNode root = new MyNode("Test");
+		GitTreeNode root = new GitTreeNode("Test");
 		DefaultTreeModel model = new DefaultTreeModel(root);
 
 		for (String string : paths) {
 			TreeFormatter.buildTreeFromString(model, string);
 		}
 
-		MyNode node = TreeFormatter.getTreeNodeFromString(model, "src/add/java/info.txt");
+		GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, "src/add/java/info.txt");
 		String actual = (String) node.getUserObject();
 		String expected = "info.txt";
 

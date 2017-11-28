@@ -1,5 +1,7 @@
 package com.oxygenxml.git.service.entities;
 
+import ro.sync.util.Equaler;
+
 /**
  * Git File Status. Used to store the file location and the file state(DELETED,
  * ADDED, MODIFIED)
@@ -64,21 +66,13 @@ public class FileStatus {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		FileStatus other = (FileStatus) obj;
-		if (changeType != other.changeType)
-			return false;
-		if (fileLocation == null) {
-			if (other.fileLocation != null)
-				return false;
-		} else if (!fileLocation.equals(other.fileLocation))
-			return false;
-		return true;
+	  boolean equals = false;
+	  if (obj instanceof FileStatus) {
+	    FileStatus other = (FileStatus) obj;
+	    equals = other.changeType == changeType 
+	        && Equaler.verifyEquals(other.fileLocation, fileLocation);
+	  }
+	  return equals;
 	}
 
 }

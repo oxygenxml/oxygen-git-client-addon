@@ -6,6 +6,11 @@ import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
+import com.oxygenxml.git.options.OptionsManager;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+
 /**
  * A checker that handles SSH related questions.
  */
@@ -39,7 +44,7 @@ public class SSHUserCredentialsProvider extends UsernamePasswordCredentialsProvi
 	 * @see org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider#get(org.eclipse.jgit.transport.URIish, org.eclipse.jgit.transport.CredentialItem[])
 	 */
 	@Override
-	public boolean get(URIish uri, CredentialItem... items) throws UnsupportedCredentialItem {
+	public boolean get(URIish uri, CredentialItem... items) {
 	  if (logger.isDebugEnabled()) {
 	    logger.debug("Credential query, uri " + uri);
 	  }
@@ -55,7 +60,7 @@ public class SSHUserCredentialsProvider extends UsernamePasswordCredentialsProvi
 	      // A not so great method to check that the pass phrase is requested.
 	      passphaseRequested = true;
 
-	      ((CredentialItem.StringType) item).setValue(new String(passphrase));
+	      ((CredentialItem.StringType) item).setValue(passphrase);
 	      // true tells the engine that we supplied the value.
 	      // The engine will look inside the given item for the response.
 	      return true;
@@ -67,7 +72,7 @@ public class SSHUserCredentialsProvider extends UsernamePasswordCredentialsProvi
 	      }
 
 	      // Present the question to the user.
-	      boolean userResponse = SshPrompt.askUser(item.getPromptText());
+	      boolean userResponse = askUser(item.getPromptText());
 	      ((CredentialItem.YesNoType) item).setValue(userResponse);
 
 	      // true tells the engine that we supplied the value.
@@ -78,6 +83,46 @@ public class SSHUserCredentialsProvider extends UsernamePasswordCredentialsProvi
 		
 		return super.get(uri, items);
 	}
+	
+	/**
+   * Presents the message to the user and returns the user's answer.
+   * 
+   * @param promptText THe message.
+   * 
+   * @return <code>true</code> if the user agrees with the message, <code>false</code> otherwise.
+   */
+  private boolean askUser(String promptText) {
+    OptionsManager optionsManager = OptionsManager.getInstance();
+    Boolean response = optionsManager.getSshPromptAnswer(promptText);
+    
+    if (logger.isDebugEnabled()) {
+      logger.debug("Look in cache for answer to: " + promptText + ", got " + response);
+    }
+    
+    if (response == null) {
+      // Ask the user.
+      String[] options = new String[] { "   Yes   ", "   No   " };
+      int[] optonsId = new int[] { 0, 1 };
+      int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+          .showConfirmDialog("Connection", promptText, options, optonsId);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Asked the user, answer: " + response);
+      }
+
+      if (result == 0) {
+        // true tells the engine that we supplied the value.
+        response = Boolean.TRUE;
+      } else {
+        response = Boolean.FALSE;
+      }
+      
+      optionsManager.saveSshPrompt(promptText, response);
+    }
+    
+    return response;
+    
+  }
 	
 	/**
 	 * @return <code>true</code> if the pass phase was requested (for SSH).

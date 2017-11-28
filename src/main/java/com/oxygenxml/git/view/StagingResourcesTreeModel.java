@@ -97,9 +97,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	 */
 	private void deleteNodes(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
-			MyNode node = TreeFormatter.getTreeNodeFromString(this, fileStatus.getFileLocation());
+			GitTreeNode node = TreeFormatter.getTreeNodeFromString(this, fileStatus.getFileLocation());
 			while (node.getParent() != null) {
-				MyNode parentNode = (MyNode) node.getParent();
+				GitTreeNode parentNode = (GitTreeNode) node.getParent();
 				if (node.getSiblingCount() != 1) {
 					parentNode.remove(node);
 					break;
@@ -216,10 +216,10 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	 * Sorts the entire tree
 	 */
 	private void sortTree() {
-		MyNode root = (MyNode) getRoot();
+		GitTreeNode root = (GitTreeNode) getRoot();
 		Enumeration e = root.depthFirstEnumeration();
 		while (e.hasMoreElements()) {
-			MyNode node = (MyNode) e.nextElement();
+			GitTreeNode node = (GitTreeNode) e.nextElement();
 			if (!node.isLeaf()) {
 				sort(node);
 			}
@@ -232,11 +232,11 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	 * @param parent
 	 *          - the node to be sorted
 	 */
-	private void sort(MyNode parent) {
+	private void sort(GitTreeNode parent) {
 		int n = parent.getChildCount();
-		List<MyNode> children = new ArrayList<MyNode>(n);
+		List<GitTreeNode> children = new ArrayList<GitTreeNode>(n);
 		for (int i = 0; i < n; i++) {
-			children.add((MyNode) parent.getChildAt(i));
+			children.add((GitTreeNode) parent.getChildAt(i));
 		}
 		Collections.sort(children, new NodeTreeComparator());
 		parent.removeAllChildren();

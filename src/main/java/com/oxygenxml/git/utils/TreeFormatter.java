@@ -9,7 +9,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.oxygenxml.git.view.MyNode;
+import com.oxygenxml.git.view.GitTreeNode;
 
 /**
  * An utility class for JTree.
@@ -29,14 +29,14 @@ public class TreeFormatter {
 	 */
 	public static void buildTreeFromString(final DefaultTreeModel model, final String str) {
 		// Fetch the root node
-		MyNode root = (MyNode) model.getRoot();
+		GitTreeNode root = (GitTreeNode) model.getRoot();
 
 		// Split the string around the delimiter
 		String[] strings = str.split("/");
 
 		// Create a node object to use for traversing down the tree as it
 		// is being created
-		MyNode node = root;
+		GitTreeNode node = root;
 
 		// Iterate of the string array
 		for (String s : strings) {
@@ -47,13 +47,13 @@ public class TreeFormatter {
 			// Index less than 0, this is a new node not currently present on the tree
 			if (index < 0) {
 				// Add the new node
-				MyNode newChild = new MyNode(s);
+				GitTreeNode newChild = new GitTreeNode(s);
 				node.insert(newChild, node.getChildCount());
 				node = newChild;
 			}
 			// Else, existing node, skip to the next string
 			else {
-				node = (MyNode) node.getChildAt(index);
+				node = (GitTreeNode) node.getChildAt(index);
 			}
 		}
 	}
@@ -67,9 +67,9 @@ public class TreeFormatter {
 	 *          The value of the child to compare with
 	 * @return The index
 	 */
-	public static int childIndex(final MyNode node, final String childValue) {
-		Enumeration<MyNode> children = node.children();
-		MyNode child = null;
+	public static int childIndex(final GitTreeNode node, final String childValue) {
+		Enumeration<GitTreeNode> children = node.children();
+		GitTreeNode child = null;
 		int index = -1;
 
 		while (children.hasMoreElements() && index < 0) {
@@ -93,13 +93,13 @@ public class TreeFormatter {
 	 *          - The string to find the node from
 	 * @return The node
 	 */
-	public static MyNode getTreeNodeFromString(DefaultTreeModel model, String path) {
-		MyNode node = (MyNode) model.getRoot();
+	public static GitTreeNode getTreeNodeFromString(DefaultTreeModel model, String path) {
+		GitTreeNode node = (GitTreeNode) model.getRoot();
 		String[] strings = path.split("/");
 		for (String s : strings) {
 			int index = childIndex(node, s);
 			if (index != -1) {
-				node = (MyNode) node.getChildAt(index);
+				node = (GitTreeNode) node.getChildAt(index);
 			}
 		}
 		return node;
