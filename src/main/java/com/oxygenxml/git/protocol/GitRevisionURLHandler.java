@@ -193,7 +193,8 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 	 *          The URL
 	 * @return The connection
 	 */
-	protected URLConnection openConnection(URL u) throws IOException {
+	@Override
+  protected URLConnection openConnection(URL u) throws IOException {
 		return new GitRevisionConnection(u);
 	}
 
