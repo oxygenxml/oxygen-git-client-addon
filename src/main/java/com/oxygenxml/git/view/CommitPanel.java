@@ -32,6 +32,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
@@ -259,19 +260,18 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 	/**
 	 * Update status.
 	 * 
-	 * @param message The message to present in the status field.
+	 * @param the current status.
 	 */
-	public void setStatus(final String message) {
-	  // TODO Create constants for the messages.
-		if ("unavailable".equals(message)) {
+	public void setStatus(final String status) {
+		if (RepositoryStatus.UNAVAILABLE.equals(status)) {
 			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
 			statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
-		} else if ("available".equals(message)) {
+		} else if (RepositoryStatus.AVAILABLE.equals(status)) {
 		  statusLabel.setText(null);
 		  statusLabel.setIcon(null);
 		} else {
 		  statusLabel.setIcon(null);
-      statusLabel.setText(message);
+      statusLabel.setText(status);
 		}
 	}
 

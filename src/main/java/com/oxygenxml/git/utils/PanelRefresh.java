@@ -43,6 +43,26 @@ import ro.sync.util.editorvars.EditorVariables;
  */
 public class PanelRefresh implements GitRefreshSupport {
 
+  /**
+   * Repository status: available or not.
+   */
+  public static final class RepositoryStatus {
+    /**
+     * Hidden constructor.
+     */
+    private RepositoryStatus() {
+      // Nada
+    }
+    /**
+     * Available.
+     */
+    public static final String AVAILABLE = "available";
+    /**
+     * Unavailable.
+     */
+    public static final String UNAVAILABLE = "unavailable";
+  }
+  
 	/**
 	 * Logger for logging.
 	 */
@@ -197,11 +217,11 @@ public class PanelRefresh implements GitRefreshSupport {
 			@Override
 			protected GitStatusCountersProvider doInBackground() throws Exception {
 			  // Connect to the remote.
-			  String status = "available";
+			  String status = RepositoryStatus.AVAILABLE;
 			  try {
 			    GitAccess.getInstance().fetch();
 			  } catch (RepositoryUnavailableException e) {
-			    status = "unavailable";
+			    status = RepositoryStatus.UNAVAILABLE;
 			  } catch (Exception e) {
 			    // Ignore other causes why the fetch might fail.
 			  }
