@@ -206,51 +206,54 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void setRepository(String path) throws IOException {
-	  // TODO Perhaps check that this repository is not the already loaded one.
-	  // We could compare new File(path + "/.git") with the git.getDirectory()
-		if (git != null) {
-			// Stop intercepting authentication requests.
-		  AuthenticationInterceptor.unbind(getHostName());
-			
-			git.close();
-		}
-		git = Git.open(new File(path + "/.git"));
-		
-    // Start intercepting authentication requests.
-		AuthenticationInterceptor.bind(getHostName());
-		
-		if (logger.isDebugEnabled()) {
-		  // Debug data for the SSH key load location.
-		  logger.debug("Java env user home: " + System.getProperty("user.home"));
-		  logger.debug("Load repository " + path);
-		  try {
-		    FS fs = getRepository().getFS();
-		    if (fs != null) {
-		      File userHome = fs.userHome();
-		      logger.debug("User home " + userHome);
-		      
-		      File sshDir = new File(userHome, ".ssh");
-		      
-		      boolean exists = sshDir.exists();
-          logger.debug("SSH dir exists " + exists);
-		      if (exists) {
-		        File[] listFiles = sshDir.listFiles();
-		        for (int i = 0; i < listFiles.length; i++) {
-              logger.debug("SSH resource path " + listFiles[i]);
-            }
-		      }
-		    } else {
-		      logger.debug("Null FS");
-		    }
-		  } catch (NoRepositorySelected e) {
-		    logger.debug(e, e);
-		  }
-		}
-		
-		// Save the new option.
-		OptionsManager.getInstance().saveSelectedRepository(path);
-		
-		fireRepositoryChanged();
+	  File currentRepo = new File(path + "/.git");
+	  boolean sameOldRepo = git != null && currentRepo.equals(git.getRepository().getDirectory());
+	  
+	  // Change the repository only if it is a different one
+	  if (!sameOldRepo ) {
+	    if (git != null) {
+	      // Stop intercepting authentication requests.
+	      AuthenticationInterceptor.unbind(getHostName());
+	      git.close();
+	    }
+
+	    git = Git.open(currentRepo);
+	    // Start intercepting authentication requests.
+	    AuthenticationInterceptor.bind(getHostName());
+
+	    if (logger.isDebugEnabled()) {
+	      // Debug data for the SSH key load location.
+	      logger.debug("Java env user home: " + System.getProperty("user.home"));
+	      logger.debug("Load repository " + path);
+	      try {
+	        FS fs = getRepository().getFS();
+	        if (fs != null) {
+	          File userHome = fs.userHome();
+	          logger.debug("User home " + userHome);
+
+	          File sshDir = new File(userHome, ".ssh");
+
+	          boolean exists = sshDir.exists();
+	          logger.debug("SSH dir exists " + exists);
+	          if (exists) {
+	            File[] listFiles = sshDir.listFiles();
+	            for (int i = 0; i < listFiles.length; i++) {
+	              logger.debug("SSH resource path " + listFiles[i]);
+	            }
+	          }
+	        } else {
+	          logger.debug("Null FS");
+	        }
+	      } catch (NoRepositorySelected e) {
+	        logger.debug(e, e);
+	      }
+	    }
+
+	    // Save the new option.
+	    OptionsManager.getInstance().saveSelectedRepository(path);
+
+	    fireRepositoryChanged();
+	  }
 	}
 
 	/**

@@ -1,8 +1,9 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -16,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
 
+import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
@@ -54,7 +56,7 @@ public class DiffPresenter {
 	/**
 	 * The frame of the oxygen's diff
 	 */
-	private Component diffFrame;
+	private JFrame diffFrame;
 
 	/**
 	 * Controller used for staging and unstaging
@@ -275,6 +277,13 @@ public class DiffPresenter {
     		diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
     				.openDiffFilesApplication(localURL, remoteUL, baseURL);
     	}
+      diffFrame.addWindowListener(new WindowAdapter() {
+        @Override
+        public void windowOpened(WindowEvent e) {
+          diffFrame.removeWindowListener(this);
+          AuthenticationInterceptor.install();
+        }
+      });
     } catch (IOException e) {
       logger.error(e, e);
     }
