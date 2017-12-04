@@ -58,6 +58,11 @@ import ro.sync.ui.Icons;
  * will be staged. <code>false</code> if this model presents staged resources
  * that will be unstaged).
  * 
+ * 
+ * TODO Sorin Only one view is visible at a given time: either the TRE or the TABLE.
+ * Create update just the visible one and mark the other one as dirty. When the user
+ * switches to the other view, we will recreate it if it's dirty. 
+ * 
  * @author Beniamin Savu
  *
  */
