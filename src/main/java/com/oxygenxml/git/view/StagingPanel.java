@@ -237,6 +237,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 								String selectedRepositoryPath = OptionsManager.getInstance().getSelectedRepository();
 								selectedRepositoryPath = selectedRepositoryPath.replace("\\", "/");
 								if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+								  // TODO Sorin Do not recreate the models from scratch. Just fire an atomic 
+								  // event, like fireTableRowsUpdated()
+								  // TODO Sorin It makes sense to schedule this on the PanelRefresh, to avoid threading issues.
 									List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
 									unstagedChangesPanel.updateFlatView(newFiles);
 									unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
