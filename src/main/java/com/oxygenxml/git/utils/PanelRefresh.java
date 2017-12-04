@@ -244,6 +244,7 @@ public class PanelRefresh implements GitRefreshSupport {
 		}.execute();
 	}
 
+	// TODO: maybe remove the state and update all the files, staged and unstaged, at once
 	private void updateFiles(final FileState state) {
 		new SwingWorker<List<FileStatus>, Integer>() {
 
