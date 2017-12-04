@@ -65,8 +65,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			ProjectViewManager.addPopUpMenuCustomizer(
 			    pluginWorkspaceAccess,
 			    translator,
-			    // TODO Sorin: I feel like passing the staging panel is not a great idea...
-			    new GitMenuActionsProvider(pluginWorkspaceAccess, translator, stagingPanel));
+			    new GitMenuActionsProvider(pluginWorkspaceAccess, translator, stageController));
 
 			pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 				/**

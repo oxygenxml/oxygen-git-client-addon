@@ -19,7 +19,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.DiffPresenter;
-import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -42,9 +42,9 @@ public class GitMenuActionsProvider {
    */
   private Translator translator;
   /**
-   * Staging panel.
+   * Stage controller.
    */
-  private StagingPanel stagingPanel;
+  private StageController stageCtrl;
 
   /**
    * The "Commit" action.
@@ -63,14 +63,14 @@ public class GitMenuActionsProvider {
    *          Translator used for i18n.
    * @param pluginWorkspaceAccess
    *          Plug-in workspace access.
-   * @param stagingPanel
+   * @param stageCtrl
    *          The staging panel.
    */
   public GitMenuActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, Translator translator,
-      StagingPanel stagingPanel) {
+      StageController stageCtrl) {
     this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     this.translator = translator;
-    this.stagingPanel = stagingPanel;
+    this.stageCtrl = stageCtrl;
   }
 
   /**
@@ -125,7 +125,7 @@ public class GitMenuActionsProvider {
           String selectedFilePath = selectedFiles[0].getAbsolutePath().replace("\\", "/");
           for (FileStatus fileStatus : gitFiles) {
             if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-              DiffPresenter diff = new DiffPresenter(fileStatus, stagingPanel.getStageController(), translator);
+              DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl, translator);
               diff.showDiff();
               break;
             }
