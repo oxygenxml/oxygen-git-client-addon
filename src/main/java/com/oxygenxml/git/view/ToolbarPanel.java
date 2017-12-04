@@ -20,8 +20,8 @@ import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.BranchInfo;
@@ -127,7 +127,8 @@ public class ToolbarPanel extends JPanel {
 	  createGUI();
 
 	  GitAccess.getInstance().addGitListener(new GitEventListener() {
-	    public void repositoryChanged() {
+	    @Override
+      public void repositoryChanged() {
 	      // Repository changed. Update the toolbar buttons.
 	      if (!GitAccess.getInstance().getSubmodules().isEmpty()) {
 	        submoduleSelectButton.setEnabled(true);
@@ -273,7 +274,8 @@ public class ToolbarPanel extends JPanel {
 		  /**
 		   * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		   */
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				new CloneRepositoryDialog(translator);
 			}
 		};
@@ -322,7 +324,8 @@ public class ToolbarPanel extends JPanel {
 	private void addBranchSelectButton() {
 		Action branchSelectAction = new AbstractAction() {
 
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
 						new BranchSelectDialog(refresh, translator);
