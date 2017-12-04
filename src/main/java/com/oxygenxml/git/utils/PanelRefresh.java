@@ -25,7 +25,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
-import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.FileState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -104,14 +103,12 @@ public class PanelRefresh implements GitRefreshSupport {
 			if (gitAccess.getRepository() != null) {
 				updateFiles(FileState.UNSTAGED);
 				updateFiles(FileState.STAGED);
-				updateCounter(Command.PULL);
-				updateCounter(Command.PUSH);
+				updateCounters();
 			}
 		} catch (NoRepositorySelected e1) {
 		  if (logger.isDebugEnabled()) {
 		    logger.debug(e1, e1);
 		  }
-			return;
 		}
 	}
 
@@ -151,18 +148,21 @@ public class PanelRefresh implements GitRefreshSupport {
 		  if (logger.isDebugEnabled()) {
 		    logger.debug(e1, e1);
 		  }
+		  // Project file doesn't exist
       projectXprExists = false;
-      return;
 		} catch (IOException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
 		}
-		File file = new File(projectView);
-		while (file.getParent() != null) {
-			String projectParent = file.getParent();
-			addGitFolder(projectParent);
-			file = file.getParentFile();
+		
+		if (projectXprExists) {
+		  File file = new File(projectView);
+		  while (file.getParent() != null) {
+		    String projectParent = file.getParent();
+		    addGitFolder(projectParent);
+		    file = file.getParentFile();
+		  }
 		}
 	}
 
@@ -177,50 +177,69 @@ public class PanelRefresh implements GitRefreshSupport {
 			stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(pathToCheck);
 		}
 	}
+	
+	/**
+	 * Git counters provider.
+	 */
+	private interface GitStatusCountersProvider {
+    /**
+     * @return the number of pulls behind.
+     */
+    public int getPullsBehind();
+    /**
+     * @return the number of pushes ahead.
+     */
+    public int getPushesAhead();
+	}
 
-	private void updateCounter(final Command command) {
-		new SwingWorker<Integer, Integer>() {
+	private void updateCounters() {
+		new SwingWorker<GitStatusCountersProvider, Void>() {
 			@Override
-      protected Integer doInBackground() throws Exception {
-				if (command == Command.PULL) {
-				  // Connect to the remote.
-				  String status = "available";
-				  try { 
-					GitAccess.getInstance().fetch();
-				  } catch (RepositoryUnavailableException e) {
-				    status = "unavailable";
-				  } catch (Exception e) {
-				    // Ignore other causes why the fetch might fail.
-				  }
-				  stagingPanel.getCommitPanel().setStatus(status);
-					
-					return GitAccess.getInstance().getPullsBehind();
-				} else {
-					return GitAccess.getInstance().getPushesAhead();
-				}
+			protected GitStatusCountersProvider doInBackground() throws Exception {
+			  // Connect to the remote.
+			  String status = "available";
+			  try {
+			    GitAccess.getInstance().fetch();
+			  } catch (RepositoryUnavailableException e) {
+			    status = "unavailable";
+			  } catch (Exception e) {
+			    // Ignore other causes why the fetch might fail.
+			  }
+			  stagingPanel.getCommitPanel().setStatus(status);
+
+			  return new GitStatusCountersProvider() {
+          @Override
+          public int getPushesAhead() {
+            return GitAccess.getInstance().getPushesAhead();
+          }
+          @Override
+          public int getPullsBehind() {
+            return GitAccess.getInstance().getPullsBehind();
+          }
+        };
 			}
 
 			@Override
 			protected void done() {
-				super.done();
-				try {
-					int counter = get();
-					if (command == Command.PULL) {
-						stagingPanel.getToolbarPanel().setPullsBehind(counter);
-						stagingPanel.getToolbarPanel().updateInformationLabel();
-					} else {
-						stagingPanel.getToolbarPanel().setPushesAhead(counter);
-					}
-				} catch (InterruptedException e) {
-					if (logger.isDebugEnabled()) {
-						logger.debug(e, e);
-					}
-					Thread.currentThread().interrupt();
-				} catch (ExecutionException e) {
-					if (logger.isDebugEnabled()) {
-						logger.debug(e, e);
-					}
-				}
+			  super.done();
+			  try {
+			    GitStatusCountersProvider counterProvider = get();
+			    // PULL
+			    stagingPanel.getToolbarPanel().setPullsBehind(counterProvider.getPullsBehind());
+			    stagingPanel.getToolbarPanel().updateInformationLabel();
+			    // PUSH
+			    stagingPanel.getToolbarPanel().setPushesAhead(counterProvider.getPushesAhead());
+
+			  } catch (InterruptedException e) {
+			    if (logger.isDebugEnabled()) {
+			      logger.debug(e, e);
+			    }
+			    Thread.currentThread().interrupt();
+			  } catch (ExecutionException e) {
+			    if (logger.isDebugEnabled()) {
+			      logger.debug(e, e);
+			    }
+			  }
 			}
 		}.execute();
 	}
