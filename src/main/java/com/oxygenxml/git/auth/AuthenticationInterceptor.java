@@ -142,6 +142,20 @@ public class AuthenticationInterceptor {
 			}
 			return null;
 		}
+		
+		/**
+     * @return the boundHosts
+     */
+    public Set<String> getBoundHosts() {
+      return boundHosts;
+    }
+
+    /**
+     * @param boundHosts the bound hosts to set.
+     */
+    public void setBoundHosts(Set<String> boundHosts) {
+      this.boundHosts = boundHosts;
+    }
 
 		/**
 		 * Check if the given host is git related host
@@ -184,7 +198,7 @@ public class AuthenticationInterceptor {
 	 * this is true, then on the install() method my authenticator will be used
 	 * instead of Oxygen's authenticator
 	 */
-	private static Authenticator installedAuthenticator;
+	private static GitAuth installedAuthenticator;
 
 	/**
 	 * Installs my custom authenticator. Gets the current authenticator by
@@ -193,16 +207,18 @@ public class AuthenticationInterceptor {
 	 * that my authenticator is already installed
 	 */
 	public static void install() {
-		final Authenticator[] oldAuth = new Authenticator[1];
+		final Authenticator[] currentAuth = new Authenticator[1];
 		try {
 
 			Field declaredField = Authenticator.class.getDeclaredField("theAuthenticator");
 			declaredField.setAccessible(true);
-			oldAuth[0] = (Authenticator) declaredField.get(null);
+			currentAuth[0] = (Authenticator) declaredField.get(null);
 
-			if (oldAuth[0] == null || oldAuth[0] != installedAuthenticator) {
+			if (currentAuth[0] == null || currentAuth[0] != installedAuthenticator) {
+			  GitAuth oldInstalledAuth = installedAuthenticator;
 
-				installedAuthenticator = new GitAuth(oldAuth[0]);
+				installedAuthenticator = new GitAuth(currentAuth[0]);
+				installedAuthenticator.setBoundHosts(oldInstalledAuth.getBoundHosts());
 
 				Authenticator.setDefault(installedAuthenticator);
 			}
@@ -223,7 +239,7 @@ public class AuthenticationInterceptor {
 	public static void bind(String hostName) {
 		install();
 
-		((GitAuth) installedAuthenticator).bind(hostName);
+		installedAuthenticator.bind(hostName);
 	}
 
 	/**
@@ -235,7 +251,7 @@ public class AuthenticationInterceptor {
 	public static void unbind(String hostName) {
 		try {
 			if (installedAuthenticator != null) {
-				((GitAuth) installedAuthenticator).unbind(hostName);
+				installedAuthenticator.unbind(hostName);
 			}
 		} catch (Throwable e) {
 			if (logger.isDebugEnabled()) {
