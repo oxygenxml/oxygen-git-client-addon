@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoWorkTreeException;
+import org.eclipse.jgit.lib.ObjectId;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
@@ -26,8 +27,8 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.FileState;
+import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -80,27 +81,27 @@ public class DiffPresenter {
 	 */
 	public void showDiff() {
 	  try {
-		GitChangeType changeType = file.getChangeType();
-    switch (changeType) {
-		case CONFLICT:
-			conflictDiff();
-			break;
-		case CHANGED:
-		  diffIndexWithHead();
-		  break;
-		case MODIFIED:
-			diffView();
-			break;
-		case ADD:
-		case UNTRACKED:
-			openFile();
-			break;
-		case SUBMODULE:
-			submoduleDiff();
-			break;
-		default:
-			break;
-		}
+	    GitChangeType changeType = file.getChangeType();
+	    switch (changeType) {
+	      case CONFLICT:
+	        conflictDiff();
+	        break;
+	      case CHANGED:
+	        diffIndexWithHead();
+	        break;
+	      case MODIFIED:
+	        diffView();
+	        break;
+	      case ADD:
+	      case UNTRACKED:
+	        openFile();
+	        break;
+	      case SUBMODULE:
+	        submoduleDiff();
+	        break;
+	      default:
+	        break;
+	    }
 	  } catch (Exception ex) {
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage());
 	    
@@ -116,8 +117,8 @@ public class DiffPresenter {
 			URL currentSubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.CURRENT_SUBMODULE, file.getFileLocation());
 			URL previouslySubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.PREVIOUSLY_SUBMODULE,
 					file.getFileLocation());
-			((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-					.openDiffFilesApplication(currentSubmoduleCommit, previouslySubmoduleCommit);
+			
+			showDiffFrame(currentSubmoduleCommit, previouslySubmoduleCommit, null);
 		} catch (MalformedURLException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -163,9 +164,7 @@ public class DiffPresenter {
 			}
 		}
 		
-		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(
-		    fileURL, lastCommitedFileURL);
-
+		showDiffFrame(fileURL, lastCommitedFileURL, null);
 	}
 	
   /**
@@ -190,8 +189,7 @@ public class DiffPresenter {
       }
     }
 
-    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(leftSideURL,
-        rightSideURL);
+    showDiffFrame(leftSideURL, rightSideURL, null);
 
   }
 
@@ -211,7 +209,7 @@ public class DiffPresenter {
 			// time stamp used for detecting if the file was changed in the diff view
 			final long diffStartedTimeStamp = localCopy.lastModified();
 
-			createDiffFrame(local, remote, base);
+			showDiffFrame(local, remote, base);
 			// checks if the file in conflict has been resolved or not after the diff
 			// view was closed
 			diffFrame.addComponentListener(new ComponentAdapter() {
@@ -264,22 +262,21 @@ public class DiffPresenter {
 	 * @param remoteUL  URL to the remote resource.
 	 * @param baseURL   URL to the base version of the resource.
 	 */
-  private void createDiffFrame(URL localURL, URL remoteUL, URL baseURL) {
+  private void showDiffFrame(URL localURL, URL remoteUL, URL baseURL) {
     try {
     	// checks whether a base commit exists or not. If not, then the a 2-way
     	// diff is presented
-    	if (GitAccess.getInstance().getLoaderFrom(GitAccess.getInstance().getBaseCommit(),
-    			file.getFileLocation()) == null) {
+    	ObjectId baseCommit = GitAccess.getInstance().getBaseCommit();
+      if (baseCommit == null 
+          || GitAccess.getInstance().getLoaderFrom(baseCommit, file.getFileLocation()) == null) {
     		diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
     				.openDiffFilesApplication(localURL, remoteUL);
     	} else {
     		diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
     				.openDiffFilesApplication(localURL, remoteUL, baseURL);
     	}
-    } catch (IOException e1) {
-    	if (logger.isDebugEnabled()) {
-    		logger.debug(e1, e1);
-    	}
+    } catch (IOException e) {
+      logger.error(e, e);
     }
   }
 
