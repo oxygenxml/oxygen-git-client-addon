@@ -30,8 +30,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
@@ -214,7 +214,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 		Action browseButtonAction = new AbstractAction() {
 
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				File directory = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).chooseDirectory();
 				if (directory != null) {
 					comboBoxPath.setSelectedItem(directory.getAbsolutePath());
@@ -272,6 +273,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	    // Make sure we present the dialog after this one is closed.
 	    // TODO There is a progress dialog support in Java. Maybe is better to use that.
 	    SwingUtilities.invokeLater(new Runnable() {
+        @Override
         public void run() {
           progressDialog.setVisible(true);
         }
@@ -279,11 +281,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	    
 	    doOK = true;
 		} catch (MalformedURLException e) {
-		  // TODO THis minimum size is needed, probably, because of the new label.
-		  // Perhaps a new pack???
-			this.setMinimumSize(new Dimension(400, 180));
-			information.setText("<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL) + "</html>");
-			return;
+			information.setText(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+			this.pack();
 		}
 		
 		if (doOK) {
