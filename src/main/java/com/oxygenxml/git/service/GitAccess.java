@@ -1,6 +1,5 @@
 package com.oxygenxml.git.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -918,7 +917,7 @@ public class GitAccess {
 	 * Gets the InputStream for the file that is found in the given commit at the
 	 * given path
 	 * 
-	 * @param commit
+	 * @param commitID
 	 *          - the commit in which the file exists
 	 * @param path
 	 *          - the path to the file
@@ -927,17 +926,12 @@ public class GitAccess {
 	 * 
 	 * @throws IOException
 	 */
-	public InputStream getInputStream(ObjectId commit)
-			throws IOException {
+	public InputStream getInputStream(ObjectId commitID) throws IOException {
 		InputStream toReturn = null;
-		if (commit != null) {
-			ObjectLoader loader = git.getRepository().open(commit);
+		if (commitID != null) {
+			ObjectLoader loader = git.getRepository().open(commitID);
 			if (loader == null) {
-				// TODO Can this be null???? 
-				// org.eclipse.jgit.lib.Repository.open(AnyObjectId) is annotated that it never returns null. 
-				toReturn = new ByteArrayInputStream(new byte[0]);
-//				File file = File.createTempFile("test", "poc");
-//				toReturn = new FileInputStream(file);
+			  throw new IOException("Cannot obtain an object loader for the commit ID: " + commitID);
 			} else {
 				toReturn = loader.openStream();
 			}
@@ -1146,7 +1140,7 @@ public class GitAccess {
 	public void restartMerge() {
 
 		try {
-			AnyObjectId commitToMerge = git.getRepository().resolve("MERGE_HEAD");// getRemoteCommit();
+			AnyObjectId commitToMerge = git.getRepository().resolve("MERGE_HEAD");
 			git.clean().call();
 			git.reset().setMode(ResetType.HARD).call();
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
