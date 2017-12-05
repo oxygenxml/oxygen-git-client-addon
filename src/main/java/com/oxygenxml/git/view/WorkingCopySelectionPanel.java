@@ -26,8 +26,8 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventListener;
@@ -116,6 +116,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		addFileChooserOn(browseButton);
 		
 		GitAccess.getInstance().addGitListener(new GitEventListener() {
+      @Override
       public void repositoryChanged() {
           // The event was not triggered by the combo.
         try {
@@ -170,7 +171,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	private void addWorkingCopySelectorListener() {
 		workingCopySelector.addItemListener(new ItemListener() {
 
-		  public void itemStateChanged(ItemEvent e) {
+		  @Override
+      public void itemStateChanged(ItemEvent e) {
 		    // Don't do anything if the event was originated by us.
 		    if (!inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
 		      inhibitRepoUpdate = true;
@@ -206,7 +208,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 		          workingCopySelector.removeItem(path);
 
 		          SwingUtilities.invokeLater(new Runnable() {
-		            public void run() {
+		            @Override
+                public void run() {
 		              PluginWorkspaceProvider.getPluginWorkspace()
 		              .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
 		            }
@@ -236,7 +239,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	private void addFileChooserOn(JButton button) {
 		button.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				File directory = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).chooseDirectory();
 				if (directory != null) {
 					String directoryPath = directory.getAbsolutePath();
@@ -298,7 +302,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	  gbc.weighty = 1;
 
 	  workingCopySelector = new JComboBox<String>();
-	  WoekingCopyToolTipRenderer renderer = new WoekingCopyToolTipRenderer();
+	  WorkingCopyToolTipRenderer renderer = new WorkingCopyToolTipRenderer();
 	  workingCopySelector.setRenderer(renderer);
 	  int height = (int) workingCopySelector.getPreferredSize().getHeight();
 	  workingCopySelector.setMinimumSize(new Dimension(10, height));
@@ -361,7 +365,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * @author Beniamin Savu
 	 *
 	 */
-	private static final class WoekingCopyToolTipRenderer extends DefaultListCellRenderer {
+	private static final class WorkingCopyToolTipRenderer extends DefaultListCellRenderer {
 
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,

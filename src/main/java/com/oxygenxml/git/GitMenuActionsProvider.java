@@ -89,7 +89,7 @@ public class GitMenuActionsProvider {
     
     // Enable/disable
     commitAction.setEnabled(true);
-    gitDiffAction.setEnabled(isGitDiffActionEnabled());
+    gitDiffAction.setEnabled(shouldEnableGitDiffAction());
     
     // Add the Git actions to the list
     actions.add(commitAction);
@@ -106,34 +106,31 @@ public class GitMenuActionsProvider {
       @Override
       public void actionPerformed(ActionEvent e) {
         File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
-        // the diff action is enabled only for one file
-        File repository = new File(selectedFiles[0].getAbsolutePath());
-
-        // We try and find the
-        while (repository.getParent() != null) {
-          if (FileHelper.isGitRepository(repository.getAbsolutePath())) {
-            break;
-          }
-          repository = repository.getParentFile();
-        }
-        try {
-          String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-          GitAccess.getInstance().setRepository(repository.getAbsolutePath());
-          OptionsManager.getInstance().saveSelectedRepository(repository.getAbsolutePath());
-          List<FileStatus> gitFiles = GitAccess.getInstance().getUnstagedFiles();
-          gitFiles.addAll(GitAccess.getInstance().getStagedFile());
-          String selectedFilePath = selectedFiles[0].getAbsolutePath().replace("\\", "/");
-          for (FileStatus fileStatus : gitFiles) {
-            if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-              DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl, translator);
-              diff.showDiff();
-              break;
+        // The diff action is enabled only for one file
+        String repository = getRepositoryForFiles(selectedFiles);
+        if (repository != null) {
+          try {
+            String previousRepository = OptionsManager.getInstance().getSelectedRepository();
+            if (!repository.equals(previousRepository)) {
+              GitAccess.getInstance().setRepository(repository);
             }
-          }
-          OptionsManager.getInstance().saveSelectedRepository(previousRepository);
-        } catch (Exception e1) {
-          if (logger.isDebugEnabled()) {
-            logger.debug(e1, e1);
+            
+            List<FileStatus> gitFiles = new ArrayList<FileStatus>();
+            gitFiles.addAll(GitAccess.getInstance().getUnstagedFiles());
+            gitFiles.addAll(GitAccess.getInstance().getStagedFile());
+            
+            String selectedFilePath = selectedFiles[0].getAbsolutePath().replace("\\", "/");
+            for (FileStatus fileStatus : gitFiles) {
+              if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
+                DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl, translator);
+                diff.showDiff();
+                break;
+              }
+            }
+          } catch (Exception e1) {
+            if (logger.isDebugEnabled()) {
+              logger.debug(e1, e1);
+            }
           }
         }
       }
@@ -148,11 +145,12 @@ public class GitMenuActionsProvider {
       @Override
       public void actionPerformed(ActionEvent e) {
         pluginWorkspaceAccess.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true);
+        
+        // Use the repository from the project view
         File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
         String repository = getRepositoryForFiles(selectedFiles);
         if (repository != null) {
           try {
-            // Use the repository from the project view
             String previousRepository = OptionsManager.getInstance().getSelectedRepository();
             if (!repository.equals(previousRepository)) {
               GitAccess.getInstance().setRepository(repository);
@@ -177,10 +175,11 @@ public class GitMenuActionsProvider {
    * @return <code>true</code> if we have staged files.
    */
   private void stageFiles(String repository) {
+    repository = repository.replace("\\", "/");
     List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
     Set<String> allSelectedFiles = ProjectViewManager.getSelectedFilesDeep(pluginWorkspaceAccess);
     for (FileStatus unstagedFileStatus : unstagedFiles) {
-      if (allSelectedFiles.contains(repository.replace("\\", "/") + "/" + unstagedFileStatus.getFileLocation())
+      if (allSelectedFiles.contains(repository + "/" + unstagedFileStatus.getFileLocation())
           && unstagedFileStatus.getChangeType() != GitChangeType.CONFLICT) {
         GitAccess.getInstance().add(unstagedFileStatus);
       }
@@ -192,22 +191,22 @@ public class GitMenuActionsProvider {
    * 
    * @return <code>true</code> if the action is enabled.
    */
-  private boolean isGitDiffActionEnabled() {
-    boolean isEnabled = true;
+  private boolean shouldEnableGitDiffAction() {
+    boolean shouldEnable = true;
     File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
     if (selectedFiles != null) {
       if (selectedFiles.length > 1 || selectedFiles.length == 1 && selectedFiles[0].isDirectory()) {
         // disable the diff action if there are 2 or more files selected or if
         // the files selected is a directory
-        isEnabled = false;
+        shouldEnable = false;
       } else if (selectedFiles.length == 1) {
         String repository = getRepositoryForFiles(selectedFiles);
         if (repository != null) {
-          isEnabled = isGitDiffEnabledBasedOnSelectedFileStatus(selectedFiles[0], repository);
+          shouldEnable = isGitDiffEnabledBasedOnSelectedFileStatus(selectedFiles[0], repository);
         }
       }
     }
-    return isEnabled;
+    return shouldEnable;
   }
 
   /**

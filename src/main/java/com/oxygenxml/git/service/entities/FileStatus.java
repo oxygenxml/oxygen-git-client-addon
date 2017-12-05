@@ -46,10 +46,6 @@ public class FileStatus {
 		return fileLocation;
 	}
 
-	public void setFileLocation(String fileLocation) {
-		this.fileLocation = fileLocation;
-	}
-
 	@Override
 	public String toString() {
 		return "UnstageFile [changeType=" + changeType + ", fileLocation=" + fileLocation + "]";
