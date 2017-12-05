@@ -36,8 +36,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -414,7 +414,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	private void addChangeAllButtonListener() {
 		changeAllButton.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 				fileTableModel.switchAllFilesStageState();
 			}
@@ -429,7 +430,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	private void addChangeSelectedButtonListener() {
 		changeSelectedButton.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
 					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
@@ -460,7 +462,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 
 			TreePath[] selectedPaths = null;
 
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				if (currentView == FLAT_VIEW) {
 					selectedPaths = restoreSelectedPathsFromTableToTree();
 					tree.setSelectionPaths(selectedPaths);
@@ -695,7 +698,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		// Compare files on enter.
 		filesTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
 		filesTable.getActionMap().put("Enter", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+      public void actionPerformed(ActionEvent e) {
 				int row = filesTable.convertRowIndexToModel(filesTable.getSelectedRow());
 				if (row != -1) {
 					openFileInCompareEditor(row);
@@ -724,7 +728,8 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 		diff.showDiff();
 	}
 
-	public void stateChanged(ChangeEvent changeEvent) {
+	@Override
+  public void stateChanged(ChangeEvent changeEvent) {
 		toggleSelectedButton();
 
 	}
