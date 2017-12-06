@@ -28,6 +28,13 @@ public class ChangeEvent {
 	 */
 	private List<FileStatus> filesToBeUpdated;
 
+	/**
+	 * Object representing a state change.
+	 * 
+	 * @param newState           The new state.
+	 * @param oldState           The old state.
+	 * @param filesToBeUpdated   The files that are changing their state.
+	 */
 	public ChangeEvent(FileState newState, FileState oldState, List<FileStatus> filesToBeUpdated) {
 		super();
 		this.newState = newState;
