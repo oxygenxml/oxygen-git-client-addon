@@ -213,7 +213,10 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		observer.stateChanged(changeEvent);
 	}
 
-	public List<FileStatus> getUnstagedFiles() {
+	/**
+	 * @return The files in the model.
+	 */
+	public List<FileStatus> getFilesStatuses() {
 		return filesStatus;
 	}
 
