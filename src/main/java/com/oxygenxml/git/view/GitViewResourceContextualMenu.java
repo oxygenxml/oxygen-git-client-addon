@@ -78,263 +78,266 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	 * @param files      The selected files.
 	 * @param staging    <code>true</code> if the files are staged.
 	 */
+	// TODO: create the actions only once
 	public void createContextualMenu(final List<FileStatus> files, final boolean staging) {
-		final FileStatus fileStatus = files.get(0);
+	  if (!files.isEmpty()) {
+	    final FileStatus fileStatus = files.get(0);
 
-		// "Open in compare editor" action
-		AbstractAction showDiffAction = new AbstractAction(
-		    translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        new DiffPresenter(fileStatus, stageController, translator).showDiff();
-      }
-    };
+	    // "Open in compare editor" action
+	    AbstractAction showDiffAction = new AbstractAction(
+	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE)) {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        new DiffPresenter(fileStatus, stageController, translator).showDiff();
+	      }
+	    };
 
-		// "Open" action
-    AbstractAction openAction = new AbstractAction(
-        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        DiffPresenter diff = new DiffPresenter(fileStatus, stageController, translator);
-        for (FileStatus file : files) {
-          diff.setFile(file);
-          try {
-            diff.openFile();
-          } catch (Exception e1) {
-            logger.error(e1, e1);
-          }
-        }
-      }
-    };
+	    // "Open" action
+	    AbstractAction openAction = new AbstractAction(
+	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN)) {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        DiffPresenter diff = new DiffPresenter(fileStatus, stageController, translator);
+	        for (FileStatus file : files) {
+	          diff.setFile(file);
+	          try {
+	            diff.openFile();
+	          } catch (Exception e1) {
+	            logger.error(e1, e1);
+	          }
+	        }
+	      }
+	    };
 
-		// "Stage"/"Unstage" actions
-    AbstractAction stageUnstageAction = new AbstractAction(
-        staging ? translator.getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE)
-            : translator.getTranslation(Tags.CONTEXTUAL_MENU_STAGE)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        FileState oldState = FileState.UNSTAGED;
-        FileState newState = FileState.STAGED;
-        if (staging) {
-          oldState = FileState.STAGED;
-          newState = FileState.UNSTAGED;
-        }
-        stageController.stateChanged(new ChangeEvent(newState, oldState, files));
-      }
-    };
+	    // "Stage"/"Unstage" actions
+	    AbstractAction stageUnstageAction = new AbstractAction(
+	        staging ? translator.getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE)
+	            : translator.getTranslation(Tags.CONTEXTUAL_MENU_STAGE)) {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        FileState oldState = FileState.UNSTAGED;
+	        FileState newState = FileState.STAGED;
+	        if (staging) {
+	          oldState = FileState.STAGED;
+	          newState = FileState.UNSTAGED;
+	        }
+	        stageController.stateChanged(new ChangeEvent(newState, oldState, files));
+	      }
+	    };
 
-		// Resolve using "mine"
-    AbstractAction resolveUsingMineAction = new AbstractAction(
-        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        stageController.stateChanged(
-            new ChangeEvent(FileState.DISCARD, FileState.UNSTAGED, files));
-      }
-    };
+	    // Resolve using "mine"
+	    AbstractAction resolveUsingMineAction = new AbstractAction(
+	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE)) {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        stageController.stateChanged(
+	            new ChangeEvent(FileState.DISCARD, FileState.UNSTAGED, files));
+	      }
+	    };
 
-		// Resolve using "theirs"
-    AbstractAction resolveUsingTheirsAction = new AbstractAction(
-        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        for (FileStatus file : files) {
-          gitAccess.remove(file);
-          gitAccess.updateWithRemoteFile(file.getFileLocation());
-        }
-        stageController.stateChanged(
-            new ChangeEvent(FileState.STAGED, FileState.UNSTAGED, files));
-      }
-    };
+	    // Resolve using "theirs"
+	    AbstractAction resolveUsingTheirsAction = new AbstractAction(
+	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS)) {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        for (FileStatus file : files) {
+	          gitAccess.remove(file);
+	          gitAccess.updateWithRemoteFile(file.getFileLocation());
+	        }
+	        stageController.stateChanged(
+	            new ChangeEvent(FileState.STAGED, FileState.UNSTAGED, files));
+	      }
+	    };
 
-		// "Mark resolved" action
-    AbstractAction markResolvedAction = new AbstractAction(
-        translator.getTranslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        stageController.stateChanged(
-            new ChangeEvent(FileState.STAGED, FileState.UNSTAGED, files));
-      }
-    };
+	    // "Mark resolved" action
+	    AbstractAction markResolvedAction = new AbstractAction(
+	        translator.getTranslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED)) {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        stageController.stateChanged(
+	            new ChangeEvent(FileState.STAGED, FileState.UNSTAGED, files));
+	      }
+	    };
 
-		// "Restart Merge" action
-    AbstractAction restartMergeAction = new AbstractAction(
-        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        gitAccess.restartMerge();
-        stageController.stateChanged(
-            new ChangeEvent(FileState.UNDEFINED, FileState.UNDEFINED,
-                Collections.<FileStatus> emptyList()));
-      }
-    };
-
-		// Resolve Conflict
-		JMenu resolveConflict = new JMenu();
-		resolveConflict.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
-		resolveConflict.add(showDiffAction);
-		resolveConflict.addSeparator();
-		resolveConflict.add(resolveUsingMineAction);
-		resolveConflict.add(resolveUsingTheirsAction);
-		resolveConflict.add(markResolvedAction);
-		resolveConflict.addSeparator();
-		resolveConflict.add(restartMergeAction);
-
-		// "Discard" action 
-		AbstractAction discardAction = new AbstractAction(
-		    translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String[] options = new String[] { "   Yes   ", "   No   " };
-        int[] optonsId = new int[] { 0, 1 };
-        int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-            translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD),
-            translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
-        if (response == 0) {
-          for (FileStatus file : files) {
-            if (file.getChangeType() == GitChangeType.ADD
-                || file.getChangeType() == GitChangeType.UNTRACKED) {
-              try {
-                FileUtils.forceDelete(
-                    new File(OptionsManager.getInstance().getSelectedRepository() + '/' + file.getFileLocation()));
-              } catch (IOException e1) {
-                logger.error(e1, e1);
+	    // "Restart Merge" action
+	    AbstractAction restartMergeAction = new AbstractAction(
+	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE)) {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        gitAccess.restartMerge();
+	        stageController.stateChanged(
+	            new ChangeEvent(FileState.UNDEFINED, FileState.UNDEFINED,
+	                Collections.<FileStatus> emptyList()));
+	      }
+	    };
+	    
+	    // "Discard" action 
+      AbstractAction discardAction = new AbstractAction(
+          translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          String[] options = new String[] { "   Yes   ", "   No   " };
+          int[] optonsId = new int[] { 0, 1 };
+          int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+              translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD),
+              translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
+          if (response == 0) {
+            for (FileStatus file : files) {
+              if (file.getChangeType() == GitChangeType.ADD
+                  || file.getChangeType() == GitChangeType.UNTRACKED) {
+                try {
+                  FileUtils.forceDelete(
+                      new File(OptionsManager.getInstance().getSelectedRepository() + '/' + file.getFileLocation()));
+                } catch (IOException e1) {
+                  logger.error(e1, e1);
+                }
+              } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
+                gitAccess.discardSubmodule();
               }
-            } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
-              gitAccess.discardSubmodule();
             }
+
+            stageController.stateChanged(
+                new ChangeEvent(FileState.DISCARD, FileState.UNDEFINED, files));
           }
-
-          stageController.stateChanged(
-              new ChangeEvent(FileState.DISCARD, FileState.UNDEFINED, files));
         }
-      }
-    };
-    
-		this.add(showDiffAction);
-		this.add(openAction);
-		this.add(stageUnstageAction);
-		this.add(resolveConflict);
-		this.add(discardAction);
+      };
 
-		boolean sameChangeType = true;
-		boolean containsConflicts = false;
-		boolean containsSubmodule = false;
-		boolean containsDelete = false;
-		if (files.size() > 1) {
-			GitChangeType gitChangeType = files.get(0).getChangeType();
-			for (FileStatus file : files) {
-				if (gitChangeType != file.getChangeType()) {
-					sameChangeType = false;
-				}
-				if (GitChangeType.CONFLICT == file.getChangeType()) {
-					containsConflicts = true;
-				}
-				if (GitChangeType.SUBMODULE == file.getChangeType()) {
-					containsSubmodule = true;
-				}
-				if (GitChangeType.MISSING == file.getChangeType()
-				    || GitChangeType.REMOVED == file.getChangeType()) {
-					containsDelete = true;
-				}
-			}
-			showDiffAction.setEnabled(false);
-		} else {
-		  showDiffAction.setEnabled(true);
-		}
-		// the active actions for all selected files that contain each type
-		if (files.size() > 1 && containsConflicts && !sameChangeType) {
-			
-		  showDiffAction.setEnabled(false);
-		  openAction.setEnabled(true);
-		  stageUnstageAction.setEnabled(false);
-			resolveConflict.setEnabled(true);
-			resolveUsingMineAction.setEnabled(false);
-			resolveUsingTheirsAction.setEnabled(false);
-			restartMergeAction.setEnabled(true);
-			markResolvedAction.setEnabled(false);
-			discardAction.setEnabled(false);
-			if(containsSubmodule || containsDelete){
-			  openAction.setEnabled(false);
-			}
-		} else {
-			// the active actions for all the selected files that are added
-			if (fileStatus.getChangeType() == GitChangeType.ADD && sameChangeType) {
-			  showDiffAction.setEnabled(false);
-			  openAction.setEnabled(true);
-			  stageUnstageAction.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				resolveUsingMineAction.setEnabled(false);
-				resolveUsingTheirsAction.setEnabled(false);
-				restartMergeAction.setEnabled(true);
-				markResolvedAction.setEnabled(false);
-				discardAction.setEnabled(true);
-				// the active actions for all the selected files that are deleted
-			} else if (fileStatus.getChangeType() == GitChangeType.MISSING && sameChangeType) {
-			  showDiffAction.setEnabled(false);
-			  openAction.setEnabled(false);
-			  stageUnstageAction.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				resolveUsingMineAction.setEnabled(false);
-				resolveUsingTheirsAction.setEnabled(false);
-				restartMergeAction.setEnabled(true);
-				markResolvedAction.setEnabled(false);
-				discardAction.setEnabled(true);
-				// the active actions for all the selected files that are modified
-			} else if (fileStatus.getChangeType() == GitChangeType.MODIFIED && sameChangeType) {
-			  openAction.setEnabled(true);
-			  stageUnstageAction.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				resolveUsingMineAction.setEnabled(false);
-				resolveUsingTheirsAction.setEnabled(false);
-				restartMergeAction.setEnabled(true);
-				markResolvedAction.setEnabled(false);
-				discardAction.setEnabled(true);
-				// the active actions for all the selected files that are submodules
-			} else if (fileStatus.getChangeType() == GitChangeType.SUBMODULE && sameChangeType) {
-			  openAction.setEnabled(false);
-			  stageUnstageAction.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				resolveUsingMineAction.setEnabled(false);
-				resolveUsingTheirsAction.setEnabled(false);
-				restartMergeAction.setEnabled(true);
-				markResolvedAction.setEnabled(false);
-				discardAction.setEnabled(true);
-				// the active actions for all the selected files that are in conflict
-			} else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
-			  openAction.setEnabled(true);
-			  stageUnstageAction.setEnabled(false);
-				resolveConflict.setEnabled(true);
-				resolveUsingMineAction.setEnabled(true);
-				resolveUsingTheirsAction.setEnabled(true);
-				restartMergeAction.setEnabled(true);
-				markResolvedAction.setEnabled(true);
-				discardAction.setEnabled(false);
-				// the active actions for all the selected files that contain each type
-				// without conflict
-			} else {
-			  showDiffAction.setEnabled(false);
-			  openAction.setEnabled(true);
-				resolveConflict.setEnabled(false);
-				resolveUsingMineAction.setEnabled(false);
-				resolveUsingTheirsAction.setEnabled(false);
-				restartMergeAction.setEnabled(false);
-				markResolvedAction.setEnabled(false);
-				discardAction.setEnabled(true);
-				if(containsSubmodule || containsDelete){
-				  openAction.setEnabled(false);
-				}
-				
-			}
-		}
-		try {
-			if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-					|| gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
-				resolveConflict.setEnabled(true);
-				restartMergeAction.setEnabled(true);
-			}
-		} catch (NoRepositorySelected e1) {
-			resolveConflict.setEnabled(false);
-		}
+	    // Resolve Conflict
+	    JMenu resolveConflict = new JMenu();
+	    resolveConflict.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
+	    resolveConflict.add(showDiffAction);
+	    resolveConflict.addSeparator();
+	    resolveConflict.add(resolveUsingMineAction);
+	    resolveConflict.add(resolveUsingTheirsAction);
+	    resolveConflict.add(markResolvedAction);
+	    resolveConflict.addSeparator();
+	    resolveConflict.add(restartMergeAction);
+
+	    this.add(showDiffAction);
+	    this.add(openAction);
+	    this.add(stageUnstageAction);
+	    this.add(resolveConflict);
+	    this.add(discardAction);
+
+	    boolean sameChangeType = true;
+	    boolean containsConflicts = false;
+	    boolean containsSubmodule = false;
+	    boolean containsDelete = false;
+	    if (files.size() > 1) {
+	      GitChangeType gitChangeType = files.get(0).getChangeType();
+	      for (FileStatus file : files) {
+	        if (gitChangeType != file.getChangeType()) {
+	          sameChangeType = false;
+	        }
+	        if (GitChangeType.CONFLICT == file.getChangeType()) {
+	          containsConflicts = true;
+	        }
+	        if (GitChangeType.SUBMODULE == file.getChangeType()) {
+	          containsSubmodule = true;
+	        }
+	        if (GitChangeType.MISSING == file.getChangeType()
+	            || GitChangeType.REMOVED == file.getChangeType()) {
+	          containsDelete = true;
+	        }
+	      }
+	      showDiffAction.setEnabled(false);
+	    } else {
+	      showDiffAction.setEnabled(true);
+	    }
+	    if (files.size() > 1 && containsConflicts && !sameChangeType) {
+	      // the active actions for all selected files that contain each type
+	      showDiffAction.setEnabled(false);
+	      openAction.setEnabled(true);
+	      stageUnstageAction.setEnabled(false);
+	      resolveConflict.setEnabled(true);
+	      resolveUsingMineAction.setEnabled(false);
+	      resolveUsingTheirsAction.setEnabled(false);
+	      restartMergeAction.setEnabled(true);
+	      markResolvedAction.setEnabled(false);
+	      discardAction.setEnabled(false);
+	      if(containsSubmodule || containsDelete){
+	        openAction.setEnabled(false);
+	      }
+	    } else {
+	      if (fileStatus.getChangeType() == GitChangeType.ADD && sameChangeType) {
+	        // the active actions for all the selected files that are added
+	        showDiffAction.setEnabled(false);
+	        openAction.setEnabled(true);
+	        stageUnstageAction.setEnabled(true);
+	        resolveConflict.setEnabled(false);
+	        resolveUsingMineAction.setEnabled(false);
+	        resolveUsingTheirsAction.setEnabled(false);
+	        restartMergeAction.setEnabled(true);
+	        markResolvedAction.setEnabled(false);
+	        discardAction.setEnabled(true);
+	      } else if (fileStatus.getChangeType() == GitChangeType.MISSING && sameChangeType) {
+	        // the active actions for all the selected files that are deleted
+	        showDiffAction.setEnabled(false);
+	        openAction.setEnabled(false);
+	        stageUnstageAction.setEnabled(true);
+	        resolveConflict.setEnabled(false);
+	        resolveUsingMineAction.setEnabled(false);
+	        resolveUsingTheirsAction.setEnabled(false);
+	        restartMergeAction.setEnabled(true);
+	        markResolvedAction.setEnabled(false);
+	        discardAction.setEnabled(true);
+	      } else if (fileStatus.getChangeType() == GitChangeType.MODIFIED && sameChangeType) {
+	        // the active actions for all the selected files that are modified
+	        openAction.setEnabled(true);
+	        stageUnstageAction.setEnabled(true);
+	        resolveConflict.setEnabled(false);
+	        resolveUsingMineAction.setEnabled(false);
+	        resolveUsingTheirsAction.setEnabled(false);
+	        restartMergeAction.setEnabled(true);
+	        markResolvedAction.setEnabled(false);
+	        discardAction.setEnabled(true);
+	      } else if (fileStatus.getChangeType() == GitChangeType.SUBMODULE && sameChangeType) {
+	        // the active actions for all the selected files that are submodules
+	        openAction.setEnabled(false);
+	        stageUnstageAction.setEnabled(true);
+	        resolveConflict.setEnabled(false);
+	        resolveUsingMineAction.setEnabled(false);
+	        resolveUsingTheirsAction.setEnabled(false);
+	        restartMergeAction.setEnabled(true);
+	        markResolvedAction.setEnabled(false);
+	        discardAction.setEnabled(true);
+	      } else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
+	        // the active actions for all the selected files that are in conflict
+	        openAction.setEnabled(true);
+	        stageUnstageAction.setEnabled(false);
+	        resolveConflict.setEnabled(true);
+	        resolveUsingMineAction.setEnabled(true);
+	        resolveUsingTheirsAction.setEnabled(true);
+	        restartMergeAction.setEnabled(true);
+	        markResolvedAction.setEnabled(true);
+	        discardAction.setEnabled(false);
+	      } else {
+	        // the active actions for all the selected files that contain each type
+	        // without conflict
+	        showDiffAction.setEnabled(false);
+	        resolveConflict.setEnabled(false);
+	        resolveUsingMineAction.setEnabled(false);
+	        resolveUsingTheirsAction.setEnabled(false);
+	        restartMergeAction.setEnabled(false);
+	        markResolvedAction.setEnabled(false);
+	        discardAction.setEnabled(true);
+	        if(containsSubmodule || containsDelete) {
+	          openAction.setEnabled(false);
+	        } else {
+	          openAction.setEnabled(true);
+	        }
+
+	      }
+	    }
+	    try {
+	      if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
+	          || gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
+	        resolveConflict.setEnabled(true);
+	        restartMergeAction.setEnabled(true);
+	      }
+	    } catch (NoRepositorySelected e1) {
+	      resolveConflict.setEnabled(false);
+	    }
+	  }
 	}
 }
