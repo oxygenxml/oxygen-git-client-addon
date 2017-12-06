@@ -29,17 +29,17 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
- * Custom contextual menu that appears when you right click on the slected files
- * in the flat or tree view
+ * Contextual menu shown for staged/unstaged resources from the Git view 
+ * (either tree or list rendering).
  * 
  * @author Beniamin Savu
- *
+ * 
  */
-public class CustomContextualMenu extends JPopupMenu {
+public class GitViewResourceContextualMenu extends JPopupMenu {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(CustomContextualMenu.class);
+  private static Logger logger = Logger.getLogger(GitViewResourceContextualMenu.class);
 
 	/**
 	 * The translator used for the contextual menu names
@@ -56,22 +56,29 @@ public class CustomContextualMenu extends JPopupMenu {
 	 */
 	private GitAccess gitAccess;
 
-	public CustomContextualMenu(Translator translator, StageController stageController, GitAccess gitAccess) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param translator       Translator for i18n.
+	 * @param stageController  Staging controller.
+	 * @param gitAccess        Access to the Git API.
+	 */
+	public GitViewResourceContextualMenu(
+	    Translator translator,
+	    StageController stageController,
+	    GitAccess gitAccess) {
 		this.translator = translator;
 		this.stageController = stageController;
 		this.gitAccess = gitAccess;
-
 	}
 
 	/**
-	 * Adds the contextual menu items and creates for each of them an action. The
-	 * action will apply for the given files. Some action may be different
-	 * depending on the given staging state
+	 * Creates the contextual menu for the selected files.
 	 * 
-	 * @param files
-	 * @param staging
+	 * @param files      The selected files.
+	 * @param staging    <code>true</code> if the files are staged.
 	 */
-	public void createContextualMenuFor(final List<FileStatus> files, final boolean staging) {
+	public void createContextualMenu(final List<FileStatus> files, final boolean staging) {
 		final FileStatus fileStatus = files.get(0);
 
 		// "Open in compare editor" action
