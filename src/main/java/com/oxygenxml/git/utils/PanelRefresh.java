@@ -35,6 +35,9 @@ import ro.sync.util.editorvars.EditorVariables;
  * TODO This should be used more rarely, as we implement and use the GitEventListener
  *      It makes sense for this object to just check things that are not covered by the notifications events,
  *      like external changes to the working copy. 
+ *      
+ * TODO Make it a coalescing. If multiple refresh event come in 500ms we only do it once.
+ * TODO Use just one thread.
  * 
  * 
  * 
@@ -287,7 +290,7 @@ public class PanelRefresh implements GitRefreshSupport {
 				} else {
 					model = (StagingResourcesTableModel) stagingPanel.getStagedChangesPanel().getFilesTable().getModel();
 				}
-				List<FileStatus> filesInModel = model.getUnstagedFiles();
+				List<FileStatus> filesInModel = model.getFilesStatuses();
 				try {
 					files = get();
 					for (FileStatus fileStatus : filesInModel) {
