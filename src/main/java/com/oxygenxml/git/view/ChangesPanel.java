@@ -81,7 +81,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	/**
 	 * Contextual menu when you right click on a file. Works for both views
 	 */
-	private CustomContextualMenu contextualMenu;
+	private GitViewResourceContextualMenu contextualMenu;
 
 	/**
 	 * Button that stages/unstages all files
@@ -139,7 +139,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 	private Translator translator;
 
 	public ChangesPanel(GitAccess gitAccess, StageController observer, boolean forStaging, Translator translator) {
-		this.contextualMenu = new CustomContextualMenu(translator, observer, gitAccess);
+		this.contextualMenu = new GitViewResourceContextualMenu(translator, observer, gitAccess);
 		this.forStaging = forStaging;
 		this.stageController = observer;
 		this.stageController.addTree(this.tree);
@@ -390,7 +390,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 						}
 						List<String> selectedPaths = TreeFormatter.getStringComonAncestor(tree);
 						contextualMenu.removeAll();
-						contextualMenu.createContextualMenuFor(model.getFilesByPaths(selectedPaths), forStaging);
+						contextualMenu.createContextualMenu(model.getFilesByPaths(selectedPaths), forStaging);
 						contextualMenu.show(tree, e.getX(), e.getY());
 					}
 				} else {
@@ -684,7 +684,7 @@ public class ChangesPanel extends JPanel implements Observer<ChangeEvent> {
 								FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
 								files.add(file);
 							}
-							contextualMenu.createContextualMenuFor(files, forStaging);
+							contextualMenu.createContextualMenu(files, forStaging);
 							contextualMenu.show(filesTable, e.getX(), e.getY());
 						} else {
 							filesTable.clearSelection();
