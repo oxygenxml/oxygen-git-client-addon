@@ -73,17 +73,16 @@ public class StagingResourcesTableModel extends AbstractTableModel {
   };
 
 	/**
-	 * <code>true</code> if this model presents un-staged resources that will be
-	 * staged. <code>false</code> if this model presents staged resources that
-	 * will be unstaged.
+	 * <code>true</code> if this model presents the resources from the index.
+	 * <code>false</code> if it presents the modified resources that can be put in the index.
 	 */
-	private boolean forStaging;
+	private boolean inIndex;
 
   private StageController stageController;
 
-	public StagingResourcesTableModel(StageController stageController, boolean forStaging) {
+	public StagingResourcesTableModel(StageController stageController, boolean inIndex) {
 		this.stageController = stageController;
-    this.forStaging = forStaging;
+    this.inIndex = inIndex;
 	}
 
 	public int getRowCount() {
@@ -134,7 +133,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		    temp = filesStatus.get(rowIndex).getFileLocation();
 		    break;
 		  case BUTTON_COLUMN:
-		    if (forStaging) {
+		    if (inIndex) {
 		      temp = "Unstage";
 		    } else {
 		      temp = "Stage";
@@ -174,7 +173,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		FileStatus fileStatus = filesStatus.remove(convertedRow);
 
     GitCommand action = GitCommand.UNSTAGE;
-    if (!forStaging) {
+    if (!inIndex) {
       action = GitCommand.STAGE;
     }
     
@@ -215,7 +214,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		}
 		
 		GitCommand action = GitCommand.UNSTAGE;
-		if (!forStaging) {
+		if (!inIndex) {
 		  action = GitCommand.STAGE;
 		}
 		
@@ -229,28 +228,28 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 */
 	public void stateChanged(ChangeEvent changeEvent) {
 	  if (logger.isDebugEnabled()) {
-	    logger.debug("Change event " + (forStaging ? " un-staged " : "staged  ") + changeEvent);
+	    logger.debug("Change event " + (inIndex ? " un-staged " : "staged  ") + changeEvent);
 	  }
 	  
-	  logger.info("Change event " + (forStaging ? " un-staged " : "staged  ") + changeEvent);
+	  logger.info("Change event " + (inIndex ? " un-staged " : "staged  ") + changeEvent);
 	  
 		List<FileStatus> newStates = 
-		    forStaging ? 
+		    inIndex ? 
 		        GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) :
-		GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
+		        GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
     List<FileStatus> oldStates = changeEvent.getOldStates();
     
     logger.info("Old states " + oldStates);
     logger.info("New states " + newStates);
     
     if (changeEvent.getCommand() == GitCommand.STAGE) {
-			if (forStaging) {
+			if (inIndex) {
 				insertRows(newStates);
 			} else {
 				deleteRows(oldStates);
 			}
 		} else if (changeEvent.getCommand() == GitCommand.UNSTAGE) {
-			if (forStaging) {
+			if (inIndex) {
 				deleteRows(oldStates);
 			} else {
 			  // Things were taken out of the INDEX. 
@@ -259,13 +258,18 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 				insertRows(newStates);
 			}
 		} else if (changeEvent.getCommand() == GitCommand.COMMIT) {
-			if (forStaging) {
+			if (inIndex) {
 			  // Committed files are removed from the INDEX.
 				filesStatus.clear();
 			}
 		} else if (changeEvent.getCommand() == GitCommand.DISCARD) {
 		  // Discarded files are no longer presented by neither model.
 			deleteRows(oldStates);
+		} else if (changeEvent.getCommand() == GitCommand.MERGE_RESTART) {
+		  filesStatus.clear();
+		  List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFile() :
+		    GitAccess.getInstance().getUnstagedFiles();
+		  insertRows(fileStatuses);
 		}
 		
 		removeDuplicates();
@@ -300,11 +304,6 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 *          - the files to be inserted in the model
 	 */
 	private void insertRows(List<FileStatus> fileToBeUpdated) {
-		for (FileStatus fileStatus : fileToBeUpdated) {
-			if (fileStatus.getChangeType() == GitChangeType.CONFLICT) {
-				fileStatus.setChangeType(GitChangeType.MODIFIED);
-			}
-		}
 		filesStatus.addAll(fileToBeUpdated);
 
 	}

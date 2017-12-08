@@ -1,110 +1,23 @@
 package com.oxygenxml.git.view;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.File;
 import java.util.Arrays;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JTable;
 
 import org.eclipse.jgit.lib.Repository;
 
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitTestBase;
-import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.StageController;
 
 /**
- * Tests the flat table view.
- * 
- * @author alex_jitianu
- */
-public class FlatViewTest extends GitTestBase {
-  /**
-   * Access to the Git API.
-   */
-  private final GitAccess gitAccess = GitAccess.getInstance();
-  
-  private JFrame mainFrame = null;
-
-  private StagingPanel stagingPanel;
-  
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-
-    
-    // Create the unstaged resources panel
-    PanelRefresh refreshSupport = new PanelRefresh(Translator.getInstance());
-    stagingPanel = new StagingPanel(
-        Translator.getInstance(),
-        refreshSupport,
-        new StageController(gitAccess)) {
-      @Override
-      public PushPullController createPushPullController(GitAccess gitAccess) {
-        return new PushPullController(gitAccess, Translator.getInstance()) {
-          @Override
-          protected void showPullConflicts(PullResponse response) {
-            // Nothing to do.
-          }
-        };
-      }
-    };
-    // TODO: Maybe move this init on the StagingPanel constructor. 
-    // Careful not to create a cycle.
-    refreshSupport.setPanel(stagingPanel);
-    
-    mainFrame = new JFrame("Git test");
-    mainFrame.getContentPane().add(stagingPanel, BorderLayout.CENTER);
-    mainFrame.setSize(new Dimension(400, 600));
-    mainFrame.setVisible(true);
-  }
-  
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    
-    mainFrame.setVisible(false);
-  }
-
-  /**
-   * Pull through the push/pull controller.
-   * 
-   * @throws Exception If it fails.
-   */
-  private void pull() throws Exception {
-    Thread execute = stagingPanel.getPushPullController().execute(Command.PULL);
-    execute.join();
-  }
-  
-  /**
-   * Dumps the model as a string.
-   * 
-   * @param model Model to dump.
-   * 
-   * @return The model.
-   */
-  private String getTreeModelDump(StagingResourcesTableModel model) {
-    StringBuilder sb = new StringBuilder();
-    for (FileStatus fileStatus : model.getFilesStatuses()) {
-      if (sb.length() > 0) {
-        sb.append("\n");
-      }
-      sb.append(fileStatus.getChangeType()).append(", ").append(fileStatus.getFileLocation());
-    }
-    return sb.toString();
-  }
-  
+* Test cases related to the actions performed
+* on the staged/unstaged resources seen in the flat view.
+*/
+public class FlatViewTest extends FlatViewTestBase {
   /**
    * Invokes the change button on the view.
    * 
@@ -153,27 +66,6 @@ public class FlatViewTest extends GitTestBase {
     }
   }
   
-  /**
-   * Dumps the un-staged and stage models and asserts their content.
-   * 
-   * @param unstagedExpected Expected for the un-staged model.
-   * @param indexExpected Expected for the staged model.
-   */
-  private void assertModels(String unstagedExpected, String indexExpected) {
-    ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
-    JTable filesTable = unstagedChangesPanel.getFilesTable();
-    StagingResourcesTableModel uModel = (StagingResourcesTableModel) filesTable.getModel();
-    
-    // The newly created file is present in the model.
-    assertEquals("Unstaged area", unstagedExpected, getTreeModelDump(uModel));
-    
-    ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
-    JTable stFilesTable = stagedChangesPanel.getFilesTable();
-    StagingResourcesTableModel stModel = (StagingResourcesTableModel) stFilesTable.getModel();
-    // The newly created file is present in the model.
-    assertEquals("Index area", indexExpected, getTreeModelDump(stModel));
-  }
-
   /**
    * Stage and UnStage a newly created file.
    *  
@@ -281,88 +173,6 @@ public class FlatViewTest extends GitTestBase {
         "", 
         "");    
   }
-
-  /**
-   * Resolve a conflict using mine copy.
-   * 
-   * Resolve using mine
-   * Resolve using theirs
-   * Restart merge
-   * 
-   * @throws Exception If it fails.
-   */
-  public void testConflict_resolveUsingMine() throws Exception {
-    /**
-     * Local repository location.
-     */
-    String localTestRepository = "target/test-resources/testConflict_resolveUsingMine_local";
-    
-    /**
-     * Remote repository location.
-     */
-    String remoteTestRepository = "target/test-resources/testConflict_resolveUsingMine_remote";
-    
-    
-    String localTestRepository2 = localTestRepository + "2";
-    File file2 = new File(localTestRepository2 + "/test.txt");
-
-    // Create repositories
-    Repository remoteRepo = createRepository(remoteTestRepository);
-    Repository localRepo1 = createRepository(localTestRepository);
-    
-    Repository localRepo2 = createRepository(localTestRepository2);
-    // Bind the local repository to the remote one.
-    bindLocalToRemote(localRepo2 , remoteRepo);
-    
-    // Bind the local repository to the remote one.
-    bindLocalToRemote(localRepo1 , remoteRepo);
-
-    // Create a new file and push it.
-    new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    setFileContent(file, "content");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("First version.");
-    PushResponse push = gitAccess.push("", "");
-    assertEquals("status: OK message null", push.toString());
-    
-    gitAccess.setRepository(localTestRepository2);
-    // Commit a new version of the file.
-    setFileContent(file2, "modified from 2nd local repo");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("modified from 2nd local repo");
-    gitAccess.push("", "");
-    
-    // Change back the repo.
-    gitAccess.setRepository(localTestRepository);
-    
-    // Change the file. Create a conflict.
-    setFileContent(file, "modified from 1st repo");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    gitAccess.commit("modified from 2nd local repo");
-    
-    // Get the remote. The conflict appears.
-    pull();
-
-    assertModels("CONFLICT, test.txt", "");
-    
-    stagingPanel.getStageController().doGitCommand(
-        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommand.RESOLVE_USING_MINE);
-    
-    assertModels("", "");
-
-    // Check the commit.
-    CommitPanel commitPanel = stagingPanel.getCommitPanel();
-    assertEquals("Conclude_Merge_Message", commitPanel.getCommitMessage().getText());
-    
-    commitPanel.getCommitButton().doClick();
-    flushAWT();
-    
-    assertEquals("", "");
-  }
-
 
   /**
    * Stage and UnStage a newly created file.
@@ -537,5 +347,162 @@ public class FlatViewTest extends GitTestBase {
     assertModels("UNTRACKED, test.txt","");
   }
   
- 
+  /**
+   * Resolve a conflict using my copy.
+   * 
+   * @throws Exception If it fails.
+   */
+  public void testConflict_resolveUsingMine() throws Exception {
+    /**
+     * Local repository location.
+     */
+    String localTestRepository = "target/test-resources/testConflict_resolveUsingMine_local";
+    
+    /**
+     * Remote repository location.
+     */
+    String remoteTestRepository = "target/test-resources/testConflict_resolveUsingMine_remote";
+    
+    
+    String localTestRepository2 = localTestRepository + "2";
+    File file2 = new File(localTestRepository2 + "/test.txt");
+
+    // Create repositories
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo1 = createRepository(localTestRepository);
+    
+    Repository localRepo2 = createRepository(localTestRepository2);
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo2 , remoteRepo);
+    
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo1 , remoteRepo);
+
+    // Create a new file and push it.
+    new File(localTestRepository).mkdirs();
+    File file = new File(localTestRepository + "/test.txt");
+    file.createNewFile();
+    setFileContent(file, "content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("First version.");
+    PushResponse push = gitAccess.push("", "");
+    assertEquals("status: OK message null", push.toString());
+    
+    gitAccess.setRepository(localTestRepository2);
+    // Commit a new version of the file.
+    setFileContent(file2, "modified from 2nd local repo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("modified from 2nd local repo");
+    gitAccess.push("", "");
+    
+    // Change back the repo.
+    gitAccess.setRepository(localTestRepository);
+    
+    // Change the file. Create a conflict.
+    setFileContent(file, "modified from 1st repo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("modified from 2nd local repo");
+    
+    // Get the remote. The conflict appears.
+    pull();
+
+    assertModels("CONFLICT, test.txt", "");
+    
+    stagingPanel.getStageController().doGitCommand(
+        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
+        GitCommand.RESOLVE_USING_MINE);
+    
+    assertModels("", "");
+
+    // Check the commit.
+    CommitPanel commitPanel = stagingPanel.getCommitPanel();
+    assertEquals("Conclude_Merge_Message", commitPanel.getCommitMessage().getText());
+    
+    commitPanel.getCommitButton().doClick();
+    flushAWT();
+    
+    assertEquals("", "");
+  }
+  
+  /**
+   * Resolve a conflict using "their" copy, restart merge, and resolve again.
+   * 
+   * @throws Exception If it fails.
+   */
+  public void testConflict_resolveUsingTheirsAndRestartMerge() throws Exception {
+    /**
+     * Local repository location.
+     */
+    String localTestRepository = "target/test-resources/testConflict_resolveUsingTheirs_local";
+    
+    /**
+     * Remote repository location.
+     */
+    String remoteTestRepository = "target/test-resources/testConflict_resolveUsingTheirs_remote";
+    
+    
+    String localTestRepository2 = localTestRepository + "2";
+    File file2 = new File(localTestRepository2 + "/test.txt");
+
+    // Create repositories
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo1 = createRepository(localTestRepository);
+    
+    Repository localRepo2 = createRepository(localTestRepository2);
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo2 , remoteRepo);
+    
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo1 , remoteRepo);
+
+    // Create a new file and push it.
+    new File(localTestRepository).mkdirs();
+    File file = new File(localTestRepository + "/test.txt");
+    file.createNewFile();
+    setFileContent(file, "content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("First version.");
+    PushResponse push = gitAccess.push("", "");
+    assertEquals("status: OK message null", push.toString());
+    
+    gitAccess.setRepository(localTestRepository2);
+    // Commit a new version of the file.
+    setFileContent(file2, "modified from 2nd local repo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("modified from 2nd local repo");
+    gitAccess.push("", "");
+    
+    // Change back the repo.
+    gitAccess.setRepository(localTestRepository);
+    
+    // Change the file. Create a conflict.
+    setFileContent(file, "modified from 1st repo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("modified from 2nd local repo");
+    
+    // Get the remote. The conflict appears.
+    pull();
+    assertModels("CONFLICT, test.txt", "");
+    
+    // Resolve using theirs
+    stagingPanel.getStageController().doGitCommand(
+        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
+        GitCommand.RESOLVE_USING_THEIRS);
+    assertModels("", "CHANGED, test.txt");
+    
+    // Restart merge
+    gitAccess.restartMerge();
+    flushAWT();
+    assertModels("CONFLICT, test.txt", "");
+    
+    // Resolve again using theirs
+    stagingPanel.getStageController().doGitCommand(
+        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
+        GitCommand.RESOLVE_USING_THEIRS);
+    assertModels("", "CHANGED, test.txt");
+    
+    // Commit
+    gitAccess.commit("commit");
+    assertModels("", "");
+  }
 }
