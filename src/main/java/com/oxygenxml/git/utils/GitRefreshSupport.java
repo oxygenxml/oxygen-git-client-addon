@@ -1,7 +1,5 @@
 package com.oxygenxml.git.utils;
 
-import com.oxygenxml.git.view.StagingPanel;
-
 /**
  * Synchronizes the staging view with the GIT repository state. 
  *  
@@ -10,6 +8,4 @@ import com.oxygenxml.git.view.StagingPanel;
 public interface GitRefreshSupport {
 	
 	public void call();
-
-	public void setPanel(StagingPanel stagingPanel);
 }

@@ -1,5 +1,7 @@
 package com.oxygenxml.git.service;
 
+import com.oxygenxml.git.view.event.ChangeEvent;
+
 /**
  * Receives notifications when the state of the Git repository changes.
  * 
@@ -9,9 +11,7 @@ package com.oxygenxml.git.service;
  * TODO We need a number of notifications:
  * 
  * 2. push/pull
- * 3. commit
  * 4. branchChanged
- * 5. fileStateChanged (the stuff from the observer)
  */
 public interface GitEventListener {
   /**
@@ -20,4 +20,11 @@ public interface GitEventListener {
    * @param repository The path of the new repository.
    */
   void repositoryChanged();
+  
+  /**
+   * The state of some files changed because of a specific command.
+   * 
+   * @param changeEvent Details about the change.
+   */
+  void stateChanged(ChangeEvent changeEvent);
 }

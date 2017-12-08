@@ -49,7 +49,7 @@ public class GitAccessRemoveTest {
 
 		List<FileStatus> files = gitAccess.getUnstagedFiles();
 		gitAccess.addAll(files);
-		gitAccess.removeAll(files);
+		gitAccess.resetAll(files);
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
 		expected.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
@@ -66,7 +66,7 @@ public class GitAccessRemoveTest {
 		}
 		List<FileStatus> files = gitAccess.getUnstagedFiles();
 		gitAccess.addAll(files);
-		gitAccess.removeAll(files);
+		gitAccess.resetAll(files);
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
 		expected.add(new FileStatus(GitChangeType.UNTRACKED, "add.txt"));
@@ -80,7 +80,7 @@ public class GitAccessRemoveTest {
 
 		List<FileStatus> files = gitAccess.getUnstagedFiles();
 		gitAccess.addAll(files);
-		gitAccess.removeAll(files);
+		gitAccess.resetAll(files);
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
 		List<FileStatus> expected = new ArrayList<FileStatus>();
 		expected.add(new FileStatus(GitChangeType.MISSING, "test.txt"));

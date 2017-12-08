@@ -48,16 +48,12 @@ public class FileStatus {
 
 	@Override
 	public String toString() {
-		return "UnstageFile [changeType=" + changeType + ", fileLocation=" + fileLocation + "]";
+		return "(changeType=" + changeType + ", fileLocation=" + fileLocation + ")";
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((changeType == null) ? 0 : changeType.hashCode());
-		result = prime * result + ((fileLocation == null) ? 0 : fileLocation.hashCode());
-		return result;
+		return fileLocation.hashCode();
 	}
 
 	@Override
@@ -65,8 +61,11 @@ public class FileStatus {
 	  boolean equals = false;
 	  if (obj instanceof FileStatus) {
 	    FileStatus other = (FileStatus) obj;
-	    equals = other.changeType == changeType 
-	        && Equaler.verifyEquals(other.fileLocation, fileLocation);
+	    equals = 
+	        (other.changeType == GitChangeType.UNKNOWN 
+	        || changeType == GitChangeType.UNKNOWN 
+	        || other.changeType == changeType) 
+          &&  Equaler.verifyEquals(other.fileLocation, fileLocation);
 	  }
 	  return equals;
 	}

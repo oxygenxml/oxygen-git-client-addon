@@ -1,8 +1,12 @@
 package com.oxygenxml.git.view.event;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 
 /**
  * Event created when a file is changing its state, from staged to unstaged or
@@ -14,44 +18,47 @@ import com.oxygenxml.git.service.entities.FileStatus;
 public class ChangeEvent {
 	
 	/**
-	 * The new state in which the files will be
+	 * The command that generated the change.
 	 */
-	private FileState newState;
-	
-	/**
-	 * The old state in which the files were
-	 */
-	private FileState oldState;
+	private GitCommand command;
 	
 	/**
 	 * The files that are changing their state
 	 */
-	private List<FileStatus> filesToBeUpdated;
+	private Collection<String> changedFiles;
 
 	/**
 	 * Object representing a state change.
 	 * 
-	 * @param newState           The new state.
-	 * @param oldState           The old state.
+	 * @param command            Command that generated the change.
 	 * @param filesToBeUpdated   The files that are changing their state.
 	 */
-	public ChangeEvent(FileState newState, FileState oldState, List<FileStatus> filesToBeUpdated) {
-		super();
-		this.newState = newState;
-		this.oldState = oldState;
-		this.filesToBeUpdated = filesToBeUpdated;
+	public ChangeEvent(GitCommand command, Collection<String> affectedFiles) {
+		this.command = command;
+		this.changedFiles = affectedFiles;
 	}
 
-	public FileState getNewState() {
-		return newState;
+	public GitCommand getCommand() {
+		return command;
 	}
 
-	public FileState getOldState() {
-		return oldState;
+	public List<FileStatus> getOldStates() {
+	  List<FileStatus> fss = new LinkedList<FileStatus>();
+	  for (Iterator<String> iterator = changedFiles.iterator(); iterator.hasNext();) {
+      String path = iterator.next();
+      fss.add(new FileStatus(GitChangeType.UNKNOWN, path));
+    }
+	  
+	  return fss;
+  }
+	
+	@Override
+	public String toString() {
+	  return " new state: " + command + " files: " + changedFiles;
 	}
-
-	public List<FileStatus> getFilesToBeUpdated() {
-		return filesToBeUpdated;
-	}
+	
+	public Collection<String> getChangedFiles() {
+    return changedFiles;
+  }
 
 }

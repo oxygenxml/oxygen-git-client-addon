@@ -9,13 +9,11 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.FileState;
-import com.oxygenxml.git.view.event.Subject;
+import com.oxygenxml.git.view.event.GitCommand;
 
 /**
  * Custom tree model
@@ -23,7 +21,7 @@ import com.oxygenxml.git.view.event.Subject;
  * @author Beniamin Savu
  *
  */
-public class StagingResourcesTreeModel extends DefaultTreeModel implements Subject<ChangeEvent>, Observer<ChangeEvent> {
+public class StagingResourcesTreeModel extends DefaultTreeModel {
 
 	/**
 	 * The files in the model
@@ -38,10 +36,11 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	private boolean forStaging;
 
 	/**
-	 * Observer to delegate the event
+	 * 
+	 * @param root
+	 * @param forStaging
+	 * @param filesStatus
 	 */
-	private Observer<ChangeEvent> observer;
-
 	public StagingResourcesTreeModel(TreeNode root, boolean forStaging, List<FileStatus> filesStatus) {
 		super(root);
 		this.forStaging = forStaging;
@@ -49,26 +48,31 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
-		List<FileStatus> fileToBeUpdated = changeEvent.getFilesToBeUpdated();
-		if (changeEvent.getNewState() == FileState.STAGED) {
+		List<FileStatus> oldStates = changeEvent.getOldStates();
+    List<FileStatus> newStates = 
+        forStaging ? 
+            GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) :
+            GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles()); 
+    
+    if (changeEvent.getCommand() == GitCommand.STAGE) {
 			if (forStaging) {
-				insertNodes(fileToBeUpdated);
+				insertNodes(newStates);
 			} else {
-				deleteNodes(fileToBeUpdated);
+				deleteNodes(oldStates);
 			}
-		} else if (changeEvent.getNewState() == FileState.UNSTAGED) {
+		} else if (changeEvent.getCommand() == GitCommand.UNSTAGE) {
 			if (forStaging) {
-				deleteNodes(fileToBeUpdated);
+				deleteNodes(oldStates);
 			} else {
-				insertNodes(fileToBeUpdated);
+				insertNodes(newStates);
 			}
-		} else if (changeEvent.getNewState() == FileState.COMMITED) {
+		} else if (changeEvent.getCommand() == GitCommand.COMMIT) {
 			if (forStaging) {
 				deleteNodes(filesStatus);
 				filesStatus.clear();
 			}
-		} else if (changeEvent.getNewState() == FileState.DISCARD) {
-			deleteNodes(fileToBeUpdated);
+		} else if (changeEvent.getCommand() == GitCommand.DISCARD) {
+			deleteNodes(oldStates);
 		}
 
 		fireTreeStructureChanged(this, null, null, null);
@@ -111,56 +115,6 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 		}
 		filesStatus.removeAll(fileToBeUpdated);
 		sortTree();
-	}
-
-	public void addObserver(Observer<ChangeEvent> observer) {
-		if (observer == null)
-			throw new NullPointerException("Null Observer");
-
-		this.observer = observer;
-	}
-
-	public void removeObserver(Observer<ChangeEvent> obj) {
-		observer = null;
-	}
-
-	/**
-	 * Change the given files stage state from unstaged to staged or from staged
-	 * to unstaged
-	 * 
-	 * @param selectedFiles
-	 *          - the files to change their stage state
-	 */
-	public void switchFilesStageState(List<String> selectedFiles) {
-
-		List<FileStatus> filesToRemove = new ArrayList<FileStatus>();
-		for (String string : selectedFiles) {
-			for (FileStatus fileStatus : filesStatus) {
-				if (fileStatus.getFileLocation().contains(string) && fileStatus.getChangeType() != GitChangeType.CONFLICT) {
-					filesToRemove.add(new FileStatus(fileStatus));
-				}
-			}
-		}
-
-		FileState newSTate = FileState.UNSTAGED;
-		FileState oldState = FileState.STAGED;
-		if (!forStaging) {
-			newSTate = FileState.STAGED;
-			oldState = FileState.UNSTAGED;
-		}
-
-		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, filesToRemove);
-		notifyObservers(changeEvent);
-	}
-
-	/**
-	 * Delegate the given event to the observer
-	 * 
-	 * @param changeEvent
-	 *          - the event to delegate
-	 */
-	private void notifyObservers(ChangeEvent changeEvent) {
-		observer.stateChanged(changeEvent);
 	}
 
 	/**
@@ -217,7 +171,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel implements Subje
 	 */
 	private void sortTree() {
 		GitTreeNode root = (GitTreeNode) getRoot();
-		Enumeration e = root.depthFirstEnumeration();
+		Enumeration<?> e = root.depthFirstEnumeration();
 		while (e.hasMoreElements()) {
 			GitTreeNode node = (GitTreeNode) e.nextElement();
 			if (!node.isLeaf()) {

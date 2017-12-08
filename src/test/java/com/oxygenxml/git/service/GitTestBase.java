@@ -11,25 +11,37 @@ import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 
+import junit.extensions.jfcunit.JFCTestCase;
 import junit.framework.TestCase;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
+import ro.sync.exml.workspace.api.listeners.WSEditorListener;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * A collection of handy methods. 
  * 
  * @author alex_jitianu
  */
-public class GitTestBase extends TestCase {
+public class GitTestBase extends JFCTestCase {
   /**
    * Logger for logging.
    */
@@ -38,6 +50,11 @@ public class GitTestBase extends TestCase {
    * The loaded reposiltories.
    */
   private List<Repository> loadedRepos = new ArrayList<Repository>();
+  
+  /**
+   * The loaded reposiltories.
+   */
+  private List<Repository> remoteRepos = new ArrayList<Repository>();
 
   /**
    * Installs the GIT protocol that we use to identify certain file versions.
@@ -73,12 +90,17 @@ public class GitTestBase extends TestCase {
    */
   protected void bindLocalToRemote(Repository localRepository, Repository remoteRepo)
       throws NoRepositorySelected, URISyntaxException, MalformedURLException, IOException {
+    
     StoredConfig config = localRepository.getConfig();
     RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
     URIish uri = new URIish(remoteRepo.getDirectory().toURI().toURL());
     remoteConfig.addURI(uri);
+    RefSpec spec = new RefSpec("+refs/heads/*:refs/remotes/origin/*");
+    remoteConfig.addFetchRefSpec(spec);
     remoteConfig.update(config);
     config.save();
+    
+    remoteRepos.add(remoteRepo);
   }
 
   /**
@@ -90,11 +112,32 @@ public class GitTestBase extends TestCase {
    * @throws Exception If it fails.
    */
   protected void setFileContent(File file, String content) throws Exception {
-    OutputStream os = new FileOutputStream(file);
+    for (Iterator<WSEditorChangeListener> iterator = editorChangeListeners.iterator(); iterator.hasNext();) {
+      WSEditorChangeListener wsEditorChangeListener = iterator.next();
+      wsEditorChangeListener.editorOpened(file.toURI().toURL());
+    }
+    
+    OutputStream os = null;
     try {
+      os = new FileOutputStream(file);
       os.write(content.getBytes("UTF-8"));
     } finally {
-      os.close();
+      if (os != null) {
+        try {
+          os.close();
+          
+          for (Iterator<WSEditorListener> iterator = editorListeners.iterator(); iterator.hasNext();) {
+            WSEditorListener wsEditorChangeListener = iterator.next();
+            wsEditorChangeListener.editorSaved(WSEditorListener.SAVE_OPERATION);
+          }
+          
+        } catch (IOException ex) {}
+      }
+      
+      for (Iterator<WSEditorChangeListener> iterator = editorChangeListeners.iterator(); iterator.hasNext();) {
+        WSEditorChangeListener wsEditorChangeListener = iterator.next();
+        wsEditorChangeListener.editorOpened(file.toURI().toURL());
+      }
     }
   }
 
@@ -130,6 +173,13 @@ public class GitTestBase extends TestCase {
    * @throws NoRepositorySelected
    */
   protected Repository createRepository(String repositoryPath) throws NoRepositorySelected {
+    try {
+      File dirToDelete = new File(repositoryPath, ".git");
+      FileUtils.deleteDirectory(dirToDelete);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
     GitAccess gitAccess = GitAccess.getInstance();
     // Create the remote repository.
     gitAccess.createNewRepository(repositoryPath);
@@ -140,31 +190,102 @@ public class GitTestBase extends TestCase {
     return remoteRepo;
   }
   
+  private List<WSEditorChangeListener> editorChangeListeners = new ArrayList<WSEditorChangeListener>();
+  private List<WSEditorListener> editorListeners = new ArrayList<WSEditorListener>();
+  
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     
+    StandalonePluginWorkspace mock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(mock);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        WSEditorChangeListener listener = (WSEditorChangeListener) invocation.getArguments()[0];
+        editorChangeListeners.add(listener);
+        return null;
+      }
+    }).when(mock).addEditorChangeListener(
+        (WSEditorChangeListener) Mockito.any(), 
+        Mockito.anyInt());
+    
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        WSEditorChangeListener listener = (WSEditorChangeListener) invocation.getArguments()[0];
+        editorChangeListeners.remove(listener);
+        return null;
+      }
+    }).when(mock).removeEditorChangeListener(
+        (WSEditorChangeListener) Mockito.any(), 
+        Mockito.anyInt());
+    
+    Mockito.when(mock.getEditorAccess((URL) Mockito.any(), Mockito.anyInt())).then(new Answer<WSEditor>() {
+      @Override
+      public WSEditor answer(InvocationOnMock invocation) throws Throwable {
+        WSEditor wsEditorMock = createWSEditorMock();
+        
+        return wsEditorMock;
+      }
+
+    });
+    
+    Mockito.when(mock.getUtilAccess()).thenReturn(Mockito.mock(UtilAccess.class));
+    
     installGitProtocol();
+  }
+  
+  private WSEditor createWSEditorMock() {
+    WSEditor wsEditorMock = Mockito.mock(WSEditor.class);
+    
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        WSEditorListener l = (WSEditorListener) invocation.getArguments()[0];
+        editorListeners.add(l);
+        return null;
+      }
+    }).when(wsEditorMock).addEditorListener((WSEditorListener) Mockito.any());
+    
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        WSEditorListener l = (WSEditorListener) invocation.getArguments()[0];
+        editorListeners.remove(l);
+        return null;
+      }
+    }).when(wsEditorMock).removeEditorListener((WSEditorListener) Mockito.any());
+
+    
+    return wsEditorMock;
   }
   
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
     
+    // Wait for JGit threads to finish up work.
+    flushAWT();
+    
     for (Repository repository : loadedRepos) {
-      String absolutePath = repository.getWorkTree().getAbsolutePath();
-      
       // Close the repository.
       repository.close();
-      
+      Thread.sleep(400);
+    }
+    
+    for (Repository repository : loadedRepos) {
       // Remove the file system resources.
       try {
+        String absolutePath = repository.getWorkTree().getAbsolutePath();
         File dirToDelete = new File(absolutePath);
         FileUtils.deleteDirectory(dirToDelete);
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
+    
+    GitAccess.getInstance().cleanUp();
   }
 
 }

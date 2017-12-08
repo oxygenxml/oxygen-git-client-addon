@@ -29,12 +29,13 @@ import org.eclipse.jgit.lib.Repository;
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitEventListener;
+import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
+import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
@@ -99,17 +100,25 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
 	 * Main panel refresh
 	 */
-	private GitRefreshSupport refresh;
+	private GitRefreshSupport refreshSupport;
 
 	private StageController stageController;
+	/**
+	 * Manages Push/Pull actions.
+	 */
+  private PushPullController pushPullController;
 
-  public StagingPanel(Translator translator, GitRefreshSupport refresh, StageController stageController) {
+  public StagingPanel(
+      Translator translator, 
+      GitRefreshSupport refresh, 
+      StageController stageController) {
 		this.translator = translator;
-		this.refresh = refresh;
+		this.refreshSupport = refresh;
 		this.stageController = stageController;
+		
 		createGUI();
 		
-		GitAccess.getInstance().addGitListener(new GitEventListener() {
+		GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void repositoryChanged() {
         GitAccess gitAccess = GitAccess.getInstance();
@@ -139,8 +148,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
             } else {
               getCommitPanel().getCommitButton().setEnabled(false);
             }
-            getUnstagedChangesPanel().getStageSelectedButton().setEnabled(false);
-            getStagedChangesPanel().getStageSelectedButton().setEnabled(false);
+            getUnstagedChangesPanel().getChangeSelectedButton().setEnabled(false);
+            getStagedChangesPanel().getChangeSelectedButton().setEnabled(false);
           }
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
@@ -153,6 +162,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           getUnstagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
           getStagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
         }
+      }
+      
+      @Override
+      public void stateChanged(ChangeEvent changeEvent) {
+        commitPanel.stateChanged(changeEvent);
       }
     });
 	}
@@ -181,14 +195,14 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.setLayout(new GridBagLayout());
 
 		final GitAccess gitAccess = GitAccess.getInstance();
-		PushPullController pushPullController = new PushPullController(gitAccess, translator);
+		pushPullController = createPushPullController(gitAccess);
 
 		// Creates the panels objects that will be in the staging panel
 		unstagedChangesPanel = new ChangesPanel(gitAccess, stageController, false, translator);
 		stagedChangesPanel = new ChangesPanel(gitAccess, stageController, true, translator);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
-		commitPanel = new CommitPanel(gitAccess, stageController, translator);
-		toolbarPanel = new ToolbarPanel(pushPullController, translator, refresh);
+		commitPanel = new CommitPanel(gitAccess, translator);
+		toolbarPanel = new ToolbarPanel(pushPullController, translator, refreshSupport);
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
@@ -258,7 +272,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				gained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
-					refresh.call();
+					refreshSupport.call();
 				}
 
 				inTheView = true;
@@ -284,6 +298,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		});
 	}
 
+  public PushPullController createPushPullController(final GitAccess gitAccess) {
+    return new PushPullController(gitAccess, translator);
+  }
+
 	/**
 	 * Adds the refresh call on the F5 keyboard button
 	 */
@@ -292,7 +310,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 			@Override
       public void actionPerformed(ActionEvent e) {
-				refresh.call();
+				refreshSupport.call();
 			}
 		};
 		this.getActionMap().put("Refresh", action);
@@ -379,7 +397,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			commitPanel.setStatus(pushPullEvent.getMessage());
 			commitPanel.clearCommitMessage();
 			workingCopySelectionPanel.getBrowseButton().setEnabled(false);
-			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(false);
+			workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
 			toolbarPanel.getPushButton().setEnabled(false);
 			toolbarPanel.getPullButton().setEnabled(false);
 			toolbarPanel.getCloneRepositoryButton().setEnabled(false);
@@ -391,7 +409,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				commitPanel.getCommitButton().setEnabled(true);
 			}
 			workingCopySelectionPanel.getBrowseButton().setEnabled(true);
-			workingCopySelectionPanel.getWorkingCopySelector().setEnabled(true);
+			workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
 			toolbarPanel.getPushButton().setEnabled(true);
 			toolbarPanel.getPullButton().setEnabled(true);
 			toolbarPanel.getCloneRepositoryButton().setEnabled(true);
@@ -424,5 +442,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
    */
   public StageController getStageController() {
     return stageController;
+  }
+  
+  /**
+   * @return The controller for Push/Pull events.
+   */
+  public PushPullController getPushPullController() {
+    return pushPullController;
   }
 }

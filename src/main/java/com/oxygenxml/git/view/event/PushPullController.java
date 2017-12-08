@@ -73,8 +73,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * 
 	 * @param command
 	 *          - The command to execute
+	 * @return The thread that executes the command.
 	 */
-	public void execute(final Command command) {
+	public Thread execute(final Command command) {
 		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		String message = "";
 		if (command == Command.PUSH) {
@@ -88,7 +89,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
 		notifyObservers(pushPullEvent);
 		
-		new Thread(new Runnable() {
+		Thread th = new Thread(new Runnable() {
 
 			public void run() {
 
@@ -192,8 +193,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 				if (PullStatus.OK == response.getStatus()) {
 					message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
 				} else if (PullStatus.CONFLICTS == response.getStatus()) {
-					new PullWithConflictsDialog(translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
-					    response.getConflictingFiles(), translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
+					showPullConflicts(response);
 				} else if (PullStatus.UP_TO_DATE == response.getStatus()) {
 					message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
 				} else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
@@ -228,7 +228,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 				}
 				return message;
 			}
-		}).start();
+		});
+		
+		th.start();
+		
+		return th;
 	}
 
 	/**
@@ -252,5 +256,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 	public void removeObserver(Observer<PushPullEvent> obj) {
 		observer = null;
 	}
+	
+	protected void showPullConflicts(PullResponse response) {
+    new PullWithConflictsDialog(translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
+        response.getConflictingFiles(), translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
+  }
 
 }

@@ -10,14 +10,15 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.FileState;
-import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.Subject;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.util.URLUtil;
 
@@ -27,8 +28,12 @@ import ro.sync.util.URLUtil;
  * @author Beniamin Savu
  *
  */
-public class StagingResourcesTableModel extends AbstractTableModel
-		implements Subject<ChangeEvent>, Observer<ChangeEvent> {
+public class StagingResourcesTableModel extends AbstractTableModel {
+  
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(StagingResourcesTableModel.class);
 
 	/**
 	 * Constant for the index representing the file status
@@ -50,11 +55,6 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	 */
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
-	/**
-	 * Observer to delegate the event
-	 */
-	private Observer<ChangeEvent> observer;
-	
 	/**
 	 * Compares file statuses.
 	 */
@@ -79,8 +79,11 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	 */
 	private boolean forStaging;
 
-	public StagingResourcesTableModel(boolean forStaging) {
-		this.forStaging = forStaging;
+  private StageController stageController;
+
+	public StagingResourcesTableModel(StageController stageController, boolean forStaging) {
+		this.stageController = stageController;
+    this.forStaging = forStaging;
 	}
 
 	public int getRowCount() {
@@ -95,7 +98,7 @@ public class StagingResourcesTableModel extends AbstractTableModel
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-	  Class clazz = null;
+	  Class<?> clazz = null;
 	  switch (columnIndex) {
 	    case FILE_STATUS_COLUMN:
 	      clazz = ChangeType.class;
@@ -170,15 +173,12 @@ public class StagingResourcesTableModel extends AbstractTableModel
 		// Update the table model. remove the file.
 		FileStatus fileStatus = filesStatus.remove(convertedRow);
 
-		FileState newSTate = FileState.UNSTAGED;
-		FileState oldState = FileState.STAGED;
-		if (!forStaging) {
-			newSTate = FileState.STAGED;
-			oldState = FileState.UNSTAGED;
-		}
-
-		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, Arrays.asList(fileStatus));
-		notifyObservers(changeEvent);
+    GitCommand action = GitCommand.UNSTAGE;
+    if (!forStaging) {
+      action = GitCommand.STAGE;
+    }
+    
+    stageController.doGitCommand(Arrays.asList(fileStatus), action);
 	}
 
 	/**
@@ -190,27 +190,6 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	 */
 	public FileStatus getUnstageFile(int convertedRow) {
 		return filesStatus.get(convertedRow);
-	}
-
-	public void addObserver(Observer<ChangeEvent> observer) {
-		if (observer == null)
-			throw new NullPointerException("Null Observer");
-
-		this.observer = observer;
-	}
-
-	public void removeObserver(Observer<ChangeEvent> obj) {
-		observer = null;
-	}
-
-	/**
-	 * Delegate the given event to the observer
-	 * 
-	 * @param changeEvent
-	 *          - the event to delegate
-	 */
-	public void notifyObservers(ChangeEvent changeEvent) {
-		observer.stateChanged(changeEvent);
 	}
 
 	/**
@@ -228,45 +207,67 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	 *          - the files to change their stage state
 	 */
 	public void switchAllFilesStageState() {
-
-		FileState newSTate = FileState.UNSTAGED;
-		FileState oldState = FileState.STAGED;
-		if (!forStaging) {
-			newSTate = FileState.STAGED;
-			oldState = FileState.UNSTAGED;
-		}
-
 		List<FileStatus> filesToBeUpdated = new ArrayList<FileStatus>();
 		for (FileStatus fileStatus : filesStatus) {
 			if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {
 				filesToBeUpdated.add(fileStatus);
 			}
 		}
-		ChangeEvent changeEvent = new ChangeEvent(newSTate, oldState, filesToBeUpdated);
-		notifyObservers(changeEvent);
+		
+		GitCommand action = GitCommand.UNSTAGE;
+		if (!forStaging) {
+		  action = GitCommand.STAGE;
+		}
+		
+    stageController.doGitCommand(filesToBeUpdated, action);
 	}
 
+	/**
+	 * Some resources changed.
+	 * 
+	 * @param changeEvent Change information.
+	 */
 	public void stateChanged(ChangeEvent changeEvent) {
-		List<FileStatus> fileToBeUpdated = changeEvent.getFilesToBeUpdated();
-		if (changeEvent.getNewState() == FileState.STAGED) {
+	  if (logger.isDebugEnabled()) {
+	    logger.debug("Change event " + (forStaging ? " un-staged " : "staged  ") + changeEvent);
+	  }
+	  
+	  logger.info("Change event " + (forStaging ? " un-staged " : "staged  ") + changeEvent);
+	  
+		List<FileStatus> newStates = 
+		    forStaging ? 
+		        GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) :
+		GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
+    List<FileStatus> oldStates = changeEvent.getOldStates();
+    
+    logger.info("Old states " + oldStates);
+    logger.info("New states " + newStates);
+    
+    if (changeEvent.getCommand() == GitCommand.STAGE) {
 			if (forStaging) {
-				insertRows(fileToBeUpdated);
+				insertRows(newStates);
 			} else {
-				deleteRows(fileToBeUpdated);
+				deleteRows(oldStates);
 			}
-		} else if (changeEvent.getNewState() == FileState.UNSTAGED) {
+		} else if (changeEvent.getCommand() == GitCommand.UNSTAGE) {
 			if (forStaging) {
-				deleteRows(fileToBeUpdated);
+				deleteRows(oldStates);
 			} else {
-				insertRows(fileToBeUpdated);
+			  // Things were taken out of the INDEX. 
+			  // The same resource might be present in the UnStaged and INDEX. Remove old states.
+			  deleteRows(oldStates);
+				insertRows(newStates);
 			}
-		} else if (changeEvent.getNewState() == FileState.COMMITED) {
+		} else if (changeEvent.getCommand() == GitCommand.COMMIT) {
 			if (forStaging) {
+			  // Committed files are removed from the INDEX.
 				filesStatus.clear();
 			}
-		} else if (changeEvent.getNewState() == FileState.DISCARD) {
-			deleteRows(fileToBeUpdated);
+		} else if (changeEvent.getCommand() == GitCommand.DISCARD) {
+		  // Discarded files are no longer presented by neither model.
+			deleteRows(oldStates);
 		}
+		
 		removeDuplicates();
 		Collections.sort(filesStatus, fileStatusComparator);
 		fireTableDataChanged();
@@ -311,6 +312,10 @@ public class StagingResourcesTableModel extends AbstractTableModel
 	public String getFileLocation(int convertedRow) {
 		return filesStatus.get(convertedRow).getFileLocation();
 	}
+	
+	public FileStatus getFileStatus(int convertedRow) {
+    return filesStatus.get(convertedRow);
+  }
 
 	/**
 	 * Gets all the file indexes from the given folder

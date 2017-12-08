@@ -9,9 +9,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +28,7 @@ import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
@@ -81,8 +86,9 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
+import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.GitCommand;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -106,7 +112,7 @@ public class GitAccess {
 	/**
 	 * Translation support.
 	 */
-	private Translator translator = new TranslatorExtensionImpl();
+	private Translator translator = Translator.getInstance();
 	/**
 	 * Receive notifications when things change.
 	 */
@@ -264,6 +270,15 @@ public class GitAccess {
     }
   }
 	
+  /**
+   * Notify the some files changed their state.
+   */
+  private void fireFileStateChanged(ChangeEvent changeEvent) {
+    for (GitEventListener gitEventListener : listeners) {
+      gitEventListener.stateChanged(changeEvent);
+    }
+  }
+	
 	public void addGitListener(GitEventListener l) {
 	  listeners.add(l);
   }
@@ -314,17 +329,36 @@ public class GitAccess {
 		fireRepositoryChanged();
 	}
 
+	 /**
+   * Makes a diff between the files from the last commit and the files from the
+   * working directory. If there are diffs, they will be saved and returned.
+   * 
+   * @return - A list with all unstaged files
+   */
+  public List<FileStatus> getUnstagedFiles() {
+    return getUnstagedFiles(Collections.<String>emptyList());
+  }
+
 	/**
 	 * Makes a diff between the files from the last commit and the files from the
 	 * working directory. If there are diffs, they will be saved and returned.
 	 * 
-	 * @return - A list with all unstaged files
+	 * @param paths A subset of interest.
+	 * 
+	 * @return - A list with the files from the given set htat are un-staged as well as 
+	 * their states.
 	 */
-	public List<FileStatus> getUnstagedFiles() {
+	public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 		if (git != null) {
 			try {
-				Status status = git.status().call();
+				StatusCommand statusCmd = git.status();
+				for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
+          String path = iterator.next();
+          statusCmd.addPath(path);
+        }
+				
+        Status status = statusCmd.call();
 				Set<String> submodules = getSubmodules();
 				for (String string : submodules) {
 					SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
@@ -436,7 +470,11 @@ public class GitAccess {
 	 */
 	public void commit(String message) {
 		try {
+		  List<FileStatus> files = getStagedFile();
+		  
 			git.commit().setMessage(message).call();
+			
+      fireFileStateChanged(new ChangeEvent(GitCommand.COMMIT, getPaths(files)));
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -444,7 +482,17 @@ public class GitAccess {
 		}
 	}
 
-	/**
+	private Collection<String> getPaths(List<FileStatus> files) {
+	  List<String> paths = new LinkedList<String>();
+	  for (Iterator<FileStatus> iterator = files.iterator(); iterator.hasNext();) {
+      FileStatus fileStatus = iterator.next();
+      paths.add(fileStatus.getFileLocation());
+    }
+	  
+	  return paths;
+  }
+
+  /**
 	 * Frees resources associated with the git instance.
 	 */
 	public void close() {
@@ -647,6 +695,8 @@ public class GitAccess {
 			} else {
 				git.add().addFilepattern(file.getFileLocation()).call();
 			}
+			
+			fireFileStateChanged(new ChangeEvent(GitCommand.STAGE, getPaths(Arrays.asList(file))));
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -670,23 +720,40 @@ public class GitAccess {
 					git.add().addFilepattern(file.getFileLocation()).call();
 				}
 			}
+			
+			fireFileStateChanged(new ChangeEvent(GitCommand.STAGE, getPaths(files)));
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
 		}
 	}
+	
+	 /**
+   * Gets all the files from the index.
+   * 
+   * @return - a set containing all the staged file names
+   */
+  public List<FileStatus> getStagedFile() {
+    return getStagedFile(Collections.<String>emptyList());
+  }
 
 	/**
-	 * Well show all the files that have been added(also called staged) and are
-	 * ready to be commited.
+	 * Checks which files from the given subset are in the Index and returns their state.
 	 * 
-	 * @return - a set containing all the staged file names
+	 * @param paths The files of interest.
+	 * 
+	 * @return - a set containing the subset of files present in the INDEX.
 	 */
-	public List<FileStatus> getStagedFile() {
+	public List<FileStatus> getStagedFile(Collection<String> paths) {
 		if (git != null) {
 			try {
-				Status status = git.status().call();
+				StatusCommand statusCmd = git.status();
+				for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
+          String path = iterator.next();
+          statusCmd.addPath(path);
+        }
+        Status status = statusCmd.call();
 				List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
 
 				Set<String> submodules = getSubmodules();
@@ -751,16 +818,19 @@ public class GitAccess {
 	}
 
 	/**
-	 * Removes a single file from the staging area.
+	 * Reset a single file from the staging area.
 	 * 
 	 * @param fileName
 	 *          - the file to be removed from the staging area
 	 */
-	public void remove(FileStatus file) {
+	public void reset(FileStatus file) {
 		try {
 			ResetCommand reset = git.reset();
 			reset.addPath(file.getFileLocation());
 			reset.call();
+			
+			fireFileStateChanged(new ChangeEvent(GitCommand.UNSTAGE, getPaths(Arrays.asList(file))));
+			
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -769,12 +839,12 @@ public class GitAccess {
 	}
 
 	/**
-	 * Removes all the specified files from the staging area.
+	 * Reset all the specified files from the staging area.
 	 * 
 	 * @param fileNames
 	 *          - the list of file to be removed
 	 */
-	public void removeAll(List<FileStatus> files) {
+	public void resetAll(List<FileStatus> files) {
 		try {
 			if (!files.isEmpty()) {
 				ResetCommand reset = git.reset();
@@ -784,6 +854,9 @@ public class GitAccess {
 				}
 				reset.call();
 			}
+			
+	     fireFileStateChanged(new ChangeEvent(GitCommand.UNSTAGE, getPaths(files)));
+	     
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -958,12 +1031,14 @@ public class GitAccess {
 	 * Restores the last commit file content to the local file at the given path.
 	 * Both files must have the same path, otherwise it will not work.
 	 * 
-	 * @param fileLocation
+	 * @param file
 	 *          - the path to the file you want to restore
 	 */
-	public void restoreLastCommitFile(String fileLocation) {
+	public void restoreLastCommitFile(FileStatus file) {
 		try {
-			git.checkout().addPath(fileLocation).call();
+			git.checkout().addPath(file.getFileLocation()).call();
+			
+			fireFileStateChanged(new ChangeEvent(GitCommand.DISCARD, getPaths(Arrays.asList(file))));
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -1138,12 +1213,13 @@ public class GitAccess {
 	 * repository has conflicts
 	 */
 	public void restartMerge() {
-
 		try {
 			AnyObjectId commitToMerge = git.getRepository().resolve("MERGE_HEAD");
 			git.clean().call();
 			git.reset().setMode(ResetType.HARD).call();
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
+			
+			fireFileStateChanged(new ChangeEvent(GitCommand.MERGE_RESTART, Collections.<String> emptyList()));
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("End fetch");
@@ -1312,4 +1388,11 @@ public class GitAccess {
 		}
 		return null;
 	}
+	
+	/**
+	 * Clean up.
+	 */
+	public void cleanUp() {
+	  listeners.clear();
+  }
 }

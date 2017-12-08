@@ -14,29 +14,17 @@ import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.GitTreeNode;
 
 /**
- * Delegates the changing event to all other observers and makes sure that all
- * the observers are properly updated
  * 
+ * Executes Git commands. A higher level wrapper over the GitAccess.
+ *  
  * @author Beniamin Savu
- *
  */
-public class StageController implements Observer<ChangeEvent> {
+public class StageController {
 
 	/**
 	 * the git API
 	 */
 	private GitAccess gitAccess;
-
-	/**
-	 * List of all subjects registered
-	 */
-	private List<Subject<ChangeEvent>> subjects = new ArrayList<Subject<ChangeEvent>>();
-
-	/**
-	 * List of all observers registered being controlled by this controller(the
-	 * controller will delegate some work to them)
-	 */
-	private List<Observer<ChangeEvent>> observers = new ArrayList<Observer<ChangeEvent>>();
 
 	private List<JTree> trees = new ArrayList<JTree>();
 
@@ -45,90 +33,52 @@ public class StageController implements Observer<ChangeEvent> {
 	}
 
 	/**
-	 * Register the given subject to this controller and adds this controller as
-	 * the observer to it. A subject can only be observed for changes
+	 * Executes the given action on the given files.
 	 * 
-	 * @param subject
-	 *          - the subject to be observed by this controller
+	 * @param filesStatus The files to be processed. 
+	 * @param action
 	 */
-	public void registerSubject(Subject<ChangeEvent> subject) {
-		subjects.add(subject);
+	public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
+	  // TODO This is something that the tree can do for itself.
+	   List<Enumeration<TreePath>> treePathsToRestore = new ArrayList<Enumeration<TreePath>>();
+	    for (JTree tree : trees) {
+	      GitTreeNode rootNode = (GitTreeNode) tree.getModel().getRoot();
+	      TreePath rootTreePath = new TreePath(rootNode);
+	      treePathsToRestore.add(tree.getExpandedDescendants(rootTreePath));
+	    }
 
-		subject.addObserver(this);
+	  if (action == GitCommand.STAGE) {
+	    gitAccess.addAll(filesStatus);
+	  } else if (action == GitCommand.UNSTAGE) {
+	    // Remove from index.
+	    gitAccess.resetAll(filesStatus);
+	  } else if (action == GitCommand.DISCARD || action == GitCommand.RESOLVE_USING_MINE) {
+      gitAccess.resetAll(filesStatus);
+      for (FileStatus file : filesStatus) {
+        // TODO Test the DISCARD on SUBMODULES.
+        if (file.getChangeType() != GitChangeType.SUBMODULE) {
+          gitAccess.restoreLastCommitFile(file);
+        }
+      }
+      
+      if (action == GitCommand.RESOLVE_USING_MINE) {
+        gitAccess.addAll(filesStatus);
+      }
+      
+	  } else if (action == GitCommand.RESOLVE_USING_THEIRS) {
+	    for (FileStatus file : filesStatus) {
+        gitAccess.reset(file);
+        gitAccess.updateWithRemoteFile(file.getFileLocation());
+      }
+	    
+	    gitAccess.addAll(filesStatus);
+	  }
+	    
+	  for (int i = 0; i < trees.size(); i++) {
+	    TreeFormatter.restoreLastExpandedPaths(treePathsToRestore.get(i), trees.get(i));
+	  }
 	}
-
-	/**
-	 * Register the given observer to this controller
-	 * 
-	 * @param observer
-	 *          - the observer to be registered
-	 */
-	public void registerObserver(Observer<ChangeEvent> observer) {
-		observers.add(observer);
-	}
-
-	/**
-	 * Removes the given subject from this controller and also remove from the
-	 * given subject this controller
-	 * 
-	 * @param subject
-	 *          - the subject to be unregistered
-	 */
-	public void unregisterSubject(Subject<ChangeEvent> subject) {
-		subjects.remove(subject);
-
-		subject.removeObserver(this);
-	}
-
-	/**
-	 * Removes the given observer from this controller
-	 * 
-	 * @param observer
-	 */
-	public void unregisterObserver(Observer<ChangeEvent> observer) {
-		observers.remove(observer);
-	}
-
-	/**
-	 * Called when a file is changing its state(Defined in the StageState enum).
-	 * Depending on the new state the file is being added to the staging area or
-	 * removed from the staging area. After this all the other observers are
-	 * notified with the new changes so they can update
-	 * 
-	 */
-	public void stateChanged(ChangeEvent changeEvent) {
-		if (changeEvent.getNewState() == FileState.STAGED) {
-			gitAccess.addAll(changeEvent.getFilesToBeUpdated());
-		} else if (changeEvent.getNewState() == FileState.UNSTAGED) {
-			gitAccess.removeAll(changeEvent.getFilesToBeUpdated());
-		} else if (changeEvent.getOldState() == FileState.UNDEFINED && changeEvent.getNewState() == FileState.DISCARD) {
-			gitAccess.removeAll(changeEvent.getFilesToBeUpdated());
-			for (FileStatus file : changeEvent.getFilesToBeUpdated()) {
-				if (file.getChangeType() != GitChangeType.SUBMODULE) {
-					gitAccess.restoreLastCommitFile(file.getFileLocation());
-				}
-			}
-		} else if (changeEvent.getOldState() == FileState.UNSTAGED && changeEvent.getNewState() == FileState.DISCARD) {
-			gitAccess.removeAll(changeEvent.getFilesToBeUpdated());
-			for (FileStatus file : changeEvent.getFilesToBeUpdated()) {
-				gitAccess.restoreLastCommitFile(file.getFileLocation());
-			}
-			gitAccess.addAll(changeEvent.getFilesToBeUpdated());
-		}
-
-		List<Enumeration<TreePath>> treePathsToRestore = new ArrayList<Enumeration<TreePath>>();
-		for (JTree tree : trees) {
-			GitTreeNode rootNode = (GitTreeNode) tree.getModel().getRoot();
-			TreePath rootTreePath = new TreePath(rootNode);
-			treePathsToRestore.add(tree.getExpandedDescendants(rootTreePath));
-		}
-		for (Observer<ChangeEvent> observer : observers) {
-			observer.stateChanged(changeEvent);
-		}
-		for (int i = 0; i < trees.size(); i++) {
-			TreeFormatter.restoreLastExpandedPaths(treePathsToRestore.get(i), trees.get(i));
-		}
-	}
+	
 
 	public void addTree(JTree tree) {
 		trees.add(tree);

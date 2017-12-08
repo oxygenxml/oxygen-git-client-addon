@@ -16,8 +16,6 @@ import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.translator.TranslatorExtensionImpl;
-import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
@@ -56,9 +54,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 
 		  AuthenticationInterceptor.install();
 
-			Translator translator = new TranslatorExtensionImpl();
+			Translator translator = Translator.getInstance();
 			StageController stageController = new StageController(GitAccess.getInstance());
-			final GitRefreshSupport gitRefreshSupport = new PanelRefresh(translator);
+			final PanelRefresh gitRefreshSupport = new PanelRefresh(translator);
 			final StagingPanel stagingPanel = new StagingPanel(translator, gitRefreshSupport, stageController);
 			gitRefreshSupport.setPanel(stagingPanel);
 

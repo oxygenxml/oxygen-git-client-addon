@@ -8,8 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 
@@ -28,8 +27,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.FileState;
+import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -227,25 +225,15 @@ public class DiffPresenter {
 								translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
 								translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
 						if (response == 0) {
-							GitAccess.getInstance().remove(file);
-							GitAccess.getInstance().restoreLastCommitFile(file.getFileLocation());
-							GitAccess.getInstance().add(file);
-							FileState oldState = FileState.UNSTAGED;
-							FileState newState = FileState.DISCARD;
-							List<FileStatus> files = new ArrayList<FileStatus>();
-							files.add(file);
-							ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
-							stageController.stateChanged(changeEvent);
+							stageController.doGitCommand(Arrays.asList(file), GitCommand.RESOLVE_USING_MINE);
 						}
 					} else {
+					  // Instead of requesting the file status again, we just mark it as modified.
 						file.setChangeType(GitChangeType.MODIFIED);
-						FileState oldState = FileState.UNSTAGED;
-						FileState newState = FileState.STAGED;
-						List<FileStatus> files = new ArrayList<FileStatus>();
-						files.add(file);
-						ChangeEvent changeEvent = new ChangeEvent(newState, oldState, files);
-						stageController.stateChanged(changeEvent);
+						
+						stageController.doGitCommand(Arrays.asList(file), GitCommand.STAGE);
 					}
+					
 					diffFrame.removeComponentListener(this);
 				}
 			});

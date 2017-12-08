@@ -36,4 +36,8 @@ public class PushResponse {
 		this.message = message;
 	}
 
+	@Override
+	public String toString() {
+	  return "status: " + status + " message " + message;
+	}
 }

@@ -19,8 +19,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.DiffPresenter;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.FileState;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -188,7 +186,6 @@ public class GitMenuActionsProvider {
       }
     }
     GitAccess.getInstance().addAll(stagedFiles);
-    stageCtrl.stateChanged(new ChangeEvent(FileState.STAGED, FileState.UNSTAGED, stagedFiles));
   }
   
   /**

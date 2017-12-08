@@ -42,4 +42,8 @@ public class PullResponse {
 		this.status = status;
 	}
 
+	@Override
+	public String toString() {
+	  return "Status: " + status + " Conflicting files: " + conflictingFiles;
+	}
 }

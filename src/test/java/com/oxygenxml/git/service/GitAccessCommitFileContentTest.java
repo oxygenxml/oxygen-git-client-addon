@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -100,6 +101,10 @@ public class GitAccessCommitFileContentTest {
 			TransportException, IOException, GitAPIException, NoRepositorySelected, InterruptedException {
 
 		pushOneFileToRemote("test 1");
+		
+		
+		System.out.println("REmote " + Arrays.asList(new File(REMOTE_TEST_REPOSITPRY).listFiles()));
+		
 		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		gitAccess.pull("", "");

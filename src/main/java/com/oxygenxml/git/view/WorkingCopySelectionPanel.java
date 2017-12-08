@@ -11,6 +11,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -30,7 +32,7 @@ import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitEventListener;
+import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -59,7 +61,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	/**
 	 * A combo box for the user to change his working copy
 	 */
-	private JComboBox<String> workingCopySelector;
+	private JComboBox<String> workingCopyCombo;
 
 	/**
 	 * A file system browser for the user to add new git repositories to the combo
@@ -92,8 +94,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 		createGUI();
 	}
 
-	public JComboBox<String> getWorkingCopySelector() {
-		return workingCopySelector;
+	public JComboBox<String> getWorkingCopyCombo() {
+		return workingCopyCombo;
 	}
 
 	public JButton getBrowseButton() {
@@ -115,7 +117,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		addFileChooserOn(browseButton);
 		
-		GitAccess.getInstance().addGitListener(new GitEventListener() {
+		GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void repositoryChanged() {
           // The event was not triggered by the combo.
@@ -133,17 +135,17 @@ public class WorkingCopySelectionPanel extends JPanel {
                 // An ugly hack to select the path in the combo without keeping it
                 // in the model. We want to avoid adding it in the model because 
                 // this path is not exactly an working copy (no .git in it)
-                workingCopySelector.setEditable(true);
-                workingCopySelector.setSelectedItem(absolutePath);
-                workingCopySelector.setEditable(false);
+                workingCopyCombo.setEditable(true);
+                workingCopyCombo.setSelectedItem(absolutePath);
+                workingCopyCombo.setEditable(false);
               } else {
                 // Add it on the first position. 
-                DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopySelector.getModel();
+                DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
                 defaultComboBoxModel.removeElement(absolutePath);
                 defaultComboBoxModel.insertElementAt(absolutePath, 0);
                 
                 // Select it.
-                workingCopySelector.setSelectedItem(absolutePath);
+                workingCopyCombo.setSelectedItem(absolutePath);
               }
             } finally {
               inhibitRepoUpdate = false;
@@ -169,7 +171,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * new working copy is selected this listener will execute
 	 */
 	private void addWorkingCopySelectorListener() {
-		workingCopySelector.addItemListener(new ItemListener() {
+		workingCopyCombo.addItemListener(new ItemListener() {
 
 		  @Override
       public void itemStateChanged(ItemEvent e) {
@@ -179,7 +181,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		      try {
 		        // get and save the selected Option so that at restart the same
 		        // repository will be selected
-		        String path = (String) workingCopySelector.getSelectedItem();
+		        String path = (String) workingCopyCombo.getSelectedItem();
 		        if (logger.isDebugEnabled()) {
 		          logger.debug("Working copy " + path);
 		        }
@@ -196,16 +198,18 @@ public class WorkingCopySelectionPanel extends JPanel {
 		          
 		          OptionsManager.getInstance().saveSelectedRepository(path);
 		        } catch (RepositoryNotFoundException ex) {
-		          logger.error(ex, ex);
+		          if (logger.isDebugEnabled()) {
+		            logger.debug(ex, ex);
+		          }
 		          // We are here if the selected Repository doesn't exists anymore
 		          OptionsManager.getInstance().removeRepositoryLocation(path);
-		          if (workingCopySelector.getItemCount() > 0) {
-		            workingCopySelector.setSelectedItem(0);
+		          if (workingCopyCombo.getItemCount() > 0) {
+		            workingCopyCombo.setSelectedItem(0);
 		          } else {
-		            workingCopySelector.setSelectedItem(null);
+		            workingCopyCombo.setSelectedItem(null);
 		            gitAccess.close();
 		          }
-		          workingCopySelector.removeItem(path);
+		          workingCopyCombo.removeItem(path);
 
 		          SwingUtilities.invokeLater(new Runnable() {
 		            @Override
@@ -250,12 +254,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 					  OptionsManager.getInstance().addRepository(directoryPath);
 					  
 					  // Insert it first.
-						DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopySelector.getModel();
+						DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
 						defaultComboBoxModel.removeElement(directoryPath);
             defaultComboBoxModel.insertElementAt(directoryPath, 0);
             
 						// sets the directory path as the selected repository
-						workingCopySelector.setSelectedItem(directoryPath);
+						workingCopyCombo.setSelectedItem(directoryPath);
 					} else {
 						PluginWorkspaceProvider.getPluginWorkspace()
 								.showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_NOT_GIT_DIRECTORY));
@@ -301,33 +305,34 @@ public class WorkingCopySelectionPanel extends JPanel {
 	  gbc.weightx = 1;
 	  gbc.weighty = 1;
 
-	  workingCopySelector = new JComboBox<String>();
+	  workingCopyCombo = new JComboBox<String>();
 	  WorkingCopyToolTipRenderer renderer = new WorkingCopyToolTipRenderer();
-	  workingCopySelector.setRenderer(renderer);
-	  int height = (int) workingCopySelector.getPreferredSize().getHeight();
-	  workingCopySelector.setMinimumSize(new Dimension(10, height));
+	  workingCopyCombo.setRenderer(renderer);
+	  int height = (int) workingCopyCombo.getPreferredSize().getHeight();
+	  workingCopyCombo.setMinimumSize(new Dimension(10, height));
 
 	  addWorkingCopySelectorListener();
 	  
 	  // Populates the combo box with the previously added repositories. Basically
 	  // restore the state before the application was closed
 	  loadEntries();
-	  this.add(workingCopySelector, gbc);
+	  this.add(workingCopyCombo, gbc);
 	}
 
 	/**
 	 * Load the recorded workinf copy locations into the combo.
 	 */
   private void loadEntries() {
-    for (String repositoryEntry : OptionsManager.getInstance().getRepositoryEntries()) {
-			workingCopySelector.addItem(repositoryEntry);
+    List<String> repositoryEntries = new ArrayList<String>(OptionsManager.getInstance().getRepositoryEntries());
+    for (String repositoryEntry : repositoryEntries) {
+			workingCopyCombo.addItem(repositoryEntry);
 		}
     
     String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
     if (!repositoryPath.equals("")) {
-      workingCopySelector.setSelectedItem(repositoryPath);
-    } else if (workingCopySelector.getItemCount() > 0) {
-      workingCopySelector.setSelectedIndex(0);
+      workingCopyCombo.setSelectedItem(repositoryPath);
+    } else if (workingCopyCombo.getItemCount() > 0) {
+      workingCopyCombo.setSelectedIndex(0);
     }
   }
 

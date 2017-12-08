@@ -26,7 +26,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitEventListener;
+import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
@@ -126,7 +126,7 @@ public class ToolbarPanel extends JPanel {
 
 	  createGUI();
 
-	  GitAccess.getInstance().addGitListener(new GitEventListener() {
+	  GitAccess.getInstance().addGitListener(new GitEventAdapter() {
 	    @Override
       public void repositoryChanged() {
 	      // Repository changed. Update the toolbar buttons.

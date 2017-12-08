@@ -12,7 +12,6 @@ import javax.swing.JProgressBar;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.translator.TranslatorExtensionImpl;
 
 import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
 
@@ -25,7 +24,7 @@ public class ProgressDialog extends OKCancelDialog {
 
 	public ProgressDialog(JFrame parentFrame) {
 		super(parentFrame, "", true);
-		translator = new TranslatorExtensionImpl();
+		translator = Translator.getInstance();
 		setTitle(translator.getTranslation(Tags.CLONE_PROGRESS_DIALOG_TITLE));
 		
 		noteLabel = new JLabel();

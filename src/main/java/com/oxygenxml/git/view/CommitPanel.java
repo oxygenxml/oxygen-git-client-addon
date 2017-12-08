@@ -36,28 +36,53 @@ import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.FileState;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
-import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.ui.Icons;
 
-public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subject<PushPullEvent> {
-
-	private StageController stageController;
+/**
+ * Panel to insert the commit message and commit the staged files. 
+ */
+public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
+  /**
+   * Text area for the commit message.
+   */
 	private JTextArea commitMessage;
+	/**
+	 * The button that commits the staged files.
+	 */
 	private JButton commitButton;
+	/**
+	 * Git access.
+	 */
 	private GitAccess gitAccess;
+	/**
+	 * Previous messages history.
+	 */
 	private JComboBox<String> previousMessages;
+	/**
+	 * Messages of interest.
+	 */
 	private JLabel statusLabel;
+	/**
+	 * Will be notified after the commit.
+	 */
 	private Observer<PushPullEvent> observer;
+	/**
+	 * Translation support.
+	 */
 	private Translator translator;
 
-	public CommitPanel(GitAccess gitAccess, StageController observer, Translator translator) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param gitAccess Git access.
+	 * @param translator Translation support.
+	 */
+	public CommitPanel(GitAccess gitAccess, Translator translator) {
 		this.gitAccess = gitAccess;
-		this.stageController = observer;
 		this.translator = translator;
 	}
 
@@ -67,7 +92,6 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
-		stageController.registerObserver(this);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -110,8 +134,6 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 					message = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
 				} else {
 					message = translator.getTranslation(Tags.COMMIT_SUCCESS);
-					ChangeEvent changeEvent = new ChangeEvent(FileState.COMMITED, FileState.STAGED, gitAccess.getStagedFile());
-					stageController.stateChanged(changeEvent);
 					gitAccess.commit(commitMessage.getText());
 					OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());
 					previousMessages.removeAllItems();
@@ -218,7 +240,6 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 		this.add(commitButton, gbc);
 	}
 
-	@Override
   public void stateChanged(ChangeEvent changeEvent) {
 		toggleCommitButton();
 	}
@@ -305,5 +326,9 @@ public class CommitPanel extends JPanel implements Observer<ChangeEvent>, Subjec
 			return comp;
 		}
 	}
+	
+	public JTextArea getCommitMessage() {
+    return commitMessage;
+  }
 
 }

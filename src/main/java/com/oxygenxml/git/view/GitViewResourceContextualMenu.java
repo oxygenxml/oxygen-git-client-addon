@@ -1,32 +1,23 @@
 package com.oxygenxml.git.view;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.FileState;
+import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.StageController;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Contextual menu shown for staged/unstaged resources from the Git view 
@@ -110,28 +101,17 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    };
 
 	    // "Stage"/"Unstage" actions
-	    AbstractAction stageUnstageAction = new AbstractAction(
-	        staging ? translator.getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE)
-	            : translator.getTranslation(Tags.CONTEXTUAL_MENU_STAGE)) {
-	      @Override
-	      public void actionPerformed(ActionEvent e) {
-	        FileState oldState = FileState.UNSTAGED;
-	        FileState newState = FileState.STAGED;
-	        if (staging) {
-	          oldState = FileState.STAGED;
-	          newState = FileState.UNSTAGED;
-	        }
-	        stageController.stateChanged(new ChangeEvent(newState, oldState, files));
-	      }
-	    };
+	    AbstractAction stageUnstageAction = new StageUnstageResourceAction(
+	        files, 
+	        staging, 
+	        stageController);
 
 	    // Resolve using "mine"
 	    AbstractAction resolveUsingMineAction = new AbstractAction(
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.stateChanged(
-	            new ChangeEvent(FileState.DISCARD, FileState.UNSTAGED, files));
+	        stageController.doGitCommand(files, GitCommand.RESOLVE_USING_MINE);
 	      }
 	    };
 
@@ -140,12 +120,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        for (FileStatus file : files) {
-	          gitAccess.remove(file);
-	          gitAccess.updateWithRemoteFile(file.getFileLocation());
-	        }
-	        stageController.stateChanged(
-	            new ChangeEvent(FileState.STAGED, FileState.UNSTAGED, files));
+	        stageController.doGitCommand(files, GitCommand.RESOLVE_USING_THEIRS);
 	      }
 	    };
 
@@ -154,8 +129,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.stateChanged(
-	            new ChangeEvent(FileState.STAGED, FileState.UNSTAGED, files));
+	        stageController.doGitCommand(files, GitCommand.STAGE);
 	      }
 	    };
 
@@ -165,42 +139,11 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
 	        gitAccess.restartMerge();
-	        stageController.stateChanged(
-	            new ChangeEvent(FileState.UNDEFINED, FileState.UNDEFINED,
-	                Collections.<FileStatus> emptyList()));
 	      }
 	    };
 	    
 	    // "Discard" action 
-      AbstractAction discardAction = new AbstractAction(
-          translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD)) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          String[] options = new String[] { "   Yes   ", "   No   " };
-          int[] optonsId = new int[] { 0, 1 };
-          int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-              translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD),
-              translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
-          if (response == 0) {
-            for (FileStatus file : files) {
-              if (file.getChangeType() == GitChangeType.ADD
-                  || file.getChangeType() == GitChangeType.UNTRACKED) {
-                try {
-                  FileUtils.forceDelete(
-                      new File(OptionsManager.getInstance().getSelectedRepository() + '/' + file.getFileLocation()));
-                } catch (IOException e1) {
-                  logger.error(e1, e1);
-                }
-              } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
-                gitAccess.discardSubmodule();
-              }
-            }
-
-            stageController.stateChanged(
-                new ChangeEvent(FileState.DISCARD, FileState.UNDEFINED, files));
-          }
-        }
-      };
+      AbstractAction discardAction = new DiscardAction(files, stageController);
 
 	    // Resolve Conflict
 	    JMenu resolveConflict = new JMenu();

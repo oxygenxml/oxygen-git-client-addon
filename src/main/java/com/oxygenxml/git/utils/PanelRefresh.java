@@ -25,7 +25,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
-import com.oxygenxml.git.view.event.FileState;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -97,8 +96,8 @@ public class PanelRefresh implements GitRefreshSupport {
 	}
 
 	private void execute() {
-		String projectView = EditorVariables.expandEditorVariables("${pd}", null);
-		if (!projectView.equals(lastSelectedProjectView)) {
+	  String projectView = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().expandEditorVariables("${pd}", null);
+		if (projectView != null && !projectView.equals(lastSelectedProjectView)) {
 			checkForGitRepositoriesUpAndDownFrom(projectView);
 			if (stagingPanel.isInFocus()) {
 				lastSelectedProjectView = projectView;
@@ -114,9 +113,9 @@ public class PanelRefresh implements GitRefreshSupport {
 				if (response == 0) {
 					gitAccess.createNewRepository(projectView);
 					OptionsManager.getInstance().addRepository(projectView);
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(projectView);
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo().addItem(projectView);
 					OptionsManager.getInstance().saveSelectedRepository(projectView);
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(projectView);
+					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo().setSelectedItem(projectView);
 				}
 				OptionsManager.getInstance().saveProjectTestedForGit(projectView);
 			}
@@ -124,8 +123,8 @@ public class PanelRefresh implements GitRefreshSupport {
 		}
 		try {
 			if (gitAccess.getRepository() != null) {
-				updateFiles(FileState.UNSTAGED);
-				updateFiles(FileState.STAGED);
+				updateFiles(true);
+				updateFiles(false);
 				updateCounters();
 			}
 		} catch (NoRepositorySelected e1) {
@@ -194,10 +193,10 @@ public class PanelRefresh implements GitRefreshSupport {
 			projectPahtIsGit = true;
 			if (!OptionsManager.getInstance().getRepositoryEntries().contains(pathToCheck)) {
 				OptionsManager.getInstance().addRepository(pathToCheck);
-				stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().addItem(pathToCheck);
+				stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo().addItem(pathToCheck);
 			}
 			OptionsManager.getInstance().saveSelectedRepository(pathToCheck);
-			stagingPanel.getWorkingCopySelectionPanel().getWorkingCopySelector().setSelectedItem(pathToCheck);
+			stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo().setSelectedItem(pathToCheck);
 		}
 	}
 	
@@ -268,12 +267,12 @@ public class PanelRefresh implements GitRefreshSupport {
 	}
 
 	// TODO: maybe remove the state and update all the files, staged and unstaged, at once
-	private void updateFiles(final FileState state) {
+	private void updateFiles(final boolean unstaged) {
 		new SwingWorker<List<FileStatus>, Integer>() {
 
 			@Override
 			protected List<FileStatus> doInBackground() throws Exception {
-				if (state == FileState.UNSTAGED) {
+				if (unstaged) {
 					return GitAccess.getInstance().getUnstagedFiles();
 				} else {
 					return GitAccess.getInstance().getStagedFile();
@@ -285,7 +284,7 @@ public class PanelRefresh implements GitRefreshSupport {
 				List<FileStatus> files = null;
 				List<FileStatus> newFiles = new ArrayList<FileStatus>();
 				StagingResourcesTableModel model = null;
-				if (state == FileState.UNSTAGED) {
+				if (unstaged) {
 					model = (StagingResourcesTableModel) stagingPanel.getUnstagedChangesPanel().getFilesTable().getModel();
 				} else {
 					model = (StagingResourcesTableModel) stagingPanel.getStagedChangesPanel().getFilesTable().getModel();
@@ -311,7 +310,7 @@ public class PanelRefresh implements GitRefreshSupport {
 					}
 				}
 				if (!newFiles.equals(filesInModel)) {
-					if (state == FileState.UNSTAGED) {
+					if (unstaged) {
 						stagingPanel.getUnstagedChangesPanel().updateFlatView(newFiles);
 						stagingPanel.getUnstagedChangesPanel().createTreeView(OptionsManager.getInstance().getSelectedRepository(),
 								newFiles);
@@ -326,7 +325,6 @@ public class PanelRefresh implements GitRefreshSupport {
 		}.execute();
 	}
 
-	@Override
   public void setPanel(StagingPanel stagingPanel) {
 		this.stagingPanel = stagingPanel;
 	}
