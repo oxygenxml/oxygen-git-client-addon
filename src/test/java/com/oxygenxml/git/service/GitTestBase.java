@@ -34,6 +34,7 @@ import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.UtilAccess;
+import ro.sync.util.PlatformDetector;
 
 /**
  * A collection of handy methods. 
@@ -72,7 +73,9 @@ public class GitTestBase extends JFCTestCase {
       }
     });
     } catch (Throwable t) {
-      logger.info(t, t);
+      if (!t.getMessage().contains("factory already defined")) {
+        logger.info(t, t);
+      }
     } 
   }
 
@@ -230,7 +233,21 @@ public class GitTestBase extends JFCTestCase {
 
     });
     
-    Mockito.when(mock.getUtilAccess()).thenReturn(Mockito.mock(UtilAccess.class));
+    UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
+    Mockito.when(mock.getUtilAccess()).thenReturn(utilAccessMock);
+    Mockito.when(utilAccessMock.locateFile(Mockito.any())).then(new Answer<File>() {
+      @Override
+      public File answer(InvocationOnMock invocation) throws Throwable {
+        URL url = (URL) invocation.getArguments()[0];
+        
+        String path = url.getPath();
+        if (PlatformDetector.isWinXPOrLater() && path.startsWith("/")) {
+          path = path.substring(1, path.length());
+        }
+        
+        return new File(url.getPath());
+      }
+    });
     
     installGitProtocol();
   }

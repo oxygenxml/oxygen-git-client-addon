@@ -160,6 +160,7 @@ public class FlatViewTest extends FlatViewTestBase {
     // Change the file.
     setFileContent(file, "modified content");
     
+    // The file is present in  both areas.
     assertModels(
         "MODIFIED, test.txt", 
         "CHANGED, test.txt");

@@ -10,9 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +31,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
@@ -240,24 +239,25 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 						editorAccess.addEditorListener(new WSEditorListener() {
 							@Override
 							public void editorSaved(int operationType) {
-								String fileInWorkPath = editorLocation.getFile().substring(1);
-								try {
-									fileInWorkPath = URLDecoder.decode(fileInWorkPath, "UTF-8");
-								} catch (UnsupportedEncodingException e) {
-									if (logger.isDebugEnabled()) {
-									  logger.debug(e, e);
-									}
-								}
-								String selectedRepositoryPath = OptionsManager.getInstance().getSelectedRepository();
-								selectedRepositoryPath = selectedRepositoryPath.replace("\\", "/");
-								if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-								  // TODO Sorin Do not recreate the models from scratch. Just fire an atomic 
-								  // event, like fireTableRowsUpdated()
-								  // TODO Sorin It makes sense to schedule this on the PanelRefresh, to avoid threading issues.
-									List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
-									unstagedChangesPanel.updateFlatView(newFiles);
-									unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
-								}
+							  String fileInWorkPath = 
+							      PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation).toString();
+							  fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
+
+							  try {
+							    String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+							    selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+
+							    if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+							      // TODO Sorin Do not recreate the models from scratch. Just fire an atomic 
+							      // event, like fireTableRowsUpdated()
+							      // TODO Sorin It makes sense to schedule this on the PanelRefresh, to avoid threading issues.
+							      List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
+							      unstagedChangesPanel.updateFlatView(newFiles);
+							      unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+							    }
+							  } catch (NoRepositorySelected e) {
+							    logger.error(e, e);
+							  }
 							}
 						});
 					}

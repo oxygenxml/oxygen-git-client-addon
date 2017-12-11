@@ -96,13 +96,16 @@ public class FlatViewTestBase extends GitTestBase {
     JTable filesTable = unstagedChangesPanel.getFilesTable();
     StagingResourcesTableModel uModel = (StagingResourcesTableModel) filesTable.getModel();
     // The newly created file is present in the model.
-    assertEquals("Unstaged area", unstagedExpected, getTreeModelDump(uModel));
     
     ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
     JTable stFilesTable = stagedChangesPanel.getFilesTable();
     StagingResourcesTableModel stModel = (StagingResourcesTableModel) stFilesTable.getModel();
     // The newly created file is present in the model.
-    assertEquals("Index area", indexExpected, getTreeModelDump(stModel));
+    
+    String ex = "--UNSTAGED--\n" + unstagedExpected + "\n\n--INDEX--\n" + indexExpected;
+    String ac = "--UNSTAGED--\n" + getTreeModelDump(uModel) + "\n\n--INDEX--\n" + getTreeModelDump(stModel);
+
+    assertEquals(ex, ac);
   }
   
   /**
