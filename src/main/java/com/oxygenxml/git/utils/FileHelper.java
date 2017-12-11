@@ -29,6 +29,17 @@ public class FileHelper {
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(FileHelper.class);
+	
+	/**
+	 * Makes sure the path uses just the / separator.
+	 * 
+	 * @param path File path.
+	 * 
+	 * @return A path tat contains only / as separator.
+	 */
+	public static String rewriteSeparator(String path) {
+	  return path.replace("\\", "/");
+	}
 
 	/**
 	 * Searches a given path for all files in that path. Generates the files paths
@@ -42,7 +53,7 @@ public class FileHelper {
 		File rootFolder = new File(path);
 		List<String> fileNames = new ArrayList<String>();
 		if (rootFolder.isFile()) {
-			fileNames.add(rootFolder.getAbsolutePath().replace("\\", "/"));
+			fileNames.add(rewriteSeparator(rootFolder.getAbsolutePath()));
 			return fileNames;
 		}
 		File[] listOfFiles = rootFolder.listFiles();
@@ -51,7 +62,7 @@ public class FileHelper {
 			if (listOfFiles[i].isDirectory() && (!listOfFiles[i].getName().equals(".git"))) {
 				fileNames.addAll(getAllFilesFromPath(listOfFiles[i].getAbsolutePath()));
 			} else if (listOfFiles[i].isFile()) {
-				fileNames.add(listOfFiles[i].getAbsolutePath().replace("\\", "/"));
+				fileNames.add(rewriteSeparator(listOfFiles[i].getAbsolutePath()));
 			}
 		}
 		return fileNames;

@@ -119,7 +119,7 @@ public class GitMenuActionsProvider {
             gitFiles.addAll(GitAccess.getInstance().getUnstagedFiles());
             gitFiles.addAll(GitAccess.getInstance().getStagedFile());
             
-            String selectedFilePath = selectedFiles[0].getAbsolutePath().replace("\\", "/");
+            String selectedFilePath = FileHelper.rewriteSeparator(selectedFiles[0].getAbsolutePath());
             for (FileStatus fileStatus : gitFiles) {
               if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
                 DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl, translator);
@@ -175,7 +175,8 @@ public class GitMenuActionsProvider {
    * @return <code>true</code> if we have staged files.
    */
   private void stageFiles(String repository) {
-    repository = repository.replace("\\", "/");
+    repository = FileHelper.rewriteSeparator(repository);
+    
     List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
     Set<String> allSelectedFiles = ProjectViewManager.getSelectedFilesDeep(pluginWorkspaceAccess);
     List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
@@ -233,7 +234,7 @@ public class GitMenuActionsProvider {
       gitFiles.addAll(GitAccess.getInstance().getStagedFile());
 
       FileStatus selectedFileStatus = null;
-      String selectedFilePath = selectedFile.getAbsolutePath().replace("\\", "/");
+      String selectedFilePath = FileHelper.rewriteSeparator(selectedFile.getAbsolutePath());
       for (FileStatus gitFileStatus : gitFiles) {
         if (selectedFilePath.endsWith(gitFileStatus.getFileLocation())) {
           selectedFileStatus = new FileStatus(gitFileStatus);
