@@ -25,17 +25,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
@@ -87,11 +87,6 @@ public class ChangesPanel extends JPanel {
 	 * constant that specifies the tree view
 	 */
 	private static final int TREE_VIEW = 2;
-
-	/**
-	 * Contextual menu when you right click on a file. Works for both views
-	 */
-	private GitViewResourceContextualMenu contextualMenu;
 
 	/**
 	 * Button that stages/unstages all files
@@ -149,7 +144,6 @@ public class ChangesPanel extends JPanel {
 	private Translator translator;
 
 	public ChangesPanel(GitAccess gitAccess, StageController stageController, boolean forStaging, Translator translator) {
-		this.contextualMenu = new GitViewResourceContextualMenu(translator, stageController, gitAccess);
 		this.forStagedResources = forStaging;
 		this.stageController = stageController;
 		this.stageController.addTree(this.tree);
@@ -378,21 +372,25 @@ public class ChangesPanel extends JPanel {
 	private void addTreeMouseListener() {
 		tree.addMouseListener(new MouseAdapter() {
 		  @Override
-			public void mousePressed(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
 				if (treePath != null) {
+				  
 					String stringPath = TreeFormatter.getStringPath(treePath);
 					GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
-					// double click event
+					
+					// ============= Double click event ==============
 					if (model.isLeaf(node) && !model.getRoot().equals(node)
-					    && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+					    && SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
 					  FileStatus file = model.getFileByPath(stringPath);
 					  DiffPresenter diff = new DiffPresenter(file, stageController, translator);
 					  diff.showDiff();
 					}
-					// right click event
-					if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && rootHasChilds(node)) {
+					
+					// ============= Tight click event ================
+					if (SwingUtilities.isRightMouseButton(e)
+					    && (!node.isRoot() || node.children().hasMoreElements())) {
 					  boolean treeInSelection = false;
 					  TreePath[] paths = tree.getSelectionPaths();
 					  if (paths != null) {
@@ -407,8 +405,11 @@ public class ChangesPanel extends JPanel {
 							tree.setSelectionPath(treePath);
 						}
 						List<String> selectedPaths = TreeFormatter.getStringComonAncestor(tree);
-						contextualMenu.removeAll();
-						contextualMenu.createContextualMenu(model.getFilesByPaths(selectedPaths), forStagedResources);
+						List<FileStatus> selectedFileStatuses = model.getFilesByPaths(selectedPaths);
+						GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
+						    selectedFileStatuses,
+						    stageController,
+						    forStagedResources);
 						contextualMenu.show(tree, e.getX(), e.getY());
 					}
 				} else {
@@ -416,11 +417,6 @@ public class ChangesPanel extends JPanel {
 				}
 				toggleSelectedButton();
 			}
-
-			public boolean rootHasChilds(GitTreeNode node) {
-				return !(node.isRoot() && !node.children().hasMoreElements());
-			}
-
 		});
 
 	}
@@ -652,17 +648,8 @@ public class ChangesPanel extends JPanel {
 		filesTable = new JTable(fileTableModel);
 		filesTable.setTableHeader(null);
 		filesTable.setShowGrid(false);
-
-		// set the checkbox column width
-		filesTable.getColumnModel().getColumn(0).setMaxWidth(30);
-
-		// set the button column width
-		// filesTable.getColumnModel().getColumn(Constants.STAGE_BUTTON_COLUMN).setMaxWidth(100);
-		// TableRendererEditor.install(filesTable, stageController);
-
-		filesTable.getColumnModel().getColumn(0).setCellRenderer(new TableIconCellRenderer());
-		filesTable.getColumnModel().getColumn(1).setCellRenderer(new TableFileLocationTextCellRenderer());
-
+		filesTable.getColumnModel().getColumn(0).setWidth(30);
+		filesTable.setDefaultRenderer(Object.class, new ChangesTableCellRenderer());
 		filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent e) {
@@ -682,17 +669,20 @@ public class ChangesPanel extends JPanel {
 		// will be opened in the Oxygen.
 		filesTable.addMouseListener(new MouseAdapter() {
 		  @Override
-			public void mousePressed(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				Point point = new Point(e.getX(), e.getY());
 				int row = filesTable.convertRowIndexToModel(filesTable.rowAtPoint(point));
 				int column = filesTable.columnAtPoint(point);
-				if (column != 1 || row == -1) {
+				if (column == -1 || row == -1) {
 					filesTable.clearSelection();
 				} else {
-					if (column == 1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+				  // ======== LEFT DOUBLE CLICK ========
+					if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
 						openFileInCompareEditor(row);
 					}
-					if (column == 1 && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1 && row != -1) {
+					
+					// ======== RIGHT CLICK ==========
+					if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1 && row != -1) {
 						boolean inSelection = false;
 						List<FileStatus> files = new ArrayList<FileStatus>();
 						int clickedRow = filesTable.rowAtPoint(e.getPoint());
@@ -710,7 +700,6 @@ public class ChangesPanel extends JPanel {
 								filesTable.setRowSelectionInterval(clickedRow, clickedRow);
 								selectedRows = filesTable.getSelectedRows();
 							}
-							contextualMenu.removeAll();
 
 							for (int i = 0; i < selectedRows.length; i++) {
 								int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
@@ -718,7 +707,11 @@ public class ChangesPanel extends JPanel {
 								FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
 								files.add(file);
 							}
-							contextualMenu.createContextualMenu(files, forStagedResources);
+							
+							GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
+							    files,
+	                stageController,
+	                forStagedResources);
 							contextualMenu.show(filesTable, e.getX(), e.getY());
 						} else {
 							filesTable.clearSelection();
@@ -730,7 +723,8 @@ public class ChangesPanel extends JPanel {
 		});
 		
 		// Compare files on enter.
-		filesTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
+		filesTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+		    .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
 		filesTable.getActionMap().put("Enter", new AbstractAction() {
 			@Override
       public void actionPerformed(ActionEvent e) {
@@ -825,68 +819,46 @@ public class ChangesPanel extends JPanel {
 	}
 
 	/**
-	 * Renderer for the text displayed in the table. For exaple the text is
-	 * src/main/java/oxygenxml/App.java, the renderer will display "App.java -
-	 * src/main/java/oxygen".
-	 * 
-	 * @author Beniamin Savu
-	 *
+	 * Renderer for the staged/unstaged tables.
 	 */
-	private final class TableFileLocationTextCellRenderer implements TableCellRenderer {
+	private final class ChangesTableCellRenderer extends DefaultTableCellRenderer {
 	  /**
 	   * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
 	   */
 	  @Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			if (value != null && value instanceof String) {
-				String toRender = (String) value;
-				String fileName = toRender.substring(toRender.lastIndexOf('/') + 1);
-				if (!fileName.equals(toRender)) {
-					toRender = toRender.replace("/" + fileName, "");
-					toRender = fileName + " - " + toRender;
-				}
-				JTextField label = new JTextField(toRender);
-				label.setBorder(null);
-
-				if (isSelected) {
-					label.setForeground(table.getSelectionForeground());
-					label.setBackground(table.getSelectionBackground());
-				} else {
-					label.setForeground(table.getForeground());
-				}
-				label.setToolTipText(toRender);
-				return label;
-			} else {
-				return new JTextField();
-			}
-		}
+		    int row, int column) {
+	    Icon icon = null;
+	    String tooltipText = null;
+	    String labelText = "";
+	    
+	    JLabel tableCellRendererComponent = (JLabel) super.getTableCellRendererComponent(
+	        table, value, isSelected, hasFocus, row, column);
+	    
+	    if (value instanceof GitChangeType) {
+	      RenderingInfo renderingInfo = getRenderingInfo((GitChangeType) value);
+	      if (renderingInfo != null) {
+	        icon = renderingInfo.getIcon();
+	        tooltipText = renderingInfo.getTooltip();
+	      }
+	    } else if (value instanceof String) {
+	      tooltipText = (String) value;
+	      String fileName = tooltipText.substring(tooltipText.lastIndexOf('/') + 1);
+	      if (!fileName.equals(tooltipText)) {
+	        tooltipText = tooltipText.replace("/" + fileName, "");
+	        tooltipText = fileName + " - " + tooltipText;
+	      }
+	      labelText = (String) value;
+	    }
+	    
+	    tableCellRendererComponent.setIcon(icon);
+	    tableCellRendererComponent.setToolTipText(tooltipText);
+	    tableCellRendererComponent.setText(labelText);
+	    
+	    return tableCellRendererComponent;
+	  }
 	}
 
-	/**
-	 * Table icon renderer based on the git change file status
-	 * 
-	 * @author Beniamin Savu
-	 *
-	 */
-	private final class TableIconCellRenderer implements TableCellRenderer {
-	  /**
-	   * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
-	   */
-	  @Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-		  JLabel iconLabel = null;
-			RenderingInfo renderingInfo = getRenderingInfo((GitChangeType) value);
-			if (renderingInfo != null) {
-			  iconLabel = new JLabel();
-			  iconLabel.setIcon(renderingInfo.getIcon());
-			  iconLabel.setToolTipText(renderingInfo.getTooltip());
-			}
-			return iconLabel;
-		}
-	}
-	
 	/**
 	 * Get the rendering info (such as icon or tooltip text) for the given Git change type.
 	 * 

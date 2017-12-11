@@ -46,11 +46,6 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	private static final int FILE_LOCATION_COLUMN = 1;
 
 	/**
-	 * Constant for the index representing the button for stage/unstage
-	 */
-	private static final int BUTTON_COLUMN = 2;
-
-	/**
 	 * The internal representation of the model
 	 */
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
@@ -106,9 +101,6 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	    case FILE_LOCATION_COLUMN:
 	      clazz = String.class;
 	      break;
-	    case BUTTON_COLUMN:
-	      clazz = String.class;
-	      break;
 	    default:
 	      break;
 	  }
@@ -117,7 +109,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 
 	@Override
 	public boolean isCellEditable(int row, int column) {
-		return column == 2;
+		return false;
 	}
 
 	@Override
@@ -134,13 +126,6 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		    break;
 		  case FILE_LOCATION_COLUMN:
 		    temp = filesStatus.get(rowIndex).getFileLocation();
-		    break;
-		  case BUTTON_COLUMN:
-		    if (inIndex) {
-		      temp = "Unstage";
-		    } else {
-		      temp = "Stage";
-		    }
 		    break;
 		  default:
 		    break;

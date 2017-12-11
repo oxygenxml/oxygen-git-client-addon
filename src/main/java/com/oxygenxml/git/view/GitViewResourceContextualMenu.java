@@ -35,7 +35,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	/**
 	 * The translator used for the contextual menu names
 	 */
-	private Translator translator;
+	private Translator translator = Translator.getInstance();
 
 	/**
 	 * Controller used for staging and unstaging
@@ -45,32 +45,31 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	/**
 	 * The git API, containg the commands
 	 */
-	private GitAccess gitAccess;
+	private GitAccess gitAccess = GitAccess.getInstance();
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param translator       Translator for i18n.
+	 * @param files            The selected files.
 	 * @param stageController  Staging controller.
-	 * @param gitAccess        Access to the Git API.
+	 * @param isStage          <code>true</code> if we create the menu for the staged resources.
 	 */
 	public GitViewResourceContextualMenu(
-	    Translator translator,
+	    List<FileStatus> files,
 	    StageController stageController,
-	    GitAccess gitAccess) {
-		this.translator = translator;
+	    boolean isStage) {
 		this.stageController = stageController;
-		this.gitAccess = gitAccess;
+		populateMenu(files, isStage);
 	}
 
 	/**
-	 * Creates the contextual menu for the selected files.
+	 * Populates the contextual menu for the selected files.
 	 * 
 	 * @param files      The selected files.
-	 * @param staging    <code>true</code> if the files are staged.
+	 * @param isStage    <code>true</code> if the contextual menu is created
+	 *                       for the staged files.
 	 */
-	// TODO: create the actions only once
-	public void createContextualMenu(final List<FileStatus> files, final boolean staging) {
+	private void populateMenu(final List<FileStatus> files, final boolean isStage) {
 	  if (!files.isEmpty()) {
 	    final FileStatus fileStatus = files.get(0);
 
@@ -103,7 +102,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    // "Stage"/"Unstage" actions
 	    AbstractAction stageUnstageAction = new StageUnstageResourceAction(
 	        files, 
-	        staging, 
+	        isStage, 
 	        stageController);
 
 	    // Resolve using "mine"

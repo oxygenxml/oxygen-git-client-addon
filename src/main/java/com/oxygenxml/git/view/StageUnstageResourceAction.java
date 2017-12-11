@@ -16,7 +16,7 @@ public class StageUnstageResourceAction extends AbstractAction {
   /**
    * <code>true</code> if the action is "Stage".
    */
-  private boolean stage;
+  private boolean isStage;
   
   /**
    * The files to be staged/unstaged.
@@ -40,14 +40,14 @@ public class StageUnstageResourceAction extends AbstractAction {
     super(stage ? Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE)
         : Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_STAGE));
     this.fileStatuses = fileStatuses;
-    this.stage = stage;
+    this.isStage = stage;
     this.stageCtrl = stageCtrl;
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
     GitCommand newState = GitCommand.STAGE;
-    if (!stage) {
+    if (!isStage) {
       newState = GitCommand.UNSTAGE;
     }
     stageCtrl.doGitCommand(fileStatuses, newState);
