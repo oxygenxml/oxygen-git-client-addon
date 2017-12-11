@@ -85,7 +85,8 @@ public class StagingResourcesTableModel extends AbstractTableModel {
     this.inIndex = inIndex;
 	}
 
-	public int getRowCount() {
+	@Override
+  public int getRowCount() {
 		int size;
 		if (filesStatus == null) {
 			size = 0;
@@ -119,11 +120,13 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		return column == 2;
 	}
 
-	public int getColumnCount() {
+	@Override
+  public int getColumnCount() {
 		return 2;
 	}
 
-	public Object getValueAt(int rowIndex, int columnIndex) {
+	@Override
+  public Object getValueAt(int rowIndex, int columnIndex) {
 		Object temp = null;
 		switch (columnIndex) {
 		  case FILE_STATUS_COLUMN:
@@ -231,16 +234,11 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	    logger.debug("Change event " + (inIndex ? " un-staged " : "staged  ") + changeEvent);
 	  }
 	  
-	  logger.info("Change event " + (inIndex ? " un-staged " : "staged  ") + changeEvent);
-	  
 		List<FileStatus> newStates = 
 		    inIndex ? 
 		        GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) :
 		        GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
     List<FileStatus> oldStates = changeEvent.getOldStates();
-    
-    logger.info("Old states " + oldStates);
-    logger.info("New states " + newStates);
     
     if (changeEvent.getCommand() == GitCommand.STAGE) {
 			if (inIndex) {
