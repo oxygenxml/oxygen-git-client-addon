@@ -143,8 +143,7 @@ public class OptionsManager {
 	}
 
 	/**
-	 * Uses JAXB to save all the selected repositories from the users in the
-	 * repositoryOptions variable
+	 * Save options.
 	 */
 	public void saveOptions() {
 		try {
