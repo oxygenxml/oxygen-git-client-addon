@@ -235,7 +235,7 @@ public class GitTestBase extends JFCTestCase {
     
     UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
     Mockito.when(mock.getUtilAccess()).thenReturn(utilAccessMock);
-    Mockito.when(utilAccessMock.locateFile(Mockito.any())).then(new Answer<File>() {
+    Mockito.when(utilAccessMock.locateFile((URL) Mockito.any())).then(new Answer<File>() {
       @Override
       public File answer(InvocationOnMock invocation) throws Throwable {
         URL url = (URL) invocation.getArguments()[0];
