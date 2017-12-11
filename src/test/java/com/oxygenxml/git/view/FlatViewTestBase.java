@@ -69,7 +69,10 @@ public class FlatViewTestBase extends GitTestBase {
   protected void tearDown() throws Exception {
     super.tearDown();
     
-    mainFrame.setVisible(false);
+    if (mainFrame != null) {
+      // Can be null if the setUp() failed.
+      mainFrame.setVisible(false);
+    }
   }
   
   /**
