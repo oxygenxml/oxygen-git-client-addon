@@ -314,14 +314,16 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
 			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			JToolTip createToolTip = comp.createToolTip();
-			Font font = createToolTip.getFont();
-			FontMetrics fontMetrics = getFontMetrics(font);
-			int length = fontMetrics.stringWidth((String) value);
-			if (length < MAX_TOOLTIP_WIDTH) {
-				comp.setToolTipText("<html><p width=\"" + length + "\">" + value + "</p></html>");
-			} else {
-				comp.setToolTipText("<html><p width=\"" + MAX_TOOLTIP_WIDTH + "\">" + value + "</p></html>");
+			if (value != null) {
+			  JToolTip createToolTip = comp.createToolTip();
+			  Font font = createToolTip.getFont();
+			  FontMetrics fontMetrics = getFontMetrics(font);
+			  int length = fontMetrics.stringWidth((String) value);
+			  if (length < MAX_TOOLTIP_WIDTH) {
+			    comp.setToolTipText("<html><p width=\"" + length + "\">" + value + "</p></html>");
+			  } else {
+			    comp.setToolTipText("<html><p width=\"" + MAX_TOOLTIP_WIDTH + "\">" + value + "</p></html>");
+			  }
 			}
 			return comp;
 		}

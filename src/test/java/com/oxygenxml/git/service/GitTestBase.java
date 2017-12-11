@@ -28,7 +28,6 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 
 import junit.extensions.jfcunit.JFCTestCase;
-import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
@@ -136,7 +135,7 @@ public class GitTestBase extends JFCTestCase {
       
       for (Iterator<WSEditorChangeListener> iterator = editorChangeListeners.iterator(); iterator.hasNext();) {
         WSEditorChangeListener wsEditorChangeListener = iterator.next();
-        wsEditorChangeListener.editorOpened(file.toURI().toURL());
+        wsEditorChangeListener.editorClosed(file.toURI().toURL());
       }
     }
   }
@@ -268,11 +267,8 @@ public class GitTestBase extends JFCTestCase {
     // Wait for JGit threads to finish up work.
     flushAWT();
     
-    for (Repository repository : loadedRepos) {
-      // Close the repository.
-      repository.close();
-      Thread.sleep(400);
-    }
+    // Only one repository is open at a given time.
+    GitAccess.getInstance().close();
     
     for (Repository repository : loadedRepos) {
       // Remove the file system resources.
