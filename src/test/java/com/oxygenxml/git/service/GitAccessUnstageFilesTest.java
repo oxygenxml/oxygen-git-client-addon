@@ -20,7 +20,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessUnstageFilesTest {
 
-	private final static String LOCAL_TEST_REPOSITPRY = "src/test/resources";
+	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessUnstageFilesTest";
 	private GitAccess gitAccess;
 
 	@Before

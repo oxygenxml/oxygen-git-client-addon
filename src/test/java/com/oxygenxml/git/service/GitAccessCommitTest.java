@@ -25,7 +25,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessCommitTest {
 
-	private final static String LOCAL_TEST_REPOSITPRY = "src/test/resources";
+	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitTest";
 	private GitAccess gitAccess;
 
 	@Before

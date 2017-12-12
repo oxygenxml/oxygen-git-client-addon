@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -227,40 +228,49 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		registerSubject(commitPanel);
 
 		addRefreshF5();
-
+		
 		// Listens on the save event in the Oxygen editor and updates the unstaging
 		// area
 		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 				.addEditorChangeListener(new WSEditorChangeListener() {
 					@Override
 					public void editorOpened(final URL editorLocation) {
-						WSEditor editorAccess = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+						editorSaved(gitAccess, editorLocation);
+					}
+
+          private void editorSaved(final GitAccess gitAccess, final URL editorLocation) {
+            WSEditor editorAccess = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 								.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
 						editorAccess.addEditorListener(new WSEditorListener() {
 							@Override
 							public void editorSaved(int operationType) {
-							  String fileInWorkPath = 
-							      PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation).toString();
-							  fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
+							  File locateFile = null;
+							  if ("file".equals(editorLocation.getProtocol())) {
+							    locateFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
+							    if (locateFile != null) {
+							      String fileInWorkPath = locateFile.toString();
+							      fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
 
-							  try {
-							    String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-							    selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+							      try {
+							        String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+							        selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
 
-							    if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-							      // TODO Sorin Do not recreate the models from scratch. Just fire an atomic 
-							      // event, like fireTableRowsUpdated()
-							      // TODO Sorin It makes sense to schedule this on the PanelRefresh, to avoid threading issues.
-							      List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
-							      unstagedChangesPanel.updateFlatView(newFiles);
-							      unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+							        if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+							          // TODO Sorin Do not recreate the models from scratch. Just fire an atomic 
+							          // event, like fireTableRowsUpdated()
+							          // TODO Sorin It makes sense to schedule this on the PanelRefresh, to avoid threading issues.
+							          List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
+							          unstagedChangesPanel.updateFlatView(newFiles);
+							          unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+							        }
+							      } catch (NoRepositorySelected e) {
+							        logger.error(e, e);
+							      }
 							    }
-							  } catch (NoRepositorySelected e) {
-							    logger.error(e, e);
 							  }
 							}
 						});
-					}
+          }
 				}, PluginWorkspace.MAIN_EDITING_AREA);
 
 		// Detect focus transitions between the view and the outside.

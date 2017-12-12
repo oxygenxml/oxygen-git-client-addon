@@ -33,9 +33,9 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessPullTest {
-	protected final static String LOCAL_TEST_REPOSITPRY = "src/test/resources/local";
-	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "src/test/resources/local2";
-	private final static String REMOTE_TEST_REPOSITPRY = "src/test/resources/remote";
+	protected final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/local";
+	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessPullTest/local2";
+	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/remote";
 	private Repository db1;
 	private Repository db2;
 	private Repository db3;

@@ -13,7 +13,7 @@ import com.oxygenxml.git.utils.FileHelper;
 
 public class FileHelperTest {
 
-	private final static String LOCAL_TEST_REPOSITPRY = "src/test/resources/local";
+	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resource/FileHelperTest/local";
 	
 	@Test
 	public void testIsNotGitRepositoery() throws IOException{

@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -30,9 +29,9 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessCommitFileContentTest {
-	protected final static String LOCAL_TEST_REPOSITPRY = "src/test/resources/local";
-	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "src/test/resources/local2";
-	private final static String REMOTE_TEST_REPOSITPRY = "src/test/resources/remote";
+	protected final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitFileContentTest/local";
+	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessCommitFileContentTest/local2";
+	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitFileContentTest/remote";
 	private Repository db1;
 	private Repository db2;
 	private Repository db3;

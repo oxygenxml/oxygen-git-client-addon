@@ -1,7 +1,12 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JTable;
@@ -12,6 +17,9 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.GitCommand;
+
+import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
+import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 
 /**
 * Test cases related to the actions performed
@@ -504,6 +512,48 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Commit
     gitAccess.commit("commit");
+    assertModels("", "");
+  }
+  
+  /**
+   * Saving a remote file doesn't fail with exceptions. The event should be ignored.
+   * 
+   * EXM-40662
+   * 
+   * @throws Exception If it fails.
+   */
+  public void testSaveRemoteURL() throws Exception {
+
+    /**
+     * Local repository location.
+     */
+    String localTestRepository = "target/test-resources/testSave_local";
+
+    // Create repositories
+    createRepository(localTestRepository);
+    
+    assertModels("", "");
+
+    URL remoteResource = new URL("http://oxygenxml.com");
+
+    for (Iterator<WSEditorChangeListener> iterator = editorChangeListeners.iterator(); iterator.hasNext();) {
+      WSEditorChangeListener wsEditorChangeListener = iterator.next();
+      wsEditorChangeListener.editorOpened(remoteResource);
+    }
+
+
+
+    for (Iterator<WSEditorListener> iterator = editorListeners.iterator(); iterator.hasNext();) {
+      WSEditorListener wsEditorChangeListener = iterator.next();
+      wsEditorChangeListener.editorSaved(WSEditorListener.SAVE_OPERATION);
+    }
+
+
+    for (Iterator<WSEditorChangeListener> iterator = editorChangeListeners.iterator(); iterator.hasNext();) {
+      WSEditorChangeListener wsEditorChangeListener = iterator.next();
+      wsEditorChangeListener.editorClosed(remoteResource);
+    }
+
     assertModels("", "");
   }
 }

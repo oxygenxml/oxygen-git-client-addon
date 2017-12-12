@@ -192,8 +192,14 @@ public class GitTestBase extends JFCTestCase {
     return remoteRepo;
   }
   
-  private List<WSEditorChangeListener> editorChangeListeners = new ArrayList<WSEditorChangeListener>();
-  private List<WSEditorListener> editorListeners = new ArrayList<WSEditorListener>();
+  /**
+   * Listeners interested in editor change events.
+   */
+  protected List<WSEditorChangeListener> editorChangeListeners = new ArrayList<WSEditorChangeListener>();
+  /**
+   * Listeners interested in editor events.
+   */
+  protected List<WSEditorListener> editorListeners = new ArrayList<WSEditorListener>();
   
   @Override
   protected void setUp() throws Exception {
