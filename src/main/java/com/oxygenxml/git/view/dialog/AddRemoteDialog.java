@@ -43,7 +43,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 	/**
 	 * The translator for the messages that are displayed in this dialog
 	 */
-	private Translator translator;
+	private static Translator translator = Translator.getInstance();
 
 	private JTextField remoteRepoTextField;
 
@@ -52,10 +52,9 @@ public class AddRemoteDialog extends OKCancelDialog {
 	 * 
 	 * @param translator Translator for i18n.
 	 */
-	public AddRemoteDialog(Translator translator) {
+	public AddRemoteDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.ADD_REMOTE_DIALOG_TITLE), true);
-		this.translator = translator;
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		addInformationLabel(gbc);

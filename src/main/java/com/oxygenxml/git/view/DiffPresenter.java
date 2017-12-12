@@ -64,12 +64,11 @@ public class DiffPresenter {
 	/**
 	 * The translator used for the messages that are displayed to the user
 	 */
-	private Translator translator;
+	private Translator translator = Translator.getInstance();
 
-	public DiffPresenter(FileStatus file, StageController stageController, Translator translator) {
+	public DiffPresenter(FileStatus file, StageController stageController) {
 		this.stageController = stageController;
 		this.file = file;
-		this.translator = translator;
 	}
 
 	/**

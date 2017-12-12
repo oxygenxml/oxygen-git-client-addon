@@ -15,7 +15,6 @@ import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
@@ -54,16 +53,14 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 
 		  AuthenticationInterceptor.install();
 
-			Translator translator = Translator.getInstance();
-			StageController stageController = new StageController(GitAccess.getInstance());
-			final PanelRefresh gitRefreshSupport = new PanelRefresh(translator);
-			final StagingPanel stagingPanel = new StagingPanel(translator, gitRefreshSupport, stageController);
+			StageController stageController = new StageController();
+			final PanelRefresh gitRefreshSupport = new PanelRefresh();
+			final StagingPanel stagingPanel = new StagingPanel(gitRefreshSupport, stageController);
 			gitRefreshSupport.setPanel(stagingPanel);
 
 			ProjectViewManager.addPopUpMenuCustomizer(
 			    pluginWorkspaceAccess,
-			    translator,
-			    new GitMenuActionsProvider(pluginWorkspaceAccess, translator, stageController));
+			    new GitMenuActionsProvider(pluginWorkspaceAccess, stageController));
 
 			pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 				/**

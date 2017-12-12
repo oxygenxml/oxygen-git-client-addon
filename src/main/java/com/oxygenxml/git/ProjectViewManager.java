@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -44,7 +43,6 @@ public class ProjectViewManager {
 	 */
 	public static void addPopUpMenuCustomizer(
 	    StandalonePluginWorkspace pluginWorkspaceAccess,
-	    Translator translator,
 	    GitMenuActionsProvider gitActionsProvider) {
 		// try to get method from 19.1 version
 		try {
@@ -61,7 +59,7 @@ public class ProjectViewManager {
 			// create a ProxyInstance of projectPopupMenuCustomizer
 			Object proxyProjectPopupMenuCustomizerImpl = Proxy.newProxyInstance(
 					projectPopupMenuCustomizerClass.getClassLoader(), new Class[] { projectPopupMenuCustomizerClass },
-					new ProjectPopupMenuCustomizerInvocationHandler(pluginWorkspaceAccess, translator, gitActionsProvider));
+					new ProjectPopupMenuCustomizerInvocationHandler(pluginWorkspaceAccess, gitActionsProvider));
 
 			// get the project manager object
 			Object projectManager = getProjectManager.invoke(pluginWorkspaceAccess);

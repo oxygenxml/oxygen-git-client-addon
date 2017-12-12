@@ -138,8 +138,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 				return new FileInputStream(temp);
 			}
 			
-			GitAccess gitAccess = GitAccess.getInstance();
-			return gitAccess.getInputStream(fileObject);
+			return GitAccess.getInstance().getInputStream(fileObject);
 		}
 
 		/**

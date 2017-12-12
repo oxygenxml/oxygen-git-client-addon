@@ -78,7 +78,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        new DiffPresenter(fileStatus, stageController, translator).showDiff();
+	        new DiffPresenter(fileStatus, stageController).showDiff();
 	      }
 	    };
 
@@ -87,7 +87,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        DiffPresenter diff = new DiffPresenter(fileStatus, stageController, translator);
+	        DiffPresenter diff = new DiffPresenter(fileStatus, stageController);
 	        for (FileStatus file : files) {
 	          diff.setFile(file);
 	          try {

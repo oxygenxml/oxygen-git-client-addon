@@ -42,14 +42,12 @@ public class PushPullController implements Subject<PushPullEvent> {
 	/**
 	 * The Git API
 	 */
-	private GitAccess gitAccess;
+	private GitAccess gitAccess = GitAccess.getInstance();
 
-	private Translator translator;
-
-	public PushPullController(GitAccess gitAccess, Translator translator) {
-		this.translator = translator;
-		this.gitAccess = gitAccess;
-	}
+	/**
+	 * Translator for i18n.
+	 */
+	private Translator translator = Translator.getInstance();
 
 	/**
 	 * Opens a login dialog to update the credentials
@@ -62,8 +60,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 		return 
 		    new LoginDialog(
 		        gitAccess.getHostName(), 
-		        loginMessage, 
-		        translator).getUserCredentials();
+		        loginMessage).getUserCredentials();
 	}
 
 	/**
@@ -91,7 +88,8 @@ public class PushPullController implements Subject<PushPullEvent> {
 		
 		Thread th = new Thread(new Runnable() {
 
-			public void run() {
+			@Override
+      public void run() {
 
 				String message = "";
 				boolean notifyFinish = true;
@@ -156,7 +154,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					} else if (e.getMessage().contains("origin: not found")
 							|| e.getMessage().contains("No value for key remote.origin.url found in configuration")) {
 					  // No remote.
-						new AddRemoteDialog(translator);
+						new AddRemoteDialog();
 					} else if (e.getMessage().contains("Auth fail")) {
 					  // This message is thrown for SSH.
 						String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
@@ -246,14 +244,16 @@ public class PushPullController implements Subject<PushPullEvent> {
 		observer.stateChanged(pushPullEvent);
 	}
 
-	public void addObserver(Observer<PushPullEvent> observer) {
+	@Override
+  public void addObserver(Observer<PushPullEvent> observer) {
 		if (observer == null)
 			throw new NullPointerException("Null Observer");
 
 		this.observer = observer;
 	}
 
-	public void removeObserver(Observer<PushPullEvent> obj) {
+	@Override
+  public void removeObserver(Observer<PushPullEvent> obj) {
 		observer = null;
 	}
 	

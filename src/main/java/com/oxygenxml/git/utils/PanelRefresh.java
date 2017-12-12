@@ -71,16 +71,11 @@ public class PanelRefresh implements GitRefreshSupport {
 	private static Logger logger = Logger.getLogger(PanelRefresh.class);
 
 	private StagingPanel stagingPanel;
-	private GitAccess gitAccess;
+	private GitAccess gitAccess = GitAccess.getInstance();
 	private String lastSelectedProjectView = "";
-	private Translator translator;
+	private Translator translator = Translator.getInstance();
 	private boolean projectPahtIsGit;
 	private boolean projectXprExists;
-
-	public PanelRefresh(Translator translator) {
-		this.gitAccess = GitAccess.getInstance();
-		this.translator = translator;
-	}
 
 	@Override
   public void call() {

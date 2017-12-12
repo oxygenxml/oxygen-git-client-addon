@@ -57,7 +57,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 	/**
 	 * The translator for i18n.
 	 */
-	private Translator translator;
+	private static Translator translator = Translator.getInstance();
 
 	/**
 	 * Constructor.
@@ -65,11 +65,10 @@ public class BranchSelectDialog extends OKCancelDialog {
 	 * @param parentFrame  The parent frame.
 	 * @param title        The dialog's title.
 	 */
-	public BranchSelectDialog(GitRefreshSupport refresh, Translator translator) {
+	public BranchSelectDialog(GitRefreshSupport refresh) {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.BRANCH_SELECTION_DIALOG_TITLE), true);
 		this.gitRefreshSupport = refresh;
-		this.translator = translator;
 
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();

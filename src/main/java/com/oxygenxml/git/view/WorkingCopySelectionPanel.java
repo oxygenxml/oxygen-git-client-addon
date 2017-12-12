@@ -72,25 +72,17 @@ public class WorkingCopySelectionPanel extends JPanel {
 	/**
 	 * The git API, containing the commands
 	 */
-	private GitAccess gitAccess;
+	private GitAccess gitAccess = GitAccess.getInstance();
 
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private Translator translator;
+	private Translator translator = Translator.getInstance();
 
   /**
    * Constructor.
-   * 
-   * @param gitAccess
-   * @param translator
    */
-	public WorkingCopySelectionPanel(
-	    GitAccess gitAccess, 
-	    Translator translator) {
-		this.translator = translator;
-		this.gitAccess = gitAccess;
-		
+	public WorkingCopySelectionPanel() {
 		createGUI();
 	}
 

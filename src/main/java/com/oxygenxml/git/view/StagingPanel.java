@@ -95,7 +95,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private Translator translator;
+	private Translator translator = Translator.getInstance();
 
 	/**
 	 * Main panel refresh
@@ -109,10 +109,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   private PushPullController pushPullController;
 
   public StagingPanel(
-      Translator translator, 
       GitRefreshSupport refresh, 
       StageController stageController) {
-		this.translator = translator;
 		this.refreshSupport = refresh;
 		this.stageController = stageController;
 		
@@ -195,14 +193,14 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.setLayout(new GridBagLayout());
 
 		final GitAccess gitAccess = GitAccess.getInstance();
-		pushPullController = createPushPullController(gitAccess);
+		pushPullController = createPushPullController();
 
 		// Creates the panels objects that will be in the staging panel
 		unstagedChangesPanel = new ChangesPanel(stageController, false);
 		stagedChangesPanel = new ChangesPanel(stageController, true);
-		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
-		commitPanel = new CommitPanel(gitAccess, translator);
-		toolbarPanel = new ToolbarPanel(pushPullController, translator, refreshSupport);
+		workingCopySelectionPanel = new WorkingCopySelectionPanel();
+		commitPanel = new CommitPanel();
+		toolbarPanel = new ToolbarPanel(pushPullController, refreshSupport);
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
@@ -308,8 +306,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		});
 	}
 
-  public PushPullController createPushPullController(final GitAccess gitAccess) {
-    return new PushPullController(gitAccess, translator);
+  protected PushPullController createPushPullController() {
+    return new PushPullController();
   }
 
 	/**

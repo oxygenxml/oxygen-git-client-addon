@@ -108,7 +108,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private Translator translator;
+	private Translator translator = Translator.getInstance();
 
 	/**
 	 * Main panel refresh
@@ -117,11 +117,9 @@ public class ToolbarPanel extends JPanel {
 
 	public ToolbarPanel(
 	    PushPullController pushPullController, 
-	    final Translator translator, 
 	    GitRefreshSupport refresh) {
 	  this.pushPullController = pushPullController;
 	  this.statusInformationLabel = new JLabel();
-	  this.translator = translator;
 	  this.refresh = refresh;
 
 	  createGUI();
@@ -192,8 +190,7 @@ public class ToolbarPanel extends JPanel {
 
       UserCredentials userCredentials = new LoginDialog(
           GitAccess.getInstance().getHostName(), 
-          loginMessage,
-          translator).getUserCredentials();
+          loginMessage).getUserCredentials();
       if (userCredentials != null) {
         // New credentials were specified. Try again.
         fetch(false);
@@ -276,7 +273,7 @@ public class ToolbarPanel extends JPanel {
 		   */
 			@Override
       public void actionPerformed(ActionEvent e) {
-				new CloneRepositoryDialog(translator);
+				new CloneRepositoryDialog();
 			}
 		};
 
@@ -299,7 +296,7 @@ public class ToolbarPanel extends JPanel {
 	    public void actionPerformed(ActionEvent e) {
 	      try {
 	        if (GitAccess.getInstance().getRepository() != null) {
-	          new SubmoduleSelectDialog(translator);
+	          new SubmoduleSelectDialog();
 	        }
 	      } catch (NoRepositorySelected e1) {
 	        if(logger.isDebugEnabled()) {
@@ -328,7 +325,7 @@ public class ToolbarPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						new BranchSelectDialog(refresh, translator);
+						new BranchSelectDialog(refresh);
 					}
 				} catch (NoRepositorySelected e1) {
           if(logger.isDebugEnabled()) {

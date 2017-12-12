@@ -50,14 +50,13 @@ public class LoginDialog extends OKCancelDialog {
 	/**
 	 * The translator for the messages that are displayed in this dialog
 	 */
-	private Translator translator;
+	private static Translator translator = Translator.getInstance();
 
-	public LoginDialog(String host, String loginMessage, Translator translator) {
+	public LoginDialog(String host, String loginMessage) {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true);
 		this.host = host;
 		this.message = loginMessage;
-		this.translator = translator;
 		createGUI();
 
 		this.pack();

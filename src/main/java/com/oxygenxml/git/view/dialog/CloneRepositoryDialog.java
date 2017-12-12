@@ -106,8 +106,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 						doBreak = true;
 					} else if (cause instanceof org.eclipse.jgit.errors.TransportException) {
 						UserCredentials userCredentials = new LoginDialog(url.getHost(),
-								translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE),
-								translator).getUserCredentials();
+								translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE))
+						        .getUserCredentials();
 						if (userCredentials != null) {
 							doOK();
 						}
@@ -128,7 +128,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	/**
 	 * The translator for the messages that are displayed in this dialog
 	 */
-	private Translator translator;
+	private static Translator translator = Translator.getInstance();
 
 	private JTextField tfURL;
 
@@ -142,10 +142,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 * @param parentFrame Parent frame.
 	 * @param translator Translation support.
 	 */
-	public CloneRepositoryDialog(Translator translator) {
+	public CloneRepositoryDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
-		this.translator = translator;
 
 		createGUI();
 

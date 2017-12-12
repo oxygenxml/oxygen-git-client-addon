@@ -57,7 +57,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	/**
 	 * Git access.
 	 */
-	private GitAccess gitAccess;
+	private GitAccess gitAccess = GitAccess.getInstance();
 	/**
 	 * Previous messages history.
 	 */
@@ -73,18 +73,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	/**
 	 * Translation support.
 	 */
-	private Translator translator;
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param gitAccess Git access.
-	 * @param translator Translation support.
-	 */
-	public CommitPanel(GitAccess gitAccess, Translator translator) {
-		this.gitAccess = gitAccess;
-		this.translator = translator;
-	}
+	private Translator translator = Translator.getInstance();
 
 	public JButton getCommitButton() {
 		return commitButton;

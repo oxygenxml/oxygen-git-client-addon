@@ -24,13 +24,9 @@ public class StageController {
 	/**
 	 * the git API
 	 */
-	private GitAccess gitAccess;
+	private GitAccess gitAccess = GitAccess.getInstance();
 
 	private List<JTree> trees = new ArrayList<JTree>();
-
-	public StageController(GitAccess gitAccess) {
-		this.gitAccess = gitAccess;
-	}
 
 	/**
 	 * Executes the given action on the given files.

@@ -30,7 +30,7 @@ public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.re
 	/**
 	 * Translator.
 	 */
-  private Translator translator;
+  private Translator translator = Translator.getInstance();
   
   /**
    * Object providing the Git-specific actions.
@@ -46,9 +46,8 @@ public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.re
 	 */
 	public ProjectPopupMenuCustomizerInvocationHandler(
 			StandalonePluginWorkspace pluginWorkspaceAccess,
-			Translator translator, GitMenuActionsProvider gitActionsProvider) {
+			GitMenuActionsProvider gitActionsProvider) {
 		this.pluginWorkspaceAccess = pluginWorkspaceAccess;
-    this.translator = translator;
     this.gitActionsProvider = gitActionsProvider;
 	}
 

@@ -42,17 +42,16 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 	/**
 	 * The translator for the messages that are displayed in this dialog
 	 */
-	private Translator translator;
+	private static Translator translator = Translator.getInstance();
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param translator Translation support.
 	 */
-	public SubmoduleSelectDialog(Translator translator) {
+	public SubmoduleSelectDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.SUBMODULE_DIALOG_TITLE), true);
-		this.translator = translator;
 
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();

@@ -40,7 +40,7 @@ public class GitMenuActionsProvider {
   /**
    * Translator.
    */
-  private Translator translator;
+  private Translator translator = Translator.getInstance();
   /**
    * Stage controller.
    */
@@ -66,10 +66,8 @@ public class GitMenuActionsProvider {
    * @param stageCtrl
    *          The staging panel.
    */
-  public GitMenuActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, Translator translator,
-      StageController stageCtrl) {
+  public GitMenuActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, StageController stageCtrl) {
     this.pluginWorkspaceAccess = pluginWorkspaceAccess;
-    this.translator = translator;
     this.stageCtrl = stageCtrl;
   }
 
@@ -122,7 +120,7 @@ public class GitMenuActionsProvider {
             String selectedFilePath = FileHelper.rewriteSeparator(selectedFiles[0].getAbsolutePath());
             for (FileStatus fileStatus : gitFiles) {
               if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-                DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl, translator);
+                DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl);
                 diff.showDiff();
                 break;
               }

@@ -318,7 +318,7 @@ public class ChangesPanel extends JPanel {
 					  if (model != null && node != null
 					      && model.isLeaf(node) && !model.getRoot().equals(node)) {
 					    FileStatus file = model.getFileByPath(stringPath);
-					    DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+					    DiffPresenter diff = new DiffPresenter(file, stageController);
 					    diff.showDiff();
 					  }
 					}
@@ -388,7 +388,7 @@ public class ChangesPanel extends JPanel {
 					if (model.isLeaf(node) && !model.getRoot().equals(node)
 					    && SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
 					  FileStatus file = model.getFileByPath(stringPath);
-					  DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+					  DiffPresenter diff = new DiffPresenter(file, stageController);
 					  diff.showDiff();
 					}
 					
@@ -768,7 +768,7 @@ public class ChangesPanel extends JPanel {
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 		int convertedRow = filesTable.convertRowIndexToModel(row);
 		FileStatus file = model.getUnstageFile(convertedRow);
-		DiffPresenter diff = new DiffPresenter(file, stageController, translator);
+		DiffPresenter diff = new DiffPresenter(file, stageController);
 		diff.showDiff();
 	}
 

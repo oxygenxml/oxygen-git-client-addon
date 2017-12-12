@@ -10,7 +10,6 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -40,14 +39,13 @@ public class FlatViewTestBase extends GitTestBase {
 
     
     // Create the unstaged resources panel
-    PanelRefresh refreshSupport = new PanelRefresh(Translator.getInstance());
+    PanelRefresh refreshSupport = new PanelRefresh();
     stagingPanel = new StagingPanel(
-        Translator.getInstance(),
         refreshSupport,
-        new StageController(gitAccess)) {
+        new StageController()) {
       @Override
-      public PushPullController createPushPullController(GitAccess gitAccess) {
-        return new PushPullController(gitAccess, Translator.getInstance()) {
+      public PushPullController createPushPullController() {
+        return new PushPullController() {
           @Override
           protected void showPullConflicts(PullResponse response) {
             // Nothing to do.

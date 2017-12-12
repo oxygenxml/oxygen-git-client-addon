@@ -39,6 +39,7 @@ public class DiffPresenterTest extends GitTestBase {
    */
   private URL toOpen = null;
 
+  @Override
   public void setUp() throws Exception {
     super.setUp();
 
@@ -47,6 +48,7 @@ public class DiffPresenterTest extends GitTestBase {
       PluginWorkspaceProvider.setPluginWorkspace(mock);
       
       Mockito.when(mock.open((URL)Mockito.any())).thenAnswer(new Answer<Boolean>() {
+        @Override
         public Boolean answer(InvocationOnMock invocation) throws Throwable {
           toOpen = (URL) invocation.getArguments()[0];
           return true;
@@ -56,6 +58,7 @@ public class DiffPresenterTest extends GitTestBase {
       final JFrame frame = Mockito.mock(JFrame.class);
       
       Mockito.when(mock.openDiffFilesApplication((URL)Mockito.any(), (URL) Mockito.any())).thenAnswer(new Answer<Object>() {
+        @Override
         public Object answer(InvocationOnMock invocation) throws Throwable {
 
           leftDiff = (URL) invocation.getArguments()[0];
@@ -116,13 +119,14 @@ public class DiffPresenterTest extends GitTestBase {
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
     Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
+      @Override
       public String answer(InvocationOnMock invocation) throws Throwable {
         return (String) invocation.getArguments()[0];
       }
     });
     
     // Diff the first WC local file.
-    DiffPresenter diffPresenter = new DiffPresenter(fileStatus, stageController, translator);
+    DiffPresenter diffPresenter = new DiffPresenter(fileStatus, stageController);
     
     diffPresenter.showDiff();
     
@@ -138,7 +142,7 @@ public class DiffPresenterTest extends GitTestBase {
     rightDiff = null;
     // Diff the index file.
     fileStatus = new FileStatus(GitChangeType.ADD, "test.txt");
-    diffPresenter = new DiffPresenter(fileStatus, stageController, translator);
+    diffPresenter = new DiffPresenter(fileStatus, stageController);
     
     diffPresenter.showDiff();
     
@@ -208,13 +212,14 @@ public class DiffPresenterTest extends GitTestBase {
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
     Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
+      @Override
       public String answer(InvocationOnMock invocation) throws Throwable {
         return (String) invocation.getArguments()[0];
       }
     });
     
     // Diff the first WC local file.
-    DiffPresenter diffPresenter = new DiffPresenter(fileStatus, stageController, translator);
+    DiffPresenter diffPresenter = new DiffPresenter(fileStatus, stageController);
     
     diffPresenter.showDiff();
     
@@ -230,7 +235,7 @@ public class DiffPresenterTest extends GitTestBase {
     rightDiff = null;
     // Diff the index file.
     fileStatus = new FileStatus(GitChangeType.CHANGED, "test.txt");
-    diffPresenter = new DiffPresenter(fileStatus, stageController, translator);
+    diffPresenter = new DiffPresenter(fileStatus, stageController);
     
     diffPresenter.showDiff();
     
