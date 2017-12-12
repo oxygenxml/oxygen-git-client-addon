@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Options>
+    <sshPromptAnswers/>
+    <repositoryLocations>
+        <location>C:\Users\alex_jitianu\Documents\Git-workspace\Oxygen-Git-Plugin\target\test-resources\testStageUnstage_NewMultipleFiles_local</location>
+        <location>C:\Users\alex_jitianu\Documents\Git-workspace\Oxygen-Git-Plugin\target\test-resources\testStageUnstage_NewMultipleFiles_remote</location>
+    </repositoryLocations>
+    <selectedRepository>C:\Users\alex_jitianu\Documents\Git-workspace\Oxygen-Git-Plugin\target\test-resources\testStageUnstage_NewMultipleFiles_local</selectedRepository>
+    <userCredentials/>
+    <commitMessages>
+        <message>Conclude_Merge_Message</message>
+    </commitMessages>
+    <projectsTested/>
+    <destinationPaths/>
+    <passphrase></passphrase>
+</Options>
