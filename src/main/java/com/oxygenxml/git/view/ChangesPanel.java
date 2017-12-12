@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -116,7 +117,7 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * Tree that stores the files
 	 */
-	private JTree tree = new JTree(new StagingResourcesTreeModel(null, false, null));
+	private JTree tree = null;
 
 	/**
 	 * Used to fire an event
@@ -151,6 +152,8 @@ public class ChangesPanel extends JPanel {
 	public ChangesPanel(StageController stageController, boolean forStagedResources) {
 		this.forStagedResources = forStagedResources;
 		this.stageController = stageController;
+		
+		tree = createTree();
 		this.stageController.addTree(this.tree);
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		this.currentViewMode = forStagedResources ? OptionsManager.getInstance().getStagedResViewMode()
@@ -659,10 +662,16 @@ public class ChangesPanel extends JPanel {
 		gbc.gridwidth = 3;
 		StagingResourcesTableModel fileTableModel = new StagingResourcesTableModel(stageController, forStagedResources);
 		
-		filesTable = new JTable(fileTableModel);
+		filesTable = createTable(fileTableModel);
 		filesTable.setTableHeader(null);
 		filesTable.setShowGrid(false);
-		filesTable.getColumnModel().getColumn(0).setMaxWidth(20);
+		
+		ImageIcon icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
+		
+		int iconWidth = icon.getIconWidth();
+    filesTable.getColumnModel().getColumn(0).setPreferredWidth(iconWidth);
+    filesTable.getColumnModel().getColumn(0).setMaxWidth(iconWidth + 4);
+		
 		filesTable.setDefaultRenderer(Object.class, new ChangesTableCellRenderer());
 		filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
@@ -946,4 +955,48 @@ public class ChangesPanel extends JPanel {
       return tooltip;
     }
 	}
+	
+	/**
+	 * @return The tree that presents the resources. 
+	 */
+	private JTree createTree() {
+	  JTree t = null;
+	  try {
+      Class<?> treeClass = getClass().getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Tree");
+      t = (JTree) treeClass.newInstance();
+    } catch (Exception e) {
+      logger.debug(e, e);
+    }
+	  
+	  if (t == null) {
+	    t = new JTree();
+	  }
+	  
+	  t.setModel(new StagingResourcesTreeModel(null, false, null));
+	  
+    return t;
+  }
+	
+	/**
+	 * @param fileTableModel The model for the table.
+	 * 
+	 * @return The table that presents the resources.
+	 */
+  private JTable createTable(StagingResourcesTableModel fileTableModel) {
+    JTable table = null;
+    try {
+      Class<?> tableClass = getClass().getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Table");
+      table = (JTable) tableClass.newInstance();
+    } catch (Exception e) {
+      logger.debug(e, e);
+    }
+    
+    if (table == null) {
+      table = new JTable();
+    }
+    
+    table.setModel(fileTableModel);
+    
+    return table;
+  }
 }
