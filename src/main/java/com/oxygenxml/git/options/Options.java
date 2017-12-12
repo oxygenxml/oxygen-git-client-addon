@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+
 import ro.sync.util.Equaler;
 
 /**
@@ -69,8 +71,36 @@ public class Options {
 	 */
 	@XmlElement(name = "passphrase")
 	private String passphrase = "";
+	
+	/**
+	 * The view mode for the staged resources: tree or table.
+	 */
+	@XmlElement(name = "stagedResViewMode")
+	private ResourcesViewMode stagedResViewMode = ResourcesViewMode.FLAT_VIEW;
+	
+	/**
+   * The view mode for the unstaged resources: tree or table.
+   */
+	@XmlElement(name = "unstagedResViewMode")
+  private ResourcesViewMode unstagedResViewMode = ResourcesViewMode.FLAT_VIEW;
+  
+  public ResourcesViewMode getUnstagedResViewMode() {
+    return unstagedResViewMode;
+  }
 
-	public DestinationPaths getDestinationPaths() {
+  public void setUnstagedResViewMode(ResourcesViewMode unstagedResViewMode) {
+    this.unstagedResViewMode = unstagedResViewMode;
+  }
+
+  public ResourcesViewMode getStagedResViewMode() {
+    return stagedResViewMode;
+  }
+
+  public void setStagedResViewMode(ResourcesViewMode stagedResViewMode) {
+    this.stagedResViewMode = stagedResViewMode;
+  }
+
+  public DestinationPaths getDestinationPaths() {
 		return destinationPaths;
 	}
 
@@ -176,7 +206,8 @@ public class Options {
 	        && Equaler.verifyEquals(repositoryLocations, opt.getRepositoryLocations())
 	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
-	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList());
+	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())
+	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode);
 	  }
 	  return toReturn;
 	}
@@ -186,7 +217,7 @@ public class Options {
 		return "Options [repositoryLocations=" + repositoryLocations + ", selectedRepository=" + selectedRepository
 				+ ", userCredentialsList=" + userCredentialsList + ", commitMessages=" + commitMessages
 				+ ", prjectsTestsForGit=" + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase="
-				+ passphrase + "]";
+				+ passphrase + ", resourcesViewMode=" + stagedResViewMode + "]";
 	}
 
 }

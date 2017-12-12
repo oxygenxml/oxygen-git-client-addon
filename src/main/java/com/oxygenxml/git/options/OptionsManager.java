@@ -15,6 +15,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.OxygenGitPlugin;
+import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -167,6 +168,22 @@ public class OptionsManager {
 		}
 
 	}
+	
+	/**
+	 * Save the new view mode for the staged resources.
+	 */
+	public void saveStagedResViewMode(ResourcesViewMode stagedResViewMode) {
+	  loadOptions();
+	  options.setStagedResViewMode(stagedResViewMode);
+	}
+	
+	/**
+   * Save the new view mode for the unstaged resources.
+   */
+  public void saveUnstagedResViewMode(ResourcesViewMode unstagedResViewMode) {
+    loadOptions();
+    options.setUnstagedResViewMode(unstagedResViewMode);
+  }
 
 	/**
 	 * Retrieves the repository selection list
@@ -383,6 +400,24 @@ public class OptionsManager {
 		loadOptions();
 
 		return options.getDestinationPaths().getPaths();
+	}
+	
+	/**
+	 * @return the staged resources view mode: tree or table.
+	 */
+	public ResourcesViewMode getStagedResViewMode() {
+	  loadOptions();
+	  
+	  return options.getStagedResViewMode();
+	}
+	
+	/**
+	 * @return the unstaged resources view mode: tree or table.
+	 */
+	public ResourcesViewMode getUntagedResViewMode() {
+	  loadOptions();
+	  
+	  return options.getUnstagedResViewMode();
 	}
 	
 	 /**

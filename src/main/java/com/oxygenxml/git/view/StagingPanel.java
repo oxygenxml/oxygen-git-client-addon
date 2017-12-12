@@ -198,8 +198,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		pushPullController = createPushPullController(gitAccess);
 
 		// Creates the panels objects that will be in the staging panel
-		unstagedChangesPanel = new ChangesPanel(gitAccess, stageController, false, translator);
-		stagedChangesPanel = new ChangesPanel(gitAccess, stageController, true, translator);
+		unstagedChangesPanel = new ChangesPanel(stageController, false);
+		stagedChangesPanel = new ChangesPanel(stageController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitAccess, translator);
 		commitPanel = new CommitPanel(gitAccess, translator);
 		toolbarPanel = new ToolbarPanel(pushPullController, translator, refreshSupport);

@@ -38,6 +38,7 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
+import javax.xml.bind.annotation.XmlEnum;
 
 import org.apache.log4j.Logger;
 
@@ -77,16 +78,15 @@ public class ChangesPanel extends JPanel {
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(ChangesPanel.class);
-
-	/**
-	 * constant that specifies the flat view
-	 */
-	private static final int FLAT_VIEW = 1;
-
-	/**
-	 * constant that specifies the tree view
-	 */
-	private static final int TREE_VIEW = 2;
+  
+  /**
+   * The current view name.
+   */
+  @XmlEnum
+  public enum ResourcesViewMode {
+    FLAT_VIEW,
+    TREE_VIEW;
+  }
 
 	/**
 	 * Button that stages/unstages all files
@@ -131,26 +131,30 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * The git API, containg the commands
 	 */
-	private GitAccess gitAccess;
+	private GitAccess gitAccess = GitAccess.getInstance();
 
 	/**
 	 * The active view in the scroll pane
 	 */
-	private int currentView;
+	private ResourcesViewMode currentViewMode;
 
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private Translator translator;
+	private Translator translator = Translator.getInstance();
 
-	public ChangesPanel(GitAccess gitAccess, StageController stageController, boolean forStaging, Translator translator) {
-		this.forStagedResources = forStaging;
+	/**
+	 * Selected paths in tree.
+	 */
+	private TreePath[] selectedPaths = null;
+
+	public ChangesPanel(StageController stageController, boolean forStagedResources) {
+		this.forStagedResources = forStagedResources;
 		this.stageController = stageController;
 		this.stageController.addTree(this.tree);
-		this.gitAccess = gitAccess;
-		this.translator = translator;
 		ToolTipManager.sharedInstance().registerComponent(tree);
-		this.currentView = FLAT_VIEW;
+		this.currentViewMode = forStagedResources ? OptionsManager.getInstance().getStagedResViewMode()
+		    : OptionsManager.getInstance().getUntagedResViewMode();
 		
 		// TODO More lazy. mark the hidden view as dirty.
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
@@ -446,7 +450,7 @@ public class ChangesPanel extends JPanel {
 			@Override
       public void actionPerformed(ActionEvent e) {
 			  List<FileStatus> fss = new ArrayList<FileStatus>();
-				if (currentView == FLAT_VIEW) {
+				if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
 					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 					for (int i = selectedRows.length - 1; i >= 0; i--) {
@@ -483,43 +487,52 @@ public class ChangesPanel extends JPanel {
 	 * selection is preserved between the view changes)
 	 */
 	private void addSwitchButtonListener() {
-
 		switchViewButton.addActionListener(new ActionListener() {
-
-			TreePath[] selectedPaths = null;
-
 			@Override
       public void actionPerformed(ActionEvent e) {
-				if (currentView == FLAT_VIEW) {
-					selectedPaths = restoreSelectedPathsFromTableToTree();
-					tree.setSelectionPaths(selectedPaths);
-					scrollPane.setViewportView(tree);
-					currentView = TREE_VIEW;
-					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TABLE_VIEW));
-					switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
-				} else {
-					currentView = FLAT_VIEW;
-					switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
-					switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
-					filesTable.clearSelection();
-					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
-
-					List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(tree.getSelectionPaths());
-					List<Integer> tableRowsToSelect = new ArrayList<Integer>();
-					for (TreePath treePath : commonAncestors) {
-						String path = TreeFormatter.getStringPath(treePath);
-						tableRowsToSelect.addAll(fileTableModel.getRows(path));
-					}
-
-					for (Integer i : tableRowsToSelect) {
-
-						filesTable.addRowSelectionInterval(i, i);
-					}
-					scrollPane.setViewportView(filesTable);
-				}
+				setResourcesViewMode(currentViewMode == ResourcesViewMode.FLAT_VIEW ? 
+				    ResourcesViewMode.TREE_VIEW : ResourcesViewMode.FLAT_VIEW);
 			}
-
 		});
+	}
+
+	/**
+	 * Set the current view mode for the resources: tree or table.
+	 * 
+	 * @param viewMode The new view mode.
+	 */
+	private void setResourcesViewMode(ResourcesViewMode viewMode) {
+	  this.currentViewMode = viewMode;
+	  if (viewMode == ResourcesViewMode.TREE_VIEW) {
+	    selectedPaths = restoreSelectedPathsFromTableToTree();
+	    tree.setSelectionPaths(selectedPaths);
+	    scrollPane.setViewportView(tree);
+	    switchViewButton.setIcon(Icons.getIcon(ImageConstants.TABLE_VIEW));
+	    switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
+	  } else {
+	    switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
+	    switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+	    filesTable.clearSelection();
+	    StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
+
+	    List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(tree.getSelectionPaths());
+	    List<Integer> tableRowsToSelect = new ArrayList<Integer>();
+	    for (TreePath treePath : commonAncestors) {
+	      String path = TreeFormatter.getStringPath(treePath);
+	      tableRowsToSelect.addAll(fileTableModel.getRows(path));
+	    }
+
+	    for (Integer i : tableRowsToSelect) {
+	      filesTable.addRowSelectionInterval(i, i);
+	    }
+	    scrollPane.setViewportView(filesTable);
+	  }
+
+	  if (forStagedResources) {
+	    OptionsManager.getInstance().saveStagedResViewMode(viewMode);
+	  } else {
+	    OptionsManager.getInstance().saveUnstagedResViewMode(viewMode);
+	  }
 	}
 
 	/**
@@ -619,7 +632,8 @@ public class ChangesPanel extends JPanel {
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
 		switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
-		switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
+		switchViewButton.setIcon(currentViewMode == ResourcesViewMode.FLAT_VIEW ? Icons.getIcon(ImageConstants.TREE_VIEW)
+		    : Icons.getIcon(ImageConstants.TABLE_VIEW));
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
 		toolbar.setOpaque(false);
@@ -648,7 +662,7 @@ public class ChangesPanel extends JPanel {
 		filesTable = new JTable(fileTableModel);
 		filesTable.setTableHeader(null);
 		filesTable.setShowGrid(false);
-		filesTable.getColumnModel().getColumn(0).setWidth(30);
+		filesTable.getColumnModel().getColumn(0).setMaxWidth(20);
 		filesTable.setDefaultRenderer(Object.class, new ChangesTableCellRenderer());
 		filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
@@ -741,6 +755,8 @@ public class ChangesPanel extends JPanel {
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		filesTable.setFillsViewportHeight(true);
 		this.add(scrollPane, gbc);
+		
+		setResourcesViewMode(currentViewMode);
 	}
 	
 	/**
@@ -761,8 +777,8 @@ public class ChangesPanel extends JPanel {
 	 * something is selected in the current view(flat or tree)
 	 */
 	private void toggleSelectedButton() {
-		if (currentView == FLAT_VIEW && filesTable.getSelectedRowCount() > 0
-				|| currentView == TREE_VIEW && tree.getSelectionCount() > 0) {
+		if (currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable.getSelectedRowCount() > 0
+				|| currentViewMode == ResourcesViewMode.TREE_VIEW && tree.getSelectionCount() > 0) {
 			changeSelectedButton.setEnabled(true);
 		} else {
 			changeSelectedButton.setEnabled(false);
