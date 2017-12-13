@@ -71,10 +71,9 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	/**
 	 * Populates the contextual menu for the selected files.
 	 * 
-	 * @param isStage    <code>true</code> if the contextual menu is created
-	 *                       for the staged files.
+	 * @param forStagedRes  <code>true</code> if the contextual menu is created for staged files.
 	 */
-	private void populateMenu(final SelectedResourcesProvider selResProvider, final boolean isStage) {
+	private void populateMenu(final SelectedResourcesProvider selResProvider, final boolean forStagedRes) {
 	  if (!selResProvider.getAllSelectedResources().isEmpty()) {
 	    final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
 	    final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
@@ -114,7 +113,9 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    // "Stage"/"Unstage" actions
 	    AbstractAction stageUnstageAction = new StageUnstageResourceAction(
 	        allSelectedResources, 
-	        isStage, 
+	        // If this contextual menu is built for a staged resource,
+	        // then the action should be unstage.
+	        !forStagedRes, 
 	        stageController);
 
 	    // Resolve using "mine"
