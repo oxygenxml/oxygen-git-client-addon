@@ -13,6 +13,7 @@ import org.eclipse.jgit.lib.Repository;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.GitCommand;
 
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
@@ -23,6 +24,14 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 * on the staged/unstaged resources seen in the flat view.
 */
 public class FlatViewTest extends FlatViewTestBase {
+  
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    
+    stagingPanel.getUnstagedChangesPanel().setResourcesViewMode(ResourcesViewMode.FLAT_VIEW);
+    stagingPanel.getStagedChangesPanel().setResourcesViewMode(ResourcesViewMode.FLAT_VIEW);
+  }
   /**
    * Invokes the change button on the view.
    * 
@@ -37,6 +46,7 @@ public class FlatViewTest extends FlatViewTestBase {
       
       JButton ssButton = unstagedChangesPanel.getChangeSelectedButton();
       filesTable.getSelectionModel().setSelectionInterval(index, index);
+      
       assertTrue(ssButton.isEnabled());
       ssButton.doClick();
     } else {

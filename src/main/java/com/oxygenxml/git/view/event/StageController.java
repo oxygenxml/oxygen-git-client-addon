@@ -39,8 +39,12 @@ public class StageController {
 	   List<Enumeration<TreePath>> treePathsToRestore = new ArrayList<Enumeration<TreePath>>();
 	    for (JTree tree : trees) {
 	      GitTreeNode rootNode = (GitTreeNode) tree.getModel().getRoot();
-	      TreePath rootTreePath = new TreePath(rootNode);
-	      treePathsToRestore.add(tree.getExpandedDescendants(rootTreePath));
+	      if (rootNode != null) {
+	        TreePath rootTreePath = new TreePath(rootNode);
+	        treePathsToRestore.add(tree.getExpandedDescendants(rootTreePath));
+	      } else {
+	        treePathsToRestore.add(null);
+	      }
 	    }
 
 	  if (action == GitCommand.STAGE) {
@@ -71,7 +75,10 @@ public class StageController {
 	  }
 	    
 	  for (int i = 0; i < trees.size(); i++) {
-	    TreeFormatter.restoreLastExpandedPaths(treePathsToRestore.get(i), trees.get(i));
+	    Enumeration<TreePath> expandedPaths = treePathsToRestore.get(i);
+	    if (expandedPaths != null) {
+	      TreeFormatter.restoreLastExpandedPaths(expandedPaths, trees.get(i));
+	    }
 	  }
 	}
 	

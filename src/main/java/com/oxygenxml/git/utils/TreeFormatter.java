@@ -102,12 +102,14 @@ public class TreeFormatter {
 	 */
 	public static GitTreeNode getTreeNodeFromString(DefaultTreeModel model, String path) {
 		GitTreeNode node = (GitTreeNode) model.getRoot();
-		String[] strings = path.split("/");
-		for (String s : strings) {
-			int index = childIndex(node, s);
-			if (index != -1) {
-				node = (GitTreeNode) node.getChildAt(index);
-			}
+		if (node != null) {
+		  String[] strings = path.split("/");
+		  for (String s : strings) {
+		    int index = childIndex(node, s);
+		    if (index != -1) {
+		      node = (GitTreeNode) node.getChildAt(index);
+		    }
+		  }
 		}
 		return node;
 	}

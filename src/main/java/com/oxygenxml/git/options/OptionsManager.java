@@ -138,7 +138,7 @@ public class OptionsManager {
 		if (OxygenGitPlugin.getInstance() != null) {
 			baseDir = OxygenGitPlugin.getInstance().getDescriptor().getBaseDir();
 		} else {
-			baseDir = new File("src/main/resources");
+			baseDir = new File("");
 		}
 		return new File(baseDir, PLUGIN_OPTIONS_FILENAME);
 	}

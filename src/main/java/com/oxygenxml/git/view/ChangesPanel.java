@@ -219,6 +219,10 @@ public class ChangesPanel extends JPanel {
 	 *          - files to generate the nodes
 	 */
 	public void createTreeView(String rootFolder, List<FileStatus> filesStatus) {
+	  if (rootFolder == null) {
+	    rootFolder = "";
+	    logger.info("Null root ", new Exception());
+	  }
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 		GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
 		Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
@@ -355,24 +359,6 @@ public class ChangesPanel extends JPanel {
 				}
 			}
 		});
-		
-    String rootFolder = "[No repository]";
-    try {
-      rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-    } catch (NoRepositorySelected e) {
-      // Never happens.
-      logger.error(e, e);
-    }
-
-		if (!forStagedResources) {
-			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-			updateFlatView(unstagedFiles);
-			createTreeView(rootFolder, unstagedFiles);
-		} else {
-			List<FileStatus> stagedFiles = gitAccess.getStagedFile();
-			updateFlatView(stagedFiles);
-			createTreeView(rootFolder, stagedFiles);
-		}
 		
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_HEIGHT));
 	}
