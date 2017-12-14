@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import ro.sync.util.Equaler;
+import com.oxygenxml.git.utils.Equaler;
 
 /**
  * Enitity for the JAXB to store the user credentials
