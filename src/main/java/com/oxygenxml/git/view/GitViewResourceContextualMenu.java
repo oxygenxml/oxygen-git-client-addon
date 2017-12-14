@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view;
 
 import java.awt.event.ActionEvent;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -10,14 +11,20 @@ import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 
+import com.oxygenxml.git.protocol.GitRevisionURLHandler;
+import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.StageController;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Contextual menu shown for staged/unstaged resources from the Git view 
@@ -48,37 +55,35 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	private GitAccess gitAccess = GitAccess.getInstance();
 
 	/**
-	 * Constructor.
-	 * 
-	 * @param files            The selected files.
-	 * @param stageController  Staging controller.
-	 * @param isStage          <code>true</code> if we create the menu for the staged resources.
-	 */
-	public GitViewResourceContextualMenu(
-	    List<FileStatus> files,
-	    StageController stageController,
-	    boolean isStage) {
-		this.stageController = stageController;
-		populateMenu(files, isStage);
-	}
+   * Constructor.
+   * 
+   * @param stageController  Staging controller.
+   * @param isStage          <code>true</code> if we create the menu for the staged resources.
+   */
+  public GitViewResourceContextualMenu(
+      SelectedResourcesProvider selResProvider,
+      StageController stageController,
+      boolean isStage) {
+    this.stageController = stageController;
+    populateMenu(selResProvider, isStage);
+  }
 
 	/**
 	 * Populates the contextual menu for the selected files.
 	 * 
-	 * @param files      The selected files.
-	 * @param isStage    <code>true</code> if the contextual menu is created
-	 *                       for the staged files.
+	 * @param forStagedRes  <code>true</code> if the contextual menu is created for staged files.
 	 */
-	private void populateMenu(final List<FileStatus> files, final boolean isStage) {
-	  if (!files.isEmpty()) {
-	    final FileStatus fileStatus = files.get(0);
+	private void populateMenu(final SelectedResourcesProvider selResProvider, final boolean forStagedRes) {
+	  if (!selResProvider.getAllSelectedResources().isEmpty()) {
+	    final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
+	    final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
 
 	    // "Open in compare editor" action
 	    AbstractAction showDiffAction = new AbstractAction(
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        new DiffPresenter(fileStatus, stageController).showDiff();
+	        new DiffPresenter(selectedLeaves.get(0), stageController).showDiff();
 	      }
 	    };
 
@@ -87,13 +92,19 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        DiffPresenter diff = new DiffPresenter(fileStatus, stageController);
-	        for (FileStatus file : files) {
-	          diff.setFile(file);
+	        for (FileStatus file : allSelectedResources) {
 	          try {
-	            diff.openFile();
-	          } catch (Exception e1) {
-	            logger.error(e1, e1);
+	            URL fileURL = null;
+	            if (file.getChangeType() == GitChangeType.ADD) {
+	              fileURL = GitRevisionURLHandler.encodeURL(
+	                  VersionIdentifier.INDEX_OR_LAST_COMMIT,
+	                  file.getFileLocation());
+	            } else {
+	              fileURL = FileHelper.getFileURL(file.getFileLocation());  
+	            }
+	            PluginWorkspaceProvider.getPluginWorkspace().open(fileURL);
+	          } catch (Exception ex) {
+	            logger.error(ex, ex);
 	          }
 	        }
 	      }
@@ -101,8 +112,10 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    // "Stage"/"Unstage" actions
 	    AbstractAction stageUnstageAction = new StageUnstageResourceAction(
-	        files, 
-	        isStage, 
+	        allSelectedResources, 
+	        // If this contextual menu is built for a staged resource,
+	        // then the action should be unstage.
+	        !forStagedRes, 
 	        stageController);
 
 	    // Resolve using "mine"
@@ -110,7 +123,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(files, GitCommand.RESOLVE_USING_MINE);
+	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_MINE);
 	      }
 	    };
 
@@ -119,7 +132,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(files, GitCommand.RESOLVE_USING_THEIRS);
+	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_THEIRS);
 	      }
 	    };
 
@@ -128,7 +141,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(files, GitCommand.STAGE);
+	        stageController.doGitCommand(allSelectedResources, GitCommand.STAGE);
 	      }
 	    };
 
@@ -142,7 +155,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    };
 	    
 	    // "Discard" action 
-      AbstractAction discardAction = new DiscardAction(files, stageController);
+      AbstractAction discardAction = new DiscardAction(allSelectedResources, stageController);
 
 	    // Resolve Conflict
 	    JMenu resolveConflict = new JMenu();
@@ -155,122 +168,44 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    resolveConflict.addSeparator();
 	    resolveConflict.add(restartMergeAction);
 
+	    // Populate contextual menu
 	    this.add(showDiffAction);
 	    this.add(openAction);
 	    this.add(stageUnstageAction);
 	    this.add(resolveConflict);
 	    this.add(discardAction);
 
-	    boolean sameChangeType = true;
-	    boolean containsConflicts = false;
-	    boolean containsSubmodule = false;
-	    boolean containsDelete = false;
-	    if (files.size() > 1) {
-	      GitChangeType gitChangeType = files.get(0).getChangeType();
-	      for (FileStatus file : files) {
-	        if (gitChangeType != file.getChangeType()) {
-	          sameChangeType = false;
-	        }
-	        if (GitChangeType.CONFLICT == file.getChangeType()) {
-	          containsConflicts = true;
-	        }
-	        if (GitChangeType.SUBMODULE == file.getChangeType()) {
-	          containsSubmodule = true;
-	        }
-	        if (GitChangeType.MISSING == file.getChangeType()
-	            || GitChangeType.REMOVED == file.getChangeType()) {
-	          containsDelete = true;
-	        }
-	      }
-	      showDiffAction.setEnabled(false);
-	    } else {
-	      showDiffAction.setEnabled(true);
-	    }
-	    if (files.size() > 1 && containsConflicts && !sameChangeType) {
-	      // the active actions for all selected files that contain each type
-	      showDiffAction.setEnabled(false);
-	      openAction.setEnabled(true);
-	      stageUnstageAction.setEnabled(false);
-	      resolveConflict.setEnabled(true);
-	      resolveUsingMineAction.setEnabled(false);
-	      resolveUsingTheirsAction.setEnabled(false);
-	      restartMergeAction.setEnabled(true);
-	      markResolvedAction.setEnabled(false);
-	      discardAction.setEnabled(false);
-	      if(containsSubmodule || containsDelete){
-	        openAction.setEnabled(false);
-	      }
-	    } else {
-	      if (fileStatus.getChangeType() == GitChangeType.ADD && sameChangeType) {
-	        // the active actions for all the selected files that are added
-	        showDiffAction.setEnabled(false);
-	        openAction.setEnabled(true);
-	        stageUnstageAction.setEnabled(true);
-	        resolveConflict.setEnabled(false);
-	        resolveUsingMineAction.setEnabled(false);
-	        resolveUsingTheirsAction.setEnabled(false);
-	        restartMergeAction.setEnabled(true);
-	        markResolvedAction.setEnabled(false);
-	        discardAction.setEnabled(true);
-	      } else if (fileStatus.getChangeType() == GitChangeType.MISSING && sameChangeType) {
-	        // the active actions for all the selected files that are deleted
-	        showDiffAction.setEnabled(false);
-	        openAction.setEnabled(false);
-	        stageUnstageAction.setEnabled(true);
-	        resolveConflict.setEnabled(false);
-	        resolveUsingMineAction.setEnabled(false);
-	        resolveUsingTheirsAction.setEnabled(false);
-	        restartMergeAction.setEnabled(true);
-	        markResolvedAction.setEnabled(false);
-	        discardAction.setEnabled(true);
-	      } else if (fileStatus.getChangeType() == GitChangeType.MODIFIED && sameChangeType) {
-	        // the active actions for all the selected files that are modified
-	        openAction.setEnabled(true);
-	        stageUnstageAction.setEnabled(true);
-	        resolveConflict.setEnabled(false);
-	        resolveUsingMineAction.setEnabled(false);
-	        resolveUsingTheirsAction.setEnabled(false);
-	        restartMergeAction.setEnabled(true);
-	        markResolvedAction.setEnabled(false);
-	        discardAction.setEnabled(true);
-	      } else if (fileStatus.getChangeType() == GitChangeType.SUBMODULE && sameChangeType) {
-	        // the active actions for all the selected files that are submodules
-	        openAction.setEnabled(false);
-	        stageUnstageAction.setEnabled(true);
-	        resolveConflict.setEnabled(false);
-	        resolveUsingMineAction.setEnabled(false);
-	        resolveUsingTheirsAction.setEnabled(false);
-	        restartMergeAction.setEnabled(true);
-	        markResolvedAction.setEnabled(false);
-	        discardAction.setEnabled(true);
-	      } else if (fileStatus.getChangeType() == GitChangeType.CONFLICT && sameChangeType) {
-	        // the active actions for all the selected files that are in conflict
-	        openAction.setEnabled(true);
-	        stageUnstageAction.setEnabled(false);
-	        resolveConflict.setEnabled(true);
-	        resolveUsingMineAction.setEnabled(true);
-	        resolveUsingTheirsAction.setEnabled(true);
-	        restartMergeAction.setEnabled(true);
-	        markResolvedAction.setEnabled(true);
-	        discardAction.setEnabled(false);
-	      } else {
-	        // the active actions for all the selected files that contain each type
-	        // without conflict
-	        showDiffAction.setEnabled(false);
-	        resolveConflict.setEnabled(false);
-	        resolveUsingMineAction.setEnabled(false);
-	        resolveUsingTheirsAction.setEnabled(false);
-	        restartMergeAction.setEnabled(false);
-	        markResolvedAction.setEnabled(false);
-	        discardAction.setEnabled(true);
-	        if(containsSubmodule || containsDelete) {
-	          openAction.setEnabled(false);
-	        } else {
-	          openAction.setEnabled(true);
-	        }
+	    boolean allSelResHaveSameChangeType = true;
+	    boolean selectionContainsConflicts = false;
+	    boolean selectionContainsSubmodule = false;
+	    boolean selectionContainsDeletions = false;
 
+	    GitChangeType firstChangeType = allSelectedResources.get(0).getChangeType();
+	    for (FileStatus file : allSelectedResources) {
+	      GitChangeType changeType = file.getChangeType();
+        if (changeType != firstChangeType) {
+	        allSelResHaveSameChangeType = false;
+	      }
+	      if (changeType == GitChangeType.CONFLICT) {
+	        selectionContainsConflicts = true;
+	      } else if (changeType == GitChangeType.SUBMODULE) {
+	        selectionContainsSubmodule = true;
+	      } else if (changeType == GitChangeType.MISSING || changeType == GitChangeType.REMOVED) {
+	        selectionContainsDeletions = true;
 	      }
 	    }
+
+	    // Enable/disable the actions
+	    showDiffAction.setEnabled(selectedLeaves.size() == 1);
+	    openAction.setEnabled(!selectionContainsDeletions && !selectionContainsSubmodule);
+	    stageUnstageAction.setEnabled(!selectionContainsConflicts);
+	    resolveConflict.setEnabled(selectionContainsConflicts);
+	    resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
+	    resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
+	    markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
+	    restartMergeAction.setEnabled(selectionContainsConflicts);
+	    discardAction.setEnabled(!selectionContainsConflicts);
+	    
 	    try {
 	      if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
 	          || gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
@@ -278,6 +213,9 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        restartMergeAction.setEnabled(true);
 	      }
 	    } catch (NoRepositorySelected e1) {
+	      if (logger.isDebugEnabled()) {
+	        logger.debug(e1, e1);
+	      }
 	      resolveConflict.setEnabled(false);
 	    }
 	  }

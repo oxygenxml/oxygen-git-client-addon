@@ -13,7 +13,6 @@ import java.util.Arrays;
 import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
@@ -83,20 +82,24 @@ public class DiffPresenter {
 	    GitChangeType changeType = file.getChangeType();
 	    switch (changeType) {
 	      case CONFLICT:
-	        conflictDiff();
+	        showConflictDiff();
 	        break;
 	      case CHANGED:
-	        diffIndexWithHead();
+	        showDiffIndexWithHead();
 	        break;
 	      case MODIFIED:
-	        diffView();
+	        showDiffViewForModified();
 	        break;
 	      case ADD:
 	      case UNTRACKED:
-	        openFile();
+	        diffViewForAddedAndUntracked();
 	        break;
 	      case SUBMODULE:
-	        submoduleDiff();
+	        showSubmoduleDiff();
+	        break;
+	      case MISSING:
+	      case REMOVED:
+	        diffViewForMissingAndRemoved();
 	        break;
 	      default:
 	        break;
@@ -110,7 +113,44 @@ public class DiffPresenter {
 	  }
 	}
 
-	private void submoduleDiff() {
+	/**
+	 * Diff for added/untracked resources.
+	 */
+	private void diffViewForAddedAndUntracked() {
+	  URL url = null;
+	  try {
+	    File localFile = new File(
+	        OptionsManager.getInstance().getSelectedRepository(),
+	        file.getFileLocation());
+	    url = localFile.toURI().toURL();
+	  } catch (MalformedURLException e) {
+	    if (logger.isDebugEnabled()) {
+	      logger.debug(e, e);
+	    }
+	  }
+	  showDiffFrame(url, null, null);
+	}
+
+	/**
+	 * Diff for missing/deleted resources.
+	 */
+	private void diffViewForMissingAndRemoved() {
+	  URL lastCommitedFileURL = null;
+	  try {
+	    lastCommitedFileURL = GitRevisionURLHandler.encodeURL(
+	        VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
+	  } catch (MalformedURLException e1) {
+	    if (logger.isDebugEnabled()) {
+	      logger.debug(e1, e1);
+	    }
+	  }
+	  showDiffFrame(null, lastCommitedFileURL, null);
+	}
+
+	/**
+	 * Submodule diff.
+	 */
+	private void showSubmoduleDiff() {
 		GitAccess.getInstance().submoduleCompare(file.getFileLocation(), true);
 		try {
 			URL currentSubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.CURRENT_SUBMODULE, file.getFileLocation());
@@ -126,37 +166,18 @@ public class DiffPresenter {
 	}
 
 	/**
-	 * Opens the file in the Oxygen
-	 * 
-	 * @throws NoWorkTreeException 
-	 * @throws MalformedURLException 
-	 */
-	public void openFile() throws NoRepositorySelected, MalformedURLException {
-	  URL fileURL = null;
-	  GitChangeType changeType = file.getChangeType();
-	  if (changeType == GitChangeType.ADD) {
-	      fileURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
-	  } else {
-	    fileURL = FileHelper.getFileURL(file.getFileLocation());  
-	  }
-	  
-    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-				.open(fileURL);
-	}
-
-	/**
 	 * Presents a 2-way diff
 	 * 
 	 * @throws NoRepositorySelected 
-	 * @throws NoWorkTreeException 
 	 */
-	private void diffView() throws NoRepositorySelected {
+	private void showDiffViewForModified() throws NoRepositorySelected {
 	  // The local (WC) version.
 		URL fileURL = FileHelper.getFileURL(file.getFileLocation());
 		URL lastCommitedFileURL = null;
 
 		try {
-			lastCommitedFileURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
+			lastCommitedFileURL = GitRevisionURLHandler.encodeURL(
+			    VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
 		} catch (MalformedURLException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
@@ -173,7 +194,7 @@ public class DiffPresenter {
    *  
    * @throws NoRepositorySelected 
    */
-  private void diffIndexWithHead() throws NoRepositorySelected {    
+  private void showDiffIndexWithHead() throws NoRepositorySelected {    
     // The local (WC) version.
     URL leftSideURL = FileHelper.getFileURL(file.getFileLocation());
     URL rightSideURL = null;
@@ -195,7 +216,7 @@ public class DiffPresenter {
 	/**
 	 * Presents a 3-way diff
 	 */
-	private void conflictDiff() {
+	private void showConflictDiff() {
 		try {
 			// builds the URL for the files
 			URL local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());

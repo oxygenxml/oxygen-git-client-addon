@@ -31,26 +31,23 @@ public class StageUnstageResourceAction extends AbstractAction {
   /**
    * Constructor.
    * 
-   * @param stage <code>true</code> if the action is "Stage".
+   * @param isStage <code>true</code> if the action is "Stage".
    */
   public StageUnstageResourceAction(
       List<FileStatus> fileStatuses,
-      boolean stage,
+      boolean isStage,
       StageController stageCtrl) {
-    super(stage ? Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE)
-        : Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_STAGE));
+    super(isStage ? Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_STAGE)
+        : Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE));
     this.fileStatuses = fileStatuses;
-    this.isStage = stage;
+    this.isStage = isStage;
     this.stageCtrl = stageCtrl;
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    GitCommand newState = GitCommand.STAGE;
-    if (!isStage) {
-      newState = GitCommand.UNSTAGE;
-    }
-    stageCtrl.doGitCommand(fileStatuses, newState);
+    GitCommand command = isStage ? GitCommand.STAGE : GitCommand.UNSTAGE;
+    stageCtrl.doGitCommand(fileStatuses, command);
   }
   
 }

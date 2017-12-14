@@ -158,6 +158,25 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 		}
 		return containingPaths;
 	}
+	
+	/**
+   * Return the files corresponding to leaves from the given paths.
+   * 
+   * @param selectedPaths The selected paths.
+   * 
+   * @return a list containing the files from the path.
+   */
+  public List<FileStatus> getFileLeavesByPaths(List<String> selectedPaths) {
+    List<FileStatus> containingPaths = new ArrayList<FileStatus>();
+    for (String path : selectedPaths) {
+      for (FileStatus fileStatus : filesStatus) {
+        if (fileStatus.getFileLocation().equals(path)) {
+          containingPaths.add(new FileStatus(fileStatus));
+        }
+      }
+    }
+    return containingPaths;
+  }
 
 	/**
 	 * Sets the files in the model also resets the internal node structure and
