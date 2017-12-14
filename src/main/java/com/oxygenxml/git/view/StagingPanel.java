@@ -26,12 +26,10 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 
 import com.jidesoft.swing.JideSplitPane;
-import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
@@ -93,11 +91,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
 
 	/**
-	 * The translator for the messages that are displayed in this panel
-	 */
-	private Translator translator = Translator.getInstance();
-
-	/**
 	 * Main panel refresh
 	 */
 	private GitRefreshSupport refreshSupport;
@@ -124,8 +117,15 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
         try {
           repository = gitAccess.getRepository();
           if (repository != null) {
-            String path = gitAccess.getWorkingCopy().getAbsolutePath();
-
+            
+            String rootFolder = "[No repository]";
+            try {
+              rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+            } catch (NoRepositorySelected e) {
+              // Never happens.
+              logger.error(e, e);
+            }
+            
             List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
             List<FileStatus> stagedFiles = gitAccess.getStagedFile();
 
@@ -134,8 +134,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
             getStagedChangesPanel().updateFlatView(stagedFiles);
 
             // generate content for TREE_VIEW
-            getUnstagedChangesPanel().createTreeView(path, unstagedFiles);
-            getStagedChangesPanel().createTreeView(path, stagedFiles);
+            getUnstagedChangesPanel().createTreeView(rootFolder, unstagedFiles);
+            getStagedChangesPanel().createTreeView(rootFolder, stagedFiles);
 
             // whan a new working copy is selected clear the commit text area
             getCommitPanel().clearCommitMessage();
@@ -233,10 +233,16 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				.addEditorChangeListener(new WSEditorChangeListener() {
 					@Override
 					public void editorOpened(final URL editorLocation) {
-						editorSaved(gitAccess, editorLocation);
+						addEditorSaveHook(gitAccess, editorLocation);
 					}
 
-          private void editorSaved(final GitAccess gitAccess, final URL editorLocation) {
+					/**
+					 * Adds a hook to refresh the models if the editor is part of the Git working copy.
+					 * 
+					 * @param gitAccess Git access.
+					 * @param editorLocation Editor to check.
+					 */
+          private void addEditorSaveHook(final GitAccess gitAccess, final URL editorLocation) {
             WSEditor editorAccess = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 								.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
 						editorAccess.addEditorListener(new WSEditorListener() {
@@ -259,7 +265,16 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 							          // TODO Sorin It makes sense to schedule this on the PanelRefresh, to avoid threading issues.
 							          List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
 							          unstagedChangesPanel.updateFlatView(newFiles);
-							          unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(), newFiles);
+							          
+							          String rootFolder = "[No repository]";
+							          try {
+							            rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+							          } catch (NoRepositorySelected e) {
+							            // Never happens.
+							            logger.error(e, e);
+							          }
+							          
+							          unstagedChangesPanel.createTreeView(rootFolder, newFiles);
 							        }
 							      } catch (NoRepositorySelected e) {
 							        logger.error(e, e);
@@ -422,8 +437,15 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			toolbarPanel.getPullButton().setEnabled(true);
 			toolbarPanel.getCloneRepositoryButton().setEnabled(true);
 			unstagedChangesPanel.updateFlatView(GitAccess.getInstance().getUnstagedFiles());
-			unstagedChangesPanel.createTreeView(OptionsManager.getInstance().getSelectedRepository(),
-					GitAccess.getInstance().getUnstagedFiles());
+			String rootFolder = "[No repository]";
+      try {
+        rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+      } catch (NoRepositorySelected e) {
+        // Never happens.
+        logger.error(e, e);
+      }
+      unstagedChangesPanel.createTreeView(rootFolder,
+      		GitAccess.getInstance().getUnstagedFiles());
 			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
 			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
 			toolbarPanel.updateInformationLabel();

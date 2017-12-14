@@ -36,6 +36,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
@@ -48,6 +50,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -79,11 +82,11 @@ public class ChangesPanel extends JPanel {
    * Provides the selected resources, sometimes filtered.
    */
   interface SelectedResourcesProvider {
-	/**
-	 * For the tree mode, get only the selected leaves.
-	 * For the table/flat view, get all selected resources,
-	 * because all are, so to say, "leaves".
-	 */
+    /**
+     * For the tree mode, get only the selected leaves.
+     * For the table/flat view, get all selected resources,
+     * because all are, so to say, "leaves".
+     */
     List<FileStatus> getOnlySelectedLeaves();
     /**
      * Get all the selected resources, including the ones
@@ -180,8 +183,10 @@ public class ChangesPanel extends JPanel {
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void stateChanged(ChangeEvent changeEvent) {
+        // Update the table.
         ((StagingResourcesTableModel)filesTable.getModel()).stateChanged(changeEvent);
         
+        // Update the tree.
         StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
         treeModel.stateChanged(changeEvent);
         
@@ -194,6 +199,13 @@ public class ChangesPanel extends JPanel {
 	public JTable getFilesTable() {
 		return filesTable;
 	}
+	
+	/**
+	 * @return The tree that renders resources.
+	 */
+	public JTree getTreeView() {
+    return tree;
+  }
 
 	/**
 	 * Generate a tree structure with the given files. The given path is used to
@@ -206,13 +218,11 @@ public class ChangesPanel extends JPanel {
 	 * @param filesStatus
 	 *          - files to generate the nodes
 	 */
-	public void createTreeView(String path, List<FileStatus> filesStatus) {
+	public void createTreeView(String rootFolder, List<FileStatus> filesStatus) {
 		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 		GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
 		Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
 		
-		path = path.replace("\\", "/");
-		String rootFolder = path.substring(path.lastIndexOf('/') + 1);
 		if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
 			GitTreeNode root = new GitTreeNode(rootFolder);
 			// Create the tree model and add the root node to it
@@ -345,15 +355,23 @@ public class ChangesPanel extends JPanel {
 				}
 			}
 		});
+		
+    String rootFolder = "[No repository]";
+    try {
+      rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+    } catch (NoRepositorySelected e) {
+      // Never happens.
+      logger.error(e, e);
+    }
 
 		if (!forStagedResources) {
 			List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
 			updateFlatView(unstagedFiles);
-			createTreeView(OptionsManager.getInstance().getSelectedRepository(), unstagedFiles);
+			createTreeView(rootFolder, unstagedFiles);
 		} else {
 			List<FileStatus> stagedFiles = gitAccess.getStagedFile();
 			updateFlatView(stagedFiles);
-			createTreeView(OptionsManager.getInstance().getSelectedRepository(), stagedFiles);
+			createTreeView(rootFolder, stagedFiles);
 		}
 		
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_HEIGHT));
@@ -394,6 +412,13 @@ public class ChangesPanel extends JPanel {
 	 * will be opened in the Oxygen
 	 */
 	private void addTreeMouseListener() {
+	  tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+      @Override
+      public void valueChanged(TreeSelectionEvent e) {
+        toggleSelectedButton();
+      }
+    });
+	  
 		tree.addMouseListener(new MouseAdapter() {
 		  @Override
 			public void mouseReleased(MouseEvent e) {
@@ -447,7 +472,6 @@ public class ChangesPanel extends JPanel {
 				} else {
 					tree.clearSelection();
 				}
-				toggleSelectedButton();
 			}
 		});
 
@@ -529,7 +553,7 @@ public class ChangesPanel extends JPanel {
 	 * 
 	 * @param viewMode The new view mode.
 	 */
-	private void setResourcesViewMode(ResourcesViewMode viewMode) {
+	void setResourcesViewMode(ResourcesViewMode viewMode) {
 	  this.currentViewMode = viewMode;
 	  if (viewMode == ResourcesViewMode.TREE_VIEW) {
 	    selectedPaths = restoreSelectedPathsFromTableToTree();
