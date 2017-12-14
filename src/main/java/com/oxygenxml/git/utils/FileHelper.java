@@ -40,6 +40,57 @@ public class FileHelper {
 	public static String rewriteSeparator(String path) {
 	  return path.replace("\\", "/");
 	}
+	
+	/**
+   * Extracts the last file name from the path.
+   * 
+   * @param               path The path of the file.
+   * @param removeAnchors <code>true</code> to remove any anchors (what is after a '#' sign inclusive) 
+   * @return              The name of the file.
+   */
+  public static String extractFileName(String path, boolean removeAnchors) {
+    if (path == null) {
+      return null;
+    }
+    String fileName = null;
+    if (removeAnchors) {
+      // Remove first the anchor. It can contain '/' characters.
+      path = removeQueryOrAnchorFromName(path);
+    }
+    int index = path.lastIndexOf('/');
+    if (index == -1) {
+      // Maybe we have a file path with the path delimiter '\'.
+      index = path.lastIndexOf('\\');
+    }
+    if (index != -1) {
+      fileName = path.substring(index + 1);
+    } else {
+      // This is the case of the relative FILE (i.e. "some.html").
+      fileName = path;
+    }
+    return fileName;
+  }
+  
+  /**
+   * Remove the query or anchor from name.
+   * 
+   * @param name The name to remove the query from.
+   * @return The name without the query or anchor in it.
+   */
+  public static String removeQueryOrAnchorFromName(String name) {
+    if (name != null) {
+      int queryIndex = name.indexOf('?');
+      if(queryIndex != -1) {
+        name = name.substring(0, queryIndex);
+      } else {
+        //Maybe it has an anchor
+        int anchorIndex = name.indexOf('#');
+        if(anchorIndex != -1) {
+          name = name.substring(0, anchorIndex);
+        }        
+      }}
+    return name;
+  }
 
 	/**
 	 * Searches a given path for all files in that path. Generates the files paths
