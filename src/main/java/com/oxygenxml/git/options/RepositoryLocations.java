@@ -8,7 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import ro.sync.util.Equaler;
+import com.oxygenxml.git.utils.Equaler;
+
 
 /**
  * Entity for the JAXB to store the list of repository locations

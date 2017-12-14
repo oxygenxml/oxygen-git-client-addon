@@ -1,6 +1,6 @@
 package com.oxygenxml.git.service.entities;
 
-import ro.sync.util.Equaler;
+import com.oxygenxml.git.utils.Equaler;
 
 /**
  * Git File Status. Used to store the file location and the file state(DELETED,

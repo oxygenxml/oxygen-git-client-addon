@@ -34,7 +34,6 @@ import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.UtilAccess;
-import ro.sync.util.PlatformDetector;
 
 /**
  * A collection of handy methods. 
@@ -248,7 +247,8 @@ public class GitTestBase extends JFCTestCase {
         URL url = (URL) invocation.getArguments()[0];
         
         String path = url.getPath();
-        if (PlatformDetector.isWinXPOrLater() && path.startsWith("/")) {
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("win") && path.startsWith("/")) {
           path = path.substring(1, path.length());
         }
         
