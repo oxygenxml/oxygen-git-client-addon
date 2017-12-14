@@ -199,25 +199,41 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    showDiffAction.setEnabled(selectedLeaves.size() == 1);
 	    openAction.setEnabled(!selectionContainsDeletions && !selectionContainsSubmodule);
 	    stageUnstageAction.setEnabled(!selectionContainsConflicts);
-	    resolveConflict.setEnabled(selectionContainsConflicts);
+	    resolveConflict.setEnabled(isRepoInMergingState());
 	    resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
 	    resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
 	    markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
-	    restartMergeAction.setEnabled(selectionContainsConflicts);
+	    restartMergeAction.setEnabled(isRepoInMergingState());
 	    discardAction.setEnabled(!selectionContainsConflicts);
-	    
-	    try {
-	      if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-	          || gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING) {
-	        resolveConflict.setEnabled(true);
-	        restartMergeAction.setEnabled(true);
-	      }
-	    } catch (NoRepositorySelected e1) {
-	      if (logger.isDebugEnabled()) {
-	        logger.debug(e1, e1);
-	      }
-	      resolveConflict.setEnabled(false);
-	    }
 	  }
 	}
+
+	/**
+	 * Check if the repository is in merging state.
+	 * 
+	 * @return <code>true</code> if the repository is in merging state.
+	 */
+  private boolean isRepoInMergingState() {
+    boolean toReturn = false;
+    try {
+      toReturn =  getRepositoryState() == RepositoryState.MERGING_RESOLVED
+          || getRepositoryState() == RepositoryState.MERGING;
+    } catch (NoRepositorySelected e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+    return toReturn;
+  }
+
+  /**
+   * Get repository state.
+   * 
+   * @return the repository state.
+   * 
+   * @throws NoRepositorySelected
+   */
+  protected RepositoryState getRepositoryState() throws NoRepositorySelected {
+    return gitAccess.getRepository().getRepositoryState();
+  }
 }

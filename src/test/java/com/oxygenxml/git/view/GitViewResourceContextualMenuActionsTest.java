@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PopupMenuSerializer;
@@ -234,7 +236,12 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true) {
+      @Override
+      protected RepositoryState getRepositoryState() throws NoRepositorySelected {
+        return RepositoryState.MERGING;
+      }
+    };
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
@@ -287,7 +294,12 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true) {
+      @Override
+      protected RepositoryState getRepositoryState() throws NoRepositorySelected {
+        return RepositoryState.MERGING;
+      }
+    };
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
@@ -340,7 +352,12 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true) {
+      @Override
+      protected RepositoryState getRepositoryState() throws NoRepositorySelected {
+        return RepositoryState.MERGING;
+      }
+    };
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 

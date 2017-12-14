@@ -305,14 +305,19 @@ public class PanelRefresh implements GitRefreshSupport {
 					}
 				}
 				if (!newFiles.equals(filesInModel)) {
-					if (unstaged) {
+					String rootFolder = "[No repository]";
+          try {
+            rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+          } catch (NoRepositorySelected e) {
+            // Never happens.
+            logger.error(e, e);
+          }
+          if (unstaged) {
 						stagingPanel.getUnstagedChangesPanel().updateFlatView(newFiles);
-						stagingPanel.getUnstagedChangesPanel().createTreeView(OptionsManager.getInstance().getSelectedRepository(),
-								newFiles);
+						stagingPanel.getUnstagedChangesPanel().createTreeView(rootFolder, newFiles);
 					} else {
 						stagingPanel.getStagedChangesPanel().updateFlatView(newFiles);
-						stagingPanel.getStagedChangesPanel().createTreeView(OptionsManager.getInstance().getSelectedRepository(),
-								newFiles);
+						stagingPanel.getStagedChangesPanel().createTreeView(rootFolder, newFiles);
 					}
 				}
 			}

@@ -2,10 +2,10 @@
 <Options>
     <sshPromptAnswers/>
     <repositoryLocations>
-        <location>C:\Users\alex_jitianu\Documents\Git-workspace\Oxygen-Git-Plugin\target\test-resources\testStageUnstage_NewMultipleFiles_local</location>
-        <location>C:\Users\alex_jitianu\Documents\Git-workspace\Oxygen-Git-Plugin\target\test-resources\testStageUnstage_NewMultipleFiles_remote</location>
+        <location>D:\workspaceSorin\oxygen-git-plugin\target\test-resources\testStageUnstage_NewMultipleFiles_local</location>
+        <location>D:\workspaceSorin\oxygen-git-plugin\target\test-resources\testStageUnstage_NewMultipleFiles_remote</location>
     </repositoryLocations>
-    <selectedRepository>C:\Users\alex_jitianu\Documents\Git-workspace\Oxygen-Git-Plugin\target\test-resources\testStageUnstage_NewMultipleFiles_local</selectedRepository>
+    <selectedRepository>target/test-resource/GitAccessPushTest/local</selectedRepository>
     <userCredentials/>
     <commitMessages>
         <message>Conclude_Merge_Message</message>
@@ -13,4 +13,6 @@
     <projectsTested/>
     <destinationPaths/>
     <passphrase></passphrase>
+    <stagedResViewMode>FLAT_VIEW</stagedResViewMode>
+    <unstagedResViewMode>FLAT_VIEW</unstagedResViewMode>
 </Options>

@@ -63,6 +63,7 @@ public class GitTestBase extends JFCTestCase {
     // Install protocol.
     try {
     URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
+      @Override
       public URLStreamHandler createURLStreamHandler(String protocol) {
         if (protocol.equals(GitRevisionURLHandler.GIT_PROTOCOL)) {
           URLStreamHandler handler = new GitRevisionURLHandler();

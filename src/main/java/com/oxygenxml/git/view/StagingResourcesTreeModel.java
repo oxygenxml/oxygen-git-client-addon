@@ -28,12 +28,11 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 */
 	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
 
-	/**
-	 * <code>true</code> if this model presents un-staged resources that will be
-	 * staged. <code>false</code> if this model presents staged resources that
-	 * will be unstaged.
-	 */
-	private boolean forStaging;
+  /**
+   * <code>true</code> if this model presents the resources inside the index.
+   * <code>false</code> if it presents the modified resources that can be put in the index.
+   */
+	private boolean inIndex;
 
 	/**
 	 * 
@@ -43,37 +42,45 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 */
 	public StagingResourcesTreeModel(TreeNode root, boolean forStaging, List<FileStatus> filesStatus) {
 		super(root);
-		this.forStaging = forStaging;
+		this.inIndex = forStaging;
 		this.filesStatus = filesStatus;
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
 		List<FileStatus> oldStates = changeEvent.getOldStates();
     List<FileStatus> newStates = 
-        forStaging ? 
+        inIndex ? 
             GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) :
             GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles()); 
     
     if (changeEvent.getCommand() == GitCommand.STAGE) {
-			if (forStaging) {
+			if (inIndex) {
 				insertNodes(newStates);
 			} else {
 				deleteNodes(oldStates);
 			}
 		} else if (changeEvent.getCommand() == GitCommand.UNSTAGE) {
-			if (forStaging) {
+			if (inIndex) {
 				deleteNodes(oldStates);
 			} else {
+	       // Things were taken out of the INDEX. 
+        // The same resource might be present in the UnStaged and INDEX. Remove old states.
+			  deleteNodes(oldStates);
 				insertNodes(newStates);
 			}
 		} else if (changeEvent.getCommand() == GitCommand.COMMIT) {
-			if (forStaging) {
+			if (inIndex) {
 				deleteNodes(filesStatus);
 				filesStatus.clear();
 			}
 		} else if (changeEvent.getCommand() == GitCommand.DISCARD) {
 			deleteNodes(oldStates);
-		}
+		} else if (changeEvent.getCommand() == GitCommand.MERGE_RESTART) {
+      filesStatus.clear();
+      List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFile() :
+        GitAccess.getInstance().getUnstagedFiles();
+      insertNodes(fileStatuses);
+    }
 
 		fireTreeStructureChanged(this, null, null, null);
 	}
@@ -218,4 +225,10 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 		}
 	}
 
+	/**
+	 * @return The files in the model.
+	 */
+	public List<FileStatus> getFilesStatus() {
+    return filesStatus;
+  }
 }

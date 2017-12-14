@@ -85,22 +85,10 @@ public class DiffPresenterTest extends GitTestBase {
    */
   @Test
   public void testNewFileDiff() throws Exception {
-    /**
-     * The local repository. 
-     */
     String localTestRepository = "target/test-resources/local";
-    /**
-     * The remote repository.
-     */
     String remoteTestRepository = "target/test-resources/remote";
-    
-    GitAccess gitAccess = GitAccess.getInstance();
-    
     Repository remoteRepo = createRepository(remoteTestRepository);
-    
-    // Create the local repository.
     Repository localRepo = createRepository(localTestRepository);
-    
     // Bind the local repository to the remote one.
     bindLocalToRemote(localRepo , remoteRepo);
     
@@ -108,8 +96,8 @@ public class DiffPresenterTest extends GitTestBase {
     File file = new File(localTestRepository + "/test.txt");
     file.createNewFile();
     
-    // Add it to the index.
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    // Add it to the index / Stage it.
+    GitAccess.getInstance().add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
     // Modify the newly created file.
     setFileContent(file, "content");
@@ -146,11 +134,9 @@ public class DiffPresenterTest extends GitTestBase {
     
     diffPresenter.showDiff();
     
-    assertNull(leftDiff);
+    assertEquals(localVersionURL, leftDiff.toString());
     assertNull(rightDiff);
-    assertNotNull(toOpen);
-    
-    assertEquals(indexVersionURL.toString(), toOpen.toString());
+    assertNull(toOpen);
     
     // Assert content.
     assertEquals("", read(new URL(indexVersionURL)));

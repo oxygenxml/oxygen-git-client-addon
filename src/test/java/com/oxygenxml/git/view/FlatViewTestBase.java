@@ -5,6 +5,7 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.JTree;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
@@ -89,7 +90,7 @@ public class FlatViewTestBase extends GitTestBase {
    * @param unstagedExpected Expected for the un-staged model.
    * @param indexExpected Expected for the staged model.
    */
-  protected void assertModels(String unstagedExpected, String indexExpected) {
+  protected void assertTableModels(String unstagedExpected, String indexExpected) {
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTable filesTable = unstagedChangesPanel.getFilesTable();
     StagingResourcesTableModel uModel = (StagingResourcesTableModel) filesTable.getModel();
@@ -113,9 +114,50 @@ public class FlatViewTestBase extends GitTestBase {
    * 
    * @return The model.
    */
-  protected String getTreeModelDump(StagingResourcesTableModel model) {
+  private String getTreeModelDump(StagingResourcesTableModel model) {
     StringBuilder sb = new StringBuilder();
     for (FileStatus fileStatus : model.getFilesStatuses()) {
+      if (sb.length() > 0) {
+        sb.append("\n");
+      }
+      sb.append(fileStatus.getChangeType()).append(", ").append(fileStatus.getFileLocation());
+    }
+    return sb.toString();
+  }
+  
+  /**
+   * Dumps the un-staged and stage models and asserts their content.
+   * 
+   * @param unstagedExpected Expected for the un-staged model.
+   * @param indexExpected Expected for the staged model.
+   */
+  protected void assertTreeModels(String unstagedExpected, String indexExpected) {
+    ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
+    JTree filesTable = unstagedChangesPanel.getTreeView();
+    StagingResourcesTreeModel uModel = (StagingResourcesTreeModel) filesTable.getModel();
+    // The newly created file is present in the model.
+    
+    ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
+    JTree stFilesTable = stagedChangesPanel.getTreeView();
+    StagingResourcesTreeModel stModel = (StagingResourcesTreeModel) stFilesTable.getModel();
+    // The newly created file is present in the model.
+    
+    String ex = "--UNSTAGED--\n" + unstagedExpected + "\n\n--INDEX--\n" + indexExpected;
+    String ac = "--UNSTAGED--\n" + getTreeModelDump(uModel) + "\n\n--INDEX--\n" + getTreeModelDump(stModel);
+
+    assertEquals(ex, ac);
+  }
+  
+  /**
+   * Dumps the model as a string.
+   * 
+   * @param model Model to dump.
+   * 
+   * @return The model.
+   */
+  private String getTreeModelDump(StagingResourcesTreeModel model) {
+    StringBuilder sb = new StringBuilder();
+    for (FileStatus fileStatus : model.getFilesStatus()) {
       if (sb.length() > 0) {
         sb.append("\n");
       }

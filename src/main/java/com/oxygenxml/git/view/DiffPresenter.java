@@ -120,10 +120,11 @@ public class DiffPresenter {
 	  URL url = null;
 	  try {
 	    File localFile = new File(
-	        OptionsManager.getInstance().getSelectedRepository(),
+	        GitAccess.getInstance().getWorkingCopy().getAbsolutePath(),
 	        file.getFileLocation());
 	    url = localFile.toURI().toURL();
-	  } catch (MalformedURLException e) {
+	  } catch (MalformedURLException | NoRepositorySelected e) {
+	    // Shouldn't rreally happen
 	    if (logger.isDebugEnabled()) {
 	      logger.debug(e, e);
 	    }

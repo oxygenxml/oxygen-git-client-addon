@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import com.oxygenxml.git.view.GitTreeNode;
@@ -224,4 +225,22 @@ public class TreeFormatter {
 			}
 		}
 	}
+	
+	/**
+	 * Converts a file path to the TreePath that indentifies the file in the tree model.
+	 * 
+	 * @param path File path from the working copy.
+	 * 
+	 * @return A file path to the TreePath.
+	 */
+	public static TreePath getTreePath(TreeModel model, String path) {
+	  String[] strings = path.split("/");
+	  Object[] parts = new Object[1 + strings.length];
+	  parts[0] = model.getRoot();
+	  for (int i = 0; i < strings.length; i++) {
+      parts[i + 1] = new GitTreeNode(strings[i]);
+    }
+	  
+	  return new TreePath(parts);
+  }
 }
