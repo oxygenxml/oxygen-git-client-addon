@@ -50,7 +50,6 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -148,11 +147,6 @@ public class ChangesPanel extends JPanel {
 	 * Shows whether or not this is the panel for staged or unstaged resources. 
 	 */
 	private boolean forStagedResources;
-
-	/**
-	 * The git API, containg the commands
-	 */
-	private GitAccess gitAccess = GitAccess.getInstance();
 
 	/**
 	 * The active view in the scroll pane
