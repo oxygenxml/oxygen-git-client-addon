@@ -19,8 +19,6 @@ import javax.swing.undo.UndoableEdit;
 
 import org.apache.log4j.Logger;
 
-import ro.sync.util.PlatformDetector;
-
 /**
  * Installs the UNDO/REDO support on a text component. 
  * @author alex_jitianu
@@ -170,7 +168,8 @@ public class UndoSupportInstaller {
   
   	// Create an undo action and add it to the text component
   	commitMessage.getActionMap().put("Undo", new AbstractAction("Undo") {
-  		public void actionPerformed(ActionEvent evt) {
+  		@Override
+      public void actionPerformed(ActionEvent evt) {
   			if (undoManager.canUndo()) {
   				undoManager.undo();
   			}
@@ -178,13 +177,15 @@ public class UndoSupportInstaller {
   	});
   
   	// Bind the undo action to ctl-Z
-  	int modifier = PlatformDetector.isMacOS() ? KeyEvent.META_DOWN_MASK:KeyEvent.CTRL_DOWN_MASK;
+  	String osName = System.getProperty("os.name").toLowerCase();
+  	int modifier = osName.contains("mac") ? KeyEvent.META_DOWN_MASK : KeyEvent.CTRL_DOWN_MASK;
   	
   	commitMessage.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, modifier), "Undo");
   
   	// Create a redo action and add it to the text component
   	commitMessage.getActionMap().put("Redo", new AbstractAction("Redo") {
-  		public void actionPerformed(ActionEvent evt) {
+  		@Override
+      public void actionPerformed(ActionEvent evt) {
   			if (undoManager.canRedo()) {
   				undoManager.redo();
   			}
