@@ -31,7 +31,6 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
@@ -91,11 +90,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * List of listeners for this panel
 	 */
 	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
-
-	/**
-	 * The translator for the messages that are displayed in this panel
-	 */
-	private Translator translator = Translator.getInstance();
 
 	/**
 	 * Main panel refresh
@@ -233,10 +227,16 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				.addEditorChangeListener(new WSEditorChangeListener() {
 					@Override
 					public void editorOpened(final URL editorLocation) {
-						editorSaved(gitAccess, editorLocation);
+						addEditorSaveHook(gitAccess, editorLocation);
 					}
 
-          private void editorSaved(final GitAccess gitAccess, final URL editorLocation) {
+					/**
+					 * Adds a hook to refresh the models if the editor is part of the Git working copy.
+					 * 
+					 * @param gitAccess Git access.
+					 * @param editorLocation Editor to check.
+					 */
+          private void addEditorSaveHook(final GitAccess gitAccess, final URL editorLocation) {
             WSEditor editorAccess = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 								.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
 						editorAccess.addEditorListener(new WSEditorListener() {
