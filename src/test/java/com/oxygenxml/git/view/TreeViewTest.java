@@ -6,13 +6,16 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.swing.JButton;
-import javax.swing.JTable;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 
 import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.GitCommand;
 
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
@@ -22,7 +25,16 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 * Test cases related to the actions performed
 * on the staged/unstaged resources seen in the flat view.
 */
-public class FlatViewTest extends FlatViewTestBase {
+public class TreeViewTest extends FlatViewTestBase {
+  
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    
+    stagingPanel.getUnstagedChangesPanel().setResourcesViewMode(ResourcesViewMode.TREE_VIEW);
+    stagingPanel.getStagedChangesPanel().setResourcesViewMode(ResourcesViewMode.TREE_VIEW);
+  }
+  
   /**
    * Invokes the change button on the view.
    * 
@@ -30,24 +42,29 @@ public class FlatViewTest extends FlatViewTestBase {
    * <code>false</code> to move files out of the INDEX.
    * @param index Index in the table of the file to move.
    */
-  private void change(boolean stage, int index) {
+  private void change(boolean stage, String fileToSelect) {
+    ChangesPanel changesPanel = null;
     if (stage) {
-      ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
-      JTable filesTable = unstagedChangesPanel.getFilesTable();
-      
-      JButton ssButton = unstagedChangesPanel.getChangeSelectedButton();
-      filesTable.getSelectionModel().setSelectionInterval(index, index);
-      assertTrue(ssButton.isEnabled());
-      ssButton.doClick();
+      changesPanel = stagingPanel.getUnstagedChangesPanel();
     } else {
-      ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
-      JTable stFilesTable = stagedChangesPanel.getFilesTable();
-      
-      JButton usButton = stagedChangesPanel.getChangeSelectedButton();
-      stFilesTable.getSelectionModel().setSelectionInterval(index, index);
-      assertTrue(usButton.isEnabled());
-      usButton.doClick();
+      changesPanel = stagingPanel.getStagedChangesPanel();
     }
+    
+    JTree filesTree = changesPanel.getTreeView();
+    
+    JButton ssButton = changesPanel.getChangeSelectedButton();
+    
+    expandAll(filesTree);
+    
+    TreePath treePath = TreeFormatter.getTreePath(filesTree.getModel(), fileToSelect);
+    filesTree.getSelectionModel().setSelectionPath(treePath);
+    
+    assertTrue(ssButton.isEnabled());
+    ssButton.doClick();
+  }
+  
+  private static void expandAll(JTree tree) {
+    TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
   }
   
   /**
@@ -56,19 +73,16 @@ public class FlatViewTest extends FlatViewTestBase {
    * @param stage <code>true</code> to stage. <code>false</code> to un-stage.
    */
   private void changeAll(boolean stage) {
+    ChangesPanel changesPanel = null;
     if (stage) {
-      ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
-      
-      JButton ssButton = unstagedChangesPanel.getChangeAllButton();
-      assertTrue(ssButton.isEnabled());
-      ssButton.doClick();
+      changesPanel = stagingPanel.getUnstagedChangesPanel();
     } else {
-      ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
-      
-      JButton usButton = stagedChangesPanel.getChangeAllButton();
-      assertTrue(usButton.isEnabled());
-      usButton.doClick();
+      changesPanel = stagingPanel.getStagedChangesPanel();
     }
+    
+    JButton ssButton = changesPanel.getChangeAllButton();
+    assertTrue(ssButton.isEnabled());
+    ssButton.doClick();
   }
   
   /**
@@ -99,22 +113,22 @@ public class FlatViewTest extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // The newly created file is present in the model.
-    assertTableModels(
+    assertTreeModels(
         "UNTRACKED, test.txt",
         "");
 
     //---------------
     // Stage.
     //---------------
-    change(true, 0);
+    change(true, "test.txt");
     // The file has moved to the INDEX.
-    assertTableModels("", "ADD, test.txt");
+    assertTreeModels("", "ADD, test.txt");
 
     //---------------
     // Back to unStaged
     //---------------
-    change(false, 0);
-    assertTableModels("UNTRACKED, test.txt", "");
+    change(false, "test.txt");
+    assertTreeModels("UNTRACKED, test.txt", "");
   }
   
   /**
@@ -147,26 +161,26 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Add it to the index.
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    assertTableModels("", "ADD, test.txt");
+    assertTreeModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");
     
-    assertTableModels("", "");
+    assertTreeModels("", "");
     
     // Change the file.
     setFileContent(file, "index content");
     
-    assertTableModels("MODIFIED, test.txt", "");
+    assertTreeModels("MODIFIED, test.txt", "");
     
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     
-    assertTableModels("", "CHANGED, test.txt");
+    assertTreeModels("", "CHANGED, test.txt");
     
     // Change the file.
     setFileContent(file, "modified content");
     
     // The file is present in  both areas.
-    assertTableModels(
+    assertTreeModels(
         "MODIFIED, test.txt", 
         "CHANGED, test.txt");
     
@@ -175,7 +189,7 @@ public class FlatViewTest extends FlatViewTestBase {
         Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt")),
         stagingPanel.getStageController());
     discardAction.actionPerformed(null);
-    assertTableModels(
+    assertTreeModels(
         "", 
         "");    
   }
@@ -209,38 +223,38 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Add it to the index.
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    assertTableModels("", "ADD, test.txt");
+    assertTreeModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");
     
-    assertTableModels("", "");
+    assertTreeModels("", "");
     
     // Change the file.
     setFileContent(file, "index content");
     
-    assertTableModels("MODIFIED, test.txt", "");
+    assertTreeModels("MODIFIED, test.txt", "");
     //------------
     // Add to INDEX (Stage)
     //------------
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     
-    assertTableModels("", "CHANGED, test.txt");
+    assertTreeModels("", "CHANGED, test.txt");
     
     //-----------------
     // Change the file again. It will appear in the index as well.
     //------------------
     setFileContent(file, "modified content");
     
-    assertTableModels(
+    assertTreeModels(
         "MODIFIED, test.txt", 
         "CHANGED, test.txt");
     
     //------------------
     // Unstage the file from the INDEX.
     //------------------
-    change(false, 0);
+    change(false, "test.txt");
     
-    assertTableModels(
+    assertTreeModels(
         "MODIFIED, test.txt", 
         "");
   }
@@ -277,7 +291,7 @@ public class FlatViewTest extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // The newly created file is present in the model.
-    assertTableModels(
+    assertTreeModels(
         "UNTRACKED, test.txt\n" + 
         "UNTRACKED, test2.txt", 
         "");
@@ -285,7 +299,7 @@ public class FlatViewTest extends FlatViewTestBase {
     changeAll(true);
     
     // The newly created file is present in the model.
-    assertTableModels(
+    assertTreeModels(
         "", 
         "ADD, test.txt\n" + 
         "ADD, test2.txt");
@@ -296,7 +310,7 @@ public class FlatViewTest extends FlatViewTestBase {
     changeAll(false);
     
     // The newly created file is present in the model.
-    assertTableModels(
+    assertTreeModels(
         "UNTRACKED, test.txt\n" + 
         "UNTRACKED, test2.txt", 
         "");
@@ -332,25 +346,25 @@ public class FlatViewTest extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // The newly created file is present in the model.
-    assertTableModels("UNTRACKED, test.txt","");
+    assertTreeModels("UNTRACKED, test.txt","");
 
-    change(true, 0);
+    change(true, "test.txt");
     
     // The file has moved to the INDEX.
-    assertTableModels("", "ADD, test.txt");
+    assertTreeModels("", "ADD, test.txt");
   
     //----------------
     // Change the file again.
     //----------------
     setFileContent(file, "new content");
-    assertTableModels("MODIFIED, test.txt", "ADD, test.txt");
+    assertTreeModels("MODIFIED, test.txt", "ADD, test.txt");
     
     //--------------
     // Back to unstaged
     //---------------
-    change(false, 0);
+    change(false, "test.txt");
     
-    assertTableModels("UNTRACKED, test.txt","");
+    assertTreeModels("UNTRACKED, test.txt","");
   }
   
   /**
@@ -412,13 +426,13 @@ public class FlatViewTest extends FlatViewTestBase {
     // Get the remote. The conflict appears.
     pull();
 
-    assertTableModels("CONFLICT, test.txt", "");
+    assertTreeModels("CONFLICT, test.txt", "");
     
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_MINE);
     
-    assertTableModels("", "");
+    assertTreeModels("", "");
 
     // Check the commit.
     CommitPanel commitPanel = stagingPanel.getCommitPanel();
@@ -488,28 +502,28 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Get the remote. The conflict appears.
     pull();
-    assertTableModels("CONFLICT, test.txt", "");
+    assertTreeModels("CONFLICT, test.txt", "");
     
     // Resolve using theirs
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    assertTableModels("", "CHANGED, test.txt");
+    assertTreeModels("", "CHANGED, test.txt");
     
     // Restart merge
     gitAccess.restartMerge();
     flushAWT();
-    assertTableModels("CONFLICT, test.txt", "");
+    assertTreeModels("CONFLICT, test.txt", "");
     
     // Resolve again using theirs
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    assertTableModels("", "CHANGED, test.txt");
+    assertTreeModels("", "CHANGED, test.txt");
     
     // Commit
     gitAccess.commit("commit");
-    assertTableModels("", "");
+    assertTreeModels("", "");
   }
   
   /**
@@ -529,7 +543,7 @@ public class FlatViewTest extends FlatViewTestBase {
     // Create repositories
     createRepository(localTestRepository);
     
-    assertTableModels("", "");
+    assertTreeModels("", "");
 
     URL remoteResource = new URL("http://oxygenxml.com");
 
@@ -551,6 +565,6 @@ public class FlatViewTest extends FlatViewTestBase {
       wsEditorChangeListener.editorClosed(remoteResource);
     }
 
-    assertTableModels("", "");
+    assertTreeModels("", "");
   }
 }

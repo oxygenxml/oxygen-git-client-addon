@@ -36,6 +36,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
@@ -163,8 +165,10 @@ public class ChangesPanel extends JPanel {
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void stateChanged(ChangeEvent changeEvent) {
+        // Update the table.
         ((StagingResourcesTableModel)filesTable.getModel()).stateChanged(changeEvent);
         
+        // Update the tree.
         StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
         treeModel.stateChanged(changeEvent);
         
@@ -177,6 +181,13 @@ public class ChangesPanel extends JPanel {
 	public JTable getFilesTable() {
 		return filesTable;
 	}
+	
+	/**
+	 * @return The tree that renders resources.
+	 */
+	public JTree getTreeView() {
+    return tree;
+  }
 
 	/**
 	 * Generate a tree structure with the given files. The given path is used to
@@ -377,6 +388,13 @@ public class ChangesPanel extends JPanel {
 	 * will be opened in the Oxygen
 	 */
 	private void addTreeMouseListener() {
+	  tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+      @Override
+      public void valueChanged(TreeSelectionEvent e) {
+        toggleSelectedButton();
+      }
+    });
+	  
 		tree.addMouseListener(new MouseAdapter() {
 		  @Override
 			public void mouseReleased(MouseEvent e) {
@@ -422,7 +440,6 @@ public class ChangesPanel extends JPanel {
 				} else {
 					tree.clearSelection();
 				}
-				toggleSelectedButton();
 			}
 		});
 
@@ -504,7 +521,7 @@ public class ChangesPanel extends JPanel {
 	 * 
 	 * @param viewMode The new view mode.
 	 */
-	private void setResourcesViewMode(ResourcesViewMode viewMode) {
+	void setResourcesViewMode(ResourcesViewMode viewMode) {
 	  this.currentViewMode = viewMode;
 	  if (viewMode == ResourcesViewMode.TREE_VIEW) {
 	    selectedPaths = restoreSelectedPathsFromTableToTree();
