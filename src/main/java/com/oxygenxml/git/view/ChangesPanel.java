@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -45,12 +46,14 @@ import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -70,12 +73,7 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  * that will be unstaged).
  * 
  * 
- * TODO Sorin Only one view is visible at a given time: either the TRE or the TABLE.
- * Create update just the visible one and mark the other one as dirty. When the user
- * switches to the other view, we will recreate it if it's dirty. 
- * 
  * @author Beniamin Savu
- *
  */
 public class ChangesPanel extends JPanel {
 
@@ -182,37 +180,68 @@ public class ChangesPanel extends JPanel {
 		this.stageController = stageController;
 		
 		tree = createTree();
-		this.stageController.addTree(this.tree);
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		this.currentViewMode = forStagedResources ? OptionsManager.getInstance().getStagedResViewMode()
 		    : OptionsManager.getInstance().getUntagedResViewMode();
 		
-		// TODO More lazy. mark the hidden view as dirty.
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+      @Override
+      public void repositoryChanged() {
+        if (filesTable != null) {
+          // The event might come too early.
+          GitAccess gitAccess = GitAccess.getInstance();
+          try {
+            Repository repository = gitAccess.getRepository();
+            if (repository != null) {
+              List<FileStatus> files = null;
+              if (forStagedResources) {
+                files = gitAccess.getStagedFile();
+              } else {
+                files = gitAccess.getUnstagedFiles();
+              }
+
+              ChangesPanel.this.repositoryChanged(files);
+
+              getChangeSelectedButton().setEnabled(true);
+            }
+          } catch (NoRepositorySelected ex) {
+            logger.debug(ex, ex);
+
+            ChangesPanel.this.repositoryChanged(Collections.emptyList());
+            ChangesPanel.this.repositoryChanged(Collections.emptyList());
+          }
+        }
+      }
+      
       @Override
       public void stateChanged(ChangeEvent changeEvent) {
         // Update the table.
-        ((StagingResourcesTableModel)filesTable.getModel()).stateChanged(changeEvent);
-        
-        // Update the tree.
-        StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-        treeModel.stateChanged(changeEvent);
-        
-        toggleSelectedButton();
+        ChangesPanel.this.stateChanged(changeEvent);
       }
     });
 
 	}
 
-	public JTable getFilesTable() {
+	JTable getFilesTable() {
 		return filesTable;
 	}
 	
 	/**
 	 * @return The tree that renders resources.
 	 */
-	public JTree getTreeView() {
+	JTree getTreeView() {
     return tree;
+  }
+	
+	 /**
+   * @return The Git files in the model.
+   */
+	public List<FileStatus> getFilesStatuses() {
+	  if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+	    return ((StagingResourcesTableModel) filesTable.getModel()).getFilesStatuses();
+	  } else {
+	    return ((StagingResourcesTreeModel) tree.getModel()).getFilesStatus();
+	  }
   }
 
 	/**
@@ -226,34 +255,34 @@ public class ChangesPanel extends JPanel {
 	 * @param filesStatus
 	 *          - files to generate the nodes
 	 */
-	public void createTreeView(String rootFolder, List<FileStatus> filesStatus) {
-	  if (rootFolder == null) {
-	    rootFolder = "";
-	    logger.info("Null root ", new Exception());
+	private void updateTreeView(String rootFolder, List<FileStatus> filesStatus) {
+	  if (tree != null) {
+	    if (rootFolder == null) {
+	      rootFolder = "";
+	    }
+	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+	    GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
+	    Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
+	    TreePath[] selectionPaths = tree.getSelectionPaths();
+
+	    if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
+	      GitTreeNode root = new GitTreeNode(rootFolder);
+	      // Create the tree model and add the root node to it
+	      treeModel = new StagingResourcesTreeModel(stageController, root, forStagedResources, new ArrayList<FileStatus>(filesStatus));
+
+	      // Create the tree with the new model
+	      tree.setModel(treeModel);
+	    }
+
+	    treeModel.setFilesStatus(filesStatus);
+
+	    CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
+	    tree.setCellRenderer(treeRenderer);
+
+	    // restore last expanded paths after refresh
+	    TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
+	    tree.setSelectionPaths(selectionPaths);
 	  }
-		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-		GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
-		Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
-		
-		if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
-			GitTreeNode root = new GitTreeNode(rootFolder);
-			// Create the tree model and add the root node to it
-			treeModel = new StagingResourcesTreeModel(root, false, new ArrayList<FileStatus>(filesStatus));
-			if (forStagedResources) {
-				treeModel = new StagingResourcesTreeModel(root, true, new ArrayList<FileStatus>(filesStatus));
-			}
-
-			// Create the tree with the new model
-			tree.setModel(treeModel);
-		}
-
-		treeModel.setFilesStatus(filesStatus);
-
-		CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
-		tree.setCellRenderer(treeRenderer);
-
-		// restore last expanded paths after refresh
-		TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
 	}
 
 	/**
@@ -279,14 +308,49 @@ public class ChangesPanel extends JPanel {
 	 * @param unstagedFiles
 	 *          - the new files to update the flat view
 	 */
-	public void updateFlatView(List<FileStatus> unstagedFiles) {
-		StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
-		List<FileStatus> selectedFiles = getTableSelectedFiles();
-		modelTable.setFilesStatus(unstagedFiles);
+	private void updateFlatView(List<FileStatus> unstagedFiles) {
+	  if (filesTable != null) {
+	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
+	    List<FileStatus> selectedFiles = getTableSelectedFiles();
+	    modelTable.setFilesStatus(unstagedFiles);
 
-		restoreTableSelection(modelTable, selectedFiles);
-		selectedFiles.clear();
+	    restoreTableSelection(modelTable, selectedFiles);
+	    selectedFiles.clear();
+	  }
 	}
+	
+	 /**
+   * Updates the flat view with the given files. Also if in the view some of the
+   * files were selected, the selection is preserved.
+   * 
+   * @param unstagedFiles
+   *          - the new files to update the flat view
+   */
+  public void update(String rootFolder, List<FileStatus> newFiles) {
+    if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+      updateFlatView(newFiles);
+    } else {
+      updateTreeView(rootFolder, newFiles);
+    }
+  }
+  
+	
+	/**
+	 * Notify the models about the change.
+	 * 
+	 * @param changeEvent Change event.
+	 */
+	public void stateChanged(ChangeEvent changeEvent) {
+	  if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
+	    modelTable.stateChanged(changeEvent);
+	  } else {
+	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+	    treeModel.stateChanged(changeEvent);
+	  }
+	  
+    toggleSelectedButton();
+  }
 
 	/**
 	 * Restores the last selected files in the table view
@@ -368,6 +432,22 @@ public class ChangesPanel extends JPanel {
 			}
 		});
 		
+		try {
+		  String rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+		  
+		  if (!forStagedResources) {
+		    List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
+		    update(rootFolder, unstagedFiles);
+		  } else {
+		    List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFile();
+		    update(rootFolder, stagedFiles);
+		  }
+		} catch (NoRepositorySelected e) {
+		  // Never happens.
+		  logger.debug(e, e);
+		}
+
+
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_HEIGHT));
 	}
 
@@ -480,8 +560,13 @@ public class ChangesPanel extends JPanel {
 
 			@Override
       public void actionPerformed(ActionEvent e) {
-				StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
-				fileTableModel.switchAllFilesStageState();
+			  if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+			    StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
+			    fileTableModel.switchAllFilesStageState();
+			  } else {
+			    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+			    treeModel.switchAllFilesStageState();
+			  }
 			}
 		});
 	}
@@ -549,6 +634,24 @@ public class ChangesPanel extends JPanel {
 	 */
 	void setResourcesViewMode(ResourcesViewMode viewMode) {
 	  this.currentViewMode = viewMode;
+	  
+    // Update models.
+    String rootFolder = "[No repository]";
+    try {
+      rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+    } catch (NoRepositorySelected e) {
+      // Never happens.
+      logger.debug(e, e);
+    }
+	  List<FileStatus> newFiles = null;
+	  if (forStagedResources) {
+	    newFiles = GitAccess.getInstance().getStagedFile();
+	  } else {
+	    newFiles = GitAccess.getInstance().getUnstagedFiles();
+	  }
+	  
+    update(rootFolder, newFiles);
+	  
 	  if (viewMode == ResourcesViewMode.TREE_VIEW) {
 	    selectedPaths = restoreSelectedPathsFromTableToTree();
 	    tree.setSelectionPaths(selectedPaths);
@@ -1060,7 +1163,7 @@ public class ChangesPanel extends JPanel {
 	    t = new JTree();
 	  }
 	  
-	  t.setModel(new StagingResourcesTreeModel(null, false, null));
+	  t.setModel(new StagingResourcesTreeModel(stageController, null, forStagedResources, null));
 	  
     return t;
   }
@@ -1086,5 +1189,23 @@ public class ChangesPanel extends JPanel {
     table.setModel(fileTableModel);
     
     return table;
+  }
+
+  /**
+   * The repository changed.
+   * 
+   * @param unstagedFiles The changed files from the new repository.
+   */
+  public void repositoryChanged(List<FileStatus> unstagedFiles) {
+    updateFlatView(unstagedFiles);
+
+    String rootFolder = "[No repository]";
+    try {
+      rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+    } catch (NoRepositorySelected e) {
+      // Never happens.
+      logger.error(e, e);
+    }
+    updateTreeView(rootFolder, unstagedFiles);
   }
 }

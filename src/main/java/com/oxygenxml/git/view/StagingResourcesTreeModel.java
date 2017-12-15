@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -9,11 +10,15 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.StageController;
 
 /**
  * Custom tree model
@@ -22,6 +27,10 @@ import com.oxygenxml.git.view.event.GitCommand;
  *
  */
 public class StagingResourcesTreeModel extends DefaultTreeModel {
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(StagingResourcesTreeModel.class);
 
 	/**
 	 * The files in the model
@@ -33,16 +42,24 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    * <code>false</code> if it presents the modified resources that can be put in the index.
    */
 	private boolean inIndex;
+	/**
+	 * Stage controller.
+	 */
+  private StageController stageController;
 
 	/**
+	 * Constructor.
 	 * 
-	 * @param root
-	 * @param forStaging
-	 * @param filesStatus
+	 * @param controller Staging controller.
+	 * @param root Root node.
+	 * @param inIndex <code>true</code> if this model presents the resources inside the index.
+   * <code>false</code> if it presents the modified resources that can be put in the index.
+	 * @param filesStatus The files statuses in the model.
 	 */
-	public StagingResourcesTreeModel(TreeNode root, boolean forStaging, List<FileStatus> filesStatus) {
+	public StagingResourcesTreeModel(StageController controller, TreeNode root, boolean inIndex, List<FileStatus> filesStatus) {
 		super(root);
-		this.inIndex = forStaging;
+    this.stageController = controller;
+		this.inIndex = inIndex;
 		this.filesStatus = filesStatus;
 	}
 
@@ -230,5 +247,28 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 */
 	public List<FileStatus> getFilesStatus() {
     return filesStatus;
+  }
+
+  /**
+   * Change the files stage state from unstaged to staged or from staged to
+   * unstaged
+   * 
+   * @param selectedFiles
+   *          - the files to change their stage state
+   */
+  public void switchAllFilesStageState() {
+    List<FileStatus> filesToBeUpdated = new ArrayList<FileStatus>();
+    for (FileStatus fileStatus : filesStatus) {
+      if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {
+        filesToBeUpdated.add(fileStatus);
+      }
+    }
+    
+    GitCommand action = GitCommand.UNSTAGE;
+    if (!inIndex) {
+      action = GitCommand.STAGE;
+    }
+    
+    stageController.doGitCommand(filesToBeUpdated, action);
   }
 }

@@ -61,10 +61,11 @@ public class DiffPresenter {
 	private StageController stageController;
 
 	/**
-	 * The translator used for the messages that are displayed to the user
+	 * Constructor.
+	 * 
+	 * @param file Fiel to DIFF.
+	 * @param stageController Stage controller to issue commands.
 	 */
-	private Translator translator = Translator.getInstance();
-
 	public DiffPresenter(FileStatus file, StageController stageController) {
 		this.stageController = stageController;
 		this.file = file;
@@ -243,8 +244,8 @@ public class DiffPresenter {
 						String[] options = new String[] { "   Yes   ", "   No   " };
 						int[] optonsId = new int[] { 0, 1 };
 						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-								translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
-								translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
+						    Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
+						    Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
 						if (response == 0) {
 							stageController.doGitCommand(Arrays.asList(file), GitCommand.RESOLVE_USING_MINE);
 						}
@@ -273,32 +274,43 @@ public class DiffPresenter {
 	 * @param remoteUL  URL to the remote resource.
 	 * @param baseURL   URL to the base version of the resource.
 	 */
-  private void showDiffFrame(URL localURL, URL remoteUL, URL baseURL) {
-    try {
-    	// checks whether a base commit exists or not. If not, then the a 2-way
-    	// diff is presented
-    	ObjectId baseCommit = GitAccess.getInstance().getBaseCommit();
-      if (baseCommit == null 
-          || GitAccess.getInstance().getLoaderFrom(baseCommit, file.getFileLocation()) == null) {
-    		diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-    				.openDiffFilesApplication(localURL, remoteUL);
-    	} else {
-    		diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-    				.openDiffFilesApplication(localURL, remoteUL, baseURL);
-    	}
-      diffFrame.addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowOpened(WindowEvent e) {
-          diffFrame.removeWindowListener(this);
-          AuthenticationInterceptor.install();
-        }
-      });
-    } catch (IOException e) {
-      logger.error(e, e);
-    }
-  }
+	private void showDiffFrame(URL localURL, URL remoteUL, URL baseURL) {
+	  if (logger.isDebugEnabled()) {
+	    logger.debug("Local  " + localURL);
+	    logger.debug("Remote " + remoteUL);
+	    logger.debug("Base   " + baseURL);
+	  }
 
-	public void setFile(FileStatus fileStatus) {
-		this.file = fileStatus;
+	  boolean threeWays = baseURL != null;
+	  try {
+	    if (threeWays) {
+	      // checks whether a base commit exists or not. If not, then the a 2-way
+	      // diff is presented
+	      ObjectId baseCommit = GitAccess.getInstance().getBaseCommit();
+	      if (baseCommit == null 
+	          || GitAccess.getInstance().getLoaderFrom(baseCommit, file.getFileLocation()) == null) {
+	        threeWays = false;
+	      }
+	    }
+	  } catch (IOException e) {
+	    threeWays = false;
+	    logger.error(e, e);
+	  }
+
+	  if (threeWays) {
+	    diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+	        .openDiffFilesApplication(localURL, remoteUL, baseURL);
+	  } else {
+	    diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+	        .openDiffFilesApplication(localURL, remoteUL);
+	  }
+	  
+	  diffFrame.addWindowListener(new WindowAdapter() {
+	    @Override
+	    public void windowOpened(WindowEvent e) {
+	      diffFrame.removeWindowListener(this);
+	      AuthenticationInterceptor.install();
+	    }
+	  });
 	}
 }

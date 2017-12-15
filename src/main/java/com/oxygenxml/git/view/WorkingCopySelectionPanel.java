@@ -145,6 +145,11 @@ public class WorkingCopySelectionPanel extends JPanel {
               inhibitRepoUpdate = false;
             }
           }
+          
+          if (GitAccess.getInstance().getBranchInfo().isDetached()) {
+            PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+                translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+          }
         } catch (NoRepositorySelected e) {
             logger.debug(e, e);
           }
@@ -179,13 +184,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		        if (logger.isDebugEnabled()) {
 		          logger.debug("Working copy " + path);
 		        }
-
-		        if (GitAccess.getInstance().getBranchInfo().isDetached()) {
-		          PluginWorkspaceProvider.getPluginWorkspace()
-		              .showInformationMessage(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
-		        }
-
-
+		        
 
 		        try {
 		          gitAccess.setRepository(path);

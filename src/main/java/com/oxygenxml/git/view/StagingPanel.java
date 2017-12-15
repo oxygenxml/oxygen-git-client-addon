@@ -13,6 +13,8 @@ import java.awt.event.FocusListener;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -29,11 +31,11 @@ import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
@@ -122,27 +124,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
         try {
           repository = gitAccess.getRepository();
           if (repository != null) {
-            
-            String rootFolder = NO_REPOSITORY;
-            try {
-              rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-            } catch (NoRepositorySelected e) {
-              // Never happens.
-              logger.error(e, e);
-            }
-            
-            List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-            List<FileStatus> stagedFiles = gitAccess.getStagedFile();
-
-            // generate content for FLAT_VIEW
-            getUnstagedChangesPanel().updateFlatView(unstagedFiles);
-            getStagedChangesPanel().updateFlatView(stagedFiles);
-
-            // generate content for TREE_VIEW
-            getUnstagedChangesPanel().createTreeView(rootFolder, unstagedFiles);
-            getStagedChangesPanel().createTreeView(rootFolder, stagedFiles);
-
-            // whan a new working copy is selected clear the commit text area
+            // When a new working copy is selected clear the commit text area
             getCommitPanel().clearCommitMessage();
 
             // checks what buttons to keep active and what buttons to deactivate
@@ -151,19 +133,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
             } else {
               getCommitPanel().getCommitButton().setEnabled(false);
             }
-            getUnstagedChangesPanel().getChangeSelectedButton().setEnabled(false);
-            getStagedChangesPanel().getChangeSelectedButton().setEnabled(false);
           }
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
-          
-          // clear content from FLAT_VIEW
-          getUnstagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
-          getStagedChangesPanel().updateFlatView(new ArrayList<FileStatus>());
-
-          // clear content from TREE_VIEW
-          getUnstagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
-          getStagedChangesPanel().createTreeView("", new ArrayList<FileStatus>());
         }
       }
       
@@ -265,21 +237,13 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 							        selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
 
 							        if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-							          // TODO Sorin Do not recreate the models from scratch. Just fire an atomic 
-							          // event, like fireTableRowsUpdated()
-							          // TODO Sorin It makes sense to schedule this on the PanelRefresh, to avoid threading issues.
-							          List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
-							          unstagedChangesPanel.updateFlatView(newFiles);
-							          
-							          String rootFolder = NO_REPOSITORY;
-							          try {
-							            rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-							          } catch (NoRepositorySelected e) {
-							            // Never happens.
-							            logger.error(e, e);
+							          if (logger.isDebugEnabled()) {
+							            logger.debug("Notify " + fileInWorkPath);
 							          }
-							          
-							          unstagedChangesPanel.createTreeView(rootFolder, newFiles);
+
+							          Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length() + 1));
+                        ChangeEvent changeEvent = new ChangeEvent(GitCommand.UNSTAGE, affectedFiles);
+                        unstagedChangesPanel.stateChanged(changeEvent);
 							        }
 							      } catch (NoRepositorySelected e) {
 							        logger.error(e, e);
@@ -438,19 +402,21 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			}
 			workingCopySelectionPanel.getBrowseButton().setEnabled(true);
 			workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
-			toolbarPanel.getPushButton().setEnabled(true);
-			toolbarPanel.getPullButton().setEnabled(true);
-			toolbarPanel.getCloneRepositoryButton().setEnabled(true);
-			unstagedChangesPanel.updateFlatView(GitAccess.getInstance().getUnstagedFiles());
-			String rootFolder = NO_REPOSITORY;
+			
+			// Update models.
+			String rootFolder = "[No repository]";
       try {
         rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
       } catch (NoRepositorySelected e) {
         // Never happens.
         logger.error(e, e);
       }
-      unstagedChangesPanel.createTreeView(rootFolder,
+      unstagedChangesPanel.update(rootFolder,
       		GitAccess.getInstance().getUnstagedFiles());
+      
+      toolbarPanel.getPushButton().setEnabled(true);
+      toolbarPanel.getPullButton().setEnabled(true);
+      toolbarPanel.getCloneRepositoryButton().setEnabled(true);
 			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
 			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
 			toolbarPanel.updateInformationLabel();
