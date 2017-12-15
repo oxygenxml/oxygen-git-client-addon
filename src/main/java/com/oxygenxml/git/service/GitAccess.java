@@ -352,32 +352,56 @@ public class GitAccess {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 		if (git != null) {
 			try {
+			  if (logger.isDebugEnabled()) {
+			    logger.debug("Prepare fot Git status, in paths " + paths);
+			  }
 				StatusCommand statusCmd = git.status();
 				for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
           String path = iterator.next();
+          
           statusCmd.addPath(path);
         }
 				
         Status status = statusCmd.call();
 				Set<String> submodules = getSubmodules();
+				
+        if (logger.isDebugEnabled()) {
+          logger.debug("submodules " + submodules);
+        }
+				
 				for (String string : submodules) {
 					SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
 					if (!submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
 						unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
 					}
 				}
+				
+				if (logger.isDebugEnabled()) {
+				  logger.debug("untracked " + status.getUntracked());
+				}
+				
 				for (String string : status.getUntracked()) {
 				  // A newly created file, not yet in the INDEX.
 					if (!submodules.contains(string)) {
 						unstagedFiles.add(new FileStatus(GitChangeType.UNTRACKED, string));
 					}
 				}
+				
+        if (logger.isDebugEnabled()) {
+          logger.debug("modified " + status.getModified());
+        }
+        
 				for (String string : status.getModified()) {
 				  // A file that was modified compared to the one from INDEX.
 					if (!submodules.contains(string)) {
 						unstagedFiles.add(new FileStatus(GitChangeType.MODIFIED, string));
 					}
 				}
+				
+        if (logger.isDebugEnabled()) {
+          logger.debug("missing " + status.getMissing());
+        }
+				
 				for (String string : status.getMissing()) {
 				  // A missing file that is present in the INDEX.
 					if (!submodules.contains(string)) {

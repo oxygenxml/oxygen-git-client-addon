@@ -1,17 +1,12 @@
 package com.oxygenxml.git.view.event;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
-import javax.swing.JTree;
-import javax.swing.tree.TreePath;
+import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.TreeFormatter;
-import com.oxygenxml.git.view.GitTreeNode;
 
 /**
  * 
@@ -20,13 +15,15 @@ import com.oxygenxml.git.view.GitTreeNode;
  * @author Beniamin Savu
  */
 public class StageController {
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(GitAccess.class);
 
 	/**
 	 * the git API
 	 */
 	private GitAccess gitAccess = GitAccess.getInstance();
-
-	private List<JTree> trees = new ArrayList<JTree>();
 
 	/**
 	 * Executes the given action on the given files.
@@ -35,18 +32,10 @@ public class StageController {
 	 * @param action
 	 */
 	public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
-	  // TODO This is something that the tree can do for itself.
-	   List<Enumeration<TreePath>> treePathsToRestore = new ArrayList<Enumeration<TreePath>>();
-	    for (JTree tree : trees) {
-	      GitTreeNode rootNode = (GitTreeNode) tree.getModel().getRoot();
-	      if (rootNode != null) {
-	        TreePath rootTreePath = new TreePath(rootNode);
-	        treePathsToRestore.add(tree.getExpandedDescendants(rootTreePath));
-	      } else {
-	        treePathsToRestore.add(null);
-	      }
-	    }
-
+	  if (logger.isDebugEnabled()) {
+	    logger.debug("Do action " + action + " on " + filesStatus);
+	  }
+	  
 	  if (action == GitCommand.STAGE) {
 	    gitAccess.addAll(filesStatus);
 	  } else if (action == GitCommand.UNSTAGE) {
@@ -55,7 +44,6 @@ public class StageController {
 	  } else if (action == GitCommand.DISCARD || action == GitCommand.RESOLVE_USING_MINE) {
       gitAccess.resetAll(filesStatus);
       for (FileStatus file : filesStatus) {
-        // TODO Test the DISCARD on SUBMODULES.
         if (file.getChangeType() != GitChangeType.SUBMODULE) {
           gitAccess.restoreLastCommitFile(file);
         }
@@ -73,18 +61,5 @@ public class StageController {
 	    
 	    gitAccess.addAll(filesStatus);
 	  }
-	    
-	  for (int i = 0; i < trees.size(); i++) {
-	    Enumeration<TreePath> expandedPaths = treePathsToRestore.get(i);
-	    if (expandedPaths != null) {
-	      TreeFormatter.restoreLastExpandedPaths(expandedPaths, trees.get(i));
-	    }
-	  }
 	}
-	
-
-	public void addTree(JTree tree) {
-		trees.add(tree);
-	}
-
 }

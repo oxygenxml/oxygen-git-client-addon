@@ -24,7 +24,6 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingPanel;
-import com.oxygenxml.git.view.StagingResourcesTableModel;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -278,13 +277,13 @@ public class PanelRefresh implements GitRefreshSupport {
 			protected void done() {
 				List<FileStatus> files = null;
 				List<FileStatus> newFiles = new ArrayList<FileStatus>();
-				StagingResourcesTableModel model = null;
+				List<FileStatus> filesInModel = null;
 				if (unstaged) {
-					model = (StagingResourcesTableModel) stagingPanel.getUnstagedChangesPanel().getFilesTable().getModel();
+					filesInModel = stagingPanel.getUnstagedChangesPanel().getFilesStatuses();
 				} else {
-					model = (StagingResourcesTableModel) stagingPanel.getStagedChangesPanel().getFilesTable().getModel();
+					filesInModel = stagingPanel.getStagedChangesPanel().getFilesStatuses();
 				}
-				List<FileStatus> filesInModel = model.getFilesStatuses();
+				
 				try {
 					files = get();
 					for (FileStatus fileStatus : filesInModel) {
@@ -304,6 +303,12 @@ public class PanelRefresh implements GitRefreshSupport {
 						logger.debug(e, e);
 					}
 				}
+				
+				if (logger.isDebugEnabled()) {
+				  logger.debug("New files      " + newFiles);
+				  logger.debug("Files in model " + filesInModel);
+				}
+				
 				if (!newFiles.equals(filesInModel)) {
 					String rootFolder = "[No repository]";
           try {
@@ -313,11 +318,9 @@ public class PanelRefresh implements GitRefreshSupport {
             logger.error(e, e);
           }
           if (unstaged) {
-						stagingPanel.getUnstagedChangesPanel().updateFlatView(newFiles);
-						stagingPanel.getUnstagedChangesPanel().createTreeView(rootFolder, newFiles);
+						stagingPanel.getUnstagedChangesPanel().update(rootFolder, newFiles);
 					} else {
-						stagingPanel.getStagedChangesPanel().updateFlatView(newFiles);
-						stagingPanel.getStagedChangesPanel().createTreeView(rootFolder, newFiles);
+						stagingPanel.getStagedChangesPanel().update(rootFolder, newFiles);
 					}
 				}
 			}

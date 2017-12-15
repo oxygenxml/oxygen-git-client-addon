@@ -304,10 +304,13 @@ public class TreeViewTest extends FlatViewTestBase {
         "ADD, test.txt\n" + 
         "ADD, test2.txt");
     
+    System.out.println("----------------------");
     //--------------
     // Back to unStaged
     //---------------
     changeAll(false);
+    flushAWT();
+    
     
     // The newly created file is present in the model.
     assertTreeModels(

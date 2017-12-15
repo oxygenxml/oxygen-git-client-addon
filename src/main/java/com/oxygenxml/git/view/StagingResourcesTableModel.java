@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -145,27 +144,6 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		removeDuplicates();
 		Collections.sort(this.filesStatus, fileStatusComparator);
 		fireTableDataChanged();
-	}
-
-	/**
-	 * Changet the stage state of the file located at the given row
-	 * 
-	 * @param convertedRow
-	 *          - row for the file to change its state
-	 */
-	public void switchFileStageState(int convertedRow) {
-		if (filesStatus.get(convertedRow).getChangeType() == GitChangeType.CONFLICT) {
-			return;
-		}
-		// Update the table model. remove the file.
-		FileStatus fileStatus = filesStatus.remove(convertedRow);
-
-    GitCommand action = GitCommand.UNSTAGE;
-    if (!inIndex) {
-      action = GitCommand.STAGE;
-    }
-    
-    stageController.doGitCommand(Arrays.asList(fileStatus), action);
 	}
 
 	/**
