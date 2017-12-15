@@ -198,11 +198,11 @@ public class GitTestBase extends JFCTestCase {
   /**
    * Listeners interested in editor change events.
    */
-  protected List<WSEditorChangeListener> editorChangeListeners = new ArrayList<WSEditorChangeListener>();
+  protected final List<WSEditorChangeListener> editorChangeListeners = new ArrayList<WSEditorChangeListener>();
   /**
    * Listeners interested in editor events.
    */
-  protected List<WSEditorListener> editorListeners = new ArrayList<WSEditorListener>();
+  protected final List<WSEditorListener> editorListeners = new ArrayList<WSEditorListener>();
   
   @Override
   protected void setUp() throws Exception {

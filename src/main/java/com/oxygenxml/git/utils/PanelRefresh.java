@@ -93,11 +93,11 @@ public class PanelRefresh implements GitRefreshSupport {
 	  String projectView = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().expandEditorVariables("${pd}", null);
 		if (projectView != null && !projectView.equals(lastSelectedProjectView)) {
 			checkForGitRepositoriesUpAndDownFrom(projectView);
-			if (stagingPanel.isInFocus()) {
+			if (stagingPanel.hasFocus()) {
 				lastSelectedProjectView = projectView;
 			}
 			addGitFolder(projectView);
-			if (stagingPanel.isInFocus() && !projectPahtIsGit
+			if (stagingPanel.hasFocus() && !projectPahtIsGit
 					&& !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectView) && projectXprExists) {
 				String[] options = new String[] { "   Yes   ", "   No   " };
 				int[] optonsId = new int[] { 0, 1 };
@@ -310,7 +310,7 @@ public class PanelRefresh implements GitRefreshSupport {
 				}
 				
 				if (!newFiles.equals(filesInModel)) {
-					String rootFolder = "[No repository]";
+					String rootFolder = StagingPanel.NO_REPOSITORY;
           try {
             rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
           } catch (NoRepositorySelected e) {

@@ -59,14 +59,18 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   /**
    * No repository.
    */
-  private static final String NO_REPOSITORY = "[No repository]";
+  public static final String NO_REPOSITORY = "[No repository]";
 
   /**
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(StagingPanel.class);
 
-	boolean gained = false;
+  /**
+   * <code>true</code> if focus gained.
+   */
+	boolean focusGained = false;
+	
 	/**
 	 * The tool bar panel used for the push and pull
 	 */
@@ -102,16 +106,26 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 */
 	private GitRefreshSupport refreshSupport;
 
+	/**
+	 * Staging controller.
+	 */
 	private StageController stageController;
+	
 	/**
 	 * Manages Push/Pull actions.
 	 */
   private PushPullController pushPullController;
 
+  /**
+   * Constructor.
+   * 
+   * @param refreshSupport   Refresh support.        
+   * @param stageController  Staging controller.
+   */
   public StagingPanel(
-      GitRefreshSupport refresh, 
+      GitRefreshSupport refreshSupport, 
       StageController stageController) {
-		this.refreshSupport = refresh;
+		this.refreshSupport = refreshSupport;
 		this.stageController = stageController;
 		
 		createGUI();
@@ -146,30 +160,47 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
     });
 	}
 
+  /**
+   * @return the working copy selection panel.
+   */
 	public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
 		return workingCopySelectionPanel;
 	}
 
+	/**
+	 * @return the unstaged resources panel.
+	 */
 	public ChangesPanel getUnstagedChangesPanel() {
 		return unstagedChangesPanel;
 	}
 
+	/**
+	 * @return The staged resources panel.
+	 */
 	public ChangesPanel getStagedChangesPanel() {
 		return stagedChangesPanel;
 	}
 
+	/**
+	 * @return The commit panel.
+	 */
 	public CommitPanel getCommitPanel() {
 		return commitPanel;
 	}
 
+	/**
+	 * @return  The tool bar panel used for the push and pull
+	 */
 	public ToolbarPanel getToolbarPanel() {
 		return toolbarPanel;
 	}
 
+	/**
+	 * Create the GUI.
+	 */
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
 
-		final GitAccess gitAccess = GitAccess.getInstance();
 		pushPullController = createPushPullController();
 
 		// Creates the panels objects that will be in the staging panel
@@ -210,7 +241,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				.addEditorChangeListener(new WSEditorChangeListener() {
 					@Override
 					public void editorOpened(final URL editorLocation) {
-						addEditorSaveHook(gitAccess, editorLocation);
+						addEditorSaveHook(editorLocation);
 					}
 
 					/**
@@ -219,7 +250,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 					 * @param gitAccess Git access.
 					 * @param editorLocation Editor to check.
 					 */
-          private void addEditorSaveHook(final GitAccess gitAccess, final URL editorLocation) {
+          private void addEditorSaveHook(final URL editorLocation) {
             WSEditor editorAccess = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 								.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
 						editorAccess.addEditorListener(new WSEditorListener() {
@@ -261,7 +292,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 			@Override
 			public void focusGained(final FocusEvent e) {
-				gained = true;
+				focusGained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
 					refreshSupport.call();
@@ -272,7 +303,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				gained = false;
+				focusGained = false;
 				
 				// The focus might still be somewhere in the view.
 				if(e.getOppositeComponent() != null){
@@ -290,6 +321,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		});
 	}
 
+	/**
+	 * Create the push/pull controller.
+	 * 
+	 * @return the controller.
+	 */
   protected PushPullController createPushPullController() {
     return new PushPullController();
   }
@@ -404,7 +440,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
 			
 			// Update models.
-			String rootFolder = "[No repository]";
+			String rootFolder = NO_REPOSITORY;
       try {
         rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
       } catch (NoRepositorySelected e) {
@@ -428,14 +464,23 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		}
 	}
 
+	/**
+	 * Register a subject for the observer pattern.
+	 * 
+	 * @param subject the subject to register.
+	 */
 	public void registerSubject(Subject<PushPullEvent> subject) {
 		subjects.add(subject);
 
 		subject.addObserver(this);
 	}
 
-	public boolean isInFocus() {
-		return gained;
+	/**
+	 * @return <code>true</code> if panel has focus.
+	 */
+	@Override
+  public boolean hasFocus() {
+		return focusGained;
 	}
 	
 	/**
