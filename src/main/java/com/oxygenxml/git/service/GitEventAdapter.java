@@ -10,9 +10,13 @@ import com.oxygenxml.git.view.event.ChangeEvent;
 public class GitEventAdapter implements GitEventListener {
 
   @Override
-  public void repositoryChanged() {}
+  public void repositoryChanged() {
+    // Adapter. Empty implementation.
+  }
 
   @Override
-  public void stateChanged(ChangeEvent changeEvent) {}
+  public void stateChanged(ChangeEvent changeEvent) {
+    // Adapter. Empty implementation.
+  }
 
 }

@@ -97,7 +97,11 @@ import com.oxygenxml.git.view.event.GitCommand;
  * @author Beniamin Savu
  */
 public class GitAccess {
-	/**
+  /**
+   * "End fetch" debug message.
+   */
+	private static final String END_FETCH_DEBUG_MESSAGE = "End fetch";
+  /**
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(GitAccess.class);
@@ -316,11 +320,7 @@ public class GitAccess {
 
 		try {
 			git = Git.init().setBare(false).setDirectory(new File(path)).call();
-		} catch (IllegalStateException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (GitAPIException e) {
+		} catch (IllegalStateException | GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -386,11 +386,7 @@ public class GitAccess {
 				}
 				unstagedFiles.addAll(getConflictingFiles());
 
-			} catch (NoWorkTreeException e1) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e1, e1);
-				}
-			} catch (GitAPIException e1) {
+			} catch (NoWorkTreeException | GitAPIException e1) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e1, e1);
 				}
@@ -1077,11 +1073,7 @@ public class GitAccess {
 						numberOfCommits++;
 					}
 				}
-			} catch (IOException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
-			} catch (GitAPIException e) {
+			} catch (IOException | GitAPIException e) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e, e);
 				}
@@ -1123,11 +1115,7 @@ public class GitAccess {
 							numberOfCommits++;
 						}
 					}
-			} catch (IOException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
-			} catch (GitAPIException e) {
+			} catch (IOException | GitAPIException e) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e, e);
 				}
@@ -1161,10 +1149,6 @@ public class GitAccess {
         git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).setCheckFetchedObjects(true)
 						.setCredentialsProvider(credentialsProvider).call();
 			}
-		} catch (InvalidRemoteException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
 		} catch (TransportException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -1180,17 +1164,13 @@ public class GitAccess {
 			} else {
 			  throw new RepositoryUnavailableException(e);
 			}
-		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (RevisionSyntaxException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		}
+		} catch (GitAPIException | RevisionSyntaxException e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    } 
 		if (logger.isDebugEnabled()) {
-			logger.debug("End fetch");
+			logger.debug(END_FETCH_DEBUG_MESSAGE);
 		}
 	}
 
@@ -1220,13 +1200,9 @@ public class GitAccess {
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 			
 			fireFileStateChanged(new ChangeEvent(GitCommand.MERGE_RESTART, Collections.<String> emptyList()));
-		} catch (GitAPIException e) {
+		} catch (GitAPIException | IOException e) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("End fetch");
-			}
-		} catch (IOException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("End fetch");
+				logger.debug(END_FETCH_DEBUG_MESSAGE);
 			}
 		}
 	}
@@ -1255,16 +1231,12 @@ public class GitAccess {
 					}
 				}
 				return branchInfo;
-			} catch (IOException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
 			} catch (NoHeadException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
-				return new BranchInfo(branchName, false);
-			} catch (GitAPIException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+        return new BranchInfo(branchName, false);
+      } catch (IOException | GitAPIException e) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e, e);
 				}
@@ -1297,7 +1269,7 @@ public class GitAccess {
 			git.submoduleUpdate().setStrategy(MergeStrategy.RECURSIVE).call();
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("End fetch");
+				logger.debug(END_FETCH_DEBUG_MESSAGE);
 			}
 		}
 	}
@@ -1377,11 +1349,7 @@ public class GitAccess {
 				revWalk.close();
 				return objectId;
 			}
-		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (IOException e) {
+		} catch (GitAPIException |IOException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}

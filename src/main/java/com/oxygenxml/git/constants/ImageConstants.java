@@ -7,6 +7,10 @@ package com.oxygenxml.git.constants;
  *
  */
 public class ImageConstants {
+  
+  private ImageConstants() {
+    // Nothing.
+  }
 
 	public static final String GIT_ADD_ICON = "/images/GitAdd10.png";
 	public static final String GIT_DELETE_ICON = "/images/GitRemoved10.png";

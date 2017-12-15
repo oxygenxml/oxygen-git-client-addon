@@ -53,8 +53,21 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 */
 	private static Logger logger = Logger.getLogger(CloneRepositoryDialog.class);
 
+	/**
+	 * HTML start tag.
+	 */
+	private static final String HTML_END_TAG = "</html>";
+	
+	/**
+	 * HTML end tag.
+	 */
+	private static final String HTML_START_TAG = "<html>";
+	
+	/**
+	 * Clone worker.
+	 */
 	private class CloneWorker extends SwingWorker<Void, Void> {
-		private final ProgressDialog progressDialog;
+    private final ProgressDialog progressDialog;
 		private final URL url;
 		private final File file;
 
@@ -100,11 +113,13 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 						}
 						doBreak = true;
 					} else if (cause instanceof NoRemoteRepositoryException) {
-						CloneRepositoryDialog.this.setVisible(true);
-						CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
-						information.setText(
-								"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) + "</html>");
-						doBreak = true;
+					  CloneRepositoryDialog.this.setVisible(true);
+					  CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
+					  information.setText(
+					      HTML_START_TAG 
+					      + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) 
+					      + HTML_END_TAG);
+					  doBreak = true;
 					} else if (cause instanceof org.eclipse.jgit.errors.TransportException) {
 						UserCredentials userCredentials = new LoginDialog(url.getHost(),
 								translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE))
@@ -303,7 +318,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				CloneRepositoryDialog.this.setVisible(true);
 				this.setMinimumSize(new Dimension(400, 190));
 				information.setText(
-						"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) + "</html>");
+						HTML_START_TAG 
+						+ translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) 
+						+ HTML_END_TAG);
 				return false;
 			}
 		} else {
@@ -319,7 +336,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				CloneRepositoryDialog.this.setVisible(true);
 				this.setMinimumSize(new Dimension(400, 180));
 				information.setText(
-						"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) + "</html>");
+						HTML_START_TAG 
+						+ translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) 
+						+ HTML_END_TAG);
 				return false;
 			}
 		}

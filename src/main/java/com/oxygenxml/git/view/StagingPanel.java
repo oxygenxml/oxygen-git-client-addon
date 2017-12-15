@@ -55,6 +55,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   /**
+   * No repository.
+   */
+  private static final String NO_REPOSITORY = "[No repository]";
+
+  /**
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(StagingPanel.class);
@@ -118,7 +123,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           repository = gitAccess.getRepository();
           if (repository != null) {
             
-            String rootFolder = "[No repository]";
+            String rootFolder = NO_REPOSITORY;
             try {
               rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
             } catch (NoRepositorySelected e) {
@@ -266,7 +271,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 							          List<FileStatus> newFiles = gitAccess.getUnstagedFiles();
 							          unstagedChangesPanel.updateFlatView(newFiles);
 							          
-							          String rootFolder = "[No repository]";
+							          String rootFolder = NO_REPOSITORY;
 							          try {
 							            rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
 							          } catch (NoRepositorySelected e) {
@@ -437,7 +442,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			toolbarPanel.getPullButton().setEnabled(true);
 			toolbarPanel.getCloneRepositoryButton().setEnabled(true);
 			unstagedChangesPanel.updateFlatView(GitAccess.getInstance().getUnstagedFiles());
-			String rootFolder = "[No repository]";
+			String rootFolder = NO_REPOSITORY;
       try {
         rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
       } catch (NoRepositorySelected e) {
