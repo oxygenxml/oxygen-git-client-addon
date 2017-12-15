@@ -5,7 +5,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -20,10 +22,11 @@ import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
-import ro.sync.ui.Icons;
 
 /**
  * Plugin extension - workspace access extension.
@@ -71,7 +74,12 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			    // The constant's value is defined in plugin.xml
 			    if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
 			      viewInfo.setComponent(stagingPanel);
-			      viewInfo.setIcon(Icons.getIcon(ImageConstants.GIT_ICON));
+			      ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+			      URL resource = getClass().getResource(ImageConstants.GIT_ICON);
+			      if (resource != null) {
+			        ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+			        viewInfo.setIcon(icon);
+			      }
 			      viewInfo.setTitle("Git Staging");
 					}
 				}

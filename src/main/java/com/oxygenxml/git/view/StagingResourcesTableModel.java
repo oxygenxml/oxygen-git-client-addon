@@ -15,11 +15,10 @@ import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.StageController;
-
-import ro.sync.util.URLUtil;
 
 /**
  * Custom table model
@@ -57,8 +56,8 @@ public class StagingResourcesTableModel extends AbstractTableModel {
     public int compare(FileStatus f1, FileStatus f2) {
       int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
       if(changeTypeCompareResult == 0) {
-        String fileName1 = URLUtil.extractFileName(f1.getFileLocation());
-        String fileName2 = URLUtil.extractFileName(f2.getFileLocation());
+        String fileName1 = FileHelper.extractFileName(f1.getFileLocation(), true);
+        String fileName2 = FileHelper.extractFileName(f2.getFileLocation(), true);
         return fileName1.compareTo(fileName2);
       } else {
         return changeTypeCompareResult;

@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,10 +41,10 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.ui.Icons;
 
 public class CloneRepositoryDialog extends OKCancelDialog {
 
@@ -52,8 +53,21 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 */
 	private static Logger logger = Logger.getLogger(CloneRepositoryDialog.class);
 
+	/**
+	 * HTML start tag.
+	 */
+	private static final String HTML_END_TAG = "</html>";
+	
+	/**
+	 * HTML end tag.
+	 */
+	private static final String HTML_START_TAG = "<html>";
+	
+	/**
+	 * Clone worker.
+	 */
 	private class CloneWorker extends SwingWorker<Void, Void> {
-		private final ProgressDialog progressDialog;
+    private final ProgressDialog progressDialog;
 		private final URL url;
 		private final File file;
 
@@ -99,11 +113,13 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 						}
 						doBreak = true;
 					} else if (cause instanceof NoRemoteRepositoryException) {
-						CloneRepositoryDialog.this.setVisible(true);
-						CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
-						information.setText(
-								"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) + "</html>");
-						doBreak = true;
+					  CloneRepositoryDialog.this.setVisible(true);
+					  CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
+					  information.setText(
+					      HTML_START_TAG 
+					      + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) 
+					      + HTML_END_TAG);
+					  doBreak = true;
 					} else if (cause instanceof org.eclipse.jgit.errors.TransportException) {
 						UserCredentials userCredentials = new LoginDialog(url.getHost(),
 								translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE))
@@ -222,7 +238,12 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			}
 		};
 		ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
-		browseButton.setIcon(Icons.getIcon(ImageConstants.FILE_CHOOSER_ICON));
+		ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+		URL resource = getClass().getResource(ImageConstants.FILE_CHOOSER_ICON);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  browseButton.setIcon(icon);
+		}
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		browseButton.setOpaque(false);
 
@@ -297,7 +318,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				CloneRepositoryDialog.this.setVisible(true);
 				this.setMinimumSize(new Dimension(400, 190));
 				information.setText(
-						"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) + "</html>");
+						HTML_START_TAG 
+						+ translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) 
+						+ HTML_END_TAG);
 				return false;
 			}
 		} else {
@@ -313,7 +336,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				CloneRepositoryDialog.this.setVisible(true);
 				this.setMinimumSize(new Dimension(400, 180));
 				information.setText(
-						"<html>" + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) + "</html>");
+						HTML_START_TAG 
+						+ translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) 
+						+ HTML_END_TAG);
 				return false;
 			}
 		}

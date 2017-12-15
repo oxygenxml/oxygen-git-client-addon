@@ -11,8 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.net.URL;
 
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -40,7 +42,8 @@ import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.Subject;
 
-import ro.sync.ui.Icons;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 
 /**
  * Panel to insert the commit message and commit the staged files. 
@@ -275,7 +278,12 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	public void setStatus(final String status) {
 		if (RepositoryStatus.UNAVAILABLE.equals(status)) {
 			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
-			statusLabel.setIcon(Icons.getIcon(ImageConstants.VALIDATION_ERROR));
+			ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+			URL resource = getClass().getResource(ImageConstants.VALIDATION_ERROR);
+			if (resource != null) {
+			  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+			  statusLabel.setIcon(icon);
+			}
 		} else if (RepositoryStatus.AVAILABLE.equals(status)) {
 		  statusLabel.setText(null);
 		  statusLabel.setIcon(null);

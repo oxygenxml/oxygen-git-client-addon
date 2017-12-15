@@ -152,9 +152,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
         try {
           URL fileContent = FileHelper.getFileURL(path);
           return fileContent.openConnection().getOutputStream();
-        } catch (NoWorkTreeException e) {
-          throw new IOException(e);
-        } catch (NoRepositorySelected e) {
+        } catch (NoWorkTreeException | NoRepositorySelected e) {
           throw new IOException(e);
         }
 			}
@@ -163,7 +161,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 
 		@Override
 		public void connect() throws IOException {
-		  
+		  // Nothing to do.
 		}
 
 		/**

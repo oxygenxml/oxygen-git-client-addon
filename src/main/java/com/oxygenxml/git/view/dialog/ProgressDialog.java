@@ -13,7 +13,7 @@ import javax.swing.JProgressBar;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
-import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 public class ProgressDialog extends OKCancelDialog {
 

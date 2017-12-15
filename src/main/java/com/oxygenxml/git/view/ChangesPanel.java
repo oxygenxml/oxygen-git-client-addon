@@ -12,6 +12,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -61,8 +62,9 @@ import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.StageController;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.ui.Icons;
 
 /**
  * This is the staging or the unstaging area, depending on the forStaging
@@ -160,7 +162,19 @@ public class ChangesPanel extends JPanel {
 	 * Selected paths in tree.
 	 */
 	private TreePath[] selectedPaths = null;
+	
+	/**
+	 * Image utilities.
+	 */
+	private ImageUtilities imageUtilities = 
+	    PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param stageController     Staging controller.
+	 * @param forStagedResources  <code>true</code> if for staged resources.
+	 */
 	public ChangesPanel(StageController stageController, boolean forStagedResources) {
 		this.forStagedResources = forStagedResources;
 		this.stageController = stageController;
@@ -642,10 +656,18 @@ public class ChangesPanel extends JPanel {
 	    selectedPaths = restoreSelectedPathsFromTableToTree();
 	    tree.setSelectionPaths(selectedPaths);
 	    scrollPane.setViewportView(tree);
-	    switchViewButton.setIcon(Icons.getIcon(ImageConstants.TABLE_VIEW));
+	    URL resource = getClass().getResource(ImageConstants.TABLE_VIEW);
+	    if (resource != null) {
+	      ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+	      switchViewButton.setIcon(icon);
+	    }
 	    switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
 	  } else {
-	    switchViewButton.setIcon(Icons.getIcon(ImageConstants.TREE_VIEW));
+	    URL resource = getClass().getResource(ImageConstants.TREE_VIEW);
+	    if (resource != null) {
+	      ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+	      switchViewButton.setIcon(icon);
+	    }
 	    switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 	    filesTable.clearSelection();
 	    StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
@@ -767,8 +789,13 @@ public class ChangesPanel extends JPanel {
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
 		switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
-		switchViewButton.setIcon(currentViewMode == ResourcesViewMode.FLAT_VIEW ? Icons.getIcon(ImageConstants.TREE_VIEW)
-		    : Icons.getIcon(ImageConstants.TABLE_VIEW));
+		URL resource = currentViewMode == ResourcesViewMode.FLAT_VIEW 
+		    ? getClass().getResource(ImageConstants.TREE_VIEW)
+		    : getClass().getResource(ImageConstants.TABLE_VIEW);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  switchViewButton.setIcon(icon);
+		}
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
 		toolbar.setOpaque(false);
@@ -798,12 +825,14 @@ public class ChangesPanel extends JPanel {
 		filesTable.setTableHeader(null);
 		filesTable.setShowGrid(false);
 		
-		ImageIcon icon = Icons.getIcon(ImageConstants.GIT_ADD_ICON);
-		
-		int iconWidth = icon.getIconWidth();
-    filesTable.getColumnModel().getColumn(0).setPreferredWidth(iconWidth);
-    filesTable.getColumnModel().getColumn(0).setMaxWidth(iconWidth + 4);
-		
+		URL resource = getClass().getResource(ImageConstants.GIT_ADD_ICON);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  int iconWidth = icon.getIconWidth();
+		  filesTable.getColumnModel().getColumn(0).setPreferredWidth(iconWidth);
+		  filesTable.getColumnModel().getColumn(0).setMaxWidth(iconWidth + 4);
+		}
+
 		filesTable.setDefaultRenderer(Object.class, new ChangesTableCellRenderer());
 		filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
@@ -961,7 +990,11 @@ public class ChangesPanel extends JPanel {
 
 			JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-			Icon icon = Icons.getIcon(ImageConstants.FOLDER_TREE_ICON);
+			URL resource = getClass().getResource(ImageConstants.FOLDER_TREE_ICON);
+			Icon icon = null;
+			if (resource != null) {
+			  icon = (Icon) imageUtilities.loadIcon(resource);
+			}
 			String toolTip = "";
 
 			StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
@@ -1037,27 +1070,43 @@ public class ChangesPanel extends JPanel {
 	  RenderingInfo renderingInfo = null;
 	  if (GitChangeType.ADD == changeType || GitChangeType.UNTRACKED == changeType) {
 	    renderingInfo = new RenderingInfo(
-	        Icons.getIcon(ImageConstants.GIT_ADD_ICON),
+	        getIcon(ImageConstants.GIT_ADD_ICON),
 	        translator.getTranslation(Tags.ADD_ICON_TOOLTIP));
     } else if (GitChangeType.MODIFIED == changeType || GitChangeType.CHANGED == changeType) {
       renderingInfo = new RenderingInfo(
-          Icons.getIcon(ImageConstants.GIT_MODIFIED_ICON),
+          getIcon(ImageConstants.GIT_MODIFIED_ICON),
           translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP));
     } else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
       renderingInfo = new RenderingInfo(
-          Icons.getIcon(ImageConstants.GIT_DELETE_ICON),
+          getIcon(ImageConstants.GIT_DELETE_ICON),
           translator.getTranslation(Tags.DELETE_ICON_TOOLTIP));
     } else if (GitChangeType.CONFLICT == changeType) {
       renderingInfo = new RenderingInfo(
-          Icons.getIcon(ImageConstants.GIT_CONFLICT_ICON),
+          getIcon(ImageConstants.GIT_CONFLICT_ICON),
           translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP));
     } else if (GitChangeType.SUBMODULE == changeType) {
       renderingInfo = new RenderingInfo(
-          Icons.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON),
+          getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON),
           translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP));
     }
 	  return renderingInfo;
 	}
+
+	/**
+	 * Get icon.
+	 *  
+	 * @param imgKey The image key.
+	 * 
+	 * @return the icon.
+	 */
+  private Icon getIcon(String imgKey) {
+    Icon toReturn = null;
+    URL resource = getClass().getResource(imgKey);
+    if (resource != null) {
+      toReturn = (Icon) imageUtilities.loadIcon(resource);
+    }
+    return toReturn;
+  }
 	
 	/**
 	 * Rendering info.

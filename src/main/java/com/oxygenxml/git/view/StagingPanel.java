@@ -57,6 +57,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   /**
+   * No repository.
+   */
+  private static final String NO_REPOSITORY = "[No repository]";
+
+  /**
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(StagingPanel.class);
