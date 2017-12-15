@@ -5,21 +5,23 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
+import java.net.URL;
 import java.util.Collection;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.UIConstants;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
-import ro.sync.ui.Icons;
 
 /**
  * A dialog that is shown when the pull is successful but has conflicts. It
@@ -54,7 +56,12 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JLabel iconLabel = new JLabel();
-		iconLabel.setIcon(Icons.getIcon(ImageConstants.WARNING_ICON));
+		ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+		URL resource = getClass().getResource(ImageConstants.WARNING_ICON);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  iconLabel.setIcon(icon);
+		}
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;

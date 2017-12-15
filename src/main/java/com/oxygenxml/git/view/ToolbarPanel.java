@@ -9,9 +9,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -42,8 +44,9 @@ import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.ui.Icons;
 
 /**
  * Contains additional support buttons like push, pull, branch select, submodule
@@ -114,6 +117,11 @@ public class ToolbarPanel extends JPanel {
 	 * Main panel refresh
 	 */
 	private GitRefreshSupport refresh;
+	
+	/**
+	 * Image utilities.
+	 */
+	private ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
 
 	public ToolbarPanel(
 	    PushPullController pushPullController, 
@@ -278,7 +286,11 @@ public class ToolbarPanel extends JPanel {
 		};
 
 		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
-		cloneRepositoryButton.setIcon(Icons.getIcon(ImageConstants.GIT_CLONE_REPOSITORY_ICON));
+		URL resource = getClass().getResource(ImageConstants.GIT_CLONE_REPOSITORY_ICON);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  cloneRepositoryButton.setIcon(icon);
+		}
 		cloneRepositoryButton.setToolTipText(translator.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
 		setCustomWidthOn(cloneRepositoryButton);
 
@@ -306,7 +318,11 @@ public class ToolbarPanel extends JPanel {
 	    }
 	  };
 		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
-		submoduleSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_SUBMODULE_ICON));
+		URL resource = getClass().getResource(ImageConstants.GIT_SUBMODULE_ICON);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  submoduleSelectButton.setIcon(icon);
+		}
 		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
 		setCustomWidthOn(submoduleSelectButton);
 
@@ -335,7 +351,11 @@ public class ToolbarPanel extends JPanel {
 			}
 		};
 		ToolbarButton branchSelectButton = new ToolbarButton(branchSelectAction, false);
-		branchSelectButton.setIcon(Icons.getIcon(ImageConstants.GIT_BRANCH_ICON));
+		URL resource = getClass().getResource(ImageConstants.GIT_BRANCH_ICON);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  branchSelectButton.setIcon(icon);
+		}
 		branchSelectButton.setToolTipText(translator.getTranslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
 		setCustomWidthOn(branchSelectButton);
 
@@ -378,13 +398,22 @@ public class ToolbarPanel extends JPanel {
 	private void addPushAndPullButtons() {
 		// PUSH
 		pushButton = createPushButton();
-		pushButton.setIcon(Icons.getIcon(ImageConstants.GIT_PUSH_ICON));
+		URL resource = getClass().getResource(ImageConstants.GIT_PUSH_ICON);
+		ImageIcon icon = null;
+		if (resource != null) {
+		  icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  pushButton.setIcon(icon);
+		}
 		pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
 		setCustomWidthOn(pushButton);
 
 		// PULL
 		pullButton = createPullButton();
-		pullButton.setIcon(Icons.getIcon(ImageConstants.GIT_PULL_ICON));
+		resource = getClass().getResource(ImageConstants.GIT_PULL_ICON);
+		if (resource != null) {
+		  icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  pullButton.setIcon(icon);
+		}
 		pullButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		setCustomWidthOn(pullButton);
 

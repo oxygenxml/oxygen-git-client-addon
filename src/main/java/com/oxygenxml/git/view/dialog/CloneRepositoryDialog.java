@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,10 +41,10 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.ui.Icons;
 
 public class CloneRepositoryDialog extends OKCancelDialog {
 
@@ -222,7 +223,12 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			}
 		};
 		ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
-		browseButton.setIcon(Icons.getIcon(ImageConstants.FILE_CHOOSER_ICON));
+		ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+		URL resource = getClass().getResource(ImageConstants.FILE_CHOOSER_ICON);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  browseButton.setIcon(icon);
+		}
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		browseButton.setOpaque(false);
 

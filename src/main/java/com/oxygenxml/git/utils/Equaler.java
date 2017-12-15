@@ -4,15 +4,17 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 /**
  * Equaler.
  */
 public class Equaler {
-  
+
   /**
-   * True to debug more on the equals flags
+   * Logger for logging.
    */
-  public static final boolean debugEquals = false;
+  private static final Logger LOGGER = Logger.getLogger(Equaler.class.getName());
 
   /**
    * Hidden constructor.
@@ -20,10 +22,10 @@ public class Equaler {
   private Equaler() {
     // Nada
   }
-  
+
   /**
-   * Verify if the two Collections of Objects are equal, including the cases when they
-   * are null.
+   * Verify if the two Collections of Objects are equal, including the cases
+   * when they are null.
    * 
    * @param o1
    *          First object collection to be compared.
@@ -57,15 +59,17 @@ public class Equaler {
     }
     return true;
   }
-  
+
   /**
    * Verify if the two objects are equal, including the cases when they are
-   * null. If the objects are not null and are URL instances the equals 
-   * verification is done by avoiding resolving the hosts of the URL because 
+   * null. If the objects are not null and are URL instances the equals
+   * verification is done by avoiding resolving the hosts of the URL because
    * that is a long operation.
    * 
-   * @param o1 First object to be compared.
-   * @param o2 Second object to be compared.
+   * @param o1
+   *          First object to be compared.
+   * @param o2
+   *          Second object to be compared.
    * @return True if objects are equal or both null, false otherwise.
    */
   public static boolean verifyEquals(Object o1, Object o2) {
@@ -77,7 +81,7 @@ public class Equaler {
       equals = false;
     } else if (o2 == null) {
       equals = false;
-    } else if (o1 instanceof CharSequence){
+    } else if (o1 instanceof CharSequence) {
       equals = verifyStringObjectEquals(o1, o2);
     } else {
       if (o1 instanceof URL) {
@@ -86,24 +90,24 @@ public class Equaler {
       if (o2 instanceof URL) {
         o2 = ((URL) o2).toExternalForm();
       }
-      if(debugEquals) {
+      if (LOGGER.isDebugEnabled()) {
         checkObjectsForArrays(o1, o2);
       }
       equals = o1.equals(o2);
     }
     return equals;
   }
-  
+
   private static boolean verifyStringObjectEquals(Object first, Object second) {
     if (first instanceof CharSequence && second instanceof CharSequence) {
-      if(first instanceof String && second instanceof String) {
+      if (first instanceof String && second instanceof String) {
         return first.equals(second);
       } else {
         CharSequence firstString = (CharSequence) first;
-        CharSequence secondString = (CharSequence)second;
+        CharSequence secondString = (CharSequence) second;
         int n = firstString.length();
         if (n == secondString.length()) {
-          for (int i = 0; i < n; i++) { 
+          for (int i = 0; i < n; i++) {
             if (firstString.charAt(i) != secondString.charAt(i)) {
               return false;
             }
@@ -114,27 +118,29 @@ public class Equaler {
         }
       }
     } else {
-      if(debugEquals) {
+      if (LOGGER.isDebugEnabled()) {
         checkObjectsForArrays(first, second);
       }
       return first.equals(second);
     }
   }
-  
+
   /**
    * Check if the given objects are arrays.
    * 
-   * @param o1 The object to check if is an array.
-   * @param o2 The object to check if is an array.
+   * @param o1
+   *          The object to check if is an array.
+   * @param o2
+   *          The object to check if is an array.
    */
   protected static void checkObjectsForArrays(Object o1, Object o2) {
-    // It may happen for someone to compare an array with an object which is not an array
+    // It may happen for someone to compare an array with an object which is not
+    // an array
     boolean firstIsArray = o1.getClass().isArray();
     boolean secondIsArray = o2.getClass().isArray();
     if (firstIsArray != secondIsArray) {
-      System.err.println("Comparing an array with a non array object");
-      new Exception().printStackTrace();
+      LOGGER.debug("Comparing an array with a non array object", new Exception());
     }
   }
-  
+
 }

@@ -11,11 +11,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -39,9 +41,9 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.ui.Icons;
 
 /**
  * Panel containing a label with showing the current working copy, a combo box
@@ -345,7 +347,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		browseButton = new ToolbarButton(null, false);
-		browseButton.setIcon(Icons.getIcon(ImageConstants.FILE_CHOOSER_ICON));
+		ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+		URL resource = getClass().getResource(ImageConstants.FILE_CHOOSER_ICON);
+		if (resource != null) {
+		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		  browseButton.setIcon(icon);
+		}
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);
