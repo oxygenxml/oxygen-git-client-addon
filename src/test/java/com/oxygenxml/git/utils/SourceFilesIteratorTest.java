@@ -26,6 +26,11 @@ public class SourceFilesIteratorTest extends JFCTestCase {
   public static final File SRC_DIR = new File("src");
   
   /**
+   * Delimiter between the imported class and the class that imports it.
+   */
+  private static final String DELIMITER = " ~IS IMPORTED BY~ ";
+  
+  /**
    * The iterator over the java source files.
    */
   private JavaFilesIterator srcFilesIterator = new JavaFilesIterator(SRC_DIR);
@@ -64,7 +69,7 @@ public class SourceFilesIteratorTest extends JFCTestCase {
             String classQName = line.substring(
                 line.indexOf("import ") + "import ".length(),
                 line.indexOf(';'));
-            importedOxyClasses.add(classQName);
+            importedOxyClasses.add(classQName + DELIMITER + file);
           }
         }
       } catch (FileNotFoundException e) {
@@ -80,15 +85,16 @@ public class SourceFilesIteratorTest extends JFCTestCase {
     
     // Check whether the imported classes are public API or not
     ClassLoader classLoader = SourceFilesIteratorTest.class.getClassLoader();
-    for (String classQName : importedOxyClasses) {
-      Class<?> clazz = classLoader.loadClass(classQName);
+    for (String importedClass : importedOxyClasses) {
+      String importedClassQName = importedClass.substring(0, importedClass.indexOf(DELIMITER));
+      Class<?> clazz = classLoader.loadClass(importedClassQName);
       API[] annotationsByType = clazz.getAnnotationsByType(API.class);
       if (annotationsByType.length == 0) {
-        classesToReport.add(classQName);
+        classesToReport.add(importedClass);
       } else {
         for (API api : annotationsByType) {
           if (api.toString().contains("INTERNAL")) {
-            classesToReport.add(classQName);
+            classesToReport.add(importedClass);
             break;
           }
         }
