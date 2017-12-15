@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
@@ -30,6 +32,7 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -255,6 +258,10 @@ public class GitTestBase extends JFCTestCase {
         return new File(url.getPath());
       }
     });
+   
+    ImageUtilities imgUtils = Mockito.mock(ImageUtilities.class);
+    Mockito.when(mock.getImageUtilities()).thenReturn(imgUtils);
+    Mockito.when(imgUtils.loadIcon((URL) Mockito.any())).thenReturn(Mockito.mock(ImageIcon.class));
     
     installGitProtocol();
   }
