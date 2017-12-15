@@ -7,6 +7,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
+/**
+ * Utility class to serialize a menu.
+ */
 public class PopupMenuSerializer {
   /**
    * Hidden constructor.
