@@ -167,6 +167,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 						} else {
 							message = translator.getTranslation(Tags.COMMAND_ABORTED);
 						}
+					} else {
+					  // Un-handled exception.
+					  message = e.getMessage();
+					  logger.error(e, e);
 					}
 				} finally {
 					if (notifyFinish) {
