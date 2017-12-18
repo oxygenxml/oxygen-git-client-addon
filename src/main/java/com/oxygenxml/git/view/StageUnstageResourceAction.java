@@ -11,6 +11,9 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.StageController;
 
+/**
+ * Moves files inside/outside the INDEX.
+ */
 public class StageUnstageResourceAction extends AbstractAction {
   
   /**
@@ -31,7 +34,9 @@ public class StageUnstageResourceAction extends AbstractAction {
   /**
    * Constructor.
    * 
+   * @param fileStatuses Moves files inside/outside the INDEX.
    * @param isStage <code>true</code> if the action is "Stage".
+   * @param stageCtrl Staging controller.
    */
   public StageUnstageResourceAction(
       List<FileStatus> fileStatuses,
