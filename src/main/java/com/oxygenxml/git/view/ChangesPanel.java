@@ -636,7 +636,7 @@ public class ChangesPanel extends JPanel {
 	  this.currentViewMode = viewMode;
 	  
     // Update models.
-    String rootFolder = "[No repository]";
+    String rootFolder = StagingPanel.NO_REPOSITORY;
     try {
       rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
     } catch (NoRepositorySelected e) {
@@ -1199,7 +1199,7 @@ public class ChangesPanel extends JPanel {
   public void repositoryChanged(List<FileStatus> unstagedFiles) {
     updateFlatView(unstagedFiles);
 
-    String rootFolder = "[No repository]";
+    String rootFolder = StagingPanel.NO_REPOSITORY;
     try {
       rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
     } catch (NoRepositorySelected e) {
