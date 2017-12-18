@@ -579,13 +579,13 @@ public class GitAccess {
 	 *          - Git username
 	 * @param password
 	 *          - Git password
+	 *          
 	 * @throws GitAPIException
 	 * @throws TransportException
 	 * @throws InvalidRemoteException
-	 * @throws IOException
 	 */
 	public PushResponse push(final String username, final String password)
-	    throws GitAPIException {
+	    throws GitAPIException, InvalidRemoteException, TransportException {
 
 	  AuthenticationInterceptor.install();
 	  PushResponse response = new PushResponse();

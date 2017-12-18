@@ -55,18 +55,28 @@ public class AddRemoteDialog extends OKCancelDialog {
 	public AddRemoteDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.ADD_REMOTE_DIALOG_TITLE), true);
-		this.setLayout(new GridBagLayout());
+		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		addInformationLabel(gbc);
 		addRemoteRepoLabel(gbc);
 		addRemoteRepoTextField(gbc);
 
-		this.pack();
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
-		this.setMinimumSize(new Dimension(320, 130));
-		this.setResizable(true);
-		this.setVisible(true);
-		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+		pack();
+		setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		setMinimumSize(new Dimension(320, 130));
+		setResizable(true);
+		setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+	}
+	
+	/**
+	 * Presents the dialog for the user to link a new remote.
+	 * 
+	 * @return <code>true</code> if the user gave a new remote.
+	 */
+	public boolean linkRemote() {
+	  setVisible(true);
+	  
+	  return getResult() == RESULT_OK;
 	}
 
 	/**

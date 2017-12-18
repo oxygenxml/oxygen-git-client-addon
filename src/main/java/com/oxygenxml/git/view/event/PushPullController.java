@@ -73,7 +73,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * @return The thread that executes the command.
 	 */
 	public Thread execute(final Command command) {
-		final UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
 		String message = "";
 		if (command == Command.PUSH) {
 			message = translator.getTranslation(Tags.PUSH_IN_PROGRESS);
@@ -82,7 +81,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 		}
 		
 		// Notify push about to start.
-		// TODO This method recursively calls itself. This means we could fire this event multiple times.
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
 		notifyObservers(pushPullEvent);
 		
@@ -90,8 +88,17 @@ public class PushPullController implements Subject<PushPullEvent> {
 
 			@Override
       public void run() {
+				executeInternal(command);
+			}
 
-				String message = "";
+			/**
+			 * Executes the given command.
+			 * 
+			 * @param command Command to execute.
+			 */
+      private void executeInternal(final Command command) {
+        UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(gitAccess.getHostName());
+        String message = "";
 				boolean notifyFinish = true;
         try {
 					if (logger.isDebugEnabled()) {
@@ -102,22 +109,26 @@ public class PushPullController implements Subject<PushPullEvent> {
 					} else {
 						message = pull(userCredentials);
 					}
-				} catch (GitAPIException e) {
+				} catch (CheckoutConflictException e) {
+          // Notify that there are conflicts that should be resolved in the staging area.
+          new PullWithConflictsDialog(
+              translator.getTranslation(Tags.PULL_STATUS), 
+              ((CheckoutConflictException) e).getConflictingPaths(), 
+              translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
+          
+          if (logger.isDebugEnabled()) {
+            logger.info(((CheckoutConflictException) e).getConflictingPaths());
+          }
+        } catch (GitAPIException e) {
 				  // Exception handling.
 					if (logger.isDebugEnabled()) {
 						logger.debug(e, e);
 					}
-					if (e instanceof CheckoutConflictException) {
-					  // Notify that there are conflicts that should be resolved in the staging area.
-						new PullWithConflictsDialog(
-								translator.getTranslation(Tags.PULL_STATUS), 
-								((CheckoutConflictException) e).getConflictingPaths(), 
-								translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
-						
-						if (logger.isDebugEnabled()) {
-						  logger.info(((CheckoutConflictException) e).getConflictingPaths());
-						}
-					} else if (e.getMessage().contains("not authorized")) {
+					
+					String lowercaseMsg = e.getMessage().toLowerCase();
+					
+					if (lowercaseMsg.contains("not authorized") 
+					    || lowercaseMsg.contains("authentication not supported")) {
 					  // Authorization problems.
 						String loginMessage = "";
 						if ("".equals(userCredentials.getUsername())) {
@@ -135,9 +146,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 						  // Skip notification now. We try again.
 							notifyFinish = false;
 							// Try again.
-							execute(command);
+							executeInternal(command);
 						}
-					} else if (e.getMessage().contains("not permitted")) {
+					} else if (lowercaseMsg.contains("not permitted")) {
 					  // The user doesn't have permissions.
 						((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 								.showWarningMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
@@ -149,13 +160,19 @@ public class PushPullController implements Subject<PushPullEvent> {
 						  // Avoid notification now. We try again.
 							notifyFinish = false;
 							// Try again.
-							execute(command);
+							executeInternal(command);
 						}
-					} else if (e.getMessage().contains("origin: not found")
-							|| e.getMessage().contains("No value for key remote.origin.url found in configuration")) {
+					} else if (lowercaseMsg.contains("origin: not found")
+							|| lowercaseMsg.contains("no value for key remote.origin.url found in configuration")) {
 					  // No remote.
-						new AddRemoteDialog();
-					} else if (e.getMessage().contains("Auth fail")) {
+						boolean linkRemote = new AddRemoteDialog().linkRemote();
+						if (linkRemote) {
+						  // Avoid notification now. We try again.
+              notifyFinish = false;
+              // Try again.
+              executeInternal(command);
+						}
+					} else if (lowercaseMsg.contains("auth fail")) {
 					  // This message is thrown for SSH.
 						String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
 						String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
@@ -163,13 +180,14 @@ public class PushPullController implements Subject<PushPullEvent> {
 						  // Avoid notification now. We try again.
 							notifyFinish = false;
 							// Try again.
-							execute(command);
+							executeInternal(command);
 						} else {
 							message = translator.getTranslation(Tags.COMMAND_ABORTED);
 						}
 					} else {
 					  // Un-handled exception.
-					  message = e.getMessage();
+					  message = translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN);
+					  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getClass().getName() + "\n" + e.getMessage());
 					  logger.error(e, e);
 					}
 				} finally {
@@ -178,7 +196,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 						notifyObservers(pushPullEvent);
 					}
 				}
-			}
+      }
 
 			/**
 			 * Pull the changes and inform the user with messages depending on the
