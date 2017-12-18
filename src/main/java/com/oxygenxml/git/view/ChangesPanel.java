@@ -208,7 +208,6 @@ public class ChangesPanel extends JPanel {
             logger.debug(ex, ex);
 
             ChangesPanel.this.repositoryChanged(Collections.emptyList());
-            ChangesPanel.this.repositoryChanged(Collections.emptyList());
           }
         }
       }
@@ -240,7 +239,7 @@ public class ChangesPanel extends JPanel {
 	  if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
 	    return ((StagingResourcesTableModel) filesTable.getModel()).getFilesStatuses();
 	  } else {
-	    return ((StagingResourcesTreeModel) tree.getModel()).getFilesStatus();
+	    return ((StagingResourcesTreeModel) tree.getModel()).getFilesStatuses();
 	  }
   }
 
@@ -1196,7 +1195,7 @@ public class ChangesPanel extends JPanel {
    * 
    * @param unstagedFiles The changed files from the new repository.
    */
-  public void repositoryChanged(List<FileStatus> unstagedFiles) {
+  private void repositoryChanged(List<FileStatus> unstagedFiles) {
     updateFlatView(unstagedFiles);
 
     String rootFolder = StagingPanel.NO_REPOSITORY;

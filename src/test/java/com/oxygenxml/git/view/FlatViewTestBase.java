@@ -157,7 +157,7 @@ public class FlatViewTestBase extends GitTestBase {
    */
   private String getTreeModelDump(StagingResourcesTreeModel model) {
     StringBuilder sb = new StringBuilder();
-    for (FileStatus fileStatus : model.getFilesStatus()) {
+    for (FileStatus fileStatus : model.getFilesStatuses()) {
       if (sb.length() > 0) {
         sb.append("\n");
       }

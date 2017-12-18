@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -35,7 +34,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	/**
 	 * The files in the model
 	 */
-	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
+	private List<FileStatus> filesStatuses = new ArrayList<FileStatus>();
 
   /**
    * <code>true</code> if this model presents the resources inside the index.
@@ -60,7 +59,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 		super(root);
     this.stageController = controller;
 		this.inIndex = inIndex;
-		this.filesStatus = filesStatus;
+		this.filesStatuses = filesStatus;
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
@@ -87,13 +86,13 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 			}
 		} else if (changeEvent.getCommand() == GitCommand.COMMIT) {
 			if (inIndex) {
-				deleteNodes(filesStatus);
-				filesStatus.clear();
+				deleteNodes(filesStatuses);
+				filesStatuses.clear();
 			}
 		} else if (changeEvent.getCommand() == GitCommand.DISCARD) {
 			deleteNodes(oldStates);
 		} else if (changeEvent.getCommand() == GitCommand.MERGE_RESTART) {
-      filesStatus.clear();
+      filesStatuses.clear();
       List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFile() :
         GitAccess.getInstance().getUnstagedFiles();
       insertNodes(fileStatuses);
@@ -113,7 +112,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 		for (FileStatus fileStatus : fileToBeUpdated) {
 			TreeFormatter.buildTreeFromString(this, fileStatus.getFileLocation());
 		}
-		filesStatus.addAll(fileToBeUpdated);
+		filesStatuses.addAll(fileToBeUpdated);
 		sortTree();
 	}
 
@@ -137,7 +136,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 				node = parentNode;
 			}
 		}
-		filesStatus.removeAll(fileToBeUpdated);
+		filesStatuses.removeAll(fileToBeUpdated);
 		sortTree();
 	}
 
@@ -149,7 +148,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * @return the file
 	 */
 	public FileStatus getFileByPath(String path) {
-		for (FileStatus fileStatus : filesStatus) {
+		for (FileStatus fileStatus : filesStatuses) {
 			if (path.equals(fileStatus.getFileLocation())) {
 				return fileStatus;
 			}
@@ -167,7 +166,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	public List<FileStatus> getFilesByPaths(List<String> selectedPaths) {
 		List<FileStatus> containingPaths = new ArrayList<FileStatus>();
 		for (String path : selectedPaths) {
-			for (FileStatus fileStatus : filesStatus) {
+			for (FileStatus fileStatus : filesStatuses) {
 				if (fileStatus.getFileLocation().startsWith(path)) {
 					containingPaths.add(new FileStatus(fileStatus));
 				}
@@ -186,7 +185,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
   public List<FileStatus> getFileLeavesByPaths(List<String> selectedPaths) {
     List<FileStatus> containingPaths = new ArrayList<FileStatus>();
     for (String path : selectedPaths) {
-      for (FileStatus fileStatus : filesStatus) {
+      for (FileStatus fileStatus : filesStatuses) {
         if (fileStatus.getFileLocation().equals(path)) {
           containingPaths.add(new FileStatus(fileStatus));
         }
@@ -203,8 +202,8 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 *          - the files on which the node structure will be created
 	 */
 	public void setFilesStatus(List<FileStatus> filesStatus) {
-		deleteNodes(this.filesStatus);
-		this.filesStatus.clear();
+		deleteNodes(this.filesStatuses);
+		this.filesStatuses.clear();
 		insertNodes(filesStatus);
 		fireTreeStructureChanged(this, null, null, null);
 	}
@@ -245,8 +244,8 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	/**
 	 * @return The files in the model.
 	 */
-	public List<FileStatus> getFilesStatus() {
-    return filesStatus;
+	public List<FileStatus> getFilesStatuses() {
+    return filesStatuses;
   }
 
   /**
@@ -258,7 +257,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    */
   public void switchAllFilesStageState() {
     List<FileStatus> filesToBeUpdated = new ArrayList<FileStatus>();
-    for (FileStatus fileStatus : filesStatus) {
+    for (FileStatus fileStatus : filesStatuses) {
       if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {
         filesToBeUpdated.add(fileStatus);
       }
