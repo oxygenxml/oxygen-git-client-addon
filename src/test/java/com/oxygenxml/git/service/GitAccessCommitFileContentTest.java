@@ -179,21 +179,17 @@ public class GitAccessCommitFileContentTest {
 	}
 
 	@After
-	public void freeResources() throws InterruptedException {
+	public void freeResources() throws Exception {
 
 		gitAccess.close();
 		db1.close();
 		db2.close();
 		db3.close();
 		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
-		try {
-			FileUtils.deleteDirectory(dirToDelete);
-			dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
-			FileUtils.deleteDirectory(dirToDelete);
-			dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
-			FileUtils.deleteDirectory(dirToDelete);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		FileUtils.deleteDirectory(dirToDelete);
+		dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
+		FileUtils.deleteDirectory(dirToDelete);
+		dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
+		FileUtils.deleteDirectory(dirToDelete);
 	}
 }
