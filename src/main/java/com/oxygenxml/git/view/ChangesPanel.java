@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -579,28 +578,25 @@ public class ChangesPanel extends JPanel {
 		changeSelectedButton.addActionListener(new ActionListener() {
 			@Override
       public void actionPerformed(ActionEvent e) {
-			  List<FileStatus> fss = new ArrayList<FileStatus>();
+			  List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
 				if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
 					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 					for (int i = selectedRows.length - 1; i >= 0; i--) {
 						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 						FileStatus fileStatus = fileTableModel.getFileStatus(convertedRow);
-						fss.add(fileStatus);
+						fileStatuses.add(fileStatus);
 					}
 				} else {
 					List<String> selectedFiles = TreeFormatter.getStringComonAncestor(tree);
 					StagingResourcesTreeModel fileTreeModel = (StagingResourcesTreeModel) tree.getModel();
-					for (Iterator<String> iterator = selectedFiles.iterator(); iterator.hasNext();) {
-            String path = iterator.next();
-            FileStatus fileByPath = fileTreeModel.getFileByPath(path);
-            fss.add(fileByPath);
-          }
+					List<FileStatus> fileStatusesForPaths = fileTreeModel.getFilesByPaths(selectedFiles);
+					fileStatuses.addAll(fileStatusesForPaths);
 				}
 				
 	      // "Stage"/"Unstage" actions
 	      AbstractAction stageUnstageAction = new StageUnstageResourceAction(
-	          fss, 
+	          fileStatuses, 
 	          !forStagedResources, 
 	          stageController);
 	      stageUnstageAction.actionPerformed(null);
