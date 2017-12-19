@@ -102,7 +102,7 @@ public class FlatViewTestBase extends GitTestBase {
     // The newly created file is present in the model.
     
     String ex = "--UNSTAGED--\n" + unstagedExpected + "\n\n--INDEX--\n" + indexExpected;
-    String ac = "--UNSTAGED--\n" + getTreeModelDump(uModel) + "\n\n--INDEX--\n" + getTreeModelDump(stModel);
+    String ac = "--UNSTAGED--\n" + getFlatModelDump(uModel) + "\n\n--INDEX--\n" + getFlatModelDump(stModel);
 
     assertEquals(ex, ac);
   }
@@ -114,7 +114,7 @@ public class FlatViewTestBase extends GitTestBase {
    * 
    * @return The model.
    */
-  private String getTreeModelDump(StagingResourcesTableModel model) {
+  private String getFlatModelDump(StagingResourcesTableModel model) {
     StringBuilder sb = new StringBuilder();
     for (FileStatus fileStatus : model.getFilesStatuses()) {
       if (sb.length() > 0) {
@@ -157,7 +157,7 @@ public class FlatViewTestBase extends GitTestBase {
    */
   private String getTreeModelDump(StagingResourcesTreeModel model) {
     StringBuilder sb = new StringBuilder();
-    for (FileStatus fileStatus : model.getFilesStatus()) {
+    for (FileStatus fileStatus : model.getFilesStatuses()) {
       if (sb.length() > 0) {
         sb.append("\n");
       }

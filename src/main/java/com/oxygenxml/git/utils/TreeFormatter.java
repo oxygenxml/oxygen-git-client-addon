@@ -231,7 +231,8 @@ public class TreeFormatter {
 	/**
 	 * Converts a file path to the TreePath that indentifies the file in the tree model.
 	 * 
-	 * @param path File path from the working copy.
+	 * @param model  The tree model.
+	 * @param path   File path from the working copy.
 	 * 
 	 * @return A file path to the TreePath.
 	 */

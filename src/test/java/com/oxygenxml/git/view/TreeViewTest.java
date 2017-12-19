@@ -304,7 +304,6 @@ public class TreeViewTest extends FlatViewTestBase {
         "ADD, test.txt\n" + 
         "ADD, test2.txt");
     
-    System.out.println("----------------------");
     //--------------
     // Back to unStaged
     //---------------
@@ -569,5 +568,45 @@ public class TreeViewTest extends FlatViewTestBase {
     }
 
     assertTreeModels("", "");
+  }
+  
+  /**
+   * <p><b>Description:</b> stage / unstage folder.</p>
+   * <p><b>Bug ID:</b> EXM-40615</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  public void testStageUnstage_Folder() throws Exception {
+    String localTestRepository = "target/test-resources/testStageUnstage_Folder_local";
+    String remoteTestRepository = "target/test-resources/testStageUnstage_Folder_remote";
+    
+    // Create a new test file.
+    new File(localTestRepository).mkdirs();
+    new File(localTestRepository + "/folder").mkdirs();
+    File file = new File(localTestRepository + "/folder/test.txt");
+    file.createNewFile();
+    
+    // Create repositories
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo = createRepository(localTestRepository);
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo , remoteRepo);
+    
+    // The newly created file is present in the model.
+    assertTreeModels("UNTRACKED, folder/test.txt", "");
+
+    //---------------
+    // Stage.
+    //---------------
+    change(true, "folder");
+    assertTreeModels("", "ADD, folder/test.txt");
+
+    //---------------
+    // Back to unStaged
+    //---------------
+    change(false, "folder");
+    assertTreeModels("UNTRACKED, folder/test.txt", "");
   }
 }
