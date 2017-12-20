@@ -421,6 +421,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Get the remote. The conflict appears.
     pull();
+    Thread.sleep(500);
 
     assertTableModels("CONFLICT, test.txt", "");
     
@@ -498,6 +499,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Get the remote. The conflict appears.
     pull();
+    Thread.sleep(500);
     assertTableModels("CONFLICT, test.txt", "");
     
     // Resolve using theirs
@@ -563,4 +565,44 @@ public class FlatViewTest extends FlatViewTestBase {
 
     assertTableModels("", "");
   }
+  
+//  /**
+//   * <p><b>Description:</b> open submodule in diff.</p>
+//   * <p><b>Bug ID:</b> EXM-40621</p>
+//   *
+//   * @author sorin_carbunaru
+//   *
+//   * @throws Exception
+//   */
+//  public void testOpenSubmoduleInDiff() throws Exception {
+//    // ====================== Create submodule =======================
+//    String subModuleLocalTestRepository = "target/test-resources/testSubmoduleX_localParent/sub";
+//    String subModuleRemoteTestRepository = "target/test-resources/testSubmoduleX_remoteSubmodule";
+//    // Create repositories
+//    Repository subModuleRemoteRepo = createRepository(subModuleRemoteTestRepository);
+//    Repository subModuleLocalRepo = createRepository(subModuleLocalTestRepository);
+//    // Bind the local repository to the remote one.
+//    bindLocalToRemote(subModuleLocalRepo, subModuleRemoteRepo);
+//    System.err.println(GitAccess.getInstance());
+//    
+//    //====================== Create parent =======================
+//    String parentLocalTestRepository = "target/test-resources/testSubmoduleX_localParent";
+//    String parentRemoteTestRepository = "target/test-resources/testSubmoduleX_remoteParent";
+//    // Create repositories
+//    Repository parentRemoteRepo = createRepository(parentRemoteTestRepository);
+//    Repository parentLocalRepo = createRepository(parentLocalTestRepository);
+//    // Bind the local repository to the remote one.
+//    bindLocalToRemote(parentLocalRepo, parentRemoteRepo);
+//    System.err.println(GitAccess.getInstance());
+//    
+//    // ======================= Add submodule to parent =======================
+//    SubmoduleAddCommand addCmd = GitAccess.getInstance().submoduleAdd();
+//    addCmd.setURI(new File(subModuleRemoteTestRepository).toURI().toString());
+//    addCmd.setPath(subModuleLocalTestRepository);
+//    addCmd.call();
+//    Thread.sleep(1000);
+//    
+//    assertTableModels("", "");
+//  }
+
 }

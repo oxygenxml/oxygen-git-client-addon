@@ -421,47 +421,51 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 	@Override
   public void stateChanged(PushPullEvent pushPullEvent) {
-		if (pushPullEvent.getActionStatus() == ActionStatus.STARTED) {
-			commitPanel.setStatus(pushPullEvent.getMessage());
-			commitPanel.clearCommitMessage();
-			workingCopySelectionPanel.getBrowseButton().setEnabled(false);
-			workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
-			toolbarPanel.getPushButton().setEnabled(false);
-			toolbarPanel.getPullButton().setEnabled(false);
-			toolbarPanel.getCloneRepositoryButton().setEnabled(false);
-			commitPanel.getCommitButton().setEnabled(false);
-		} else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
-			commitPanel.setStatus(pushPullEvent.getMessage());
-			commitPanel.clearCommitMessage();
-			if (!GitAccess.getInstance().getStagedFile().isEmpty()) {
-				commitPanel.getCommitButton().setEnabled(true);
-			}
-			workingCopySelectionPanel.getBrowseButton().setEnabled(true);
-			workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
-			
-			// Update models.
-			String rootFolder = NO_REPOSITORY;
-      try {
-        rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-      } catch (NoRepositorySelected e) {
-        // Never happens.
-        logger.error(e, e);
+	  SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        if (pushPullEvent.getActionStatus() == ActionStatus.STARTED) {
+          commitPanel.setStatus(pushPullEvent.getMessage());
+          commitPanel.clearCommitMessage();
+          workingCopySelectionPanel.getBrowseButton().setEnabled(false);
+          workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
+          toolbarPanel.getPushButton().setEnabled(false);
+          toolbarPanel.getPullButton().setEnabled(false);
+          toolbarPanel.getCloneRepositoryButton().setEnabled(false);
+          commitPanel.getCommitButton().setEnabled(false);
+        } else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
+          commitPanel.setStatus(pushPullEvent.getMessage());
+          commitPanel.clearCommitMessage();
+          if (!GitAccess.getInstance().getStagedFile().isEmpty()) {
+            commitPanel.getCommitButton().setEnabled(true);
+          }
+          workingCopySelectionPanel.getBrowseButton().setEnabled(true);
+          workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
+          
+          // Update models.
+          String rootFolder = NO_REPOSITORY;
+          try {
+            rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+          } catch (NoRepositorySelected e) {
+            // Never happens.
+            logger.error(e, e);
+          }
+          unstagedChangesPanel.update(rootFolder, GitAccess.getInstance().getUnstagedFiles());
+          
+          toolbarPanel.getPushButton().setEnabled(true);
+          toolbarPanel.getPullButton().setEnabled(true);
+          toolbarPanel.getCloneRepositoryButton().setEnabled(true);
+          toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
+          toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
+          toolbarPanel.updateInformationLabel();
+        } else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
+          commitPanel.setStatus(pushPullEvent.getMessage());
+          toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
+          toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
+          toolbarPanel.updateInformationLabel();
+        }
       }
-      unstagedChangesPanel.update(rootFolder,
-      		GitAccess.getInstance().getUnstagedFiles());
-      
-      toolbarPanel.getPushButton().setEnabled(true);
-      toolbarPanel.getPullButton().setEnabled(true);
-      toolbarPanel.getCloneRepositoryButton().setEnabled(true);
-			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
-			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
-			toolbarPanel.updateInformationLabel();
-		} else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
-			commitPanel.setStatus(pushPullEvent.getMessage());
-			toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
-			toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
-			toolbarPanel.updateInformationLabel();
-		}
+    });
 	}
 
 	/**

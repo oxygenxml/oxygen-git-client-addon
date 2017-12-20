@@ -427,7 +427,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Get the remote. The conflict appears.
     pull();
-
+    Thread.sleep(500);
     assertTreeModels("CONFLICT, test.txt", "");
     
     stagingPanel.getStageController().doGitCommand(
@@ -504,6 +504,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Get the remote. The conflict appears.
     pull();
+    Thread.sleep(500);
     assertTreeModels("CONFLICT, test.txt", "");
     
     // Resolve using theirs
