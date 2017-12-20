@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -512,46 +513,77 @@ public class ChangesPanel extends JPanel {
 					  diff.showDiff();
 					}
 					
-					// ============= Tight click event ================
+					// ============= Right click event ================
 					if (SwingUtilities.isRightMouseButton(e)
 					    && (!node.isRoot() || node.children().hasMoreElements())) {
 					  boolean treeInSelection = false;
-					  TreePath[] paths = tree.getSelectionPaths();
-					  if (paths != null) {
-					    for (int i = 0; i < paths.length; i++) {
-								if (treePath.equals(paths[i])) {
-									treeInSelection = true;
-									break;
-								}
-							}
-						}
-						if (!treeInSelection) {
-							tree.setSelectionPath(treePath);
-						}
-						final List<String> selPaths = TreeFormatter.getStringComonAncestor(tree);
-						GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
-						    new SelectedResourcesProvider() {
-                  @Override
-                  public List<FileStatus> getOnlySelectedLeaves() {
-                    return model.getFileLeavesByPaths(selPaths);
-                  }
-                  @Override
-                  public List<FileStatus> getAllSelectedResources() {
-                    return model.getFilesByPaths(selPaths);
-                  }
-                },
-						    stageController,
-						    forStagedResources);
-						contextualMenu.show(tree, e.getX(), e.getY());
+				    TreePath[] paths = tree.getSelectionPaths();
+				    if (paths != null) {
+				      for (int i = 0; i < paths.length; i++) {
+				        if (treePath.equals(paths[i])) {
+				          treeInSelection = true;
+				          break;
+				        }
+				      }
+				    }
+				    if (!treeInSelection) {
+				      tree.setSelectionPath(treePath);
+				    }
+				    
+					  showContextualMenuForTree(e.getX(), e.getY(), model);
 					}
 				} else {
 					tree.clearSelection();
 				}
 			}
 		});
+		
+		tree.addKeyListener(new KeyAdapter() {
+		  @Override
+		  public void keyPressed(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+		      // Show context menu
+		      TreePath[] treePaths = tree.getSelectionPaths();
+		      if (treePaths.length > 0) {
+		        TreePath lastTreePath = treePaths[treePaths.length - 1];
+		        Rectangle pathBounds = tree.getPathBounds(lastTreePath);
+		        showContextualMenuForTree(
+		            pathBounds.x,
+		            pathBounds.y + pathBounds.height,
+		            (StagingResourcesTreeModel) tree.getModel());
+		      }
+		    }
+		  }
+		});
 
 	}
 
+	 /**
+   * Show contextual menu
+   * 
+   * @param x         X coordinate where to show.
+   * @param y         Y coordinate where to show.
+   * @param model     The model of the tree.
+   * @param treePath  The current tree path.
+   */
+  private void showContextualMenuForTree(int x, int y, final StagingResourcesTreeModel model) {
+    final List<String> selPaths = TreeFormatter.getStringComonAncestor(tree);
+    GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
+        new SelectedResourcesProvider() {
+          @Override
+          public List<FileStatus> getOnlySelectedLeaves() {
+            return model.getFileLeavesByPaths(selPaths);
+          }
+          @Override
+          public List<FileStatus> getAllSelectedResources() {
+            return model.getFilesByPaths(selPaths);
+          }
+        },
+        stageController,
+        forStagedResources);
+    contextualMenu.show(tree, x, y);
+  }
+	
 	/**
 	 * Adds a listener on the changeAll button: When clicked all the files will go
 	 * in the staging or unstaging area, depending on the forStaging variable
@@ -867,7 +899,6 @@ public class ChangesPanel extends JPanel {
 					// ======== RIGHT CLICK ==========
 					if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1 && row != -1) {
 						boolean inSelection = false;
-						final List<FileStatus> files = new ArrayList<FileStatus>();
 						int clickedRow = filesTable.rowAtPoint(e.getPoint());
 						int[] selectedRows = filesTable.getSelectedRows();
 						for (int i = 0; i < selectedRows.length; i++) {
@@ -884,28 +915,7 @@ public class ChangesPanel extends JPanel {
 								selectedRows = filesTable.getSelectedRows();
 							}
 
-							for (int i = 0; i < selectedRows.length; i++) {
-								int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
-								StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-								FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
-								files.add(file);
-							}
-							
-							GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
-							    new SelectedResourcesProvider() {
-                    @Override
-                    public List<FileStatus> getOnlySelectedLeaves() {
-                      // All resources are "leaves" in the table view.
-                      return getAllSelectedResources();
-                    }
-                    @Override
-                    public List<FileStatus> getAllSelectedResources() {
-                      return files;
-                    }
-                  },
-	                stageController,
-	                forStagedResources);
-							contextualMenu.show(filesTable, e.getX(), e.getY());
+							showContextualMenuForFlatView(e.getX(), e.getY(), selectedRows);
 						} else {
 							filesTable.clearSelection();
 						}
@@ -913,6 +923,20 @@ public class ChangesPanel extends JPanel {
 				}
 				toggleSelectedButton();
 			}
+
+		});
+		
+		filesTable.addKeyListener(new KeyAdapter() {
+		  @Override
+		  public void keyPressed(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+		      int[] selectedRows = filesTable.getSelectedRows();
+		      if (selectedRows.length > 0) {
+		        Rectangle cellRect = filesTable.getCellRect(selectedRows[selectedRows.length - 1], 0, true);
+		        showContextualMenuForFlatView(cellRect.x, cellRect.y + cellRect.height, selectedRows);
+		      }
+		    }
+		  }
 		});
 		
 		// Compare files on enter.
@@ -937,6 +961,40 @@ public class ChangesPanel extends JPanel {
 		
 		setResourcesViewMode(currentViewMode);
 	}
+	
+	/**
+	 * Show contextual menu for flat view.
+	 * 
+	 * @param x             The X coordinate where to show the menu.
+	 * @param y             The Y coordinate where to show the menu.
+	 * @param selectedRows  The selected rows.
+	 */
+	private void showContextualMenuForFlatView(int x, int y, int[] selectedRows) {
+	  final List<FileStatus> files = new ArrayList<FileStatus>();
+	  
+    for (int i = 0; i < selectedRows.length; i++) {
+      int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
+      StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+      FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
+      files.add(file);
+    }
+    
+    GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
+        new SelectedResourcesProvider() {
+          @Override
+          public List<FileStatus> getOnlySelectedLeaves() {
+            // All resources are "leaves" in the table view.
+            return getAllSelectedResources();
+          }
+          @Override
+          public List<FileStatus> getAllSelectedResources() {
+            return files;
+          }
+        },
+        stageController,
+        forStagedResources);
+    contextualMenu.show(filesTable, x, y);
+  }
 	
 	/**
 	 * Open an instance of diff presenter and compares current file with the last commit.
