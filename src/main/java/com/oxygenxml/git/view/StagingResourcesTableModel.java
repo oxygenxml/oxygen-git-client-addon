@@ -15,7 +15,6 @@ import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.StageController;
@@ -36,12 +35,12 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * Constant for the index representing the file status
 	 */
-	private static final int FILE_STATUS_COLUMN = 0;
+	public static final int FILE_STATUS_COLUMN = 0;
 
 	/**
 	 * Constant for the index representing the file location
 	 */
-	private static final int FILE_LOCATION_COLUMN = 1;
+	public static final int FILE_LOCATION_COLUMN = 1;
 
 	/**
 	 * The internal representation of the model
@@ -56,9 +55,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
     public int compare(FileStatus f1, FileStatus f2) {
       int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
       if(changeTypeCompareResult == 0) {
-        String fileName1 = FileHelper.extractFileName(f1.getFileLocation(), true);
-        String fileName2 = FileHelper.extractFileName(f2.getFileLocation(), true);
-        return fileName1.compareTo(fileName2);
+        return f1.getFileLocation().compareTo(f2.getFileLocation());
       } else {
         return changeTypeCompareResult;
       }

@@ -40,6 +40,7 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
@@ -824,8 +825,9 @@ public class ChangesPanel extends JPanel {
 		if (resource != null) {
 		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
 		  int iconWidth = icon.getIconWidth();
-		  filesTable.getColumnModel().getColumn(0).setPreferredWidth(iconWidth);
-		  filesTable.getColumnModel().getColumn(0).setMaxWidth(iconWidth + 4);
+		  TableColumn statusCol = filesTable.getColumnModel().getColumn(StagingResourcesTableModel.FILE_STATUS_COLUMN);
+      statusCol.setPreferredWidth(iconWidth);
+		  statusCol.setMaxWidth(iconWidth + 4);
 		}
 
 		filesTable.setDefaultRenderer(Object.class, new ChangesTableCellRenderer());
