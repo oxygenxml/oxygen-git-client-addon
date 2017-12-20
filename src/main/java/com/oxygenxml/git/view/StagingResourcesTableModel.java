@@ -36,7 +36,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * Constant for the index representing the file status
 	 */
-	private static final int FILE_STATUS_COLUMN = 0;
+	static final int FILE_STATUS_COLUMN = 0;
 
 	/**
 	 * Constant for the index representing the file location
