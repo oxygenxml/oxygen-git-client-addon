@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -12,6 +13,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +42,6 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -64,6 +65,7 @@ import com.oxygenxml.git.view.event.StageController;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
 /**
  * This is the staging or the unstaging area, depending on the forStaging
@@ -274,7 +276,7 @@ public class ChangesPanel extends JPanel {
 
 	    treeModel.setFilesStatus(filesStatus);
 
-	    CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
+	    ChangesTreeCellRenderer treeRenderer = new ChangesTreeCellRenderer();
 	    tree.setCellRenderer(treeRenderer);
 
 	    // restore last expanded paths after refresh
@@ -975,7 +977,7 @@ public class ChangesPanel extends JPanel {
 	 * @author Beniamin Savu
 	 *
 	 */
-	private final class CustomTreeIconRenderer extends DefaultTreeCellRenderer {
+	private final class ChangesTreeCellRenderer extends TreeCellRenderer {
 	  /**
 	   * @see javax.swing.tree.DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
 	   */
@@ -1050,6 +1052,29 @@ public class ChangesPanel extends JPanel {
 	    tableCellRendererComponent.setToolTipText(tooltipText);
 	    tableCellRendererComponent.setText(labelText);
 	    
+	    // Active/inactive table selection
+	    if (table.isRowSelected(row)) {
+	      if (table.hasFocus()) {
+	        tableCellRendererComponent.setBackground(table.getSelectionBackground());
+	      } else {
+	        Color inactiveBgColor = table.getSelectionBackground();
+	        try {
+            Class<?> colorProviderClass = Class.forName("ro.sync.ui.theme.SAThemeColorProvider");
+            Object colorProvider = colorProviderClass.newInstance();
+            Method getInactiveSelBgColorMethod = colorProviderClass.getMethod("getInactiveSelectionBgColor");
+            int[] rgb = (int[]) getInactiveSelBgColorMethod.invoke(colorProvider);
+            inactiveBgColor = new Color(rgb[0], rgb[1], rgb[2]);
+          } catch (Exception e) {
+            if (isDoubleBuffered()) {
+              logger.debug(e, e);
+            }
+          }
+	        tableCellRendererComponent.setBackground(inactiveBgColor);
+	      }
+	    } else {
+	      tableCellRendererComponent.setBackground(table.getBackground());
+	    }
+
 	    return tableCellRendererComponent;
 	  }
 	}
