@@ -57,6 +57,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	/**
    * Constructor.
    * 
+   * @param selResProvider   Provides the resources that will be processed by the menu's actions. 
    * @param stageController  Staging controller.
    * @param isStage          <code>true</code> if we create the menu for the staged resources.
    */
@@ -71,9 +72,12 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	/**
 	 * Populates the contextual menu for the selected files.
 	 * 
+	 * @param selResProvider   Provides the resources that will be processed by the menu's actions.
 	 * @param forStagedRes  <code>true</code> if the contextual menu is created for staged files.
 	 */
-	private void populateMenu(final SelectedResourcesProvider selResProvider, final boolean forStagedRes) {
+	private void populateMenu(
+	    final SelectedResourcesProvider selResProvider, 
+	    final boolean forStagedRes) {
 	  if (!selResProvider.getAllSelectedResources().isEmpty()) {
 	    final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
 	    final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
@@ -95,11 +99,14 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        for (FileStatus file : allSelectedResources) {
 	          try {
 	            URL fileURL = null;
-	            if (file.getChangeType() == GitChangeType.ADD) {
+	            if (file.getChangeType() == GitChangeType.ADD
+	                || file.getChangeType() == GitChangeType.CHANGED) {
+	              // A file from the INDEX. We need a special URL to access it.
 	              fileURL = GitRevisionURLHandler.encodeURL(
 	                  VersionIdentifier.INDEX_OR_LAST_COMMIT,
 	                  file.getFileLocation());
 	            } else {
+	              // We must open a local copy.
 	              fileURL = FileHelper.getFileURL(file.getFileLocation());  
 	            }
 	            PluginWorkspaceProvider.getPluginWorkspace().open(fileURL);

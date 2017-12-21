@@ -85,11 +85,15 @@ public class ChangesPanel extends JPanel {
      * For the tree mode, get only the selected leaves.
      * For the table/flat view, get all selected resources,
      * because all are, so to say, "leaves".
+     * 
+     * @return The directly selected resources.
      */
     List<FileStatus> getOnlySelectedLeaves();
     /**
      * Get all the selected resources, including the ones
-     * from inside folders.
+     * from inside folders. Never <code>null</code>.
+     * 
+     * @return All selected resources. Either directly or indirectly, thorugh parent selection.
      */
     List<FileStatus> getAllSelectedResources();
   }
