@@ -123,6 +123,8 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
 
+  private ToolbarButton branchSelectButton;
+
 	public ToolbarPanel(
 	    PushPullController pushPullController, 
 	    GitRefreshSupport refresh) {
@@ -156,9 +158,7 @@ public class ToolbarPanel extends JPanel {
 	          fetch(true);
 
 	          // After the fetch is done, update the toolbar icons.
-	          setPullsBehind(GitAccess.getInstance().getPullsBehind());
-	          setPushesAhead(GitAccess.getInstance().getPushesAhead());
-	          updateInformationLabel();
+	          updateStatus();
 	        }
 	      }).start();
 	    }
@@ -208,6 +208,20 @@ public class ToolbarPanel extends JPanel {
     }
   }
 
+  /**
+   * Enables/Disables the buttons.
+   * 
+   * @param enabled <code>true</code> to enable the buttons. <code>false</code> to disable them.
+   */
+  public void updateButtonState(boolean enabled) {
+    pushButton.setEnabled(false);
+    pullButton.setEnabled(false);
+    cloneRepositoryButton.setEnabled(false);
+    submoduleSelectButton.setEnabled(false);
+    branchSelectButton.setEnabled(false);
+    
+  }
+
 	public JButton getPushButton() {
 		return pushButton;
 	}
@@ -218,16 +232,6 @@ public class ToolbarPanel extends JPanel {
 
 	public JButton getCloneRepositoryButton() {
 		return cloneRepositoryButton;
-	}
-
-	public void setPullsBehind(int pullsBehind) {
-		this.pullsBehind = pullsBehind;
-		pullButton.repaint();
-	}
-
-	public void setPushesAhead(int pushesAhead) {
-		this.pushesAhead = pushesAhead;
-		pushButton.repaint();
 	}
 
 	/**
@@ -268,7 +272,7 @@ public class ToolbarPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-		updateInformationLabel();
+		updateStatus();
 		this.add(statusInformationLabel, gbc);
 
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
@@ -350,7 +354,7 @@ public class ToolbarPanel extends JPanel {
 				}
 			}
 		};
-		ToolbarButton branchSelectButton = new ToolbarButton(branchSelectAction, false);
+		branchSelectButton = new ToolbarButton(branchSelectAction, false);
 		URL resource = getClass().getResource(ImageConstants.GIT_BRANCH_ICON);
 		if (resource != null) {
 		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
@@ -362,7 +366,19 @@ public class ToolbarPanel extends JPanel {
 		gitToolbar.add(branchSelectButton);
 	}
 
-	public void updateInformationLabel() {
+	/**
+	 * Updates the presented information, like the Pull-behind, Pushes-ahead
+	 * and branch status.
+	 */
+	public void updateStatus() {
+    this.pullsBehind = GitAccess.getInstance().getPullsBehind();
+    pullButton.repaint();
+    
+    this.pushesAhead = GitAccess.getInstance().getPushesAhead();
+    pushButton.repaint();
+    
+    
+	  
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
 		String message = "";
 		if (branchInfo.isDetached()) {

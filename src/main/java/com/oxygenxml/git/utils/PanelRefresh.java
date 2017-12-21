@@ -214,20 +214,6 @@ public class PanelRefresh implements GitRefreshSupport {
 	}
 	
 	/**
-	 * Git counters provider.
-	 */
-	private interface GitStatusCountersProvider {
-    /**
-     * @return the number of pulls behind.
-     */
-    public int getPullsBehind();
-    /**
-     * @return the number of pushes ahead.
-     */
-    public int getPushesAhead();
-	}
-
-	/**
 	 * Update the counters presented on the Pull/Push toolbar action.
 	 */
 	private void updateCounters() {
@@ -242,26 +228,10 @@ public class PanelRefresh implements GitRefreshSupport {
     }
     stagingPanel.getCommitPanel().setStatus(status);
 
-    final GitStatusCountersProvider counterProvider = new GitStatusCountersProvider() {
-      @Override
-      public int getPushesAhead() {
-        return GitAccess.getInstance().getPushesAhead();
-      }
-      @Override
-      public int getPullsBehind() {
-        return GitAccess.getInstance().getPullsBehind();
-      }
-    };
-	  
 	  SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        // PULL
-        stagingPanel.getToolbarPanel().setPullsBehind(counterProvider.getPullsBehind());
-        stagingPanel.getToolbarPanel().updateInformationLabel();
-        // PUSH
-        stagingPanel.getToolbarPanel().setPushesAhead(counterProvider.getPushesAhead());
-      
+        stagingPanel.getToolbarPanel().updateStatus();
       }
     });
 	}
