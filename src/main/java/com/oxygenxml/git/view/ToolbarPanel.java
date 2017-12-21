@@ -214,11 +214,11 @@ public class ToolbarPanel extends JPanel {
    * @param enabled <code>true</code> to enable the buttons. <code>false</code> to disable them.
    */
   public void updateButtonState(boolean enabled) {
-    pushButton.setEnabled(false);
-    pullButton.setEnabled(false);
-    cloneRepositoryButton.setEnabled(false);
-    submoduleSelectButton.setEnabled(false);
-    branchSelectButton.setEnabled(false);
+    pushButton.setEnabled(enabled);
+    pullButton.setEnabled(enabled);
+    cloneRepositoryButton.setEnabled(enabled);
+    submoduleSelectButton.setEnabled(enabled);
+    branchSelectButton.setEnabled(enabled);
     
   }
 
