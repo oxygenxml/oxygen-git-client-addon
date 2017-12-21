@@ -47,13 +47,20 @@ public class CustomProtocolURLHandlerExtension
 	 * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#canCheckReadOnly(java.lang.String)
 	 */
 	public boolean canCheckReadOnly(String protocol) {
-		return false;
+		return GIT.equals(protocol);
 	}
 
 	/**
 	 * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#isReadOnly(java.net.URL)
 	 */
 	public boolean isReadOnly(URL url) {
-		return false;
+	  boolean isReadOnly = false;
+	  if (GIT.equals(url.getProtocol())) {
+	    if (!VersionIdentifier.MINE.equals(url.getHost())) {
+	      isReadOnly = true;
+	    }
+	  }
+	  
+		return isReadOnly;
 	}
 }

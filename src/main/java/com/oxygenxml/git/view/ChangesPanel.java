@@ -456,7 +456,11 @@ public class ChangesPanel extends JPanel {
                 pathBounds.y + pathBounds.height,
                 (StagingResourcesTreeModel) tree.getModel());
           }
+<<<<<<< HEAD
 				}
+=======
+        }
+>>>>>>> branch 'master' of https://github.com/oxygenxml/Oxygen-Git-Plugin.git
 			}
 		});
 		

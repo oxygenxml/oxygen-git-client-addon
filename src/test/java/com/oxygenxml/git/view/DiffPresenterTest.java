@@ -134,7 +134,9 @@ public class DiffPresenterTest extends GitTestBase {
     
     diffPresenter.showDiff();
     
-    assertEquals(localVersionURL, leftDiff.toString());
+    // On the left we present the Index version.
+    assertEquals("git://IndexOrLastCommit/test.txt", leftDiff.toString());
+    // On the right we present the HEAD version.
     assertNull(rightDiff);
     assertNull(toOpen);
     

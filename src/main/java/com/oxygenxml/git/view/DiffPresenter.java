@@ -120,10 +120,14 @@ public class DiffPresenter {
 	private void diffViewForAddedAndUntracked() {
 	  URL url = null;
 	  try {
-	    File localFile = new File(
-	        GitAccess.getInstance().getWorkingCopy().getAbsolutePath(),
-	        file.getFileLocation());
-	    url = localFile.toURI().toURL();
+	    GitChangeType changeType = file.getChangeType();
+	    if (changeType == GitChangeType.ADD) {
+	      url = GitRevisionURLHandler.encodeURL(
+	          VersionIdentifier.INDEX_OR_LAST_COMMIT, 
+	          file.getFileLocation());
+	    } else {
+	      url = FileHelper.getFileURL(file.getFileLocation());  
+	    }
 	  } catch (MalformedURLException | NoRepositorySelected e) {
 	    // Shouldn't rreally happen
 	    if (logger.isDebugEnabled()) {

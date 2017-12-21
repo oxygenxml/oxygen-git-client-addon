@@ -156,7 +156,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
           throw new IOException(e);
         }
 			}
-			throw new IOException("Writing is permitted only in the local file.");
+			throw new IOException("Writing is permitted only in the Working Copy files.");
 		}
 
 		@Override

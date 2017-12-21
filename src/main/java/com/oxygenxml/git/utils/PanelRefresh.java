@@ -5,9 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.swing.SwingWorker;
+import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -30,17 +31,9 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.util.editorvars.EditorVariables;
 
 /**
- * TODO This should be used more rarely, as we implement and use the GitEventListener
- *      It makes sense for this object to just check things that are not covered by the notifications events,
- *      like external changes to the working copy. 
- *      
- * TODO Make it a coalescing. If multiple refresh event come in 500ms we only do it once.
- * TODO Use just one thread.
- * 
- * 
+ * Synchronize the models with the Git repository state. 
  * 
  * @author alex_jitianu
- *
  */
 public class PanelRefresh implements GitRefreshSupport {
 
@@ -68,6 +61,9 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(PanelRefresh.class);
+	
+	private Timer timer = new Timer(true);
+	
 
 	private StagingPanel stagingPanel;
 	private GitAccess gitAccess = GitAccess.getInstance();
@@ -75,6 +71,8 @@ public class PanelRefresh implements GitRefreshSupport {
 	private Translator translator = Translator.getInstance();
 	private boolean projectPahtIsGit;
 	private boolean projectXprExists;
+
+  private TimerTask task;
 
 	@Override
   public void call() {
@@ -117,9 +115,30 @@ public class PanelRefresh implements GitRefreshSupport {
 		}
 		try {
 			if (gitAccess.getRepository() != null) {
-				updateFiles(true);
-				updateFiles(false);
-				updateCounters();
+			  
+			  if (task != null) {
+			    logger.debug("cancel task");
+		      task.cancel();
+		    }
+		    
+		    task = new TimerTask() {
+		      @Override
+		      public void run() {
+		        if (logger.isDebugEnabled()) {
+		          logger.debug("Start update on thread.");
+		        }
+		        
+		        updateFiles(true);
+		        updateFiles(false);
+		        updateCounters();
+		        
+		        if (logger.isDebugEnabled()) {
+              logger.debug("End update on thread.");
+            }
+		      }
+		    };
+			  
+		    timer.schedule(task, 500);
 			}
 		} catch (NoRepositorySelected e1) {
 		  if (logger.isDebugEnabled()) {
@@ -208,109 +227,86 @@ public class PanelRefresh implements GitRefreshSupport {
     public int getPushesAhead();
 	}
 
+	/**
+	 * Update the counters presented on the Pull/Push toolbar action.
+	 */
 	private void updateCounters() {
-		new SwingWorker<GitStatusCountersProvider, Void>() {
-			@Override
-			protected GitStatusCountersProvider doInBackground() throws Exception {
-			  // Connect to the remote.
-			  String status = RepositoryStatus.AVAILABLE;
-			  try {
-			    GitAccess.getInstance().fetch();
-			  } catch (RepositoryUnavailableException e) {
-			    status = RepositoryStatus.UNAVAILABLE;
-			  } catch (Exception e) {
-			    // Ignore other causes why the fetch might fail.
-			  }
-			  stagingPanel.getCommitPanel().setStatus(status);
+    // Connect to the remote.
+    String status = RepositoryStatus.AVAILABLE;
+    try {
+      GitAccess.getInstance().fetch();
+    } catch (RepositoryUnavailableException e) {
+      status = RepositoryStatus.UNAVAILABLE;
+    } catch (Exception e) {
+      // Ignore other causes why the fetch might fail.
+    }
+    stagingPanel.getCommitPanel().setStatus(status);
 
-			  return new GitStatusCountersProvider() {
-          @Override
-          public int getPushesAhead() {
-            return GitAccess.getInstance().getPushesAhead();
-          }
-          @Override
-          public int getPullsBehind() {
-            return GitAccess.getInstance().getPullsBehind();
-          }
-        };
-			}
-
-			@Override
-			protected void done() {
-			  super.done();
-			  try {
-			    GitStatusCountersProvider counterProvider = get();
-			    // PULL
-			    stagingPanel.getToolbarPanel().setPullsBehind(counterProvider.getPullsBehind());
-			    stagingPanel.getToolbarPanel().updateInformationLabel();
-			    // PUSH
-			    stagingPanel.getToolbarPanel().setPushesAhead(counterProvider.getPushesAhead());
-
-			  } catch (InterruptedException e) {
-			    if (logger.isDebugEnabled()) {
-			      logger.debug(e, e);
-			    }
-			    Thread.currentThread().interrupt();
-			  } catch (ExecutionException e) {
-			    if (logger.isDebugEnabled()) {
-			      logger.debug(e, e);
-			    }
-			  }
-			}
-		}.execute();
+    final GitStatusCountersProvider counterProvider = new GitStatusCountersProvider() {
+      @Override
+      public int getPushesAhead() {
+        return GitAccess.getInstance().getPushesAhead();
+      }
+      @Override
+      public int getPullsBehind() {
+        return GitAccess.getInstance().getPullsBehind();
+      }
+    };
+	  
+	  SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // PULL
+        stagingPanel.getToolbarPanel().setPullsBehind(counterProvider.getPullsBehind());
+        stagingPanel.getToolbarPanel().updateInformationLabel();
+        // PUSH
+        stagingPanel.getToolbarPanel().setPushesAhead(counterProvider.getPushesAhead());
+      
+      }
+    });
 	}
 
-	// TODO: maybe remove the state and update all the files, staged and unstaged, at once
+	/**
+	 * Updates the files in the model. 
+	 * 
+	 * @param unstaged <code>true</code> to update the local Working Copy files.
+	 * <code>false</code> to update the INDEX.
+	 */
 	private void updateFiles(final boolean unstaged) {
-		new SwingWorker<List<FileStatus>, Integer>() {
+	  List<FileStatus> nfiles = null;
+	  if (unstaged) {
+	    nfiles = GitAccess.getInstance().getUnstagedFiles();
+	  } else {
+	    nfiles = GitAccess.getInstance().getStagedFile();
+	  }
+	  
+	  final List<FileStatus> files = nfiles;
+	  SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        List<FileStatus> newFiles = new ArrayList<FileStatus>();
+        List<FileStatus> filesInModel = null;
+        if (unstaged) {
+          filesInModel = stagingPanel.getUnstagedChangesPanel().getFilesStatuses();
+        } else {
+          filesInModel = stagingPanel.getStagedChangesPanel().getFilesStatuses();
+        }
 
-			@Override
-			protected List<FileStatus> doInBackground() throws Exception {
-				if (unstaged) {
-					return GitAccess.getInstance().getUnstagedFiles();
-				} else {
-					return GitAccess.getInstance().getStagedFile();
-				}
-			}
+        for (FileStatus fileStatus : filesInModel) {
+          if (files.contains(fileStatus)) {
+            newFiles.add(fileStatus);
+            files.remove(fileStatus);
+          }
+        }
+        newFiles.addAll(files);
 
-			@Override
-			protected void done() {
-				List<FileStatus> files = null;
-				List<FileStatus> newFiles = new ArrayList<FileStatus>();
-				List<FileStatus> filesInModel = null;
-				if (unstaged) {
-					filesInModel = stagingPanel.getUnstagedChangesPanel().getFilesStatuses();
-				} else {
-					filesInModel = stagingPanel.getStagedChangesPanel().getFilesStatuses();
-				}
-				
-				try {
-					files = get();
-					for (FileStatus fileStatus : filesInModel) {
-						if (files.contains(fileStatus)) {
-							newFiles.add(fileStatus);
-							files.remove(fileStatus);
-						}
-					}
-					newFiles.addAll(files);
-				} catch (InterruptedException e) {
-					if (logger.isDebugEnabled()) {
-						logger.debug(e, e);
-					}
-					Thread.currentThread().interrupt();
-				} catch (ExecutionException e) {
-					if (logger.isDebugEnabled()) {
-						logger.debug(e, e);
-					}
-				}
-				
-				if (logger.isDebugEnabled()) {
-				  logger.debug("New files      " + newFiles);
-				  logger.debug("Files in model " + filesInModel);
-				}
-				
-				if (!newFiles.equals(filesInModel)) {
-					String rootFolder = StagingPanel.NO_REPOSITORY;
+        if (logger.isDebugEnabled()) {
+          logger.debug("New files      " + newFiles);
+          logger.debug("Files in model " + filesInModel);
+        }
+
+        if (!newFiles.equals(filesInModel)) {
+          String rootFolder = StagingPanel.NO_REPOSITORY;
           try {
             rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
           } catch (NoRepositorySelected e) {
@@ -318,16 +314,20 @@ public class PanelRefresh implements GitRefreshSupport {
             logger.error(e, e);
           }
           if (unstaged) {
-						stagingPanel.getUnstagedChangesPanel().update(rootFolder, newFiles);
-					} else {
-						stagingPanel.getStagedChangesPanel().update(rootFolder, newFiles);
-					}
-				}
-			}
-
-		}.execute();
+            stagingPanel.getUnstagedChangesPanel().update(rootFolder, newFiles);
+          } else {
+            stagingPanel.getStagedChangesPanel().update(rootFolder, newFiles);
+          }
+        }
+      }
+    });
 	}
 
+	/**
+	 * Links the refresh support with the staging panel.
+	 * 
+	 * @param stagingPanel Staging panel.
+	 */
   public void setPanel(StagingPanel stagingPanel) {
 		this.stagingPanel = stagingPanel;
 	}
