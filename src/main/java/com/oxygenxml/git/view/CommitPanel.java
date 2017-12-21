@@ -94,26 +94,8 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		addCommitButton(gbc);
 
 		addCommitButtonListener();
-		addPreviouslyMessagesComboBoxListener();
 		this.setPreferredSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_HEIGHT));
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_HEIGHT));
-	}
-
-	private void addPreviouslyMessagesComboBoxListener() {
-		previousMessages.addItemListener(new ItemListener() {
-		  @Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED
-				    && !previousMessages.getSelectedItem().equals(
-				        translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE))) {
-						commitMessage.setText((String) previousMessages.getSelectedItem());
-						previousMessages.setEditable(true);
-						previousMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
-						previousMessages.setEditable(false);
-				}
-			}
-		});
-
 	}
 
 	private void addCommitButtonListener() {
@@ -128,10 +110,14 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 					message = translator.getTranslation(Tags.COMMIT_SUCCESS);
 					gitAccess.commit(commitMessage.getText());
 					OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());
+					
 					previousMessages.removeAllItems();
+					previousMessages.addItem(getCommitHistoryHint());
 					for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
 						previousMessages.addItem(previouslyCommitMessage);
 					}
+					
+					previousMessages.setSelectedItem(getCommitHistoryHint());
 
 					commitButton.setEnabled(false);
 				}
@@ -156,8 +142,11 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	}
 
 	private void addPreviouslyMessagesComboBox(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(
+		    UIConstants.COMPONENT_TOP_PADDING, 
+		    UIConstants.COMPONENT_LEFT_PADDING,
+			UIConstants.COMPONENT_BOTTOM_PADDING, 
+			UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
@@ -169,18 +158,36 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		PreviousMessagesToolTipRenderer renderer = new PreviousMessagesToolTipRenderer();
 		previousMessages.setRenderer(renderer);
 
+		// Add the hint first.
+		previousMessages.addItem(getCommitHistoryHint());
 		for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
 			previousMessages.addItem(previouslyCommitMessage);
 		}
-		previousMessages.setEditable(true);
-		previousMessages.setSelectedItem(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
-		previousMessages.setEditable(false);
+		
+		previousMessages.setSelectedItem(getCommitHistoryHint());
+		
+		previousMessages.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED
+            && !previousMessages.getSelectedItem().equals(getCommitHistoryHint())) {
+            commitMessage.setText((String) previousMessages.getSelectedItem());
+        }
+      }
+    });
 
 		int height = (int) previousMessages.getPreferredSize().getHeight();
 		previousMessages.setMinimumSize(new Dimension(10, height));
 
 		this.add(previousMessages, gbc);
 	}
+
+	/**
+	 * @return The message that instructs the user to select a previously used message.
+	 */
+  private String getCommitHistoryHint() {
+    return "<" + translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE) + ">";
+  }
 
 	private void addCommitMessageTextArea(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -293,7 +300,11 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		}
 	}
 
-	public void clearCommitMessage() {
+	/**
+	 * Resets the panel. Clears any selection done by the user or inserted text.
+	 */
+	public void reset() {
+	  previousMessages.setSelectedItem(getCommitHistoryHint());
 		commitMessage.setText(null);
 	}
 
