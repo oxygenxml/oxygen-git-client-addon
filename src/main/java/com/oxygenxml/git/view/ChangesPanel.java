@@ -434,7 +434,18 @@ public class ChangesPanel extends JPanel {
 					    diff.showDiff();
 					  }
 					}
-				}
+				} else if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+          // Show context menu
+          TreePath[] treePaths = tree.getSelectionPaths();
+          if (treePaths != null && treePaths.length > 0) {
+            TreePath lastTreePath = treePaths[treePaths.length - 1];
+            Rectangle pathBounds = tree.getPathBounds(lastTreePath);
+            showContextualMenuForTree(
+                pathBounds.x,
+                pathBounds.y + pathBounds.height,
+                (StagingResourcesTreeModel) tree.getModel());
+          }
+        }
 			}
 		});
 		
@@ -541,25 +552,6 @@ public class ChangesPanel extends JPanel {
 				}
 			}
 		});
-		
-		tree.addKeyListener(new KeyAdapter() {
-		  @Override
-		  public void keyPressed(KeyEvent e) {
-		    if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
-		      // Show context menu
-		      TreePath[] treePaths = tree.getSelectionPaths();
-		      if (treePaths.length > 0) {
-		        TreePath lastTreePath = treePaths[treePaths.length - 1];
-		        Rectangle pathBounds = tree.getPathBounds(lastTreePath);
-		        showContextualMenuForTree(
-		            pathBounds.x,
-		            pathBounds.y + pathBounds.height,
-		            (StagingResourcesTreeModel) tree.getModel());
-		      }
-		    }
-		  }
-		});
-
 	}
 
 	 /**
