@@ -38,12 +38,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -67,7 +70,6 @@ import com.oxygenxml.git.view.event.StageController;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
 /**
  * This is the staging or the unstaging area, depending on the forStaging
@@ -171,6 +173,16 @@ public class ChangesPanel extends JPanel {
 	 */
 	private ImageUtilities imageUtilities = 
 	    PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+	
+	/**
+	 * <code>true</code> if the contextual menu is showing for the resources in the flat view.
+	 */
+	private boolean isContextMenuShowingForFlatView = false;
+	
+	/**
+	 * <code>true</code> if the contextual menu is showing for the resources in the tree view.
+	 */
+	private boolean isContextMenuShowingForTreeView = false;
 
 	/**
 	 * Constructor.
@@ -278,8 +290,7 @@ public class ChangesPanel extends JPanel {
 
 	    treeModel.setFilesStatus(filesStatus);
 
-	    ChangesTreeCellRenderer treeRenderer = new ChangesTreeCellRenderer();
-	    tree.setCellRenderer(treeRenderer);
+	    tree.setCellRenderer(new ChangesTreeCellRenderer());
 
 	    // restore last expanded paths after refresh
 	    TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
@@ -497,6 +508,11 @@ public class ChangesPanel extends JPanel {
 	  
 		tree.addMouseListener(new MouseAdapter() {
 		  @Override
+		  public void mousePressed(MouseEvent e) {
+		    tree.requestFocus();
+		  }
+		  
+		  @Override
 			public void mouseReleased(MouseEvent e) {
 				final StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
@@ -555,9 +571,9 @@ public class ChangesPanel extends JPanel {
 		    }
 		  }
 		});
-
+		
 	}
-
+	
 	 /**
    * Show contextual menu
    * 
@@ -581,6 +597,21 @@ public class ChangesPanel extends JPanel {
         },
         stageController,
         forStagedResources);
+    contextualMenu.addPopupMenuListener(new PopupMenuListener() {
+      @Override
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        isContextMenuShowingForTreeView = true;
+      }
+      @Override
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        isContextMenuShowingForTreeView = false;
+        contextualMenu.removePopupMenuListener(this);
+      }
+      @Override
+      public void popupMenuCanceled(PopupMenuEvent e) {
+        //
+      }
+    });
     contextualMenu.show(tree, x, y);
   }
 	
@@ -993,6 +1024,23 @@ public class ChangesPanel extends JPanel {
         },
         stageController,
         forStagedResources);
+    
+    contextualMenu.addPopupMenuListener(new PopupMenuListener() {
+      @Override
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        isContextMenuShowingForFlatView = true;
+      }
+      @Override
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        isContextMenuShowingForFlatView  = false;
+        contextualMenu.removePopupMenuListener(this);
+      }
+      @Override
+      public void popupMenuCanceled(PopupMenuEvent e) {
+        //         
+      }
+    });
+    
     contextualMenu.show(filesTable, x, y);
   }
 	
@@ -1037,7 +1085,12 @@ public class ChangesPanel extends JPanel {
 	 * @author Beniamin Savu
 	 *
 	 */
-	private final class ChangesTreeCellRenderer extends TreeCellRenderer {
+	private final class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
+	  /**
+	   * Default selection color.
+	   */
+	  private final Color defaultSelectionColor = getBackgroundSelectionColor();
+	  
 	  /**
 	   * @see javax.swing.tree.DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
 	   */
@@ -1070,9 +1123,39 @@ public class ChangesPanel extends JPanel {
 			}
 			label.setIcon(icon);
 			label.setToolTipText(toolTip);
+			
+			// Active/inactive table selection
+      if (sel) {
+        if (tree.hasFocus()) {
+          setBackgroundSelectionColor(defaultSelectionColor);
+        } else if (!isContextMenuShowingForTreeView) {
+          setBackgroundSelectionColor(getInactiveSelectionColor(defaultSelectionColor));
+        }
+      }
 
-			return label;
+      return label;
 		}
+	}
+
+	/**
+	 * Get inactive selection color.
+	 * 
+	 * @return the color.
+	 */
+	private Color getInactiveSelectionColor(Color defaultColor) {
+	  Color inactiveBgColor = defaultColor;
+	  try {
+	    Class<?> colorProviderClass = Class.forName("ro.sync.ui.theme.SAThemeColorProvider");
+	    Object colorProvider = colorProviderClass.newInstance();
+	    Method getInactiveSelBgColorMethod = colorProviderClass.getMethod("getInactiveSelectionBgColor");
+	    int[] rgb = (int[]) getInactiveSelBgColorMethod.invoke(colorProvider);
+	    inactiveBgColor = new Color(rgb[0], rgb[1], rgb[2]);
+	  } catch (Exception e) {
+	    if (isDoubleBuffered()) {
+	      logger.debug(e, e);
+	    }
+	  }
+	  return inactiveBgColor;
 	}
 
 	/**
@@ -1116,20 +1199,9 @@ public class ChangesPanel extends JPanel {
 	    if (table.isRowSelected(row)) {
 	      if (table.hasFocus()) {
 	        tableCellRendererComponent.setBackground(table.getSelectionBackground());
-	      } else {
-	        Color inactiveBgColor = table.getSelectionBackground();
-	        try {
-            Class<?> colorProviderClass = Class.forName("ro.sync.ui.theme.SAThemeColorProvider");
-            Object colorProvider = colorProviderClass.newInstance();
-            Method getInactiveSelBgColorMethod = colorProviderClass.getMethod("getInactiveSelectionBgColor");
-            int[] rgb = (int[]) getInactiveSelBgColorMethod.invoke(colorProvider);
-            inactiveBgColor = new Color(rgb[0], rgb[1], rgb[2]);
-          } catch (Exception e) {
-            if (isDoubleBuffered()) {
-              logger.debug(e, e);
-            }
-          }
-	        tableCellRendererComponent.setBackground(inactiveBgColor);
+	      } else if (!isContextMenuShowingForFlatView) {
+	        Color defaultColor = table.getSelectionBackground();
+	        tableCellRendererComponent.setBackground(getInactiveSelectionColor(defaultColor));
 	      }
 	    } else {
 	      tableCellRendererComponent.setBackground(table.getBackground());
