@@ -431,9 +431,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           commitPanel.reset();
           workingCopySelectionPanel.getBrowseButton().setEnabled(false);
           workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
-          toolbarPanel.getPushButton().setEnabled(false);
-          toolbarPanel.getPullButton().setEnabled(false);
-          toolbarPanel.getCloneRepositoryButton().setEnabled(false);
+          
+          toolbarPanel.updateButtonState(false);
+
           commitPanel.getCommitButton().setEnabled(false);
         } else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
           commitPanel.setStatus(pushPullEvent.getMessage());
@@ -454,17 +454,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           }
           unstagedChangesPanel.update(rootFolder, GitAccess.getInstance().getUnstagedFiles());
           
-          toolbarPanel.getPushButton().setEnabled(true);
-          toolbarPanel.getPullButton().setEnabled(true);
-          toolbarPanel.getCloneRepositoryButton().setEnabled(true);
-          toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
-          toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
-          toolbarPanel.updateInformationLabel();
+          toolbarPanel.updateButtonState(true);
+          
+          toolbarPanel.updateStatus();
         } else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
           commitPanel.setStatus(pushPullEvent.getMessage());
-          toolbarPanel.setPushesAhead(GitAccess.getInstance().getPushesAhead());
-          toolbarPanel.setPullsBehind(GitAccess.getInstance().getPullsBehind());
-          toolbarPanel.updateInformationLabel();
+          toolbarPanel.updateStatus();
         }
       }
     });
