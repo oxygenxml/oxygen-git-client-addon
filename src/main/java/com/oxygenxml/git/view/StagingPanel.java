@@ -308,8 +308,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				// The focus might still be somewhere in the view.
 				if(e.getOppositeComponent() != null){
 					Window windowAncestor = SwingUtilities.getWindowAncestor(e.getOppositeComponent());
-					logger.info("e.getOppositeComponent() " + e.getOppositeComponent());
-					logger.info("Window " + windowAncestor);
 					if (windowAncestor != null) {
 					  boolean contains = windowAncestor.toString().contains("MainFrame");
 					  if(contains && !SwingUtilities.isDescendingFrom(e.getOppositeComponent(), StagingPanel.this)){
