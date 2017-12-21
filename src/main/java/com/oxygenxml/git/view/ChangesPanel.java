@@ -1,17 +1,20 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +44,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -65,6 +67,7 @@ import com.oxygenxml.git.view.event.StageController;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import ro.sync.exml.workspace.api.standalone.ui.TreeCellRenderer;
 
 /**
  * This is the staging or the unstaging area, depending on the forStaging
@@ -279,7 +282,7 @@ public class ChangesPanel extends JPanel {
 
 	    treeModel.setFilesStatus(filesStatus);
 
-	    CustomTreeIconRenderer treeRenderer = new CustomTreeIconRenderer();
+	    ChangesTreeCellRenderer treeRenderer = new ChangesTreeCellRenderer();
 	    tree.setCellRenderer(treeRenderer);
 
 	    // restore last expanded paths after refresh
@@ -514,46 +517,77 @@ public class ChangesPanel extends JPanel {
 					  diff.showDiff();
 					}
 					
-					// ============= Tight click event ================
+					// ============= Right click event ================
 					if (SwingUtilities.isRightMouseButton(e)
 					    && (!node.isRoot() || node.children().hasMoreElements())) {
 					  boolean treeInSelection = false;
-					  TreePath[] paths = tree.getSelectionPaths();
-					  if (paths != null) {
-					    for (int i = 0; i < paths.length; i++) {
-								if (treePath.equals(paths[i])) {
-									treeInSelection = true;
-									break;
-								}
-							}
-						}
-						if (!treeInSelection) {
-							tree.setSelectionPath(treePath);
-						}
-						final List<String> selPaths = TreeFormatter.getStringComonAncestor(tree);
-						GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
-						    new SelectedResourcesProvider() {
-                  @Override
-                  public List<FileStatus> getOnlySelectedLeaves() {
-                    return model.getFileLeavesByPaths(selPaths);
-                  }
-                  @Override
-                  public List<FileStatus> getAllSelectedResources() {
-                    return model.getFilesByPaths(selPaths);
-                  }
-                },
-						    stageController,
-						    forStagedResources);
-						contextualMenu.show(tree, e.getX(), e.getY());
+				    TreePath[] paths = tree.getSelectionPaths();
+				    if (paths != null) {
+				      for (int i = 0; i < paths.length; i++) {
+				        if (treePath.equals(paths[i])) {
+				          treeInSelection = true;
+				          break;
+				        }
+				      }
+				    }
+				    if (!treeInSelection) {
+				      tree.setSelectionPath(treePath);
+				    }
+				    
+					  showContextualMenuForTree(e.getX(), e.getY(), model);
 					}
 				} else {
 					tree.clearSelection();
 				}
 			}
 		});
+		
+		tree.addKeyListener(new KeyAdapter() {
+		  @Override
+		  public void keyPressed(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+		      // Show context menu
+		      TreePath[] treePaths = tree.getSelectionPaths();
+		      if (treePaths.length > 0) {
+		        TreePath lastTreePath = treePaths[treePaths.length - 1];
+		        Rectangle pathBounds = tree.getPathBounds(lastTreePath);
+		        showContextualMenuForTree(
+		            pathBounds.x,
+		            pathBounds.y + pathBounds.height,
+		            (StagingResourcesTreeModel) tree.getModel());
+		      }
+		    }
+		  }
+		});
 
 	}
 
+	 /**
+   * Show contextual menu
+   * 
+   * @param x         X coordinate where to show.
+   * @param y         Y coordinate where to show.
+   * @param model     The model of the tree.
+   * @param treePath  The current tree path.
+   */
+  private void showContextualMenuForTree(int x, int y, final StagingResourcesTreeModel model) {
+    final List<String> selPaths = TreeFormatter.getStringComonAncestor(tree);
+    GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
+        new SelectedResourcesProvider() {
+          @Override
+          public List<FileStatus> getOnlySelectedLeaves() {
+            return model.getFileLeavesByPaths(selPaths);
+          }
+          @Override
+          public List<FileStatus> getAllSelectedResources() {
+            return model.getFilesByPaths(selPaths);
+          }
+        },
+        stageController,
+        forStagedResources);
+    contextualMenu.show(tree, x, y);
+  }
+	
 	/**
 	 * Adds a listener on the changeAll button: When clicked all the files will go
 	 * in the staging or unstaging area, depending on the forStaging variable
@@ -869,7 +903,6 @@ public class ChangesPanel extends JPanel {
 					// ======== RIGHT CLICK ==========
 					if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1 && row != -1) {
 						boolean inSelection = false;
-						final List<FileStatus> files = new ArrayList<FileStatus>();
 						int clickedRow = filesTable.rowAtPoint(e.getPoint());
 						int[] selectedRows = filesTable.getSelectedRows();
 						for (int i = 0; i < selectedRows.length; i++) {
@@ -886,28 +919,7 @@ public class ChangesPanel extends JPanel {
 								selectedRows = filesTable.getSelectedRows();
 							}
 
-							for (int i = 0; i < selectedRows.length; i++) {
-								int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
-								StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
-								FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
-								files.add(file);
-							}
-							
-							GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
-							    new SelectedResourcesProvider() {
-                    @Override
-                    public List<FileStatus> getOnlySelectedLeaves() {
-                      // All resources are "leaves" in the table view.
-                      return getAllSelectedResources();
-                    }
-                    @Override
-                    public List<FileStatus> getAllSelectedResources() {
-                      return files;
-                    }
-                  },
-	                stageController,
-	                forStagedResources);
-							contextualMenu.show(filesTable, e.getX(), e.getY());
+							showContextualMenuForFlatView(e.getX(), e.getY(), selectedRows);
 						} else {
 							filesTable.clearSelection();
 						}
@@ -915,6 +927,20 @@ public class ChangesPanel extends JPanel {
 				}
 				toggleSelectedButton();
 			}
+
+		});
+		
+		filesTable.addKeyListener(new KeyAdapter() {
+		  @Override
+		  public void keyPressed(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+		      int[] selectedRows = filesTable.getSelectedRows();
+		      if (selectedRows.length > 0) {
+		        Rectangle cellRect = filesTable.getCellRect(selectedRows[selectedRows.length - 1], 0, true);
+		        showContextualMenuForFlatView(cellRect.x, cellRect.y + cellRect.height, selectedRows);
+		      }
+		    }
+		  }
 		});
 		
 		// Compare files on enter.
@@ -939,6 +965,40 @@ public class ChangesPanel extends JPanel {
 		
 		setResourcesViewMode(currentViewMode);
 	}
+	
+	/**
+	 * Show contextual menu for flat view.
+	 * 
+	 * @param x             The X coordinate where to show the menu.
+	 * @param y             The Y coordinate where to show the menu.
+	 * @param selectedRows  The selected rows.
+	 */
+	private void showContextualMenuForFlatView(int x, int y, int[] selectedRows) {
+	  final List<FileStatus> files = new ArrayList<FileStatus>();
+	  
+    for (int i = 0; i < selectedRows.length; i++) {
+      int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
+      StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
+      FileStatus file = new FileStatus(model.getUnstageFile(convertedSelectedRow));
+      files.add(file);
+    }
+    
+    GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
+        new SelectedResourcesProvider() {
+          @Override
+          public List<FileStatus> getOnlySelectedLeaves() {
+            // All resources are "leaves" in the table view.
+            return getAllSelectedResources();
+          }
+          @Override
+          public List<FileStatus> getAllSelectedResources() {
+            return files;
+          }
+        },
+        stageController,
+        forStagedResources);
+    contextualMenu.show(filesTable, x, y);
+  }
 	
 	/**
 	 * Open an instance of diff presenter and compares current file with the last commit.
@@ -981,7 +1041,7 @@ public class ChangesPanel extends JPanel {
 	 * @author Beniamin Savu
 	 *
 	 */
-	private final class CustomTreeIconRenderer extends DefaultTreeCellRenderer {
+	private final class ChangesTreeCellRenderer extends TreeCellRenderer {
 	  /**
 	   * @see javax.swing.tree.DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
 	   */
@@ -1056,6 +1116,29 @@ public class ChangesPanel extends JPanel {
 	    tableCellRendererComponent.setToolTipText(tooltipText);
 	    tableCellRendererComponent.setText(labelText);
 	    
+	    // Active/inactive table selection
+	    if (table.isRowSelected(row)) {
+	      if (table.hasFocus()) {
+	        tableCellRendererComponent.setBackground(table.getSelectionBackground());
+	      } else {
+	        Color inactiveBgColor = table.getSelectionBackground();
+	        try {
+            Class<?> colorProviderClass = Class.forName("ro.sync.ui.theme.SAThemeColorProvider");
+            Object colorProvider = colorProviderClass.newInstance();
+            Method getInactiveSelBgColorMethod = colorProviderClass.getMethod("getInactiveSelectionBgColor");
+            int[] rgb = (int[]) getInactiveSelBgColorMethod.invoke(colorProvider);
+            inactiveBgColor = new Color(rgb[0], rgb[1], rgb[2]);
+          } catch (Exception e) {
+            if (isDoubleBuffered()) {
+              logger.debug(e, e);
+            }
+          }
+	        tableCellRendererComponent.setBackground(inactiveBgColor);
+	      }
+	    } else {
+	      tableCellRendererComponent.setBackground(table.getBackground());
+	    }
+
 	    return tableCellRendererComponent;
 	  }
 	}
