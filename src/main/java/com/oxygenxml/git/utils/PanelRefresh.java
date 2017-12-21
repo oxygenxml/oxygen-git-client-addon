@@ -117,7 +117,9 @@ public class PanelRefresh implements GitRefreshSupport {
 			if (gitAccess.getRepository() != null) {
 			  
 			  if (task != null) {
-			    logger.debug("cancel task");
+			    if (logger.isDebugEnabled()) {
+			      logger.debug("cancel task");
+			    }
 		      task.cancel();
 		    }
 		    
