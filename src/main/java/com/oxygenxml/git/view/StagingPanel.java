@@ -139,7 +139,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           repository = gitAccess.getRepository();
           if (repository != null) {
             // When a new working copy is selected clear the commit text area
-            getCommitPanel().clearCommitMessage();
+            getCommitPanel().reset();
 
             // checks what buttons to keep active and what buttons to deactivate
             if (!gitAccess.getStagedFile().isEmpty()) {
@@ -308,6 +308,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				// The focus might still be somewhere in the view.
 				if(e.getOppositeComponent() != null){
 					Window windowAncestor = SwingUtilities.getWindowAncestor(e.getOppositeComponent());
+					logger.info("e.getOppositeComponent() " + e.getOppositeComponent());
+					logger.info("Window " + windowAncestor);
 					if (windowAncestor != null) {
 					  boolean contains = windowAncestor.toString().contains("MainFrame");
 					  if(contains && !SwingUtilities.isDescendingFrom(e.getOppositeComponent(), StagingPanel.this)){
@@ -428,7 +430,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
       public void run() {
         if (pushPullEvent.getActionStatus() == ActionStatus.STARTED) {
           commitPanel.setStatus(pushPullEvent.getMessage());
-          commitPanel.clearCommitMessage();
+          commitPanel.reset();
           workingCopySelectionPanel.getBrowseButton().setEnabled(false);
           workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
           toolbarPanel.getPushButton().setEnabled(false);
@@ -437,7 +439,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           commitPanel.getCommitButton().setEnabled(false);
         } else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
           commitPanel.setStatus(pushPullEvent.getMessage());
-          commitPanel.clearCommitMessage();
+          commitPanel.reset();
           if (!GitAccess.getInstance().getStagedFile().isEmpty()) {
             commitPanel.getCommitButton().setEnabled(true);
           }

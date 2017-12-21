@@ -150,8 +150,8 @@
     </key>
     <key value="Commit_ComboBox_Display_Message">
         <comment>The massage displayed on the combo box containing the previouslt commited messages</comment>
-        <val lang="en_US">Previously committed messages </val>
-        <val lang="de_DE">Vorherige Commit-Nachrichten </val>
+        <val lang="en_US">Choose a previously used comment</val>
+        <val lang="de_DE">Choose a previously used comment</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
