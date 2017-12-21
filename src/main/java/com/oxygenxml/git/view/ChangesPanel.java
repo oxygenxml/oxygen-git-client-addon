@@ -179,14 +179,9 @@ public class ChangesPanel extends JPanel {
 	    PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
 	
 	/**
-	 * <code>true</code> if the contextual menu is showing for the resources in the flat view.
-	 */
-	private boolean isContextMenuShowingForFlatView = false;
-	
-	/**
 	 * <code>true</code> if the contextual menu is showing for the resources in the tree view.
 	 */
-	private boolean isContextMenuShowingForTreeView = false;
+	private boolean isContextMenuShowing = false;
 
 	/**
 	 * Constructor.
@@ -237,7 +232,6 @@ public class ChangesPanel extends JPanel {
         ChangesPanel.this.stateChanged(changeEvent);
       }
     });
-
 	}
 
 	JTable getFilesTable() {
@@ -426,42 +420,38 @@ public class ChangesPanel extends JPanel {
 		
 		// Compare file with last commit when enter is pressed.
 		tree.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					TreePath pathForRow = null;
-					StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-					int[] selectionRows = tree.getSelectionRows();
-					if (selectionRows != null && selectionRows.length > 0) {
-						pathForRow = tree.getPathForRow(selectionRows[selectionRows.length - 1]);
-					}
-					if (pathForRow != null) {
-					  String stringPath = TreeFormatter.getStringPath(pathForRow);
-					  GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
-					  if (model != null && node != null
-					      && model.isLeaf(node) && !model.getRoot().equals(node)) {
-					    FileStatus file = model.getFileByPath(stringPath);
-					    DiffPresenter diff = new DiffPresenter(file, stageController);
-					    diff.showDiff();
-					  }
-					}
-				} else if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
-          // Show context menu
-          TreePath[] treePaths = tree.getSelectionPaths();
-          if (treePaths != null && treePaths.length > 0) {
-            TreePath lastTreePath = treePaths[treePaths.length - 1];
-            Rectangle pathBounds = tree.getPathBounds(lastTreePath);
-            showContextualMenuForTree(
-                pathBounds.x,
-                pathBounds.y + pathBounds.height,
-                (StagingResourcesTreeModel) tree.getModel());
-          }
-<<<<<<< HEAD
-				}
-=======
-        }
->>>>>>> branch 'master' of https://github.com/oxygenxml/Oxygen-Git-Plugin.git
-			}
+		  @Override
+		  public void keyReleased(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+		      TreePath pathForRow = null;
+		      StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+		      int[] selectionRows = tree.getSelectionRows();
+		      if (selectionRows != null && selectionRows.length > 0) {
+		        pathForRow = tree.getPathForRow(selectionRows[selectionRows.length - 1]);
+		      }
+		      if (pathForRow != null) {
+		        String stringPath = TreeFormatter.getStringPath(pathForRow);
+		        GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+		        if (model != null && node != null
+		            && model.isLeaf(node) && !model.getRoot().equals(node)) {
+		          FileStatus file = model.getFileByPath(stringPath);
+		          DiffPresenter diff = new DiffPresenter(file, stageController);
+		          diff.showDiff();
+		        }
+		      }
+		    } else if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+		      // Show context menu
+		      TreePath[] treePaths = tree.getSelectionPaths();
+		      if (treePaths != null && treePaths.length > 0) {
+		        TreePath lastTreePath = treePaths[treePaths.length - 1];
+		        Rectangle pathBounds = tree.getPathBounds(lastTreePath);
+		        showContextualMenuForTree(
+		            pathBounds.x,
+		            pathBounds.y + pathBounds.height,
+		            (StagingResourcesTreeModel) tree.getModel());
+		      }
+		    }
+		  }
 		});
 		
 		try {
@@ -527,12 +517,10 @@ public class ChangesPanel extends JPanel {
 	  
 		tree.addMouseListener(new MouseAdapter() {
 		  @Override
-		  public void mousePressed(MouseEvent e) {
-		    tree.requestFocus();
-		  }
-		  
-		  @Override
 			public void mouseReleased(MouseEvent e) {
+		    tree.requestFocus();
+		    tree.repaint();
+		    
 				final StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
 				if (treePath != null) {
@@ -600,16 +588,16 @@ public class ChangesPanel extends JPanel {
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        isContextMenuShowingForTreeView = true;
+        isContextMenuShowing = true;
       }
       @Override
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        isContextMenuShowingForTreeView = false;
+        isContextMenuShowing = false;
         contextualMenu.removePopupMenuListener(this);
       }
       @Override
       public void popupMenuCanceled(PopupMenuEvent e) {
-        //
+        isContextMenuShowing = false;
       }
     });
     contextualMenu.show(tree, x, y);
@@ -684,6 +672,7 @@ public class ChangesPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
 				setResourcesViewMode(currentViewMode == ResourcesViewMode.FLAT_VIEW ? 
 				    ResourcesViewMode.TREE_VIEW : ResourcesViewMode.FLAT_VIEW);
+				isContextMenuShowing = false;
 			}
 		});
 	}
@@ -916,6 +905,9 @@ public class ChangesPanel extends JPanel {
 		filesTable.addMouseListener(new MouseAdapter() {
 		  @Override
 			public void mouseReleased(MouseEvent e) {
+		    filesTable.requestFocus();
+		    filesTable.repaint();
+        
 				Point point = new Point(e.getX(), e.getY());
 				int row = filesTable.convertRowIndexToModel(filesTable.rowAtPoint(point));
 				int column = filesTable.columnAtPoint(point);
@@ -1028,16 +1020,16 @@ public class ChangesPanel extends JPanel {
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        isContextMenuShowingForFlatView = true;
+        isContextMenuShowing = true;
       }
       @Override
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        isContextMenuShowingForFlatView  = false;
+        isContextMenuShowing  = false;
         contextualMenu.removePopupMenuListener(this);
       }
       @Override
       public void popupMenuCanceled(PopupMenuEvent e) {
-        //         
+        isContextMenuShowing  = false;
       }
     });
     
@@ -1105,7 +1097,7 @@ public class ChangesPanel extends JPanel {
 			if (resource != null) {
 			  icon = (Icon) imageUtilities.loadIcon(resource);
 			}
-			String toolTip = "";
+			String toolTip = null;
 
 			StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 			TreePath treePath = tree.getPathForRow(row);
@@ -1128,7 +1120,7 @@ public class ChangesPanel extends JPanel {
       if (sel) {
         if (tree.hasFocus()) {
           setBackgroundSelectionColor(defaultSelectionColor);
-        } else if (!isContextMenuShowingForTreeView) {
+        } else if (!isContextMenuShowing) {
           setBackgroundSelectionColor(getInactiveSelectionColor(defaultSelectionColor));
         }
       }
@@ -1199,7 +1191,7 @@ public class ChangesPanel extends JPanel {
 	    if (table.isRowSelected(row)) {
 	      if (table.hasFocus()) {
 	        tableCellRendererComponent.setBackground(table.getSelectionBackground());
-	      } else if (!isContextMenuShowingForFlatView) {
+	      } else if (!isContextMenuShowing) {
 	        Color defaultColor = table.getSelectionBackground();
 	        tableCellRendererComponent.setBackground(getInactiveSelectionColor(defaultColor));
 	      }
