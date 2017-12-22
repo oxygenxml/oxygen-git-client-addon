@@ -209,7 +209,7 @@ public class ChangesPanel extends JPanel {
             if (repository != null) {
               List<FileStatus> files = null;
               if (forStagedResources) {
-                files = gitAccess.getStagedFile();
+                files = gitAccess.getStagedFiles();
               } else {
                 files = gitAccess.getUnstagedFiles();
               }
@@ -461,7 +461,7 @@ public class ChangesPanel extends JPanel {
 		    List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
 		    update(rootFolder, unstagedFiles);
 		  } else {
-		    List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFile();
+		    List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFiles();
 		    update(rootFolder, stagedFiles);
 		  }
 		} catch (NoRepositorySelected e) {
@@ -695,7 +695,7 @@ public class ChangesPanel extends JPanel {
     }
 	  List<FileStatus> newFiles = null;
 	  if (forStagedResources) {
-	    newFiles = GitAccess.getInstance().getStagedFile();
+	    newFiles = GitAccess.getInstance().getStagedFiles();
 	  } else {
 	    newFiles = GitAccess.getInstance().getUnstagedFiles();
 	  }

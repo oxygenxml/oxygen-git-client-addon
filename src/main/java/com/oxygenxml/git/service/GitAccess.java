@@ -252,9 +252,6 @@ public class GitAccess {
 	      }
 	    }
 
-	    // Save the new option.
-	    OptionsManager.getInstance().saveSelectedRepository(path);
-
 	    fireRepositoryChanged();
 	  }
 	}
@@ -311,6 +308,11 @@ public class GitAccess {
 	 *          - A string that specifies the git Repository folder
 	 */
 	public void createNewRepository(String path) {
+    if (git != null) {
+      // Stop intercepting authentication requests.
+      AuthenticationInterceptor.unbind(getHostName());
+      git.close();
+    }
 
 		try {
 			git = Git.init().setBare(false).setDirectory(new File(path)).call();
@@ -484,7 +486,7 @@ public class GitAccess {
 	 */
 	public void commit(String message) {
 		try {
-		  List<FileStatus> files = getStagedFile();
+		  List<FileStatus> files = getStagedFiles();
 		  
 			git.commit().setMessage(message).call();
 			
@@ -735,7 +737,7 @@ public class GitAccess {
    * 
    * @return - a set containing all the staged file names
    */
-  public List<FileStatus> getStagedFile() {
+  public List<FileStatus> getStagedFiles() {
     return getStagedFile(Collections.<String>emptyList());
   }
 

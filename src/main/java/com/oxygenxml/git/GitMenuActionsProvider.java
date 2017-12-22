@@ -115,7 +115,7 @@ public class GitMenuActionsProvider {
             
             List<FileStatus> gitFiles = new ArrayList<FileStatus>();
             gitFiles.addAll(GitAccess.getInstance().getUnstagedFiles());
-            gitFiles.addAll(GitAccess.getInstance().getStagedFile());
+            gitFiles.addAll(GitAccess.getInstance().getStagedFiles());
             
             String selectedFilePath = FileHelper.rewriteSeparator(selectedFiles[0].getAbsolutePath());
             for (FileStatus fileStatus : gitFiles) {
@@ -229,7 +229,7 @@ public class GitMenuActionsProvider {
 
       List<FileStatus> gitFiles = new ArrayList<FileStatus>();
       gitFiles.addAll(GitAccess.getInstance().getUnstagedFiles());
-      gitFiles.addAll(GitAccess.getInstance().getStagedFile());
+      gitFiles.addAll(GitAccess.getInstance().getStagedFiles());
 
       FileStatus selectedFileStatus = null;
       String selectedFilePath = FileHelper.rewriteSeparator(selectedFile.getAbsolutePath());

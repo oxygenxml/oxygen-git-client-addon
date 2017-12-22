@@ -24,6 +24,7 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.ChangesPanel;
 import com.oxygenxml.git.view.StagingPanel;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -36,128 +37,165 @@ import ro.sync.util.editorvars.EditorVariables;
  * @author alex_jitianu
  */
 public class PanelRefresh implements GitRefreshSupport {
+  
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(PanelRefresh.class);
 
   /**
    * Repository status: available or not.
    */
-  public static final class RepositoryStatus {
-    /**
-     * Hidden constructor.
-     */
-    private RepositoryStatus() {
-      // Nada
-    }
+  public static enum RepositoryStatus {
     /**
      * Available.
      */
-    public static final String AVAILABLE = "available";
+    AVAILABLE,
     /**
      * Unavailable.
      */
-    public static final String UNAVAILABLE = "unavailable";
+    UNAVAILABLE;
   }
-  
+
 	/**
-	 * Logger for logging.
+	 * used for coalescing.
 	 */
-	private static Logger logger = Logger.getLogger(PanelRefresh.class);
+	private Timer timer = new Timer("Working copy status updater", true);
 	
-	private Timer timer = new Timer(true);
-	
-
+	/**
+	 * Staging panel to update.
+	 */
 	private StagingPanel stagingPanel;
+	/**
+	 * Git access.
+	 */
 	private GitAccess gitAccess = GitAccess.getInstance();
-	private String lastSelectedProjectView = "";
+	/**
+	 * The last analyzed project.
+	 */
+	private String lastSelectedProject = "";
+	/**
+	 * Translation support.
+	 */
 	private Translator translator = Translator.getInstance();
-	private boolean projectPahtIsGit;
-	private boolean projectXprExists;
-
+	/**
+	 * The scheduled refresh task.
+	 */
   private TimerTask task;
 
 	@Override
   public void call() {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Refresh Started");
-		}
-		projectPahtIsGit = false;
-		projectXprExists = true;
-		execute();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Refresh Ended");
-		}
+	  boolean repoChanged = false;
+	  // Check if the current Oxygen project is a Git repository.
+	  if (stagingPanel.hasFocus()) {
+	    // Do it only when the view has focus.
+	    String projectView = PluginWorkspaceProvider.getPluginWorkspace().
+	        getUtilAccess().expandEditorVariables("${pd}", null);
+	    if (projectView != null 
+	        && !projectView.equals(lastSelectedProject)
+	        // Fast check to see if this is actually not a Git repository.
+	        && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectView)) {
+	      // Mark this project as tested.
+	      lastSelectedProject = projectView;
+	      try {
+	        boolean repoLoaded = checkForGitRepositoriesUpAndDownFrom(projectView);
+
+	        repoChanged = repoLoaded;
+	        if (!repoLoaded) {
+	          String[] options = new String[] { "   Yes   ", "   No   " };
+	          int[] optonsId = new int[] { 0, 1 };
+	          int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+	              translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
+	              translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
+	          if (response == 0) {
+	            repoChanged = true;
+	            gitAccess.createNewRepository(projectView);
+	          }
+
+	          // Don't ask the user again.
+	          OptionsManager.getInstance().saveProjectTestedForGit(projectView);
+	        }
+
+	      } catch (FileNotFoundException e) {
+	        if (logger.isDebugEnabled()) {
+	          logger.debug(e, e);
+	        }
+	      } catch (IOException e) {
+	        if (logger.isDebugEnabled()) {
+            logger.debug(e, e);
+          }
+	      }
+	    }
+	  }
+	  
+	  // No point in refreshing if we've just changed the repository.
+	  if (!repoChanged) {
+	    // Check the current repository.
+	    try {
+	      if (gitAccess.getRepository() != null) {
+
+	        if (task != null) {
+	          if (logger.isDebugEnabled()) {
+	            logger.debug("cancel task");
+	          }
+	          task.cancel();
+	        }
+
+	        task = new TimerTask() {
+	          @Override
+	          public void run() {
+	            if (logger.isDebugEnabled()) {
+	              logger.debug("Start update on thread.");
+	            }
+
+	            List<FileStatus> newFiles = GitAccess.getInstance().getUnstagedFiles();
+	            ChangesPanel panelToUpdate = stagingPanel.getUnstagedChangesPanel();
+	            updateFiles(panelToUpdate, newFiles);
+	            
+	            newFiles = GitAccess.getInstance().getStagedFiles();
+	            panelToUpdate = stagingPanel.getStagedChangesPanel();
+	            updateFiles(panelToUpdate, newFiles);
+	              
+	            updateCounters();
+
+	            if (logger.isDebugEnabled()) {
+	              logger.debug("End update on thread.");
+	            }
+	          }
+	        };
+
+	        timer.schedule(task, 500);
+	      }
+	    } catch (NoRepositorySelected e1) {
+	      if (logger.isDebugEnabled()) {
+	        logger.debug(e1, e1);
+	      }
+	    }
+	  }
 	}
 
-	private void execute() {
-	  String projectView = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().expandEditorVariables("${pd}", null);
-		if (projectView != null && !projectView.equals(lastSelectedProjectView)) {
-			checkForGitRepositoriesUpAndDownFrom(projectView);
-			if (stagingPanel.hasFocus()) {
-				lastSelectedProjectView = projectView;
-			}
-			addGitFolder(projectView);
-			if (stagingPanel.hasFocus() && !projectPahtIsGit
-					&& !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectView) && projectXprExists) {
-				String[] options = new String[] { "   Yes   ", "   No   " };
-				int[] optonsId = new int[] { 0, 1 };
-				int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-						translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-						translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
-				if (response == 0) {
-					gitAccess.createNewRepository(projectView);
-					OptionsManager.getInstance().addRepository(projectView);
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo().addItem(projectView);
-					OptionsManager.getInstance().saveSelectedRepository(projectView);
-					stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo().setSelectedItem(projectView);
-				}
-				OptionsManager.getInstance().saveProjectTestedForGit(projectView);
-			}
-
-		}
-		try {
-			if (gitAccess.getRepository() != null) {
-			  
-			  if (task != null) {
-			    if (logger.isDebugEnabled()) {
-			      logger.debug("cancel task");
-			    }
-		      task.cancel();
-		    }
-		    
-		    task = new TimerTask() {
-		      @Override
-		      public void run() {
-		        if (logger.isDebugEnabled()) {
-		          logger.debug("Start update on thread.");
-		        }
-		        
-		        updateFiles(true);
-		        updateFiles(false);
-		        updateCounters();
-		        
-		        if (logger.isDebugEnabled()) {
-              logger.debug("End update on thread.");
-            }
-		      }
-		    };
-			  
-		    timer.schedule(task, 500);
-			}
-		} catch (NoRepositorySelected e1) {
-		  if (logger.isDebugEnabled()) {
-		    logger.debug(e1, e1);
-		  }
-		}
-	}
-
-	private void checkForGitRepositoriesUpAndDownFrom(String projectView) {
+	/**
+	 * Checks the project directory for Git repositories.
+	 * 
+	 * @param projectDir Project directory.
+	 * 
+	 * @return <code>true</code> if a Git repository was detected and loaded. <code>false</code>
+	 * if no Git repository was detected.
+	 * 
+	 * @throws FileNotFoundException The project file doesn't exist.
+	 * @throws IOException A Git repository was detected but not loaded.
+	 */
+	private boolean checkForGitRepositoriesUpAndDownFrom(String projectDir) throws FileNotFoundException, IOException {
+	  boolean projectPahtIsGit = false;
 		String projectName = EditorVariables.expandEditorVariables("${pn}", null);
 		String projectXprName = projectName + ".xpr";
-		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-		SAXParser saxParser;
 		try {
-			saxParser = saxParserFactory.newSAXParser();
+		  // Parse the XML file to detected the referred resources.
+		  SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+		  SAXParser saxParser = saxParserFactory.newSAXParser();
 			XPRHandler handler = new XPRHandler();
-			File xmlFile = new File(projectView, projectXprName);
+			
+			File xmlFile = new File(projectDir, projectXprName);
 			saxParser.parse(xmlFile, handler);
 			List<String> pathsFromProjectView = handler.getPaths();
 			for (String path : pathsFromProjectView) {
@@ -165,14 +203,29 @@ public class PanelRefresh implements GitRefreshSupport {
 				if (FileHelper.isURL(path)) {
 					file = new File(path);
 				} else if (!".".equals(path)) {
-					file = new File(projectView, path);
+					file = new File(projectDir, path);
 				}
 				if (file != null) {
 					String pathToCheck = file.getAbsolutePath();
-					addGitFolder(pathToCheck);
+					if (checkGitFolder(pathToCheck)) {
+					  projectPahtIsGit = true;
+					  break;
+					}
 				}
 			}
 
+			if (!projectPahtIsGit) {
+			  // The oxygen project might be inside a Git repository.
+			  // Look into the ancestors for a Git repository.
+			  File file = new File(projectDir);
+			  while (file != null) {
+			    if (checkGitFolder(file.getAbsolutePath())) {
+			      projectPahtIsGit = true;
+			      break;
+			    }
+			    file = file.getParentFile();
+			  }
+			}
 		} catch (ParserConfigurationException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
@@ -181,38 +234,34 @@ public class PanelRefresh implements GitRefreshSupport {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
-		} catch (FileNotFoundException e1) {
-		  if (logger.isDebugEnabled()) {
-		    logger.debug(e1, e1);
-		  }
-		  // Project file doesn't exist
-      projectXprExists = false;
 		} catch (IOException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
 		}
 		
-		if (projectXprExists) {
-		  File file = new File(projectView);
-		  while (file.getParent() != null) {
-		    String projectParent = file.getParent();
-		    addGitFolder(projectParent);
-		    file = file.getParentFile();
-		  }
-		}
+		return projectPahtIsGit;
 	}
 
-	private void addGitFolder(String pathToCheck) {
+	/**
+	 * Checks if the given folder is a Git repository. If it is, then it loads
+	 * it into the view.
+	 * 
+	 * @param pathToCheck Folder path.
+	 *  
+	 * @return <code>true</code> if the path identifies a Git repository.
+	 * 
+	 * @throws IOException Problems changing the repository. 
+	 */
+	private boolean checkGitFolder(String pathToCheck) throws IOException {
+	  boolean projectPahtIsGit = false;
 		if (FileHelper.isGitRepository(pathToCheck)) {
 			projectPahtIsGit = true;
-			if (!OptionsManager.getInstance().getRepositoryEntries().contains(pathToCheck)) {
-				OptionsManager.getInstance().addRepository(pathToCheck);
-				stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo().addItem(pathToCheck);
-			}
-			OptionsManager.getInstance().saveSelectedRepository(pathToCheck);
-			stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo().setSelectedItem(pathToCheck);
+			
+			GitAccess.getInstance().setRepository(pathToCheck);
 		}
+		
+		return projectPahtIsGit;
 	}
 	
 	/**
@@ -220,7 +269,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	private void updateCounters() {
     // Connect to the remote.
-    String status = RepositoryStatus.AVAILABLE;
+    RepositoryStatus status = RepositoryStatus.AVAILABLE;
     try {
       GitAccess.getInstance().fetch();
     } catch (RepositoryUnavailableException e) {
@@ -244,33 +293,22 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * @param unstaged <code>true</code> to update the local Working Copy files.
 	 * <code>false</code> to update the INDEX.
 	 */
-	private void updateFiles(final boolean unstaged) {
-	  List<FileStatus> nfiles = null;
-	  if (unstaged) {
-	    nfiles = GitAccess.getInstance().getUnstagedFiles();
-	  } else {
-	    nfiles = GitAccess.getInstance().getStagedFile();
-	  }
-	  
-	  final List<FileStatus> files = nfiles;
+	private void updateFiles(ChangesPanel panelToUpdate, final List<FileStatus> nfiles) {
 	  SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         List<FileStatus> newFiles = new ArrayList<FileStatus>();
         List<FileStatus> filesInModel = null;
-        if (unstaged) {
-          filesInModel = stagingPanel.getUnstagedChangesPanel().getFilesStatuses();
-        } else {
-          filesInModel = stagingPanel.getStagedChangesPanel().getFilesStatuses();
-        }
+        
+        filesInModel = panelToUpdate.getFilesStatuses();
 
         for (FileStatus fileStatus : filesInModel) {
-          if (files.contains(fileStatus)) {
+          if (nfiles.contains(fileStatus)) {
             newFiles.add(fileStatus);
-            files.remove(fileStatus);
+            nfiles.remove(fileStatus);
           }
         }
-        newFiles.addAll(files);
+        newFiles.addAll(nfiles);
 
         if (logger.isDebugEnabled()) {
           logger.debug("New files      " + newFiles);
@@ -285,11 +323,8 @@ public class PanelRefresh implements GitRefreshSupport {
             // Never happens.
             logger.error(e, e);
           }
-          if (unstaged) {
-            stagingPanel.getUnstagedChangesPanel().update(rootFolder, newFiles);
-          } else {
-            stagingPanel.getStagedChangesPanel().update(rootFolder, newFiles);
-          }
+          
+          panelToUpdate.update(rootFolder, newFiles);
         }
       }
     });

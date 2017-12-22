@@ -247,10 +247,10 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	  boolean enable = false;
 	  try {
 	    if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-	        && gitAccess.getStagedFile().isEmpty() && gitAccess.getUnstagedFiles().isEmpty()) {
+	        && gitAccess.getStagedFiles().isEmpty() && gitAccess.getUnstagedFiles().isEmpty()) {
 	      enable = true;
 	      commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
-	    } else if (!gitAccess.getStagedFile().isEmpty()) {
+	    } else if (!gitAccess.getStagedFiles().isEmpty()) {
 	      enable = true;
 	    }
 	  } catch (NoRepositorySelected e) {
@@ -282,8 +282,8 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	 * 
 	 * @param the current status.
 	 */
-	public void setStatus(final String status) {
-		if (RepositoryStatus.UNAVAILABLE.equals(status)) {
+	public void setStatus(final RepositoryStatus status) {
+		if (RepositoryStatus.UNAVAILABLE == status) {
 			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
 			ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
 			URL resource = getClass().getResource(ImageConstants.VALIDATION_ERROR);
@@ -291,12 +291,9 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 			  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
 			  statusLabel.setIcon(icon);
 			}
-		} else if (RepositoryStatus.AVAILABLE.equals(status)) {
+		} else if (RepositoryStatus.AVAILABLE == status) {
 		  statusLabel.setText(null);
 		  statusLabel.setIcon(null);
-		} else {
-		  statusLabel.setIcon(null);
-      statusLabel.setText(status);
 		}
 	}
 
@@ -341,4 +338,13 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
     return commitMessage;
   }
 
+	/**
+	 * Update the status.
+	 * 
+	 * @param message New status.
+	 */
+  public void setStatus(String message) {
+    statusLabel.setIcon(null);
+    statusLabel.setText(message);
+  }
 }

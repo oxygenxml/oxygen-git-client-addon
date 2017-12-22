@@ -93,7 +93,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 			deleteNodes(oldStates);
 		} else if (changeEvent.getCommand() == GitCommand.MERGE_RESTART) {
       filesStatuses.clear();
-      List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFile() :
+      List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() :
         GitAccess.getInstance().getUnstagedFiles();
       insertNodes(fileStatuses);
     }

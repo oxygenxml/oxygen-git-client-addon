@@ -142,7 +142,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
             getCommitPanel().reset();
 
             // checks what buttons to keep active and what buttons to deactivate
-            if (!gitAccess.getStagedFile().isEmpty()) {
+            if (!gitAccess.getStagedFiles().isEmpty()) {
               getCommitPanel().getCommitButton().setEnabled(true);
             } else {
               getCommitPanel().getCommitButton().setEnabled(false);
@@ -438,7 +438,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
         } else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
           commitPanel.setStatus(pushPullEvent.getMessage());
           commitPanel.reset();
-          if (!GitAccess.getInstance().getStagedFile().isEmpty()) {
+          if (!GitAccess.getInstance().getStagedFiles().isEmpty()) {
             commitPanel.getCommitButton().setEnabled(true);
           }
           workingCopySelectionPanel.getBrowseButton().setEnabled(true);

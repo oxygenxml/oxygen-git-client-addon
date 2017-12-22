@@ -7,6 +7,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * Collects all refered paths insdie an Oxygen project file.
+ * 
+ * @author alex_jitianu
+ */
 public class XPRHandler extends DefaultHandler {
 
 	/**

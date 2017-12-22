@@ -96,6 +96,15 @@ public class GitPullCasesTest extends GitTestBase {
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
         "Status: FINISHED, message: \n" + 
         "", b.toString());
+    
+    // Commit.
+    instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    instance.commit("Another");
+    instance.push("", "");
+    
+    pc.execute(Command.PULL).join();
+    
+    assertNull(ex[0]);
   }
   
 }
