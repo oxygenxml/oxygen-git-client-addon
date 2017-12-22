@@ -73,12 +73,18 @@ public class GitPullCasesTest extends GitTestBase {
     instance.setRepository(local1Repository);
     setFileContent(local1File, "changed in local 1");
     
+    final StringBuilder pullWithConflicts = new StringBuilder();
     final org.eclipse.jgit.api.errors.CheckoutConflictException[] ex = new 
         org.eclipse.jgit.api.errors.CheckoutConflictException[1];
     PushPullController pc = new PushPullController() {
       protected void showPullFailedBecauseofConflict(org.eclipse.jgit.api.errors.CheckoutConflictException e) {
         ex[0] = e;
       };
+      
+      @Override
+      protected void showPullConflicts(PullResponse response) {
+        pullWithConflicts.append(response);
+      }
     };
     
     final StringBuilder b = new StringBuilder();
@@ -97,6 +103,7 @@ public class GitPullCasesTest extends GitTestBase {
         "Status: FINISHED, message: \n" + 
         "", b.toString());
     
+    ex[0] = null;
     // Commit.
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Another");
@@ -105,6 +112,7 @@ public class GitPullCasesTest extends GitTestBase {
     pc.execute(Command.PULL).join();
     
     assertNull(ex[0]);
+    assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
   }
   
 }
