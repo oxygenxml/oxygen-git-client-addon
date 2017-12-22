@@ -14,6 +14,7 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.GitCommand;
 
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
@@ -565,5 +566,34 @@ public class FlatViewTest extends FlatViewTestBase {
 
     assertTableModels("", "");
   }
+  
+  /**
+   * <p><b>Description:</b> don't activate the submodule selection button every time you push/pull.</p>
+   * <p><b>Bug ID:</b> EXM-40740</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
+    // ================= No submodules ====================
+    stagingPanel.getPushPullController().execute(Command.PULL);
+    sleep(500);
+    
+    assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
+    
+    // ================= Set submodule ====================
+    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport) {
+      @Override
+      boolean gitHasSubmodules() {
+        return true;
+      }
+    });
+    stagingPanel.getPushPullController().execute(Command.PULL);
+    sleep(500);
+    
+    assertTrue(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
+  }
+
   
 }
