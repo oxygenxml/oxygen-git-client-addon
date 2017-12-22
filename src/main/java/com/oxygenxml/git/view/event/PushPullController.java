@@ -111,10 +111,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 					}
 				} catch (CheckoutConflictException e) {
           // Notify that there are conflicts that should be resolved in the staging area.
-          new PullWithConflictsDialog(
-              translator.getTranslation(Tags.PULL_STATUS), 
-              ((CheckoutConflictException) e).getConflictingPaths(), 
-              translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
+          showPullFailedBecauseofConflict(e);
           
           if (logger.isDebugEnabled()) {
             logger.info(((CheckoutConflictException) e).getConflictingPaths());
@@ -279,9 +276,28 @@ public class PushPullController implements Subject<PushPullEvent> {
 		observer = null;
 	}
 	
+	/**
+	 * Informs the user that pull was successful with conflicts.
+	 *  
+	 * @param response Pull response.
+	 */
 	protected void showPullConflicts(PullResponse response) {
     new PullWithConflictsDialog(translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
         response.getConflictingFiles(), translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
+  }
+	
+
+  /**
+   * Pull failed because there are uncommitted files that would be in conflict
+   * after the pull.
+   * 
+   * @param e Exception.
+   */
+  protected void showPullFailedBecauseofConflict(CheckoutConflictException e) {
+    new PullWithConflictsDialog(
+        translator.getTranslation(Tags.PULL_STATUS), 
+        ((CheckoutConflictException) e).getConflictingPaths(), 
+        translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
   }
 
 }

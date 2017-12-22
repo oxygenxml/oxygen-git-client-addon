@@ -3,15 +3,10 @@ package com.oxygenxml.git.service;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -24,11 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.service.PullResponse;
-import com.oxygenxml.git.service.PullStatus;
-import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
@@ -42,8 +32,7 @@ public class GitAccessPullTest {
 	protected GitAccess gitAccess;
 
 	@Before
-	public void init()
-			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
+	public void init() throws Exception {
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		db1 = gitAccess.getRepository();
@@ -59,11 +48,12 @@ public class GitAccessPullTest {
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
 		URIish uri = new URIish(db3.getDirectory().toURI().toURL());
 		remoteConfig.addURI(uri);
+		RefSpec spec1 = new RefSpec("+refs/heads/*:refs/remotes/origin/*");
+    remoteConfig.addFetchRefSpec(spec1);
 		remoteConfig.update(config);
 		config.save();
 
 		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		config = gitAccess.getRepository().getConfig();
 		remoteConfig = new RemoteConfig(config, "origin");
 		uri = new URIish(db3.getDirectory().toURI().toURL());
@@ -76,8 +66,7 @@ public class GitAccessPullTest {
 	}
 
 	@Test
-	public void testPullOK()
-			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException {
+	public void testPullOK() throws Exception {
 		pushOneFileToRemote();
 
 		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
@@ -89,12 +78,10 @@ public class GitAccessPullTest {
 	}
 
 	@Test
-	public void testPullUncomitedFiles() throws RepositoryNotFoundException, FileNotFoundException,
-			InvalidRemoteException, TransportException, IOException, GitAPIException {
+	public void testPullUncomitedFiles() throws Exception {
 		pushOneFileToRemote();
 
 		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test2.txt");
 		file.createNewFile();
 
@@ -105,8 +92,7 @@ public class GitAccessPullTest {
 	}
 	
 	@Test
-	public void testPullConflicts() throws RepositoryNotFoundException, FileNotFoundException,
-			InvalidRemoteException, TransportException, IOException, GitAPIException {
+	public void testPullConflicts() throws Exception {
 		pushOneFileToRemote();
 
 		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
@@ -171,8 +157,12 @@ public class GitAccessPullTest {
 		}
 	}
 
-	protected void pushOneFileToRemote() throws IOException, RepositoryNotFoundException, FileNotFoundException,
-			InvalidRemoteException, TransportException, GitAPIException {
+	/**
+	 * Loads LOCAL_TEST_REPOSITPRY and pushes one file to REMOTE_TEST_REPOSITPRY.
+	 * 
+	 * @throws Exception If it fails.
+	 */
+	protected void pushOneFileToRemote() throws Exception {
 		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
 		OptionsManager.getInstance().saveSelectedRepository(LOCAL_TEST_REPOSITPRY);
 
@@ -183,5 +173,4 @@ public class GitAccessPullTest {
 		gitAccess.commit("file test added");
 		gitAccess.push("", "");
 	}
-
 }

@@ -157,16 +157,17 @@ public class GitTestBase extends JFCTestCase {
    */
   protected String read(URL url) throws IOException {
     StringBuilder b = new StringBuilder();
-    InputStreamReader r = new InputStreamReader(url.openStream(), "UTF-8");
-  
-    char[] buf = new char[1024];
-    int length = -1;
-    while ((length = r.read(buf)) != -1) {
-      b.append(buf, 0, length);
+    
+    try (InputStreamReader r = new InputStreamReader(url.openStream(), "UTF-8")) {
+      char[] buf = new char[1024];
+      int length = -1;
+      while ((length = r.read(buf)) != -1) {
+        b.append(buf, 0, length);
+      }
     }
-    
+
     return b.toString();
-    
+
   }
   
 

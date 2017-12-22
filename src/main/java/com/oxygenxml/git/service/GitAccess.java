@@ -29,22 +29,16 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
-import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
-import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidConfigurationException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
-import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.dircache.DirCache;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -624,27 +618,14 @@ public class GitAccess {
 	 * Pulls the files that are not on the local repository from the remote
 	 * repository
 	 * 
-	 * @param username
-	 *          - Git username
-	 * @param password
-	 *          - Git password
-	 * @return
-	 * @throws GitAPIException
-	 * @throws TransportException
-	 * @throws NoHeadException
-	 * @throws RefNotAdvertisedException
-	 * @throws RefNotFoundException
-	 * @throws CanceledException
-	 * @throws InvalidRemoteException
-	 * @throws DetachedHeadException
-	 * @throws InvalidConfigurationException
-	 * @throws WrongRepositoryStateException
-	 * @throws IOException
-	 * @throws IncorrectObjectTypeException
-	 * @throws AmbiguousObjectException
-	 * @throws RevisionSyntaxException
+	 * @param username Git username
+	 * @param password Git password
+	 * 
+	 * @return The result, if successful.
+	 *  
+	 * @throws GitAPIException If it fails.
 	 */
-	public PullResponse pull(String username, String password) throws GitAPIException {
+	public PullResponse pull(String username, String password) throws GitAPIException, CheckoutConflictException {
 	  AuthenticationInterceptor.install();
 
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());

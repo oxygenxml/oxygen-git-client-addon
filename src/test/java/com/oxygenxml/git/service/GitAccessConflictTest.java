@@ -9,23 +9,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.junit.Test;
 
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessConflictTest extends GitAccessPullTest {
 
 	@Test
-	public void testResolveUsingTheirs() throws RepositoryNotFoundException, FileNotFoundException,
-			InvalidRemoteException, TransportException, IOException, GitAPIException {
+	public void testResolveUsingTheirs() throws Exception {
 		pushOneFileToRemote();
 
 		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
@@ -47,7 +41,7 @@ public class GitAccessConflictTest extends GitAccessPullTest {
 	}
 
 	@Test
-	public void testRestartMerge() throws RepositoryNotFoundException, FileNotFoundException, InvalidRemoteException, TransportException, IOException, GitAPIException, NoRepositorySelected {
+	public void testRestartMerge() throws Exception {
 		pushOneFileToRemote();
 
 		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);

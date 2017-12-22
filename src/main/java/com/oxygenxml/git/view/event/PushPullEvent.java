@@ -38,5 +38,10 @@ public class PushPullEvent {
 	public void setMessage(String message){
 		this.message = message;
 	}
+	
+	@Override
+	public String toString() {
+	  return "Status: " + actionStatus + ", message: " + message;
+	}
 
 }
