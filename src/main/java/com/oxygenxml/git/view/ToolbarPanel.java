@@ -138,7 +138,7 @@ public class ToolbarPanel extends JPanel {
 	    @Override
       public void repositoryChanged() {
 	      // Repository changed. Update the toolbar buttons.
-	      if (!GitAccess.getInstance().getSubmodules().isEmpty()) {
+	      if (gitHasSubmodules()) {
 	        submoduleSelectButton.setEnabled(true);
 	      } else {
 	        submoduleSelectButton.setEnabled(false);
@@ -164,6 +164,13 @@ public class ToolbarPanel extends JPanel {
 	    }
 	  });
 	}
+	
+	/**
+	 * @return <code>true</code> if we have submodules.
+	 */
+	boolean gitHasSubmodules() {
+    return !GitAccess.getInstance().getSubmodules().isEmpty();
+  }
 	
 	/**
 	 * Fetch.
@@ -217,12 +224,16 @@ public class ToolbarPanel extends JPanel {
     pushButton.setEnabled(enabled);
     pullButton.setEnabled(enabled);
     cloneRepositoryButton.setEnabled(enabled);
-    submoduleSelectButton.setEnabled(enabled);
+    submoduleSelectButton.setEnabled(enabled && gitHasSubmodules());
     branchSelectButton.setEnabled(enabled);
     
   }
+  
+  public ToolbarButton getSubmoduleSelectButton() {
+    return submoduleSelectButton;
+  }
 
-	public JButton getPushButton() {
+  public JButton getPushButton() {
 		return pushButton;
 	}
 
@@ -258,7 +269,7 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton();
 		addSubmoduleSelectButton();
-		if (!GitAccess.getInstance().getSubmodules().isEmpty()) {
+		if (gitHasSubmodules()) {
 			submoduleSelectButton.setEnabled(true);
 		} else {
 			submoduleSelectButton.setEnabled(false);

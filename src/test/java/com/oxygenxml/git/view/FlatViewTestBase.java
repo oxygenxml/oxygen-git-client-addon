@@ -33,6 +33,10 @@ public class FlatViewTestBase extends GitTestBase {
    * Staging/Unstaging panel.
    */
   protected StagingPanel stagingPanel;
+  /**
+   * Refresh support.
+   */
+  protected PanelRefresh refreshSupport;
   
   @Override
   protected void setUp() throws Exception {
@@ -40,7 +44,7 @@ public class FlatViewTestBase extends GitTestBase {
 
     
     // Create the unstaged resources panel
-    PanelRefresh refreshSupport = new PanelRefresh();
+    refreshSupport = new PanelRefresh();
     stagingPanel = new StagingPanel(
         refreshSupport,
         new StageController()) {

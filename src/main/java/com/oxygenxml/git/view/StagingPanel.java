@@ -194,6 +194,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	public ToolbarPanel getToolbarPanel() {
 		return toolbarPanel;
 	}
+	
+	void setToolbarPanelFromTests(ToolbarPanel toolbarPanel) {
+    this.toolbarPanel = toolbarPanel;
+  }
 
 	/**
 	 * Create the GUI.
