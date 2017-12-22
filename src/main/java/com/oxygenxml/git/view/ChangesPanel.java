@@ -424,12 +424,12 @@ public class ChangesPanel extends JPanel {
 		  public void keyReleased(KeyEvent e) {
 		    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 		      TreePath pathForRow = null;
-		      StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 		      int[] selectionRows = tree.getSelectionRows();
 		      if (selectionRows != null && selectionRows.length > 0) {
 		        pathForRow = tree.getPathForRow(selectionRows[selectionRows.length - 1]);
 		      }
 		      if (pathForRow != null) {
+		        StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 		        String stringPath = TreeFormatter.getStringPath(pathForRow);
 		        GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 		        if (model != null && node != null
