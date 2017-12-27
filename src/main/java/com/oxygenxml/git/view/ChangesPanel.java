@@ -445,10 +445,12 @@ public class ChangesPanel extends JPanel {
 		      if (treePaths != null && treePaths.length > 0) {
 		        TreePath lastTreePath = treePaths[treePaths.length - 1];
 		        Rectangle pathBounds = tree.getPathBounds(lastTreePath);
-		        showContextualMenuForTree(
-		            pathBounds.x,
-		            pathBounds.y + pathBounds.height,
-		            (StagingResourcesTreeModel) tree.getModel());
+		        if (pathBounds != null) {
+		          showContextualMenuForTree(
+		              pathBounds.x,
+		              pathBounds.y + pathBounds.height,
+		              (StagingResourcesTreeModel) tree.getModel());
+		        }
 		      }
 		    }
 		  }
