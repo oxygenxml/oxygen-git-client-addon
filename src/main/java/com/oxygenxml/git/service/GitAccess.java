@@ -371,7 +371,6 @@ public class GitAccess {
 					SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
 					if (submoduleStatus != null 
 					    && submoduleStatus.getHeadId() != null
-					    && submoduleStatus.getIndexId() != null
 					    && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
 						unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
 					}
