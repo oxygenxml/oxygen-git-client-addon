@@ -116,21 +116,29 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Main panel refresh
 	 */
-	private GitRefreshSupport refresh;
+	private GitRefreshSupport refreshSupport;
 	
 	/**
 	 * Image utilities.
 	 */
 	private ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
 
+	/**
+	 * Branch selection button.
+	 */
   private ToolbarButton branchSelectButton;
 
+  /**
+   * Constructor.
+   * @param pushPullController Push/pull controller.
+   * @param refreshSupport     The refresh support.
+   */
 	public ToolbarPanel(
 	    PushPullController pushPullController, 
-	    GitRefreshSupport refresh) {
+	    GitRefreshSupport refreshSupport) {
 	  this.pushPullController = pushPullController;
 	  this.statusInformationLabel = new JLabel();
-	  this.refresh = refresh;
+	  this.refreshSupport = refreshSupport;
 
 	  createGUI();
 
@@ -138,7 +146,7 @@ public class ToolbarPanel extends JPanel {
 	    @Override
       public void repositoryChanged() {
 	      // Repository changed. Update the toolbar buttons.
-	      if (gitHasSubmodules()) {
+	      if (gitRepoHasSubmodules()) {
 	        submoduleSelectButton.setEnabled(true);
 	      } else {
 	        submoduleSelectButton.setEnabled(false);
@@ -168,7 +176,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * @return <code>true</code> if we have submodules.
 	 */
-	boolean gitHasSubmodules() {
+	boolean gitRepoHasSubmodules() {
     return !GitAccess.getInstance().getSubmodules().isEmpty();
   }
 	
@@ -224,7 +232,7 @@ public class ToolbarPanel extends JPanel {
     pushButton.setEnabled(enabled);
     pullButton.setEnabled(enabled);
     cloneRepositoryButton.setEnabled(enabled);
-    submoduleSelectButton.setEnabled(enabled && gitHasSubmodules());
+    submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
     branchSelectButton.setEnabled(enabled);
     
   }
@@ -269,7 +277,7 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton();
 		addSubmoduleSelectButton();
-		if (gitHasSubmodules()) {
+		if (gitRepoHasSubmodules()) {
 			submoduleSelectButton.setEnabled(true);
 		} else {
 			submoduleSelectButton.setEnabled(false);
@@ -356,7 +364,7 @@ public class ToolbarPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						new BranchSelectDialog(refresh);
+						new BranchSelectDialog(refreshSupport);
 					}
 				} catch (NoRepositorySelected e1) {
           if(logger.isDebugEnabled()) {
