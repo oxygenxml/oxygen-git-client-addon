@@ -37,7 +37,6 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.event.ActionStatus;
-import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.Subject;
@@ -239,7 +238,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		this.add(commitButton, gbc);
 	}
 
-  public void stateChanged(ChangeEvent changeEvent) {
+  public void stateChanged() {
 		toggleCommitButton();
 	}
 

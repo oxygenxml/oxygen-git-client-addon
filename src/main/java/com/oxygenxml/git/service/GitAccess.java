@@ -587,7 +587,7 @@ public class GitAccess {
 	 * @throws InvalidRemoteException
 	 */
 	public PushResponse push(final String username, final String password)
-	    throws GitAPIException, InvalidRemoteException, TransportException {
+	    throws GitAPIException {
 
 	  AuthenticationInterceptor.install();
 	  PushResponse response = new PushResponse();
@@ -633,7 +633,7 @@ public class GitAccess {
 	 *  
 	 * @throws GitAPIException If it fails.
 	 */
-	public PullResponse pull(String username, String password) throws GitAPIException, CheckoutConflictException {
+	public PullResponse pull(String username, String password) throws GitAPIException {
 	  AuthenticationInterceptor.install();
 
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());

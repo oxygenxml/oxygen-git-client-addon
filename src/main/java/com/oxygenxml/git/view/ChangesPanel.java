@@ -755,7 +755,7 @@ public class ChangesPanel extends JPanel {
 		int[] selectedRows = filesTable.getSelectedRows();
 		StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
-		TreePath[] selectedPaths = new TreePath[selectedRows.length];
+		TreePath[] selPaths = new TreePath[selectedRows.length];
 		for (int i = 0; i < selectedRows.length; i++) {
 			int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 			String absolutePath = fileTableModel.getFileLocation(convertedRow);
@@ -770,9 +770,9 @@ public class ChangesPanel extends JPanel {
 				nodeBuilder = (GitTreeNode) nodeBuilder.getParent();
 			}
 
-			selectedPaths[i] = new TreePath(selectedPath);
+			selPaths[i] = new TreePath(selectedPath);
 		}
-		return selectedPaths;
+		return selPaths;
 	}
 
 	/**

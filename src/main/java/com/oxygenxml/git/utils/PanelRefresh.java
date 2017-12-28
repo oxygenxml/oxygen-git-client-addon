@@ -46,7 +46,7 @@ public class PanelRefresh implements GitRefreshSupport {
   /**
    * Repository status: available or not.
    */
-  public static enum RepositoryStatus {
+  public enum RepositoryStatus {
     /**
      * Available.
      */
@@ -116,14 +116,10 @@ public class PanelRefresh implements GitRefreshSupport {
 	          OptionsManager.getInstance().saveProjectTestedForGit(projectView);
 	        }
 
-	      } catch (FileNotFoundException e) {
+	      } catch (IOException e) {
 	        if (logger.isDebugEnabled()) {
 	          logger.debug(e, e);
 	        }
-	      } catch (IOException e) {
-	        if (logger.isDebugEnabled()) {
-            logger.debug(e, e);
-          }
 	      }
 	    }
 	  }
@@ -185,7 +181,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * @throws FileNotFoundException The project file doesn't exist.
 	 * @throws IOException A Git repository was detected but not loaded.
 	 */
-	private boolean checkForGitRepositoriesUpAndDownFrom(String projectDir) throws FileNotFoundException, IOException {
+	private boolean checkForGitRepositoriesUpAndDownFrom(String projectDir) throws IOException {
 	  boolean projectPahtIsGit = false;
 		String projectName = EditorVariables.expandEditorVariables("${pn}", null);
 		String projectXprName = projectName + ".xpr";
@@ -226,15 +222,7 @@ public class PanelRefresh implements GitRefreshSupport {
 			    file = file.getParentFile();
 			  }
 			}
-		} catch (ParserConfigurationException e1) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e1, e1);
-			}
-		} catch (SAXException e1) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e1, e1);
-			}
-		} catch (IOException e1) {
+		} catch (ParserConfigurationException | SAXException | IOException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
