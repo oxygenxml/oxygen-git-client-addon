@@ -149,7 +149,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
       });
 			
 		} catch (Throwable t) {
-			// Runtime exceptions shouldn't affect Oxygen.
+			// Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
 			pluginWorkspaceAccess.showErrorMessage(t.getMessage());
 			logger.fatal(t, t);
 		}
