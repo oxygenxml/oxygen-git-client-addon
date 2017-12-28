@@ -2,10 +2,14 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
+import org.eclipse.jgit.api.SubmoduleAddCommand;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.submodule.SubmoduleStatus;
+import org.eclipse.jgit.submodule.SubmoduleStatusType;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -240,4 +244,70 @@ public class DiffPresenterTest extends GitTestBase {
     // Assert content.
     assertEquals("index content", read(new URL(indexVersionURL)));
   }
+  
+  /**
+   * <p><b>Description:</b> diff on submodule.</p>
+   * <p><b>Bug ID:</b> EXM-40621</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testCompareSubmodule() throws Exception {
+    GitAccess gitAccess = GitAccess.getInstance();
+    
+    // PARENT repos
+    String localTestRepositoryP = "target/test-resources/localCS";
+    String remoteTestRepositoryP = "target/test-resources/remoteCS";
+    Repository remoteRepoP = createRepository(remoteTestRepositoryP);
+    Repository localRepoP = createRepository(localTestRepositoryP);
+    bindLocalToRemote(localRepoP, remoteRepoP);
+    
+    // SUBMODULE repos
+    String remoteTestRepositorySubModule = "target/test-resources/remoteCS-SubModule/";
+    Repository remoteRepoSubModule = createRepository(remoteTestRepositorySubModule);
+    // Commit (very important)
+    gitAccess.commit("Commit");
+    
+    // Set the PARENT repo as the current one, to which we'll add the submodule
+    gitAccess.setRepository(localTestRepositoryP);
+    
+    // Add SUBMODULE
+    SubmoduleAddCommand addCommand = gitAccess.submoduleAdd();
+    addCommand.setURI(remoteRepoSubModule.getDirectory().toURI().toString());
+    addCommand.setPath("modules/submodule");
+    Repository subRepo = addCommand.call();
+    subRepo.close();
+    
+    File parentWorkDir = gitAccess.getRepository().getWorkTree();
+    assertTrue( new File( parentWorkDir, "modules/submodule" ).isDirectory() );
+    assertTrue( new File( parentWorkDir, ".gitmodules" ).isFile() );
+
+    // Check the SUBMODULE
+    Map<String,SubmoduleStatus> submodules = gitAccess.submoduleStatus().call();
+    assertEquals(1, submodules.size());
+    SubmoduleStatus status = submodules.get("modules/submodule");
+    assertNotNull(status);
+    assertEquals(SubmoduleStatusType.INITIALIZED, status.getType());
+    
+    // SHOW DIFF
+    DiffPresenter diffPresenter = new DiffPresenter(
+        // The submodule
+        gitAccess.getStagedFiles().get(1),
+        Mockito.mock(StageController.class));
+    diffPresenter.showDiff();
+    
+    assertNotNull(leftDiff);
+    assertNotNull(rightDiff);
+    
+    String left = "git://CurrentSubmodule/modules/submodule.txt";
+    assertEquals(left, leftDiff.toString());
+    assertTrue(read(new URL(left)).startsWith("Subproject commit "));
+    
+    String right = "git://PreviousSubmodule/modules/submodule.txt";
+    assertEquals(right, rightDiff.toString());
+    assertTrue(read(new URL(right)).startsWith("Subproject commit "));
+  }
+  
 }

@@ -29,6 +29,8 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
+import org.eclipse.jgit.api.SubmoduleAddCommand;
+import org.eclipse.jgit.api.SubmoduleStatusCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
@@ -367,7 +369,7 @@ public class GitAccess {
 				
 				for (String string : submodules) {
 					SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
-					if (!submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
+					if (submoduleStatus != null && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
 						unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
 					}
 				}
@@ -429,10 +431,12 @@ public class GitAccess {
 	public ObjectId submoduleCompare(String submodulePath, boolean index) {
 		try {
 			SubmoduleStatus submoduleStatus = git.submoduleStatus().addPath(submodulePath).call().get(submodulePath);
-			if (index) {
-				return submoduleStatus.getIndexId();
-			} else {
-				return submoduleStatus.getHeadId();
+			if (submoduleStatus != null) {
+			  if (index) {
+			    return submoduleStatus.getIndexId();
+			  } else {
+			    return submoduleStatus.getHeadId();
+			  }
 			}
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
@@ -1370,4 +1374,22 @@ public class GitAccess {
 	public void cleanUp() {
 	  listeners.clear();
   }
+	
+	/**
+	 * Submodule add command.
+	 * 
+	 * @return the command to call.
+	 */
+	public SubmoduleAddCommand submoduleAdd() {
+	  return git.submoduleAdd();
+	}
+	
+	/**
+	 * Submodule status command.
+	 * 
+	 * @return the command to call.
+	 */
+	public SubmoduleStatusCommand submoduleStatus() {
+	  return git.submoduleStatus();
+	}
 }
