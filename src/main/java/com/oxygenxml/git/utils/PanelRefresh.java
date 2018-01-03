@@ -3,6 +3,7 @@ package com.oxygenxml.git.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -104,9 +105,13 @@ public class PanelRefresh implements GitRefreshSupport {
 	        if (!repoLoaded) {
 	          String[] options = new String[] { "   Yes   ", "   No   " };
 	          int[] optonsId = new int[] { 0, 1 };
+	          String projectName = PluginWorkspaceProvider.getPluginWorkspace().
+	              getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
 	          int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
 	              translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-	              translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
+	              MessageFormat.format(translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
+	              options,
+	              optonsId);
 	          if (response == 0) {
 	            repoChanged = true;
 	            gitAccess.createNewRepository(projectView);
