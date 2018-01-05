@@ -540,14 +540,10 @@ public class ChangesPanel extends JPanel {
 					}
 					
 					// ============= Right click event ================
-					Repository repo = getCurrentRepository();
-					RepositoryState repositoryState = null;
-					if (repo != null) {
-					  repositoryState = repo.getRepositoryState();
-					}
 					if (SwingUtilities.isRightMouseButton(e)
-					    && (!node.isRoot() || node.children().hasMoreElements() 
-					        || repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED)) {
+					    && (!node.isRoot() 
+					        || node.children().hasMoreElements()
+					        || isMergingResolved())) {
 					  boolean treeInSelection = false;
 				    TreePath[] paths = tree.getSelectionPaths();
 				    if (paths != null) {
@@ -572,7 +568,31 @@ public class ChangesPanel extends JPanel {
 	}
 	
 	/**
-	 * @return the current repository.
+	 * @return the state of the current repository or <code>null</code>, if there's no repository selected.
+	 */
+	 private RepositoryState getRepositoryState() {
+	   RepositoryState repositoryState = null;
+     Repository repo = getCurrentRepository();
+     if (repo != null) {
+       repositoryState = repo.getRepositoryState();
+     }
+     return repositoryState;
+   }
+	
+	/**
+	 * Check if the merging has been resolved.
+	 * 
+	 * @param repositoryState the repository state.
+	 * 
+	 * @return <code>true</code> if the merging has been resolved.
+	 */
+	private boolean isMergingResolved() {
+	  RepositoryState repositoryState = getRepositoryState();
+    return repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED;
+  }
+	
+	/**
+	 * @return the current repository or <code>null</code> if there's no repository selected.
 	 */
 	private Repository getCurrentRepository() {
 	  Repository repo = null;
