@@ -251,6 +251,9 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	      commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
 	    } else if (!gitAccess.getStagedFiles().isEmpty()) {
 	      enable = true;
+	    } else if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING
+	        && translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE).equals(commitMessage.getText())) {
+	      commitMessage.setText("");
 	    }
 	  } catch (NoRepositorySelected e) {
 	    // Remains disabled

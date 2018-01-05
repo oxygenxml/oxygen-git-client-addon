@@ -1,13 +1,12 @@
 package com.oxygenxml.git.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitTestBase;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PopupMenuSerializer;
@@ -50,7 +49,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
@@ -95,7 +95,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
@@ -140,7 +141,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
@@ -184,7 +186,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
@@ -236,12 +239,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true) {
-      @Override
-      protected RepositoryState getRepositoryState() throws NoRepositorySelected {
-        return RepositoryState.MERGING;
-      }
-    };
+        true,
+        // In merging state
+        true);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
@@ -294,12 +294,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true) {
-      @Override
-      protected RepositoryState getRepositoryState() throws NoRepositorySelected {
-        return RepositoryState.MERGING;
-      }
-    };
+        true,
+        // In merging state
+        true);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
@@ -352,12 +349,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true) {
-      @Override
-      protected RepositoryState getRepositoryState() throws NoRepositorySelected {
-        return RepositoryState.MERGING;
-      }
-    };
+        true,
+        // In merging state
+        true);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
@@ -401,6 +395,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For unstaged resources
+        false,
         false);
     
     assertEquals("\n" + 
@@ -446,6 +441,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For unstaged resources
+        false,
         false);
     
     assertEquals("\n" + 
@@ -491,6 +487,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For unstaged resources
+        false,
         false);
     
     assertEquals("\n" + 
@@ -535,7 +532,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
@@ -580,7 +578,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
@@ -625,7 +624,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
@@ -669,6 +669,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For unstaged resources
+        false,
         false);
     
     assertEquals("\n" + 
@@ -714,6 +715,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For unstaged resources
+        false,
         false);
     
     assertEquals("\n" + 
@@ -759,6 +761,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For unstaged resources
+        false,
         false);
     
     assertEquals("\n" + 
@@ -803,6 +806,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For unstaged resources
+        false,
         false);
     
     assertEquals("\n" + 
@@ -848,6 +852,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For unstaged resources
+        false,
         false);
     
     assertEquals("\n" + 
@@ -893,7 +898,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
@@ -937,7 +943,8 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         },
         stagingCtrl,
         // For staged resources
-        true);
+        true,
+        false);
     
     assertEquals("\n" + 
         "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
@@ -952,6 +959,58 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
         "Contextual_Menu_Discard [ENABLED]",
+        PopupMenuSerializer.serializePopupStructure(menu, true, true));
+  }
+  
+  /**
+   * <p><b>Description:</b> test the enabling state of the actions
+   * from the contextual menu of the staged resources. Empty root. Merging state.</p>
+   * <p><b>Bug ID:</b> EXM-40615</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  public void testActionsEnablingState_21() throws Exception {
+    // Create repositories
+    String localTestRepository = "target/test-resources/testActionsEnabling6_local";
+    String remoteTestRepository = "target/test-resources/testActionsEnabling6_remote";
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo = createRepository(localTestRepository);
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo , remoteRepo);
+    
+    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+        new SelectedResourcesProvider() {
+          @Override
+          public List<FileStatus> getOnlySelectedLeaves() {
+            return getAllSelectedResources();
+          }
+          
+          @Override
+          public List<FileStatus> getAllSelectedResources() {
+            return Collections.emptyList();
+          }
+        },
+        stagingCtrl,
+        // For staged resources
+        true,
+        // In merging state
+        true);
+    
+    assertEquals("\n" + 
+        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Contextual_Menu_Open [DISABLED]\n" + 
+        "Contextual_Menu_Unstage [DISABLED]\n" + 
+        "Contextual_Menu_Resolve_Conflict [ENABLED]\n" + 
+        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "  ----\n" + 
+        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
+        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  ----\n" + 
+        "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
+        "Contextual_Menu_Discard [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   

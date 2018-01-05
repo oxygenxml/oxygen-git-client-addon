@@ -52,6 +52,7 @@ import javax.xml.bind.annotation.XmlEnum;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
@@ -540,7 +541,7 @@ public class ChangesPanel extends JPanel {
 					
 					// ============= Right click event ================
 					if (SwingUtilities.isRightMouseButton(e)
-					    && (!node.isRoot() || node.children().hasMoreElements())) {
+					    && (!node.isRoot() || node.children().hasMoreElements() || isRepoInMergingState())) {
 					  boolean treeInSelection = false;
 				    TreePath[] paths = tree.getSelectionPaths();
 				    if (paths != null) {
@@ -564,6 +565,25 @@ public class ChangesPanel extends JPanel {
 		});
 	}
 	
+	/**
+   * Check if the repository is in merging state.
+   * 
+   * @return <code>true</code> if the repository is in merging state.
+   */
+  private boolean isRepoInMergingState() {
+    boolean toReturn = false;
+    try {
+    	RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
+      toReturn = repositoryState == RepositoryState.MERGING_RESOLVED
+          || repositoryState == RepositoryState.MERGING;
+    } catch (NoRepositorySelected e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+    return toReturn;
+  }
+  
 	 /**
    * Show contextual menu
    * 
@@ -586,7 +606,8 @@ public class ChangesPanel extends JPanel {
           }
         },
         stageController,
-        forStagedResources);
+        forStagedResources,
+        isRepoInMergingState());
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -1017,7 +1038,8 @@ public class ChangesPanel extends JPanel {
           }
         },
         stageController,
-        forStagedResources);
+        forStagedResources,
+        isRepoInMergingState());
     
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
@@ -1107,25 +1129,32 @@ public class ChangesPanel extends JPanel {
 				String path = TreeFormatter.getStringPath(treePath);
 				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
 					FileStatus file = model.getFileByPath(path);
-					GitChangeType changeType = file.getChangeType();
-					RenderingInfo renderingInfo = getRenderingInfo(changeType);
-					if (renderingInfo != null) {
-					  icon = renderingInfo.getIcon();
-					  toolTip = renderingInfo.getTooltip();
+					if (file != null) {
+					  GitChangeType changeType = file.getChangeType();
+					  RenderingInfo renderingInfo = getRenderingInfo(changeType);
+					  if (renderingInfo != null) {
+					    icon = renderingInfo.getIcon();
+					    toolTip = renderingInfo.getTooltip();
+					  }
+					} else {
+					  label = null;
 					}
 				}
 			}
-			label.setIcon(icon);
-			label.setToolTipText(toolTip);
 			
-			// Active/inactive table selection
-      if (sel) {
-        if (tree.hasFocus()) {
-          setBackgroundSelectionColor(defaultSelectionColor);
-        } else if (!isContextMenuShowing) {
-          setBackgroundSelectionColor(getInactiveSelectionColor(defaultSelectionColor));
-        }
-      }
+			if (label != null) {
+			  label.setIcon(icon);
+			  label.setToolTipText(toolTip);
+
+			  // Active/inactive table selection
+			  if (sel) {
+			    if (tree.hasFocus()) {
+			      setBackgroundSelectionColor(defaultSelectionColor);
+			    } else if (!isContextMenuShowing) {
+			      setBackgroundSelectionColor(getInactiveSelectionColor(defaultSelectionColor));
+			    }
+			  }
+			}
 
       return label;
 		}
