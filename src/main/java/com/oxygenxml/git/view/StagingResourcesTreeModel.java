@@ -59,7 +59,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 		super(root);
     this.stageController = controller;
 		this.inIndex = inIndex;
-		this.filesStatuses = Collections.synchronizedList(new ArrayList<>(filesStatus));
+		if (filesStatus != null) {
+		  this.filesStatuses = Collections.synchronizedList(filesStatus);
+		}
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
