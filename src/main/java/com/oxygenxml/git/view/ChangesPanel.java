@@ -540,8 +540,14 @@ public class ChangesPanel extends JPanel {
 					}
 					
 					// ============= Right click event ================
+					Repository repo = getCurrentRepository();
+					RepositoryState repositoryState = null;
+					if (repo != null) {
+					  repositoryState = repo.getRepositoryState();
+					}
 					if (SwingUtilities.isRightMouseButton(e)
-					    && (!node.isRoot() || node.children().hasMoreElements() || isRepoInMergingState())) {
+					    && (!node.isRoot() || node.children().hasMoreElements() 
+					        || repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED)) {
 					  boolean treeInSelection = false;
 				    TreePath[] paths = tree.getSelectionPaths();
 				    if (paths != null) {
@@ -566,23 +572,35 @@ public class ChangesPanel extends JPanel {
 	}
 	
 	/**
-   * Check if the repository is in merging state.
-   * 
-   * @return <code>true</code> if the repository is in merging state.
-   */
-  private boolean isRepoInMergingState() {
-    boolean toReturn = false;
-    try {
-    	RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
-      toReturn = repositoryState == RepositoryState.MERGING_RESOLVED
-          || repositoryState == RepositoryState.MERGING;
+	 * @return the current repository.
+	 */
+	private Repository getCurrentRepository() {
+	  Repository repo = null;
+	  try {
+	    repo = GitAccess.getInstance().getRepository();
     } catch (NoRepositorySelected e) {
       if (logger.isDebugEnabled()) {
         logger.debug(e, e);
       }
     }
-    return toReturn;
-  }
+	  return repo;
+	}
+	
+	/**
+   * Check if the repository is in merging state.
+   * 
+   * @return <code>true</code> if the repository is in merging state.
+   */
+	private boolean isRepoInMergingState() {
+	  boolean toReturn = false;
+	  Repository repo = getCurrentRepository();
+	  if (repo != null) {
+	    RepositoryState repositoryState = repo.getRepositoryState();
+	    toReturn = repositoryState == RepositoryState.MERGING_RESOLVED
+	        || repositoryState == RepositoryState.MERGING;
+	  }
+	  return toReturn;
+	}
   
 	 /**
    * Show contextual menu
