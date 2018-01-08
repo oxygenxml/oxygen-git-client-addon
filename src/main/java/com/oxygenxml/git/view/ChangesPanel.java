@@ -540,7 +540,7 @@ public class ChangesPanel extends JPanel {
 					}
 					
 					// ============= Right click event ================
-					if (SwingUtilities.isRightMouseButton(e)
+					if (e.isPopupTrigger()
 					    && (!node.isRoot() 
 					        || node.children().hasMoreElements()
 					        || isMergingResolved())) {
@@ -976,7 +976,7 @@ public class ChangesPanel extends JPanel {
 					filesTable.clearSelection();
 					// When resolving a conflict "using mine" and there are no more entries in the tables,
 					// show the contextual menu for being able to restart the merging
-					if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1 
+					if (e.isPopupTrigger() && e.getClickCount() == 1 
 					    && GitAccess.getInstance().getStagedFiles().isEmpty()
 					    && GitAccess.getInstance().getUnstagedFiles().isEmpty()
 					    && isMergingResolved()) {
@@ -989,7 +989,7 @@ public class ChangesPanel extends JPanel {
 					}
 					
 					// ======== RIGHT CLICK ==========
-					if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1 && row != -1) {
+					if (e.isPopupTrigger() && e.getClickCount() == 1 && row != -1) {
 						boolean inSelection = false;
 						int clickedRow = filesTable.rowAtPoint(e.getPoint());
 						int[] selectedRows = filesTable.getSelectedRows();
