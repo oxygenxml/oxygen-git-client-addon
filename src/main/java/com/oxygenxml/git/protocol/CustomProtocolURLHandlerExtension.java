@@ -21,7 +21,8 @@ public class CustomProtocolURLHandlerExtension
 	/**
 	 * Gets the handler for the custom protocol
 	 */
-	public URLStreamHandler getURLStreamHandler(String protocol) {
+	@Override
+  public URLStreamHandler getURLStreamHandler(String protocol) {
 		// If the protocol is "git" return its handler
 		if (protocol.equals(GIT)) {
 			return new GitRevisionURLHandler();
@@ -32,35 +33,38 @@ public class CustomProtocolURLHandlerExtension
 	/**
 	 * @see ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtension#getLockHandler()
 	 */
-	public LockHandler getLockHandler() {
+	@Override
+  public LockHandler getLockHandler() {
 		return null;
 	}
 
 	/**
 	 * @see ro.sync.exml.plugin.urlstreamhandler.URLStreamHandlerWithLockPluginExtension#isLockingSupported(java.lang.String)
 	 */
-	public boolean isLockingSupported(String protocol) {
+	@Override
+  public boolean isLockingSupported(String protocol) {
 		return false;
 	}
 
 	/**
 	 * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#canCheckReadOnly(java.lang.String)
 	 */
-	public boolean canCheckReadOnly(String protocol) {
+	@Override
+  public boolean canCheckReadOnly(String protocol) {
 		return GIT.equals(protocol);
 	}
 
 	/**
 	 * @see ro.sync.exml.plugin.urlstreamhandler.URLHandlerReadOnlyCheckerExtension#isReadOnly(java.net.URL)
 	 */
+	@Override
 	public boolean isReadOnly(URL url) {
 	  boolean isReadOnly = false;
-	  if (GIT.equals(url.getProtocol())) {
-	    if (!VersionIdentifier.MINE.equals(url.getHost())) {
-	      isReadOnly = true;
-	    }
+	  if (GIT.equals(url.getProtocol())
+	      && !VersionIdentifier.MINE.equals(url.getHost())) {
+	    isReadOnly = true;
 	  }
-	  
-		return isReadOnly;
+
+	  return isReadOnly;
 	}
 }

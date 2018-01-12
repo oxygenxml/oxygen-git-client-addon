@@ -52,6 +52,7 @@ import javax.xml.bind.annotation.XmlEnum;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
@@ -445,10 +446,12 @@ public class ChangesPanel extends JPanel {
 		      if (treePaths != null && treePaths.length > 0) {
 		        TreePath lastTreePath = treePaths[treePaths.length - 1];
 		        Rectangle pathBounds = tree.getPathBounds(lastTreePath);
-		        showContextualMenuForTree(
-		            pathBounds.x,
-		            pathBounds.y + pathBounds.height,
-		            (StagingResourcesTreeModel) tree.getModel());
+		        if (pathBounds != null) {
+		          showContextualMenuForTree(
+		              pathBounds.x,
+		              pathBounds.y + pathBounds.height,
+		              (StagingResourcesTreeModel) tree.getModel());
+		        }
 		      }
 		    }
 		  }
@@ -537,8 +540,10 @@ public class ChangesPanel extends JPanel {
 					}
 					
 					// ============= Right click event ================
-					if (SwingUtilities.isRightMouseButton(e)
-					    && (!node.isRoot() || node.children().hasMoreElements())) {
+					if (e.isPopupTrigger()
+					    && (!node.isRoot() 
+					        || node.children().hasMoreElements()
+					        || isMergingResolved())) {
 					  boolean treeInSelection = false;
 				    TreePath[] paths = tree.getSelectionPaths();
 				    if (paths != null) {
@@ -562,6 +567,61 @@ public class ChangesPanel extends JPanel {
 		});
 	}
 	
+	/**
+	 * @return the state of the current repository or <code>null</code>, if there's no repository selected.
+	 */
+	 private RepositoryState getRepositoryState() {
+	   RepositoryState repositoryState = null;
+     Repository repo = getCurrentRepository();
+     if (repo != null) {
+       repositoryState = repo.getRepositoryState();
+     }
+     return repositoryState;
+   }
+	
+	/**
+	 * Check if the merging has been resolved.
+	 * 
+	 * @param repositoryState the repository state.
+	 * 
+	 * @return <code>true</code> if the merging has been resolved.
+	 */
+	private boolean isMergingResolved() {
+	  RepositoryState repositoryState = getRepositoryState();
+    return repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED;
+  }
+	
+	/**
+	 * @return the current repository or <code>null</code> if there's no repository selected.
+	 */
+	private Repository getCurrentRepository() {
+	  Repository repo = null;
+	  try {
+	    repo = GitAccess.getInstance().getRepository();
+    } catch (NoRepositorySelected e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+	  return repo;
+	}
+	
+	/**
+   * Check if the repository is in merging state.
+   * 
+   * @return <code>true</code> if the repository is in merging state.
+   */
+	private boolean isRepoInMergingState() {
+	  boolean toReturn = false;
+	  Repository repo = getCurrentRepository();
+	  if (repo != null) {
+	    RepositoryState repositoryState = repo.getRepositoryState();
+	    toReturn = repositoryState == RepositoryState.MERGING_RESOLVED
+	        || repositoryState == RepositoryState.MERGING;
+	  }
+	  return toReturn;
+	}
+  
 	 /**
    * Show contextual menu
    * 
@@ -584,7 +644,8 @@ public class ChangesPanel extends JPanel {
           }
         },
         stageController,
-        forStagedResources);
+        forStagedResources,
+        isRepoInMergingState());
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -753,7 +814,7 @@ public class ChangesPanel extends JPanel {
 		int[] selectedRows = filesTable.getSelectedRows();
 		StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
-		TreePath[] selectedPaths = new TreePath[selectedRows.length];
+		TreePath[] selPaths = new TreePath[selectedRows.length];
 		for (int i = 0; i < selectedRows.length; i++) {
 			int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 			String absolutePath = fileTableModel.getFileLocation(convertedRow);
@@ -768,9 +829,9 @@ public class ChangesPanel extends JPanel {
 				nodeBuilder = (GitTreeNode) nodeBuilder.getParent();
 			}
 
-			selectedPaths[i] = new TreePath(selectedPath);
+			selPaths[i] = new TreePath(selectedPath);
 		}
-		return selectedPaths;
+		return selPaths;
 	}
 
 	/**
@@ -913,6 +974,14 @@ public class ChangesPanel extends JPanel {
 				int column = filesTable.columnAtPoint(point);
 				if (column == -1 || row == -1) {
 					filesTable.clearSelection();
+					// When resolving a conflict "using mine" and there are no more entries in the tables,
+					// show the contextual menu for being able to restart the merging
+					if (e.isPopupTrigger() && e.getClickCount() == 1 
+					    && GitAccess.getInstance().getStagedFiles().isEmpty()
+					    && GitAccess.getInstance().getUnstagedFiles().isEmpty()
+					    && isMergingResolved()) {
+					  showContextualMenuForFlatView(e.getX(), e.getY(), new int[0]);
+					}
 				} else {
 				  // ======== LEFT DOUBLE CLICK ========
 					if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
@@ -920,7 +989,7 @@ public class ChangesPanel extends JPanel {
 					}
 					
 					// ======== RIGHT CLICK ==========
-					if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1 && row != -1) {
+					if (e.isPopupTrigger() && e.getClickCount() == 1 && row != -1) {
 						boolean inSelection = false;
 						int clickedRow = filesTable.rowAtPoint(e.getPoint());
 						int[] selectedRows = filesTable.getSelectedRows();
@@ -1015,7 +1084,8 @@ public class ChangesPanel extends JPanel {
           }
         },
         stageController,
-        forStagedResources);
+        forStagedResources,
+        isRepoInMergingState());
     
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
@@ -1105,25 +1175,32 @@ public class ChangesPanel extends JPanel {
 				String path = TreeFormatter.getStringPath(treePath);
 				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
 					FileStatus file = model.getFileByPath(path);
-					GitChangeType changeType = file.getChangeType();
-					RenderingInfo renderingInfo = getRenderingInfo(changeType);
-					if (renderingInfo != null) {
-					  icon = renderingInfo.getIcon();
-					  toolTip = renderingInfo.getTooltip();
+					if (file != null) {
+					  GitChangeType changeType = file.getChangeType();
+					  RenderingInfo renderingInfo = getRenderingInfo(changeType);
+					  if (renderingInfo != null) {
+					    icon = renderingInfo.getIcon();
+					    toolTip = renderingInfo.getTooltip();
+					  }
+					} else {
+					  label = null;
 					}
 				}
 			}
-			label.setIcon(icon);
-			label.setToolTipText(toolTip);
 			
-			// Active/inactive table selection
-      if (sel) {
-        if (tree.hasFocus()) {
-          setBackgroundSelectionColor(defaultSelectionColor);
-        } else if (!isContextMenuShowing) {
-          setBackgroundSelectionColor(getInactiveSelectionColor(defaultSelectionColor));
-        }
-      }
+			if (label != null) {
+			  label.setIcon(icon);
+			  label.setToolTipText(toolTip);
+
+			  // Active/inactive table selection
+			  if (sel) {
+			    if (tree.hasFocus()) {
+			      setBackgroundSelectionColor(defaultSelectionColor);
+			    } else if (!isContextMenuShowing) {
+			      setBackgroundSelectionColor(getInactiveSelectionColor(defaultSelectionColor));
+			    }
+			  }
+			}
 
       return label;
 		}

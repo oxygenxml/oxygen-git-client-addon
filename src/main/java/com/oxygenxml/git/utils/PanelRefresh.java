@@ -3,6 +3,7 @@ package com.oxygenxml.git.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -46,7 +47,7 @@ public class PanelRefresh implements GitRefreshSupport {
   /**
    * Repository status: available or not.
    */
-  public static enum RepositoryStatus {
+  public enum RepositoryStatus {
     /**
      * Available.
      */
@@ -104,9 +105,13 @@ public class PanelRefresh implements GitRefreshSupport {
 	        if (!repoLoaded) {
 	          String[] options = new String[] { "   Yes   ", "   No   " };
 	          int[] optonsId = new int[] { 0, 1 };
+	          String projectName = PluginWorkspaceProvider.getPluginWorkspace().
+	              getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
 	          int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
 	              translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-	              translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), options, optonsId);
+	              MessageFormat.format(translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
+	              options,
+	              optonsId);
 	          if (response == 0) {
 	            repoChanged = true;
 	            gitAccess.createNewRepository(projectView);
@@ -116,14 +121,10 @@ public class PanelRefresh implements GitRefreshSupport {
 	          OptionsManager.getInstance().saveProjectTestedForGit(projectView);
 	        }
 
-	      } catch (FileNotFoundException e) {
+	      } catch (IOException e) {
 	        if (logger.isDebugEnabled()) {
 	          logger.debug(e, e);
 	        }
-	      } catch (IOException e) {
-	        if (logger.isDebugEnabled()) {
-            logger.debug(e, e);
-          }
 	      }
 	    }
 	  }
@@ -185,7 +186,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * @throws FileNotFoundException The project file doesn't exist.
 	 * @throws IOException A Git repository was detected but not loaded.
 	 */
-	private boolean checkForGitRepositoriesUpAndDownFrom(String projectDir) throws FileNotFoundException, IOException {
+	private boolean checkForGitRepositoriesUpAndDownFrom(String projectDir) throws IOException {
 	  boolean projectPahtIsGit = false;
 		String projectName = EditorVariables.expandEditorVariables("${pn}", null);
 		String projectXprName = projectName + ".xpr";
@@ -226,15 +227,7 @@ public class PanelRefresh implements GitRefreshSupport {
 			    file = file.getParentFile();
 			  }
 			}
-		} catch (ParserConfigurationException e1) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e1, e1);
-			}
-		} catch (SAXException e1) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e1, e1);
-			}
-		} catch (IOException e1) {
+		} catch (ParserConfigurationException | SAXException | IOException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}

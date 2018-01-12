@@ -17,7 +17,7 @@ public class XPRHandler extends DefaultHandler {
 	/**
 	 * List to hold the file paths from the xpr file
 	 */
-	private List<String> filePaths = new ArrayList<String>();
+	private List<String> filePaths = new ArrayList<>();
 
 
 	@Override

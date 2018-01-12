@@ -155,15 +155,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 			remoteConfig.addFetchRefSpec(spec);
 			remoteConfig.update(config);
 			config.save();
-		} catch (NoRepositorySelected e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (URISyntaxException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		} catch (IOException e) {
+		} catch (NoRepositorySelected | URISyntaxException | IOException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}

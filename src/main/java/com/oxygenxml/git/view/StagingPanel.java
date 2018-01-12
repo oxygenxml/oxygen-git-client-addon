@@ -155,7 +155,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
       
       @Override
       public void stateChanged(ChangeEvent changeEvent) {
-        commitPanel.stateChanged(changeEvent);
+        commitPanel.stateChanged();
       }
     });
 	}

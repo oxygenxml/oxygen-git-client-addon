@@ -333,6 +333,8 @@ public class Tags {
 	/**
 	 * The text displayed in the dialog that appears if the project.xpr is not a
 	 * git repository and has no got repositories
+	 * 
+	 * en: Do you want your current project ("{0}") to be a git project?
 	 */
 	public static final String CHECK_PROJECTXPR_IS_GIT = "Check_ProjcetXPR_Is_Git";
 

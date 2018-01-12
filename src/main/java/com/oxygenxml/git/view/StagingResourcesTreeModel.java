@@ -34,7 +34,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	/**
 	 * The files in the model
 	 */
-	private List<FileStatus> filesStatuses = new ArrayList<FileStatus>();
+	private List<FileStatus> filesStatuses = Collections.synchronizedList(new ArrayList<>());
 
   /**
    * <code>true</code> if this model presents the resources inside the index.
@@ -59,7 +59,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 		super(root);
     this.stageController = controller;
 		this.inIndex = inIndex;
-		this.filesStatuses = filesStatus;
+		if (filesStatus != null) {
+		  this.filesStatuses = Collections.synchronizedList(filesStatus);
+		}
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
@@ -148,12 +150,16 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * @return the file
 	 */
 	public FileStatus getFileByPath(String path) {
-		for (FileStatus fileStatus : filesStatuses) {
-			if (path.equals(fileStatus.getFileLocation())) {
-				return fileStatus;
-			}
-		}
-		return null;
+	  FileStatus toReturn = null;
+	  synchronized (filesStatuses) {
+	    for (FileStatus fileStatus : filesStatuses) {
+	      if (path.equals(fileStatus.getFileLocation())) {
+	        toReturn = fileStatus;
+	        break;
+	      }
+	    }
+    }
+		return toReturn;
 	}
 
 	/**
@@ -164,15 +170,17 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * @return a list containing the files from the path
 	 */
 	public List<FileStatus> getFilesByPaths(List<String> selectedPaths) {
-		List<FileStatus> containingPaths = new ArrayList<FileStatus>();
-		for (String path : selectedPaths) {
-			for (FileStatus fileStatus : filesStatuses) {
-				if (fileStatus.getFileLocation().startsWith(path)) {
-					containingPaths.add(new FileStatus(fileStatus));
-				}
-			}
-		}
-		return containingPaths;
+	  List<FileStatus> containingPaths = new ArrayList<FileStatus>();
+	  for (String path : selectedPaths) {
+	    synchronized (filesStatuses) {
+	      for (FileStatus fileStatus : filesStatuses) {
+	        if (fileStatus.getFileLocation().startsWith(path)) {
+	          containingPaths.add(new FileStatus(fileStatus));
+	        }
+	      }
+	    }
+	  }
+	  return containingPaths;
 	}
 	
 	/**
@@ -182,17 +190,19 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    * 
    * @return a list containing the files from the path.
    */
-  public List<FileStatus> getFileLeavesByPaths(List<String> selectedPaths) {
-    List<FileStatus> containingPaths = new ArrayList<FileStatus>();
-    for (String path : selectedPaths) {
-      for (FileStatus fileStatus : filesStatuses) {
-        if (fileStatus.getFileLocation().equals(path)) {
-          containingPaths.add(new FileStatus(fileStatus));
-        }
-      }
-    }
-    return containingPaths;
-  }
+	public List<FileStatus> getFileLeavesByPaths(List<String> selectedPaths) {
+	  List<FileStatus> containingPaths = new ArrayList<FileStatus>();
+	  for (String path : selectedPaths) {
+	    synchronized (filesStatuses) {
+	      for (FileStatus fileStatus : filesStatuses) {
+	        if (fileStatus.getFileLocation().equals(path)) {
+	          containingPaths.add(new FileStatus(fileStatus));
+	        }
+	      }
+	    }
+	  }
+	  return containingPaths;
+	}
 
 	/**
 	 * Sets the files in the model also resets the internal node structure and
@@ -257,9 +267,11 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    */
   public void switchAllFilesStageState() {
     List<FileStatus> filesToBeUpdated = new ArrayList<FileStatus>();
-    for (FileStatus fileStatus : filesStatuses) {
-      if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {
-        filesToBeUpdated.add(fileStatus);
+    synchronized (filesStatuses) {
+      for (FileStatus fileStatus : filesStatuses) {
+        if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {
+          filesToBeUpdated.add(fileStatus);
+        }
       }
     }
     

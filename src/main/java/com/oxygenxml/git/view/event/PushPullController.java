@@ -114,7 +114,7 @@ public class PushPullController implements Subject<PushPullEvent> {
           showPullFailedBecauseofConflict(e);
           
           if (logger.isDebugEnabled()) {
-            logger.info(((CheckoutConflictException) e).getConflictingPaths());
+            logger.info(e.getConflictingPaths());
           }
         } catch (GitAPIException e) {
 				  // Exception handling.
@@ -296,7 +296,7 @@ public class PushPullController implements Subject<PushPullEvent> {
   protected void showPullFailedBecauseofConflict(CheckoutConflictException e) {
     new PullWithConflictsDialog(
         translator.getTranslation(Tags.PULL_STATUS), 
-        ((CheckoutConflictException) e).getConflictingPaths(), 
+        e.getConflictingPaths(), 
         translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
   }
 

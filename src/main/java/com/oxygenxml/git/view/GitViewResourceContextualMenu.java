@@ -9,12 +9,10 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -53,19 +51,27 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	 * The git API, containg the commands
 	 */
 	private GitAccess gitAccess = GitAccess.getInstance();
-
+	
 	/**
+	 * <code>true</code> if the repository is in merging state.
+	 */
+	private boolean isRepoInMergingState;
+
+  /**
    * Constructor.
    * 
-   * @param selResProvider   Provides the resources that will be processed by the menu's actions. 
-   * @param stageController  Staging controller.
-   * @param isStage          <code>true</code> if we create the menu for the staged resources.
+   * @param selResProvider        Provides the resources that will be processed by the menu's actions. 
+   * @param stageController       Staging controller.
+   * @param isStage               <code>true</code> if we create the menu for the staged resources.
+	 * @param isRepoInMergingState  <code>true</code> if the repository is in merging state.
    */
   public GitViewResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
       StageController stageController,
-      boolean isStage) {
+      boolean isStage,
+      boolean isRepoInMergingState) {
     this.stageController = stageController;
+    this.isRepoInMergingState = isRepoInMergingState;
     populateMenu(selResProvider, isStage);
   }
 
@@ -78,7 +84,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	private void populateMenu(
 	    final SelectedResourcesProvider selResProvider, 
 	    final boolean forStagedRes) {
-	  if (!selResProvider.getAllSelectedResources().isEmpty()) {
+	  if (!selResProvider.getAllSelectedResources().isEmpty() || isRepoInMergingState) {
 	    final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
 	    final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
 
@@ -187,60 +193,40 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    boolean selectionContainsSubmodule = false;
 	    boolean selectionContainsDeletions = false;
 
-	    GitChangeType firstChangeType = allSelectedResources.get(0).getChangeType();
-	    for (FileStatus file : allSelectedResources) {
-	      GitChangeType changeType = file.getChangeType();
-        if (changeType != firstChangeType) {
-	        allSelResHaveSameChangeType = false;
-	      }
-	      if (changeType == GitChangeType.CONFLICT) {
-	        selectionContainsConflicts = true;
-	      } else if (changeType == GitChangeType.SUBMODULE) {
-	        selectionContainsSubmodule = true;
-	      } else if (changeType == GitChangeType.MISSING || changeType == GitChangeType.REMOVED) {
-	        selectionContainsDeletions = true;
+	    if (!allSelectedResources.isEmpty()) {
+	      GitChangeType firstChangeType = allSelectedResources.get(0).getChangeType();
+	      for (FileStatus file : allSelectedResources) {
+	        GitChangeType changeType = file.getChangeType();
+	        if (changeType != firstChangeType) {
+	          allSelResHaveSameChangeType = false;
+	        }
+	        if (changeType == GitChangeType.CONFLICT) {
+	          selectionContainsConflicts = true;
+	        } else if (changeType == GitChangeType.SUBMODULE) {
+	          selectionContainsSubmodule = true;
+	        } else if (changeType == GitChangeType.MISSING || changeType == GitChangeType.REMOVED) {
+	          selectionContainsDeletions = true;
+	        }
 	      }
 	    }
 
 	    // Enable/disable the actions
 	    showDiffAction.setEnabled(selectedLeaves.size() == 1);
-	    openAction.setEnabled(!selectionContainsDeletions && !selectionContainsSubmodule);
-	    stageUnstageAction.setEnabled(!selectionContainsConflicts);
-	    resolveConflict.setEnabled(isRepoInMergingState());
-	    resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
-	    resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
-	    markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType);
-	    restartMergeAction.setEnabled(isRepoInMergingState());
-	    discardAction.setEnabled(!selectionContainsConflicts);
+	    openAction.setEnabled(!selectionContainsDeletions && !selectionContainsSubmodule && !allSelectedResources.isEmpty());
+	    stageUnstageAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
+	    resolveConflict.setEnabled(isRepoInMergingState);
+	    resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
+	    resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
+	    markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
+	    restartMergeAction.setEnabled(isRepoInMergingState);
+	    discardAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
 	  }
 	}
-
+	
 	/**
-	 * Check if the repository is in merging state.
-	 * 
-	 * @return <code>true</code> if the repository is in merging state.
-	 */
-  private boolean isRepoInMergingState() {
-    boolean toReturn = false;
-    try {
-      toReturn =  getRepositoryState() == RepositoryState.MERGING_RESOLVED
-          || getRepositoryState() == RepositoryState.MERGING;
-    } catch (NoRepositorySelected e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
-    }
-    return toReturn;
-  }
-
-  /**
-   * Get repository state.
-   * 
-   * @return the repository state.
-   * 
-   * @throws NoRepositorySelected
+   * @param inMergingState <code>true</code> if the repository is in merging state.
    */
-  protected RepositoryState getRepositoryState() throws NoRepositorySelected {
-    return gitAccess.getRepository().getRepositoryState();
+  void setRepoInMergingState(boolean inMergingState) {
+    isRepoInMergingState = inMergingState;
   }
 }

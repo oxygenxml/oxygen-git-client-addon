@@ -68,8 +68,17 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 */
 	private boolean inIndex;
 
+	/**
+	 * Staging controller.
+	 */
   private StageController stageController;
 
+  /**
+   * Constructor.
+   * 
+   * @param stageController Staging controller.
+   * @param inIndex         <code>true</code> if this is the model of the staged files.
+   */
 	public StagingResourcesTableModel(StageController stageController, boolean inIndex) {
 		this.stageController = stageController;
     this.inIndex = inIndex;
