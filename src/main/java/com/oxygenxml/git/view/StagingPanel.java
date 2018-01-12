@@ -457,6 +457,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
             logger.error(e, e);
           }
           unstagedChangesPanel.update(rootFolder, GitAccess.getInstance().getUnstagedFiles());
+          stagedChangesPanel.update(rootFolder, GitAccess.getInstance().getStagedFiles());
           
           toolbarPanel.updateButtonState(true);
           

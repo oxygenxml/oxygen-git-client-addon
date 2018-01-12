@@ -285,8 +285,8 @@ public class OptionsManager {
 		loadOptions();
 
 		List<UserCredentials> userCredentialsList = options.getUserCredentialsList().getCredentials();
-		String username = "";
-		String password = "";
+		String username = null;
+		String password = null;
 		for (UserCredentials credential : userCredentialsList) {
 			if (host.equals(credential.getHost())) {
 				username = credential.getUsername();
@@ -298,9 +298,6 @@ public class OptionsManager {
 		if (OxygenGitPlugin.getInstance() != null) {
 			decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess()
 					.decrypt(password);
-		}
-		if (decryptedPassword == null) {
-			decryptedPassword = "";
 		}
 
 		return new UserCredentials(username, decryptedPassword, host);

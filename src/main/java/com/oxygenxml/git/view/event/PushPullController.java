@@ -128,13 +128,13 @@ public class PushPullController implements Subject<PushPullEvent> {
 					    || lowercaseMsg.contains("authentication not supported")) {
 					  // Authorization problems.
 						String loginMessage = "";
-						if ("".equals(userCredentials.getUsername())) {
+						if (userCredentials.getUsername() == null) {
 						  // No credentials were used but they are required.
 							loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
 						} else {
 						  // Invalid credentails.
 							loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-									+ userCredentials.getUsername();
+									+ " " + userCredentials.getUsername();
 						}
 						// Request new credentials.
 						UserCredentials loadNewCredentials = requestNewCredentials(loginMessage);

@@ -23,13 +23,13 @@ public class UserCredentials {
 	 * Git username
 	 */
 	@XmlElement(name = "username")
-	private String username = "";
+	private String username = null;
 
 	/**
 	 * Git Password
 	 */
 	@XmlElement(name = "password")
-	private String password = "";
+	private String password = null;
 
 	/**
 	 * Default constructor.
@@ -50,7 +50,7 @@ public class UserCredentials {
 	}
 
 	public String getUsername() {
-		return username;
+		return username != null && username.length() > 0 ? username : null;
 	}
 
 	public void setUsername(String username) {
@@ -58,7 +58,9 @@ public class UserCredentials {
 	}
 
 	public String getPassword() {
-		return password;
+	  // Later on, org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider will throw a NPE 
+	  // if we pass a NULL.
+		return password != null ? password : "";
 	}
 
 	public void setPassword(String password) {
