@@ -25,11 +25,10 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.lib.Repository;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitRefreshSupport;
@@ -129,35 +128,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.stageController = stageController;
 		
 		createGUI();
-		
-		GitAccess.getInstance().addGitListener(new GitEventAdapter() {
-      @Override
-      public void repositoryChanged() {
-        GitAccess gitAccess = GitAccess.getInstance();
-        Repository repository;
-        try {
-          repository = gitAccess.getRepository();
-          if (repository != null) {
-            // When a new working copy is selected clear the commit text area
-            getCommitPanel().reset();
-
-            // checks what buttons to keep active and what buttons to deactivate
-            if (!gitAccess.getStagedFiles().isEmpty()) {
-              getCommitPanel().getCommitButton().setEnabled(true);
-            } else {
-              getCommitPanel().getCommitButton().setEnabled(false);
-            }
-          }
-        } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
-        }
-      }
-      
-      @Override
-      public void stateChanged(ChangeEvent changeEvent) {
-        commitPanel.stateChanged();
-      }
-    });
 	}
 
   /**
@@ -230,7 +200,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		addSplitPanel(gbc, splitPane);
 
 		// creates the actual GUI for each panel
-		commitPanel.createGUI();
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
 
@@ -456,8 +425,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
             // Never happens.
             logger.error(e, e);
           }
-          unstagedChangesPanel.update(rootFolder, GitAccess.getInstance().getUnstagedFiles());
-          stagedChangesPanel.update(rootFolder, GitAccess.getInstance().getStagedFiles());
+          
+          GitStatus status = GitAccess.getInstance().getStatus();
+          unstagedChangesPanel.update(rootFolder, status.getUnstagedFiles());
+          stagedChangesPanel.update(rootFolder, status.getStagedFiles());
           
           toolbarPanel.updateButtonState(true);
           

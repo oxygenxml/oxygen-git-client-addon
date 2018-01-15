@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -114,8 +115,9 @@ public class GitMenuActionsProvider {
             }
             
             List<FileStatus> gitFiles = new ArrayList<FileStatus>();
-            gitFiles.addAll(GitAccess.getInstance().getUnstagedFiles());
-            gitFiles.addAll(GitAccess.getInstance().getStagedFiles());
+            GitStatus status = GitAccess.getInstance().getStatus();
+            gitFiles.addAll(status.getUnstagedFiles());
+            gitFiles.addAll(status.getStagedFiles());
             
             String selectedFilePath = FileHelper.rewriteSeparator(selectedFiles[0].getAbsolutePath());
             for (FileStatus fileStatus : gitFiles) {
@@ -228,8 +230,9 @@ public class GitMenuActionsProvider {
       }
 
       List<FileStatus> gitFiles = new ArrayList<FileStatus>();
-      gitFiles.addAll(GitAccess.getInstance().getUnstagedFiles());
-      gitFiles.addAll(GitAccess.getInstance().getStagedFiles());
+      GitStatus status = GitAccess.getInstance().getStatus();
+      gitFiles.addAll(status.getUnstagedFiles());
+      gitFiles.addAll(status.getStagedFiles());
 
       FileStatus selectedFileStatus = null;
       String selectedFilePath = FileHelper.rewriteSeparator(selectedFile.getAbsolutePath());

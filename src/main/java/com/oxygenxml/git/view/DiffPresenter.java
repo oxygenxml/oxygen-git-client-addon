@@ -290,7 +290,7 @@ public class DiffPresenter {
 	    if (threeWays) {
 	      // checks whether a base commit exists or not. If not, then the a 2-way
 	      // diff is presented
-	      ObjectId baseCommit = GitAccess.getInstance().getBaseCommit();
+	      ObjectId baseCommit = GitAccess.getInstance().getBaseCommit(null);
 	      if (baseCommit == null 
 	          || GitAccess.getInstance().getLoaderFrom(baseCommit, file.getFileLocation()) == null) {
 	        threeWays = false;

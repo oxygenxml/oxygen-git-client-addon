@@ -65,6 +65,10 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
+	  if (logger.isDebugEnabled()) {
+      logger.debug("Tree model for index: " + inIndex + " event " + changeEvent);
+    }
+	  
 		List<FileStatus> oldStates = changeEvent.getOldStates();
     List<FileStatus> newStates = 
         inIndex ? 

@@ -25,18 +25,23 @@ import javax.swing.JTextArea;
 import javax.swing.JToolTip;
 import javax.swing.ScrollPaneConstants;
 
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.event.ActionStatus;
+import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.Subject;
@@ -48,6 +53,10 @@ import ro.sync.exml.workspace.api.images.ImageUtilities;
  * Panel to insert the commit message and commit the staged files. 
  */
 public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(CommitPanel.class);
   /**
    * Text area for the commit message.
    */
@@ -80,6 +89,38 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	public JButton getCommitButton() {
 		return commitButton;
 	}
+	
+	/**
+	 * Constructor.
+	 */
+	public CommitPanel() {
+	  createGUI();
+	  
+    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+      @Override
+      public void repositoryChanged() {
+        GitAccess gitAccess = GitAccess.getInstance();
+        Repository repository;
+        try {
+          repository = gitAccess.getRepository();
+          if (repository != null) {
+            // When a new working copy is selected clear the commit text area
+            reset();
+
+            // checks what buttons to keep active and what buttons to deactivate
+            toggleCommitButton(false);
+          }
+        } catch (NoRepositorySelected e) {
+          logger.debug(e, e);
+        }
+      }
+      
+      @Override
+      public void stateChanged(ChangeEvent changeEvent) {
+        toggleCommitButton(changeEvent.getCommand() == GitCommand.STAGE);
+      }
+    });
+  }
 
 	public void createGUI() {
 		this.setLayout(new GridBagLayout());
@@ -234,33 +275,40 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		commitButton = new JButton(translator.getTranslation(Tags.COMMIT_BUTTON_TEXT));
-		toggleCommitButton();
+		toggleCommitButton(false);
 		this.add(commitButton, gbc);
 	}
 
-  public void stateChanged() {
-		toggleCommitButton();
-	}
+  /**
+   * Checks if the commit button should be enabled.
+   * 
+   * @param forceEnable <code>true</code> to make the button enable without any additional checks.
+   */
+  private void toggleCommitButton(boolean forceEnable) {
+    boolean enable = false;
+    if (forceEnable) {
+      enable = true;
+    } else {
+      try {
+        RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
+        if (repositoryState == RepositoryState.MERGING_RESOLVED
+            && gitAccess.getStagedFiles().isEmpty() && gitAccess.getUnstagedFiles().isEmpty()) {
+          enable = true;
+          commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
+        } else if (!gitAccess.getStagedFiles().isEmpty()) {
+          enable = true;
+        } else if (repositoryState == RepositoryState.MERGING
+            && translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE).equals(commitMessage.getText())) {
+          commitMessage.setText("");
+        }
+      } catch (NoRepositorySelected e) {
+        // Remains disabled
+      }
+    }
 
-	private void toggleCommitButton() {
-	  boolean enable = false;
-	  try {
-	    if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING_RESOLVED
-	        && gitAccess.getStagedFiles().isEmpty() && gitAccess.getUnstagedFiles().isEmpty()) {
-	      enable = true;
-	      commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
-	    } else if (!gitAccess.getStagedFiles().isEmpty()) {
-	      enable = true;
-	    } else if (gitAccess.getRepository().getRepositoryState() == RepositoryState.MERGING
-	        && translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE).equals(commitMessage.getText())) {
-	      commitMessage.setText("");
-	    }
-	  } catch (NoRepositorySelected e) {
-	    // Remains disabled
-	  }
-	  commitButton.setEnabled(enable);
+    commitButton.setEnabled(enable);
 
-	}
+  }
 
 	private void notifyObservers(PushPullEvent pushPullEvent) {
 		observer.stateChanged(pushPullEvent);

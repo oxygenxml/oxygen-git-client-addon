@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -149,13 +150,15 @@ public class PanelRefresh implements GitRefreshSupport {
 	              logger.debug("Start update on thread.");
 	            }
 
-	            List<FileStatus> newFiles = GitAccess.getInstance().getUnstagedFiles();
-	            ChangesPanel panelToUpdate = stagingPanel.getUnstagedChangesPanel();
-	            updateFiles(panelToUpdate, newFiles);
+	            GitStatus status = GitAccess.getInstance().getStatus();
 	            
-	            newFiles = GitAccess.getInstance().getStagedFiles();
-	            panelToUpdate = stagingPanel.getStagedChangesPanel();
-	            updateFiles(panelToUpdate, newFiles);
+	            updateFiles(
+	                stagingPanel.getUnstagedChangesPanel(), 
+	                status.getUnstagedFiles());
+	            
+	            updateFiles(
+	                stagingPanel.getStagedChangesPanel(), 
+	                status.getStagedFiles());
 	              
 	            updateCounters();
 
@@ -270,11 +273,12 @@ public class PanelRefresh implements GitRefreshSupport {
     } catch (Exception e) {
       // Ignore other causes why the fetch might fail.
     }
-    stagingPanel.getCommitPanel().setStatus(status);
 
+    final RepositoryStatus fStatus = status;
 	  SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+        stagingPanel.getCommitPanel().setStatus(fStatus);
         stagingPanel.getToolbarPanel().updateStatus();
       }
     });

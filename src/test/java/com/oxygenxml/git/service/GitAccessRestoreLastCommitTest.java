@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -51,7 +52,7 @@ public class GitAccessRestoreLastCommitTest {
 		out.println("hellllo");
 		out.close();
 
-		gitAccess.restoreLastCommitFile(new FileStatus(GitChangeType.CHANGED, "test.txt"));
+		gitAccess.restoreLastCommitFile(Arrays.asList("test.txt"));
 		String expected = getFileContent();
 		assertEquals(actual, expected);
 	}

@@ -59,6 +59,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -976,11 +977,14 @@ public class ChangesPanel extends JPanel {
 					filesTable.clearSelection();
 					// When resolving a conflict "using mine" and there are no more entries in the tables,
 					// show the contextual menu for being able to restart the merging
-					if (e.isPopupTrigger() && e.getClickCount() == 1 
-					    && GitAccess.getInstance().getStagedFiles().isEmpty()
-					    && GitAccess.getInstance().getUnstagedFiles().isEmpty()
-					    && isMergingResolved()) {
+					
+					if (e.isPopupTrigger() && e.getClickCount() == 1) {
+					  GitStatus status = GitAccess.getInstance().getStatus();
+					  if (status.getStagedFiles().isEmpty()
+              && status.getUnstagedFiles().isEmpty()
+              && isMergingResolved()) {
 					  showContextualMenuForFlatView(e.getX(), e.getY(), new int[0]);
+					  }
 					}
 				} else {
 				  // ======== LEFT DOUBLE CLICK ========

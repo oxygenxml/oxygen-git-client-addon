@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.AddCommand;
+import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.MergeResult;
@@ -27,6 +29,7 @@ import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
+import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.SubmoduleAddCommand;
@@ -326,6 +329,28 @@ public class GitAccess {
 		
 		fireRepositoryChanged();
 	}
+	
+	/**
+	 * @return A status of the Working Copy, with the unstaged and staged files.
+	 */
+	public GitStatus getStatus() {
+	  GitStatus gitStatus = null;
+	  StatusCommand statusCmd = git.status();
+	  
+    try {
+      Status status = statusCmd.call();
+      List<FileStatus> unstagedFiles = getUnstagedFiles(status);
+      List<FileStatus> stagedFiles = getStagedFiles(status);
+      
+      gitStatus = new GitStatus(unstagedFiles, stagedFiles);
+    } catch (GitAPIException e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+    
+    return gitStatus;
+  }
 
 	 /**
    * Makes a diff between the files from the last commit and the files from the
@@ -335,6 +360,41 @@ public class GitAccess {
    */
   public List<FileStatus> getUnstagedFiles() {
     return getUnstagedFiles(Collections.<String>emptyList());
+  }
+  
+  /**
+   * Makes a diff between the files from the last commit and the files from the
+   * working directory. If there are diffs, they will be saved and returned.
+   * 
+   * @param paths A subset of interest.
+   * 
+   * @return - A list with the files from the given set htat are un-staged as well as 
+   * their states.
+   */
+  public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
+    if (git != null) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Prepare fot Git status, in paths " + paths);
+      }
+
+      StatusCommand statusCmd = git.status();
+      for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
+        String path = iterator.next();
+
+        statusCmd.addPath(path);
+      }
+
+      try {
+        Status status = statusCmd.call();
+        return getUnstagedFiles(status);
+      } catch (GitAPIException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+      }
+    }
+    
+    return Collections.emptyList();
   }
 
 	/**
@@ -346,21 +406,10 @@ public class GitAccess {
 	 * @return - A list with the files from the given set htat are un-staged as well as 
 	 * their states.
 	 */
-	public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
+	private List<FileStatus> getUnstagedFiles(Status status) {
 		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
 		if (git != null) {
 			try {
-			  if (logger.isDebugEnabled()) {
-			    logger.debug("Prepare fot Git status, in paths " + paths);
-			  }
-				StatusCommand statusCmd = git.status();
-				for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
-          String path = iterator.next();
-          
-          statusCmd.addPath(path);
-        }
-				
-        Status status = statusCmd.call();
 				Set<String> submodules = getSubmodules();
 				
         if (logger.isDebugEnabled()) {
@@ -408,8 +457,10 @@ public class GitAccess {
 						unstagedFiles.add(new FileStatus(GitChangeType.MISSING, string));
 					}
 				}
-				unstagedFiles.addAll(getConflictingFiles());
-
+				
+        for (String fileName : status.getConflicting()) {
+          unstagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
+        }
 			} catch (NoWorkTreeException | GitAPIException e1) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e1, e1);
@@ -722,12 +773,30 @@ public class GitAccess {
 	public void addAll(List<FileStatus> files) {
 
 		try {
+		  
+		  RmCommand removeCmd = null;
+		  AddCommand addCmd = null;
+		  
 			for (FileStatus file : files) {
 				if (file.getChangeType() == GitChangeType.MISSING) {
-					git.rm().addFilepattern(file.getFileLocation()).call();
+				  if (removeCmd == null) {
+				    removeCmd = git.rm();
+				  }
+          removeCmd.addFilepattern(file.getFileLocation());
 				} else {
-					git.add().addFilepattern(file.getFileLocation()).call();
+				  if (addCmd == null) {
+				    addCmd = git.add();
+				  }
+          addCmd.addFilepattern(file.getFileLocation());
 				}
+			}
+			
+			if (removeCmd != null) {
+			  removeCmd.call();
+			}
+			
+			if (addCmd != null) {
+			  addCmd.call();
 			}
 			
 			fireFileStateChanged(new ChangeEvent(GitCommand.STAGE, getPaths(files)));
@@ -746,60 +815,73 @@ public class GitAccess {
   public List<FileStatus> getStagedFiles() {
     return getStagedFile(Collections.<String>emptyList());
   }
+  
+  /**
+   * Checks which files from the given subset are in the Index and returns their state.
+   * 
+   * @param paths The files of interest.
+   * 
+   * @return - a set containing the subset of files present in the INDEX.
+   */
+  public List<FileStatus> getStagedFile(Collection<String> paths) {
+    if (git != null) {
+      StatusCommand statusCmd = git.status();
+      for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
+        String path = iterator.next();
+        statusCmd.addPath(path);
+      }
+
+      try {
+        Status status = statusCmd.call();
+        return getStagedFiles(status);
+      }catch (GitAPIException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+      }
+    }
+    
+    return Collections.emptyList();
+  }
 
 	/**
 	 * Checks which files from the given subset are in the Index and returns their state.
 	 * 
-	 * @param paths The files of interest.
+	 * @param statusCmd Status command to execute.
 	 * 
 	 * @return - a set containing the subset of files present in the INDEX.
 	 */
-	public List<FileStatus> getStagedFile(Collection<String> paths) {
-		if (git != null) {
-			try {
-				StatusCommand statusCmd = git.status();
-				for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
-          String path = iterator.next();
-          statusCmd.addPath(path);
-        }
-        Status status = statusCmd.call();
-				List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+  private List<FileStatus> getStagedFiles(Status status) {
+    List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+    Set<String> submodules = getSubmodules();
 
-				Set<String> submodules = getSubmodules();
+    for (String fileName : status.getChanged()) {
+      // File from INDEX, modified from HEAD
+      if (submodules.contains(fileName)) {
+        stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
+      } else {
+        stagedFiles.add(new FileStatus(GitChangeType.CHANGED, fileName));
+      }
+    }
+    for (String fileName : status.getAdded()) {
+      // Newly created files added in the INDEX
+      if (submodules.contains(fileName)) {
+        stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
+      } else {
+        stagedFiles.add(new FileStatus(GitChangeType.ADD, fileName));
+      }
+    }
+    for (String fileName : status.getRemoved()) {
+      // A delete added in the INDEX, file is present in HEAD.
+      if (submodules.contains(fileName)) {
+        stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
+      } else {
+        stagedFiles.add(new FileStatus(GitChangeType.REMOVED, fileName));
+      }
+    }
 
-				for (String fileName : status.getChanged()) {
-				  // File from INDEX, modified from HEAD
-					if (submodules.contains(fileName)) {
-						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
-					} else {
-						stagedFiles.add(new FileStatus(GitChangeType.CHANGED, fileName));
-					}
-				}
-				for (String fileName : status.getAdded()) {
-				  // Newly created files added in the INDEX
-					if (submodules.contains(fileName)) {
-						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
-					} else {
-						stagedFiles.add(new FileStatus(GitChangeType.ADD, fileName));
-					}
-				}
-				for (String fileName : status.getRemoved()) {
-				  // A delete added in the INDEX, file is present in HEAD.
-					if (submodules.contains(fileName)) {
-						stagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, fileName));
-					} else {
-						stagedFiles.add(new FileStatus(GitChangeType.REMOVED, fileName));
-					}
-				}
-				return stagedFiles;
-			} catch (GitAPIException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
-			}
-		}
-		return new ArrayList<FileStatus>();
-	}
+    return stagedFiles;
+  }
 
 	/**
 	 * Gets the conflicting file from the git status
@@ -916,11 +998,11 @@ public class GitAccess {
 	 * 
 	 * @return the last remote commit
 	 */
-	public ObjectId getRemoteCommit() {
+	public ObjectId getRemoteCommit(BranchInfo branchInfo) {
 		Repository repo = git.getRepository();
 		ObjectId remoteCommit = null;
 		try {
-			remoteCommit = repo.resolve("origin/" + getBranchInfo().getBranchName() + "^{commit}");
+			remoteCommit = repo.resolve("origin/" + branchInfo.getBranchName() + "^{commit}");
 			return remoteCommit;
 		} catch (IOException e) {
 			if (logger.isDebugEnabled()) {
@@ -933,16 +1015,21 @@ public class GitAccess {
 	/**
 	 * Finds the base commit from the last local commit and the remote commit
 	 * 
+	 * @param branchInfo Current branch info or <code>null</code> if unknown.
+	 * 
 	 * @return the base commit
 	 */
-	public ObjectId getBaseCommit() {
+	public ObjectId getBaseCommit(BranchInfo branchInfo) {
+	  if (branchInfo == null) {
+	    branchInfo = getBranchInfo();
+	  }
 		Repository repository = git.getRepository();
 		RevWalk walk = new RevWalk(repository);
 		ObjectId localCommit = null;
 		ObjectId remoteCommit = null;
 		ObjectId baseCommit = null;
 		try {
-			remoteCommit = repository.resolve("origin/" + getBranchInfo().getBranchName() + "^{commit}");
+			remoteCommit = repository.resolve("origin/" + branchInfo.getBranchName() + "^{commit}");
 			localCommit = repository.resolve("HEAD^{commit}");
 			if (remoteCommit != null && localCommit != null) {
 				RevCommit base = getCommonAncestor(walk, walk.parseCommit(localCommit), walk.parseCommit(remoteCommit));
@@ -1043,11 +1130,13 @@ public class GitAccess {
 	 * @param file
 	 *          - the path to the file you want to restore
 	 */
-	public void restoreLastCommitFile(FileStatus file) {
+	public void restoreLastCommitFile(List<String> paths) {
 		try {
-			git.checkout().addPath(file.getFileLocation()).call();
+		  CheckoutCommand checkoutCmd = git.checkout();
+		  checkoutCmd.addPaths(paths);
+			checkoutCmd.call();
 			
-			fireFileStateChanged(new ChangeEvent(GitCommand.DISCARD, getPaths(Arrays.asList(file))));
+			fireFileStateChanged(new ChangeEvent(GitCommand.DISCARD, paths));
 		} catch (GitAPIException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -1069,8 +1158,9 @@ public class GitAccess {
 			RevWalk walk = new RevWalk(repository);
 			walk.reset();
 			try {
+			  BranchInfo branchInfo = getBranchInfo();
 				ObjectId local = getLastLocalCommit();
-				ObjectId base = getBaseCommit();
+				ObjectId base = getBaseCommit(branchInfo);
 				if (local != null && base != null) {
 					RevCommit localCommit = walk.parseCommit(local);
 					RevCommit baseCommit = walk.parseCommit(base);
@@ -1109,12 +1199,15 @@ public class GitAccess {
 			RevWalk walk = new RevWalk(repository);
 			walk.reset();
 			try {
-				if (getRemoteCommit() != null && getBaseCommit() != null) {
-					RevCommit remoteCommit = walk.parseCommit(getRemoteCommit());
-					RevCommit baseCommit = walk.parseCommit(getBaseCommit());
+				BranchInfo branchInfo = getBranchInfo();
+        ObjectId remoteCommitId = getRemoteCommit(branchInfo);
+        ObjectId baseCommitId = getBaseCommit(branchInfo);
+        if (remoteCommitId != null && baseCommitId != null) {
+					RevCommit remoteCommit = walk.parseCommit(remoteCommitId);
+					RevCommit baseCommit = walk.parseCommit(baseCommitId);
 					numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
 				}
-				if (getBaseCommit() == null
+				if (baseCommitId == null
 				    && repository.resolve("remotes/origin/" + git.getRepository().getBranch()) != null) {
 						LogCommand log = git.log();
 						if (repository.resolve("HEAD") != null) {
@@ -1288,8 +1381,6 @@ public class GitAccess {
 	}
 
 	/**
-	 * TODO Create tests.
-	 * 
 	 * Locates the file with the given path in the index.
 	 * 
 	 * @param path File path.

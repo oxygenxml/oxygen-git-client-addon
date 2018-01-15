@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.event;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -43,11 +44,14 @@ public class StageController {
 	    gitAccess.resetAll(filesStatus);
 	  } else if (action == GitCommand.DISCARD || action == GitCommand.RESOLVE_USING_MINE) {
       gitAccess.resetAll(filesStatus);
+      List<String> paths = new LinkedList<>();
       for (FileStatus file : filesStatus) {
         if (file.getChangeType() != GitChangeType.SUBMODULE) {
-          gitAccess.restoreLastCommitFile(file);
+          paths.add(file.getFileLocation());
         }
       }
+      
+      gitAccess.restoreLastCommitFile(paths);
       
       if (action == GitCommand.RESOLVE_USING_MINE) {
         gitAccess.addAll(filesStatus);
