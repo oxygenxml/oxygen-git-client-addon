@@ -25,7 +25,7 @@ before_deploy:
   - ./travis/deploy.sh
 deploy:
   provider: releases
-  api_key: ${MY_GH_TOKEN_OXYGEN}
+  api_key: ${OXYGEN_PLUGIN_TOKEN}
   file:
     - target/git.support-${TRAVIS_TAG}-plugin.jar
     - target/addon.xml
