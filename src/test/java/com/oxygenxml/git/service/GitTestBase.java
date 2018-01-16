@@ -262,7 +262,13 @@ public class GitTestBase extends JFCTestCase {
    
     ImageUtilities imgUtils = Mockito.mock(ImageUtilities.class);
     Mockito.when(mock.getImageUtilities()).thenReturn(imgUtils);
-    Mockito.when(imgUtils.loadIcon((URL) Mockito.any())).thenReturn(Mockito.mock(ImageIcon.class));
+    Mockito.when(imgUtils.loadIcon((URL) Mockito.any())).thenAnswer(new Answer<ImageIcon>() {
+      @Override
+      public ImageIcon answer(InvocationOnMock invocation) throws Throwable {
+        URL url = (URL) invocation.getArguments()[0];
+        return new ImageIcon(url);
+      }
+    });
     
     installGitProtocol();
   }

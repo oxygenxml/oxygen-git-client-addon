@@ -335,21 +335,23 @@ public class GitAccess {
 	 */
 	public GitStatus getStatus() {
 	  GitStatus gitStatus = null;
-	  StatusCommand statusCmd = git.status();
-	  
-    try {
-      Status status = statusCmd.call();
-      List<FileStatus> unstagedFiles = getUnstagedFiles(status);
-      List<FileStatus> stagedFiles = getStagedFiles(status);
-      
-      gitStatus = new GitStatus(unstagedFiles, stagedFiles);
-    } catch (GitAPIException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
-    }
+	  if (git != null) {
+	    StatusCommand statusCmd = git.status();
+
+	    try {
+	      Status status = statusCmd.call();
+	      List<FileStatus> unstagedFiles = getUnstagedFiles(status);
+	      List<FileStatus> stagedFiles = getStagedFiles(status);
+
+	      gitStatus = new GitStatus(unstagedFiles, stagedFiles);
+	    } catch (GitAPIException e) {
+	      if (logger.isDebugEnabled()) {
+	        logger.debug(e, e);
+	      }
+	    }
+	  }
     
-    return gitStatus;
+    return gitStatus != null ? gitStatus : new GitStatus(Collections.emptyList(), Collections.emptyList());
   }
 
 	 /**
