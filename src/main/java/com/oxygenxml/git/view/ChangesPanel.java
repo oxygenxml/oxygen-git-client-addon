@@ -521,6 +521,12 @@ public class ChangesPanel extends JPanel {
 	  
 		tree.addMouseListener(new MouseAdapter() {
 		  @Override
+		  public void mousePressed(MouseEvent e) {
+			  // For MacOS
+		    mouseReleased(e);
+		  }
+		  
+		  @Override
 			public void mouseReleased(MouseEvent e) {
 		    tree.requestFocus();
 		    tree.repaint();
@@ -965,6 +971,12 @@ public class ChangesPanel extends JPanel {
 		// file
 		// will be opened in the Oxygen.
 		filesTable.addMouseListener(new MouseAdapter() {
+		  @Override
+		  public void mousePressed(MouseEvent e) {
+  		 // For MacOS
+		    mouseReleased(e);
+		  }
+		  
 		  @Override
 			public void mouseReleased(MouseEvent e) {
 		    filesTable.requestFocus();
