@@ -1,22 +1,12 @@
 package com.oxygenxml.git.service;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.eclipse.jgit.lib.BranchConfig;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
-import org.junit.Test;
-
-import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
 
 /**
  * Asserts the status of the local repository. 
@@ -76,29 +66,32 @@ public class GitStatusTest extends GitTestBase {
     config.save();
   }
   
-  public void testPullsBehind() throws Exception {
-    gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
-
-    PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test_second_local.txt");
-    out.println("hellllo");
-    out.close();
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test_second_local.txt"));
-    gitAccess.commit("file test added1");
-    gitAccess.push("", "");
+  /**
+   * Tests the counters that express the state of the repository compared with the remote one.
+   * 
+   * @throws Exception If it fails.
+   */
+  public void testPullsBehind_PushAhead() throws Exception {
     
+    gitAccess.setRepository(LOCAL_TEST_REPOSITORY);
+    
+    pushOneFileToRemote(LOCAL_TEST_REPOSITORY, "test_second_local.txt", "hellllo");
     
     pushOneFileToRemote(SECOND_LOCAL_TEST_REPOSITORY, "test.txt", "hello");
     gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
     
-    int actual = gitAccess.getPullsBehind();
-    int expected = 1;
+    assertEquals(1, gitAccess.getPullsBehind());
     
-    assertEquals(expected, actual);
+    assertEquals(1, gitAccess.getPushesAhead());
   }
 
-  @Test
-  public void testNoPullsBehind() throws RepositoryNotFoundException, IOException{
+  /**
+   * Up to date repository.
+   * 
+   * @throws Exception If it fails.
+   */
+  public void testNoPullsBehind() throws Exception{
     gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
     
     int actual = gitAccess.getPullsBehind();
@@ -106,5 +99,4 @@ public class GitStatusTest extends GitTestBase {
     
     assertEquals(expected, actual);
   }
-
 }

@@ -126,26 +126,6 @@ public class GitAccessPushTest {
 	}
 	
 	@Test
-	public void testPushesAhead() throws RepositoryNotFoundException, IOException, URISyntaxException, NoRepositorySelected, InvalidRemoteException, TransportException, GitAPIException{
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
-		final StoredConfig config = gitAccess.getRepository().getConfig();
-		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
-		URIish uri = new URIish(db2.getDirectory().toURI().toURL());
-		remoteConfig.addURI(uri);
-		remoteConfig.update(config);
-		config.save();
-
-		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-		gitAccess.commit("file test added");
-
-		gitAccess.push("", "");
-		int actual = gitAccess.getPushesAhead();
-		int expected = 1;
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
 	public void testNoPushesAhead() throws RepositoryNotFoundException, IOException, URISyntaxException, NoRepositorySelected, InvalidRemoteException, TransportException, GitAPIException{
 		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
 		final StoredConfig config = gitAccess.getRepository().getConfig();
