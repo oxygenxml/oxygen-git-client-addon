@@ -1,62 +1,62 @@
 # Git support plugin
 
+This add-on contributes a built-in Git client directly in Oxygen XML Editor/Author
+
+## Installation
+
 This add-on is compatible with Oxygen XML Editor (or XML Author) version 18.1 or higher. 
 
-You can install the add-on by using Oxygen's add-ons support. In Oxygen, go to Help->Install new add-ons... and paste:
+To install it the add-on, follow these instructions:
 
-https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml
+1. Go to **Help->Install new add-ons** to open an add-on selection dialog box.
+2. Enter or paste https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml in the **Show add-ons from** field.
+3. Select the **Git Support (Experimental)** add-on and click **Next**.
+4. Select the **I accept all terms of the end user license agreement** option and click **Finish**.
+5. Restart the application.
 
-and continue the installation.
+Result: A **Git Staging* view will now be available in Oxygen XML Editor/Author. If it is not visible, go to **Window->Show View** and select **Get Staging**. This view acts as a basic Git client integrated directly into Oxygen and it provides support for committing changes to a Git repository, comparing and merging changes, and other Git commands.
 
-After installing the plugin if the git window is not visible you should go to the "Window" menu -> show view -> Git Staging.
+## Selecting the working copy
 
-Selecting the working copy
-=========================
+Click the **Browse** button to select a working copy from your file system. The selected folder must be a Git Repository. The add-on assumes that you already have a local clone of the remote repository.
 
-Click the *Browse* button to select a working copy from your file system. The selected folder must be a Git Repository. The plugin assumes that you already have a local clone of the remote repository.
+## Unstaged resources area
 
-Unstaged resources area
-========================
-In the unstaged resources area (the one on top) you will see all the modifications that have occurred since your last commit (files that have been modified, new files and deleted files). Various actions are available in the contextual menu (*Open*, *Open in compare editor*).
-You can stage all the files by clicking the *Stage All* button or you can stage some of them by selecting and clicking the *Stage Selected* button. 
-You can switch from the flat(table) view to a tree view by clicking on the button positioned above area.
+In the unstaged resources area (the one on top), you will see all the modifications that have occurred since your last commit (files that have been modified, new files, and deleted files). Various actions are available in the contextual menu (**Open**, **Open in compare editor**).
+You can stage all the files by clicking the **Stage All** button or you can stage some of them by selecting and clicking the **Stage Selected** button. 
+You can switch from the flat (table) view to a tree view by clicking on the **Switch to tree/flat view** button positioned above this area.
 
-Staged resources area
-=====================
-In the staging area you will see all the resources that are ready to be committed. Any files from this area can be unstaged and sent back to the unstaged resources area. The staging area has similar actions with the unstaging area.
+## Staged resources area
 
-Comparing changes and conflict resolution
-==========================================
-At any time, if you want to see the differences between the last commit and your current modifications you can double click the file that appears either in the staging or unstaging area and the [Oxygen's Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html) window will appear and highlight the changes.
-If the file is in conflict (has been modified both by you and another), [Oxygen's Three Way Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html#file-comparison__threeway_comparisons) will show a comparison between the local change, the remote change, and the original base revision.
+In the staging area, you will see all the resources that are ready to be committed. Any files from this area can be unstaged and sent back to the unstaged resources area. The staging area has similar actions with the unstaging area.
 
-Committing
-==========
-After staging the files, on the bottom of the view you can input the commit message and commit them into your local repository. For convenience, you can also select one of the previously entered messages.
+## Comparing changes and conflict resolution
 
-Push/Pull
-=========
-To push your local repository changes to the remote one you must click on the *Push* button from the view's toolbar. To bring the changes from the remote repository into your local one you must click on the *Pull* button from the same toolbar.
-To push or pull you need to acces the remote, and for that you need to provide some credentials. If no credentials are found , the addon will ask for an account and password. If you have a two-factor authentication for: 
--GitHub: You must go to your *Account Settings* -> *Personal access tokens* -> *Generate new token*. After that you have to use the generated token as the password back in Oxygen when you are asked to enter your credentials
+At any time, if you want to see the differences between the last commit and your current modifications, you can double click the file that appears either in the staged or unstaged area and the [Oxygen's Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html) window will appear and highlight the changes.
+
+If the file has a conflict (has been modified both by you and another), [Oxygen's Three Way Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html#file-comparison__threeway_comparisons) will show a comparison between the local change, the remote change, and the original base revision.
+
+## Committing
+
+After staging the files, on the bottom of the view you can input a commit message and commit them into your local repository. For convenience, you can also select a previously entered message.
+
+## Push/Pull
+
+To push your local repository changes to the remote one, you must click on the **Push** button from the view's toolbar. To bring the changes from the remote repository into your local one, you must click on the **Pull** button from the same toolbar.
+
+To push or pull, you need to access the remote, and for that you need to provide some credentials. If no credentials are found, the add-on will ask for an account and password. If you have a two-factor authentication for: 
+-GitHub: You must go to your **Account Settings->Personal access tokens->Generate new token**. Then, back in the **Git Staging** view in Oxygen, you have to use the generated token as the password when you are asked to enter your credentials.
 
 
-File conflicts solving flow
-===========================
-How to solve github conflicts with oXygen GitHub plugin
+## File conflicts solving flow
 
-You edit your file and commit it in the local repository. After you try to push it to the public repository a warning informing you about not being up-to-date with the repository will appear.
+How to solve github conflicts with the Oxygen **Git Support** add-on:
 
-Steps to fix this:
+After you edit your file and commit it in the local repository and try to push it to the public repository, if a warning appears informing you about not being up-to-date with the repository, follow these steps to fix this:
 
-Pull the data from the repository using the "Pull" button.
-
-In the "Unstaged Files" view can select each conflicted file and open it the compare editor. Choose what changes you want to keep/discard and save the document.
-
-After you close the compare editor the file will be staged automatically and moved to the "Staged Files" view.
-
-When all conflicts are resolved and no more files are left in the "Unstaged Files" view, the changes can be commited.
-
-Enter a message and commit. You will a new "Push" available
-
-Push the changes to public repository.
+1. Pull the data from the repository using the "Pull" button.
+2. In the "Unstaged area, select each conflicted file and open it the compare editor. Choose what changes you want to keep/discard and save the document.
+3. After you close the compare editor the file will be staged automatically and moved to the "Staged" area.
+4. When all conflicts are resolved and no more files are left in the "Unstaged" area, the changes can be committed.
+5. Enter a message and commit. You will now have a new "Push" available.
+6. Push the changes to the public repository.
