@@ -964,7 +964,12 @@ public class GitAccess {
 	public String getHostName() {
 		if (git != null) {
 			Config storedConfig = git.getRepository().getConfig();
+			// TODO How we should react when there are multiple remote repositories???
 			String url = storedConfig.getString("remote", "origin", "url");
+			if (url == null) {
+			  Set<String> remoteNames = git.getRepository().getRemoteNames();
+			  url = storedConfig.getString("remote", remoteNames.iterator().next(), "url");
+			}
 			try {
 				URL u = new URL(url);
 				url = u.getHost();
