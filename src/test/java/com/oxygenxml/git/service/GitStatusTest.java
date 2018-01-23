@@ -72,17 +72,24 @@ public class GitStatusTest extends GitTestBase {
    * @throws Exception If it fails.
    */
   public void testPullsBehind_PushAhead() throws Exception {
-    
-    gitAccess.setRepository(LOCAL_TEST_REPOSITORY);
-    
+    /**
+     * Repo1 pushes something to remote.
+     */
     pushOneFileToRemote(LOCAL_TEST_REPOSITORY, "test_second_local.txt", "hellllo");
     
-    pushOneFileToRemote(SECOND_LOCAL_TEST_REPOSITORY, "test.txt", "hello");
+    /**
+     * Repo2 commits something in the local repository.
+     */
+    commitOneFile(SECOND_LOCAL_TEST_REPOSITORY, "test.txt", "hello");
     gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+
+    // Fetch the remote.
     gitAccess.fetch();
     
+    // The remote contains one extra commit that needs to be pulled.
     assertEquals(1, gitAccess.getPullsBehind());
     
+    // The local also contains one extra commit that needs to be pushed.
     assertEquals(1, gitAccess.getPushesAhead());
   }
 
