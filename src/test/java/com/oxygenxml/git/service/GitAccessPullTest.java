@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
@@ -117,28 +116,6 @@ public class GitAccessPullTest {
 		assertEquals(pullExpected, pullActual);
 	}
 	
-	@Test
-	public void testNoPullsBehind() throws RepositoryNotFoundException, IOException{
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		
-		int actual = gitAccess.getPullsBehind();
-		int expected = 0;
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void testPullsBehind() throws Exception {
-		pushOneFileToRemote();
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		gitAccess.fetch();
-		
-		int actual = gitAccess.getPullsBehind();
-		int expected = 1;
-		
-		assertEquals(expected, actual);
-	}
-
 	@After
 	public void freeResources() {
 		gitAccess.close();

@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
@@ -53,6 +52,7 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
+import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -65,7 +65,6 @@ import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
@@ -1154,38 +1153,22 @@ public class GitAccess {
 	 */
 	public int getPushesAhead() {
 		int numberOfCommits = 0;
-
-		if (git != null) {
-			Repository repository = git.getRepository();
-			RevWalk walk = new RevWalk(repository);
-			walk.reset();
-			try {
-			  BranchInfo branchInfo = getBranchInfo();
-				ObjectId local = getLastLocalCommit();
-				ObjectId base = getBaseCommit(branchInfo);
-				if (local != null && base != null) {
-					RevCommit localCommit = walk.parseCommit(local);
-					RevCommit baseCommit = walk.parseCommit(base);
-					numberOfCommits = RevWalkUtils.count(walk, localCommit, baseCommit);
-				}
-				if (base == null) {
-					Iterable<RevCommit> results = git.log().call();
-					for (RevCommit revCommit : results) {
-						if (revCommit.getId().name().equals(git.getRepository().getBranch())) {
-							numberOfCommits = 0;
-							break;
-						}
-						numberOfCommits++;
-					}
-				}
-			} catch (IOException | GitAPIException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
-			}
-			walk.close();
-		}
-		return numberOfCommits;
+		
+	  try {
+	    String branchName = getBranchInfo().getBranchName();
+	    if (branchName != null && branchName.length() > 0) {
+	      BranchTrackingStatus bts = BranchTrackingStatus.of(getRepository(), branchName);
+	      if (bts != null) {
+	        numberOfCommits = bts.getAheadCount();
+	      }
+	    }
+	  } catch (IOException | NoRepositorySelected e) {
+	    if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+	  }
+	  
+	  return numberOfCommits;
 	}
 
 	/**
@@ -1195,44 +1178,23 @@ public class GitAccess {
 	 * @return the number of commits the remote is ahead
 	 */
 	public int getPullsBehind() {
-		int numberOfCommits = 0;
-		if (git != null) {
-			Repository repository = git.getRepository();
-			RevWalk walk = new RevWalk(repository);
-			walk.reset();
-			try {
-				BranchInfo branchInfo = getBranchInfo();
-        ObjectId remoteCommitId = getRemoteCommit(branchInfo);
-        ObjectId baseCommitId = getBaseCommit(branchInfo);
-        if (remoteCommitId != null && baseCommitId != null) {
-					RevCommit remoteCommit = walk.parseCommit(remoteCommitId);
-					RevCommit baseCommit = walk.parseCommit(baseCommitId);
-					numberOfCommits = RevWalkUtils.count(walk, remoteCommit, baseCommit);
-				}
-				if (baseCommitId == null
-				    && repository.resolve("remotes/origin/" + git.getRepository().getBranch()) != null) {
-						LogCommand log = git.log();
-						if (repository.resolve("HEAD") != null) {
-							log.not(repository.resolve("HEAD"));
-						}
-						Iterable<RevCommit> logs = git.log()
-								.add(repository.resolve("remotes/origin/" + git.getRepository().getBranch())).call();
-						Iterator<RevCommit> iterator = logs.iterator();
-						while (iterator.hasNext()) {
-						  iterator.next();
-							numberOfCommits++;
-						}
-					}
-			} catch (IOException | GitAPIException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
-			}
-			walk.close();
-		}
-		return numberOfCommits;
+	  int numberOfCommits = 0;
 
-	}
+	  try {
+	    String branchName = getBranchInfo().getBranchName();
+	    if (branchName != null && branchName.length() > 0) {
+	      BranchTrackingStatus bts = BranchTrackingStatus.of(getRepository(), branchName);
+	      if (bts != null) {
+	        numberOfCommits = bts.getBehindCount();
+	      }
+	    }
+	  } catch (IOException | NoRepositorySelected e) {
+	    if (logger.isDebugEnabled()) {
+	      logger.debug(e, e);
+	    }
+	  }
+
+	  return numberOfCommits;}
 
 	/**
 	 * Brings all the commits to the local repository but does not merge them.
