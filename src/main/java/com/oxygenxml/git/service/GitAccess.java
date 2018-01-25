@@ -968,7 +968,10 @@ public class GitAccess {
 			String url = storedConfig.getString("remote", "origin", "url");
 			if (url == null) {
 			  Set<String> remoteNames = git.getRepository().getRemoteNames();
-			  url = storedConfig.getString("remote", remoteNames.iterator().next(), "url");
+			  Iterator<String> iterator = remoteNames.iterator();
+			  if (iterator.hasNext()) {
+			    url = storedConfig.getString("remote", iterator.next(), "url");
+			  }
 			}
 			try {
 				URL u = new URL(url);
