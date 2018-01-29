@@ -21,6 +21,13 @@
 		      </head>
 		      <body>
 		         <div>
+		            <h3>What's new in version 1.2.6</h3>
+		            <ol>
+		               <li>Bug fix: The contextual menu didn't show when running Oxygen on Mac OS X (broken in version 1.2.5)</li>
+		               <li>Improved the calculation of pull behind and push ahead counters</li>
+		            </ol>
+		         </div>
+		         <div>
 		            <h3>What's new in version 1.2.5</h3>
 		            <ol>
 		               <li>Bug fixes </li>

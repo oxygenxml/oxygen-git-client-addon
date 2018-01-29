@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -28,6 +29,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -321,5 +324,30 @@ public class GitTestBase extends JFCTestCase {
     
     GitAccess.getInstance().cleanUp();
   }
+  
+  /**
+   * Loads the repository and pushes one file to the remote.
+   * 
+   * @throws Exception If it fails.
+   */
+  protected final void pushOneFileToRemote(String repository, String fileName, String fileContent) throws Exception {
+    commitOneFile(repository, fileName, fileContent);
+    GitAccess.getInstance().push("", "");
+  }
+  
+  /**
+   * Loads the repository and pushes one file to the remote.
+   * 
+   * @throws Exception If it fails.
+   */
+  protected final void commitOneFile(String repository, String fileName, String fileContent) throws Exception {
+    GitAccess gitAccess = GitAccess.getInstance();
+    gitAccess.setRepository(repository);
 
+    PrintWriter out = new PrintWriter(repository + "/" + fileName);
+    out.println(fileContent);
+    out.close();
+    gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
+    gitAccess.commit("New file: " + fileName);
+  }
 }

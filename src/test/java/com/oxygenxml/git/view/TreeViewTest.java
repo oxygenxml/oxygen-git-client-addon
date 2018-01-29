@@ -511,6 +511,7 @@ public class TreeViewTest extends FlatViewTestBase {
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
+    flushAWT();
     assertTreeModels("", "CHANGED, test.txt");
     
     // Restart merge
@@ -522,10 +523,12 @@ public class TreeViewTest extends FlatViewTestBase {
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
+    flushAWT();
     assertTreeModels("", "CHANGED, test.txt");
     
     // Commit
     gitAccess.commit("commit");
+    flushAWT();
     assertTreeModels("", "");
   }
   
