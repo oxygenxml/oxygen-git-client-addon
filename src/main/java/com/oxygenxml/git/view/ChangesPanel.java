@@ -34,7 +34,6 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -540,7 +539,7 @@ public class ChangesPanel extends JPanel {
 					
 					// ============= Double click event ==============
 					if (model.isLeaf(node) && !model.getRoot().equals(node)
-					    && SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+					    && !e.isPopupTrigger() && e.getClickCount() == 2) {
 					  FileStatus file = model.getFileByPath(stringPath);
 					  DiffPresenter diff = new DiffPresenter(file, stageController);
 					  diff.showDiff();
@@ -1000,7 +999,7 @@ public class ChangesPanel extends JPanel {
 					}
 				} else {
 				  // ======== LEFT DOUBLE CLICK ========
-					if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+					if (!e.isPopupTrigger() && e.getClickCount() == 2) {
 						openFileInCompareEditor(row);
 					}
 					
