@@ -163,7 +163,7 @@ public class DiffPresenter {
 			URL previouslySubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.PREVIOUSLY_SUBMODULE,
 					file.getFileLocation());
 			
-			showDiffFrame(currentSubmoduleCommit, previouslySubmoduleCommit, null);
+			showDiffFrame(currentSubmoduleCommit, previouslySubmoduleCommit, previouslySubmoduleCommit);
 		} catch (MalformedURLException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -190,7 +190,7 @@ public class DiffPresenter {
 			}
 		}
 		
-		showDiffFrame(fileURL, lastCommitedFileURL, null);
+		showDiffFrame(fileURL, lastCommitedFileURL, lastCommitedFileURL);
 	}
 	
   /**
@@ -215,7 +215,7 @@ public class DiffPresenter {
       }
     }
 
-    showDiffFrame(leftSideURL, rightSideURL, null);
+    showDiffFrame(leftSideURL, rightSideURL, rightSideURL);
 
   }
 
