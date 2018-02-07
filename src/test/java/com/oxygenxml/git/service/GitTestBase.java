@@ -3,6 +3,7 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -155,22 +156,23 @@ public class GitTestBase extends JFCTestCase {
    * @param url The URL to read.
    * 
    * @return The content.
-   * 
-   * @throws IOException If it fails.
    */
-  protected String read(URL url) throws IOException {
-    StringBuilder b = new StringBuilder();
-    
-    try (InputStreamReader r = new InputStreamReader(url.openStream(), "UTF-8")) {
+  protected String read(URL url) {
+    StringBuilder stringBuilder = new StringBuilder();
+    try (
+        // Java will try to automatically close each of the declared resources
+        InputStream openedStream = url.openStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(openedStream, "UTF-8");
+        ) {
       char[] buf = new char[1024];
       int length = -1;
-      while ((length = r.read(buf)) != -1) {
-        b.append(buf, 0, length);
+      while ((length = inputStreamReader.read(buf)) != -1) {
+        stringBuilder.append(buf, 0, length);
       }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
-
-    return b.toString();
-
+    return stringBuilder.toString();
   }
   
 
