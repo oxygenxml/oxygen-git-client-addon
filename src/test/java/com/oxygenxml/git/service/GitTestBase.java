@@ -151,26 +151,46 @@ public class GitTestBase extends JFCTestCase {
   }
 
   /**
-   * Reads all the content of the given URL.
+   * Gets the content from a given URL.
    * 
-   * @param url The URL to read.
+   * @param url The URL from where to read.
    * 
-   * @return The content.
+   * @return The content, never <code>null</code>.
    */
-  protected String read(URL url) {
-    StringBuilder stringBuilder = new StringBuilder();
+  @SuppressWarnings("unused")
+  protected String read(URL url) throws IOException {
+    String result = null;
     try (
         // Java will try to automatically close each of the declared resources
         InputStream openedStream = url.openStream();
-        InputStreamReader inputStreamReader = new InputStreamReader(openedStream, "UTF-8");
-        ) {
-      char[] buf = new char[1024];
-      int length = -1;
-      while ((length = inputStreamReader.read(buf)) != -1) {
-        stringBuilder.append(buf, 0, length);
-      }
+        InputStreamReader inputStreamReader = new InputStreamReader(openedStream, "UTF-8")) {
+      result = read(inputStreamReader);
     } catch (IOException e) {
-      e.printStackTrace();
+      if (result == null) {
+        throw e;
+      } else {
+        // Just some info about this error, the method will return the result.
+        e.printStackTrace();
+      }
+    }
+    return result;
+  }
+  
+  /**
+   * Reads all the content from a given reader.
+   * 
+   * @param isr The reader.
+   *
+   * @return The content.
+   *
+   * @throws IOException If cannot read.
+   */
+  private static String read(InputStreamReader isr) throws IOException {
+    StringBuilder stringBuilder = new StringBuilder();
+    char[] buf = new char[1024];
+    int length = -1;
+    while ((length = isr.read(buf)) != -1) {
+      stringBuilder.append(buf, 0, length);
     }
     return stringBuilder.toString();
   }
