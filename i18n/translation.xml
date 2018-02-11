@@ -7,7 +7,7 @@
     <key value="Previous_passphrase_invalid">
         <comment>Message shown when a previous SSH passphrase was invalid.</comment>
         <val lang="en_US">The previous passphrase is invalid.</val>
-        <val lang="de_DE">The previous passphrase is invalid.</val>
+        <val lang="de_DE">Der vorherige SSH-Passphrase ist ungültig.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -15,7 +15,7 @@
     <key value="Pull_status">
         <comment>Label.</comment>
         <val lang="en_US">Pull status</val>
-        <val lang="de_DE">Pull status</val>
+        <val lang="de_DE">Pull-Status</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -23,7 +23,7 @@
     <key value="Enter_ssh_passphrase">
         <comment>Message asking for the SSH passphrase.</comment>
         <val lang="en_US">Please enter your SSH passphrase</val>
-        <val lang="de_DE">Please enter your SSH passphrase</val>
+        <val lang="de_DE">Bitte gib deinen SSH-Passphrase ein</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -31,7 +31,7 @@
     <key value="Command_aborted">
         <comment>Message displayed when a command is aborted.</comment>
         <val lang="en_US">Command aborted.</val>
-        <val lang="de_DE">Command aborted.</val>
+        <val lang="de_DE">Aktion abgebrochen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -151,7 +151,7 @@
     <key value="Commit_ComboBox_Display_Message">
         <comment>The massage displayed on the combo box containing the previouslt commited messages</comment>
         <val lang="en_US">Choose a previously used comment</val>
-        <val lang="de_DE">Choose a previously used comment</val>
+        <val lang="de_DE">Wähle eine vorherige Commit-Nachricht</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -376,7 +376,7 @@
     <key value="Workingcopy_Not_Git_Directory">
         <comment>The text displayed when the user selects a non git folder(It doesn't contain the ".git" folder)</comment>
         <val lang="en_US">Please select a git directory</val>
-        <val lang="de_DE">Bitte wählem Sie ein Git-Repository aus</val>
+        <val lang="de_DE">Bitte wählen Sie ein Git-Repository aus</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -544,7 +544,7 @@
     <key value="Login_Dilaog_Title">
         <comment>The text displayed on the title for the login dialog</comment>
         <val lang="en_US">Git Account</val>
-        <val lang="de_DE">Git Account</val>
+        <val lang="de_DE">Git-Account</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -784,7 +784,7 @@
     <key value="Conclude_Merge_Message">
         <comment>The text is displayed you fix all conflicts and there is nothing to commit</comment>
         <val lang="en_US">All conflicts fixed but you are still merging. Commit to conclude the merge.</val>
-        <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte commiten um den Merge abzuschließen.</val>
+        <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte committen um den Merge abzuschließen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
