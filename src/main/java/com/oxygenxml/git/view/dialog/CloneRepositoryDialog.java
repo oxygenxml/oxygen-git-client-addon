@@ -115,7 +115,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 					} else if (cause instanceof NoRemoteRepositoryException) {
 					  CloneRepositoryDialog.this.setVisible(true);
 					  CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
-					  information.setText(
+					  informationLabel.setText(
 					      HTML_START_TAG 
 					      + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) 
 					      + HTML_END_TAG);
@@ -146,11 +146,20 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 */
 	private static Translator translator = Translator.getInstance();
 
-	private JTextField tfURL;
+	/**
+	 * Source URL text field.
+	 */
+	private JTextField sourceUrlTextField;
 
-	private JComboBox<String> comboBoxPath;
+	/**
+	 * Destination path combo box.
+	 */
+	private JComboBox<String> destinationPathCombo;
 
-	private JLabel information;
+	/**
+	 * Label for displaying information.
+	 */
+	private JLabel informationLabel;
 	
 	/**
 	 * Constructor.
@@ -166,7 +175,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 		this.pack();
 		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
-		this.setMinimumSize(new Dimension(400, 160));
+		this.setMinimumSize(new Dimension(475, 160));
 		this.setResizable(true);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
@@ -176,7 +185,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
-		JLabel lblURL = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL));
+		JLabel lblURL = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL) + ":");
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -187,8 +196,16 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		panel.add(lblURL, gbc);
 
-		tfURL = new JTextField();
-		UndoSupportInstaller.installUndoManager(tfURL);
+		try {
+		  Class<?> textFieldClass= Class.forName("ro.sync.exml.workspace.api.standalone.ui.TextField");
+      sourceUrlTextField = (JTextField) textFieldClass.newInstance();
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
+      sourceUrlTextField = new JTextField();
+      if (logger.isDebugEnabled()) {
+        logger.debug(e1, e1);
+      }
+    }
+		UndoSupportInstaller.installUndoManager(sourceUrlTextField);
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -197,7 +214,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.weighty = 0;
 		gbc.gridx = 1;
 		gbc.gridy = 0;
-		panel.add(tfURL, gbc);
+		gbc.gridwidth = 2;
+		panel.add(sourceUrlTextField, gbc);
 
 		JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -208,14 +226,15 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.weighty = 0;
 		gbc.gridx = 0;
 		gbc.gridy = 1;
+		gbc.gridwidth = 1;
 		panel.add(lblPath, gbc);
 
-		comboBoxPath = new JComboBox<String>();
-		UndoSupportInstaller.installUndoManager(((JTextComponent) comboBoxPath.getEditor().getEditorComponent()));
-		comboBoxPath.setEditable(true);
+		destinationPathCombo = new JComboBox<String>();
+		UndoSupportInstaller.installUndoManager(((JTextComponent) destinationPathCombo.getEditor().getEditorComponent()));
+		destinationPathCombo.setEditable(true);
 		List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
 		for (String string : destinationPaths) {
-			comboBoxPath.addItem(string);
+			destinationPathCombo.addItem(string);
 		}
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
@@ -225,7 +244,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.weighty = 0;
 		gbc.gridx = 1;
 		gbc.gridy = 1;
-		panel.add(comboBoxPath, gbc);
+		panel.add(destinationPathCombo, gbc);
 
 		Action browseButtonAction = new AbstractAction() {
 
@@ -233,7 +252,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
       public void actionPerformed(ActionEvent e) {
 				File directory = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).chooseDirectory();
 				if (directory != null) {
-					comboBoxPath.setSelectedItem(directory.getAbsolutePath());
+					destinationPathCombo.setSelectedItem(directory.getAbsolutePath());
 				}
 			}
 		};
@@ -257,8 +276,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.gridy = 1;
 		panel.add(browseButton, gbc);
 
-		information = new JLabel();
-		information.setForeground(Color.RED);
+		informationLabel = new JLabel();
+		informationLabel.setForeground(Color.RED);
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -268,7 +287,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 3;
-		panel.add(information, gbc);
+		panel.add(informationLabel, gbc);
 
 		this.add(panel, BorderLayout.NORTH);
 	}
@@ -276,9 +295,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	@Override
 	protected void doOK() {
 	  boolean doOK = false;
-		final String selectedPath = (String) comboBoxPath.getSelectedItem();
+		final String selectedPath = (String) destinationPathCombo.getSelectedItem();
 		try {
-			final URL url = new URL(tfURL.getText());
+			final URL url = new URL(sourceUrlTextField.getText());
 			final File file = new File(selectedPath);
 			if (!destinationPathIsValid(file)) {
 				return;
@@ -301,7 +320,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	    
 	    doOK = true;
 		} catch (MalformedURLException e) {
-			information.setText(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+			informationLabel.setText(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
 			this.pack();
 		}
 		
@@ -317,7 +336,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			if (file.list().length > 0) {
 				CloneRepositoryDialog.this.setVisible(true);
 				this.setMinimumSize(new Dimension(400, 190));
-				information.setText(
+				informationLabel.setText(
 						HTML_START_TAG 
 						+ translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) 
 						+ HTML_END_TAG);
@@ -335,7 +354,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			if (tempFile == null) {
 				CloneRepositoryDialog.this.setVisible(true);
 				this.setMinimumSize(new Dimension(400, 180));
-				information.setText(
+				informationLabel.setText(
 						HTML_START_TAG 
 						+ translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) 
 						+ HTML_END_TAG);

@@ -45,6 +45,9 @@ public class AddRemoteDialog extends OKCancelDialog {
 	 */
 	private static Translator translator = Translator.getInstance();
 
+	/**
+	 * Remote repository text field.
+	 */
 	private JTextField remoteRepoTextField;
 
 	/**
@@ -63,7 +66,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 
 		pack();
 		setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
-		setMinimumSize(new Dimension(320, 130));
+		setMinimumSize(new Dimension(500, 130));
 		setResizable(true);
 		setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
 	}
@@ -115,7 +118,15 @@ public class AddRemoteDialog extends OKCancelDialog {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		remoteRepoTextField = new JTextField();
+		try {
+      Class<?> textFieldClass= Class.forName("ro.sync.exml.workspace.api.standalone.ui.TextField");
+      remoteRepoTextField = (JTextField) textFieldClass.newInstance();
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
+      remoteRepoTextField = new JTextField();
+      if (logger.isDebugEnabled()) {
+        logger.debug(e1, e1);
+      }
+    }
 		getContentPane().add(remoteRepoTextField, gbc);
 	}
 

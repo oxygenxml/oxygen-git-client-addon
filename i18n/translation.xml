@@ -463,7 +463,7 @@
     </key>
     <key value="Add_Remote_Dialog_Add_Remote_Repo_Label">
         <comment>The text displayed in the dialog that appears near the text field for remote repo</comment>
-        <val lang="en_US">Remote Repo URL: </val>
+        <val lang="en_US">Remote repository URL: </val>
         <val lang="de_DE">Remote-URL: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -471,7 +471,7 @@
     </key>
     <key value="Add_Remote_Dialog_Info_Label">
         <comment>The text displayed in the dialog that appears at the top of the dialog</comment>
-        <val lang="en_US">This repository has no remote. Please insert one</val>
+        <val lang="en_US">This repository has no remotes. Please provide one.</val>
         <val lang="de_DE">Dieses Repository hat keine Remote-Verbindung. Bitte ergänzen Sie eine.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -695,8 +695,8 @@
     </key>
     <key value="Clone_Repository_Dialog_Url_Label">
         <comment>The text displayed for the "URL" label in the clone repository dialog</comment>
-        <val lang="en_US">URL:</val>
-        <val lang="de_DE">URL:</val>
+        <val lang="en_US">Source URL</val>
+        <val lang="de_DE">Source URL</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
