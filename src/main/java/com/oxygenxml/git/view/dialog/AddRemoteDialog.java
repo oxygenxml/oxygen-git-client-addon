@@ -118,15 +118,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		try {
-      Class<?> textFieldClass= Class.forName("ro.sync.exml.workspace.api.standalone.ui.TextField");
-      remoteRepoTextField = (JTextField) textFieldClass.newInstance();
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
-      remoteRepoTextField = new JTextField();
-      if (logger.isDebugEnabled()) {
-        logger.debug(e1, e1);
-      }
-    }
+		remoteRepoTextField = UIUtil.createTextField();
 		getContentPane().add(remoteRepoTextField, gbc);
 	}
 

@@ -196,16 +196,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		panel.add(lblURL, gbc);
 
-		try {
-		  Class<?> textFieldClass= Class.forName("ro.sync.exml.workspace.api.standalone.ui.TextField");
-      sourceUrlTextField = (JTextField) textFieldClass.newInstance();
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
-      sourceUrlTextField = new JTextField();
-      if (logger.isDebugEnabled()) {
-        logger.debug(e1, e1);
-      }
-    }
-		UndoSupportInstaller.installUndoManager(sourceUrlTextField);
+		sourceUrlTextField = UIUtil.createTextField();
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
