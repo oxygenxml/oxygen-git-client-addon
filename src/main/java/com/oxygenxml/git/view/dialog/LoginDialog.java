@@ -77,7 +77,7 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
 		JLabel lblGitRemote = new JLabel(
-				"<html>" + message + "<br>" + translator.getTranslation(Tags.LOGIN_DIALOG) + "<b>" + host + "</b></html>");
+				"<html>" + message + "<br>" + translator.getTranslation(Tags.LOGIN_DIALOG) + " <b>" + host + "</b></html>");
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
