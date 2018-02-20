@@ -76,12 +76,12 @@ public class BranchSelectDialog extends OKCancelDialog {
 		addBranchSelectCombo(gbc);
 		addInformationLabel(gbc);
 
-		this.pack();
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(320, 140));
 		this.setResizable(true);
-		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+		this.pack();
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		this.setVisible(true);
 	}
 
 	/**

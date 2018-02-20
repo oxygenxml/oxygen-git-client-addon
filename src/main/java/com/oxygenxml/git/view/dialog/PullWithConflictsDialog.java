@@ -98,12 +98,12 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 		getContentPane().add(panel);
 		getCancelButton().setVisible(false);
 		
-		this.pack();
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setResizable(true);
 		this.setMinimumSize(new Dimension(420, 220));
-		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+		this.pack();
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		this.setVisible(true);
 	}
 
 }

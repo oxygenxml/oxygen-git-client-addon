@@ -66,13 +66,13 @@ public class PassphraseDialog extends OKCancelDialog {
 		panel.add(tfPassphrase, gbc);
 
 		this.getContentPane().add(panel);
-		this.pack();
-		this.setLocationRelativeTo(
-				(JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame());
 		this.setMinimumSize(new Dimension(380, 150));
 		this.setResizable(true);
-		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+		this.pack();
+		this.setLocationRelativeTo(
+		    (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame());
+		this.setVisible(true);
 	}
 
 	@Override

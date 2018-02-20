@@ -173,12 +173,12 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 
 		createGUI();
 
-		this.pack();
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setMinimumSize(new Dimension(475, 160));
 		this.setResizable(true);
-		this.setVisible(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+		this.pack();
+		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		this.setVisible(true);
 	}
 
 	private void createGUI() {

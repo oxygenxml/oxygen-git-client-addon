@@ -64,11 +64,11 @@ public class AddRemoteDialog extends OKCancelDialog {
 		addRemoteRepoLabel(gbc);
 		addRemoteRepoTextField(gbc);
 
-		pack();
-		setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		setMinimumSize(new Dimension(500, 130));
 		setResizable(true);
 		setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+		pack();
+		setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 	}
 	
 	/**

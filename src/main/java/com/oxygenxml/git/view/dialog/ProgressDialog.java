@@ -59,10 +59,10 @@ public class ProgressDialog extends OKCancelDialog {
 
 		getOkButton().setVisible(false);
 
-		pack();
-		setLocationRelativeTo(parentFrame);
 		setMinimumSize(new Dimension(370, 150));
 		setResizable(false);
+		pack();
+		setLocationRelativeTo(parentFrame);
 
 	}
 
