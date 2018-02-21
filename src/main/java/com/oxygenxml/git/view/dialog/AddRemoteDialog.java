@@ -66,7 +66,6 @@ public class AddRemoteDialog extends OKCancelDialog {
 
 		setMinimumSize(new Dimension(500, 130));
 		setResizable(true);
-		setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
 		pack();
 		setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 	}

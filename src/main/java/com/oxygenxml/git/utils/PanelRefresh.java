@@ -84,12 +84,70 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * The scheduled refresh task.
 	 */
   private TimerTask task;
-
-	@Override
+  
+  @Override
   public void call() {
-	  boolean repoChanged = false;
 	  // Check if the current Oxygen project is a Git repository.
-	  if (stagingPanel.hasFocus()) {
+	  boolean repoChanged = loadRepositoryFromOxygenProject();
+	  
+	  // No point in refreshing if we've just changed the repository.
+	  if (!repoChanged) {
+	    // Check the current repository.
+	    try {
+	      if (gitAccess.getRepository() != null) {
+	        if (task != null) {
+	          if (logger.isDebugEnabled()) {
+	            logger.debug("cancel task");
+	          }
+	          task.cancel();
+	        }
+
+	        task = new TimerTask() {
+	          @Override
+	          public void run() {
+	            if (logger.isDebugEnabled()) {
+	              logger.debug("Start update on thread.");
+	            }
+
+	            GitStatus status = GitAccess.getInstance().getStatus();
+
+	            updateFiles(
+	                stagingPanel.getUnstagedChangesPanel(), 
+	                status.getUnstagedFiles());
+
+	            updateFiles(
+	                stagingPanel.getStagedChangesPanel(), 
+	                status.getStagedFiles());
+
+	            updateCounters();
+
+	            if (logger.isDebugEnabled()) {
+	              logger.debug("End update on thread.");
+	            }
+	          }
+	        };
+
+	        timer.schedule(task, 500);
+	      }
+	    } catch (NoRepositorySelected e1) {
+	      if (logger.isDebugEnabled()) {
+	        logger.debug(e1, e1);
+	      }
+	    }
+	  }
+	}
+
+  /**
+   * Checks the current loaded project and:
+   * 
+   * 1. load it if it contains a Git project.
+   * 2. create a new Git repo if the project doesn't contains a Git project and the user agrees.
+   * 
+   * @return <code>true</code> if the repository changed.
+   */
+  private boolean loadRepositoryFromOxygenProject() {
+    boolean repoChanged = false;
+    if (stagingPanel.hasFocus()) {
 	    // Do it only when the view has focus.
 	    String projectView = PluginWorkspaceProvider.getPluginWorkspace().
 	        getUtilAccess().expandEditorVariables("${pd}", null);
@@ -129,54 +187,9 @@ public class PanelRefresh implements GitRefreshSupport {
 	      }
 	    }
 	  }
-	  
-	  // No point in refreshing if we've just changed the repository.
-	  if (!repoChanged) {
-	    // Check the current repository.
-	    try {
-	      if (gitAccess.getRepository() != null) {
-
-	        if (task != null) {
-	          if (logger.isDebugEnabled()) {
-	            logger.debug("cancel task");
-	          }
-	          task.cancel();
-	        }
-
-	        task = new TimerTask() {
-	          @Override
-	          public void run() {
-	            if (logger.isDebugEnabled()) {
-	              logger.debug("Start update on thread.");
-	            }
-
-	            GitStatus status = GitAccess.getInstance().getStatus();
-	            
-	            updateFiles(
-	                stagingPanel.getUnstagedChangesPanel(), 
-	                status.getUnstagedFiles());
-	            
-	            updateFiles(
-	                stagingPanel.getStagedChangesPanel(), 
-	                status.getStagedFiles());
-	              
-	            updateCounters();
-
-	            if (logger.isDebugEnabled()) {
-	              logger.debug("End update on thread.");
-	            }
-	          }
-	        };
-
-	        timer.schedule(task, 500);
-	      }
-	    } catch (NoRepositorySelected e1) {
-	      if (logger.isDebugEnabled()) {
-	        logger.debug(e1, e1);
-	      }
-	    }
-	  }
-	}
+    
+    return repoChanged;
+  }
 
 	/**
 	 * Checks the project directory for Git repositories.

@@ -268,7 +268,14 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				focusGained = true;
 				// The focus is somewhere in he view.
 				if (!inTheView) {
-					refreshSupport.call();
+//				  // Schedule the refresh at a later time to that the 
+//				  // focus event gets processed.
+				  SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              refreshSupport.call();
+            }
+          });
 				}
 
 				inTheView = true;
