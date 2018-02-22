@@ -408,10 +408,10 @@ public class ChangesPanel extends JPanel {
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
+		addFilesPanel(gbc);
 		addChangeAllButton(gbc);
 		addChangeSelectedButton(gbc);
 		addSwitchViewButton(gbc);
-		addFilesPanel(gbc);
 
 		addSwitchButtonListener();
 		addChangeSelectedButtonListener();
@@ -773,19 +773,23 @@ public class ChangesPanel extends JPanel {
 	    selectedPaths = restoreSelectedPathsFromTableToTree();
 	    tree.setSelectionPaths(selectedPaths);
 	    scrollPane.setViewportView(tree);
-	    URL resource = getClass().getResource(ImageConstants.TABLE_VIEW);
-	    if (resource != null) {
-	      ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-	      switchViewButton.setIcon(icon);
+	    if (switchViewButton != null) {
+	      URL resource = getClass().getResource(ImageConstants.TABLE_VIEW);
+	      if (resource != null) {
+	        ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+	        switchViewButton.setIcon(icon);
+	      }
+	      switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
 	    }
-	    switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
 	  } else {
-	    URL resource = getClass().getResource(ImageConstants.TREE_VIEW);
-	    if (resource != null) {
-	      ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-	      switchViewButton.setIcon(icon);
+	    if (switchViewButton != null) {
+	      URL resource = getClass().getResource(ImageConstants.TREE_VIEW);
+	      if (resource != null) {
+	        ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+	        switchViewButton.setIcon(icon);
+	      }
+	      switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 	    }
-	    switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 	    filesTable.clearSelection();
 	    StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
@@ -852,9 +856,10 @@ public class ChangesPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
+		gbc.gridwidth = 1;
 		if (forStagedResources) {
 			changeAllButton = new JButton(translator.getTranslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
 		} else {
@@ -875,9 +880,10 @@ public class ChangesPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 1;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
+		gbc.gridwidth = 1;
 		if (forStagedResources) {
 			changeSelectedButton = new JButton(translator.getTranslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
 		} else {
@@ -900,7 +906,8 @@ public class ChangesPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 2;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
+		gbc.gridwidth = 1;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		JToolBar toolbar = new JToolBar();
@@ -932,7 +939,7 @@ public class ChangesPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 3;
