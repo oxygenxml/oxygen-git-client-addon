@@ -32,6 +32,7 @@ public class ProgressDialog extends OKCancelDialog {
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(false);
 		progressBar.setIndeterminate(true);
+		progressBar.setPreferredSize(new Dimension(250, progressBar.getPreferredSize().height));
 
 		JPanel panel = new JPanel(new GridBagLayout());
 

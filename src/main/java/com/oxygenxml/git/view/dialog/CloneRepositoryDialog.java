@@ -197,6 +197,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		panel.add(lblURL, gbc);
 
 		sourceUrlTextField = UIUtil.createTextField();
+		sourceUrlTextField.setPreferredSize(new Dimension(350, sourceUrlTextField.getPreferredSize().height));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;

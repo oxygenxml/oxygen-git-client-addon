@@ -118,6 +118,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
 		remoteRepoTextField = UIUtil.createTextField();
+		remoteRepoTextField.setPreferredSize(new Dimension(350, remoteRepoTextField.getPreferredSize().height));
 		getContentPane().add(remoteRepoTextField, gbc);
 	}
 

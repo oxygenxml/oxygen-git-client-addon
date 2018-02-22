@@ -101,7 +101,8 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridwidth = 1;
 		panel.add(lbUsername, gbc);
 
-		tfUsername = new JTextField(25);
+		tfUsername = new JTextField();
+		tfUsername.setPreferredSize(new Dimension(250, tfUsername.getPreferredSize().height));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -125,7 +126,8 @@ public class LoginDialog extends OKCancelDialog {
 		gbc.gridwidth = 1;
 		panel.add(lbPassword, gbc);
 
-		pfPassword = new JPasswordField(25);
+		pfPassword = new JPasswordField();
+		pfPassword.setPreferredSize(new Dimension(250, pfPassword.getPreferredSize().height));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
