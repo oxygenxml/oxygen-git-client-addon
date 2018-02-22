@@ -401,29 +401,30 @@ public class ToolbarPanel extends JPanel {
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
 		String message = "";
 		if (branchInfo.isDetached()) {
-			message += "<html>";
-			message += "Commit: <b>" + branchInfo.getShortBranchName() + "</b></html>";
+			message += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
 			statusInformationLabel
 					.setToolTipText(translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD) + " "
 							+ branchInfo.getBranchName());
 		} else {
+		  String ttMessage = null;
 			String currentBranch = branchInfo.getBranchName();
 			if (!"".equals(currentBranch)) {
-				message += "<html>";
-				message += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH) + "<b>" + currentBranch
-						+ "</b> - ";
+			  message = "<html><b>" + currentBranch + "</b></html>";
+				ttMessage = "<html>" + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH)
+				    + " <b>" + currentBranch + "</b> - ";
 				if (pullsBehind == 0) {
-					message += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+				  ttMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
 				} else if (pullsBehind == 1) {
-					message += pullsBehind + " " + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
+				  ttMessage += pullsBehind + " " + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
 				} else {
-					message += pullsBehind + " "
+				  ttMessage += pullsBehind + " "
 							+ translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
 				}
-				message += "</html>";
+				ttMessage += "</html>";
 			}
-			statusInformationLabel.setToolTipText("");
+			statusInformationLabel.setToolTipText(ttMessage);
 		}
+		
 		statusInformationLabel.setText(message);
 	}
 

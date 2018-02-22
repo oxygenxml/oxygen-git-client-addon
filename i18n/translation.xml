@@ -575,8 +575,8 @@
     </key>
     <key value="Toolbar_Panel_Information_Status_Branch">
         <comment>The text displayed on the right side of the toolbar buttons for the branch text</comment>
-        <val lang="en_US">Branch: </val>
-        <val lang="de_DE">Branch: </val>
+        <val lang="en_US">Branch:</val>
+        <val lang="de_DE">Branch:</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
