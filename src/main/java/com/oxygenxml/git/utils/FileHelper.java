@@ -4,7 +4,10 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -29,6 +32,50 @@ public class FileHelper {
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(FileHelper.class);
+	
+	/**
+   * Get the common ancestor for a list of directories.
+   * 
+   * @param dirs  The list of directories.
+   * 
+   * @return The common ancestor or <code>null</code> if 
+   *            the given list of directories is 
+   *            <code>null</code> or empty.
+   */
+  public static File getCommonDir(Set<File> dirs) {
+    File commonAncestor = null;
+    
+    if (dirs != null && !dirs.isEmpty()) {
+      int k = 0;
+      String[][] folders = new String[dirs.size()][];
+      for (Iterator<File> iter = dirs.iterator(); iter.hasNext();) {
+        folders[k] = iter.next().getAbsolutePath().split(Pattern.quote(File.separator));
+        k++;
+      }
+
+      StringBuilder commonPathBuilder = new StringBuilder();
+      for (int j = 0; j < folders[0].length; j++) {
+        String thisFolder = folders[0][j]; 
+        boolean allMatched = true;
+        for (int i = 1; i < folders.length && allMatched; i++) {
+          if (folders[i].length < j) {
+            allMatched = false;
+            break; 
+          }
+          allMatched &= folders[i][j].equals(thisFolder);
+        }
+        if (allMatched) {
+          commonPathBuilder.append(thisFolder).append("/");
+        } else {
+          break;
+        }
+      }
+      
+      commonAncestor = new File(commonPathBuilder.toString());
+    }
+    
+    return commonAncestor;
+  }
 	
 	/**
 	 * Makes sure the path uses just the / separator.

@@ -4,6 +4,22 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Yes">
+        <comment>"Yes"</comment>
+        <val lang="en_US">Yes</val>
+        <val lang="de_DE">Ja</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="No">
+        <comment>"No"</comment>
+        <val lang="en_US">No</val>
+        <val lang="de_DE">Nein</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
     <key value="Previous_passphrase_invalid">
         <comment>Message shown when a previous SSH passphrase was invalid.</comment>
         <val lang="en_US">The previous passphrase is invalid.</val>

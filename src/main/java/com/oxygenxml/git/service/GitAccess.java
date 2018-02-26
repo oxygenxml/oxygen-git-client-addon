@@ -42,6 +42,7 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
@@ -56,6 +57,7 @@ import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -72,10 +74,12 @@ import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
 
+import com.oxygenxml.git.ProjectViewManager;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.SSHUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
@@ -84,6 +88,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.GitCommand;
@@ -694,8 +699,32 @@ public class GitAccess {
 		} else {
 			git.reset().call();
 			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+			Repository repository = git.getRepository();
+			
+			ObjectId oldHead = null;
+			try {
+        oldHead = repository.resolve("HEAD^{tree}");
+      } catch (RevisionSyntaxException | IOException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+      }
+			// Call "Pull"
 			PullResult call = git.pull().setCredentialsProvider(new SSHUserCredentialsProvider(username, password, sshPassphrase))
 					.call();
+			ObjectId head = null;
+			try {
+        head = repository.resolve("HEAD^{tree}");
+      } catch (RevisionSyntaxException | IOException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+      }
+			
+			if (oldHead != null && head != null) {
+			  refreshProject(repository, oldHead, head);
+			}
+			
 			MergeResult mergeResult = call.getMergeResult();
 			if (mergeResult != null && mergeResult.getConflicts() != null) {
 			  Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
@@ -712,6 +741,45 @@ public class GitAccess {
 		return response;
 
 	}
+
+	/**
+	 * Refresh the Project view.
+	 * 
+	 * @param repository The current repository.      
+	 * @param oldHead    The old HEAD (before pull).
+	 * @param head       The new HEAD (after pull).
+	 * 
+	 * @throws GitAPIException when error occurs during diff.
+	 */
+  private void refreshProject(Repository repository, ObjectId oldHead, ObjectId head) throws GitAPIException {
+    CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+    CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+    try {
+      ObjectReader reader = repository.newObjectReader();
+      oldTreeIter.reset(reader, oldHead);
+      newTreeIter.reset(reader, head);
+      List<DiffEntry> diffs= git.diff()
+          .setNewTree(newTreeIter)
+          .setOldTree(oldTreeIter)
+          .call();
+      
+      Set<File> pulledFilesParentDirs = new HashSet<>();
+      String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
+      for (DiffEntry diffEntry : diffs) {
+        if (diffEntry.getChangeType() == ChangeType.ADD) {
+          pulledFilesParentDirs.add(new File(selectedRepository, diffEntry.getNewPath()).getParentFile());
+        } else if (diffEntry.getChangeType() == ChangeType.DELETE) {
+          pulledFilesParentDirs.add(new File(selectedRepository, diffEntry.getOldPath()).getParentFile());
+        }
+      }
+      // Refresh the Project view
+      ProjectViewManager.refreshFolders(new File[] {FileHelper.getCommonDir(pulledFilesParentDirs)});
+    } catch (IOException e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+  }
 
 	/**
 	 * Finds the common base for the given commit "a" and the given commit "b"
@@ -1340,16 +1408,12 @@ public class GitAccess {
 
 	/**
 	 * Return the submodule head commit to the previously one
+	 * 
+	 * @throws GitAPIException when an error occurs while trying to discard the submodule.
 	 */
-	public void discardSubmodule() {
-		try {
-			git.submoduleSync().call();
-			git.submoduleUpdate().setStrategy(MergeStrategy.RECURSIVE).call();
-		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(END_FETCH_DEBUG_MESSAGE);
-			}
-		}
+	public void discardSubmodule() throws GitAPIException {
+	  git.submoduleSync().call();
+	  git.submoduleUpdate().setStrategy(MergeStrategy.RECURSIVE).call();
 	}
 
 	/**

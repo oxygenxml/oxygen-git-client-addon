@@ -14,6 +14,15 @@ public class Tags {
     // Nothing.
   }
   /**
+   * en: Yes
+   */
+  public static final String YES = "Yes";
+  /**
+   * en: No
+   */
+  public static final String NO = "No";
+  
+  /**
    * Message shown when a previous SSH passphrase was invalid.
    * 
    * en: The previous passphrase is invalid.
