@@ -46,17 +46,17 @@ public class FileHelperTest {
 	 * @throws IOException
 	 */
 	@Test
-  public void testGetCommonDirectory() {
+  public void testGetCommonDirectory() throws IOException {
 	  Set<File> files = new HashSet<>();
 	  File firstFile = new File("/home/user1/tmp/coverage/test");
     files.add(firstFile);
 	  files.add(new File("/home/user1/tmp/covert/operator"));
 	  files.add(new File("/home/user1/tmp/coven/members"));
-	  assertEquals("D:\\home\\user1\\tmp", FileHelper.getCommonDir(files).toString());
+	  assertEquals(new File("/home/user1/tmp/").getCanonicalPath(), FileHelper.getCommonDir(files).getCanonicalPath());
 	  
 	  files.remove(firstFile);
 	  files.add(new File("/notHome/user1/tmp/coverage/test"));
-	  assertEquals("D:\\", FileHelper.getCommonDir(files).toString());
+	  assertEquals(new File("/").getCanonicalPath(), FileHelper.getCommonDir(files).getCanonicalPath());
 	}
 	
 	@After
