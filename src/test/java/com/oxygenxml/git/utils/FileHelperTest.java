@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
-
-import com.oxygenxml.git.utils.FileHelper;
 
 public class FileHelperTest {
 
@@ -38,6 +38,25 @@ public class FileHelperTest {
 		boolean expected = true;
 		
 		assertEquals(expected, actual);
+	}
+	
+	/**
+	 * Test the {@link FileHelper#getCommonDir(java.util.Set)} method.
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+  public void testGetCommonDirectory() {
+	  Set<File> files = new HashSet<>();
+	  File firstFile = new File("/home/user1/tmp/coverage/test");
+    files.add(firstFile);
+	  files.add(new File("/home/user1/tmp/covert/operator"));
+	  files.add(new File("/home/user1/tmp/coven/members"));
+	  assertEquals("D:\\home\\user1\\tmp", FileHelper.getCommonDir(files).toString());
+	  
+	  files.remove(firstFile);
+	  files.add(new File("/notHome/user1/tmp/coverage/test"));
+	  assertEquals("D:\\", FileHelper.getCommonDir(files).toString());
 	}
 	
 	@After
