@@ -79,7 +79,6 @@ public class DiffPresenter {
 	 * 
 	 */
 	public void showDiff() {
-	  logger.info("Show diff ", new Exception());
 	  try {
 	    GitChangeType changeType = file.getChangeType();
 	    switch (changeType) {
