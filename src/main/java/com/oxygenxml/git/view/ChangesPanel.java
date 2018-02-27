@@ -169,11 +169,6 @@ public class ChangesPanel extends JPanel {
 	private Translator translator = Translator.getInstance();
 
 	/**
-	 * Selected paths in tree.
-	 */
-	private TreePath[] selectedPaths = null;
-	
-	/**
 	 * Image utilities.
 	 */
 	private ImageUtilities imageUtilities = 
@@ -387,7 +382,7 @@ public class ChangesPanel extends JPanel {
 	 * @return table selected files
 	 */
 	private List<FileStatus> getTableSelectedFiles() {
-		List<FileStatus> selectedFiles = new ArrayList<FileStatus>();
+		List<FileStatus> selectedFiles = new ArrayList<>();
 		int[] selectedRows = null;
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 		selectedRows = filesTable.getSelectedRows();
@@ -518,39 +513,40 @@ public class ChangesPanel extends JPanel {
       }
     });
 	  
-		tree.addMouseListener(new MouseAdapter() {
-		  @Override
-		  public void mousePressed(MouseEvent e) {
-			  // For MacOS the popup trigger comes on mouse pressed.
-		    handleContextualMenu(e);
-		  }
-		  
-		  @Override
-			public void mouseReleased(MouseEvent e) {
-		    // Switching between Staged and UnStaged with right click introduced some paint artifacts. 
-        tree.requestFocus();
-        tree.repaint();
-        
-		    showDiff(e);
-		    
-		    handleContextualMenu(e);
-			}
+	  tree.addMouseListener(new MouseAdapter() {
+	    @Override
+	    public void mousePressed(MouseEvent e) {
+	      // For MacOS the popup trigger comes on mouse pressed.
+	      handleContextualMenuEvent(e);
+	    }
 
-		  /**
-		   * Shows the contextual menu, if the mouse event is a popup trigger.
-		   * 
-		   * @param e Mouse event.
-		   */
-      private void handleContextualMenu(MouseEvent e) {
-		    if (e.isPopupTrigger() && e.getClickCount() == 1) {
-		      // ============= Right click event ================
-		      // First, check the node under the mouse.
+	    @Override
+	    public void mouseReleased(MouseEvent e) {
+	      // Switching between Staged and UnStaged with right click introduced some paint artifacts. 
+	      tree.requestFocus();
+	      tree.repaint();
+
+	      // Maybe the event was a (not pop-up trigger) double-click
+	      showDiff(e);
+	      // Or maybe it was a right click
+	      handleContextualMenuEvent(e);
+	    }
+
+	    /**
+	     * Shows the contextual menu, if the mouse event is a pop-up trigger.
+	     * 
+	     * @param e Mouse event.
+	     */
+	    private void handleContextualMenuEvent(MouseEvent e) {
+	      if (e.isPopupTrigger() && e.getClickCount() == 1) {
+	        // ============= Right click event ================
+	        // First, check the node under the mouse.
 	        TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
 	        if (treePath != null) {
 	          boolean treeInSelection = false;
 	          TreePath[] paths = tree.getSelectionPaths();
 	          // The node under the mouse might not be the selected one.
-	          // A JTree only updates selection for a left button.
+	          // A JTree only updates selection for a left button. Also do it for a right click.
 	          if (paths != null) {
 	            for (int i = 0; i < paths.length; i++) {
 	              if (treePath.equals(paths[i])) {
@@ -566,49 +562,44 @@ public class ChangesPanel extends JPanel {
 	          // A click outside the tree. Go with a selected path.
 	          treePath = tree.getSelectionPath();
 	        }
-	        
-		      if (treePath != null) {
-		        String stringPath = TreeFormatter.getStringPath(treePath);
-		        StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-		        GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 
-		        if (!node.isRoot() 
-		                || node.children().hasMoreElements()
-		                || isMergingResolved()) {
+	        if (treePath != null) {
+	          String stringPath = TreeFormatter.getStringPath(treePath);
+	          StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+	          GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 
-		          showContextualMenuForTree(e.getX(), e.getY(), model);
-		        }
-		      }
-		    }
-      }
+	          if (!node.isRoot() 
+	              || node.children().hasMoreElements()
+	              || isMergingResolved()) {
 
-      /**
-       * Shows DIFF for a double click mouse event.
-       * 
-       * @param e Mouse event.
-       */
-		  private void showDiff(MouseEvent e) {
-		    if (!e.isPopupTrigger() && 
-		        e.getClickCount() == 2) {
-		      // ============= Double click event ==============
-		      final StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-		      TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
-		      if (treePath != null) {
+	            showContextualMenuForTree(e.getX(), e.getY(), model);
+	          }
+	        }
+	      }
+	    }
 
-		        String stringPath = TreeFormatter.getStringPath(treePath);
-		        GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
-
-		        if (
-		            model.isLeaf(node) && 
-		            !model.getRoot().equals(node)) {
-		          FileStatus file = model.getFileByPath(stringPath);
-		          DiffPresenter diff = new DiffPresenter(file, stageController);
-		          diff.showDiff();
-		        }
-		      }
-		    }
-		  }
-		  });
+	    /**
+	     * Shows DIFF for a double click mouse event.
+	     * 
+	     * @param e Mouse event.
+	     */
+	    private void showDiff(MouseEvent e) {
+	      if (!e.isPopupTrigger() && e.getClickCount() == 2) {
+	        // ============= Double click event ==============
+	        TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
+	        if (treePath != null) {
+	          String stringPath = TreeFormatter.getStringPath(treePath);
+	          StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+	          GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+	          if (model.isLeaf(node) && !model.getRoot().equals(node)) {
+	            FileStatus file = model.getFileByPath(stringPath);
+	            DiffPresenter diff = new DiffPresenter(file, stageController);
+	            diff.showDiff();
+	          }
+	        }
+	      }
+	    }
+	  });
 	}
 	
 	/**
@@ -737,7 +728,7 @@ public class ChangesPanel extends JPanel {
 		changeSelectedButton.addActionListener(new ActionListener() {
 			@Override
       public void actionPerformed(ActionEvent e) {
-			  List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+			  List<FileStatus> fileStatuses = new ArrayList<>();
 				if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
 					int[] selectedRows = filesTable.getSelectedRows();
 					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
@@ -808,7 +799,7 @@ public class ChangesPanel extends JPanel {
     update(rootFolder, newFiles);
 	  
 	  if (viewMode == ResourcesViewMode.TREE_VIEW) {
-	    selectedPaths = restoreSelectedPathsFromTableToTree();
+	    TreePath[] selectedPaths = restoreSelectedPathsFromTableToTree();
 	    tree.setSelectionPaths(selectedPaths);
 	    scrollPane.setViewportView(tree);
 	    if (switchViewButton != null) {
@@ -832,7 +823,7 @@ public class ChangesPanel extends JPanel {
 	    StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
 	    List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(tree.getSelectionPaths());
-	    List<Integer> tableRowsToSelect = new ArrayList<Integer>();
+	    List<Integer> tableRowsToSelect = new ArrayList<>();
 	    for (TreePath treePath : commonAncestors) {
 	      String path = TreeFormatter.getStringPath(treePath);
 	      tableRowsToSelect.addAll(fileTableModel.getRows(path));
@@ -1027,9 +1018,9 @@ public class ChangesPanel extends JPanel {
 		    filesTable.requestFocus();
 		    filesTable.repaint();
         
+		    // Maybe the event is a pop-up trigger
 				handleContexMenuEvent(e);
-				
-				 // ======== LEFT DOUBLE CLICK ========
+				// Maybe (not pop-up trigger) double click
         if (!e.isPopupTrigger() && e.getClickCount() == 2) {
           Point point = new Point(e.getX(), e.getY());
           int clickedRow = filesTable.rowAtPoint(point);
@@ -1127,7 +1118,7 @@ public class ChangesPanel extends JPanel {
 	 * @param selectedRows  The selected rows.
 	 */
 	private void showContextualMenuForFlatView(int x, int y, int[] selectedRows) {
-	  final List<FileStatus> files = new ArrayList<FileStatus>();
+	  final List<FileStatus> files = new ArrayList<>();
 	  
     for (int i = 0; i < selectedRows.length; i++) {
       int convertedSelectedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
