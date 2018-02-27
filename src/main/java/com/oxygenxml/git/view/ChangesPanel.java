@@ -521,56 +521,94 @@ public class ChangesPanel extends JPanel {
 		tree.addMouseListener(new MouseAdapter() {
 		  @Override
 		  public void mousePressed(MouseEvent e) {
-			  // For MacOS
-		    mouseReleased(e);
+			  // For MacOS the popup trigger comes on mouse pressed.
+		    handleContextualMenu(e);
 		  }
 		  
 		  @Override
 			public void mouseReleased(MouseEvent e) {
-		    tree.requestFocus();
-		    tree.repaint();
+		    // Switching between Staged and UnStaged with right click introduced some paint artifacts. 
+        tree.requestFocus();
+        tree.repaint();
+        
+		    showDiff(e);
 		    
-				final StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-				TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
-				if (treePath != null) {
-				  
-					String stringPath = TreeFormatter.getStringPath(treePath);
-					GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
-					
-					// ============= Double click event ==============
-					if (model.isLeaf(node) && !model.getRoot().equals(node)
-					    && !e.isPopupTrigger() && e.getClickCount() == 2) {
-					  FileStatus file = model.getFileByPath(stringPath);
-					  DiffPresenter diff = new DiffPresenter(file, stageController);
-					  diff.showDiff();
-					}
-					
-					// ============= Right click event ================
-					if (e.isPopupTrigger()
-					    && (!node.isRoot() 
-					        || node.children().hasMoreElements()
-					        || isMergingResolved())) {
-					  boolean treeInSelection = false;
-				    TreePath[] paths = tree.getSelectionPaths();
-				    if (paths != null) {
-				      for (int i = 0; i < paths.length; i++) {
-				        if (treePath.equals(paths[i])) {
-				          treeInSelection = true;
-				          break;
-				        }
-				      }
-				    }
-				    if (!treeInSelection) {
-				      tree.setSelectionPath(treePath);
-				    }
-				    
-					  showContextualMenuForTree(e.getX(), e.getY(), model);
-					}
-				} else {
-					tree.clearSelection();
-				}
+		    handleContextualMenu(e);
 			}
-		});
+
+		  /**
+		   * Shows the contextual menu, if the mouse event is a popup trigger.
+		   * 
+		   * @param e Mouse event.
+		   */
+      private void handleContextualMenu(MouseEvent e) {
+		    if (e.isPopupTrigger() && e.getClickCount() == 1) {
+		      // ============= Right click event ================
+		      // First, check the node under the mouse.
+	        TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
+	        if (treePath != null) {
+	          boolean treeInSelection = false;
+	          TreePath[] paths = tree.getSelectionPaths();
+	          // The node under the mouse might not be the selected one.
+	          // A JTree only updates selection for a left button.
+	          if (paths != null) {
+	            for (int i = 0; i < paths.length; i++) {
+	              if (treePath.equals(paths[i])) {
+	                treeInSelection = true;
+	                break;
+	              }
+	            }
+	          }
+	          if (!treeInSelection) {
+	            tree.setSelectionPath(treePath);
+	          }
+	        } else {
+	          // A click outside the tree. Go with a selected path.
+	          treePath = tree.getSelectionPath();
+	        }
+	        
+		      if (treePath != null) {
+		        String stringPath = TreeFormatter.getStringPath(treePath);
+		        StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+		        GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+
+		        if (!node.isRoot() 
+		                || node.children().hasMoreElements()
+		                || isMergingResolved()) {
+
+		          showContextualMenuForTree(e.getX(), e.getY(), model);
+		        }
+		      }
+		    }
+      }
+
+      /**
+       * Shows DIFF for a double click mouse event.
+       * 
+       * @param e Mouse event.
+       */
+		  private void showDiff(MouseEvent e) {
+		    if (!e.isPopupTrigger() && 
+		        e.getClickCount() == 2) {
+		      // ============= Double click event ==============
+		      final StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+		      TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
+		      if (treePath != null) {
+
+		        String stringPath = TreeFormatter.getStringPath(treePath);
+		        GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+
+		        if (
+		            model.isLeaf(node) && 
+		            !model.getRoot().equals(node)) {
+		          FileStatus file = model.getFileByPath(stringPath);
+		          DiffPresenter diff = new DiffPresenter(file, stageController);
+		          diff.showDiff();
+		        }
+		      }
+		    }
+		  }
+		  });
 	}
 	
 	/**
@@ -979,64 +1017,69 @@ public class ChangesPanel extends JPanel {
 		filesTable.addMouseListener(new MouseAdapter() {
 		  @Override
 		  public void mousePressed(MouseEvent e) {
-  		 // For MacOS
-		    mouseReleased(e);
+	      // For MacOS the popup trigger comes on mouse pressed.
+		    handleContexMenuEvent(e);
 		  }
 		  
 		  @Override
 			public void mouseReleased(MouseEvent e) {
+        // Switching between Staged and UnStaged with right click introduced some paint artifacts.
 		    filesTable.requestFocus();
 		    filesTable.repaint();
         
-				Point point = new Point(e.getX(), e.getY());
-				int row = filesTable.convertRowIndexToModel(filesTable.rowAtPoint(point));
-				int column = filesTable.columnAtPoint(point);
-				if (column == -1 || row == -1) {
-					filesTable.clearSelection();
-					// When resolving a conflict "using mine" and there are no more entries in the tables,
-					// show the contextual menu for being able to restart the merging
-					
-					if (e.isPopupTrigger() && e.getClickCount() == 1) {
-					  GitStatus status = GitAccess.getInstance().getStatus();
-					  if (status.getStagedFiles().isEmpty()
-              && status.getUnstagedFiles().isEmpty()
-              && isMergingResolved()) {
-					  showContextualMenuForFlatView(e.getX(), e.getY(), new int[0]);
-					  }
-					}
-				} else {
-				  // ======== LEFT DOUBLE CLICK ========
-					if (!e.isPopupTrigger() && e.getClickCount() == 2) {
-						openFileInCompareEditor(row);
-					}
-					
-					// ======== RIGHT CLICK ==========
-					if (e.isPopupTrigger() && e.getClickCount() == 1 && row != -1) {
-						boolean inSelection = false;
-						int clickedRow = filesTable.rowAtPoint(e.getPoint());
-						int[] selectedRows = filesTable.getSelectedRows();
-						for (int i = 0; i < selectedRows.length; i++) {
-							if (clickedRow == selectedRows[i]) {
-								inSelection = true;
-								break;
-							}
-
-						}
-
-						if (clickedRow >= 0 && clickedRow < filesTable.getRowCount()) {
-							if (!inSelection) {
-								filesTable.setRowSelectionInterval(clickedRow, clickedRow);
-								selectedRows = filesTable.getSelectedRows();
-							}
-
-							showContextualMenuForFlatView(e.getX(), e.getY(), selectedRows);
-						} else {
-							filesTable.clearSelection();
-						}
-					}
-				}
-				toggleSelectedButton();
+				handleContexMenuEvent(e);
+				
+				 // ======== LEFT DOUBLE CLICK ========
+        if (!e.isPopupTrigger() && e.getClickCount() == 2) {
+          Point point = new Point(e.getX(), e.getY());
+          int clickedRow = filesTable.rowAtPoint(point);
+          openFileInCompareEditor(clickedRow);
+        }
+        
 			}
+
+		  /**
+		   * Present the contextual menu if this is the proper event.
+		   * 
+		   * @param e Mouse event.
+		   */
+		  private void handleContexMenuEvent(MouseEvent e) {
+		    if (e.isPopupTrigger() && e.getClickCount() == 1) {
+		      Point point = new Point(e.getX(), e.getY());
+		      int clickedRow = filesTable.rowAtPoint(point);
+		      int[] selectedRows = filesTable.getSelectedRows();
+		      if (clickedRow != -1) {
+		        // Might be a right click over a non-selected row. 
+		        boolean inSelection = false;
+		        for (int i = 0; i < selectedRows.length; i++) {
+		          if (clickedRow == selectedRows[i]) {
+		            inSelection = true;
+		            break;
+		          }
+		        }
+
+		        if (!inSelection) {
+		          filesTable.setRowSelectionInterval(clickedRow, clickedRow);
+		          selectedRows = filesTable.getSelectedRows();
+		        }
+		      }
+		      
+		      if (selectedRows.length == 0) {
+		        // When resolving a conflict "using mine" and there are no more entries in the tables,
+		        // show the contextual menu for being able to restart the merging
+
+		        GitStatus status = GitAccess.getInstance().getStatus();
+		        if (status.getStagedFiles().isEmpty()
+		            && status.getUnstagedFiles().isEmpty()
+		            && isMergingResolved()) {
+		          showContextualMenuForFlatView(e.getX(), e.getY(), new int[0]);
+		        }
+		      } else {
+		        // ======== RIGHT CLICK ==========
+		        showContextualMenuForFlatView(e.getX(), e.getY(), selectedRows);
+		      }
+		    }
+		  }
 
 		});
 		

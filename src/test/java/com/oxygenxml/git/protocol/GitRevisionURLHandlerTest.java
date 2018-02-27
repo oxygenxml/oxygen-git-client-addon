@@ -72,9 +72,28 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
   }
   
   @Test
-  public void testConflict() {
-    // TODO Use GitAccessConflictTest as inspiration.
-
+  public void testConflict() throws Exception {
+    
+//    Pattern compile = Pattern.compile("Icons.", Pattern.DOTALL);
+//    Matcher matcher = compile.matcher("Icons\r");
+//    System.out.println("matcher.matches() " + matcher.matches());
+//    
+//    // TODO Use GitAccessConflictTest as inspiration.
+//    IMatcher createPathMatcher = PathMatcher.createPathMatcher("Icons\r", '/', false);
+//    System.out.println(createPathMatcher.getClass());
+//    boolean matches = createPathMatcher.matches("Icons\r", false, false);
+//    
+//    assertTrue(matches);
+//    
+//    createPathMatcher = PathMatcher.createPathMatcher("Icons*", '/', false);
+//    System.out.println(createPathMatcher.getClass());
+//    matches = createPathMatcher.matches("Icons\r", false, false);
+//    
+////    Field declaredField = createPathMatcher.getClass().getDeclaredField("p");
+////    declaredField.setAccessible(true);
+////    Pattern p = (Pattern) declaredField.get(createPathMatcher);
+////    System.out.println("Pattern " + p);
+//    assertTrue(matches);
   }
 
 }
