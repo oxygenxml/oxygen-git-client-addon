@@ -24,7 +24,7 @@ public class DestinationPaths {
 	 * The list with the previous destination paths
 	 */
 	@XmlElement(name = "path")
-	private List<String> paths = new LinkedList<String>();
+	private List<String> paths = new LinkedList<>();
 
 	public List<String> getPaths() {
 		return paths;

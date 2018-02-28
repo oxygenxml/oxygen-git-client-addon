@@ -99,7 +99,6 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void repositoryChanged() {
-        GitAccess gitAccess = GitAccess.getInstance();
         Repository repository;
         try {
           repository = gitAccess.getRepository();
@@ -194,7 +193,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
-		previousMessages = new JComboBox<String>();
+		previousMessages = new JComboBox<>();
 		PreviousMessagesToolTipRenderer renderer = new PreviousMessagesToolTipRenderer();
 		previousMessages.setRenderer(renderer);
 

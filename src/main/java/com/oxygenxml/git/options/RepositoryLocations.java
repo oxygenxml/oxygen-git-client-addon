@@ -25,7 +25,7 @@ public class RepositoryLocations {
 	 * The list with the users repositories
 	 */
 	@XmlElement(name = "location")
-	private List<String> locations = new LinkedList<String>();
+	private List<String> locations = new LinkedList<>();
 
 	public List<String> getLocations() {
 		return locations;

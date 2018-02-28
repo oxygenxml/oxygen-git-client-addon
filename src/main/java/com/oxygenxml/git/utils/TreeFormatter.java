@@ -122,12 +122,12 @@ public class TreeFormatter {
 	 * @return A List containing the common ancestors
 	 */
 	public static List<TreePath> getTreeCommonAncestors(TreePath[] selectedPaths) {
-		List<TreePath> commonAncestors = new ArrayList<TreePath>();
+		List<TreePath> commonAncestors = new ArrayList<>();
 		if (selectedPaths != null) {
 			commonAncestors.add(selectedPaths[0]);
 			for (int i = 0; i < selectedPaths.length; i++) {
 				boolean newPathToAdd = false;
-				List<TreePath> pathsToRemove = new ArrayList<TreePath>();
+				List<TreePath> pathsToRemove = new ArrayList<>();
 				for (TreePath treePath : commonAncestors) {
 					if (treePath.isDescendant(selectedPaths[i])) {
 						newPathToAdd = false;
@@ -193,7 +193,7 @@ public class TreeFormatter {
 
 	
 	public static List<String> getStringComonAncestor(JTree tree) {
-		List<String> selectedFiles = new ArrayList<String>();
+		List<String> selectedFiles = new ArrayList<>();
 		TreePath[] selectedPaths = tree.getSelectionPaths();
 		List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(selectedPaths);
 		String fullPath = "";

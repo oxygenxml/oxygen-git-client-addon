@@ -25,6 +25,11 @@ public class ProjectViewManager {
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(ProjectViewManager.class.getName());
+  
+  /**
+   * The "getProjectManager()" method name.
+   */
+  private static final String GET_PROJECT_MANAGER_METHOD_NAME = "getProjectManager";
 
   /**
    * Hiden constructor.
@@ -49,13 +54,13 @@ public class ProjectViewManager {
 		// try to get method from 19.1 version
 		try {
 			// get the getProjectManager method
-			Method getProjectManager = pluginWorkspaceAccess.getClass().getMethod("getProjectManager");
+			Method getProjectManager = pluginWorkspaceAccess.getClass().getMethod(GET_PROJECT_MANAGER_METHOD_NAME);
 
 			// get the projectManager class
-			Class projectManagerClass = getProjectManager.getReturnType();
+			Class<?> projectManagerClass = getProjectManager.getReturnType();
 
 			// get the projectPopupMenuCustomizer interface
-			Class projectPopupMenuCustomizerClass = 
+			Class<?> projectPopupMenuCustomizerClass = 
 			    Class.forName("ro.sync.exml.workspace.api.standalone.project.ProjectPopupMenuCustomizer");
 			
 			// create a ProxyInstance of projectPopupMenuCustomizer
@@ -68,7 +73,7 @@ public class ProjectViewManager {
 
 			// get the addPopUpMenuCustomizer method
 			Method addPopUpMenuCustomizerMethod = projectManagerClass.getMethod("addPopUpMenuCustomizer",
-					new Class[] { projectPopupMenuCustomizerClass });
+					projectPopupMenuCustomizerClass);
 			// invoke addPopUpMenuCustomizer method
 			addPopUpMenuCustomizerMethod.invoke(projectManager, proxyProjectPopupMenuCustomizerImpl);
 
@@ -91,10 +96,10 @@ public class ProjectViewManager {
 	  File[] toReturn = null;
 		try {
 			// get the getProjectManager method
-			Method getProjectManager = pluginWorkspaceAccess.getClass().getMethod("getProjectManager");
+			Method getProjectManager = pluginWorkspaceAccess.getClass().getMethod(GET_PROJECT_MANAGER_METHOD_NAME);
 
 			// get the projectManager class
-			Class projectManagerClass = getProjectManager.getReturnType();
+			Class<?> projectManagerClass = getProjectManager.getReturnType();
 
 			// get the projectManager
 			Object projectManager = getProjectManager.invoke(pluginWorkspaceAccess);
@@ -122,7 +127,7 @@ public class ProjectViewManager {
 	 * @return the selected files and all the files from inside the selected directories in the Project view.
 	 */
 	public static Set<String> getSelectedFilesDeep(StandalonePluginWorkspace pluginWorkspaceAccess){
-	  Set<String> files = new HashSet<String>();
+	  Set<String> files = new HashSet<>();
 
 	  File[] selectedFiles = getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
 	  if (selectedFiles != null) {
@@ -145,7 +150,7 @@ public class ProjectViewManager {
 	    // but the plug-in should be compatible with older versions.
 	    StandalonePluginWorkspace workspaceAccess = 
 	        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-      Method getProjectManagerMethod = StandalonePluginWorkspace.class.getMethod("getProjectManager");
+      Method getProjectManagerMethod = StandalonePluginWorkspace.class.getMethod(GET_PROJECT_MANAGER_METHOD_NAME);
       Object projectManager = getProjectManagerMethod.invoke(workspaceAccess);
       Class<?> projectControllerClass = Class.forName(
           "ro.sync.exml.workspace.api.standalone.project.ProjectController");

@@ -76,7 +76,7 @@ public class GitMenuActionsProvider {
    * Get the Git-specific actions for the current selection from the Project view.
    */
   public List<AbstractAction> getActionsForProjectViewSelection() {
-    List<AbstractAction> actions = new ArrayList<AbstractAction>();
+    List<AbstractAction> actions = new ArrayList<>();
     
     // Create the Git actions, if not already created
     if (commitAction == null) {
@@ -114,7 +114,7 @@ public class GitMenuActionsProvider {
               GitAccess.getInstance().setRepository(repository);
             }
             
-            List<FileStatus> gitFiles = new ArrayList<FileStatus>();
+            List<FileStatus> gitFiles = new ArrayList<>();
             GitStatus status = GitAccess.getInstance().getStatus();
             gitFiles.addAll(status.getUnstagedFiles());
             gitFiles.addAll(status.getStagedFiles());
@@ -179,7 +179,7 @@ public class GitMenuActionsProvider {
     
     List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
     Set<String> allSelectedFiles = ProjectViewManager.getSelectedFilesDeep(pluginWorkspaceAccess);
-    List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+    List<FileStatus> stagedFiles = new ArrayList<>();
     for (FileStatus unstagedFileStatus : unstagedFiles) {
       if (allSelectedFiles.contains(repository + "/" + unstagedFileStatus.getFileLocation())
           && unstagedFileStatus.getChangeType() != GitChangeType.CONFLICT) {
@@ -229,7 +229,7 @@ public class GitMenuActionsProvider {
         GitAccess.getInstance().setRepository(repository);
       }
 
-      List<FileStatus> gitFiles = new ArrayList<FileStatus>();
+      List<FileStatus> gitFiles = new ArrayList<>();
       GitStatus status = GitAccess.getInstance().getStatus();
       gitFiles.addAll(status.getUnstagedFiles());
       gitFiles.addAll(status.getStagedFiles());

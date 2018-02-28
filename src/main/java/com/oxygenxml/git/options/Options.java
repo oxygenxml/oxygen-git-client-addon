@@ -25,7 +25,7 @@ public class Options {
    * A cache for the SSH questions and the user answer.
    */
   @XmlElement(name = "sshPromptAnswers")
-  private HashMap<String, Boolean> sshPromptAnswers = new HashMap<String, Boolean>();
+  private Map<String, Boolean> sshPromptAnswers = new HashMap<>();
 
 	/**
 	 * Wrapper for a list with the repository locations
@@ -167,7 +167,7 @@ public class Options {
 	/**
 	 * @param sshPromptAnswers A cache for asking the user for connection message.
 	 */
-	public void setSshQuestions(HashMap<String, Boolean> sshPromptAnswers) {
+	public void setSshQuestions(Map<String, Boolean> sshPromptAnswers) {
     this.sshPromptAnswers = sshPromptAnswers;
   }
 	

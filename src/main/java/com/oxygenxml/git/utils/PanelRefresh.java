@@ -307,7 +307,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	  SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        List<FileStatus> newFiles = new ArrayList<FileStatus>();
+        List<FileStatus> newFiles = new ArrayList<>();
         List<FileStatus> filesInModel = null;
         
         filesInModel = panelToUpdate.getFilesStatuses();

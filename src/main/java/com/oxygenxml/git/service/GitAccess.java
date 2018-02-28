@@ -101,6 +101,10 @@ import com.oxygenxml.git.view.event.GitCommand;
  */
 public class GitAccess {
   /**
+   * "remote"
+   */
+  private static final String REMOTE = "remote";
+  /**
    * "End fetch" debug message.
    */
 	private static final String END_FETCH_DEBUG_MESSAGE = "End fetch";
@@ -123,7 +127,7 @@ public class GitAccess {
 	/**
 	 * Receive notifications when things change.
 	 */
-	private Set<GitEventListener> listeners = new LinkedHashSet<GitEventListener>();
+	private Set<GitEventListener> listeners = new LinkedHashSet<>();
 
 	 /**
    * Singleton instance.
@@ -413,7 +417,7 @@ public class GitAccess {
 	 * their states.
 	 */
 	private List<FileStatus> getUnstagedFiles(Status status) {
-		List<FileStatus> unstagedFiles = new ArrayList<FileStatus>();
+		List<FileStatus> unstagedFiles = new ArrayList<>();
 		if (git != null) {
 			try {
 				Set<String> submodules = getSubmodules();
@@ -520,7 +524,7 @@ public class GitAccess {
 				logger.debug(e, e);
 			}
 		}
-		return new HashSet<String>();
+		return new HashSet<>();
 	}
 
 	/**
@@ -562,7 +566,7 @@ public class GitAccess {
 	}
 
 	private Collection<String> getPaths(List<FileStatus> files) {
-	  List<String> paths = new LinkedList<String>();
+	  List<String> paths = new LinkedList<>();
 	  for (Iterator<FileStatus> iterator = files.iterator(); iterator.hasNext();) {
       FileStatus fileStatus = iterator.next();
       paths.add(fileStatus.getFileLocation());
@@ -921,7 +925,7 @@ public class GitAccess {
 	 * @return - a set containing the subset of files present in the INDEX.
 	 */
   private List<FileStatus> getStagedFiles(Status status) {
-    List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+    List<FileStatus> stagedFiles = new ArrayList<>();
     Set<String> submodules = getSubmodules();
 
     for (String fileName : status.getChanged()) {
@@ -961,7 +965,7 @@ public class GitAccess {
 		if (git != null) {
 			try {
 				Status status = git.status().call();
-				List<FileStatus> stagedFiles = new ArrayList<FileStatus>();
+				List<FileStatus> stagedFiles = new ArrayList<>();
 				for (String fileName : status.getConflicting()) {
 					stagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
 				}
@@ -974,7 +978,7 @@ public class GitAccess {
 			}
 		}
 
-		return new ArrayList<FileStatus>();
+		return new ArrayList<>();
 	}
 
 	/**
@@ -1033,12 +1037,12 @@ public class GitAccess {
 		if (git != null) {
 			Config storedConfig = git.getRepository().getConfig();
 			// TODO How we should react when there are multiple remote repositories???
-			String url = storedConfig.getString("remote", "origin", "url");
+			String url = storedConfig.getString(REMOTE, "origin", "url");
 			if (url == null) {
 			  Set<String> remoteNames = git.getRepository().getRemoteNames();
 			  Iterator<String> iterator = remoteNames.iterator();
 			  if (iterator.hasNext()) {
-			    url = storedConfig.getString("remote", iterator.next(), "url");
+			    url = storedConfig.getString(REMOTE, iterator.next(), "url");
 			  }
 			}
 			try {
@@ -1291,7 +1295,7 @@ public class GitAccess {
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
-			if (sections.contains("remote")) {
+			if (sections.contains(REMOTE)) {
         git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).setCheckFetchedObjects(true)
 						.setCredentialsProvider(credentialsProvider).call();
 			}

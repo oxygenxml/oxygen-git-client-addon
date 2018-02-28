@@ -71,7 +71,7 @@ public class UndoSupportInstaller {
   private static class UndoManager extends AbstractUndoableEdit implements UndoableEditListener {
   	String lastEditName = null;
   	int lastOffset = -1;
-  	ArrayList<MyCompoundEdit> edits = new ArrayList<MyCompoundEdit>();
+  	ArrayList<MyCompoundEdit> edits = new ArrayList<>();
   	MyCompoundEdit current;
   	int pointer = -1;
   	@Override

@@ -149,7 +149,7 @@ public class FileHelper {
 	 */
 	public static List<String> getAllFilesFromPath(String path) {
 		File rootFolder = new File(path);
-		List<String> fileNames = new ArrayList<String>();
+		List<String> fileNames = new ArrayList<>();
 		if (rootFolder.isFile()) {
 			fileNames.add(rewriteSeparator(rootFolder.getAbsolutePath()));
 			return fileNames;

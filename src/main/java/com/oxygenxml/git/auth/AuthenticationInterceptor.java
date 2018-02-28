@@ -56,7 +56,7 @@ public class AuthenticationInterceptor {
 		/**
 		 * The lists of hosts for which to intercept the authentication.
 		 */
-		private Set<String> boundHosts = new HashSet<String>();
+		private Set<String> boundHosts = new HashSet<>();
 
 		/**
 		 * Constructor.

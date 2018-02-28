@@ -98,7 +98,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
 	 * List of listeners for this panel
 	 */
-	private List<Subject<PushPullEvent>> subjects = new ArrayList<Subject<PushPullEvent>>();
+	private List<Subject<PushPullEvent>> subjects = new ArrayList<>();
 
 	/**
 	 * Main panel refresh

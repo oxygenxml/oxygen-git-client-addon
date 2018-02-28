@@ -25,7 +25,7 @@ public class ProjectsTestedForGit {
 	 * The list with the users repositories
 	 */
 	@XmlElement(name = "path")
-	private List<String> paths = new ArrayList<String>();
+	private List<String> paths = new ArrayList<>();
 
 	public List<String> getPaths() {
 		return paths;

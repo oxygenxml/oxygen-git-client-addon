@@ -26,7 +26,7 @@ public class CommitMessages {
 	 * The last 7 committed messages
 	 */
 	@XmlElement(name = "message")
-	private List<String> messages = new ArrayList<String>();
+	private List<String> messages = new ArrayList<>();
 
 	public List<String> getMessages() {
 		return messages;
