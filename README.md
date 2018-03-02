@@ -60,3 +60,9 @@ After you edit your file and commit it in the local repository and try to push i
 4. When all conflicts are resolved and no more files are left in the "Unstaged" area, the changes can be committed.
 5. Enter a message and commit. You will now have a new "Push" available.
 6. Push the changes to the public repository.
+
+Copyright and License
+---------------------
+Copyright 2018 Syncro Soft SRL.
+
+This project is licensed under [Apache License 2.0](https://github.com/oxygenxml/oxygen-git-plugin/blob/master/LICENSE)
