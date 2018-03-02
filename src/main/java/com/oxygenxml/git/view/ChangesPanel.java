@@ -352,8 +352,15 @@ public class ChangesPanel extends JPanel {
 	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
 	    modelTable.stateChanged(changeEvent);
 	  } else {
+	    Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
+	    TreePath[] selectionPaths = tree.getSelectionPaths();
+
 	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 	    treeModel.stateChanged(changeEvent);
+
+	    // Restore last expanded paths after refresh
+	    TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
+	    tree.setSelectionPaths(selectionPaths);
 	  }
 	  
     toggleSelectedButton();

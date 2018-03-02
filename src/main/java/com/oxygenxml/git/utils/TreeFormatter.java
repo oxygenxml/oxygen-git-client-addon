@@ -91,14 +91,13 @@ public class TreeFormatter {
 	}
 
 	/**
-	 * Finds the node in the tree from a given forward slash delimited string
-	 * path.
+	 * Finds the node in the tree from a given forward slash delimited string path.
 	 * 
 	 * @param model
 	 *          - The tree model
 	 * @param path
 	 *          - The string to find the node from
-	 * @return The node
+	 * @return The node or <code>null</code> if the file is not present in the tree.
 	 */
 	public static GitTreeNode getTreeNodeFromString(DefaultTreeModel model, String path) {
 		GitTreeNode node = (GitTreeNode) model.getRoot();
@@ -108,6 +107,9 @@ public class TreeFormatter {
 		    int index = childIndex(node, s);
 		    if (index != -1) {
 		      node = (GitTreeNode) node.getChildAt(index);
+		    } else {
+		      node = null;
+		      break;
 		    }
 		  }
 		}

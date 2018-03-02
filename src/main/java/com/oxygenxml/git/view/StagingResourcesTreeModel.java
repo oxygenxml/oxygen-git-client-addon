@@ -73,8 +73,8 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
     List<FileStatus> newStates = 
         inIndex ? 
             GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) :
-            GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles()); 
-    
+            GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
+            
     if (changeEvent.getCommand() == GitCommand.STAGE) {
 			if (inIndex) {
 				insertNodes(newStates);
@@ -112,6 +112,8 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * 
 	 * @param fileToBeUpdated
 	 *          - the files on which the nodes will be created
+	 *          
+	 * TODO EXM-41133 Sorin Return the added TreePaths.
 	 */
 	private void insertNodes(List<FileStatus> fileToBeUpdated) {
 
@@ -127,11 +129,13 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * 
 	 * @param fileToBeUpdated
 	 *          - the files on which the nodes will be deleted
+	 *          
+	 * TODO EXM-41133 Sorin Return deleted TreePath.
 	 */
 	private void deleteNodes(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
 			GitTreeNode node = TreeFormatter.getTreeNodeFromString(this, fileStatus.getFileLocation());
-			while (node.getParent() != null) {
+			while (node != null && node.getParent() != null) {
 				GitTreeNode parentNode = (GitTreeNode) node.getParent();
 				if (node.getSiblingCount() != 1) {
 					parentNode.remove(node);
