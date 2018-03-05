@@ -1,6 +1,7 @@
 package com.oxygenxml.git.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,5 +76,25 @@ public class TreeFormatterTest {
 
 	}
 
+	/**
+	 * Getting tree node from a string should return <code>null</code> if
+	 * there is no corresponding node.
+	 */
+	@Test
+  public void testGetNodeFromString_2() {
+    List<String> paths = new ArrayList<String>();
+    paths.add("src/add/poc.txt");
+    paths.add("src/add/hello.txt");
+    paths.add("src/add/java/info.txt");
+    GitTreeNode root = new GitTreeNode("Test");
+    DefaultTreeModel model = new DefaultTreeModel(root);
+
+    for (String string : paths) {
+      TreeFormatter.buildTreeFromString(model, string);
+    }
+
+    GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, "path/to/non/existing/file.xml");
+    assertNull(node);
+  }
 
 }
