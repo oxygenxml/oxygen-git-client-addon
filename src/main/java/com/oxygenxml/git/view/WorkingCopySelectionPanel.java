@@ -298,7 +298,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	  gbc.weightx = 1;
 	  gbc.weighty = 1;
 
-	  workingCopyCombo = new JComboBox<String>();
+	  workingCopyCombo = new JComboBox<>();
 	  WorkingCopyToolTipRenderer renderer = new WorkingCopyToolTipRenderer();
 	  workingCopyCombo.setRenderer(renderer);
 	  int height = (int) workingCopyCombo.getPreferredSize().getHeight();
@@ -316,7 +316,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * Load the recorded workinf copy locations into the combo.
 	 */
   private void loadEntries() {
-    List<String> repositoryEntries = new ArrayList<String>(OptionsManager.getInstance().getRepositoryEntries());
+    List<String> repositoryEntries = new ArrayList<>(OptionsManager.getInstance().getRepositoryEntries());
     for (String repositoryEntry : repositoryEntries) {
 			workingCopyCombo.addItem(repositoryEntry);
 		}

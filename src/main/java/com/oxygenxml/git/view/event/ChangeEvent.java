@@ -43,7 +43,7 @@ public class ChangeEvent {
 	}
 
 	public List<FileStatus> getOldStates() {
-	  List<FileStatus> fss = new LinkedList<FileStatus>();
+	  List<FileStatus> fss = new LinkedList<>();
 	  for (Iterator<String> iterator = changedFiles.iterator(); iterator.hasNext();) {
       String path = iterator.next();
       fss.add(new FileStatus(GitChangeType.UNKNOWN, path));

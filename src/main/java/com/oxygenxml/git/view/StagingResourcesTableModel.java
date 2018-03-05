@@ -45,7 +45,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * The internal representation of the model
 	 */
-	private List<FileStatus> filesStatus = new ArrayList<FileStatus>();
+	private List<FileStatus> filesStatus = new ArrayList<>();
 
 	/**
 	 * Compares file statuses.
@@ -177,7 +177,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 *          - the files to change their stage state
 	 */
 	public void switchAllFilesStageState() {
-		List<FileStatus> filesToBeUpdated = new ArrayList<FileStatus>();
+		List<FileStatus> filesToBeUpdated = new ArrayList<>();
 		for (FileStatus fileStatus : filesStatus) {
 			if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {
 				filesToBeUpdated.add(fileStatus);
@@ -247,7 +247,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * Removes any duplicate entries
 	 */
 	private void removeDuplicates() {
-		Set<FileStatus> set = new HashSet<FileStatus>();
+		Set<FileStatus> set = new HashSet<>();
 		set.addAll(this.filesStatus);
 		this.filesStatus.clear();
 		this.filesStatus.addAll(set);
@@ -290,7 +290,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * @return a list containing the file indexes
 	 */
 	public List<Integer> getRows(String path) {
-		List<Integer> rows = new ArrayList<Integer>();
+		List<Integer> rows = new ArrayList<>();
 
 		for (int i = 0; i < filesStatus.size(); i++) {
 			if (filesStatus.get(i).getFileLocation().contains(path)) {

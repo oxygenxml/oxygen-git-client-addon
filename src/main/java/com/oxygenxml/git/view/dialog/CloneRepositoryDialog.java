@@ -221,7 +221,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.gridwidth = 1;
 		panel.add(lblPath, gbc);
 
-		destinationPathCombo = new JComboBox<String>();
+		destinationPathCombo = new JComboBox<>();
 		UndoSupportInstaller.installUndoManager(((JTextComponent) destinationPathCombo.getEditor().getEditorComponent()));
 		destinationPathCombo.setEditable(true);
 		List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
