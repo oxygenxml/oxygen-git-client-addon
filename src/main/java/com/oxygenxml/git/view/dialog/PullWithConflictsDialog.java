@@ -38,7 +38,7 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 
 
 		// populating the JList with the conflict files
-		DefaultListModel<String> model = new DefaultListModel<String>();
+		DefaultListModel<String> model = new DefaultListModel<>();
 		for (String fileName : conflictFiles) {
 			File file = new File(fileName);
 			String listElement = file.getName();
@@ -48,7 +48,7 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 			}
 			model.addElement(listElement);
 		}
-		JList<String> filesInConflictList = new JList<String>(model);
+		JList<String> filesInConflictList = new JList<>(model);
 		JScrollPane scollPane = new JScrollPane(filesInConflictList);
 		scollPane.setPreferredSize(new Dimension(scollPane.getPreferredSize().width, 50));
 		

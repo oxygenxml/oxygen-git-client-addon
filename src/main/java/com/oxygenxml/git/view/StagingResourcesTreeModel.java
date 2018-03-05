@@ -178,7 +178,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * @return a list containing the files from the path
 	 */
 	public List<FileStatus> getFilesByPaths(List<String> selectedPaths) {
-	  List<FileStatus> containingPaths = new ArrayList<FileStatus>();
+	  List<FileStatus> containingPaths = new ArrayList<>();
 	  for (String path : selectedPaths) {
 	    synchronized (filesStatuses) {
 	      for (FileStatus fileStatus : filesStatuses) {
@@ -199,7 +199,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    * @return a list containing the files from the path.
    */
 	public List<FileStatus> getFileLeavesByPaths(List<String> selectedPaths) {
-	  List<FileStatus> containingPaths = new ArrayList<FileStatus>();
+	  List<FileStatus> containingPaths = new ArrayList<>();
 	  for (String path : selectedPaths) {
 	    synchronized (filesStatuses) {
 	      for (FileStatus fileStatus : filesStatuses) {
@@ -248,7 +248,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 */
 	private void sort(GitTreeNode parent) {
 		int n = parent.getChildCount();
-		List<GitTreeNode> children = new ArrayList<GitTreeNode>(n);
+		List<GitTreeNode> children = new ArrayList<>(n);
 		for (int i = 0; i < n; i++) {
 			children.add((GitTreeNode) parent.getChildAt(i));
 		}
@@ -274,7 +274,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    *          - the files to change their stage state
    */
   public void switchAllFilesStageState() {
-    List<FileStatus> filesToBeUpdated = new ArrayList<FileStatus>();
+    List<FileStatus> filesToBeUpdated = new ArrayList<>();
     synchronized (filesStatuses) {
       for (FileStatus fileStatus : filesStatuses) {
         if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {

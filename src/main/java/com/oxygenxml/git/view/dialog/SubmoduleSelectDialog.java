@@ -81,7 +81,7 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-		submoduleList = new JComboBox<String>();
+		submoduleList = new JComboBox<>();
 		submoduleList.setPreferredSize(new Dimension(200, submoduleList.getPreferredSize().height));
 		for (String submodule : GitAccess.getInstance().getSubmodules()) {
 			submoduleList.addItem(submodule);
