@@ -190,6 +190,9 @@ public class ChangesPanel extends JPanel {
 		this.stageController = stageController;
 		
 		tree = createTree();
+		// ==== EXM-41138 hack: expand/collapse on second mouse released ====
+		tree.setDragEnabled(true);
+		// ==================================================================
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		this.currentViewMode = forStagedResources ? OptionsManager.getInstance().getStagedResViewMode()
 		    : OptionsManager.getInstance().getUntagedResViewMode();
