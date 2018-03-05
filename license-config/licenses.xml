@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<licenseSummary xmlns="http://mojo.codehaus.org/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://mojo.codehaus.org/ licenses.xsd">
+    <dependencies>
+    
+        <dependency>
+            <groupId>net.sf.jfcunit</groupId>
+            <artifactId>jfcunit</artifactId>
+            <version>2.08</version>
+            <licenses>
+                <license>
+                    <name>GNU LESSER GENERAL PUBLIC LICENSE</name>
+                    <url>http://maven.ibiblio.org/maven/net.sf.jfcunit/licenses/jfcunit-2.08.license</url>
+                </license>
+            </licenses>
+        </dependency>
+    </dependencies>
+</licenseSummary>

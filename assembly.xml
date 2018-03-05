@@ -18,8 +18,8 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>licenses/</directory>
-      <outputDirectory>lib</outputDirectory>
+      <directory>target/generated-resources</directory>
+      <outputDirectory>license</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>

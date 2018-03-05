@@ -155,7 +155,28 @@
 	
 					</executions>
 				</plugin>
-	
+				
+				<!-- Download licenses -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.14</version>
+				<configuration>
+					<licensesConfigFile>${project.basedir}/license-config/licenses.xml</licensesConfigFile>
+					<includedScopes>compile</includedScopes>
+					<sortByGroupIdAndArtifactId>true</sortByGroupIdAndArtifactId>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<id>download-licenses</id>
+						<goals>
+							<goal>download-licenses</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.0.2</version>
