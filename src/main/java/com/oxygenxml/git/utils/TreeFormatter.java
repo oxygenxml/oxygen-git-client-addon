@@ -101,7 +101,7 @@ public class TreeFormatter {
 	 */
 	public static GitTreeNode getTreeNodeFromString(DefaultTreeModel model, String path) {
 		GitTreeNode node = (GitTreeNode) model.getRoot();
-		if (node != null) {
+		if (node != null && path != null && !path.isEmpty()) {
 		  String[] strings = path.split("/");
 		  for (String s : strings) {
 		    int index = childIndex(node, s);

@@ -96,5 +96,27 @@ public class TreeFormatterTest {
     GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, "path/to/non/existing/file.xml");
     assertNull(node);
   }
+	
+	/**
+	 * EXM-41140
+	 * 
+   * Get the right node (the root) for an empty path.
+   */
+  @Test
+  public void testGetNodeFromString_3() {
+    List<String> paths = new ArrayList<String>();
+    paths.add("src/add/poc.txt");
+    paths.add("src/add/hello.txt");
+    paths.add("src/add/java/info.txt");
+    GitTreeNode root = new GitTreeNode("Test");
+    DefaultTreeModel model = new DefaultTreeModel(root);
+
+    for (String string : paths) {
+      TreeFormatter.buildTreeFromString(model, string);
+    }
+
+    GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, "");
+    assertEquals(root, node);
+  }
 
 }
