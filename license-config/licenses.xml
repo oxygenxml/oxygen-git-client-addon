@@ -5,6 +5,18 @@
     xsi:schemaLocation="http://mojo.codehaus.org/ licenses.xsd">
     <dependencies>
     
+    <!-- https://mvnrepository.com/artifact/jakarta-regexp/jakarta-regexp -->
+		<dependency>
+		    <groupId>jakarta-regexp</groupId>
+		    <artifactId>jakarta-regexp</artifactId>
+		    <version>1.4</version>
+		    <licenses>
+				<license>
+					 <name>The Apache Software License, Version 2.0</name>
+         			 <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+				</license>
+		  	</licenses>
+		</dependency>
         <dependency>
             <groupId>net.sf.jfcunit</groupId>
             <artifactId>jfcunit</artifactId>
