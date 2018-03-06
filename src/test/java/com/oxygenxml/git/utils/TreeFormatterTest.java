@@ -95,6 +95,9 @@ public class TreeFormatterTest {
 
     GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, "path/to/non/existing/file.xml");
     assertNull(node);
+    
+    node = TreeFormatter.getTreeNodeFromString(model, "src/add/non-existing.txt");
+    assertNull(node);
   }
 	
 	/**
