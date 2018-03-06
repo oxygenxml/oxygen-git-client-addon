@@ -93,7 +93,9 @@ public class RefreshProjectTest extends TestCase {
       File[] value = captor.getValue();
       assertNotNull(value);
       assertEquals(1, value.length);
-      assertEquals(repoDir.getCanonicalFile(), value[0]);
+      assertEquals(
+          repoDir.getCanonicalFile().getAbsolutePath(),
+          value[0].getAbsolutePath());
     } finally {
       FileUtils.deleteDirectory(repoDir);
     }
@@ -141,7 +143,9 @@ public class RefreshProjectTest extends TestCase {
       File[] value = captor.getValue();
       assertNotNull(value);
       assertEquals(1, value.length);
-      assertEquals(repoDir.getCanonicalFile(), value[0]);
+      assertEquals(
+          repoDir.getCanonicalFile().getAbsolutePath(),
+          value[0].getAbsolutePath());
     } finally {
       FileUtils.deleteDirectory(repoDir);
     }
@@ -185,7 +189,9 @@ public class RefreshProjectTest extends TestCase {
       File[] value = captor.getValue();
       assertNotNull(value);
       assertEquals(1, value.length);
-      assertEquals(subModule.getCanonicalFile(), value[0]);
+      assertEquals(
+          subModule.getCanonicalFile().getAbsolutePath(),
+          value[0].getAbsolutePath());
     } finally {
       FileUtils.deleteDirectory(repoDir);
     }

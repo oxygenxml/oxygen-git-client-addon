@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -58,11 +59,14 @@ public class FileHelper {
         String thisFolder = folders[0][j]; 
         boolean allMatched = true;
         for (int i = 1; i < folders.length && allMatched; i++) {
-          if (folders[i].length < j) {
+          String[] currentLine = folders[i];
+          if (j >= currentLine.length) {
+            // The first line contains more tokens than the current one.
             allMatched = false;
-            break; 
+            break;
+          } else {
+            allMatched &= currentLine[j].equals(thisFolder);
           }
-          allMatched &= folders[i][j].equals(thisFolder);
         }
         if (allMatched) {
           commonPathBuilder.append(thisFolder).append("/");
