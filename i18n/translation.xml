@@ -799,7 +799,7 @@
     </key>
     <key value="Conclude_Merge_Message">
         <comment>The text is displayed you fix all conflicts and there is nothing to commit</comment>
-        <val lang="en_US">All conflicts fixed but you are still merging. Commit to conclude the merge.</val>
+        <val lang="en_US">All conflicts were fixed, but you are still merging. Commit to conclude the merge.</val>
         <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte committen um den Merge abzuschließen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
