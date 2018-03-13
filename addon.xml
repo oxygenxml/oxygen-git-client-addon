@@ -20,6 +20,12 @@
 		         </style>
 		      </head>
 		      <body>
+		      	<div>
+		      		<h3>What's new in version 1.2.9</h3>
+		      		<ol>
+		      			<li>Fixed various issues encountered while working with resources in the tree view.</li>
+		      		</ol>
+		      	</div>
 		         <div>
 		            <h3>What's new in version 1.2.6</h3>
 		            <ol>
