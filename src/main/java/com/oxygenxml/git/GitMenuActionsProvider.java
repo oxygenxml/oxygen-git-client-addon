@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -221,7 +223,7 @@ public class GitMenuActionsProvider {
    * @return <code>true</code> if "Git diff" should be enabled.
    */
   private boolean isGitDiffEnabledBasedOnSelectedFileStatus(File selectedFile, String repository) {
-    boolean isEnabled = true;
+    boolean isEnabled = false;
     try {
       // Use the repository from the project view
       String previousRepository = OptionsManager.getInstance().getSelectedRepository();
@@ -229,32 +231,30 @@ public class GitMenuActionsProvider {
         GitAccess.getInstance().setRepository(repository);
       }
 
-      List<FileStatus> gitFiles = new ArrayList<>();
-      GitStatus status = GitAccess.getInstance().getStatus();
-      gitFiles.addAll(status.getUnstagedFiles());
-      gitFiles.addAll(status.getStagedFiles());
-
+      String relativePath = FileHelper.getPath(selectedFile);
+      GitStatus status = GitAccess.getInstance().getStatus(Arrays.asList(relativePath));
+      
       FileStatus selectedFileStatus = null;
-      String selectedFilePath = FileHelper.rewriteSeparator(selectedFile.getAbsolutePath());
-      for (FileStatus gitFileStatus : gitFiles) {
-        if (selectedFilePath.endsWith(gitFileStatus.getFileLocation())) {
-          selectedFileStatus = new FileStatus(gitFileStatus);
-          break;
-        }
+      List<FileStatus> unstagedFiles = status.getUnstagedFiles();
+      List<FileStatus> stagedFiles = status.getStagedFiles();
+      if (!unstagedFiles.isEmpty()) {
+        selectedFileStatus = unstagedFiles.get(0);
+      } else if (!stagedFiles.isEmpty()) {
+        selectedFileStatus = stagedFiles.get(0);
       }
-
-      if (selectedFileStatus == null
-          || selectedFileStatus.getChangeType() == GitChangeType.ADD
-          || selectedFileStatus.getChangeType() == GitChangeType.UNTRACKED
-          || selectedFileStatus.getChangeType() == GitChangeType.MISSING
-          || selectedFileStatus.getChangeType() == GitChangeType.REMOVED) {
-
-        isEnabled = false;
+      
+      if (selectedFileStatus != null
+          // Diff is not possible for any of these statuses.
+          && selectedFileStatus.getChangeType() != GitChangeType.ADD
+          && selectedFileStatus.getChangeType() != GitChangeType.UNTRACKED
+          && selectedFileStatus.getChangeType() != GitChangeType.MISSING
+          && selectedFileStatus.getChangeType() != GitChangeType.REMOVED) {
+        isEnabled = true;
       }
-    } catch (IOException e) {
-      isEnabled = false;
+    } catch (IOException | NoRepositorySelected e) {
       logger.error(e, e);
     }
+    
     return isEnabled;
   }
 

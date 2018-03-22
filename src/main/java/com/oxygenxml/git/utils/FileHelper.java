@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -192,6 +191,33 @@ public class FileHelper {
 		}
 		return url;
 	}
+	
+	/**
+	 * If this file is part of the repository, it returns the path relative 
+	 * to the loaded Git repository.
+	 * 
+	 * @param file Working copy file.
+	 * 
+	 * @return The path relative to the repository or <code>null</code> if the file is not 
+	 * from the working copy.
+	 * 
+	 * @throws NoRepositorySelected No repository was loaded. 
+	 */
+	public static String getPath(File file) throws NoRepositorySelected {
+	  String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+    selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+
+    String fileInWorkPath = FileHelper.rewriteSeparator(file.getAbsolutePath());
+    if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Notify " + fileInWorkPath);
+      }
+
+      return fileInWorkPath.substring(selectedRepositoryPath.length () + 1);
+    }
+    
+    return null;
+  }
 
 	/**
 	 * Check if the given path corresponds to a Git repository.

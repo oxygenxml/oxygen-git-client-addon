@@ -361,6 +361,39 @@ public class GitAccess {
     
     return gitStatus != null ? gitStatus : new GitStatus(Collections.emptyList(), Collections.emptyList());
   }
+	
+	/**
+	 * A status of the Working Copy, with the unstaged and staged files.
+	 * 
+	 * @param paths A subset of interest.
+	 *  
+   * @return A status of the Working Copy, with the unstaged and staged files.
+   */
+  public GitStatus getStatus(Collection<String> paths) {
+    GitStatus gitStatus = null;
+    if (git != null) {
+      StatusCommand statusCmd = git.status();
+      for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
+        String path = iterator.next();
+
+        statusCmd.addPath(path);
+      }
+
+      try {
+        Status status = statusCmd.call();
+        List<FileStatus> unstagedFiles = getUnstagedFiles(status);
+        List<FileStatus> stagedFiles = getStagedFiles(status);
+
+        gitStatus = new GitStatus(unstagedFiles, stagedFiles);
+      } catch (GitAPIException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+      }
+    }
+    
+    return gitStatus != null ? gitStatus : new GitStatus(Collections.emptyList(), Collections.emptyList());
+  }
 
 	 /**
    * Makes a diff between the files from the last commit and the files from the
