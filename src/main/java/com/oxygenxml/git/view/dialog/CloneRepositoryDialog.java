@@ -233,6 +233,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
       if (checkConnectionTask != null) {
         checkConnectionTask.cancel();
       }
+      CloneRepositoryDialog.this.getOkButton().setEnabled(false);
       checkConnectionTask = new TimerTask() {
         @Override
         public void run() {
@@ -243,10 +244,13 @@ public class CloneRepositoryDialog extends OKCancelDialog {
               URL sourceURL = new URL(text);
               AuthenticationInterceptor.bind(sourceURL.getHost());
               List<Ref> remoteBranches = new ArrayList<>(GitAccess.getInstance().listRemoteBranchesForURL(text));
-              Collections.sort(remoteBranches, refComparator);
-              // Re-populate the combo
-              for (Ref ref : remoteBranches) {
-                branchesComboBox.addItem(ref);
+              if (!remoteBranches.isEmpty()) {
+                CloneRepositoryDialog.this.getOkButton().setEnabled(true);
+                Collections.sort(remoteBranches, refComparator);
+                // Re-populate the combo
+                for (Ref ref : remoteBranches) {
+                  branchesComboBox.addItem(ref);
+                }
               }
             } catch (MalformedURLException e) {
               branchesComboBox.removeAllItems();
@@ -457,6 +461,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		panel.add(informationLabel, gbc);
 
 		this.add(panel, BorderLayout.NORTH);
+		
+		getOkButton().setEnabled(false);
 	}
 
 	/**
