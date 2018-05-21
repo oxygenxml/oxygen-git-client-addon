@@ -52,6 +52,12 @@ public class LoginDialog extends OKCancelDialog {
 	 */
 	private static Translator translator = Translator.getInstance();
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param host         The host for which to provide the credentials.
+	 * @param loginMessage The login message.
+	 */
 	public LoginDialog(String host, String loginMessage) {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true);
@@ -148,7 +154,7 @@ public class LoginDialog extends OKCancelDialog {
 		String password = new String(pfPassword.getPassword());
 		userCredentials = new UserCredentials(username, password, host);
 		OptionsManager.getInstance().saveGitCredentials(userCredentials);
-		dispose();
+		super.doOK();
 	}
 
 	public UserCredentials getUserCredentials() {

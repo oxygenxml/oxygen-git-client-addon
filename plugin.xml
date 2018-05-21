@@ -1,38 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- The plugin.dtd file is located in the OXYGEN_INSATALL_DIR/plugins directory -->
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
-
-<plugin
- id="com.oxygenxml.git"
- name="Git Support Plugin"
- description="provides support for working with Git: commit, diff, push, pull"
- version="${project.version}"
- vendor="oXygen XML"
- class="com.oxygenxml.git.OxygenGitPlugin"
- classLoaderType="preferReferencedResources">
+<plugin id="com.oxygenxml.git" name="Git Support Plugin"
+    description="provides support for working with Git: commit, diff, push, pull"
+    version="${project.version}" vendor="oXygen XML" class="com.oxygenxml.git.OxygenGitPlugin"
+    classLoaderType="preferReferencedResources">
  
- <runtime>
- 	<!-- 
- 			We load images using Oxygen's classes to handle HiDPI display and Dark Theme. 
- 			Because of that we have to make the icons available in Oxygen's ClassLoader.		
- 	-->
-	 <library name="lib/${project.build.finalName}-images.jar" scope="global"/>
-  <library name="src\main\resources" scope="global" />
-	
-	
-	 <librariesFolder name="lib" />
-  <library name="target/classes" />
-	 <librariesFolder name="target/lib" />
-	
-	
- </runtime>
+    <runtime>
+        <!-- 
+ 		    	We load images using Oxygen's classes to handle HiDPI display and Dark Theme. 
+ 			    Because of that we have to make the icons available in Oxygen's ClassLoader.		
+ 	    -->
+        <library name="lib/${project.build.finalName}-images.jar" scope="global"/>
+        <library name="src\main\resources" scope="global"/>
+        <librariesFolder name="lib"/>
+        <library name="target/classes"/>
+        <librariesFolder name="target/lib"/>
+    </runtime>
  
- <extension type="WorkspaceAccess" 
-  class="com.oxygenxml.git.OxygenGitPluginExtension"/>
- 
- <extension type="URLHandler" 
-  class="com.oxygenxml.git.protocol.CustomProtocolURLHandlerExtension"/>
- 
-  <!--The sample view which will present messages from the sample plugin.-->
-  <view id="GitStagingView" initialSide="WEST" initialRow="0"/>
+    <extension type="WorkspaceAccess" class="com.oxygenxml.git.OxygenGitPluginExtension"/>
+    <extension type="URLHandler" class="com.oxygenxml.git.protocol.CustomProtocolURLHandlerExtension"/>
+    
+    <!--The sample view which will present messages from the sample plugin.-->
+    <view id="GitStagingView" initialSide="WEST" initialRow="0"/>
 </plugin>
