@@ -42,6 +42,11 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
    * Host name.
    */
   private String host;
+  /**
+   * <code>true</code> if the "reset()" method was called
+   * for the current login try.
+   */
+  private boolean wasReset;
 
   /**
    * Constructor.
@@ -76,6 +81,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
    */
   @Override
   public void reset(URIish uri) {
+    wasReset = true;
     if (logger.isDebugEnabled()) {
       logger.debug("Reset credentials provider for: " + uri.toString());
     }
@@ -100,6 +106,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
    */
   @Override
   public boolean get(URIish uri, CredentialItem... items) {
+    wasReset = false;
     if (logger.isDebugEnabled()) {
       logger.debug("Get credential items for: " + uri.toString());
     } 
@@ -128,4 +135,18 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
     }
   }
   
+  /**
+   * @return <code>true</code> if the "reset()" method was called
+   * for the current login try.
+   */
+  public boolean wasResetCalled() {
+    return wasReset;
+  }
+
+  /**
+   * @return <code>true</code> if the login re-trying should be canceled.
+   */
+  public boolean shouldCancelLogin() {
+    return shouldCancelLogin;
+  }
 }

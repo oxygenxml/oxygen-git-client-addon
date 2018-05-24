@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -38,14 +39,12 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 import org.eclipse.jgit.lib.Ref;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -64,16 +63,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 */
 	private static Logger logger = Logger.getLogger(CloneRepositoryDialog.class);
 
-	/**
-	 * HTML start tag.
-	 */
-	private static final String HTML_END_TAG = "</html>";
-	
-	/**
-	 * HTML end tag.
-	 */
-	private static final String HTML_START_TAG = "<html>";
-	
 	/**
 	 * Clone worker.
 	 */
@@ -128,51 +117,21 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				Thread.currentThread().interrupt();
 			} catch (ExecutionException e) {
 				progressDialog.dispose();
-				handleExecutionException(e);
+
+				// Download cancelled
+	      Throwable cause = e.getCause();
+	      while (cause != null) {
+	        if (cause.getMessage().contains("Download cancelled")) {
+	          cleanDestDir();
+	          break;
+	        }
+	        cause = cause.getCause();
+	      }
+	      
 				return;
 			} finally {
 			  AuthenticationInterceptor.unbind(sourceUrl.getHost());
 			}
-		}
-
-		/**
-		 * Handle execution exception.
-		 * 
-		 * @param ex The exception.
-		 */
-		private void handleExecutionException(ExecutionException ex) {
-		  Throwable cause = ex.getCause();
-		  while (cause != null) {
-		    
-		    boolean doBreak = false;
-		    if (cause.getMessage().contains("Download cancelled")) {
-		      cleanDestDir();
-		      doBreak = true;
-		    } else if (cause instanceof NoRemoteRepositoryException) {
-		      CloneRepositoryDialog.this.setVisible(true);
-		      CloneRepositoryDialog.this.setMinimumSize(new Dimension(400, 190));
-		      informationLabel.setText(
-		          HTML_START_TAG 
-		          + translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY) 
-		          + HTML_END_TAG);
-		      doBreak = true;
-		    } else if (cause instanceof org.eclipse.jgit.errors.TransportException) {
-		      LoginDialog loginDialog = new LoginDialog(
-		          sourceUrl.getHost(),
-		          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE));
-          UserCredentials userCredentials = loginDialog.getUserCredentials();
-		      if (userCredentials != null) {
-		        doOK();
-		      }
-		      doBreak = true;
-		    }
-		    
-		    if (doBreak) {
-		      break;
-		    }
-		    
-		    cause = cause.getCause();
-		  }
 		}
 
 		/**
@@ -197,7 +156,10 @@ public class CloneRepositoryDialog extends OKCancelDialog {
      * Timer task for checking the connection to the repository (source) URL.
      */
     private TimerTask checkConnectionTask;
-    
+    /**
+     * <code>true</code> if the button was previously disabled.
+     */
+    private boolean oldShouldDisableOK;
     /**
      * Reference comparator (for branch names).
      */
@@ -233,34 +195,51 @@ public class CloneRepositoryDialog extends OKCancelDialog {
       if (checkConnectionTask != null) {
         checkConnectionTask.cancel();
       }
-      CloneRepositoryDialog.this.getOkButton().setEnabled(false);
       checkConnectionTask = new TimerTask() {
+        /**
+         * @see java.util.TimerTask.run()
+         */
         @Override
         public void run() {
           String text = sourceUrlTextField.getText();
+          boolean shouldDisableOK = false;
           if (text != null && !text.isEmpty()) {
             branchesComboBox.removeAllItems();
             try {
               URL sourceURL = new URL(text);
               AuthenticationInterceptor.bind(sourceURL.getHost());
-              List<Ref> remoteBranches = new ArrayList<>(GitAccess.getInstance().listRemoteBranchesForURL(text));
+              Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
+                  text,
+                  // Maybe there was a problem with getting the remote branches
+                  CloneRepositoryDialog.this::showInfoMessage);
+              List<Ref> remoteBranches = new ArrayList<>(branches);
               if (!remoteBranches.isEmpty()) {
                 CloneRepositoryDialog.this.getOkButton().setEnabled(true);
                 Collections.sort(remoteBranches, refComparator);
-                // Re-populate the combo
                 for (Ref ref : remoteBranches) {
                   branchesComboBox.addItem(ref);
                 }
+                branchesComboBox.setEnabled(true);
+                informationLabel.setVisible(false);
+              } else {
+                shouldDisableOK = true;
               }
             } catch (MalformedURLException e) {
               branchesComboBox.removeAllItems();
+              branchesComboBox.setEnabled(false);
+              shouldDisableOK = true;
+              showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
               if (logger.isDebugEnabled()) {
                 logger.debug(e, e);
               }
             }
           } else {
+            shouldDisableOK = oldShouldDisableOK;
+            branchesComboBox.setEnabled(false);
             branchesComboBox.removeAllItems();
           }
+          CloneRepositoryDialog.this.getOkButton().setEnabled(!shouldDisableOK);
+          oldShouldDisableOK = shouldDisableOK;
         }
       };
       checkRepoURLConTimer.schedule(checkConnectionTask, 500);
@@ -375,6 +354,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
     gbc.gridx ++;
     gbc.gridwidth = 2;
     panel.add(branchesComboBox, gbc);
+    branchesComboBox.setEnabled(false);
     branchesComboBox.setRenderer(new DefaultListCellRenderer() {
       @Override
       public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -461,9 +441,19 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		panel.add(informationLabel, gbc);
 
 		this.add(panel, BorderLayout.NORTH);
-		
-		getOkButton().setEnabled(false);
 	}
+	
+	/**
+	 * Show info message in the dialog.
+	 * 
+	 * @param message The message.
+	 */
+	private void showInfoMessage(String message) {
+    informationLabel.setText(message);
+    informationLabel.setVisible(true);
+    pack();
+    setMinimumSize(getSize());
+  }
 
 	/**
 	 * 
@@ -489,36 +479,58 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 */
 	@Override
 	protected void doOK() {
-	  boolean doOK = false;
-		final String selectedPath = (String) destinationPathCombo.getSelectedItem();
-		try {
-			final URL url = new URL(sourceUrlTextField.getText());
-			final File file = new File(selectedPath);
-			if (!isDestinationPathValid(file)) {
-				return;
-			}
-			
-			// Progress dialog.
-	    final ProgressDialog progressDialog = new ProgressDialog(
-	        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
-
-	    new CloneWorker(progressDialog, url, file).execute();
-	    
-	    // Make sure we present the dialog after this one is closed.
-	    // TODO There is a progress dialog support in Java. Maybe is better to use that.
-	    SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
-	    
-	    doOK = true;
-		} catch (MalformedURLException e) {
-			informationLabel.setText(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
-			this.pack();
-		}
-		
-		if (doOK) {
-		  // Close the dialog.
+		if (areSourceAndDestValid()) {
 		  super.doOK();
 		}
-
+	}
+	
+	/**
+	 * Validate the source URL and the destination path.
+	 * 
+	 * @return <code>true</code> if bothe the source URL and the destination path are valid.
+	 */
+	private boolean areSourceAndDestValid() {
+	  boolean areValid = false;
+	  URL sourceURL = getAndValidateSourceURL();
+	  if (sourceURL != null) {
+	    final String selectedDestPath = (String) destinationPathCombo.getSelectedItem();
+	    if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
+	      final File destFile = new File(selectedDestPath);
+	      if (isDestinationPathValid(destFile)) {
+	        JFrame parentFrame = (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame();
+          final ProgressDialog progressDialog = new ProgressDialog(parentFrame);
+	        CloneWorker cloneWorker = new CloneWorker(progressDialog, sourceURL, destFile);
+          cloneWorker.execute();
+	        // Make sure we present the dialog after this one is closed.
+	        // TODO There is a progress dialog support in Java. Maybe is better to use that.
+	        SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
+	        areValid = true;
+	      }
+	    } else {
+	      showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
+	    }
+	  }
+	  return areValid;
+	}
+	
+	/**
+	 * Get the repository/source URL.
+	 * 
+	 * @return the URL or <code>null</code> if the provided text is invalid.
+	 */
+	private URL getAndValidateSourceURL() {
+	  URL url = null;
+	  final String repoURLText = sourceUrlTextField.getText();
+	  if (repoURLText != null && !repoURLText.isEmpty()) {
+	    try {
+	      url = new URL(repoURLText);
+	    } catch (MalformedURLException e) {
+	      showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+	    }
+	  } else {
+	    showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+	  }
+	  return url;
 	}
 
 	/**
@@ -531,12 +543,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	private boolean isDestinationPathValid(final File destFile) {
 		if (destFile.exists()) {
 			if (destFile.list().length > 0) {
-				CloneRepositoryDialog.this.setVisible(true);
-				this.setMinimumSize(new Dimension(400, 190));
-				informationLabel.setText(
-						HTML_START_TAG 
-						+ translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY) 
-						+ HTML_END_TAG);
+			  showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));
 				return false;
 			}
 		} else {
@@ -549,12 +556,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				tempFile = tempFile.getParentFile();
 			}
 			if (tempFile == null) {
-				CloneRepositoryDialog.this.setVisible(true);
-				this.setMinimumSize(new Dimension(400, 180));
-				informationLabel.setText(
-						HTML_START_TAG 
-						+ translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH) 
-						+ HTML_END_TAG);
+			  showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
 				return false;
 			}
 		}

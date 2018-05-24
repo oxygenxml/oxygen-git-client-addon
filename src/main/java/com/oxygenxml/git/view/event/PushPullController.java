@@ -174,8 +174,13 @@ public class PushPullController implements Subject<PushPullEvent> {
         }
       } catch (GitAPIException e) {
         // Exception handling.
-        boolean handleAuthException = AuthUtil.handleAuthException(e, hostName, userCredentials);
-        if (handleAuthException) {
+        boolean shouldTryAgain = AuthUtil.handleAuthException(
+            e,
+            hostName,
+            userCredentials,
+            exMessage -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(exMessage),
+            true);
+        if (shouldTryAgain) {
           // Skip notification now. We try again.
           notifyFinish = false;
           // Try again.

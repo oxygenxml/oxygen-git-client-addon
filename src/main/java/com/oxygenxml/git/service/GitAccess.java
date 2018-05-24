@@ -81,6 +81,7 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
 
 import com.oxygenxml.git.ProjectViewManager;
+import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResetableUserCredentialsProvider;
@@ -666,11 +667,14 @@ public class GitAccess {
   /**
    * List the remote branches for the given repository URL.
    * 
-   * @param urlString The repository URL.
+   * @param urlString         The repository URL.
+   * @param excMessPresenter  Exception message presenter.
    * 
    * @return the collection of remote branches or an empty set.
    */
-  public Collection<Ref> listRemoteBranchesForURL(String urlString) {
+  public Collection<Ref> listRemoteBranchesForURL(
+      String urlString,
+      AuthExceptionMessagePresenter excMessPresenter) {
     Collection<Ref> remoteRefs = Collections.emptySet();
     URL url = null;
     if (urlString != null && !urlString.isEmpty()) {
@@ -683,7 +687,7 @@ public class GitAccess {
       }
     }
     if (url != null) {
-      remoteRefs = doListRemoteBranchesInternal(url);
+      remoteRefs = doListRemoteBranchesInternal(url, excMessPresenter);
     }
     return remoteRefs;
   }
@@ -692,40 +696,59 @@ public class GitAccess {
    * Do list remote branches internal.
    * 
    * @param repoURL The repository URL.
+   * @param excMessPresenter  Exception message presenter.
    * 
    * @return the remote branches or an empty list.
    */
-  private Collection<Ref> doListRemoteBranchesInternal(URL repoURL) {
+  private Collection<Ref> doListRemoteBranchesInternal(
+      URL repoURL,
+      AuthExceptionMessagePresenter excMessPresenter) {
     Collection<Ref> remoteRefs = Collections.emptySet();
     String host = repoURL.getHost();
     boolean shouldStopTryingLogin = false;
+    if (logger.isDebugEnabled()) {
+      logger.debug("START LISTING REMOTE BRANCHES FOR: " + repoURL);
+    }
     do {
       final UserCredentials[] gitCredentials = 
           new UserCredentials[] {OptionsManager.getInstance().getGitCredentials(host)};
+      String username = gitCredentials[0].getUsername();
+      String password = gitCredentials[0].getPassword();
+      if (logger.isDebugEnabled()) {
+        logger.debug("Try login with user: " + username 
+            + " and password: " + password);
+      }
       ResetableUserCredentialsProvider credentialsProvider = new ResetableUserCredentialsProvider(
-          gitCredentials[0].getUsername(),
-          gitCredentials[0].getPassword(),
+          username,
+          password,
           host);
       try {
-        // TODO Use a SSHUserCredentialsProvider 
-        if (logger.isDebugEnabled()) {
-          logger.debug("List remote branches for: " + repoURL);
-        }
+        // TODO Use a SSHUserCredentialsProvider??? 
+        logger.debug("Now do list the remote branches...");
         remoteRefs = Git.lsRemoteRepository()
             .setHeads(true)
             .setRemote(repoURL.toExternalForm())
             .setCredentialsProvider(credentialsProvider)
             .call();
+        if (logger.isDebugEnabled()) {
+          logger.debug("BRANCHES: " + remoteRefs);
+        }
         shouldStopTryingLogin = true;
       } catch (TransportException ex) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(ex, ex);
+        }
         boolean retryLogin = AuthUtil.handleAuthException(
             ex,
             host,
             new UserCredentials(
                 credentialsProvider.getUsername(),
                 credentialsProvider.getPassword(),
-                host));
-        if (!retryLogin) {
+                host),
+            excMessPresenter,
+            !credentialsProvider.wasResetCalled());
+        if (!retryLogin || credentialsProvider.shouldCancelLogin()) {
+          logger.debug("STOP TRYING TO LOGIN!");
           shouldStopTryingLogin = true;
         }
       } catch (GitAPIException e) {
@@ -734,6 +757,7 @@ public class GitAccess {
         }
       }
     } while (!shouldStopTryingLogin);
+    
     return remoteRefs;
   }
 

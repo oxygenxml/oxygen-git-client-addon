@@ -40,60 +40,80 @@ public class AuthUtil {
    * 
    * @param ex                The exception to handle.
    * @param hostName          The host name.
-   * @param userCredentials   The user credentials.   
+   * @param userCredentials   The user credentials.
+   * @param excMessPresenter  Exception message preenter.  
+   * @param retryLoginHere    <code>true</code> to retry login here, in this method.
    * 
    * @return <code>true</code> if the authentication should be tried again.
    */
   public static boolean handleAuthException(
       GitAPIException ex,
       String hostName,
-      UserCredentials userCredentials) {
-    boolean tryAgain = false;
+      UserCredentials userCredentials,
+      AuthExceptionMessagePresenter excMessPresenter,
+      boolean retryLoginHere) {
+    
+    logger.debug(ex, ex);
+    
+    boolean tryAgainOutside = false;
     String lowercaseMsg = ex.getMessage().toLowerCase();
-    if (lowercaseMsg.contains("not authorized") 
-        || lowercaseMsg.contains("authentication not supported")) {
+    if (lowercaseMsg.contains("not authorized") || lowercaseMsg.contains("authentication not supported")) {
       // Authorization problems.
       String loginMessage = "";
       if (userCredentials.getUsername() == null) {
         // No credentials were used but they are required.
         loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
       } else {
-        // Invalid credentails.
+        // Invalid credentials.
         loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
             + " " + userCredentials.getUsername();
       }
-      // Request new credentials.
-      UserCredentials loadNewCredentials = requestNewCredentials(hostName, loginMessage);
-      tryAgain = loadNewCredentials != null;
+      if (retryLoginHere) {
+        // Request new credentials.
+        UserCredentials loadNewCredentials = requestNewCredentials(hostName, loginMessage);
+        tryAgainOutside = loadNewCredentials != null;
+      } else {
+        tryAgainOutside = true;
+      }
     } else if (lowercaseMsg.contains("not permitted")) {
       // The user doesn't have permissions.
       ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
           .showWarningMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
-      // Request new credentials.
-      UserCredentials loadNewCredentials = requestNewCredentials(
-          hostName,
-          translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
-              + userCredentials.getUsername());
-      
-      tryAgain = loadNewCredentials != null;
+      if (retryLoginHere) {
+        // Request new credentials.
+        UserCredentials loadNewCredentials = requestNewCredentials(
+            hostName,
+            translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
+                + userCredentials.getUsername());
+        tryAgainOutside = loadNewCredentials != null;
+      } else {
+        tryAgainOutside = true;
+      }
     } else if (lowercaseMsg.contains("origin: not found")
         || lowercaseMsg.contains("no value for key remote.origin.url found in configuration")) {
-      // No remote.
-      tryAgain  = new AddRemoteDialog().linkRemote();
+      // No remote linked with the local.
+      tryAgainOutside  = new AddRemoteDialog().linkRemote();
     } else if (lowercaseMsg.contains("auth fail")) {
       // This message is thrown for SSH.
       String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
       String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
-      tryAgain = passphrase != null;
+      tryAgainOutside = passphrase != null;
     } else if (ex.getCause() instanceof NoRemoteRepositoryException) {
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("No remote repository found.");
+      if (excMessPresenter != null) {
+        excMessPresenter.presentMessage("No remote repository found.");
+      } else {
+        logger.error(ex, ex);
+      }
     } else {
-      // Un-handled exception.
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getClass().getName() + "\n" + ex.getMessage());
-      logger.error(ex, ex);
+      // "Unhandled" exception
+      if (excMessPresenter != null) {
+        excMessPresenter.presentMessage(ex.getClass().getName() + ": " + ex.getMessage());
+      } else {
+        logger.error(ex, ex);
+      }
     }
     
-    return tryAgain;
+    return tryAgainOutside;
   }
   
   /**
