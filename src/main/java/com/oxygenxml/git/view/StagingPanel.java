@@ -243,9 +243,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 							        if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
 							          if (logger.isDebugEnabled()) {
 							            logger.debug("Notify " + fileInWorkPath);
+							            logger.debug("WC " + selectedRepositoryPath);
 							          }
 
-							          Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length() + 1));
+							          Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
                         ChangeEvent changeEvent = new ChangeEvent(GitCommand.UNSTAGE, affectedFiles);
                         unstagedChangesPanel.stateChanged(changeEvent);
 							        }

@@ -209,7 +209,6 @@ public class AuthenticationInterceptor {
 	public static void install() {
 		final Authenticator[] currentAuth = new Authenticator[1];
 		try {
-
 			Field declaredField = Authenticator.class.getDeclaredField("theAuthenticator");
 			declaredField.setAccessible(true);
 			currentAuth[0] = (Authenticator) declaredField.get(null);
@@ -218,15 +217,17 @@ public class AuthenticationInterceptor {
 			  GitAuth oldInstalledAuth = installedAuthenticator;
 
 				installedAuthenticator = new GitAuth(currentAuth[0]);
-				installedAuthenticator.setBoundHosts(oldInstalledAuth.getBoundHosts());
+				
+				if (oldInstalledAuth != null) {
+				  // Keep the previously bound hosts, if any.
+				  installedAuthenticator.setBoundHosts(oldInstalledAuth.getBoundHosts());
+				}
 
 				Authenticator.setDefault(installedAuthenticator);
 			}
 
-		} catch (Throwable e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		} catch (IllegalArgumentException | NoSuchFieldException | IllegalAccessException e) {
+		  logger.error(e, e);
 		}
 	}
 

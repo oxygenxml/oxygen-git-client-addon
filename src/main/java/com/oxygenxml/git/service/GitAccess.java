@@ -363,7 +363,7 @@ public class GitAccess {
   }
 	
 	/**
-	 * A status of the Working Copy, with the unstaged and staged files.
+	 * 
 	 * 
 	 * @param paths A subset of interest.
 	 *  
