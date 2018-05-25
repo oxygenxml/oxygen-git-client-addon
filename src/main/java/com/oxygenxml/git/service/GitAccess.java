@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
@@ -80,7 +81,10 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
 
 import com.oxygenxml.git.ProjectViewManager;
+import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
+import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
+import com.oxygenxml.git.auth.ResetableUserCredentialsProvider;
 import com.oxygenxml.git.auth.SSHUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -216,10 +220,9 @@ public class GitAccess {
 	}
 
 	/**
-	 * Sets the git repository. File path must exist
+	 * Sets the Git repository. The file path must exist.
 	 * 
-	 * @param path
-	 *          - A string that specifies the git Repository folder
+	 * @param path A string that specifies the Git repository folder.
 	 */
 	public void setRepository(String path) throws IOException {
 	  File currentRepo = new File(path + "/.git");
@@ -238,36 +241,45 @@ public class GitAccess {
 	    AuthenticationInterceptor.bind(getHostName());
 
 	    if (logger.isDebugEnabled()) {
-	      // Debug data for the SSH key load location.
-	      logger.debug("Java env user home: " + System.getProperty("user.home"));
-	      logger.debug("Load repository " + path);
-	      try {
-	        FS fs = getRepository().getFS();
-	        if (fs != null) {
-	          File userHome = fs.userHome();
-	          logger.debug("User home " + userHome);
-
-	          File sshDir = new File(userHome, ".ssh");
-
-	          boolean exists = sshDir.exists();
-	          logger.debug("SSH dir exists " + exists);
-	          if (exists) {
-	            File[] listFiles = sshDir.listFiles();
-	            for (int i = 0; i < listFiles.length; i++) {
-	              logger.debug("SSH resource path " + listFiles[i]);
-	            }
-	          }
-	        } else {
-	          logger.debug("Null FS");
-	        }
-	      } catch (NoRepositorySelected e) {
-	        logger.debug(e, e);
-	      }
+	      logSshKeyLoadingData(path);
 	    }
 
 	    fireRepositoryChanged();
 	  }
 	}
+
+	/**
+	 * Log SSH key loading location data.
+	 * 
+	 * @param path The path to the Git repository folder.
+	 */
+  private void logSshKeyLoadingData(String path) {
+    // Debug data for the SSH key load location.
+    logger.debug("Java env user home: " + System.getProperty("user.home"));
+    logger.debug("Load repository " + path);
+    try {
+      FS fs = getRepository().getFS();
+      if (fs != null) {
+        File userHome = fs.userHome();
+        logger.debug("User home " + userHome);
+
+        File sshDir = new File(userHome, ".ssh");
+
+        boolean exists = sshDir.exists();
+        logger.debug("SSH dir exists " + exists);
+        if (exists) {
+          File[] listFiles = sshDir.listFiles();
+          for (int i = 0; i < listFiles.length; i++) {
+            logger.debug("SSH resource path " + listFiles[i]);
+          }
+        }
+      } else {
+        logger.debug("Null FS");
+      }
+    } catch (NoRepositorySelected e) {
+      logger.debug(e, e);
+    }
+  }
 
 	/**
 	 * Notify that the loaded repository changed.
@@ -619,12 +631,12 @@ public class GitAccess {
 	}
 
 	/**
-	 * Gets all branches
+	 * Gets all the local branches.
 	 * 
-	 * @return - All the branches from the repository
+	 * @return All the local branches from the repository or an empty list.
 	 */
-	public List<Ref> getBrachList() {
-		List<Ref> branches = null;
+	public List<Ref> getLocalBranchList() {
+		List<Ref> branches = Collections.emptyList();
 		try {
 			branches = git.branchList().call();
 		} catch (GitAPIException e) {
@@ -634,6 +646,120 @@ public class GitAccess {
 		}
 		return branches;
 	}
+	
+	 /**
+   * Gets all the remote branches for the current repository.
+   * 
+   * @return All the remote branches from the repository or an empty list.
+   */
+  public List<Ref> getRemoteBrachListForCurrentRepo() {
+    List<Ref> branches = Collections.emptyList();
+    try {
+      branches = git.branchList().setListMode(ListMode.REMOTE).call();
+    } catch (GitAPIException e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+    return branches;
+  }
+  
+  /**
+   * List the remote branches for the given repository URL.
+   * 
+   * @param urlString         The repository URL.
+   * @param excMessPresenter  Exception message presenter.
+   * 
+   * @return the collection of remote branches or an empty set.
+   */
+  public Collection<Ref> listRemoteBranchesForURL(
+      String urlString,
+      AuthExceptionMessagePresenter excMessPresenter) {
+    Collection<Ref> remoteRefs = Collections.emptySet();
+    URL url = null;
+    if (urlString != null && !urlString.isEmpty()) {
+      try {
+        url = new URL(urlString);
+      } catch (MalformedURLException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+      }
+    }
+    if (url != null) {
+      remoteRefs = doListRemoteBranchesInternal(url, excMessPresenter);
+    }
+    return remoteRefs;
+  }
+
+  /**
+   * Do list remote branches internal.
+   * 
+   * @param repoURL The repository URL.
+   * @param excMessPresenter  Exception message presenter.
+   * 
+   * @return the remote branches or an empty list.
+   */
+  private Collection<Ref> doListRemoteBranchesInternal(
+      URL repoURL,
+      AuthExceptionMessagePresenter excMessPresenter) {
+    Collection<Ref> remoteRefs = Collections.emptySet();
+    String host = repoURL.getHost();
+    boolean shouldStopTryingLogin = false;
+    if (logger.isDebugEnabled()) {
+      logger.debug("START LISTING REMOTE BRANCHES FOR: " + repoURL);
+    }
+    do {
+      final UserCredentials[] gitCredentials = 
+          new UserCredentials[] {OptionsManager.getInstance().getGitCredentials(host)};
+      String username = gitCredentials[0].getUsername();
+      String password = gitCredentials[0].getPassword();
+      if (logger.isDebugEnabled()) {
+        logger.debug("Try login with user: " + username 
+            + " and password: " + password);
+      }
+      ResetableUserCredentialsProvider credentialsProvider = new ResetableUserCredentialsProvider(
+          username,
+          password,
+          host);
+      try {
+        // TODO Use a SSHUserCredentialsProvider??? 
+        logger.debug("Now do list the remote branches...");
+        remoteRefs = Git.lsRemoteRepository()
+            .setHeads(true)
+            .setRemote(repoURL.toExternalForm())
+            .setCredentialsProvider(credentialsProvider)
+            .call();
+        if (logger.isDebugEnabled()) {
+          logger.debug("BRANCHES: " + remoteRefs);
+        }
+        shouldStopTryingLogin = true;
+      } catch (TransportException ex) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(ex, ex);
+        }
+        boolean retryLogin = AuthUtil.handleAuthException(
+            ex,
+            host,
+            new UserCredentials(
+                credentialsProvider.getUsername(),
+                credentialsProvider.getPassword(),
+                host),
+            excMessPresenter,
+            !credentialsProvider.wasResetCalled());
+        if (!retryLogin || credentialsProvider.shouldCancelLogin()) {
+          logger.debug("STOP TRYING TO LOGIN!");
+          shouldStopTryingLogin = true;
+        }
+      } catch (GitAPIException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+      }
+    } while (!shouldStopTryingLogin);
+    
+    return remoteRefs;
+  }
 
 	/**
 	 * Creates a new branch in the repository
@@ -699,8 +825,8 @@ public class GitAccess {
 	    return response;
 	  }
 	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-	  Iterable<PushResult> call = git.push()
-	      .setCredentialsProvider(new SSHUserCredentialsProvider(username, password, sshPassphrase)).call();
+	  Iterable<PushResult> call = git.push().setCredentialsProvider(
+	      new SSHUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
 	  Iterator<PushResult> results = call.iterator();
 	  logger.debug("Push Ended");
 	  while (results.hasNext()) {
@@ -747,8 +873,8 @@ public class GitAccess {
         }
       }
 			// Call "Pull"
-			PullResult call = git.pull().setCredentialsProvider(new SSHUserCredentialsProvider(username, password, sshPassphrase))
-					.call();
+			PullResult call = git.pull().setCredentialsProvider(
+			    new SSHUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
 			ObjectId head = null;
 			try {
         head = repository.resolve("HEAD^{tree}");
@@ -1324,7 +1450,8 @@ public class GitAccess {
 		String username = gitCredentials.getUsername();
 		String password = gitCredentials.getPassword();
 		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		SSHUserCredentialsProvider credentialsProvider = new SSHUserCredentialsProvider(username, password, sshPassphrase);
+		SSHUserCredentialsProvider credentialsProvider = 
+		    new SSHUserCredentialsProvider(username, password, sshPassphrase, getHostName());
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
@@ -1415,14 +1542,10 @@ public class GitAccess {
 				}
 				return branchInfo;
 			} catch (NoHeadException e) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e, e);
-        }
-        return new BranchInfo(branchName, false);
-      } catch (IOException | GitAPIException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
+			  logger.debug(e, e);
+			  return new BranchInfo(branchName, false);
+			} catch (IOException | GitAPIException e) {
+			  logger.debug(e, e);
 			}
 		}
 		return new BranchInfo("", false);
@@ -1527,9 +1650,7 @@ public class GitAccess {
 				return objectId;
 			}
 		} catch (GitAPIException |IOException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.debug(e, e);
 		}
 		return null;
 	}

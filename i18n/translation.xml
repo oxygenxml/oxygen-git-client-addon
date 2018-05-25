@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Checkout_branch">
+        <comment>"Checkout branch" label in the dialog shown when cloning a repository.</comment>
+        <val lang="en_US">Checkout branch</val>
+        <val lang="de_DE">Checkout branch</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
     <key value="Yes">
         <comment>"Yes"</comment>
         <val lang="en_US">Yes</val>
@@ -711,8 +719,8 @@
     </key>
     <key value="Clone_Repository_Dialog_Url_Label">
         <comment>The text displayed for the "URL" label in the clone repository dialog</comment>
-        <val lang="en_US">Source URL</val>
-        <val lang="de_DE">Source URL</val>
+        <val lang="en_US">Repository URL</val>
+        <val lang="de_DE">Repository URL</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -726,9 +734,9 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     <key value="Clone_Repository_Dialog_Invalid_Url">
-        <comment>The text displayed if the url is invalid</comment>
-        <val lang="en_US">URL is invalid</val>
-        <val lang="de_DE">URL ist ungültig</val>
+        <comment>The text displayed if the repository (source) url is invalid</comment>
+        <val lang="en_US">The repository URL is invalid</val>
+        <val lang="de_DE">Die Repository URL ist ungültig</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -751,8 +759,8 @@
     </key>
     <key value="Clone_Repository_Dialog_Destination_Path_Not_Empty">
         <comment>The text displayed if the chosen destionation path is not an empty folder</comment>
-        <val lang="en_US">The destination path already exists and is not an empty folder. Please choose an empty or a new folder into which to clone</val>
-        <val lang="de_DE">Das Zielverzeichnis existiert bereits und ist nicht leer. Bitte wähle ein leeres oder neues Verzeichnis</val>
+        <val lang="en_US">The destination path already exists and is not an empty folder.</val>
+        <val lang="de_DE">Das Zielverzeichnis existiert bereits und ist nicht leer.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>

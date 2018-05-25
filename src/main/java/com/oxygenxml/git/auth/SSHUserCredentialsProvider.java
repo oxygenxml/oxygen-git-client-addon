@@ -3,7 +3,6 @@ package com.oxygenxml.git.auth;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import com.oxygenxml.git.options.OptionsManager;
 
@@ -13,7 +12,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 /**
  * A checker that handles SSH related questions.
  */
-public class SSHUserCredentialsProvider extends UsernamePasswordCredentialsProvider {
+public class SSHUserCredentialsProvider extends ResetableUserCredentialsProvider {
   /**
    *  Logger for logging.
    */
@@ -33,9 +32,10 @@ public class SSHUserCredentialsProvider extends UsernamePasswordCredentialsProvi
 	 * @param username User name.
 	 * @param password Password.
 	 * @param passphrase SSH pass phase.
+	 * @param host The host name.
 	 */
-	public SSHUserCredentialsProvider(String username, String password, String passphrase) {
-		super(username, password);
+	public SSHUserCredentialsProvider(String username, String password, String passphrase, String host) {
+		super(username, password, host);
 		this.passphrase = passphrase;
 	}
 

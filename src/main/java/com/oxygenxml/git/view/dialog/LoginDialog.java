@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -22,6 +24,10 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 public class LoginDialog extends OKCancelDialog {
+  /**
+   *  Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(LoginDialog.class); 
 	/**
 	 * The host for which to enter the credentials
 	 */
@@ -52,9 +58,18 @@ public class LoginDialog extends OKCancelDialog {
 	 */
 	private static Translator translator = Translator.getInstance();
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param host         The host for which to provide the credentials.
+	 * @param loginMessage The login message.
+	 */
 	public LoginDialog(String host, String loginMessage) {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true);
+		if (logger.isDebugEnabled()) {
+		  logger.debug(new Exception("LOGIN DIALOG WAS SHOWN..."));
+		}
 		this.host = host;
 		this.message = loginMessage;
 		createGUI();
@@ -148,7 +163,7 @@ public class LoginDialog extends OKCancelDialog {
 		String password = new String(pfPassword.getPassword());
 		userCredentials = new UserCredentials(username, password, host);
 		OptionsManager.getInstance().saveGitCredentials(userCredentials);
-		dispose();
+		super.doOK();
 	}
 
 	public UserCredentials getUserCredentials() {

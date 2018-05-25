@@ -14,6 +14,12 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Label in the repository cloning dialog.
+   * 
+   * en: Checkout branch
+   */
+  public static final String CHECKOUT_BRANCH = "Checkout_branch";
+  /**
    * en: Yes
    */
   public static final String YES = "Yes";

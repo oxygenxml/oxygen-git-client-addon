@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
 	<xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
 		id="com.oxygenxml.git">
-		<xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/1.2.9/git.support-1.2.9-plugin.jar" />
-		<xt:version>1.2.9</xt:version> 
+		<xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/1.2.10/git.support-1.2.10-plugin.jar" />
+		<xt:version>1.2.10</xt:version> 
 		<xt:oxy_version>18.1+</xt:oxy_version>
 		<xt:type>plugin</xt:type>
 		<xt:author>Syncro Soft SRL</xt:author>
@@ -20,6 +20,12 @@
 		         </style>
 		      </head>
 		      <body>
+		        <div>
+		          <h3>What's new in version 1.2.10</h3>
+		          <ol>
+		            <li>Speed improvement when invoking the contextual menu the Project view.</li>
+		          </ol>
+		        </div>
 		      	<div>
 		      		<h3>What's new in version 1.2.9</h3>
 		      		<ol>

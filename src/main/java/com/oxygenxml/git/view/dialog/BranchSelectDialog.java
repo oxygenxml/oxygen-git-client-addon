@@ -122,7 +122,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 		branchesCombo = new JComboBox<>();
 		branchesCombo.setPreferredSize(new Dimension(200, branchesCombo.getPreferredSize().height));
 		List<String> branches = new ArrayList<>();
-		for (Ref branch : GitAccess.getInstance().getBrachList()) {
+		for (Ref branch : GitAccess.getInstance().getLocalBranchList()) {
 			String name = branch.getName();
 			name = name.replace("refs/heads/", "");
 			branchesCombo.addItem(name);
