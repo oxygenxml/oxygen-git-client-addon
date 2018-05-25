@@ -759,8 +759,8 @@
     </key>
     <key value="Clone_Repository_Dialog_Destination_Path_Not_Empty">
         <comment>The text displayed if the chosen destionation path is not an empty folder</comment>
-        <val lang="en_US">The destination path already exists and is not an empty folder. Please choose an empty or a new folder into which to clone</val>
-        <val lang="de_DE">Das Zielverzeichnis existiert bereits und ist nicht leer. Bitte wähle ein leeres oder neues Verzeichnis</val>
+        <val lang="en_US">The destination path already exists and is not an empty folder.</val>
+        <val lang="de_DE">Das Zielverzeichnis existiert bereits und ist nicht leer.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
