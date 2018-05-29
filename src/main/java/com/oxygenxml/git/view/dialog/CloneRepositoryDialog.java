@@ -50,6 +50,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -157,10 +158,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
      */
     private TimerTask checkConnectionTask;
     /**
-     * <code>true</code> if the button was previously disabled.
-     */
-    private boolean oldShouldDisableOK;
-    /**
      * Reference comparator (for branch names).
      */
     private Comparator<Ref> refComparator = (o1, o2) -> {
@@ -201,10 +198,12 @@ public class CloneRepositoryDialog extends OKCancelDialog {
          */
         @Override
         public void run() {
+          final List<Ref> remoteBranches = new ArrayList<>();
+          SwingUtilities.invokeLater(() -> branchesComboBox.removeAllItems());
+          
           String text = sourceUrlTextField.getText();
-          boolean shouldDisableOK = false;
-          if (text != null && !text.isEmpty()) {
-            branchesComboBox.removeAllItems();
+          boolean wasTextProvided = text != null && !text.isEmpty();
+          if (wasTextProvided) {
             try {
               URL sourceURL = new URL(text);
               AuthenticationInterceptor.bind(sourceURL.getHost());
@@ -212,34 +211,34 @@ public class CloneRepositoryDialog extends OKCancelDialog {
                   text,
                   // Maybe there was a problem with getting the remote branches
                   CloneRepositoryDialog.this::showInfoMessage);
-              List<Ref> remoteBranches = new ArrayList<>(branches);
-              if (!remoteBranches.isEmpty()) {
-                CloneRepositoryDialog.this.getOkButton().setEnabled(true);
+              if (!branches.isEmpty()) {
+                remoteBranches.addAll(branches);
                 Collections.sort(remoteBranches, refComparator);
-                for (Ref ref : remoteBranches) {
-                  branchesComboBox.addItem(ref);
-                }
-                branchesComboBox.setEnabled(true);
-                informationLabel.setVisible(false);
-              } else {
-                shouldDisableOK = true;
               }
             } catch (MalformedURLException e) {
-              branchesComboBox.removeAllItems();
-              branchesComboBox.setEnabled(false);
-              shouldDisableOK = true;
-              showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+              SwingUtilities.invokeLater(() -> showInfoMessage(
+                  translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL)));
               if (logger.isDebugEnabled()) {
                 logger.debug(e, e);
               }
             }
-          } else {
-            shouldDisableOK = oldShouldDisableOK;
-            branchesComboBox.setEnabled(false);
-            branchesComboBox.removeAllItems();
           }
-          CloneRepositoryDialog.this.getOkButton().setEnabled(!shouldDisableOK);
-          oldShouldDisableOK = shouldDisableOK;
+          
+          SwingUtilities.invokeLater(() -> {
+            boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
+            if (shouldEnableBranchesCombo) {
+              for (Ref ref : remoteBranches) {
+                branchesComboBox.addItem(ref);
+              }
+            }
+            branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+            if (wasTextProvided) {
+              // If we have branches, then we didn't have any problems.
+              // Hide the information label. Otherwise, show it.
+              informationLabel.setVisible(!shouldEnableBranchesCombo);
+            }
+          });
+          
         }
       };
       checkRepoURLConTimer.schedule(checkConnectionTask, 500);
@@ -274,7 +273,12 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	/**
 	 * The combo box containing the remote branches for a given repository URL.
 	 */
-  private JComboBox<Ref> branchesComboBox; 
+  private JComboBox<Ref> branchesComboBox;
+  
+  /**
+   * Plugin workspace access.
+   */
+  private PluginWorkspace pluginWorkspace; 
 	
 	/**
 	 * Constructor.
@@ -285,6 +289,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	public CloneRepositoryDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
 		    translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_TITLE), true);
+		
+		pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
 
 		createGUI();
 
@@ -292,7 +298,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		this.setResizable(true);
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
 		this.pack();
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		this.setLocationRelativeTo((JFrame) pluginWorkspace.getParentFrame());
 		this.setVisible(true);
 	}
 
@@ -401,14 +407,14 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		Action browseButtonAction = new AbstractAction() {
 			@Override
       public void actionPerformed(ActionEvent e) {
-				File directory = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).chooseDirectory();
+				File directory = ((StandalonePluginWorkspace) pluginWorkspace).chooseDirectory();
 				if (directory != null) {
 					destinationPathCombo.setSelectedItem(directory.getAbsolutePath());
 				}
 			}
 		};
 		ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
-		ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+		ImageUtilities imageUtilities = pluginWorkspace.getImageUtilities();
 		URL resource = getClass().getResource(ImageConstants.FILE_CHOOSER_ICON);
 		if (resource != null) {
 		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
@@ -497,7 +503,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	    if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
 	      final File destFile = new File(selectedDestPath);
 	      if (isDestinationPathValid(destFile)) {
-	        JFrame parentFrame = (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame();
+	        JFrame parentFrame = (JFrame) pluginWorkspace.getParentFrame();
           final ProgressDialog progressDialog = new ProgressDialog(parentFrame);
 	        CloneWorker cloneWorker = new CloneWorker(progressDialog, sourceURL, destFile);
           cloneWorker.execute();
@@ -507,7 +513,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	        areValid = true;
 	      }
 	    } else {
-	      showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
+	      pluginWorkspace.showErrorMessage(
+	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
 	    }
 	  }
 	  return areValid;
@@ -525,10 +532,12 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	    try {
 	      url = new URL(repoURLText);
 	    } catch (MalformedURLException e) {
-	      showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+	      pluginWorkspace.showErrorMessage(
+	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
 	    }
 	  } else {
-	    showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+	    pluginWorkspace.showErrorMessage(
+	        translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
 	  }
 	  return url;
 	}
@@ -543,7 +552,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	private boolean isDestinationPathValid(final File destFile) {
 		if (destFile.exists()) {
 			if (destFile.list().length > 0) {
-			  showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));
+			  pluginWorkspace.showErrorMessage(
+			      translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_NOT_EMPTY));
 				return false;
 			}
 		} else {
@@ -556,7 +566,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				tempFile = tempFile.getParentFile();
 			}
 			if (tempFile == null) {
-			  showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
+			  pluginWorkspace.showErrorMessage(
+			      translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH));
 				return false;
 			}
 		}

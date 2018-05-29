@@ -100,7 +100,7 @@ public class AuthUtil {
       tryAgainOutside = passphrase != null;
     } else if (ex.getCause() instanceof NoRemoteRepositoryException) {
       if (excMessPresenter != null) {
-        excMessPresenter.presentMessage("No remote repository found.");
+        excMessPresenter.presentMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
       } else {
         logger.error(ex, ex);
       }
