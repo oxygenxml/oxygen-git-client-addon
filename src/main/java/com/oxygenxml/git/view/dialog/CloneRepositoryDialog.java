@@ -39,7 +39,10 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Ref.Storage;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.ImageConstants;
@@ -63,6 +66,20 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(CloneRepositoryDialog.class);
+	
+	/**
+	 * The default branch marker.
+	 */
+	private static final Ref DEFAULT_BRANCH_MARKER = new ObjectIdRef(Storage.NEW, "DEFAULT_BRANCH", null) {
+    @Override
+    public boolean isPeeled() {
+      return false;
+    }
+    @Override
+    public ObjectId getPeeledObjectId() {
+      return null;
+    }
+  };
 
 	/**
 	 * Clone worker.
@@ -81,6 +98,10 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		 * Destination file.
 		 */
 		private final File destFile;
+		/**
+		 * The branch to checkout.
+		 */
+    private Ref branch;
 
 		/**
 		 * Constructor.
@@ -88,11 +109,13 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		 * @param progressDialog The progress dialog for the cloning operation.
 		 * @param sourceUrl      Repository (source) URL.
 		 * @param destFile       Destination file.
+		 * @param branch         The branch to checkout.
 		 */
-		private CloneWorker(ProgressDialog progressDialog, URL sourceUrl, File destFile) {
+		private CloneWorker(ProgressDialog progressDialog, URL sourceUrl, File destFile, Ref branch) {
 			this.progressDialog = progressDialog;
 			this.sourceUrl = sourceUrl;
 			this.destFile = destFile;
+      this.branch = branch;
 		}
 
 		@Override
@@ -100,7 +123,11 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			CloneRepositoryDialog.this.setVisible(false);
 			// Intercept all authentication requests.
 			AuthenticationInterceptor.bind(sourceUrl.getHost());
-			GitAccess.getInstance().clone(sourceUrl, destFile, progressDialog);
+			GitAccess.getInstance().clone(
+			    sourceUrl,
+			    destFile,
+			    progressDialog,
+			    branch != null && branch != DEFAULT_BRANCH_MARKER ? branch.getName() : null);
 			progressDialog.dispose();
 			return null;
 		}
@@ -153,97 +180,98 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 * Listens to insertions in / deletions from the source (repository) URL text field.
 	 */
 	private transient DocumentListener sourceUrlTextFieldDocListener = new DocumentListener() {
-    /**
-     * Timer task for checking the connection to the repository (source) URL.
-     */
-    private TimerTask checkConnectionTask;
-    /**
-     * Reference comparator (for branch names).
-     */
-    private Comparator<Ref> refComparator = (o1, o2) -> {
-      int toReturn = 0;
-      if (o1 != null && o2 != null) {
-        String name1 = getBranchShortName(o1);
-        String name2 = getBranchShortName(o2);
-        toReturn = name1.compareTo(name2);
-      }
-      return toReturn;
-    };
+	  /**
+	   * Timer task for checking the connection to the repository (source) URL.
+	   */
+	  private TimerTask checkConnectionTask;
+	  /**
+	   * Reference comparator (for branch names).
+	   */
+	  private Comparator<Ref> refComparator = (o1, o2) -> {
+	    int toReturn = 0;
+	    if (o1 != null && o2 != null) {
+	      String name1 = getBranchShortName(o1);
+	      String name2 = getBranchShortName(o2);
+	      toReturn = name1.compareTo(name2);
+	    }
+	    return toReturn;
+	  };
 
-    @Override
-    public void removeUpdate(DocumentEvent e) {
-      checkURLConnection();
-    }
+	  @Override
+	  public void removeUpdate(DocumentEvent e) {
+	    checkURLConnection();
+	  }
 
-    @Override
-    public void insertUpdate(DocumentEvent e) {
-      checkURLConnection();
-    }
+	  @Override
+	  public void insertUpdate(DocumentEvent e) {
+	    checkURLConnection();
+	  }
 
-    @Override
-    public void changedUpdate(DocumentEvent e) {
-      // Nothing to do here
-    }
+	  @Override
+	  public void changedUpdate(DocumentEvent e) {
+	    // Nothing to do here
+	  }
 
-    /**
-     * Check the connection to the repository (source) URL.
-     */
-    private void checkURLConnection() {
-      if (checkConnectionTask != null) {
-        checkConnectionTask.cancel();
-      }
-      checkConnectionTask = new TimerTask() {
-        /**
-         * @see java.util.TimerTask.run()
-         */
-        @Override
-        public void run() {
-          final List<Ref> remoteBranches = new ArrayList<>();
-          SwingUtilities.invokeLater(() -> branchesComboBox.removeAllItems());
-          
-          String text = sourceUrlTextField.getText();
-          boolean wasTextProvided = text != null && !text.isEmpty();
-          if (wasTextProvided) {
-            try {
-              URL sourceURL = new URL(text);
-              AuthenticationInterceptor.bind(sourceURL.getHost());
-              Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
-                  text,
-                  // Maybe there was a problem with getting the remote branches
-                  CloneRepositoryDialog.this::showInfoMessage);
-              if (!branches.isEmpty()) {
-                remoteBranches.addAll(branches);
-                Collections.sort(remoteBranches, refComparator);
-              }
-            } catch (MalformedURLException e) {
-              SwingUtilities.invokeLater(() -> showInfoMessage(
-                  translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL)));
-              if (logger.isDebugEnabled()) {
-                logger.debug(e, e);
-              }
-            }
-          }
-          
-          SwingUtilities.invokeLater(() -> {
-            boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
-            if (shouldEnableBranchesCombo) {
-              for (Ref ref : remoteBranches) {
-                branchesComboBox.addItem(ref);
-              }
-            }
-            branchesComboBox.setEnabled(shouldEnableBranchesCombo);
-            if (wasTextProvided) {
-              // If we have branches, then we didn't have any problems.
-              // Hide the information label. Otherwise, show it.
-              informationLabel.setVisible(!shouldEnableBranchesCombo);
-            }
-          });
-          
-        }
-      };
-      checkRepoURLConTimer.schedule(checkConnectionTask, 500);
-    }
-  };
+	  /**
+	   * Check the connection to the repository (source) URL.
+	   */
+	  private void checkURLConnection() {
+	    if (checkConnectionTask != null) {
+	      checkConnectionTask.cancel();
+	    }
+	    checkConnectionTask = new TimerTask() {
+	      /**
+	       * @see java.util.TimerTask.run()
+	       */
+	      @Override
+	      public void run() {
+	        final List<Ref> remoteBranches = new ArrayList<>();
+	        SwingUtilities.invokeLater(() -> branchesComboBox.removeAllItems());
+
+	        String text = sourceUrlTextField.getText();
+	        boolean wasTextProvided = text != null && !text.isEmpty();
+	        if (wasTextProvided) {
+	          try {
+	            URL sourceURL = new URL(text);
+	            AuthenticationInterceptor.bind(sourceURL.getHost());
+	            Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
+	                text,
+	                // Maybe there was a problem with getting the remote branches
+	                CloneRepositoryDialog.this::showInfoMessage);
+	            if (!branches.isEmpty()) {
+	              remoteBranches.addAll(branches);
+	              Collections.sort(remoteBranches, refComparator);
+	            }
+	          } catch (MalformedURLException e) {
+	            SwingUtilities.invokeLater(() -> showInfoMessage(
+	                translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL)));
+	            if (logger.isDebugEnabled()) {
+	              logger.debug(e, e);
+	            }
+	          }
+	        }
+
+	        SwingUtilities.invokeLater(() -> {
+	          boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
+	          if (shouldEnableBranchesCombo) {
+	            branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
+	            for (Ref ref : remoteBranches) {
+	              branchesComboBox.addItem(ref);
+	            }
+	          }
+	          branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+	          if (wasTextProvided) {
+	            // If we have branches, then we didn't have any problems.
+	            // Hide the information label. Otherwise, show it.
+	            informationLabel.setVisible(!shouldEnableBranchesCombo);
+	          }
+	        });
+
+	      }
+	    };
+	    checkRepoURLConTimer.schedule(checkConnectionTask, 500);
+	  }
+	};
 
 	/**
 	 * The translator for the messages that are displayed in this dialog
@@ -367,7 +395,11 @@ public class CloneRepositoryDialog extends OKCancelDialog {
           boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if (value != null) {
-          label.setText(getBranchShortName((Ref) value));
+          if (value == DEFAULT_BRANCH_MARKER) {
+            label.setText("<Default branch>");
+          } else {
+            label.setText(getBranchShortName((Ref) value));
+          }
         }
         return label;
       }
@@ -505,7 +537,11 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	      if (isDestinationPathValid(destFile)) {
 	        JFrame parentFrame = (JFrame) pluginWorkspace.getParentFrame();
           final ProgressDialog progressDialog = new ProgressDialog(parentFrame);
-	        CloneWorker cloneWorker = new CloneWorker(progressDialog, sourceURL, destFile);
+	        CloneWorker cloneWorker = new CloneWorker(
+	            progressDialog,
+	            sourceURL,
+	            destFile,
+	            (Ref) branchesComboBox.getSelectedItem());
           cloneWorker.execute();
 	        // Make sure we present the dialog after this one is closed.
 	        // TODO There is a progress dialog support in Java. Maybe is better to use that.

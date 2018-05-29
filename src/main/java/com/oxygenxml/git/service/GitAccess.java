@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.MergeResult;
@@ -154,11 +155,12 @@ public class GitAccess {
 	 * @param url Remote repository to clone.
 	 * @param directory Local directory in which to create the clone.
 	 * @param progressDialog Progress support.
+	 * @param branchName The name of the branch to clone and checkout.
 	 * 
 	 * @throws GitAPIException
 	 * @throws URISyntaxException
 	 */
-	public void clone(URL url, File directory, final ProgressDialog progressDialog)
+	public void clone(URL url, File directory, final ProgressDialog progressDialog, String branchName)
 			throws GitAPIException, URISyntaxException {
 		if (git != null) {
 			git.close();
@@ -212,9 +214,21 @@ public class GitAccess {
 				this.totalWork = totalWork;
 			}
 		};
-		git = Git.cloneRepository().setURI(uri.toString()).setDirectory(directory).setCloneSubmodules(true)
-				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).setProgressMonitor(p)
-				.call();
+		
+		CloneCommand cloneCommand = Git.cloneRepository()
+		    .setURI(uri.toString())
+		    .setDirectory(directory)
+		    .setCloneSubmodules(true)
+		    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+		    .setProgressMonitor(p);
+		if (branchName != null) {
+      git = cloneCommand
+		      .setBranchesToClone(Arrays.asList(branchName))
+		      .setBranch(branchName)
+		      .call();
+		} else {
+		  git = cloneCommand.call();
+		}
 		
 		fireRepositoryChanged();
 	}
