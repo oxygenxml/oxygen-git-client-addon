@@ -14,6 +14,12 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Message shown when trying to clone from an invalid remote.
+   * 
+   * en: Invalid remote
+   */
+  public static final String INVALID_REMOTE = "Invalid_remote";
+  /**
    * Label in the repository cloning dialog.
    * 
    * en: Checkout branch

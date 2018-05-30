@@ -39,6 +39,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.lib.Ref;
@@ -146,11 +147,21 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			} catch (ExecutionException e) {
 				progressDialog.dispose();
 
-				// Download cancelled
 	      Throwable cause = e.getCause();
 	      while (cause != null) {
+	        boolean shouldBreak = false;
 	        if (cause.getMessage().contains("Download cancelled")) {
+	          // Download cancelled
 	          cleanDestDir();
+	          shouldBreak = true;
+	        } else if (cause instanceof InvalidRemoteException) {
+	          pluginWorkspace.showErrorMessage(
+	              translator.getTranslation(Tags.INVALID_REMOTE)
+	                  + ": " 
+	                  + sourceUrl);
+	          shouldBreak = true;
+	        }
+	        if (shouldBreak) {
 	          break;
 	        }
 	        cause = cause.getCause();

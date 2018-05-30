@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Invalid_remote">
+        <comment>Message shown when trying to clone from an invalid remote.</comment>
+        <val lang="en_US">Invalid remote</val>
+        <val lang="de_DE">Invalid remote</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
     <key value="Clone_Repository_Dialog_Url_Is_Not_A_Repository">
         <comment>The text displayed if the URL doesn't point to a remote repository</comment>
         <val lang="en_US">No remote repository found for the provided URL.</val>
