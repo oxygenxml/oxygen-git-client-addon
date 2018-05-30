@@ -169,7 +169,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	          if (lowercaseMsg.contains("not authorized")) {
 	            SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
 	                translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-	                + " <" + sourceUrl.getHost() + ">"));
+	                + ": " 
+	                + sourceUrl.getHost()));
 	            shouldBreak = true;
 	          }
 	        }
