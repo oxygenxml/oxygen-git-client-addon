@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -250,7 +251,9 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	       */
 	      @Override
 	      public void run() {
-	        if (CloneRepositoryDialog.this.isShowing()) {
+	        if (CloneRepositoryDialog.this.isShowing()
+	            && KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow() == CloneRepositoryDialog.this) {
+	          
 	          final List<Ref> remoteBranches = new ArrayList<>();
 	          SwingUtilities.invokeLater(() -> branchesComboBox.removeAllItems());
 
