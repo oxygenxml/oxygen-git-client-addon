@@ -250,48 +250,49 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	       */
 	      @Override
 	      public void run() {
-	        final List<Ref> remoteBranches = new ArrayList<>();
-	        SwingUtilities.invokeLater(() -> branchesComboBox.removeAllItems());
+	        if (CloneRepositoryDialog.this.isShowing()) {
+	          final List<Ref> remoteBranches = new ArrayList<>();
+	          SwingUtilities.invokeLater(() -> branchesComboBox.removeAllItems());
 
-	        String text = sourceUrlTextField.getText();
-	        boolean wasTextProvided = text != null && !text.isEmpty();
-	        if (wasTextProvided) {
-	          try {
-	            URL sourceURL = new URL(text);
-	            AuthenticationInterceptor.bind(sourceURL.getHost());
-	            Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
-	                text,
-	                // Maybe there was a problem with getting the remote branches
-	                CloneRepositoryDialog.this::showInfoMessage);
-	            if (!branches.isEmpty()) {
-	              remoteBranches.addAll(branches);
-	              Collections.sort(remoteBranches, refComparator);
-	            }
-	          } catch (MalformedURLException e) {
-	            SwingUtilities.invokeLater(() -> showInfoMessage(
-	                translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL)));
-	            if (logger.isDebugEnabled()) {
-	              logger.debug(e, e);
-	            }
-	          }
-	        }
-
-	        SwingUtilities.invokeLater(() -> {
-	          boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
-	          if (shouldEnableBranchesCombo) {
-	            branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
-	            for (Ref ref : remoteBranches) {
-	              branchesComboBox.addItem(ref);
-	            }
-	          }
-	          branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+	          String text = sourceUrlTextField.getText();
+	          boolean wasTextProvided = text != null && !text.isEmpty();
 	          if (wasTextProvided) {
-	            // If we have branches, then we didn't have any problems.
-	            // Hide the information label. Otherwise, show it.
-	            informationLabel.setVisible(!shouldEnableBranchesCombo);
+	            try {
+	              URL sourceURL = new URL(text);
+	              AuthenticationInterceptor.bind(sourceURL.getHost());
+	              Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
+	                  text,
+	                  // Maybe there was a problem with getting the remote branches
+	                  CloneRepositoryDialog.this::showInfoMessage);
+	              if (!branches.isEmpty()) {
+	                remoteBranches.addAll(branches);
+	                Collections.sort(remoteBranches, refComparator);
+	              }
+	            } catch (MalformedURLException e) {
+	              SwingUtilities.invokeLater(() -> showInfoMessage(
+	                  translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL)));
+	              if (logger.isDebugEnabled()) {
+	                logger.debug(e, e);
+	              }
+	            }
 	          }
-	        });
 
+	          SwingUtilities.invokeLater(() -> {
+	            boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
+	            if (shouldEnableBranchesCombo) {
+	              branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
+	              for (Ref ref : remoteBranches) {
+	                branchesComboBox.addItem(ref);
+	              }
+	            }
+	            branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+	            if (wasTextProvided) {
+	              // If we have branches, then we didn't have any problems.
+	              // Hide the information label. Otherwise, show it.
+	              informationLabel.setVisible(!shouldEnableBranchesCombo);
+	            }
+	          });
+	        }
 	      }
 	    };
 	    checkRepoURLConTimer.schedule(checkConnectionTask, 500);
