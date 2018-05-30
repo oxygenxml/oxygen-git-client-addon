@@ -40,6 +40,7 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.lib.Ref;
@@ -145,6 +146,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 				}
 				Thread.currentThread().interrupt();
 			} catch (ExecutionException e) {
+			  logger.debug(e);
+			  
 				progressDialog.dispose();
 
 	      Throwable cause = e.getCause();
@@ -152,16 +155,26 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	        boolean shouldBreak = false;
 	        if (cause.getMessage().contains("Download cancelled")) {
 	          // Download cancelled
-	          cleanDestDir();
 	          shouldBreak = true;
 	        } else if (cause instanceof InvalidRemoteException) {
-	          pluginWorkspace.showErrorMessage(
-	              translator.getTranslation(Tags.INVALID_REMOTE)
-	                  + ": " 
-	                  + sourceUrl);
+	          // Invalid remote
+	          SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
+                translator.getTranslation(Tags.INVALID_REMOTE)
+                + ": " 
+                + sourceUrl));
 	          shouldBreak = true;
+	        } else if (cause instanceof TransportException) {
+	          // Invalid credentials
+	          String lowercaseMsg = cause.getMessage().toLowerCase();
+	          if (lowercaseMsg.contains("not authorized")) {
+	            SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
+	                translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+	                + " <" + sourceUrl.getHost() + ">"));
+	            shouldBreak = true;
+	          }
 	        }
 	        if (shouldBreak) {
+	          cleanDestDir();
 	          break;
 	        }
 	        cause = cause.getCause();
