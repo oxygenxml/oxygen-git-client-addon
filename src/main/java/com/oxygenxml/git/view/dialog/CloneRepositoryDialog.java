@@ -452,8 +452,11 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		UndoSupportInstaller.installUndoManager(((JTextComponent) destinationPathCombo.getEditor().getEditorComponent()));
 		destinationPathCombo.setEditable(true);
 		List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
-		for (String string : destinationPaths) {
-			destinationPathCombo.addItem(string);
+		if (!destinationPaths.isEmpty()) {
+		  for (String string : destinationPaths) {
+		    destinationPathCombo.addItem(string);
+		  }
+		  destinationPathCombo.setSelectedItem("");
 		}
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
