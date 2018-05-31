@@ -455,6 +455,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		for (String string : destinationPaths) {
 			destinationPathCombo.addItem(string);
 		}
+		destinationPathCombo.setSelectedItem("");
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
