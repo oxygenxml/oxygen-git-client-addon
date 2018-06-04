@@ -281,8 +281,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	                  Collections.sort(remoteBranches, refComparator);
 	                }
 	              } catch (MalformedURLException e) {
-	                SwingUtilities.invokeLater(() -> showInfoMessage(
-	                    translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL)));
+	                showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
 	                if (logger.isDebugEnabled()) {
 	                  logger.debug(e, e);
 	                }
@@ -575,11 +574,13 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 * @param message The message.
 	 */
 	private void showInfoMessage(String message) {
-    informationLabel.setText(message);
-    informationLabel.setVisible(true);
-    pack();
-    setMinimumSize(getSize());
-  }
+	  SwingUtilities.invokeLater(() -> {
+	    informationLabel.setText(message);
+	    informationLabel.setVisible(true);
+	    pack();
+	  });
+	  setMinimumSize(getSize());
+	}
 
 	/**
 	 * 
