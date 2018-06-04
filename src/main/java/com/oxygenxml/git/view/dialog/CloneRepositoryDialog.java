@@ -6,8 +6,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +32,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -253,50 +258,82 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	      public void run() {
 	        if (CloneRepositoryDialog.this.isShowing()
 	            && KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow() == CloneRepositoryDialog.this) {
-	          
-	          final List<Ref> remoteBranches = new ArrayList<>();
-	          SwingUtilities.invokeLater(() -> branchesComboBox.removeAllItems());
 
-	          String text = sourceUrlTextField.getText();
-	          boolean wasTextProvided = text != null && !text.isEmpty();
-	          if (wasTextProvided) {
-	            try {
-	              URL sourceURL = new URL(text);
-	              AuthenticationInterceptor.bind(sourceURL.getHost());
-	              Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
-	                  text,
-	                  // Maybe there was a problem with getting the remote branches
-	                  CloneRepositoryDialog.this::showInfoMessage);
-	              if (!branches.isEmpty()) {
-	                remoteBranches.addAll(branches);
-	                Collections.sort(remoteBranches, refComparator);
-	              }
-	            } catch (MalformedURLException e) {
-	              SwingUtilities.invokeLater(() -> showInfoMessage(
-	                  translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL)));
-	              if (logger.isDebugEnabled()) {
-	                logger.debug(e, e);
-	              }
-	            }
-	          }
+	          try {
+	            final List<Ref> remoteBranches = new ArrayList<>();
+	            SwingUtilities.invokeLater(() -> {
+	              branchesComboBox.removeAllItems();
+	              setProgressVisible(true);
+	            });
 
-	          SwingUtilities.invokeLater(() -> {
-	            boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
-	            if (shouldEnableBranchesCombo) {
-	              branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
-	              for (Ref ref : remoteBranches) {
-	                branchesComboBox.addItem(ref);
-	              }
-	            }
-	            branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+	            String text = sourceUrlTextField.getText();
+	            boolean wasTextProvided = text != null && !text.isEmpty();
 	            if (wasTextProvided) {
-	              // If we have branches, then we didn't have any problems.
-	              // Hide the information label. Otherwise, show it.
-	              informationLabel.setVisible(!shouldEnableBranchesCombo);
+	              try {
+	                URL sourceURL = new URL(text);
+	                AuthenticationInterceptor.bind(sourceURL.getHost());
+	                Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
+	                    text,
+	                    // Maybe there was a problem with getting the remote branches
+	                    CloneRepositoryDialog.this::showInfoMessage);
+	                if (!branches.isEmpty()) {
+	                  remoteBranches.addAll(branches);
+	                  Collections.sort(remoteBranches, refComparator);
+	                }
+	              } catch (MalformedURLException e) {
+	                SwingUtilities.invokeLater(() -> showInfoMessage(
+	                    translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL)));
+	                if (logger.isDebugEnabled()) {
+	                  logger.debug(e, e);
+	                }
+	              }
 	            }
-	          });
+
+	            SwingUtilities.invokeLater(() -> {
+	              boolean shouldEnableBranchesCombo = !remoteBranches.isEmpty();
+	              if (shouldEnableBranchesCombo) {
+	                branchesComboBox.addItem(DEFAULT_BRANCH_MARKER);
+	                for (Ref ref : remoteBranches) {
+	                  branchesComboBox.addItem(ref);
+	                }
+	              }
+	              branchesComboBox.setEnabled(shouldEnableBranchesCombo);
+	              if (wasTextProvided) {
+	                // If we have branches, then we didn't have any problems.
+	                // Hide the information label. Otherwise, show it.
+	                informationLabel.setVisible(!shouldEnableBranchesCombo);
+	              }
+	            });
+	          } finally {
+	            SwingUtilities.invokeLater(() -> setProgressVisible(false));
+	          }
 	        }
 	      }
+
+	      /**
+	       * Show/hide the progress circle for branch retrieval.
+	       * 
+	       * @param shouldShow <code>true</code> to show the progress circle.
+	       */
+        private void setProgressVisible(boolean shouldShow) {
+          if (loadingLabel != null) {
+            JRootPane rootPane = getRootPane();
+            JLayeredPane layeredPane = rootPane.getLayeredPane();
+            layeredPane.remove(loadingLabel);
+            if (shouldShow) {
+              Rectangle rectToShowAt = SwingUtilities.convertRectangle(
+                  branchesComboBox.getParent(), 
+                  branchesComboBox.getBounds(), 
+                  rootPane);
+              rectToShowAt.translate(5, 0);
+              loadingLabel.setBounds(rectToShowAt);
+              layeredPane.add(loadingLabel, JLayeredPane.POPUP_LAYER);
+              loadingLabel.setIcon(loadIcon);
+            } else {
+              loadingLabel.setIcon(null);
+            }
+          }
+        }
 	    };
 	    checkRepoURLConTimer.schedule(checkConnectionTask, 500);
 	  }
@@ -335,7 +372,17 @@ public class CloneRepositoryDialog extends OKCancelDialog {
   /**
    * Plugin workspace access.
    */
-  private PluginWorkspace pluginWorkspace; 
+  private PluginWorkspace pluginWorkspace;
+
+  /**
+   * Loading label with animated GIF.
+   */
+  private JLabel loadingLabel; 
+  
+  /**
+   * Load icon.
+   */
+  private ImageIcon loadIcon;
 	
 	/**
 	 * Constructor.
@@ -392,7 +439,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		panel.add(sourceUrlTextField, gbc);
 		// Add document listener for URL validation and remote branch retrieval
 		sourceUrlTextField.getDocument().addDocumentListener(sourceUrlTextFieldDocListener);
-		
+
 		// "Checkout branch" label
 		JLabel branchesLabel = new JLabel(translator.getTranslation(Tags.CHECKOUT_BRANCH) + ":");
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -433,7 +480,16 @@ public class CloneRepositoryDialog extends OKCancelDialog {
         return label;
       }
     });
-
+    
+    // Loading icon
+    URL loadingIconURL = getClass().getResource(ImageConstants.LOADING_ICON);
+    if (loadingIconURL != null) {
+      Image img = Toolkit.getDefaultToolkit().createImage(loadingIconURL);
+      loadIcon = new ImageIcon(img);
+    }
+    loadingLabel = new JLabel();
+    loadingLabel.setMinimumSize(new Dimension(loadIcon.getIconWidth(), loadIcon.getIconHeight()));
+    
     // "Destination path" label
 		JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -495,7 +551,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		gbc.weighty = 0;
 		gbc.gridx ++;
 		panel.add(browseButton, gbc);
-
+		
 		// Information label shown when some problems occur
 		informationLabel = new JLabel();
 		informationLabel.setForeground(Color.RED);
