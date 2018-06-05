@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -163,10 +162,13 @@ public class GitAccess {
 	public void clone(URL url, File directory, final ProgressDialog progressDialog, String branchName)
 			throws GitAPIException, URISyntaxException {
 		if (git != null) {
+		  AuthenticationInterceptor.unbind(getHostName());
 			git.close();
 		}
-		URI uri = url.toURI();
-		UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(url.getHost());
+		// Intercept all authentication requests.
+    String host = url.getHost();
+    AuthenticationInterceptor.bind(host);
+		UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(host);
 		String username = gitCredentials.getUsername();
 		String password = gitCredentials.getPassword();
 
@@ -215,8 +217,10 @@ public class GitAccess {
 			}
 		};
 		
+		progressDialog.setNote("Initializing...");
+		
 		CloneCommand cloneCommand = Git.cloneRepository()
-		    .setURI(uri.toString())
+		    .setURI(url.toURI().toString())
 		    .setDirectory(directory)
 		    .setCloneSubmodules(true)
 		    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))

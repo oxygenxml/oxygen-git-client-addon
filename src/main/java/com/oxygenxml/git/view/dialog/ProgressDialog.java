@@ -53,14 +53,14 @@ public class ProgressDialog extends OKCancelDialog {
 
 		gbc.gridy++;
 		gbc.weightx = 0;
-		gbc.insets = new Insets(0, 5, 10, 5);
+		gbc.insets = new Insets(10, 5, 10, 5);
 		panel.add(noteLabel, gbc);
 
 		add(panel);
 
 		getOkButton().setVisible(false);
 
-		setMinimumSize(new Dimension(370, 150));
+		setMinimumSize(new Dimension(370, 130));
 		setResizable(false);
 		pack();
 		setLocationRelativeTo(parentFrame);

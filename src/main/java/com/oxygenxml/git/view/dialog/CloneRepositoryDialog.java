@@ -129,8 +129,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		@Override
 		protected Void doInBackground() throws Exception {
 			CloneRepositoryDialog.this.setVisible(false);
-			// Intercept all authentication requests.
-			AuthenticationInterceptor.bind(sourceUrl.getHost());
 			GitAccess.getInstance().clone(
 			    sourceUrl,
 			    destFile,
@@ -186,10 +184,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	        }
 	        cause = cause.getCause();
 	      }
-	      
 				return;
-			} finally {
-			  AuthenticationInterceptor.unbind(sourceUrl.getHost());
 			}
 		}
 

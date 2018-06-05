@@ -98,7 +98,8 @@ public class AuthUtil {
       String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
       String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
       tryAgainOutside = passphrase != null;
-    } else if (ex.getCause() instanceof NoRemoteRepositoryException) {
+    } else if (ex.getCause() instanceof NoRemoteRepositoryException
+        || lowercaseMsg.contains("invalid advertisement of")) {
       if (excMessPresenter != null) {
         excMessPresenter.presentMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
       } else {
