@@ -74,7 +74,7 @@ import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
@@ -84,8 +84,7 @@ import com.oxygenxml.git.ProjectViewManager;
 import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
-import com.oxygenxml.git.auth.ResetableUserCredentialsProvider;
-import com.oxygenxml.git.auth.SSHUserCredentialsProvider;
+import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -159,8 +158,8 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 * @throws URISyntaxException
 	 */
-	public void clone(URL url, File directory, final ProgressDialog progressDialog, String branchName)
-			throws GitAPIException, URISyntaxException {
+	public void clone(URIish url, File directory, final ProgressDialog progressDialog, String branchName)
+			throws GitAPIException {
 		if (git != null) {
 		  AuthenticationInterceptor.unbind(getHostName());
 			git.close();
@@ -219,11 +218,12 @@ public class GitAccess {
 		
 		progressDialog.setNote("Initializing...");
 		
-		CloneCommand cloneCommand = Git.cloneRepository()
-		    .setURI(url.toURI().toString())
+		String pass = OptionsManager.getInstance().getSshPassphrase();
+    CloneCommand cloneCommand = Git.cloneRepository()
+		    .setURI(url.toString())
 		    .setDirectory(directory)
 		    .setCloneSubmodules(true)
-		    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+		    .setCredentialsProvider(new SSHCapableUserCredentialsProvider(username, password, pass, url.getHost()))
 		    .setProgressMonitor(p);
 		if (branchName != null) {
       git = cloneCommand
@@ -691,23 +691,10 @@ public class GitAccess {
    * @return the collection of remote branches or an empty set.
    */
   public Collection<Ref> listRemoteBranchesForURL(
-      String urlString,
+      URIish sourceURL,
       AuthExceptionMessagePresenter excMessPresenter) {
-    Collection<Ref> remoteRefs = Collections.emptySet();
-    URL url = null;
-    if (urlString != null && !urlString.isEmpty()) {
-      try {
-        url = new URL(urlString);
-      } catch (MalformedURLException e) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e, e);
-        }
-      }
-    }
-    if (url != null) {
-      remoteRefs = doListRemoteBranchesInternal(url, excMessPresenter);
-    }
-    return remoteRefs;
+    AuthenticationInterceptor.bind(sourceURL.getHost());
+    return doListRemoteBranchesInternal(sourceURL, excMessPresenter);
   }
 
   /**
@@ -719,7 +706,7 @@ public class GitAccess {
    * @return the remote branches or an empty list.
    */
   private Collection<Ref> doListRemoteBranchesInternal(
-      URL repoURL,
+      URIish repoURL,
       AuthExceptionMessagePresenter excMessPresenter) {
     Collection<Ref> remoteRefs = Collections.emptySet();
     String host = repoURL.getHost();
@@ -736,16 +723,16 @@ public class GitAccess {
         logger.debug("Try login with user: " + username 
             + " and password: " + password);
       }
-      ResetableUserCredentialsProvider credentialsProvider = new ResetableUserCredentialsProvider(
+      SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(
           username,
           password,
+          OptionsManager.getInstance().getSshPassphrase(),
           host);
       try {
-        // TODO Use a SSHUserCredentialsProvider??? 
         logger.debug("Now do list the remote branches...");
         remoteRefs = Git.lsRemoteRepository()
             .setHeads(true)
-            .setRemote(repoURL.toExternalForm())
+            .setRemote(repoURL.toString())
             .setCredentialsProvider(credentialsProvider)
             .call();
         if (logger.isDebugEnabled()) {
@@ -844,7 +831,7 @@ public class GitAccess {
 	  }
 	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 	  Iterable<PushResult> call = git.push().setCredentialsProvider(
-	      new SSHUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
+	      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
 	  Iterator<PushResult> results = call.iterator();
 	  logger.debug("Push Ended");
 	  while (results.hasNext()) {
@@ -892,7 +879,7 @@ public class GitAccess {
       }
 			// Call "Pull"
 			PullResult call = git.pull().setCredentialsProvider(
-			    new SSHUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
+			    new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
 			ObjectId head = null;
 			try {
         head = repository.resolve("HEAD^{tree}");
@@ -1468,8 +1455,8 @@ public class GitAccess {
 		String username = gitCredentials.getUsername();
 		String password = gitCredentials.getPassword();
 		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		SSHUserCredentialsProvider credentialsProvider = 
-		    new SSHUserCredentialsProvider(username, password, sshPassphrase, getHostName());
+		SSHCapableUserCredentialsProvider credentialsProvider = 
+		    new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName());
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();

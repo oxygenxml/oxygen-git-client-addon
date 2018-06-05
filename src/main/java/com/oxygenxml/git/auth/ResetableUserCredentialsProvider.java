@@ -47,6 +47,10 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
    * for the current login try.
    */
   private boolean wasReset;
+  /**
+   * Flag to keep track if the credentials were previously created.
+   */
+  private boolean userCredentialsRequested = false; 
 
   /**
    * Constructor.
@@ -85,7 +89,11 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
     if (logger.isDebugEnabled()) {
       logger.debug("Reset credentials provider for: " + uri.toString());
     }
-    if (!shouldCancelLogin) {
+    if (
+        // The credentials were actually previously requested. 
+        userCredentialsRequested 
+        // The user hasn't already canceled a login session.
+        && !shouldCancelLogin) {
       LoginDialog loginDialog = new LoginDialog(
           host,
           username == null ? translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE)
@@ -114,16 +122,19 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
       for (CredentialItem credentialItem : items) { // NOSONAR
         if (credentialItem instanceof CredentialItem.Username) {
           ((CredentialItem.Username) credentialItem).setValue(username);
+          userCredentialsRequested = true;
           continue;
         }
         if (credentialItem instanceof CredentialItem.Password) {
           ((CredentialItem.Password) credentialItem).setValue(password.toCharArray());
+          userCredentialsRequested = true;
           continue;
         }
         if (credentialItem instanceof CredentialItem.StringType
             //$NON-NLS-1$
             && credentialItem.getPromptText().equals("Password: ")) {
           ((CredentialItem.StringType) credentialItem).setValue(password);
+          userCredentialsRequested = true;
           continue;
         }
         throw new UnsupportedCredentialItem(uri, credentialItem.getClass().getName()

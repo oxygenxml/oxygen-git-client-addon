@@ -5,18 +5,19 @@ import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
 
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.view.dialog.PassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
- * A checker that handles SSH related questions.
+ * A checker that is able to handle SSH-based requests.
  */
-public class SSHUserCredentialsProvider extends ResetableUserCredentialsProvider {
+public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsProvider {
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(SSHUserCredentialsProvider.class); 
+  private static Logger logger = Logger.getLogger(SSHCapableUserCredentialsProvider.class); 
 	/**
 	 * The pass phase to be used for SSH connections.
 	 */
@@ -34,11 +35,11 @@ public class SSHUserCredentialsProvider extends ResetableUserCredentialsProvider
 	 * @param passphrase SSH pass phase.
 	 * @param host The host name.
 	 */
-	public SSHUserCredentialsProvider(String username, String password, String passphrase, String host) {
+	public SSHCapableUserCredentialsProvider(String username, String password, String passphrase, String host) {
 		super(username, password, host);
 		this.passphrase = passphrase;
 	}
-
+	
 	/**
 	 * @see org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider#get(org.eclipse.jgit.transport.URIish, org.eclipse.jgit.transport.CredentialItem[])
 	 */
@@ -53,11 +54,15 @@ public class SSHUserCredentialsProvider extends ResetableUserCredentialsProvider
 	      logger.debug(item.getClass() + ", secure value: " + item.isValueSecure());
 	      logger.debug("Message: |" + item.getPromptText() + "|");
 	    }
-
+	    
 	    if (item instanceof CredentialItem.StringType
 	        && item.getPromptText().startsWith("Passphrase")) {
 	      // A not so great method to check that the pass phrase is requested.
 	      passphaseRequested = true;
+	      
+	      if (passphrase == null) {
+	        passphrase = new PassphraseDialog(item.getPromptText()).getPassphrase();
+	      }
 
 	      ((CredentialItem.StringType) item).setValue(passphrase);
 	      // true tells the engine that we supplied the value.

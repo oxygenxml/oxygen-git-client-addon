@@ -14,7 +14,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,8 +52,8 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Ref.Storage;
+import org.eclipse.jgit.transport.URIish;
 
-import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -101,7 +102,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
     /**
      * Repository (source) URL.
      */
-		private final URL sourceUrl;
+		private final URIish sourceUrl;
 		/**
 		 * Destination file.
 		 */
@@ -119,7 +120,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 		 * @param destFile       Destination file.
 		 * @param branch         The branch to checkout.
 		 */
-		private CloneWorker(ProgressDialog progressDialog, URL sourceUrl, File destFile, Ref branch) {
+		private CloneWorker(ProgressDialog progressDialog, URIish sourceUrl, File destFile, Ref branch) {
 			this.progressDialog = progressDialog;
 			this.sourceUrl = sourceUrl;
 			this.destFile = destFile;
@@ -157,7 +158,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	      Throwable cause = e.getCause();
 	      while (cause != null) {
 	        boolean shouldBreak = false;
-	        if (cause.getMessage().contains("Download cancelled")) {
+	        if (cause.getMessage() != null && cause.getMessage().contains("Download cancelled")) {
 	          // Download cancelled
 	          shouldBreak = true;
 	        } else if (cause instanceof InvalidRemoteException) {
@@ -265,22 +266,21 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	            boolean wasTextProvided = text != null && !text.isEmpty();
 	            if (wasTextProvided) {
 	              try {
-	                URL sourceURL = new URL(text);
-	                AuthenticationInterceptor.bind(sourceURL.getHost());
+	                URIish sourceURL = new URIish(text);
 	                Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
-	                    text,
+	                    sourceURL,
 	                    // Maybe there was a problem with getting the remote branches
 	                    CloneRepositoryDialog.this::showInfoMessage);
 	                if (!branches.isEmpty()) {
 	                  remoteBranches.addAll(branches);
 	                  Collections.sort(remoteBranches, refComparator);
 	                }
-	              } catch (MalformedURLException e) {
+	              } catch (URISyntaxException e) {
 	                showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
-	                if (logger.isDebugEnabled()) {
-	                  logger.debug(e, e);
-	                }
-	              }
+                  if (logger.isDebugEnabled()) {
+                    logger.debug(e, e);
+                  }
+                }
 	            }
 
 	            SwingUtilities.invokeLater(() -> {
@@ -613,7 +613,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 */
 	private boolean areSourceAndDestValid() {
 	  boolean areValid = false;
-	  URL sourceURL = getAndValidateSourceURL();
+	  URIish sourceURL = getAndValidateSourceURL();
 	  if (sourceURL != null) {
 	    final String selectedDestPath = (String) destinationPathCombo.getSelectedItem();
 	    if (selectedDestPath != null && !selectedDestPath.isEmpty()) {
@@ -645,16 +645,16 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	 * 
 	 * @return the URL or <code>null</code> if the provided text is invalid.
 	 */
-	private URL getAndValidateSourceURL() {
-	  URL url = null;
+	private URIish getAndValidateSourceURL() {
+	  URIish url = null;
 	  final String repoURLText = sourceUrlTextField.getText();
 	  if (repoURLText != null && !repoURLText.isEmpty()) {
 	    try {
-	      url = new URL(repoURLText);
-	    } catch (MalformedURLException e) {
-	      pluginWorkspace.showErrorMessage(
-	          translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
-	    }
+	      url = new URIish(repoURLText);
+	    } catch (URISyntaxException e) {
+        pluginWorkspace.showErrorMessage(
+            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+      }
 	  } else {
 	    pluginWorkspace.showErrorMessage(
 	        translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
