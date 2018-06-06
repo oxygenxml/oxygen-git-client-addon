@@ -14,7 +14,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -323,9 +322,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
               loadingLabel.setBounds(rectToShowAt);
               layeredPane.add(loadingLabel, JLayeredPane.POPUP_LAYER);
               loadingLabel.setIcon(loadIcon);
-            } else {
-              loadingLabel.setIcon(null);
             }
+            branchesComboBox.repaint();
           }
         }
 	    };
@@ -371,7 +369,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
   /**
    * Loading label with animated GIF.
    */
-  private JLabel loadingLabel; 
+  private JLabel loadingLabel = new JLabel();
   
   /**
    * Load icon.
@@ -481,8 +479,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
       Image img = Toolkit.getDefaultToolkit().createImage(loadingIconURL);
       loadIcon = new ImageIcon(img);
     }
-    loadingLabel = new JLabel();
-    loadingLabel.setMinimumSize(new Dimension(loadIcon.getIconWidth(), loadIcon.getIconHeight()));
     
     // "Destination path" label
 		JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
