@@ -46,7 +46,9 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.errors.NotSupportedException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.lib.Ref;
@@ -275,7 +277,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	                  Collections.sort(remoteBranches, refComparator);
 	                }
 	              } catch (URISyntaxException e) {
-	                showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+	                showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
                   if (logger.isDebugEnabled()) {
                     logger.debug(e, e);
                   }
@@ -297,6 +299,16 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	                informationLabel.setVisible(!shouldEnableBranchesCombo);
 	              }
 	            });
+	          } catch (JGitInternalException e) {
+	            Throwable cause = e.getCause();
+	            if (cause instanceof NotSupportedException) {
+	              showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+	            } else {
+	              pluginWorkspace.showErrorMessage(e.getMessage());
+	              if (logger.isDebugEnabled())  {
+	                logger.debug(e, e);
+	              }
+	            }
 	          } finally {
 	            SwingUtilities.invokeLater(() -> setProgressVisible(false));
 	          }
@@ -649,11 +661,11 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	      url = new URIish(repoURLText);
 	    } catch (URISyntaxException e) {
         pluginWorkspace.showErrorMessage(
-            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+            translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
       }
 	  } else {
 	    pluginWorkspace.showErrorMessage(
-	        translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_INVALID_URL));
+	        translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
 	  }
 	  return url;
 	}

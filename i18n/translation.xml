@@ -749,14 +749,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Clone_Repository_Dialog_Invalid_Url">
-        <comment>The text displayed if the repository (source) url is invalid</comment>
-        <val lang="en_US">The repository URL is invalid</val>
-        <val lang="de_DE">Die Repository URL ist ungültig</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
     <key value="Clone_Repository_Dialog_Invalid_Destination_Path">
         <comment>The text displayed if the destination path is invalid</comment>
         <val lang="en_US">Destination path is invalid</val>
