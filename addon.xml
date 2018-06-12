@@ -20,6 +20,12 @@
 		         </style>
 		      </head>
 		      <body>
+		          <div>
+		              <h3>What's new in version 1.2.11</h3>
+		              <ol>
+		                  <li>Various performance optimizations, bug fixes and the ability to check out a specific branch when cloning a repository.</li>
+		              </ol>
+		          </div>
 		        <div>
 		          <h3>What's new in version 1.2.10</h3>
 		          <ol>
