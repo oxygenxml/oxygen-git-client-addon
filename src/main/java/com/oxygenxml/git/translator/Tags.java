@@ -512,11 +512,6 @@ public class Tags {
 	public static final String CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL = "Clone_Repository_Dialog_Destination_Path_Label";
 
 	/**
-	 * The text displayed if the url is invalid
-	 */
-	public static final String CLONE_REPOSITORY_DIALOG_INVALID_URL = "Clone_Repository_Dialog_Invalid_Url";
-
-	/**
 	 * The text displayed if the destination path is invalid
 	 */
 	public static final String CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH = "Clone_Repository_Dialog_Invalid_Destination_Path";

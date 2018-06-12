@@ -177,17 +177,19 @@ public class GitAccess {
 			float currentWork = 0;
 
 			@Override
-      public void update(int completed) {
-				currentWork += completed;
-				String text = "";
-				if (totalWork != 0) {
-					float percentFloat = currentWork / totalWork * 100;
-					int percent = (int) percentFloat;
-					text = taskTitle + " " + percent + "% completed";
-				} else {
-					text = taskTitle + "100% completed";
-				}
-				progressDialog.setNote(text);
+			public void update(int completed) {
+			  currentWork += completed;
+			  if (progressDialog != null) {
+			    String text = "";
+			    if (totalWork != 0) {
+			      float percentFloat = currentWork / totalWork * 100;
+			      int percent = (int) percentFloat;
+			      text = taskTitle + " " + percent + "% completed";
+			    } else {
+			      text = taskTitle + "100% completed";
+			    }
+			    progressDialog.setNote(text);
+			  }
 			}
 
 			@Override
@@ -196,11 +198,15 @@ public class GitAccess {
 			}
 
 			@Override
-      public boolean isCancelled() {
-				if (progressDialog.isCanceled()) {
-					progressDialog.setNote("Canceling...");
-				}
-				return progressDialog.isCanceled();
+			public boolean isCancelled() {
+			  boolean isCanceled = false;
+			  if (progressDialog != null) {
+			    if (progressDialog.isCanceled()) {
+			      progressDialog.setNote("Canceling...");
+			    }
+			    isCanceled = progressDialog.isCanceled();
+			  }
+			  return isCanceled;
 			}
 
 			@Override
@@ -216,7 +222,9 @@ public class GitAccess {
 			}
 		};
 		
-		progressDialog.setNote("Initializing...");
+		if (progressDialog != null) {
+		  progressDialog.setNote("Initializing...");
+		}
 		
 		String pass = OptionsManager.getInstance().getSshPassphrase();
     CloneCommand cloneCommand = Git.cloneRepository()
