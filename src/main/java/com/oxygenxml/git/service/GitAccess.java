@@ -1692,14 +1692,4 @@ public class GitAccess {
 	public SubmoduleStatusCommand submoduleStatus() {
 	  return git.submoduleStatus();
 	}
-	
-	/**
-	 * !!! FOR TESTS !!!
-	 * 
-	 * Get the {@link Git} object through which
-	 * to interact with the repository.
-	 */
-	public Git getGitForTests() {
-    return git;
-  }
 }
