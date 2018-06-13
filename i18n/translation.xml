@@ -7,7 +7,7 @@
     <key value="Invalid_remote">
         <comment>Message shown when trying to clone from an invalid remote.</comment>
         <val lang="en_US">Invalid remote</val>
-        <val lang="de_DE">Invalid remote</val>
+        <val lang="de_DE">Remote ungültig</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -15,7 +15,7 @@
     <key value="Clone_Repository_Dialog_Url_Is_Not_A_Repository">
         <comment>The text displayed if the URL doesn't point to a remote repository</comment>
         <val lang="en_US">No remote repository found for the provided URL.</val>
-        <val lang="de_DE">No remote repository found for the provided URL.</val>
+        <val lang="de_DE">Unter dieser URL wurde kein Remote-Repository gefunden.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -23,7 +23,7 @@
     <key value="Checkout_branch">
         <comment>"Checkout branch" label in the dialog shown when cloning a repository.</comment>
         <val lang="en_US">Checkout branch</val>
-        <val lang="de_DE">Checkout branch</val>
+        <val lang="de_DE">Branch auschecken</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
