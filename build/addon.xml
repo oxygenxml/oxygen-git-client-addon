@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
 	<xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
 		id="com.oxygenxml.git">
-		<xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/1.2.10/git.support-1.2.10-plugin.jar" />
-		<xt:version>1.2.10</xt:version> 
+		<xt:location href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/1.3.0/git.support-1.3.0-plugin.jar" />
+		<xt:version>1.3.0</xt:version> 
 		<xt:oxy_version>18.1+</xt:oxy_version>
 		<xt:type>plugin</xt:type>
 		<xt:author>Syncro Soft SRL</xt:author>
@@ -20,6 +20,12 @@
 		         </style>
 		      </head>
 		      <body>
+		          <div>
+		              <h3>What's new in version 1.2.11</h3>
+		              <ol>
+		                  <li>Various performance optimizations, bug fixes and the ability to check out a specific branch when cloning a repository.</li>
+		              </ol>
+		          </div>
 		        <div>
 		          <h3>What's new in version 1.2.10</h3>
 		          <ol>
