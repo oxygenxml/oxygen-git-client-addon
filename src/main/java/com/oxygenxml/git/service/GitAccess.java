@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -65,6 +66,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.merge.MergeStrategy;
+import org.eclipse.jgit.merge.ResolveMerger.MergeFailureReason;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -864,9 +866,11 @@ public class GitAccess {
 	 * 
 	 * @return The result, if successful.
 	 *  
-	 * @throws GitAPIException If it fails.
+	 * @throws CheckoutConflictException There is a conflict between the local repository and the remote one.
+	 *  The same file that is in conflict is changed inside the working copy so operation is aborted.
+	 * @throws GitAPIException other errors.
 	 */
-	public PullResponse pull(String username, String password) throws GitAPIException {
+	public PullResponse pull(String username, String password) throws CheckoutConflictException, GitAPIException {
 	  AuthenticationInterceptor.install();
 
 		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
@@ -902,7 +906,35 @@ public class GitAccess {
 			}
 			
 			MergeResult mergeResult = call.getMergeResult();
+			
+			if (mergeResult != null) {
+			  if (logger.isDebugEnabled()) {
+			    logger.debug("Merge result " + mergeResult);
+			    logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
+			  }
+			  
+			  if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
+			    
+			    if (logger.isDebugEnabled()) {
+			      Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
+			      if (failingPaths != null) {
+			        Set<String> keySet = failingPaths.keySet();
+			        for (String string : keySet) {
+			          logger.debug("path " + string);
+			          logger.debug("reason " + failingPaths.get(string));
+			        }
+			      }
+			    }
+			    
+			    throw new CheckoutConflictException(
+			        new ArrayList<String>(mergeResult.getFailingPaths().keySet()), 
+			        new org.eclipse.jgit.errors.CheckoutConflictException(""));
+			  }
+			}
+			
 			if (mergeResult != null && mergeResult.getConflicts() != null) {
+			  // This is a successful merge but there are conflicts that should be resolved
+			  // by the user.
 			  Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
 			  if (conflictingFiles != null) {
 			    response.setConflictingFiles(conflictingFiles);
@@ -913,7 +945,7 @@ public class GitAccess {
 				response.setStatus(PullStatus.UP_TO_DATE);
 			}
 		}
-
+		
 		return response;
 
 	}
