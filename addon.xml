@@ -21,6 +21,9 @@
 		      </head>
 		      <body>
 		          <div>
+		              <p>This add-on contributes a built-in Git client directly into Oxygen in the form of a <b>Git Staging</b> view that includes various actions that perform common Git commands, such as push, pull, change branch, commit, and more. It also includes a built-in tool for comparing and merging changes.</p>
+		          </div>
+		          <div>
 		              <h3>What's new in version 1.3.1</h3>
 		              <ol>
 		                  <li>Present an error message when Pull fails because local changes would be overwritten by merge.</li>
