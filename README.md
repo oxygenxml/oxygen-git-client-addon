@@ -23,7 +23,7 @@ Click the **Clone new repository** button (it has a '+' sign as the icon) and pr
 - a **Checkout branch**: a specific branch of the repositry to be cloned. The default branch will be cloned if another one is not specified.
 - the **Destination path**: the local path were the repository will be cloned.
 
-After cloning a repository, it will be set as the current working copy.
+After cloning a repository, it will automatically be set as the current working copy.
 
 ## Selecting the working copy
 
