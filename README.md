@@ -27,7 +27,7 @@ After cloning a repository, it will automatically be set as the current working 
 
 ## Selecting a working copy
 
-Click the **Browse** button to select a working copy from your file system. The selected folder must be a Git Repository.
+Click the **Browse** button to select a working copy from your file system. The selected folder must be a Git repository.
 
 ## Unstaged resources area
 
