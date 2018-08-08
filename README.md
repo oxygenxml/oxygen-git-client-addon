@@ -16,6 +16,15 @@ To install it the add-on, follow these instructions:
 
 Result: A **Git Staging** view will now be available in Oxygen XML Editor/Author. If it is not visible, go to **Window->Show View** and select **Get Staging**. This view acts as a basic Git client integrated directly into Oxygen and it provides support for committing changes to a Git repository, comparing and merging changes, and other Git commands.
 
+## Cloning a repository
+
+Click the **Clone new repository** button (it has a '+' sign as the icon) and provide:
+- the **Repository URL**: it is the URL of the remote repository to be cloned
+- a **Checkout branch**: it is a specific branch of the repositry to be cloned. The default branch will be cloned if another one is not specified.
+- the **Destination path**: it is the local path were the repository will be cloned.
+
+After cloning a repository, it will be set as the current working copy.
+
 ## Selecting the working copy
 
 Click the **Browse** button to select a working copy from your file system. The selected folder must be a Git Repository.
