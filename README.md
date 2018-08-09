@@ -29,6 +29,14 @@ After cloning a repository, it will automatically be set as the current working 
 
 Click the **Browse** button to select a working copy from your file system. The selected folder must be a Git repository.
 
+## Switching between local branches
+
+For swithing between local branches, use the **Change branch** action from the toolbar of the **Git Staging** view and selected the desired branch from the presented combo box.
+
+## Working with submodules
+
+For opening and working with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box.
+
 ## Unstaged resources area
 
 In the unstaged resources area (the one on top), you will see all the modifications that have occurred since your last commit (files that have been modified, new files, and deleted files). Various actions are available in the contextual menu (**Open**, **Open in compare editor**, **Stage**, **Discard**, etc.).
