@@ -1,10 +1,10 @@
 # Git support plugin
 
-This add-on contributes a built-in Git client directly in Oxygen XML Editor/Author
+This add-on contributes a built-in Git client directly in Oxygen XML Editor/Author/Developer.
 
 ## Installation
 
-This add-on is compatible with Oxygen XML Editor (or XML Author) version 18.1 or higher. 
+This add-on is compatible with Oxygen XML Editor/Author/Developer version 18.1 or higher. 
 
 To install it the add-on, follow these instructions:
 
@@ -14,7 +14,7 @@ To install it the add-on, follow these instructions:
 4. Select the **I accept all terms of the end user license agreement** option and click **Finish**.
 5. Restart the application.
 
-Result: A **Git Staging** view will now be available in Oxygen XML Editor/Author. If it is not visible, go to **Window->Show View** and select **Get Staging**. This view acts as a basic Git client integrated directly into Oxygen and it provides support for committing changes to a Git repository, comparing and merging changes, and other Git commands.
+Result: A **Git Staging** view will now be available in Oxygen XML Editor/Author/Developer. If it is not visible, go to **Window->Show View** and select **Get Staging**. This view acts as a basic Git client integrated directly into Oxygen and it provides support for committing changes to a Git repository, comparing and merging changes, and other Git commands.
 
 ## Cloning a repository
 
