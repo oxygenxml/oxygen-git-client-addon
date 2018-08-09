@@ -6,7 +6,7 @@ This add-on contributes a built-in Git client directly in Oxygen XML Editor/Auth
 
 This add-on is compatible with Oxygen XML Editor/Author/Developer version 18.1 or higher. 
 
-To install it the add-on, follow these instructions:
+To install the add-on, follow these instructions:
 
 1. Go to **Help->Install new add-ons** to open an add-on selection dialog box.
 2. Enter or paste https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml in the **Show add-ons from** field.
@@ -31,7 +31,7 @@ Click the **Browse** button to select a working copy from your file system. The 
 
 ## Switching between local branches
 
-For swithing between local branches, use the **Change branch** action from the toolbar of the **Git Staging** view and selected the desired branch from the presented combo box.
+For swithing between local branches, use the **Change branch** action from the toolbar of the **Git Staging** view and select the desired branch from the presented combo box.
 
 ## Working with submodules
 
@@ -59,23 +59,21 @@ After staging the files, on the bottom of the view you can input a commit messag
 
 ## Push/Pull
 
-To push your local repository changes to the remote one, you must click on the **Push** button from the view's toolbar. To bring the changes from the remote repository into your local one, you must click on the **Pull** button from the same toolbar.
+To push your local repository changes to the remote one, use the **Push** button from the view's toolbar. To bring the changes from the remote repository into your local one, use the **Pull** button from the same toolbar.
 
 To push or pull, you need to access the remote, and for that you need to provide some credentials. If no credentials are found, the add-on will ask for an account and password. If you have a two-factor authentication for GitHub, you must go to your **Account Settings->Personal access tokens->Generate new token** and then, back in the **Git Staging** view in Oxygen, you have to use the generated token as the password when you are asked to enter your credentials.
 
 
 ## File conflicts solving flow
 
-How to solve github conflicts with the Oxygen **Git Support** add-on:
-
-After you edit your file and commit it in the local repository and try to push it to the public repository, if a warning appears informing you about not being up-to-date with the repository, follow these steps to fix this:
+After editing a file, commiting it to the local repository and trying to push it to the remote repository, if a warning appears informing you about not being up-to-date with the repository, follow these steps:
 
 1. Pull the data from the repository using the **Pull** button.
-2. In the **Unstaged** area, select each conflicted file and open it the compare editor. Choose what changes you want to keep/discard and save the document.
+2. In the **Unstaged** area, select each conflicted file and open it the compare editor either by double clicking or by using the contextual menu action. Choose what changes you want to keep/discard and save the document.
 3. After you close the compare editor, the file will be staged automatically and moved to the **Staged** area.
-4. When all conflicts are resolved and no more files are left in the **Unstaged** area, the changes can be committed.
+4. When all the conflicts are resolved and no more files are left in the **Unstaged** area, the changes can be committed.
 5. Enter a message and commit. You will now have a new change to **Push**.
-6. Push the changes to the public repository.
+6. Push the changes to the remote repository.
 
 Copyright and License
 ---------------------
