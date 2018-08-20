@@ -279,7 +279,7 @@ public class ChangesPanel extends JPanel {
 	    if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
 	      GitTreeNode root = new GitTreeNode(rootFolder);
 	      // Create the tree model and add the root node to it
-	      treeModel = new StagingResourcesTreeModel(stageController, root, forStagedResources, new ArrayList<FileStatus>(filesStatus));
+	      treeModel = new StagingResourcesTreeModel(stageController, root, forStagedResources, new ArrayList<>(filesStatus));
 
 	      // Create the tree with the new model
 	      tree.setModel(treeModel);
@@ -414,8 +414,8 @@ public class ChangesPanel extends JPanel {
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		addFilesPanel(gbc);
-		addChangeAllButton(gbc);
 		addChangeSelectedButton(gbc);
+		addChangeAllButton(gbc);
 		addSwitchViewButton(gbc);
 
 		addSwitchButtonListener();
@@ -894,9 +894,9 @@ public class ChangesPanel extends JPanel {
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 0;
+		gbc.gridx = 1;
 		gbc.gridy = 1;
-		gbc.weightx = 0;
+		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
 		if (forStagedResources) {
@@ -918,9 +918,9 @@ public class ChangesPanel extends JPanel {
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 1;
+		gbc.gridx = 0;
 		gbc.gridy = 1;
-		gbc.weightx = 1;
+		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
 		if (forStagedResources) {
@@ -1034,7 +1034,9 @@ public class ChangesPanel extends JPanel {
         if (!e.isPopupTrigger() && e.getClickCount() == 2) {
           Point point = new Point(e.getX(), e.getY());
           int clickedRow = filesTable.rowAtPoint(point);
-          openFileInCompareEditor(clickedRow);
+          if (clickedRow != -1) {
+            openFileInCompareEditor(clickedRow);
+          }
         }
         
 			}
