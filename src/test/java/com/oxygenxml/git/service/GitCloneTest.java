@@ -192,7 +192,7 @@ public class GitCloneTest extends GitTestBase {
     
     gitAccess.setSubmodule("modules/submodule");
     
-    File module = new File(cloneDest, ".git\\modules\\modules\\submodule");
+    File module = new File(cloneDest, ".git/modules/modules/submodule");
     assertEquals(module.getAbsolutePath(), gitAccess.getRepository().getDirectory().getAbsolutePath());
   }
 }
