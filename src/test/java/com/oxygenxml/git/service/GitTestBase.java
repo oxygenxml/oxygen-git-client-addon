@@ -222,6 +222,15 @@ public class GitTestBase extends JFCTestCase {
   }
   
   /**
+   * Records the given repository for clean up when the test is finished.
+   * 
+   * @param repo Repository to clean up.
+   */
+  protected final void record4Cleanup(Repository repo) {
+    loadedRepos.add(repo);
+  }
+  
+  /**
    * Listeners interested in editor change events.
    */
   protected final List<WSEditorChangeListener> editorChangeListeners = new ArrayList<WSEditorChangeListener>();
@@ -336,10 +345,12 @@ public class GitTestBase extends JFCTestCase {
     for (Repository repository : loadedRepos) {
       // Remove the file system resources.
       try {
+        repository.close();
         String absolutePath = repository.getWorkTree().getAbsolutePath();
         File dirToDelete = new File(absolutePath);
         FileUtils.deleteDirectory(dirToDelete);
       } catch (IOException e) {
+        System.err.println("Unable to delete: " + repository.getWorkTree().getAbsolutePath());
         e.printStackTrace();
       }
     }

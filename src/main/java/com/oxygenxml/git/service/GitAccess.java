@@ -232,7 +232,6 @@ public class GitAccess {
     CloneCommand cloneCommand = Git.cloneRepository()
 		    .setURI(url.toString())
 		    .setDirectory(directory)
-		    .setCloneSubmodules(true)
 		    .setCredentialsProvider(new SSHCapableUserCredentialsProvider(username, password, pass, url.getHost()))
 		    .setProgressMonitor(p);
 		if (branchName != null) {
@@ -605,12 +604,21 @@ public class GitAccess {
 	 * 
 	 * @param submodule
 	 *          - the name of the submodule
-	 * @throws IOException
-	 * @throws GitAPIException
+	 * @throws IOException Failed to load the submodule.
+	 * @throws GitAPIException Failed to load the submodule.
 	 */
-	public void setSubmodule(String submodule) throws IOException {
+	public void setSubmodule(String submodule) throws IOException, GitAPIException {
 		Repository parentRepository = git.getRepository();
 		Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
+		
+		if (submoduleRepository == null) {
+		  // The submodule wasn't updated.
+		  git.submoduleInit().call();
+		  git.submoduleUpdate().call();
+		  
+		  submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
+		}
+		
 		git = Git.wrap(submoduleRepository);
 		
 		fireRepositoryChanged();

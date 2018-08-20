@@ -1,18 +1,28 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.SubmoduleAddCommand;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.submodule.SubmoduleStatus;
+import org.eclipse.jgit.submodule.SubmoduleStatusType;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.URIish;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.DiffPresenter;
+import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.io.FileSystemUtil;
 
@@ -117,5 +127,72 @@ public class GitCloneTest extends GitTestBase {
       FileUtils.deleteDirectory(cloneDest2);
     }
   }
-
+  
+  
+  /**
+   * <p><b>Description:</b> Clone a project that has submodules, and try to load the submodule.</p>
+   * <p><b>Bug ID:</b> EXM-42006</p>
+   *
+   * @author alex_jitianu 
+   *
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testCloneSubmodules() throws Exception {
+    GitAccess gitAccess = GitAccess.getInstance();
+    
+    // PARENT repos
+    String localTestRepositoryP = "target/test-resources/GitCloneTest/testCloneSubmodules-localCS";
+    String remoteTestRepositoryP = "target/test-resources/GitCloneTest/testCloneSubmodules-remoteCS";
+    
+    Repository remoteRepoP = createRepository(remoteTestRepositoryP);
+    Repository localRepoP = createRepository(localTestRepositoryP);
+    bindLocalToRemote(localRepoP, remoteRepoP);
+    
+    // Do a commit to bind the repositories together.
+    gitAccess.setRepository(localTestRepositoryP);
+    // A setup is performed on the first commit.
+    gitAccess.commit("");
+    gitAccess.push("", "");
+    
+    // SUBMODULE repos
+    String remoteTestRepositorySubModule = "target/test-resources/GitCloneTest/testCloneSubmodules-remoteCS-SubModule/";
+    Repository remoteRepoSubModule = createRepository(remoteTestRepositorySubModule);
+    gitAccess.setRepository(remoteTestRepositorySubModule);
+    gitAccess.commit("Commit");
+    
+    // Link the submodule in the main repository.
+    gitAccess.setRepository(localTestRepositoryP);
+    // Add SUBMODULE
+    SubmoduleAddCommand addCommand = gitAccess.submoduleAdd();
+    addCommand.setURI(remoteRepoSubModule.getDirectory().toURI().toString());
+    addCommand.setPath("modules/submodule");
+    Repository subRepo = addCommand.call();
+    subRepo.close();
+    
+    gitAccess.setRepository(localTestRepositoryP);
+    gitAccess.commit("Submodule add");
+    gitAccess.push("", "");
+    
+    File cloneDest = new File("target/test-resources/GitCloneTest/testCloneSubmodules-remoteCS-2");
+    FileUtils.deleteDirectory(cloneDest);
+    // Clone the remote.
+    gitAccess.clone(
+        new URIish(localRepoP.getDirectory().toURI().toURL()),
+        cloneDest,
+        null,
+        null);
+    
+    // The newly cloned repository must be removed when the test is done.
+    Repository repository = gitAccess.getRepository();
+    record4Cleanup(repository);
+    
+    Set<String> submodules = gitAccess.getSubmodules();
+    assertEquals("[modules/submodule]", submodules.toString());
+    
+    gitAccess.setSubmodule("modules/submodule");
+    
+    File module = new File(cloneDest, ".git\\modules\\modules\\submodule");
+    assertEquals(module.getAbsolutePath(), gitAccess.getRepository().getDirectory().getAbsolutePath());
+  }
 }

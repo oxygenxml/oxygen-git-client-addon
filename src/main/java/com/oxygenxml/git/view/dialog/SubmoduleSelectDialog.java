@@ -5,19 +5,24 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
+import java.text.Format;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
+import com.ibm.icu.text.MessageFormat;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import javafx.scene.control.TextFormatter;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -118,7 +123,15 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 		String submodule = (String) submoduleList.getSelectedItem();
 		try {
 			GitAccess.getInstance().setSubmodule(submodule);
-		} catch (IOException e) {
+		} catch (IOException | GitAPIException e) {
+      String message = e.getMessage();
+      if (message == null) {
+        // The exception's toString() adds more data, like the class name.
+        message = e.toString();
+      }
+      String formated = MessageFormat.format(translator.getTranslation(Tags.SUBMODULE_LOAD_FAIL), message);
+      
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(formated);
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}

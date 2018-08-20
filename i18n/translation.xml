@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Submodule_load_fail">
+        <comment>Message shown when trying to clone from an invalid remote.</comment>
+        <val lang="en_US">Submodule could not be loaded because of: {0}.</val>
+        <val lang="de_DE">Submodule could not be loaded because of: {0}.</val>
+        <val lang="fr_FR">Submodule could not be loaded because of: {0}.</val>
+        <val lang="ja_JP">Submodule could not be loaded because of: {0}.</val>
+        <val lang="nl_NL">Submodule could not be loaded because of: {0}.</val>
+    </key>
     <key value="Invalid_remote">
         <comment>Message shown when trying to clone from an invalid remote.</comment>
         <val lang="en_US">Invalid remote</val>

@@ -16,6 +16,12 @@ public class Tags {
   /**
    * Message shown when trying to clone from an invalid remote.
    * 
+   * en: Submodule_load_fail
+   */
+  public static final String SUBMODULE_LOAD_FAIL = "Submodule_load_fail";
+  /**
+   * Message shown when trying to clone from an invalid remote.
+   * 
    * en: Invalid remote
    */
   public static final String INVALID_REMOTE = "Invalid_remote";
