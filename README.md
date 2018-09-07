@@ -20,7 +20,7 @@ Result: A **Git Staging** view will now be available in Oxygen XML Editor/Author
 
 Click the **Clone new repository** button (it has a '+' sign as the icon) and provide the following:
 - **Repository URL**: The URL of the remote repository to be cloned.
-- **Checkout branch**: A specific branch of the repositry to be cloned. The default branch will be cloned if another one is not specified.
+- **Checkout branch**: A specific branch of the repository to be cloned. The default branch will be cloned if another one is not specified.
 - **Destination path**: The local path were the repository will be cloned.
 
 After cloning a repository, it will automatically be set as the current working copy.
