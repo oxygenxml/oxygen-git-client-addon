@@ -43,10 +43,10 @@ public class GitCloneTest extends GitTestBase {
    * @throws Exception
    */
   public void testClone1() throws Exception {
-    String localRepoLoc = "target/test-resources/GitCloneTest/testClone1-local";
-    String remoteRepoLoc = "target/test-resources/GitCloneTest/testClone1-remote";
-    String cloneDestLoc = "target/test-resources/GitCloneTest/testClone1-cloneDest";
-    String cloneDestLoc2 = "target/test-resources/GitCloneTest/testClone1-cloneDest2";
+    String localRepoLoc = "target/test-resources/GitCloneTest2/testClone1-local";
+    String remoteRepoLoc = "target/test-resources/GitCloneTest2/testClone1-remote";
+    String cloneDestLoc = "target/test-resources/GitCloneTest2/testClone1-cloneDest";
+    String cloneDestLoc2 = "target/test-resources/GitCloneTest2/testClone1-cloneDest2";
     File localDir = new File(localRepoLoc);
     File cloneDest = new File(cloneDestLoc);
     File cloneDest2 = new File(cloneDestLoc2);
@@ -66,6 +66,7 @@ public class GitCloneTest extends GitTestBase {
       gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
       gitAccess.commit("");
       gitAccess.push("", "");
+      
 
       // Create a second branch ("slave")
       RefSpec spec = new RefSpec("refs/heads/master:refs/heads/slave");
@@ -108,13 +109,13 @@ public class GitCloneTest extends GitTestBase {
           new URIish(remoteRepo.getDirectory().toURI().toURL()),
           cloneDest2,
           null,
-          "slave");
+          "refs/heads/slave");
       assertEquals("slave", gitAccess.getRepository().getBranch());
       
       // Check what we have in the destination folder
       files = new ArrayList<>();
       FileSystemUtil.listRecursively(new File[] {cloneDest2}, false, null, files);
-      assertEquals(13, files.size());
+      assertEquals(12, files.size());
       assertTrue(files.toString().contains("test.txt"));
       // The second file shouldn't be here. Only on "master", because
       // "slave" was created earlier than when "test2.txt" was pushed. 

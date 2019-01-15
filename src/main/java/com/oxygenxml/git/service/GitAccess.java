@@ -155,7 +155,7 @@ public class GitAccess {
 	 * @param url Remote repository to clone.
 	 * @param directory Local directory in which to create the clone.
 	 * @param progressDialog Progress support.
-	 * @param branchName The name of the branch to clone and checkout.
+	 * @param branchName The name of the branch to clone and checkout. Must be specified as full ref names (e.g. "refs/heads/hotfixes/17.0").
 	 * 
 	 * @throws GitAPIException
 	 * @throws URISyntaxException
