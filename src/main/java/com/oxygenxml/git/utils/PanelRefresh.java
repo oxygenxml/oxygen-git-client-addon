@@ -301,26 +301,27 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Updates the files in the model. 
 	 * 
-	 * @param nfiles The new files to be presented in the panel.
+	 * @param panelToUpdate The panel to update: staged or unstaged resources panel.
+	 * @param newfiles The new files to be presented in the panel.
 	 */
-	private void updateFiles(ChangesPanel panelToUpdate, final List<FileStatus> nfiles) {
+	private void updateFiles(ChangesPanel panelToUpdate, final List<FileStatus> newfiles) {
 	  // The current files presented in the panel.
 	  List<FileStatus> filesInModel = panelToUpdate.getFilesStatuses();
 	  
 	  if (logger.isDebugEnabled()) {
-	    logger.debug("New files      " + nfiles);
+	    logger.debug("New files      " + newfiles);
 	    logger.debug("Files in model " + filesInModel);
 	  }
 	  
 	  // Quick change detection.
-	  boolean changeDetected = nfiles.size() != filesInModel.size();
+	  boolean changeDetected = newfiles.size() != filesInModel.size();
 	  if (!changeDetected) {
 	    // Same size. Sort and compare files.
-	    Collections.sort(nfiles, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
+	    Collections.sort(newfiles, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
 	    List<FileStatus> sortedModel = new ArrayList<>(filesInModel.size());
 	    Collections.sort(sortedModel, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
 	    
-	    changeDetected = !nfiles.equals(sortedModel);
+	    changeDetected = !newfiles.equals(sortedModel);
 	  }
 
 	  if (changeDetected) {
@@ -332,7 +333,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	        // Never happens.
 	        logger.error(e, e);
 	      }
-	      panelToUpdate.update(rootFolder, nfiles);
+	      panelToUpdate.update(rootFolder, newfiles);
 	    });
 	  }
 	}
