@@ -113,10 +113,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 				@Override
 				public void windowActivated(WindowEvent e) {
 					super.windowActivated(e);
-					if (refresh) {
+					if (refresh && stagingPanel.isShowing()) {
 						gitRefreshSupport.call();
-						refresh = false;
 					}
+					refresh = false;
 				}
 
 				@Override

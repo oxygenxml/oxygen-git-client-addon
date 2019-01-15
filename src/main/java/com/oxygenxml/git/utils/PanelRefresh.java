@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -300,44 +301,40 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Updates the files in the model. 
 	 * 
-	 * @param unstaged <code>true</code> to update the local Working Copy files.
-	 * <code>false</code> to update the INDEX.
+	 * @param nfiles The new files to be presented in the panel.
 	 */
 	private void updateFiles(ChangesPanel panelToUpdate, final List<FileStatus> nfiles) {
-	  SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        List<FileStatus> newFiles = new ArrayList<>();
-        List<FileStatus> filesInModel = null;
-        
-        filesInModel = panelToUpdate.getFilesStatuses();
+	  // The current files presented in the panel.
+	  List<FileStatus> filesInModel = panelToUpdate.getFilesStatuses();
+	  
+	  if (logger.isDebugEnabled()) {
+	    logger.debug("New files      " + nfiles);
+	    logger.debug("Files in model " + filesInModel);
+	  }
+	  
+	  // Quick change detection.
+	  boolean changeDetected = nfiles.size() != filesInModel.size();
+	  if (!changeDetected) {
+	    // Same size. Sort and compare files.
+	    Collections.sort(nfiles, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
+	    List<FileStatus> sortedModel = new ArrayList<>(filesInModel.size());
+	    Collections.sort(sortedModel, (o1, o2) -> o1.getFileLocation().compareTo(o2.getFileLocation()));
+	    
+	    changeDetected = !nfiles.equals(sortedModel);
+	  }
 
-        for (FileStatus fileStatus : filesInModel) {
-          if (nfiles.contains(fileStatus)) {
-            newFiles.add(fileStatus);
-            nfiles.remove(fileStatus);
-          }
-        }
-        newFiles.addAll(nfiles);
-
-        if (logger.isDebugEnabled()) {
-          logger.debug("New files      " + newFiles);
-          logger.debug("Files in model " + filesInModel);
-        }
-
-        if (!newFiles.equals(filesInModel)) {
-          String rootFolder = StagingPanel.NO_REPOSITORY;
-          try {
-            rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-          } catch (NoRepositorySelected e) {
-            // Never happens.
-            logger.error(e, e);
-          }
-          
-          panelToUpdate.update(rootFolder, newFiles);
-        }
-      }
-    });
+	  if (changeDetected) {
+	    SwingUtilities.invokeLater(() -> {
+	      String rootFolder = StagingPanel.NO_REPOSITORY;
+	      try {
+	        rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+	      } catch (NoRepositorySelected e) {
+	        // Never happens.
+	        logger.error(e, e);
+	      }
+	      panelToUpdate.update(rootFolder, nfiles);
+	    });
+	  }
 	}
 
 	/**

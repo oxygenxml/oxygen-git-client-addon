@@ -251,7 +251,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
                         unstagedChangesPanel.stateChanged(changeEvent);
 							        }
 							      } catch (NoRepositorySelected e) {
-							        logger.error(e, e);
+							        logger.debug(e, e);
 							      }
 							    }
 							  }
