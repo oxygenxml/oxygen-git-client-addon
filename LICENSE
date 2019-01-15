@@ -69,7 +69,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
 
-org.eclipse.jgit-4.9.2.201712150930-r,
+org.eclipse.jgit-5.2.1.201812262042-r,
 Eclipse Distribution License (New BSD License), see below:
 "   Copyright (C) 2009, Google Inc.
     Copyright (C) 2009, Igor Fedorenko <igor@ifedorenko.com>
