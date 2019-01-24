@@ -3,7 +3,7 @@
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
 <plugin id="com.oxygenxml.git" name="Git Support Plugin"
     description="provides support for working with Git: commit, diff, push, pull"
-    version="${project.version}" vendor="oXygen XML" class="com.oxygenxml.git.OxygenGitPlugin"
+    version="${project.version}" vendor="Syncro Soft" class="com.oxygenxml.git.OxygenGitPlugin"
     classLoaderType="preferReferencedResources">
  
     <runtime>
