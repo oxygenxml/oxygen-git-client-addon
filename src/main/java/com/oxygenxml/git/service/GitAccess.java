@@ -935,7 +935,7 @@ public class GitAccess {
 			    }
 			    
 			    throw new CheckoutConflictException(
-			        new ArrayList<String>(mergeResult.getFailingPaths().keySet()), 
+			        new ArrayList<>(mergeResult.getFailingPaths().keySet()), 
 			        new org.eclipse.jgit.errors.CheckoutConflictException(""));
 			  }
 			}
@@ -1065,7 +1065,7 @@ public class GitAccess {
 			for (FileStatus file : files) {
 				if (file.getChangeType() == GitChangeType.MISSING) {
 				  if (removeCmd == null) {
-				    removeCmd = git.rm();
+				    removeCmd = git.rm().setCached(true);
 				  }
           removeCmd.addFilepattern(file.getFileLocation());
 				} else {
@@ -1076,12 +1076,13 @@ public class GitAccess {
 				}
 			}
 			
-			if (removeCmd != null) {
-			  removeCmd.call();
-			}
 			
 			if (addCmd != null) {
 			  addCmd.call();
+			}
+			
+			if (removeCmd != null) {
+			  removeCmd.call();
 			}
 			
 			fireFileStateChanged(new ChangeEvent(GitCommand.STAGE, getPaths(files)));
