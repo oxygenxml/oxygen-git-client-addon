@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URL;
@@ -258,10 +260,41 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 3;
-		gbc.weightx = 0;
+		gbc.weightx = 1;
 		gbc.weighty = 0;
-		statusLabel = new JLabel();
+		gbc.gridwidth = 1;
+		statusLabel = new JLabel() {
+		  @Override
+		  public void setText(String text) {
+		    super.setText(text);
+		    setStatusLabelTooltip();
+		  }
+		};
+		statusLabel.addComponentListener(new ComponentAdapter() {
+		  @Override
+		  public void componentResized(ComponentEvent e) {
+		    super.componentResized(e);
+		    setStatusLabelTooltip();
+		  }
+		});
 		this.add(statusLabel, gbc);
+	}
+	
+	/**
+	 * Set a tooltip for the status label.
+	 */
+	private void setStatusLabelTooltip() {
+	  if (statusLabel != null && statusLabel.isShowing()) {
+	    String text = statusLabel.getText();
+	    if (text != null && !text.isEmpty()) {
+	      FontMetrics fontMetrics = getFontMetrics(getFont());
+	      if (fontMetrics.stringWidth(text) > statusLabel.getSize().width) {
+	        statusLabel.setToolTipText(text);
+	      } else {
+	        statusLabel.setToolTipText(null);
+	      }
+	    }
+	  }
 	}
 
 	private void addCommitButton(GridBagConstraints gbc) {
@@ -271,8 +304,9 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 1;
 		gbc.gridy = 3;
-		gbc.weightx = 1;
+		gbc.weightx = 0;
 		gbc.weighty = 0;
+		gbc.gridwidth = 1;
 		commitButton = new JButton(translator.getTranslation(Tags.COMMIT_BUTTON_TEXT));
 		toggleCommitButton(false);
 		this.add(commitButton, gbc);
