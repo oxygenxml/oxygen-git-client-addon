@@ -89,10 +89,11 @@ public class PanelRefresh implements GitRefreshSupport {
   @Override
   public void call() {
 	  // Check if the current Oxygen project is a Git repository.
+    boolean isAfterRestart = lastSelectedProject.isEmpty(); 
 	  boolean repoChanged = loadRepositoryFromOxygenProject();
 	  
 	  // No point in refreshing if we've just changed the repository.
-	  if (!repoChanged) {
+	  if (!repoChanged || isAfterRestart) {
 	    // Check the current repository.
 	    try {
 	      if (gitAccess.getRepository() != null) {
