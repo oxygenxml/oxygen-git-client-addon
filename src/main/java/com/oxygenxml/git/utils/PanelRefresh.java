@@ -7,8 +7,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
@@ -61,11 +63,6 @@ public class PanelRefresh implements GitRefreshSupport {
   }
 
 	/**
-	 * used for coalescing.
-	 */
-	private Timer timer = new Timer("Working copy status updater", true);
-	
-	/**
 	 * Staging panel to update.
 	 */
 	private StagingPanel stagingPanel;
@@ -82,9 +79,30 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	private Translator translator = Translator.getInstance();
 	/**
-	 * The scheduled refresh task.
+	 * Refresh executor.
 	 */
-  private TimerTask task;
+	private ScheduledExecutorService refreshExecutor = new ScheduledThreadPoolExecutor(1);
+	/**
+	 * Refresh future (representing pending completion of the task).
+	 */
+	private ScheduledFuture<?> refreshFuture;
+	/**
+	 * Refresh task.
+	 */
+	private Runnable refreshRunnable = () -> {
+	  logger.debug("Start update on thread.");
+
+	  GitStatus status = GitAccess.getInstance().getStatus();
+	  updateFiles(
+	      stagingPanel.getUnstagedChangesPanel(), 
+	      status.getUnstagedFiles());
+	  updateFiles(
+	      stagingPanel.getStagedChangesPanel(), 
+	      status.getStagedFiles());
+	  updateCounters();
+
+	  logger.debug("End update on thread.");
+	};
   
   @Override
   public void call() {
@@ -97,43 +115,16 @@ public class PanelRefresh implements GitRefreshSupport {
 	    // Check the current repository.
 	    try {
 	      if (gitAccess.getRepository() != null) {
-	        if (task != null) {
-	          if (logger.isDebugEnabled()) {
-	            logger.debug("cancel task");
-	          }
-	          task.cancel();
+	        if (!refreshFuture.isDone()) {
+	          logger.debug("cancel task");
+	          refreshFuture.cancel(true);
 	        }
-
-	        task = new TimerTask() {
-	          @Override
-	          public void run() {
-	            if (logger.isDebugEnabled()) {
-	              logger.debug("Start update on thread.");
-	            }
-
-	            GitStatus status = GitAccess.getInstance().getStatus();
-
-	            updateFiles(
-	                stagingPanel.getUnstagedChangesPanel(), 
-	                status.getUnstagedFiles());
-
-	            updateFiles(
-	                stagingPanel.getStagedChangesPanel(), 
-	                status.getStagedFiles());
-
-	            updateCounters();
-
-	            if (logger.isDebugEnabled()) {
-	              logger.debug("End update on thread.");
-	            }
-	          }
-	        };
-
-	        timer.schedule(task, 500);
+	        
+	        refreshFuture = getRefreshExecutor().schedule(refreshRunnable, 500, TimeUnit.MILLISECONDS);
 	      }
-	    } catch (NoRepositorySelected e1) {
+	    } catch (NoRepositorySelected e) {
 	      if (logger.isDebugEnabled()) {
-	        logger.debug(e1, e1);
+	        logger.debug(e, e);
 	      }
 	    }
 	  }
@@ -347,4 +338,12 @@ public class PanelRefresh implements GitRefreshSupport {
   public void setPanel(StagingPanel stagingPanel) {
 		this.stagingPanel = stagingPanel;
 	}
+
+  /**
+   * @return The refresh executor.
+   */
+  public ScheduledExecutorService getRefreshExecutor() {
+    return refreshExecutor;
+  }
+
 }

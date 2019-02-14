@@ -6,6 +6,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -46,6 +48,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 	static final String GIT_STAGING_VIEW = "GitStagingView";
 
 	/**
+	 * Refresh support.
+	 */
+	final PanelRefresh gitRefreshSupport = new PanelRefresh();
+	
+	/**
 	 * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
 	 */
 	@Override
@@ -57,7 +64,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 		  AuthenticationInterceptor.install();
 
 			StageController stageController = new StageController();
-			final PanelRefresh gitRefreshSupport = new PanelRefresh();
 			final StagingPanel stagingPanel = new StagingPanel(gitRefreshSupport, stageController);
 			gitRefreshSupport.setPanel(stagingPanel);
 
@@ -162,6 +168,16 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 	public boolean applicationClosing() {
 		OptionsManager.getInstance().saveOptions();
 		GitAccess.getInstance().close();
+		
+		// EXM-42867: wait for the refresh to execute
+		ScheduledExecutorService refreshExecutor = gitRefreshSupport.getRefreshExecutor();
+		refreshExecutor.shutdown();
+		try {
+      refreshExecutor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      logger.warn(e);
+    }
+		
 		// Close application.
 		return true;
 	}
