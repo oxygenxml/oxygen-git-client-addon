@@ -10,7 +10,6 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.PullResponse;
-import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -206,15 +205,27 @@ public class PushPullController implements Subject<PushPullEvent> {
     private String pull(final UserCredentials userCredentials) throws GitAPIException {
       PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
       String message = "";
-      if (PullStatus.OK == response.getStatus()) {
-        message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
-      } else if (PullStatus.CONFLICTS == response.getStatus()) {
-        showPullConflicts(response);
-      } else if (PullStatus.UP_TO_DATE == response.getStatus()) {
-        message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
-      } else if (PullStatus.REPOSITORY_HAS_CONFLICTS == response.getStatus()) {
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
+      
+      switch (response.getStatus()) {
+        case OK:
+          message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
+          break;
+        case CONFLICTS:
+          showPullConflicts(response);
+          break;
+        case REPOSITORY_HAS_CONFLICTS:
+          ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+              .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
+          break;
+        case UP_TO_DATE:
+          message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
+          break;
+        case LOCK_FAILED:
+          message = translator.getTranslation(Tags.LOCK_FAILED);
+          break;
+        default:
+          // Nothing
+          break;
       }
       return message;
     }

@@ -569,4 +569,34 @@ public class Tags {
 	 * modified might become in conflict
 	 */
 	public static final String PULL_CHECKOUT_CONFLICT_MESSAGE = "Pull_Checkout_Conflict_Message";
+	
+	/**
+	 * Lock failed when pulling.
+	 */
+  public static final String LOCK_FAILED = "Lock_failed";
+  
+  /**
+   * Lock failed explanation.
+   */
+  public static final String LOCK_FAILED_EXPLANATION = "Lock_failed_explanation";
+  
+  /**
+   * Cannot lock ref {0}.
+   */
+  public static final String CANNOT_LOCK_REF = "Cannot_lock_ref";
+  
+  /**
+   * Unable to create {0}.
+   */
+  public static final String UNABLE_TO_CREATE_FILE = "Unable_to_create_file";
+  
+  /**
+   * File exists.
+   */
+  public static final String FILE_EXISTS = "File_exists";
+  
+  /**
+   * Error.
+   */
+  public static final String ERROR = "Error";
 }

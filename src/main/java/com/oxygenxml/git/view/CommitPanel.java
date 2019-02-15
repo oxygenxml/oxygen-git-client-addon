@@ -79,7 +79,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	 * Messages of interest.
 	 */
 	private JLabel statusLabel;
-	/**
+  /**
 	 * Will be notified after the commit.
 	 */
 	private Observer<PushPullEvent> observer;
@@ -429,5 +429,12 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
   public void setStatus(String message) {
     statusLabel.setIcon(null);
     statusLabel.setText(message);
+  }
+  
+  /**
+   * @return the statusLabel
+   */
+  public JLabel getStatusLabel() {
+    return statusLabel;
   }
 }

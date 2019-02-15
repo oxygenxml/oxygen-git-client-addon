@@ -62,6 +62,7 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -76,6 +77,7 @@ import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
+import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -97,6 +99,9 @@ import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.GitCommand;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Implements some basic git functionality like commit, push, pull, retrieve
@@ -885,78 +890,126 @@ public class GitAccess {
 		if (!getConflictingFiles().isEmpty()) {
 			response.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
 		} else {
-			git.reset().call();
-			String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-			Repository repository = git.getRepository();
-			
-			ObjectId oldHead = null;
-			try {
-        oldHead = repository.resolve("HEAD^{tree}");
-      } catch (RevisionSyntaxException | IOException e) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e, e);
-        }
-      }
-			// Call "Pull"
-			PullResult call = git.pull().setCredentialsProvider(
-			    new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
-			ObjectId head = null;
-			try {
-        head = repository.resolve("HEAD^{tree}");
-      } catch (RevisionSyntaxException | IOException e) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e, e);
-        }
-      }
-			
-			if (oldHead != null && head != null) {
-			  refreshProject(repository, oldHead, head);
-			}
-			
-			MergeResult mergeResult = call.getMergeResult();
-			
-			if (mergeResult != null) {
-			  if (logger.isDebugEnabled()) {
-			    logger.debug("Merge result " + mergeResult);
-			    logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
-			  }
-			  
-			  if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
-			    
-			    if (logger.isDebugEnabled()) {
-			      Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
-			      if (failingPaths != null) {
-			        Set<String> keySet = failingPaths.keySet();
-			        for (String string : keySet) {
-			          logger.debug("path " + string);
-			          logger.debug("reason " + failingPaths.get(string));
-			        }
-			      }
-			    }
-			    
-			    throw new CheckoutConflictException(
-			        new ArrayList<>(mergeResult.getFailingPaths().keySet()), 
-			        new org.eclipse.jgit.errors.CheckoutConflictException(""));
-			  }
-			}
-			
-			if (mergeResult != null && mergeResult.getConflicts() != null) {
-			  // This is a successful merge but there are conflicts that should be resolved
-			  // by the user.
-			  Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
-			  if (conflictingFiles != null) {
-			    response.setConflictingFiles(conflictingFiles);
-			    response.setStatus(PullStatus.CONFLICTS);
-			  }
-			}
-			if (call.getMergeResult().getMergeStatus() == MergeStatus.ALREADY_UP_TO_DATE) {
-				response.setStatus(PullStatus.UP_TO_DATE);
-			}
+		  git.reset().call();
+		  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+		  Repository repository = git.getRepository();
+
+		  ObjectId oldHead = null;
+		  try {
+		    oldHead = repository.resolve("HEAD^{tree}");
+		  } catch (RevisionSyntaxException | IOException e) {
+		    if (logger.isDebugEnabled()) {
+		      logger.debug(e, e);
+		    }
+		  }
+		  // Call "Pull"
+		  PullResult call = git.pull().setCredentialsProvider(
+		      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
+
+		  // Get fetch result
+		  Collection<TrackingRefUpdate> trackingRefUpdates = call.getFetchResult().getTrackingRefUpdates();
+		  String lockFailureMessage = createLockFailureMessageIfNeeded(trackingRefUpdates);
+		  if (!lockFailureMessage.isEmpty()) {
+		    // Lock failure
+		    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+            .showErrorMessage(translator.getTranslation(lockFailureMessage));
+		    response.setStatus(PullStatus.LOCK_FAILED);
+		  } else {
+		    ObjectId head = null;
+		    try {
+		      head = repository.resolve("HEAD^{tree}");
+		    } catch (RevisionSyntaxException | IOException e) {
+		      if (logger.isDebugEnabled()) {
+		        logger.debug(e, e);
+		      }
+		    }
+
+		    if (oldHead != null && head != null) {
+		      refreshProject(repository, oldHead, head);
+		    }
+
+		    MergeResult mergeResult = call.getMergeResult();
+
+		    if (mergeResult != null) {
+		      if (logger.isDebugEnabled()) {
+		        logger.debug("Merge result " + mergeResult);
+		        logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
+		      }
+
+		      if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
+
+		        if (logger.isDebugEnabled()) {
+		          Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
+		          if (failingPaths != null) {
+		            Set<String> keySet = failingPaths.keySet();
+		            for (String string : keySet) {
+		              logger.debug("path " + string);
+		              logger.debug("reason " + failingPaths.get(string));
+		            }
+		          }
+		        }
+
+		        throw new CheckoutConflictException(
+		            new ArrayList<>(mergeResult.getFailingPaths().keySet()), 
+		            new org.eclipse.jgit.errors.CheckoutConflictException(""));
+		      }
+		    }
+
+		    if (mergeResult != null && mergeResult.getConflicts() != null) {
+		      // This is a successful merge but there are conflicts that should be resolved
+		      // by the user.
+		      Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
+		      if (conflictingFiles != null) {
+		        response.setConflictingFiles(conflictingFiles);
+		        response.setStatus(PullStatus.CONFLICTS);
+		      }
+		    }
+		    if (call.getMergeResult().getMergeStatus() == MergeStatus.ALREADY_UP_TO_DATE) {
+		      response.setStatus(PullStatus.UP_TO_DATE);
+		    }
+		  }
 		}
 		
 		return response;
 
 	}
+
+	/**
+	 * Create lock failure message when pulling/fetching, if needed.
+	 * 
+	 * @param trackingRefUpdates Give us details about the fetch result.
+	 * 
+	 * @return the message.
+	 */
+  private String createLockFailureMessageIfNeeded(Collection<TrackingRefUpdate> trackingRefUpdates) {
+    StringBuilder fetchResultStringBuilder = new StringBuilder();
+    for (Iterator<TrackingRefUpdate> iterator = trackingRefUpdates.iterator(); iterator.hasNext();) {
+      TrackingRefUpdate trackingRefUpdate = iterator.next();
+      if (trackingRefUpdate.getResult() == RefUpdate.Result.LOCK_FAILURE) {
+        if (fetchResultStringBuilder.length() > 0) {
+          fetchResultStringBuilder.append("\n\n");
+        }
+        fetchResultStringBuilder.append(translator.getTranslation(Tags.ERROR) + ": ");
+        fetchResultStringBuilder.append(MessageFormat.format(
+            translator.getTranslation(Tags.CANNOT_LOCK_REF),
+            trackingRefUpdate.getLocalName()) + " ");
+        try {
+          String repoDir = getRepository().getDirectory().getAbsolutePath();
+          File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock");
+          fetchResultStringBuilder.append(MessageFormat.format(
+              translator.getTranslation(Tags.UNABLE_TO_CREATE_FILE),
+              lockFile.getAbsolutePath()) + " ");
+          if (lockFile.exists()) {
+            fetchResultStringBuilder.append(translator.getTranslation(Tags.FILE_EXISTS) + "\n");
+          }
+        } catch (NoRepositorySelected e) {
+          logger.debug(e, e);
+        }
+        fetchResultStringBuilder.append(translator.getTranslation(Tags.LOCK_FAILED_EXPLANATION));
+      }
+    }
+    return fetchResultStringBuilder.toString();
+  }
 
 	/**
 	 * Refresh the Project view.

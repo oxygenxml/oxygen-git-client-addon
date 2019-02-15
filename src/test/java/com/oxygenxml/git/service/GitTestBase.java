@@ -55,12 +55,12 @@ public class GitTestBase extends JFCTestCase {
   /**
    * The loaded reposiltories.
    */
-  private List<Repository> loadedRepos = new ArrayList<Repository>();
+  private List<Repository> loadedRepos = new ArrayList<>();
   
   /**
    * The loaded reposiltories.
    */
-  private List<Repository> remoteRepos = new ArrayList<Repository>();
+  private List<Repository> remoteRepos = new ArrayList<>();
 
   /**
    * Installs the GIT protocol that we use to identify certain file versions.
@@ -233,11 +233,11 @@ public class GitTestBase extends JFCTestCase {
   /**
    * Listeners interested in editor change events.
    */
-  protected final List<WSEditorChangeListener> editorChangeListeners = new ArrayList<WSEditorChangeListener>();
+  protected final List<WSEditorChangeListener> editorChangeListeners = new ArrayList<>();
   /**
    * Listeners interested in editor events.
    */
-  protected final List<WSEditorListener> editorListeners = new ArrayList<WSEditorListener>();
+  protected final List<WSEditorListener> editorListeners = new ArrayList<>();
   
   @Override
   protected void setUp() throws Exception {

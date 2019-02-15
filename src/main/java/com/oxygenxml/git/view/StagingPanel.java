@@ -226,37 +226,39 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           private void addEditorSaveHook(final URL editorLocation) {
             WSEditor editorAccess = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 								.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
-						editorAccess.addEditorListener(new WSEditorListener() {
-							@Override
-							public void editorSaved(int operationType) {
-							  File locateFile = null;
-							  if ("file".equals(editorLocation.getProtocol())) {
-							    locateFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
-							    if (locateFile != null) {
-							      String fileInWorkPath = locateFile.toString();
-							      fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
+            if (editorAccess != null) {
+              editorAccess.addEditorListener(new WSEditorListener() {
+                @Override
+                public void editorSaved(int operationType) {
+                  File locateFile = null;
+                  if ("file".equals(editorLocation.getProtocol())) {
+                    locateFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
+                    if (locateFile != null) {
+                      String fileInWorkPath = locateFile.toString();
+                      fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
 
-							      try {
-							        String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-							        selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+                      try {
+                        String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+                        selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
 
-							        if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-							          if (logger.isDebugEnabled()) {
-							            logger.debug("Notify " + fileInWorkPath);
-							            logger.debug("WC " + selectedRepositoryPath);
-							          }
+                        if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+                          if (logger.isDebugEnabled()) {
+                            logger.debug("Notify " + fileInWorkPath);
+                            logger.debug("WC " + selectedRepositoryPath);
+                          }
 
-							          Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
-                        ChangeEvent changeEvent = new ChangeEvent(GitCommand.UNSTAGE, affectedFiles);
-                        unstagedChangesPanel.stateChanged(changeEvent);
-							        }
-							      } catch (NoRepositorySelected e) {
-							        logger.debug(e, e);
-							      }
-							    }
-							  }
-							}
-						});
+                          Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
+                          ChangeEvent changeEvent = new ChangeEvent(GitCommand.UNSTAGE, affectedFiles);
+                          unstagedChangesPanel.stateChanged(changeEvent);
+                        }
+                      } catch (NoRepositorySelected e) {
+                        logger.debug(e, e);
+                      }
+                    }
+                  }
+                }
+              });
+            }
           }
 				}, PluginWorkspace.MAIN_EDITING_AREA);
 

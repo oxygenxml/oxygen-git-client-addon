@@ -30,5 +30,11 @@ public enum PullStatus {
 	/**
 	 * The repository already has conflicts and cannot pull until they are resolved
 	 */
-	REPOSITORY_HAS_CONFLICTS;
+	REPOSITORY_HAS_CONFLICTS,
+	
+	/**
+	 * Lock failed.
+	 */
+	LOCK_FAILED;
+	
 }

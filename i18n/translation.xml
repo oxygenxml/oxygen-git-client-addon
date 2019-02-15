@@ -4,6 +4,62 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Lock_failed_explanation">
+        <comment>Message telling what may have caused the lock fail and how to address the problem.</comment>
+        <val lang="en_US">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
+        <val lang="de_DE">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
+        <val lang="fr_FR">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
+        <val lang="ja_JP">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
+        <val lang="nl_NL">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
+    </key>
+    <key value="Unable_to_create_file">
+        <comment>Message telling that a file couldn't be created.</comment>
+        <val lang="en_US">Unable to create "{0}".</val>
+        <val lang="de_DE">Unable to create "{0}".</val>
+        <val lang="fr_FR">Unable to create "{0}".</val>
+        <val lang="ja_JP">Unable to create "{0}".</val>
+        <val lang="nl_NL">Unable to create "{0}".</val>
+    </key>
+    <key value="File_exists">
+        <comment>Message telling that a file exists.</comment>
+        <val lang="en_US">File exists.</val>
+        <val lang="de_DE">File exists.</val>
+        <val lang="fr_FR">File exists.</val>
+        <val lang="ja_JP">File exists.</val>
+        <val lang="nl_NL">File exists.</val>
+    </key>
+    <key value="Cannot_lock_ref">
+        <comment>Message shown when the client couldn't lock ref when trying to pull.</comment>
+        <val lang="en_US">Cannot lock ref "{0}".</val>
+        <val lang="de_DE">Cannot lock ref "{0}".</val>
+        <val lang="fr_FR">Cannot lock ref "{0}".</val>
+        <val lang="ja_JP">Cannot lock ref "{0}".</val>
+        <val lang="nl_NL">Cannot lock ref "{0}".</val>
+    </key>
+    <key value="Cannot_lock_ref">
+        <comment>Message shown when the client couldn't lock ref when trying to pull.</comment>
+        <val lang="en_US">Cannot lock ref "{0}".</val>
+        <val lang="de_DE">Cannot lock ref "{0}".</val>
+        <val lang="fr_FR">Cannot lock ref "{0}".</val>
+        <val lang="ja_JP">Cannot lock ref "{0}".</val>
+        <val lang="nl_NL">Cannot lock ref "{0}".</val>
+    </key>
+    <key value="Error">
+        <comment>Error</comment>
+        <val lang="en_US">Error</val>
+        <val lang="de_DE">Error</val>
+        <val lang="fr_FR">Error</val>
+        <val lang="ja_JP">Error</val>
+        <val lang="nl_NL">Error</val>
+    </key>
+    <key value="Lock_failed">
+        <comment>Message shown when the lock failed while trying to update.</comment>
+        <val lang="en_US">Lock failed</val>
+        <val lang="de_DE">Lock failed</val>
+        <val lang="fr_FR">Lock failed</val>
+        <val lang="ja_JP">Lock failed</val>
+        <val lang="nl_NL">Lock failed</val>
+    </key>
     <key value="Submodule_load_fail">
         <comment>Message shown when trying to clone from an invalid remote.</comment>
         <val lang="en_US">Submodule could not be loaded because of: {0}.</val>
