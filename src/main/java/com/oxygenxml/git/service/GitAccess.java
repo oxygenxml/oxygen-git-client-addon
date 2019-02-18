@@ -488,66 +488,20 @@ public class GitAccess {
 	 * Makes a diff between the files from the last commit and the files from the
 	 * working directory. If there are diffs, they will be saved and returned.
 	 * 
-	 * @param paths A subset of interest.
+	 * @param status The repository's status.
 	 * 
-	 * @return - A list with the files from the given set htat are un-staged as well as 
-	 * their states.
+	 * @return The unstaged files and their states.
 	 */
 	private List<FileStatus> getUnstagedFiles(Status status) {
 		List<FileStatus> unstagedFiles = new ArrayList<>();
 		if (git != null) {
 			try {
 				Set<String> submodules = getSubmodules();
-				
-        if (logger.isDebugEnabled()) {
-          logger.debug("submodules " + submodules);
-        }
-				
-				for (String string : submodules) {
-					SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
-					if (submoduleStatus != null 
-					    && submoduleStatus.getHeadId() != null
-					    && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
-						unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
-					}
-				}
-				
-				if (logger.isDebugEnabled()) {
-				  logger.debug("untracked " + status.getUntracked());
-				}
-				
-				for (String string : status.getUntracked()) {
-				  // A newly created file, not yet in the INDEX.
-					if (!submodules.contains(string)) {
-						unstagedFiles.add(new FileStatus(GitChangeType.UNTRACKED, string));
-					}
-				}
-				
-        if (logger.isDebugEnabled()) {
-          logger.debug("modified " + status.getModified());
-        }
-        
-				for (String string : status.getModified()) {
-				  // A file that was modified compared to the one from INDEX.
-					if (!submodules.contains(string)) {
-						unstagedFiles.add(new FileStatus(GitChangeType.MODIFIED, string));
-					}
-				}
-				
-        if (logger.isDebugEnabled()) {
-          logger.debug("missing " + status.getMissing());
-        }
-				
-				for (String string : status.getMissing()) {
-				  // A missing file that is present in the INDEX.
-					if (!submodules.contains(string)) {
-						unstagedFiles.add(new FileStatus(GitChangeType.MISSING, string));
-					}
-				}
-				
-        for (String fileName : status.getConflicting()) {
-          unstagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
-        }
+        addSubmodulesToUnstaged(unstagedFiles, submodules);
+				addUntrackedFilesToUnstaged(status, unstagedFiles, submodules);
+        addModifiedFilesToUnstaged(status, unstagedFiles, submodules);
+        addMissingFilesToUnstaged(status, unstagedFiles, submodules);
+				addConflictingFilesToUnstaged(status, unstagedFiles);
 			} catch (NoWorkTreeException | GitAPIException e1) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e1, e1);
@@ -556,6 +510,99 @@ public class GitAccess {
 		}
 		return unstagedFiles;
 	}
+
+	/**
+	 * Add conflicting files to the list of resources that are not staged.
+	 * 
+	 * @param status        The repository's status.
+	 * @param unstagedFiles The list of unstaged (not in the INDEX) files.
+	 */
+  private void addConflictingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("conflicting " + status.getConflicting());
+    }
+    for (String fileName : status.getConflicting()) {
+      unstagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
+    }
+  }
+
+  /**
+   * Add missing files to the list of resources that are not staged (not in the INDEX).
+   * 
+   * @param status        The repository's status.
+   * @param unstagedFiles The list of unstaged (not in the INDEX) files.
+   * @param submodules    The set of submodules.
+   */
+  private void addMissingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("missing " + status.getMissing());
+    }
+    for (String string : status.getMissing()) {
+    	if (!submodules.contains(string)) {
+    		unstagedFiles.add(new FileStatus(GitChangeType.MISSING, string));
+    	}
+    }
+  }
+
+  /**
+   * Add modified files to the list of resources that are not staged (not in the INDEX).
+   * 
+   * @param status        The repository's status.
+   * @param unstagedFiles The list of unstaged (not in the INDEX) files.
+   * @param submodules    The set of submodules.
+   */
+  private void addModifiedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("modified " + status.getModified());
+    }
+    for (String string : status.getModified()) {
+      // A file that was modified compared to the one from INDEX.
+    	if (!submodules.contains(string)) {
+    		unstagedFiles.add(new FileStatus(GitChangeType.MODIFIED, string));
+    	}
+    }
+  }
+
+  /**
+   * Add untracked files (i.e. newly created files) to the list of resources
+   * that are not staged (not in the INDEX).
+   * 
+   * @param status        The repository's status.
+   * @param unstagedFiles The list of unstaged (not in the INDEX) files.
+   * @param submodules    The set of submodules.
+   */
+  private void addUntrackedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("untracked " + status.getUntracked());
+    }
+    for (String string : status.getUntracked()) {
+    	if (!submodules.contains(string)) {
+    		unstagedFiles.add(new FileStatus(GitChangeType.UNTRACKED, string));
+    	}
+    }
+  }
+
+  /**
+   * Add submodules to the list of resources that are not staged.
+   * 
+   * @param unstagedFiles The list of unstaged (not in the INDEX) files.
+   * @param submodules    The set of submodules.
+   * 
+   * @throws GitAPIException When an error occurs when trying to check the submodules status.
+   */
+  private void addSubmodulesToUnstaged(List<FileStatus> unstagedFiles, Set<String> submodules) throws GitAPIException {
+    if (logger.isDebugEnabled()) {
+      logger.debug("submodules " + submodules);
+    }
+    for (String string : submodules) {
+    	SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
+    	if (submoduleStatus != null 
+    	    && submoduleStatus.getHeadId() != null
+    	    && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
+    		unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
+    	}
+    }
+  }
 
 	/**
 	 * Returns for the given submodule the SHA-1 commit id for the Index if the
@@ -883,96 +930,115 @@ public class GitAccess {
 	 *  The same file that is in conflict is changed inside the working copy so operation is aborted.
 	 * @throws GitAPIException other errors.
 	 */
-	public PullResponse pull(String username, String password) throws CheckoutConflictException, GitAPIException {
+	public PullResponse pull(String username, String password) throws GitAPIException {
+	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<String>());
 	  AuthenticationInterceptor.install();
 
-		PullResponse response = new PullResponse(PullStatus.OK, new HashSet<String>());
 		if (!getConflictingFiles().isEmpty()) {
-			response.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
+			pullResponseToReturn.setStatus(PullStatus.REPOSITORY_HAS_CONFLICTS);
 		} else {
 		  git.reset().call();
-		  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		  Repository repository = git.getRepository();
 
-		  ObjectId oldHead = null;
-		  try {
-		    oldHead = repository.resolve("HEAD^{tree}");
-		  } catch (RevisionSyntaxException | IOException e) {
-		    if (logger.isDebugEnabled()) {
-		      logger.debug(e, e);
-		    }
-		  }
 		  // Call "Pull"
-		  PullResult call = git.pull().setCredentialsProvider(
-		      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
+		  Repository repository = git.getRepository();
+		  ObjectId oldHead = resolveHead(repository);
+		  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+		  SSHCapableUserCredentialsProvider credentialsProvider = 
+		      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName());
+      PullResult pullCommandResult = git.pull().setCredentialsProvider(credentialsProvider).call();
 
 		  // Get fetch result
-		  Collection<TrackingRefUpdate> trackingRefUpdates = call.getFetchResult().getTrackingRefUpdates();
+		  Collection<TrackingRefUpdate> trackingRefUpdates = pullCommandResult.getFetchResult().getTrackingRefUpdates();
 		  String lockFailureMessage = createLockFailureMessageIfNeeded(trackingRefUpdates);
 		  if (!lockFailureMessage.isEmpty()) {
 		    // Lock failure
 		    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showErrorMessage(translator.getTranslation(lockFailureMessage));
-		    response.setStatus(PullStatus.LOCK_FAILED);
+		    pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
 		  } else {
-		    ObjectId head = null;
-		    try {
-		      head = repository.resolve("HEAD^{tree}");
-		    } catch (RevisionSyntaxException | IOException e) {
-		      if (logger.isDebugEnabled()) {
-		        logger.debug(e, e);
-		      }
-		    }
-
+		    ObjectId head = resolveHead(repository);
 		    if (oldHead != null && head != null) {
 		      refreshProject(repository, oldHead, head);
 		    }
 
-		    MergeResult mergeResult = call.getMergeResult();
-
-		    if (mergeResult != null) {
-		      if (logger.isDebugEnabled()) {
-		        logger.debug("Merge result " + mergeResult);
-		        logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
-		      }
-
-		      if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
-
-		        if (logger.isDebugEnabled()) {
-		          Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
-		          if (failingPaths != null) {
-		            Set<String> keySet = failingPaths.keySet();
-		            for (String string : keySet) {
-		              logger.debug("path " + string);
-		              logger.debug("reason " + failingPaths.get(string));
-		            }
-		          }
-		        }
-
-		        throw new CheckoutConflictException(
-		            new ArrayList<>(mergeResult.getFailingPaths().keySet()), 
-		            new org.eclipse.jgit.errors.CheckoutConflictException(""));
-		      }
-		    }
-
-		    if (mergeResult != null && mergeResult.getConflicts() != null) {
-		      // This is a successful merge but there are conflicts that should be resolved
-		      // by the user.
-		      Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
-		      if (conflictingFiles != null) {
-		        response.setConflictingFiles(conflictingFiles);
-		        response.setStatus(PullStatus.CONFLICTS);
-		      }
-		    }
-		    if (call.getMergeResult().getMergeStatus() == MergeStatus.ALREADY_UP_TO_DATE) {
-		      response.setStatus(PullStatus.UP_TO_DATE);
-		    }
+		    // Treat merge result
+		    treatMergeResult(pullResponseToReturn, pullCommandResult.getMergeResult());
 		  }
 		}
 		
-		return response;
+		return pullResponseToReturn;
 
 	}
+
+	/**
+	 * Resolve HEAD.
+	 * 
+	 * @param repository The repo.
+	 * 
+	 * @return the HEAD.
+	 */
+  private ObjectId resolveHead(Repository repository) {
+    ObjectId head = null;
+    try {
+      head = repository.resolve("HEAD^{tree}");
+    } catch (RevisionSyntaxException | IOException e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+    return head;
+  }
+
+	/**
+	 * Treat merge result.
+	 * 
+	 * @param pullResponse   Pull response.
+	 * @param mergeResult    Merge result.
+	 * 
+	 * @throws CheckoutConflictException when a command can't succeed because of unresolvedconflicts.
+	 */
+  private void treatMergeResult(PullResponse pullResponse, MergeResult mergeResult) throws CheckoutConflictException {
+    if (mergeResult != null) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Merge result " + mergeResult);
+        logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
+      }
+
+      if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
+        logMergeFailure(mergeResult);
+        throw new CheckoutConflictException(
+            new ArrayList<>(mergeResult.getFailingPaths().keySet()), 
+            new org.eclipse.jgit.errors.CheckoutConflictException(""));
+      } else if (mergeResult.getMergeStatus() == MergeStatus.ALREADY_UP_TO_DATE) {
+        pullResponse.setStatus(PullStatus.UP_TO_DATE);
+      } else if (mergeResult.getConflicts() != null) {
+        // Successful merge but there are conflicts that should be resolved by the user.
+        Set<String> conflictingFiles = mergeResult.getConflicts().keySet();
+        if (conflictingFiles != null) {
+          pullResponse.setConflictingFiles(conflictingFiles);
+          pullResponse.setStatus(PullStatus.CONFLICTS);
+        }
+      }
+    }
+  }
+
+  /**
+   * Log merge failure.
+   * 
+   * @param mergeResult The merge result.
+   */
+  private void logMergeFailure(MergeResult mergeResult) {
+    if (logger.isDebugEnabled()) {
+      Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
+      if (failingPaths != null) {
+        Set<String> keySet = failingPaths.keySet();
+        for (String string : keySet) {
+          logger.debug("path " + string);
+          logger.debug("reason " + failingPaths.get(string));
+        }
+      }
+    }
+  }
 
 	/**
 	 * Create lock failure message when pulling/fetching, if needed.
