@@ -6,11 +6,11 @@
     </languageList>
     <key value="Lock_failed_explanation">
         <comment>Message telling what may have caused the lock fail and how to address the problem.</comment>
-        <val lang="en_US">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
-        <val lang="de_DE">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
-        <val lang="fr_FR">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
-        <val lang="ja_JP">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
-        <val lang="nl_NL">Another git process may be running or a previous git process may have crashed in this repository. Remove the lock file manually to continue.</val>
+        <val lang="en_US">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
+        <val lang="de_DE">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
+        <val lang="fr_FR">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
+        <val lang="ja_JP">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
+        <val lang="nl_NL">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
     </key>
     <key value="Unable_to_create_file">
         <comment>Message telling that a file couldn't be created.</comment>
@@ -27,14 +27,6 @@
         <val lang="fr_FR">File exists.</val>
         <val lang="ja_JP">File exists.</val>
         <val lang="nl_NL">File exists.</val>
-    </key>
-    <key value="Cannot_lock_ref">
-        <comment>Message shown when the client couldn't lock ref when trying to pull.</comment>
-        <val lang="en_US">Cannot lock ref "{0}".</val>
-        <val lang="de_DE">Cannot lock ref "{0}".</val>
-        <val lang="fr_FR">Cannot lock ref "{0}".</val>
-        <val lang="ja_JP">Cannot lock ref "{0}".</val>
-        <val lang="nl_NL">Cannot lock ref "{0}".</val>
     </key>
     <key value="Cannot_lock_ref">
         <comment>Message shown when the client couldn't lock ref when trying to pull.</comment>
