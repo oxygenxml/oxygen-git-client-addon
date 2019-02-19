@@ -95,7 +95,7 @@ public class GitPullCasesTest extends GitTestBase {
       }
     });
     
-    pc.execute(Command.PULL).join();
+    pc.execute(Command.PULL).get();
     
     assertNotNull(ex[0]);
     assertEquals("[test.txt]", ex[0].getConflictingPaths().toString());
@@ -109,7 +109,7 @@ public class GitPullCasesTest extends GitTestBase {
     instance.commit("Another");
     instance.push("", "");
     
-    pc.execute(Command.PULL).join();
+    pc.execute(Command.PULL).get();
     
     assertNull(ex[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
@@ -199,7 +199,7 @@ public class GitPullCasesTest extends GitTestBase {
       }
     });
     
-    pc.execute(Command.PULL).join();
+    pc.execute(Command.PULL).get();
     
     assertNotNull(ex[0]);
     assertEquals("[test.txt]", ex[0].getConflictingPaths().toString());
@@ -213,7 +213,7 @@ public class GitPullCasesTest extends GitTestBase {
     instance.commit("Another");
     instance.push("", "");
     
-    pc.execute(Command.PULL).join();
+    pc.execute(Command.PULL).get();
     
     assertNull(ex[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());

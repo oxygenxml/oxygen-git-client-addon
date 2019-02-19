@@ -120,7 +120,12 @@ public class PanelRefresh implements GitRefreshSupport {
 	          refreshFuture.cancel(true);
 	        }
 	        
-	        refreshFuture = getRefreshExecutor().schedule(refreshRunnable, 500, TimeUnit.MILLISECONDS);
+	        if (refreshExecutor.isShutdown()) {
+	          // A shutdown operation was canceled.
+	          refreshExecutor = new ScheduledThreadPoolExecutor(1);
+	        }
+	        
+	        refreshFuture = refreshExecutor.schedule(refreshRunnable, 500, TimeUnit.MILLISECONDS);
 	      }
 	    } catch (NoRepositorySelected e) {
 	      if (logger.isDebugEnabled()) {
@@ -340,10 +345,22 @@ public class PanelRefresh implements GitRefreshSupport {
 	}
 
   /**
-   * @return The refresh executor.
+   * Attempts to shutdown any running refresh tasks.
    */
-  public ScheduledExecutorService getRefreshExecutor() {
-    return refreshExecutor;
+  public void shutdown() {
+    if (refreshFuture != null) {
+      // Just in case the task isn't running yet.
+      refreshFuture.cancel(false);
+    }
+    refreshExecutor.shutdown();
+    try {
+      refreshExecutor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      logger.warn(e);
+      // Restore interrupted state...
+      Thread.currentThread().interrupt();
+
+    }    
   }
 
 }

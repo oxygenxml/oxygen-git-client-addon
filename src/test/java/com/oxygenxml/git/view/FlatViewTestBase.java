@@ -84,8 +84,8 @@ public class FlatViewTestBase extends GitTestBase {
    * @throws Exception If it fails.
    */
   protected void pull() throws Exception {
-    Thread execute = stagingPanel.getPushPullController().execute(Command.PULL);
-    execute.join();
+    // Execute pull command and wait for it to finish.
+    stagingPanel.getPushPullController().execute(Command.PULL).get();
   }
   
   /**

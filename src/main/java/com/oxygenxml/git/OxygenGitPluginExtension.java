@@ -51,12 +51,22 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 	 * Refresh support.
 	 */
 	final PanelRefresh gitRefreshSupport = new PanelRefresh();
+
+	/**
+	 * Staging panel.
+	 */
+  private StagingPanel stagingPanel;
+  /**
+   * Plugin workspace access.
+   */
+  private StandalonePluginWorkspace pluginWorkspaceAccess;
 	
 	/**
 	 * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
 	 */
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
+	  this.pluginWorkspaceAccess = pluginWorkspaceAccess;
 		try {
 		  // Uncomment this to start with fresh options. For testing purposes
 //			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
@@ -64,7 +74,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 		  AuthenticationInterceptor.install();
 
 			StageController stageController = new StageController();
-			final StagingPanel stagingPanel = new StagingPanel(gitRefreshSupport, stageController);
+			stagingPanel = new StagingPanel(gitRefreshSupport, stageController);
 			gitRefreshSupport.setPanel(stagingPanel);
 
 			ProjectViewManager.addPopUpMenuCustomizer(
@@ -167,16 +177,22 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 	@Override
 	public boolean applicationClosing() {
 		OptionsManager.getInstance().saveOptions();
-		GitAccess.getInstance().close();
+		
+		try {
+		stagingPanel.shutdown();
+		} catch (IllegalStateException e) {
+		  pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, true);
+		  
+		  pluginWorkspaceAccess.showWarningMessage(e.getMessage());
+		  
+		  // Cancel the closing.
+		  return false;
+		}
 		
 		// EXM-42867: wait for the refresh to execute
-		ScheduledExecutorService refreshExecutor = gitRefreshSupport.getRefreshExecutor();
-		refreshExecutor.shutdown();
-		try {
-      refreshExecutor.awaitTermination(2000, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException e) {
-      logger.warn(e);
-    }
+    gitRefreshSupport.shutdown();
+    
+    GitAccess.getInstance().close();
 		
 		// Close application.
 		return true;
