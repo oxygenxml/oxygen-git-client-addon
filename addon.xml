@@ -24,6 +24,16 @@
 		              <p>This add-on contributes a built-in Git client directly into Oxygen in the form of a <b>Git Staging</b> view that includes various actions that perform common Git commands, such as push, pull, change branch, commit, and more. It also includes a built-in tool for comparing and merging changes.</p>
 		          </div>
 		          <div>
+		              <h3>What's new in version 1.4.0</h3>
+		              <ol>
+		                  <li>Update to JGit 5.2.1.</li>
+		                  <li>Performance improvements when checking the status of the repository.</li>
+		                  <li>Fixed bug that led to file loss when changing the letter case in a file name.</li>
+		                  <li>Better error message when the working copy is locked.</li>
+		                  <li>When closing, Oxygen will wait for Git commands to complete to avoid possible side effects such as leaving the worky copy locked.</li>
+		              </ol>
+		          </div>
+		          <div>
 		              <h3>What's new in version 1.3.2</h3>
 		              <ol>
 		                  <li>Initalize and update submodules if needed when the user opens a submodule.</li>
