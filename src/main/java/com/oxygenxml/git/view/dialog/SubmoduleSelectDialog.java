@@ -5,7 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
-import java.text.Format;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -20,9 +19,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
-import javafx.scene.control.TextFormatter;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
