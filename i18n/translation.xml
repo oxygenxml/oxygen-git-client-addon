@@ -31,7 +31,7 @@
     <key value="Lock_failed_explanation">
         <comment>Message telling what may have caused the lock fail and how to address the problem.</comment>
         <val lang="en_US">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
-        <val lang="de_DE">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
+        <val lang="de_DE">Es kann sein, dass bereits ein anderer Git-Prozess in diesem Repository aktiv ist. Bitte stellen Sie sicher, dass alle anderen Git-Prozesse beendet sind und versuchen Sie es erneut. Falls die Aktion immernoch fehlschlägt kann es sein, dass ein anderer Git-Prozess in diesem Repository abgestürzt ist. Entfernen Sie die Lock-Datei manuell um fortzufahren.</val>
         <val lang="fr_FR">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
         <val lang="ja_JP">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
         <val lang="nl_NL">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
@@ -39,7 +39,7 @@
     <key value="Unable_to_create_file">
         <comment>Message telling that a file couldn't be created.</comment>
         <val lang="en_US">Unable to create "{0}".</val>
-        <val lang="de_DE">Unable to create "{0}".</val>
+        <val lang="de_DE">Datei "{0}" kann nicht erstellt werden.</val>
         <val lang="fr_FR">Unable to create "{0}".</val>
         <val lang="ja_JP">Unable to create "{0}".</val>
         <val lang="nl_NL">Unable to create "{0}".</val>
@@ -47,7 +47,7 @@
     <key value="File_exists">
         <comment>Message telling that a file exists.</comment>
         <val lang="en_US">File exists.</val>
-        <val lang="de_DE">File exists.</val>
+        <val lang="de_DE">Datei existiert bereits.</val>
         <val lang="fr_FR">File exists.</val>
         <val lang="ja_JP">File exists.</val>
         <val lang="nl_NL">File exists.</val>
@@ -55,7 +55,7 @@
     <key value="Cannot_lock_ref">
         <comment>Message shown when the client couldn't lock ref when trying to pull.</comment>
         <val lang="en_US">Cannot lock ref "{0}".</val>
-        <val lang="de_DE">Cannot lock ref "{0}".</val>
+        <val lang="de_DE">Sperre für ref "{0}" nicht möglich.</val>
         <val lang="fr_FR">Cannot lock ref "{0}".</val>
         <val lang="ja_JP">Cannot lock ref "{0}".</val>
         <val lang="nl_NL">Cannot lock ref "{0}".</val>
@@ -63,7 +63,7 @@
     <key value="Error">
         <comment>Error</comment>
         <val lang="en_US">Error</val>
-        <val lang="de_DE">Error</val>
+        <val lang="de_DE">Fehler</val>
         <val lang="fr_FR">Error</val>
         <val lang="ja_JP">Error</val>
         <val lang="nl_NL">Error</val>
@@ -71,7 +71,7 @@
     <key value="Lock_failed">
         <comment>Message shown when the lock failed while trying to update.</comment>
         <val lang="en_US">Lock failed</val>
-        <val lang="de_DE">Lock failed</val>
+        <val lang="de_DE">Sperre fehlgeschlagen</val>
         <val lang="fr_FR">Lock failed</val>
         <val lang="ja_JP">Lock failed</val>
         <val lang="nl_NL">Lock failed</val>
@@ -79,7 +79,7 @@
     <key value="Submodule_load_fail">
         <comment>Message shown when trying to clone from an invalid remote.</comment>
         <val lang="en_US">Submodule could not be loaded because of: {0}.</val>
-        <val lang="de_DE">Submodule could not be loaded because of: {0}.</val>
+        <val lang="de_DE">Submodule konnte nicht geklont werden: {0}.</val>
         <val lang="fr_FR">Submodule could not be loaded because of: {0}.</val>
         <val lang="ja_JP">Submodule could not be loaded because of: {0}.</val>
         <val lang="nl_NL">Submodule could not be loaded because of: {0}.</val>
@@ -744,7 +744,7 @@
     <key value="Project_View_Git_Diff_Contextual_Menu_Item">
         <comment>The text displayed for the "Git Diff" contextual menu item in the project view </comment>
         <val lang="en_US">Git Diff</val>
-        <val lang="de_DE">Git Diff</val>
+        <val lang="de_DE">Git-Diff</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -816,7 +816,7 @@
     <key value="Clone_Repository_Dialog_Url_Label">
         <comment>The text displayed for the "URL" label in the clone repository dialog</comment>
         <val lang="en_US">Repository URL</val>
-        <val lang="de_DE">Repository URL</val>
+        <val lang="de_DE">Repository-URL</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
