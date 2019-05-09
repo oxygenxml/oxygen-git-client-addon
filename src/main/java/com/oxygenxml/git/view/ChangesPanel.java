@@ -775,23 +775,6 @@ public class ChangesPanel extends JPanel {
 	void setResourcesViewMode(ResourcesViewMode viewMode) {
 	  this.currentViewMode = viewMode;
 	  
-    // Update models.
-    String rootFolder = StagingPanel.NO_REPOSITORY;
-    try {
-      rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-    } catch (NoRepositorySelected e) {
-      // Never happens.
-      logger.debug(e, e);
-    }
-	  List<FileStatus> newFiles = null;
-	  if (forStagedResources) {
-	    newFiles = GitAccess.getInstance().getStagedFiles();
-	  } else {
-	    newFiles = GitAccess.getInstance().getUnstagedFiles();
-	  }
-	  
-    update(rootFolder, newFiles);
-	  
 	  if (viewMode == ResourcesViewMode.TREE_VIEW) {
 	    TreePath[] selectedPaths = restoreSelectedPathsFromTableToTree();
 	    tree.setSelectionPaths(selectedPaths);
