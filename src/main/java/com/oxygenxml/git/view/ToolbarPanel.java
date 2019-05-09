@@ -411,28 +411,28 @@ public class ToolbarPanel extends JPanel {
 			if (!"".equals(currentBranch)) {
 			  message = "<html><b>" + currentBranch + "</b></html>";
 			  
-			  String remoteName = "";
+			  String remoteName = null;
         try {
           remoteName = GitAccess.getInstance().getRemote(currentBranch);
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
         }
 				ttMessage = "<html>"
-				    + (remoteName.isEmpty() ? "" : translator.getTranslation(Tags.REMOTE) + "/")
+				    + (remoteName == null ? "" : translator.getTranslation(Tags.REMOTE) + "/")
 				    + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH).toLowerCase()
 				    + " <b>"
-				    + (remoteName.isEmpty() ? "" : remoteName + "/")
+				    + (remoteName == null ? "" : remoteName + "/")
 				    + currentBranch 
 				    + "</b> - ";
 				pushButton.setToolTipText(
 				    translator.getTranslation(Tags.PUSH_TO)
 				      + " "
-				      + (remoteName.isEmpty() ? "" : remoteName + "/")
+				      + (remoteName == null ? "" : remoteName + "/")
 				      + currentBranch );
 				pullButton.setToolTipText(
 				    translator.getTranslation(Tags.PULL_FROM)
 				      + " "
-				      + (remoteName.isEmpty() ? "" : remoteName + "/") 
+				      + (remoteName == null ? "" : remoteName + "/") 
 				      + currentBranch );
 				if (pullsBehind == 0) {
 				  ttMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
