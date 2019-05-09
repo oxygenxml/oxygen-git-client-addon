@@ -396,8 +396,6 @@ public class ToolbarPanel extends JPanel {
     this.pushesAhead = GitAccess.getInstance().getPushesAhead();
     pushButton.repaint();
     
-    
-	  
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
 		String message = "";
 		if (branchInfo.isDetached()) {
@@ -405,13 +403,37 @@ public class ToolbarPanel extends JPanel {
 			statusInformationLabel
 					.setToolTipText(translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD) + " "
 							+ branchInfo.getBranchName());
+				pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
+				pullButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		} else {
 		  String ttMessage = null;
 			String currentBranch = branchInfo.getBranchName();
 			if (!"".equals(currentBranch)) {
 			  message = "<html><b>" + currentBranch + "</b></html>";
-				ttMessage = "<html>" + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH)
-				    + " <b>" + currentBranch + "</b> - ";
+			  
+			  String remoteName = "";
+        try {
+          remoteName = GitAccess.getInstance().getRemote(currentBranch);
+        } catch (NoRepositorySelected e) {
+          logger.debug(e, e);
+        }
+				ttMessage = "<html>"
+				    + (remoteName.isEmpty() ? "" : translator.getTranslation(Tags.REMOTE) + "/")
+				    + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH).toLowerCase()
+				    + " <b>"
+				    + (remoteName.isEmpty() ? "" : remoteName + "/")
+				    + currentBranch 
+				    + "</b> - ";
+				pushButton.setToolTipText(
+				    translator.getTranslation(Tags.PUSH_TO)
+				      + " "
+				      + (remoteName.isEmpty() ? "" : remoteName + "/")
+				      + currentBranch );
+				pullButton.setToolTipText(
+				    translator.getTranslation(Tags.PULL_FROM)
+				      + " "
+				      + (remoteName.isEmpty() ? "" : remoteName + "/") 
+				      + currentBranch );
 				if (pullsBehind == 0) {
 				  ttMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
 				} else if (pullsBehind == 1) {

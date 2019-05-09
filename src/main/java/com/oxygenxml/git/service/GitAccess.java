@@ -1769,6 +1769,20 @@ public class GitAccess {
 	  
 	  return firstEntry.getObjectId();
 	}
+	
+	/**
+	 * Get the name of the remote for the given branch.
+	 * 
+	 * @param branchName The name of the branch for which to retrieve the remote name.
+	 * 
+	 * @return The name of the remote.
+	 * 
+	 * @throws NoRepositorySelected 
+	 */
+	public String getRemote(String branchName) throws NoRepositorySelected {
+	  Repository repository = GitAccess.getInstance().getRepository();
+	  return repository.getConfig().getString("branch", branchName, REMOTE);
+	}
 
 	/**
 	 * Returns the SHA-1 commit id for a file by specifying what commit to get for

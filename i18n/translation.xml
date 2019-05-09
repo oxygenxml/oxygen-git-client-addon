@@ -4,6 +4,30 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Push_to">
+        <comment>Push to</comment>
+        <val lang="en_US">Push to</val>
+        <val lang="de_DE">Push to</val>
+        <val lang="fr_FR">Push to</val>
+        <val lang="ja_JP">Push to</val>
+        <val lang="nl_NL">Push to</val>
+    </key>
+    <key value="Pull_from">
+        <comment>Pull from</comment>
+        <val lang="en_US">Pull from</val>
+        <val lang="de_DE">Pull from</val>
+        <val lang="fr_FR">Pull from</val>
+        <val lang="ja_JP">Pull from</val>
+        <val lang="nl_NL">Pull from</val>
+    </key>
+    <key value="Remote">
+        <comment>Remote</comment>
+        <val lang="en_US">Remote</val>
+        <val lang="de_DE">Remote</val>
+        <val lang="fr_FR">Remote</val>
+        <val lang="ja_JP">Remote</val>
+        <val lang="nl_NL">Remote</val>
+    </key>
     <key value="Lock_failed_explanation">
         <comment>Message telling what may have caused the lock fail and how to address the problem.</comment>
         <val lang="en_US">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
