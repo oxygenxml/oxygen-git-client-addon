@@ -461,22 +461,6 @@ public class ChangesPanel extends JPanel {
 		    }
 		  }
 		});
-		
-		try {
-		  String rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-		  
-		  if (!forStagedResources) {
-		    List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
-		    update(rootFolder, unstagedFiles);
-		  } else {
-		    List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFiles();
-		    update(rootFolder, stagedFiles);
-		  }
-		} catch (NoRepositorySelected e) {
-		  // Never happens.
-		  logger.debug(e, e);
-		}
-
 
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_HEIGHT));
 	}

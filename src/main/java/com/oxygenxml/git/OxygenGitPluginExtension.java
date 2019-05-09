@@ -74,9 +74,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 		  AuthenticationInterceptor.install();
 
 			StageController stageController = new StageController();
-			stagingPanel = new StagingPanel(gitRefreshSupport, stageController);
-			gitRefreshSupport.setPanel(stagingPanel);
-
+			
 			ProjectViewManager.addPopUpMenuCustomizer(
 			    pluginWorkspaceAccess,
 			    new GitMenuActionsProvider(pluginWorkspaceAccess, stageController));
@@ -89,7 +87,14 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			  public void customizeView(ViewInfo viewInfo) {
 			    // The constant's value is defined in plugin.xml
 			    if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
+			      stagingPanel = new StagingPanel(gitRefreshSupport, stageController);
+			      gitRefreshSupport.setPanel(stagingPanel);
+			      
 			      viewInfo.setComponent(stagingPanel);
+			      
+			      // Start the thread that populates the view.
+			      gitRefreshSupport.call();
+			      
 			      ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
 			      URL resource = getClass().getResource(ImageConstants.GIT_ICON);
 			      if (resource != null) {
@@ -129,7 +134,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 				@Override
 				public void windowActivated(WindowEvent e) {
 					super.windowActivated(e);
-					if (refresh && stagingPanel.isShowing()) {
+					if (refresh && stagingPanel != null && stagingPanel.isShowing()) {
 						gitRefreshSupport.call();
 					}
 					refresh = false;
@@ -178,21 +183,22 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 	public boolean applicationClosing() {
 		OptionsManager.getInstance().saveOptions();
 		
-		try {
-		stagingPanel.shutdown();
-		} catch (IllegalStateException e) {
-		  pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, true);
-		  
-		  pluginWorkspaceAccess.showWarningMessage(e.getMessage());
-		  
-		  // Cancel the closing.
-		  return false;
+		if (stagingPanel != null) {
+		  // Only if the view was actually created.
+		  try {
+		    stagingPanel.shutdown();
+		  } catch (IllegalStateException e) {
+		    pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, true);
+		    pluginWorkspaceAccess.showWarningMessage(e.getMessage());
+
+		    // Cancel the closing.
+		    return false;
+		  }
 		}
-		
 		// EXM-42867: wait for the refresh to execute
-    gitRefreshSupport.shutdown();
-    
-    GitAccess.getInstance().close();
+		gitRefreshSupport.shutdown();
+		
+		GitAccess.getInstance().close();
 		
 		// Close application.
 		return true;
