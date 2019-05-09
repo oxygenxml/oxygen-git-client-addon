@@ -599,4 +599,19 @@ public class Tags {
    * Error.
    */
   public static final String ERROR = "Error";
+  
+  /**
+   * Remote.
+   */
+  public static final String REMOTE = "Remote";
+  
+  /**
+   * Push to.
+   */
+  public static final String PUSH_TO = "Push_to";
+  
+  /**
+   * Pull from.
+   */
+  public static final String PULL_FROM = "Pull_from";
 }
