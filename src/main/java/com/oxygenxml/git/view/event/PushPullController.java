@@ -8,12 +8,14 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.translator.Tags;
@@ -93,7 +95,9 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 *          - the Event fired
 	 */
 	private void notifyObservers(PushPullEvent pushPullEvent) {
-		observer.stateChanged(pushPullEvent);
+	  if (observer != null) {
+	    observer.stateChanged(pushPullEvent);
+	  }
 	}
 
 	@Override
@@ -214,29 +218,41 @@ public class PushPullController implements Subject<PushPullEvent> {
      * @throws GitAPIException
      */
     private String pull(final UserCredentials userCredentials) throws GitAPIException {
-      PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
       String message = "";
-      
-      switch (response.getStatus()) {
-        case OK:
-          message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
-          break;
-        case CONFLICTS:
-          showPullConflicts(response);
-          break;
-        case REPOSITORY_HAS_CONFLICTS:
-          ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-              .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
-          break;
-        case UP_TO_DATE:
-          message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
-          break;
-        case LOCK_FAILED:
-          message = translator.getTranslation(Tags.LOCK_FAILED);
-          break;
-        default:
-          // Nothing
-          break;
+
+      RepositoryState repositoryState = null;
+      try {
+        repositoryState = gitAccess.getRepository().getRepositoryState();
+      } catch (NoRepositorySelected e) {
+        logger.debug(e, e);
+      }
+
+      if (repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED) {
+        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+            .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
+      } else {
+        PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
+        switch (response.getStatus()) {
+          case OK:
+            message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
+            break;
+          case CONFLICTS:
+            showPullConflicts(response);
+            break;
+          case REPOSITORY_HAS_CONFLICTS:
+            ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+                .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
+            break;
+          case UP_TO_DATE:
+            message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
+            break;
+          case LOCK_FAILED:
+            message = translator.getTranslation(Tags.LOCK_FAILED);
+            break;
+          default:
+            // Nothing
+            break;
+        }
       }
       return message;
     }

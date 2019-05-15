@@ -10,13 +10,42 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.eclipse.jgit.lib.RepositoryState;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.event.Command;
+import com.oxygenxml.git.view.event.PushPullController;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class GitAccessConflictTest extends GitAccessPullTest {
+  
+  private String[] shownWarningMess = new String[1];
+  
+  @Override
+  @Before
+  public void init() throws Exception {
+    super.init();
+    
+    StandalonePluginWorkspace pluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspaceMock);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        String message = (String) invocation.getArguments()[0];
+        shownWarningMess[0] = message;
+        return null;
+      }
+    }).when(pluginWorkspaceMock).showWarningMessage(Mockito.anyString());
+    shownWarningMess[0] = "";
+  }
 
 	@Test
 	public void testResolveUsingTheirs() throws Exception {
@@ -31,13 +60,27 @@ public class GitAccessConflictTest extends GitAccessPullTest {
 		out.println("teeeeeest");
 		out.close();
 
-		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+		FileStatus fileStatus = new FileStatus(GitChangeType.ADD, "test.txt");
+    gitAccess.add(fileStatus);
 		gitAccess.commit("conflict");
 		gitAccess.pull("", "");
+		
+		gitAccess.reset(fileStatus);
 		gitAccess.updateWithRemoteFile("test.txt");
+		gitAccess.add(fileStatus);
+		
 		String expected = "hellllo";
 		String actual = getFileContent();
 		assertEquals(expected, actual);
+		
+		// Pulling now will say that the merge was not concluded and we should commit
+    assertEquals(RepositoryState.MERGING_RESOLVED, gitAccess.getRepository().getRepositoryState());
+
+    PushPullController ppc = new PushPullController();
+    ppc.execute(Command.PULL);
+    Thread.sleep(1200);
+
+    assertEquals("Conclude_Merge_Message", shownWarningMess[0]);
 	}
 
 	@Test

@@ -317,7 +317,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
    * 
    * @param forceEnable <code>true</code> to make the button enable without any additional checks.
    */
-  private void toggleCommitButton(boolean forceEnable) {
+  void toggleCommitButton(boolean forceEnable) {
     boolean enable = false;
     if (forceEnable) {
       enable = true;
@@ -325,7 +325,8 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
       try {
         RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
         if (repositoryState == RepositoryState.MERGING_RESOLVED
-            && gitAccess.getStagedFiles().isEmpty() && gitAccess.getUnstagedFiles().isEmpty()) {
+            && gitAccess.getStagedFiles().isEmpty()
+            && gitAccess.getUnstagedFiles().isEmpty()) {
           enable = true;
           commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
         } else if (!gitAccess.getStagedFiles().isEmpty()) {
