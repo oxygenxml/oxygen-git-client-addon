@@ -32,9 +32,9 @@ public class GitAccessCommitFileContentTest {
 	protected final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitFileContentTest/local";
 	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessCommitFileContentTest/local2";
 	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitFileContentTest/remote";
-	private Repository db1;
-	private Repository db2;
-	private Repository db3;
+	private Repository localRepo1;
+	private Repository localRepo2;
+	private Repository remoteRepo;
 	protected GitAccess gitAccess;
 
 	@Before
@@ -42,19 +42,19 @@ public class GitAccessCommitFileContentTest {
 			GitAPIException, NoRepositorySelected {
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
-		db1 = gitAccess.getRepository();
+		localRepo1 = gitAccess.getRepository();
 		gitAccess.createNewRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		db2 = gitAccess.getRepository();
+		localRepo2 = gitAccess.getRepository();
 		gitAccess.createNewRepository(REMOTE_TEST_REPOSITPRY);
-		db3 = gitAccess.getRepository();
+		remoteRepo = gitAccess.getRepository();
 
 		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		file.createNewFile();
 		StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
-		URIish uri = new URIish(db3.getDirectory().toURI().toURL());
-		remoteConfig.addURI(uri);
+		URIish remoteURI = new URIish(remoteRepo.getDirectory().toURI().toURL());
+		remoteConfig.addURI(remoteURI);
 		remoteConfig.update(config);
 		config.save();
 
@@ -62,8 +62,8 @@ public class GitAccessCommitFileContentTest {
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		config = gitAccess.getRepository().getConfig();
 		remoteConfig = new RemoteConfig(config, "origin");
-		uri = new URIish(db3.getDirectory().toURI().toURL());
-		remoteConfig.addURI(uri);
+		remoteURI = new URIish(remoteRepo.getDirectory().toURI().toURL());
+		remoteConfig.addURI(remoteURI);
 		RefSpec spec = new RefSpec("+refs/heads/*:refs/remotes/origin/*");
 		remoteConfig.addFetchRefSpec(spec);
 		remoteConfig.update(config);
@@ -182,9 +182,9 @@ public class GitAccessCommitFileContentTest {
 	public void freeResources() throws Exception {
 
 		gitAccess.close();
-		db1.close();
-		db2.close();
-		db3.close();
+		localRepo1.close();
+		localRepo2.close();
+		remoteRepo.close();
 		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 		FileUtils.deleteDirectory(dirToDelete);
 		dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
