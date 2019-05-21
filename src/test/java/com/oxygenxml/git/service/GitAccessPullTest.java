@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
@@ -118,6 +119,10 @@ public class GitAccessPullTest {
 	
 	@After
 	public void freeResources() {
+	  // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
+	  // When an object is collected by the GC, it releases a file lock.
+    WindowCache.getInstance().cleanup();
+
 		gitAccess.close();
 		db1.close();
 		db2.close();

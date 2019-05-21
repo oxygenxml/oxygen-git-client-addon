@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
@@ -335,6 +336,10 @@ public class GitTestBase extends JFCTestCase {
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
+    
+    // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
+    // When an object is collected by the GC, it releases a file lock.
+    WindowCache.getInstance().cleanup();
     
     // Wait for JGit threads to finish up work.
     flushAWT();

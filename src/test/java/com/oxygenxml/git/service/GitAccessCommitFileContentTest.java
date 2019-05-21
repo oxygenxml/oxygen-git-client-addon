@@ -13,6 +13,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
+import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
@@ -180,6 +181,9 @@ public class GitAccessCommitFileContentTest {
 
 	@After
 	public void freeResources() throws Exception {
+	  // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
+    // When an object is collected by the GC, it releases a file lock.
+    WindowCache.getInstance().cleanup();
 
 		gitAccess.close();
 		localRepo1.close();

@@ -6,8 +6,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -16,6 +14,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
+import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -71,6 +70,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 		  // Uncomment this to start with fresh options. For testing purposes
 //			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
 
+		  org.eclipse.jgit.transport.SshSessionFactory.setInstance(
+		      new org.eclipse.jgit.transport.sshd.SshdSessionFactory(null, new ResolvingProxyDataFactory()));
+		  
 		  AuthenticationInterceptor.install();
 
 			StageController stageController = new StageController();

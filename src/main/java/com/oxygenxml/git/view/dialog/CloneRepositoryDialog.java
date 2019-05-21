@@ -80,7 +80,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	/**
 	 * The default branch marker.
 	 */
-	private static final Ref DEFAULT_BRANCH_MARKER = new ObjectIdRef(Storage.NEW, "DEFAULT_BRANCH", null) {
+	private static final Ref DEFAULT_BRANCH_MARKER = new ObjectIdRef(Storage.NEW, "DEFAULT_BRANCH", null, -1) {
     @Override
     public boolean isPeeled() {
       return false;
