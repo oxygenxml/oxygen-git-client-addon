@@ -18,6 +18,7 @@ import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
@@ -70,8 +71,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 		  // Uncomment this to start with fresh options. For testing purposes
 //			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
 
-		  org.eclipse.jgit.transport.SshSessionFactory.setInstance(
-		      new org.eclipse.jgit.transport.sshd.SshdSessionFactory(null, new ResolvingProxyDataFactory()));
+		  if (!"true".equals(System.getProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS))) {
+  		  org.eclipse.jgit.transport.SshSessionFactory.setInstance(
+  		      new org.eclipse.jgit.transport.sshd.SshdSessionFactory(null, new ResolvingProxyDataFactory()));
+		  }
 		  
 		  AuthenticationInterceptor.install();
 
