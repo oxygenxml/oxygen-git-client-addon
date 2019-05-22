@@ -39,6 +39,18 @@ JavaEWAH-1.1.6
 Site: https://github.com/lemire/javaewah
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
+sshd-core-2.0.0
+Site: https://mina.apache.org/
+License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
+
+sshd-sftp-2.0.0
+Site: https://mina.apache.org/
+License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
+
+eddsa-0.3.0
+Site: https://github.com/str4d/ed25519-java 
+License: CC0 1.0 Universal (https://github.com/str4d/ed25519-java/blob/master/LICENSE.txt)
+
 jsch-0.1.54
 Site: http://www.jcraft.com/jsch
 License: BSD-style license, see below:
@@ -69,7 +81,8 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
 
-org.eclipse.jgit-5.2.1.201812262042-r,
+org.eclipse.jgit-5.3.1.201904271842-r,
+org.eclipse.jgit.ssh.apache-5.3.1.201904271842-r,
 Eclipse Distribution License - v 1.0
 
 Copyright (c) 2007, Eclipse Foundation, Inc. and its licensors.
