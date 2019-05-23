@@ -1795,30 +1795,38 @@ public class GitAccess {
 	 * @return the SHA-1 commit id
 	 */
 	public ObjectId getCommit(Commit commit, String path) {
-		List<DiffEntry> entries;
-		boolean baseIsNull = false;
-		int index = 0;
+	  ObjectId toReturn = null;
 		try {
-			entries = git.diff().setPathFilter(PathFilter.create(path)).call();
+		  List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
+			boolean baseIsNull = false;
 			if (entries.size() == 2) {
 				baseIsNull = true;
 			}
+			int index = 0;
 			if (commit == Commit.MINE) {
 				if (baseIsNull) {
 					index = 0;
 				} else {
 					index = 1;
 				}
-				return entries.get(index).getOldId().toObjectId();
+				if (index >= entries.size()) {
+				  throw new IOException("No diff info available for path: '" + path
+				      + "' and commit: '" + commit + "'");
+				}
+				toReturn =  entries.get(index).getOldId().toObjectId();
 			} else if (commit == Commit.THEIRS) {
 				if (baseIsNull) {
 					index = 1;
 				} else {
 					index = 2;
 				}
-				return entries.get(index).getOldId().toObjectId();
+				if (index >= entries.size()) {
+          throw new IOException("No diff info available for path: '" + path
+              + "' and commit: '" + commit + "'");
+        }
+				toReturn =  entries.get(index).getOldId().toObjectId();
 			} else if (commit == Commit.BASE) {
-				return entries.get(index).getOldId().toObjectId();
+			  toReturn = entries.get(index).getOldId().toObjectId();
 			} else if (commit == Commit.LOCAL) {
 				ObjectId lastLocalCommit = getLastLocalCommit();
 				RevWalk revWalk = new RevWalk(git.getRepository());
@@ -1828,18 +1836,16 @@ public class GitAccess {
 				treeWalk.addTree(tree);
 				treeWalk.setRecursive(true);
 				treeWalk.setFilter(PathFilter.create(path));
-				ObjectId objectId = null;
 				if (treeWalk.next()) {
-					objectId = treeWalk.getObjectId(0);
+				  toReturn = treeWalk.getObjectId(0);
 				}
 				treeWalk.close();
 				revWalk.close();
-				return objectId;
 			}
-		} catch (GitAPIException |IOException e) {
+		} catch (GitAPIException | IOException e) {
 		  logger.debug(e, e);
 		}
-		return null;
+		return toReturn;
 	}
 	
 	/**
