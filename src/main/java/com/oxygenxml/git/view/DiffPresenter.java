@@ -309,12 +309,15 @@ public class DiffPresenter {
 	        .openDiffFilesApplication(localURL, remoteUL);
 	  }
 	  
-	  diffFrame.addWindowListener(new WindowAdapter() {
-	    @Override
-	    public void windowOpened(WindowEvent e) {
-	      diffFrame.removeWindowListener(this);
-	      AuthenticationInterceptor.install();
-	    }
-	  });
+	  // The "openDiffFilesApplication()" API may return null
+	  if (diffFrame != null) {
+	    diffFrame.addWindowListener(new WindowAdapter() {
+	      @Override
+	      public void windowOpened(WindowEvent e) {
+	        diffFrame.removeWindowListener(this);
+	        AuthenticationInterceptor.install();
+	      }
+	    });
+	  }
 	}
 }
