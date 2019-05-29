@@ -28,7 +28,7 @@
 		              <ol>
 		                  <li>Updated to JGit 5.3.1.</li>
 		                  <li>The add-on now works with more kinds of SSH keys, by using JGit's new SSH session factory based on 'Apache MINA sshd' by default. See <a href="https://wiki.eclipse.org/JGit/New_and_Noteworthy/5.2">https://wiki.eclipse.org/JGit/New_and_Noteworthy/5.2</a> for a full list of benefits.</li>
-		                  <li>The add-on now allows comparing images.</li>
+		                  <!-- <li>The add-on now allows comparing images.</li> -->
 		                  <li>The tooltips of the push/pull buttons and the branch label now also present the remote repository.</li>
 		                  <li>Bug fixes</li>
 		              </ol>
