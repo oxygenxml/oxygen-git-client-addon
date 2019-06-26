@@ -323,14 +323,7 @@ public class PanelRefresh implements GitRefreshSupport {
 
 	  if (changeDetected) {
 	    SwingUtilities.invokeLater(() -> {
-	      String rootFolder = StagingPanel.NO_REPOSITORY;
-	      try {
-	        rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-	      } catch (NoRepositorySelected e) {
-	        // Never happens.
-	        logger.error(e, e);
-	      }
-	      panelToUpdate.update(rootFolder, newfiles);
+	      panelToUpdate.update(newfiles);
 	    });
 	  }
 	}

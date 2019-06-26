@@ -46,6 +46,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -261,33 +262,21 @@ public class ChangesPanel extends JPanel {
 	 * example will be: if path = "C:/test/repository" the root node name will be
 	 * "repository", then the files will pe placed under this root
 	 * 
-	 * @param path
-	 *          - the root
 	 * @param filesStatus
 	 *          - files to generate the nodes
 	 */
-	private void updateTreeView(String rootFolder, List<FileStatus> filesStatus) {
+	private void updateTreeView(List<FileStatus> filesStatus) {
 	  if (tree != null) {
-	    if (rootFolder == null) {
-	      rootFolder = "";
-	    }
-	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-	    GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
 	    Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
 	    TreePath[] selectionPaths = tree.getSelectionPaths();
 
-	    if (rootNode == null || !rootFolder.equals(rootNode.getUserObject())) {
-	      GitTreeNode root = new GitTreeNode(rootFolder);
-	      // Create the tree model and add the root node to it
-	      treeModel = new StagingResourcesTreeModel(stageController, root, forStagedResources, new ArrayList<>(filesStatus));
-
-	      // Create the tree with the new model
-	      tree.setModel(treeModel);
-	    }
-
-	    treeModel.setFilesStatus(filesStatus);
-
-	    tree.setCellRenderer(new ChangesTreeCellRenderer());
+	    // Create the tree with the new model
+	    tree.setModel(
+	        new StagingResourcesTreeModel(
+	            stageController, 
+	            GitAccess.getInstance().getWorkingCopyName(), 
+	            forStagedResources, 
+	            filesStatus));
 
 	    // restore last expanded paths after refresh
 	    TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
@@ -336,11 +325,11 @@ public class ChangesPanel extends JPanel {
    * @param unstagedFiles
    *          - the new files to update the flat view
    */
-  public void update(String rootFolder, List<FileStatus> newFiles) {
+  public void update(List<FileStatus> newFiles) {
     if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
       updateFlatView(newFiles);
     } else {
-      updateTreeView(rootFolder, newFiles);
+      updateTreeView(newFiles);
     }
   }
   
@@ -773,44 +762,62 @@ public class ChangesPanel extends JPanel {
 	 * @param viewMode The new view mode.
 	 */
 	void setResourcesViewMode(ResourcesViewMode viewMode) {
+	  if (logger.isDebugEnabled()) {
+	    logger.debug("Switch to " + viewMode);
+	  }
+	  
 	  this.currentViewMode = viewMode;
 	  
 	  if (viewMode == ResourcesViewMode.TREE_VIEW) {
-	    TreePath[] selectedPaths = restoreSelectedPathsFromTableToTree();
-	    tree.setSelectionPaths(selectedPaths);
+	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
+	    List<FileStatus> filesStatuses = modelTable.getFilesStatuses();
+	    
+	    if (logger.isDebugEnabled()) {
+	      logger.debug("Table model " + filesStatuses);
+	    }
+	    
+	     // Create the tree with the new model
+      tree.setModel(
+          new StagingResourcesTreeModel(
+              stageController, 
+              GitAccess.getInstance().getWorkingCopyName(), 
+              forStagedResources, 
+              filesStatuses));
+	    
+	    restoreSelectedPathsFromTableToTree();
+	    
+	    // Activate the tree view.
 	    scrollPane.setViewportView(tree);
-	    if (switchViewButton != null) {
-	      URL resource = getClass().getResource(ImageConstants.TABLE_VIEW);
-	      if (resource != null) {
-	        ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-	        switchViewButton.setIcon(icon);
-	      }
-	      switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
-	    }
 	  } else {
-	    if (switchViewButton != null) {
-	      URL resource = getClass().getResource(ImageConstants.TREE_VIEW);
-	      if (resource != null) {
-	        ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-	        switchViewButton.setIcon(icon);
-	      }
-	      switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+	    
+	    // Get the list of files from the tree model and update the table.
+	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+	    List<FileStatus> filesStatuses = treeModel.getFilesStatuses();
+	    
+	    if (logger.isDebugEnabled()) {
+	      logger.debug("Tree model " + filesStatuses);
 	    }
-	    filesTable.clearSelection();
-	    StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
+	    
+	    StagingResourcesTableModel tableModel = (StagingResourcesTableModel) filesTable.getModel();
+	    tableModel.setFilesStatus(filesStatuses);
 
 	    List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(tree.getSelectionPaths());
 	    List<Integer> tableRowsToSelect = new ArrayList<>();
 	    for (TreePath treePath : commonAncestors) {
 	      String path = TreeFormatter.getStringPath(treePath);
-	      tableRowsToSelect.addAll(fileTableModel.getRows(path));
+	      tableRowsToSelect.addAll(tableModel.getRows(path));
 	    }
 
+	    filesTable.clearSelection();
 	    for (Integer i : tableRowsToSelect) {
 	      filesTable.addRowSelectionInterval(i, i);
 	    }
+	    
+	    // Activate the table view.
 	    scrollPane.setViewportView(filesTable);
 	  }
+	  
+	  updateChangeViewButton();
 
 	  if (forStagedResources) {
 	    OptionsManager.getInstance().saveStagedResViewMode(viewMode);
@@ -820,13 +827,33 @@ public class ChangesPanel extends JPanel {
 	}
 
 	/**
-	 * Calculates the treePaths from the table selected files and return the
-	 * treePaths
-	 * 
-	 * @return TreePath array containing the the files selected from the table
-	 *         view
+	 * Updates the button that switches the view with the a image and tooltip that correspond
+	 * to the current active view mode.
 	 */
-	private TreePath[] restoreSelectedPathsFromTableToTree() {
+  private void updateChangeViewButton() {
+    if (switchViewButton != null) {
+      if (currentViewMode == ResourcesViewMode.TREE_VIEW) {
+        URL resource = getClass().getResource(ImageConstants.TABLE_VIEW);
+        if (resource != null) {
+          ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+          switchViewButton.setIcon(icon);
+        }
+        switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
+      } else {
+        URL resource = getClass().getResource(ImageConstants.TREE_VIEW);
+        if (resource != null) {
+          ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+          switchViewButton.setIcon(icon);
+        }
+        switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+      }
+    }
+  }
+
+	/**
+	 * Calculates the treePaths from the table selected files and sets them into the tree.
+	 */
+	private void restoreSelectedPathsFromTableToTree() {
 		int[] selectedRows = filesTable.getSelectedRows();
 		StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
 
@@ -847,7 +874,8 @@ public class ChangesPanel extends JPanel {
 
 			selPaths[i] = new TreePath(selectedPath);
 		}
-		return selPaths;
+		
+		tree.setSelectionPaths(selPaths);
 	}
 
 	/**
@@ -1419,6 +1447,7 @@ public class ChangesPanel extends JPanel {
 	    t = new JTree();
 	  }
 	  
+	  t.setCellRenderer(new ChangesTreeCellRenderer());
 	  t.setModel(new StagingResourcesTreeModel(stageController, null, forStagedResources, null));
 	  
     return t;
@@ -1455,13 +1484,6 @@ public class ChangesPanel extends JPanel {
   private void repositoryChanged(List<FileStatus> unstagedFiles) {
     updateFlatView(unstagedFiles);
 
-    String rootFolder = StagingPanel.NO_REPOSITORY;
-    try {
-      rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-    } catch (NoRepositorySelected e) {
-      // Never happens.
-      logger.error(e, e);
-    }
-    updateTreeView(rootFolder, unstagedFiles);
+    updateTreeView(unstagedFiles);
   }
 }

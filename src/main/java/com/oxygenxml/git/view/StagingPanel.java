@@ -55,10 +55,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  */
 public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
-  /**
-   * No repository.
-   */
-  public static final String NO_REPOSITORY = "[No repository]";
 
   /**
    * Logger for logging.
@@ -110,7 +106,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 */
 	private StageController stageController;
 	
-	/**
+	/** 
 	 * Manages Push/Pull actions.
 	 */
   private PushPullController pushPullController;
@@ -425,17 +421,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
           
           // Update models.
-          String rootFolder = NO_REPOSITORY;
-          try {
-            rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
-          } catch (NoRepositorySelected e) {
-            // Never happens.
-            logger.error(e, e);
-          }
-          
           GitStatus status = GitAccess.getInstance().getStatus();
-          unstagedChangesPanel.update(rootFolder, status.getUnstagedFiles());
-          stagedChangesPanel.update(rootFolder, status.getStagedFiles());
+          unstagedChangesPanel.update(status.getUnstagedFiles());
+          stagedChangesPanel.update(status.getStagedFiles());
           
           toolbarPanel.updateButtonState(true);
           

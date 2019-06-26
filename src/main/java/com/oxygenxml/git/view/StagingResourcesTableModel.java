@@ -145,10 +145,12 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 *          - the files
 	 */
 	public void setFilesStatus(List<FileStatus> filesStatus) {
+	  fireTableRowsDeleted(0, getRowCount());
 		this.filesStatus = filesStatus;
 		removeDuplicates();
 		Collections.sort(this.filesStatus, fileStatusComparator);
-		fireTableDataChanged();
+		
+		fireTableRowsInserted(0, getRowCount());
 	}
 
 	/**

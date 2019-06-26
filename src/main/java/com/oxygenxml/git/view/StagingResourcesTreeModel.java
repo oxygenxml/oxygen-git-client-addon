@@ -50,18 +50,17 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * Constructor.
 	 * 
 	 * @param controller Staging controller.
-	 * @param root Root node.
+	 * @param root Root folder's name.
 	 * @param inIndex <code>true</code> if this model presents the resources inside the index.
    * <code>false</code> if it presents the modified resources that can be put in the index.
 	 * @param filesStatus The files statuses in the model.
 	 */
-	public StagingResourcesTreeModel(StageController controller, TreeNode root, boolean inIndex, List<FileStatus> filesStatus) {
-		super(root);
+	public StagingResourcesTreeModel(StageController controller, String root, boolean inIndex, List<FileStatus> filesStatus) {
+		super(new GitTreeNode(root != null ? root : ""));
     this.stageController = controller;
 		this.inIndex = inIndex;
-		if (filesStatus != null) {
-		  this.filesStatuses = Collections.synchronizedList(filesStatus);
-		}
+    
+    setFilesStatus(filesStatus);
 	}
 
 	public void stateChanged(ChangeEvent changeEvent) {
@@ -219,9 +218,12 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * @param filesStatus
 	 *          - the files on which the node structure will be created
 	 */
-	public void setFilesStatus(List<FileStatus> filesStatus) {
+	private void setFilesStatus(List<FileStatus> filesStatus) {
+	  if (filesStatus == null) {
+	    filesStatus = Collections.emptyList();
+	  }
 		deleteNodes(this.filesStatuses);
-		this.filesStatuses.clear();
+		
 		insertNodes(filesStatus);
 		fireTreeStructureChanged(this, null, null, null);
 	}

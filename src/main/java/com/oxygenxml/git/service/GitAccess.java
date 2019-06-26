@@ -1883,4 +1883,23 @@ public class GitAccess {
 	  return git;
 	}
 
+  /**
+   * No repository.
+   */
+  public static final String NO_REPOSITORY = "[No repository]";
+
+  /**
+   * @return The name of the Workking copy or {@link NO_REPOSITORY} if there is no working copy opened.
+   */
+  public String getWorkingCopyName() {
+    String rootFolder = NO_REPOSITORY;
+    try {
+      rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
+    } catch (NoRepositorySelected e) {
+      // Never happens.
+      logger.error(e, e);
+    }
+    return rootFolder;
+  }
+
 }
