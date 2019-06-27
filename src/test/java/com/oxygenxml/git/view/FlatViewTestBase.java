@@ -2,19 +2,33 @@ package com.oxygenxml.git.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
+import com.oxygenxml.git.service.PullStatus;
+import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.StageController;
+
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
 * Base for the test classes related to the actions performed
@@ -168,5 +182,14 @@ public class FlatViewTestBase extends GitTestBase {
       sb.append(fileStatus.getChangeType()).append(", ").append(fileStatus.getFileLocation());
     }
     return sb.toString();
+  }
+  
+  /**
+   * Updates the information presented in the view with the current state of the working copy.   
+   */
+  protected final void refreshViews() {
+    refreshSupport.call();
+    sleep(500);
+    flushAWT();
   }
 }

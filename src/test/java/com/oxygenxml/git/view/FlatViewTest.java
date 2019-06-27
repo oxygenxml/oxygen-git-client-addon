@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.GitCommand;
@@ -89,6 +91,11 @@ public class FlatViewTest extends FlatViewTestBase {
       assertTrue(usButton.isEnabled());
       usButton.doClick();
     }
+  }
+  
+  protected final void switchToView(ResourcesViewMode viewMode) {
+    stagingPanel.getUnstagedChangesPanel().setResourcesViewMode(viewMode);
+    stagingPanel.getStagedChangesPanel().setResourcesViewMode(viewMode);
   }
   
   /**
@@ -692,13 +699,8 @@ public class FlatViewTest extends FlatViewTestBase {
       bindLocalToRemote(localRepo , remoteRepo);
 
       // Create a new file and push it.
-      new File(localTestRepository).mkdirs();
-      File file = new File(localTestRepository + "/test.txt");
-      file.createNewFile();
-      sleep(300);
-      setFileContent(file, "content");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
-      gitAccess.commit("First version.");
+      String fileName = "test.txt";
+      File file = commitNewFile(localTestRepository, fileName, "content");
       PushResponse push = gitAccess.push("", "");
       assertEquals("status: OK message null", push.toString());
 
@@ -711,7 +713,7 @@ public class FlatViewTest extends FlatViewTestBase {
 
       // Commit a new version of the file.
       setFileContent(file, "modified");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+      gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
       gitAccess.commit("modified");
       gitAccess.push("", "");
       assertEquals("status: OK message null", push.toString());
@@ -728,4 +730,90 @@ public class FlatViewTest extends FlatViewTestBase {
     }
   }
   
+  /**
+   * Creates a new file and commits it the repository.
+   * 
+   * @param parentDir parent directory.
+   * @param fileName File name.
+   * @param content Content for the new file.
+   * 
+   * @return The newly created file.
+   * 
+   * @throws Exception If it fails.
+   */
+  private File commitNewFile(String parentDir, String fileName, String content) throws Exception {
+    File file = createNewFile(parentDir, fileName, content);
+    gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
+    gitAccess.commit("First version.");
+    
+    return file;
+  }
+  private File createNewFile(String parentDir, String fileName, String content) throws IOException, Exception {
+    new File(parentDir).mkdirs();
+    File file = new File(parentDir + "/" + fileName);
+    file.createNewFile();
+    setFileContent(file, content);
+    return file;
+  }
+
+  /**
+   * <p><b>Description:</b> Tests switching between view modes.</p>
+   * <p><b>Bug ID:</b> EXM-43553</p>
+   *
+   * @author alex_jitianu
+   *
+   * @throws Exception If it fails.
+   */
+  public void testSwitchViewModes() throws Exception {
+    PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+    try {
+      String localTestRepository = "target/test-resources/testSwitchViewModes_local";
+      String remoteTestRepository = "target/test-resources/testSwitchViewModes_remote";
+
+      // Create repositories
+      Repository remoteRepo = createRepository(remoteTestRepository);
+      Repository localRepo = createRepository(localTestRepository);
+      bindLocalToRemote(localRepo , remoteRepo);
+
+      // Step 1. Creaet new files and refresh the table view.
+      createNewFile(localTestRepository, "test.txt", "test");
+      createNewFile(localTestRepository, "test2.txt", "test2");
+      refreshViews();
+      
+      assertTableModels(
+          "UNTRACKED, test.txt\n" + 
+          "UNTRACKED, test2.txt", "");
+      
+      // Step 3. Switch to tree view.
+      switchToView(ResourcesViewMode.TREE_VIEW);
+      
+      // The tree view initialized itself from the previous view.
+      assertTreeModels(
+          "UNTRACKED, test.txt\n" + 
+          "UNTRACKED, test2.txt",
+          "");
+      
+      // Step 4. Create a new file while in tree view and refresh the tree to pick up the change.
+      createNewFile(localTestRepository, "test3.txt", "test3");
+      refreshViews();
+      
+      // Assert that the tree has picked up the changes.
+      assertTreeModels(
+          "UNTRACKED, test.txt\n" + 
+          "UNTRACKED, test2.txt\n" + 
+          "UNTRACKED, test3.txt",
+          "");
+      
+      // Step 6. Switch to table view. The table view should initialize itself from the previous view.
+      switchToView(ResourcesViewMode.FLAT_VIEW);
+      assertTableModels(
+          "UNTRACKED, test.txt\n" + 
+          "UNTRACKED, test2.txt\n" + 
+          "UNTRACKED, test3.txt", "");
+      
+    } finally {
+      PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspace);
+    }
+  }
+
 }
