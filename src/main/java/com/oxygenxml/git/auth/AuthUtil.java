@@ -53,7 +53,10 @@ public class AuthUtil {
       AuthExceptionMessagePresenter excMessPresenter,
       boolean retryLoginHere) {
     
-    logger.debug(ex, ex);
+    if (logger.isDebugEnabled()) {
+      logger.debug("Handle Auth Exception: ");
+      logger.debug(ex, ex);
+    }
     
     boolean tryAgainOutside = false;
     String lowercaseMsg = ex.getMessage().toLowerCase();

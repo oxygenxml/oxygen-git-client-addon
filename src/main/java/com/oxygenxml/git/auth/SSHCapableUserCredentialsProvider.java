@@ -51,20 +51,29 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	  for (CredentialItem item : items) {
 	    // TODO Should handle item.isValueSecure()
 	    if (logger.isDebugEnabled()) {
-	      logger.debug(item.getClass() + ", secure value: " + item.isValueSecure());
+	      logger.debug("Item class :" + item.getClass() + ", is secure value: " + item.isValueSecure());
 	      logger.debug("Message: |" + item.getPromptText() + "|");
 	    }
 	    
-	    if (item instanceof CredentialItem.StringType
+	    if ((item instanceof CredentialItem.StringType || item instanceof CredentialItem.Password)
 	        && item.getPromptText().startsWith("Passphrase")) {
+	      
+	      logger.debug("Passphrase required. Stored passphrase is: '" + passphrase + "'");
+	      
 	      // A not so great method to check that the pass phrase is requested.
 	      passphaseRequested = true;
 	      
-	      if (passphrase == null) {
+	      if (passphrase == null || "".equals(passphrase)) {
+	        logger.debug("Ask for new passphrase...");
 	        passphrase = new PassphraseDialog(item.getPromptText()).getPassphrase();
+	        logger.debug("New passphrase is: '" + passphrase + "'");
 	      }
 
-	      ((CredentialItem.StringType) item).setValue(passphrase);
+	      if (item instanceof CredentialItem.StringType) {
+	        ((CredentialItem.StringType) item).setValue(passphrase);
+	      } else if (item instanceof CredentialItem.Password) {
+	        ((CredentialItem.Password) item).setValue(passphrase.toCharArray());
+	      }
 	      // true tells the engine that we supplied the value.
 	      // The engine will look inside the given item for the response.
 	      return true;
