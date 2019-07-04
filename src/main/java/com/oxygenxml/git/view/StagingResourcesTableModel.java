@@ -45,20 +45,17 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * The internal representation of the model
 	 */
-	private List<FileStatus> filesStatus = new ArrayList<>();
+	private List<FileStatus> filesStatuses = Collections.synchronizedList(new ArrayList<>());
 
 	/**
 	 * Compares file statuses.
 	 */
-	private Comparator<FileStatus> fileStatusComparator = new Comparator<FileStatus>() {
-    @Override
-    public int compare(FileStatus f1, FileStatus f2) {
-      int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
-      if(changeTypeCompareResult == 0) {
-        return f1.getFileLocation().compareTo(f2.getFileLocation());
-      } else {
-        return changeTypeCompareResult;
-      }
+	private Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
+    int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
+    if(changeTypeCompareResult == 0) {
+      return f1.getFileLocation().compareTo(f2.getFileLocation());
+    } else {
+      return changeTypeCompareResult;
     }
   };
 
@@ -86,13 +83,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 
 	@Override
   public int getRowCount() {
-		int size;
-		if (filesStatus == null) {
-			size = 0;
-		} else {
-			size = filesStatus.size();
-		}
-		return size;
+		return filesStatuses != null ? filesStatuses.size() : 0;
 	}
 
 	@Override
@@ -126,10 +117,10 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		Object temp = null;
 		switch (columnIndex) {
 		  case FILE_STATUS_COLUMN:
-		    temp = filesStatus.get(rowIndex).getChangeType();
+		    temp = filesStatuses.get(rowIndex).getChangeType();
 		    break;
 		  case FILE_LOCATION_COLUMN:
-		    temp = filesStatus.get(rowIndex).getFileLocation();
+		    temp = filesStatuses.get(rowIndex).getFileLocation();
 		    break;
 		  default:
 		    break;
@@ -141,14 +132,15 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * Sets the model with the given files, and also sorts it
 	 * 
-	 * @param filesStatus
+	 * @param filesStatuses
 	 *          - the files
 	 */
-	public void setFilesStatus(List<FileStatus> filesStatus) {
+	public void setFilesStatus(List<FileStatus> filesStatuses) {
 	  fireTableRowsDeleted(0, getRowCount());
-		this.filesStatus = filesStatus;
+	  
+		this.filesStatuses = Collections.synchronizedList(new ArrayList<>(filesStatuses));
 		removeDuplicates();
-		Collections.sort(this.filesStatus, fileStatusComparator);
+		Collections.sort(this.filesStatuses, fileStatusComparator);
 		
 		fireTableRowsInserted(0, getRowCount());
 	}
@@ -161,14 +153,14 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * @return the file
 	 */
 	public FileStatus getUnstageFile(int convertedRow) {
-		return filesStatus.get(convertedRow);
+		return filesStatuses.get(convertedRow);
 	}
 
 	/**
 	 * @return The files in the model.
 	 */
 	public List<FileStatus> getFilesStatuses() {
-		return filesStatus;
+		return filesStatuses;
 	}
 
 	/**
@@ -180,12 +172,14 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 */
 	public void switchAllFilesStageState() {
 		List<FileStatus> filesToBeUpdated = new ArrayList<>();
-		for (FileStatus fileStatus : filesStatus) {
-			if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {
-				filesToBeUpdated.add(fileStatus);
-			}
+		synchronized (filesStatuses) {
+		  for (FileStatus fileStatus : filesStatuses) {
+		    if (fileStatus.getChangeType() != GitChangeType.CONFLICT) {
+		      filesToBeUpdated.add(fileStatus);
+		    }
+		  }
 		}
-		
+
 		GitCommand action = GitCommand.UNSTAGE;
 		if (!inIndex) {
 		  action = GitCommand.STAGE;
@@ -228,20 +222,20 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		} else if (changeEvent.getCommand() == GitCommand.COMMIT) {
 			if (inIndex) {
 			  // Committed files are removed from the INDEX.
-				filesStatus.clear();
+				filesStatuses.clear();
 			}
 		} else if (changeEvent.getCommand() == GitCommand.DISCARD) {
 		  // Discarded files are no longer presented by neither model.
 			deleteRows(oldStates);
 		} else if (changeEvent.getCommand() == GitCommand.MERGE_RESTART) {
-		  filesStatus.clear();
+		  filesStatuses.clear();
 		  List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() :
 		    GitAccess.getInstance().getUnstagedFiles();
 		  insertRows(fileStatuses);
 		}
 		
 		removeDuplicates();
-		Collections.sort(filesStatus, fileStatusComparator);
+		Collections.sort(filesStatuses, fileStatusComparator);
 		fireTableDataChanged();
 	}
 
@@ -250,9 +244,9 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 */
 	private void removeDuplicates() {
 		Set<FileStatus> set = new HashSet<>();
-		set.addAll(this.filesStatus);
-		this.filesStatus.clear();
-		this.filesStatus.addAll(set);
+		set.addAll(this.filesStatuses);
+		this.filesStatuses.clear();
+		this.filesStatuses.addAll(set);
 	}
 
 	/**
@@ -262,7 +256,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 *          - the files to be deleted from the model
 	 */
 	private void deleteRows(List<FileStatus> fileToBeUpdated) {
-		filesStatus.removeAll(fileToBeUpdated);
+		filesStatuses.removeAll(fileToBeUpdated);
 	}
 
 	/**
@@ -272,16 +266,16 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 *          - the files to be inserted in the model
 	 */
 	private void insertRows(List<FileStatus> fileToBeUpdated) {
-		filesStatus.addAll(fileToBeUpdated);
+		filesStatuses.addAll(fileToBeUpdated);
 
 	}
 
 	public String getFileLocation(int convertedRow) {
-		return filesStatus.get(convertedRow).getFileLocation();
+		return filesStatuses.get(convertedRow).getFileLocation();
 	}
 	
 	public FileStatus getFileStatus(int convertedRow) {
-    return filesStatus.get(convertedRow);
+    return filesStatuses.get(convertedRow);
   }
 
 	/**
@@ -292,14 +286,14 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * @return a list containing the file indexes
 	 */
 	public List<Integer> getRows(String path) {
-		List<Integer> rows = new ArrayList<>();
-
-		for (int i = 0; i < filesStatus.size(); i++) {
-			if (filesStatus.get(i).getFileLocation().contains(path)) {
-				rows.add(i);
-			}
-
-		}
+	  List<Integer> rows = new ArrayList<>();
+	  synchronized (filesStatuses) {
+	    for (int i = 0; i < filesStatuses.size(); i++) {
+	      if (filesStatuses.get(i).getFileLocation().contains(path)) {
+	        rows.add(i);
+	      }
+	    }
+	  }
 		return rows;
 	}
 
@@ -311,12 +305,14 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * @return the row
 	 */
 	public int getRow(String fileLocation) {
-		for (int i = 0; i < filesStatus.size(); i++) {
-			if (filesStatus.get(i).getFileLocation().equals(fileLocation)) {
-				return i;
-			}
-		}
-		return -1;
+	  synchronized (filesStatuses) {
+	    for (int i = 0; i < filesStatuses.size(); i++) {
+	      if (filesStatuses.get(i).getFileLocation().equals(fileLocation)) {
+	        return i;
+	      }
+	    }
+	  }
+	  return -1;
 	}
 
 }
