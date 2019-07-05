@@ -221,9 +221,10 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	  if (filesStatus == null) {
 	    filesStatus = Collections.emptyList();
 	  }
+	  
 		deleteNodes(this.filesStatuses);
-		
 		insertNodes(filesStatus);
+		
 		fireTreeStructureChanged(this, null, null, null);
 	}
 
