@@ -11,19 +11,24 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.transport.sshd.DefaultProxyDataFactory;
 import org.eclipse.jgit.transport.sshd.ProxyData;
+import org.eclipse.jgit.transport.sshd.ProxyDataFactory;
 
 /**
  * Obtain {@link ProxyData} to connect through some proxy.
  * 
  * An attempt will be made to resolve the host name into an InetAddress. 
  */
-public class ResolvingProxyDataFactory extends DefaultProxyDataFactory {
+public class ResolvingProxyDataFactory implements ProxyDataFactory {
   /**
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(ResolvingProxyDataFactory.class);
+  
+  /**
+   * The 'socket' URI scheme.
+   */
+  private static final String SOCKET_URI_SCHEME = "socket";
 
   /**
    * org.eclipse.jgit.transport.sshd.ProxyDataFactory.get(InetSocketAddress)
@@ -76,12 +81,14 @@ public class ResolvingProxyDataFactory extends DefaultProxyDataFactory {
   }
   
   /**
-   * Just a copy of super.get()
+   * Just a copy of super.get() that avoids an NPE and creates proper "socket://" URIs
+   * instead of wrong "socks://" URIs.
    * 
-   * @param remoteAddress
-   * @return
+   * @param remoteAddress Remote address.
+   * 
+   * @return An object containing proxy data or <code>null</code>.
    */
-  public ProxyData getInternal(InetSocketAddress remoteAddress) {
+  ProxyData getInternal(InetSocketAddress remoteAddress) {
     try {
       
       if (logger.isDebugEnabled()) {
@@ -89,7 +96,7 @@ public class ResolvingProxyDataFactory extends DefaultProxyDataFactory {
       }
       
       List<Proxy> proxies = ProxySelector.getDefault()
-          .select(new URI(Proxy.Type.SOCKS.name(),
+          .select(new URI(SOCKET_URI_SCHEME,
               "//" + remoteAddress.getHostString(), null)); //$NON-NLS-1$
       
       if (logger.isDebugEnabled()) {
