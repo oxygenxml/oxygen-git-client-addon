@@ -226,7 +226,7 @@ public class AuthenticationInterceptor {
 				
 				try {
 				  // EXM-43925
-          Class<?> webdavAsyncAuth = Class.forName("ro.sync.net.protocol.http.WebdavAsyncAuthenticator");
+          Class<?> webdavAsyncAuth = Class.forName("ro.sync.net.protocol.http.HttpAsyncAuthenticator");
           Method setUseDefaultAuth = webdavAsyncAuth.getMethod("setUseDefaultAuthenticator", boolean.class);
           setUseDefaultAuth.invoke(null, true);
         } catch (ClassNotFoundException | NoSuchMethodException 
