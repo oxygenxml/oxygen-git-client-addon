@@ -25,7 +25,7 @@ public class ResolvingProxyDataFactoryTest extends TestCase {
     assertEquals("The Apache MINA SSHD library has been updated."
         + " Check " + ResolvingProxyDataFactory.class.getName() + " for "
         + "updating the patches, if needed.",
-        "org.eclipse.jgit.ssh.apache-5.4.0.201906121030-r.jar",
+        "org.eclipse.jgit.ssh.apache-5.4.2.201908231537-r.jar",
         name);
   }
   

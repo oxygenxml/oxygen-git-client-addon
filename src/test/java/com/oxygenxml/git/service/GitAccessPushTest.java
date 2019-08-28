@@ -94,7 +94,7 @@ public class GitAccessPushTest {
 	}
 	
 	@Test
-	public void testPushRejected()
+	public void testAPushRejected()
 			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
 		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
 		StoredConfig config = gitAccess.getRepository().getConfig();

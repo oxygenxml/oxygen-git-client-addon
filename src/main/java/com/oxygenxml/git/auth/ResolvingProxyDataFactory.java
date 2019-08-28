@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -41,7 +42,7 @@ public class ResolvingProxyDataFactory implements ProxyDataFactory {
 
 
   /**
-   * Create new proxy data over the given.
+   * Create new proxy data over the given. Inspired by EGit ProxyDataFactory.
    * 
    * @param data PRoxy data.
    * 
@@ -81,7 +82,9 @@ public class ResolvingProxyDataFactory implements ProxyDataFactory {
   }
   
   /**
-   * Just a copy of super.get() that avoids an NPE and creates proper "socket://" URIs
+   * OXYGEN PATCH
+   * 
+   * Just a copy of DefaultProxyDataFactory.get() that creates proper "socket://" URIs
    * instead of wrong "socks://" URIs.
    * 
    * @param remoteAddress Remote address.
@@ -95,16 +98,19 @@ public class ResolvingProxyDataFactory implements ProxyDataFactory {
         logger.debug("Use proxy selector " + ProxySelector.getDefault());
       }
       
+      // ------------------------
+      // OXYGEN PATCH START
+      // Proxy.Type.SOCKS.name() was replaced with SOCKET_URI_SCHEME
+      //-------------------------
       List<Proxy> proxies = ProxySelector.getDefault()
           .select(new URI(SOCKET_URI_SCHEME,
               "//" + remoteAddress.getHostString(), null)); //$NON-NLS-1$
+      // ------------------------
+      // OXYGEN PATCH END
+      //-------------------------
       
       if (logger.isDebugEnabled()) {
         logger.debug("Got SOCKS proxies " + proxies);
-      }
-      
-      if (proxies == null) {
-        proxies = new ArrayList<>();
       }
       
       ProxyData data = getData(proxies, Proxy.Type.SOCKS);
@@ -118,10 +124,6 @@ public class ResolvingProxyDataFactory implements ProxyDataFactory {
           logger.debug("Got HTTP " + proxies);
         }
         
-        if (proxies == null) {
-          proxies = new ArrayList<>();
-        }
-        
         data = getData(proxies, Proxy.Type.HTTP);
       }
       return data;
@@ -130,7 +132,28 @@ public class ResolvingProxyDataFactory implements ProxyDataFactory {
     }
   }
 
+  /**
+   * OXYGEN PATCH 
+   * 
+   * This method is identical with DefaultProxyDataFactory.getData(). All we added is a null guard at the beginning.
+   * 
+   * 
+   * @param proxies
+   * @param type
+   * @return
+   */
   private ProxyData getData(List<Proxy> proxies, Proxy.Type type) {
+    // ------------------------
+    // OXYGEN PATCH START
+    // Make sure we don't pass a null 
+    //-------------------------
+    if (proxies == null) {
+      proxies = Collections.emptyList();
+    }
+    // ------------------------
+    // OXYGEN PATCH END
+    //-------------------------
+    
     Proxy proxy = proxies.stream().filter(p -> type == p.type()).findFirst()
         .orElse(null);
     if (proxy == null) {

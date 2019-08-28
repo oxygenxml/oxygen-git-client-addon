@@ -31,7 +31,7 @@
 		<groupId>xyz</groupId>
 	    <version>1.0.0</version>
 		<scope>system</scope>
-		<systemPath>${project.basedir}/test_lib/org.eclipse.jgit-5.3.1.201904271842-r.jar</systemPath>
+		<systemPath>${project.basedir}/test_lib/org.eclipse.jgit-5.4.2.201908231537-r.jar</systemPath>
 	</dependency>
 	  <dependency>
         <groupId>net.sf.jfcunit</groupId>
@@ -58,9 +58,9 @@
 	        <scope>test</scope>
 	    </dependency>
 		<dependency>
-    		<groupId>org.eclipse.jgit</groupId>
-    		<artifactId>org.eclipse.jgit.ssh.apache</artifactId>
-    		<version>5.4.0.201906121030-r</version>
+		    <groupId>org.eclipse.jgit</groupId>
+		    <artifactId>org.eclipse.jgit.ssh.apache</artifactId>
+		    <version>5.4.2.201908231537-r</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>

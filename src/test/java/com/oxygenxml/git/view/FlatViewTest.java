@@ -675,7 +675,7 @@ public class FlatViewTest extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
-  public void testPullCannotLockRef() throws Exception {
+  public void testAPullCannotLockRef() throws Exception {
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     try {
       final boolean[] showErrorMessageCalled = new boolean[] {false};
