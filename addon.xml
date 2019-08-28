@@ -24,6 +24,12 @@
 		              <p>This add-on contributes a built-in Git client directly into Oxygen in the form of a <b>Git Staging</b> view that includes various actions that perform common Git commands, such as push, pull, change branch, commit, and more. It also includes a built-in tool for comparing and merging changes.</p>
 		          </div>
 		          <div>
+		              <h3>What's new in version 1.5.2</h3>
+		              <ol>
+		                  <li>Updated to JGit version 5.4.2 which comes with various bug fixes: <a href="https://projects.eclipse.org/projects/technology.jgit/releases/5.4.2/review">https://projects.eclipse.org/projects/technology.jgit/releases/5.4.2/review</a></li>
+		              </ol>
+		          </div>
+		          <div>
 		              <h3>What's new in version 1.5.1</h3>
 		              <ol>
 		                  <li>Updated to JGit 5.4.0.</li>
