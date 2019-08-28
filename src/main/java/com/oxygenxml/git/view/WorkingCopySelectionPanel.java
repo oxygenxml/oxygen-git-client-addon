@@ -216,7 +216,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		            logger.debug(e1, e1);
 		          }
 		          JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		              "Could not load the repository");
+		              "Could not load the repository. " + e1.getMessage());
 		        }
 		      } finally {
 		        inhibitRepoUpdate = false;
