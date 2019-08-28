@@ -5,8 +5,9 @@ addons:
     organization: "oxygenxml-github"
     token:
       secure: "${SONAR_CLOUD_TOKEN}"
+dist: trusty
 jdk:
- - openjdk8
+ - oraclejdk8
 matrix:
   fast_finish: true
 install: true
