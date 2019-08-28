@@ -1,6 +1,7 @@
 package com.oxygenxml.git.auth;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.InetAddress;
@@ -222,7 +223,17 @@ public class AuthenticationInterceptor {
 				  // Keep the previously bound hosts, if any.
 				  installedAuthenticator.setBoundHosts(oldInstalledAuth.getBoundHosts());
 				}
-
+				
+				try {
+				  // EXM-43925
+          Class<?> webdavAsyncAuth = Class.forName("ro.sync.net.protocol.http.HttpAsyncAuthenticator");
+          Method setUseDefaultAuth = webdavAsyncAuth.getMethod("setUseDefaultAuthenticator", boolean.class);
+          setUseDefaultAuth.invoke(null, true);
+        } catch (ClassNotFoundException | NoSuchMethodException 
+            | SecurityException | InvocationTargetException e) {
+          // Ignore
+        }
+				
 				Authenticator.setDefault(installedAuthenticator);
 			}
 
