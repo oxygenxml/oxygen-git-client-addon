@@ -3,6 +3,7 @@ package com.oxygenxml.git.view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
@@ -191,5 +192,34 @@ public class FlatViewTestBase extends GitTestBase {
     refreshSupport.call();
     sleep(500);
     flushAWT();
+  }
+  
+  
+  
+  /**
+   * Creates a new file and commits it the repository.
+   * 
+   * @param parentDir parent directory.
+   * @param fileName File name.
+   * @param content Content for the new file.
+   * 
+   * @return The newly created file.
+   * 
+   * @throws Exception If it fails.
+   */
+  protected final File commitNewFile(String parentDir, String fileName, String content) throws Exception {
+    File file = createNewFile(parentDir, fileName, content);
+    gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
+    gitAccess.commit("First version.");
+    
+    return file;
+  }
+  
+  protected final File createNewFile(String parentDir, String fileName, String content) throws IOException, Exception {
+    new File(parentDir).mkdirs();
+    File file = new File(parentDir + "/" + fileName);
+    file.createNewFile();
+    setFileContent(file, content);
+    return file;
   }
 }

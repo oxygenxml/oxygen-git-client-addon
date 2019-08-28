@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -9,18 +8,11 @@ import java.util.Iterator;
 import javax.swing.JButton;
 import javax.swing.JTable;
 
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import com.oxygenxml.git.service.PullResponse;
-import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.GitCommand;
@@ -29,7 +21,6 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
 * Test cases related to the actions performed
@@ -665,95 +656,6 @@ public class FlatViewTest extends FlatViewTestBase {
     sleep(500);
     
     assertTrue(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
-  }
-
-  /**
-   * <p><b>Description:</b> lock fail test.</p>
-   * <p><b>Bug ID:</b> EXM-42867</p>
-   *
-   * @author sorin_carbunaru
-   *
-   * @throws Exception If it fails.
-   */
-  public void testAPullCannotLockRef() throws Exception {
-    PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-    try {
-      final boolean[] showErrorMessageCalled = new boolean[] {false};
-      
-      StandalonePluginWorkspace pluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-      Mockito.doAnswer(new Answer<Void>() {
-        @Override
-        public Void answer(InvocationOnMock invocation) throws Throwable {
-          showErrorMessageCalled[0] = true;
-          return null;
-        }
-      }).when(pluginWorkspaceMock).showErrorMessage(Mockito.anyString());
-      PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspaceMock);
-      
-      String localTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_local_pullCannotLock";
-      String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote_pullCannotLock";
-
-      // Create repositories
-      Repository remoteRepo = createRepository(remoteTestRepository);
-      Repository localRepo = createRepository(localTestRepository);
-      bindLocalToRemote(localRepo , remoteRepo);
-
-      // Create a new file and push it.
-      String fileName = "test.txt";
-      File file = commitNewFile(localTestRepository, fileName, "content");
-      PushResponse push = gitAccess.push("", "");
-      assertEquals("status: OK message null", push.toString());
-
-      // Create lock files
-      String repoDir = gitAccess.getRepository().getDirectory().getAbsolutePath();
-      Ref ref = gitAccess.getRemoteBrachListForCurrentRepo().get(0);
-      File lockFile = new File(repoDir, ref.getName() + ".lock");
-      lockFile.createNewFile();
-      setFileContent(lockFile, gitAccess.getLastLocalCommit().getName());
-
-      // Commit a new version of the file.
-      setFileContent(file, "modified");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
-      gitAccess.commit("modified");
-      gitAccess.push("", "");
-      assertEquals("status: OK message null", push.toString());
-
-      // Pull should throw "Lock failed" error
-      PullResponse pullResponse = gitAccess.pull("", "");
-      assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
-      assertTrue(showErrorMessageCalled[0]);
-      stagingPanel.getPushPullController().execute(Command.PULL);
-      sleep(300);
-      assertEquals("Lock_failed", stagingPanel.getCommitPanel().getStatusLabel().getText());
-    } finally {
-      PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspace);
-    }
-  }
-  
-  /**
-   * Creates a new file and commits it the repository.
-   * 
-   * @param parentDir parent directory.
-   * @param fileName File name.
-   * @param content Content for the new file.
-   * 
-   * @return The newly created file.
-   * 
-   * @throws Exception If it fails.
-   */
-  private File commitNewFile(String parentDir, String fileName, String content) throws Exception {
-    File file = createNewFile(parentDir, fileName, content);
-    gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
-    gitAccess.commit("First version.");
-    
-    return file;
-  }
-  private File createNewFile(String parentDir, String fileName, String content) throws IOException, Exception {
-    new File(parentDir).mkdirs();
-    File file = new File(parentDir + "/" + fileName);
-    file.createNewFile();
-    setFileContent(file, content);
-    return file;
   }
 
   /**
