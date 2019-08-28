@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
+import java.util.concurrent.Future;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -77,8 +78,9 @@ public class FlatView2Test extends FlatViewTestBase {
       PullResponse pullResponse = gitAccess.pull("", "");
       assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
       assertTrue(showErrorMessageCalled[0]);
-      stagingPanel.getPushPullController().execute(Command.PULL);
-      sleep(300);
+      Future<?> execute = stagingPanel.getPushPullController().execute(Command.PULL);
+      execute.get();
+      flushAWT();
       assertEquals("Lock_failed", stagingPanel.getCommitPanel().getStatusLabel().getText());
     } finally {
       PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspace);
