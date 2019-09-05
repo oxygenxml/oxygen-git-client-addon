@@ -147,25 +147,34 @@ public class OptionsManager {
 	 * Save options.
 	 */
 	public void saveOptions() {
-		try {
+	  boolean save = true;
+	  StringWriter optionsWriter = new StringWriter();
+	  
+	  ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+	  try {
+	    Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
 
-			JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			if (OxygenGitPlugin.getInstance() == null) {
-				jaxbMarshaller.marshal(options, getOptionsFile());
-			} else {
-				StringWriter stringWriter = new StringWriter();
-				jaxbMarshaller.marshal(options, stringWriter);
-
-				PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(GIT_PLUGIN_OPTIONS,
-						PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().escapeTextValue(stringWriter.toString()));
-			}
-		} catch (JAXBException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		}
+	    JAXBContext jaxbContext = JAXBContext.newInstance(Options.class);
+	    Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+	    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	    if (OxygenGitPlugin.getInstance() == null) {
+	      jaxbMarshaller.marshal(optionsWriter, getOptionsFile());
+	    } else {
+	      jaxbMarshaller.marshal(optionsWriter, optionsWriter);
+	    }
+	  } catch (JAXBException e) {
+	    save = false;
+	    if (logger.isDebugEnabled()) {
+	      logger.debug(e, e);
+	    }
+	  } finally {
+	    Thread.currentThread().setContextClassLoader(contextClassLoader);
+	  }
+	  
+	  if (save) {
+	    PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(GIT_PLUGIN_OPTIONS,
+	        PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
+	  }
 
 	}
 	
