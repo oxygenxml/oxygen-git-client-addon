@@ -791,7 +791,7 @@ public class GitAccess {
       String password = gitCredentials[0].getPassword();
       if (logger.isDebugEnabled()) {
         logger.debug("Try login with user: " + username 
-            + " and password: " + password);
+            + " and a password that I won't tell you.");
       }
       SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(
           username,

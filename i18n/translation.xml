@@ -7,7 +7,7 @@
     <key value="Push_to">
         <comment>Push to</comment>
         <val lang="en_US">Push to</val>
-        <val lang="de_DE">Push to</val>
+        <val lang="de_DE">Push an</val>
         <val lang="fr_FR">Push to</val>
         <val lang="ja_JP">Push to</val>
         <val lang="nl_NL">Push to</val>
@@ -15,7 +15,7 @@
     <key value="Pull_from">
         <comment>Pull from</comment>
         <val lang="en_US">Pull from</val>
-        <val lang="de_DE">Pull from</val>
+        <val lang="de_DE">Pull von</val>
         <val lang="fr_FR">Pull from</val>
         <val lang="ja_JP">Pull from</val>
         <val lang="nl_NL">Pull from</val>
@@ -271,7 +271,7 @@
     <key value="Commit_ComboBox_Display_Message">
         <comment>The massage displayed on the combo box containing the previouslt commited messages</comment>
         <val lang="en_US">Choose a previously used comment</val>
-        <val lang="de_DE">Wähle eine vorherige Commit-Nachricht</val>
+        <val lang="de_DE">Wählen Sie eine vorherige Commit-Nachricht</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -310,8 +310,8 @@
     </key>
     <key value="Branch_Behind">
         <comment>The massage displayed when you push but your repository is not up to date</comment>
-        <val lang="en_US">Cannot Push. Your current branch is behind</val>
-        <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück</val>
+        <val lang="en_US">Cannot Push. Your current branch is behind. Pull first.</val>
+        <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück. Erstens pullen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -888,15 +888,15 @@
     <key value="Conclude_Merge_Message">
         <comment>The text is displayed you fix all conflicts and there is nothing to commit</comment>
         <val lang="en_US">All conflicts were fixed, but you are still merging. Commit to conclude the merge.</val>
-        <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte committen um den Merge abzuschließen.</val>
+        <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte committen Sie um den Merge abzuschließen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     <key value="Pull_Checkout_Conflict_Message">
         <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
-        <val lang="en_US">Cannot pull. Your local changes to the following files would be overwritten by merge: </val>
-        <val lang="de_DE">Pull nicht möglich. Die folgenden lokalen Änderungen würden bei einem Pull überschrieben werden: </val>
+        <val lang="en_US">Cannot pull. Your uncommitted local changes done to the following files would be overwritten by merge: </val>
+        <val lang="de_DE">Pull nicht möglich. Die folgenden nicht-committeten lokalen Änderungen würden bei einem Pull überschrieben werden: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>

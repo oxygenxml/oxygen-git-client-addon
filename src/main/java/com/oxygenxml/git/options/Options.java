@@ -214,9 +214,9 @@ public class Options {
 	@Override
 	public String toString() {
 		return "Options [repositoryLocations=" + repositoryLocations + ", selectedRepository=" + selectedRepository
-				+ ", userCredentialsList=" + userCredentialsList + ", commitMessages=" + commitMessages
+				+ ", userCredentialsList=" + "CLASSIFIED" + ", commitMessages=" + commitMessages
 				+ ", prjectsTestsForGit=" + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase="
-				+ passphrase + ", resourcesViewMode=" + stagedResViewMode + "]";
+				+ "CLASSIFIED" + ", resourcesViewMode=" + stagedResViewMode + "]";
 	}
 
 }
