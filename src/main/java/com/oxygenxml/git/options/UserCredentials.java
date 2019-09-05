@@ -77,7 +77,7 @@ public class UserCredentials {
 
 	@Override
 	public String toString() {
-		return "UserCredentials [host=" + host + ", username=" + username + ", password=" + password + "]";
+		return "UserCredentials [host=" + host + ", username=" + username + ", password=" + "CLASSIFIED" + "]";
 	}
 
 	@Override
