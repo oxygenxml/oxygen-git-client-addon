@@ -888,22 +888,24 @@ public class GitAccess {
 	  PushResponse response = new PushResponse();
 
 	  RepositoryState repositoryState = git.getRepository().getRepositoryState();
-
 	  if (repositoryState == RepositoryState.MERGING) {
 	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 	    response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
 	    return response;
 	  }
+	  
 	  if (getPullsBehind() > 0) {
 	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 	    response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
 	    return response;
 	  }
+	  
 	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 	  Iterable<PushResult> call = git.push().setCredentialsProvider(
 	      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
-	  Iterator<PushResult> results = call.iterator();
 	  logger.debug("Push Ended");
+	  
+	  Iterator<PushResult> results = call.iterator();
 	  while (results.hasNext()) {
 	    PushResult result = results.next();
 	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
