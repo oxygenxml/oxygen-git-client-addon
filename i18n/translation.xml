@@ -302,7 +302,7 @@
     </key>
     <key value="Push_With_Conflicts">
         <comment>The massage displayed when you push with conflicts</comment>
-        <val lang="en_US">Cannot Push. Please resolve conflicts</val>
+        <val lang="en_US">Cannot push. Please resolve conflicts</val>
         <val lang="de_DE">Push nicht möglich. Bitte Konflikte lösen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -310,7 +310,7 @@
     </key>
     <key value="Branch_Behind">
         <comment>The massage displayed when you push but your repository is not up to date</comment>
-        <val lang="en_US">Cannot Push. Your current branch is behind. Pull first.</val>
+        <val lang="en_US">Cannot push. Your current branch is behind. Pull first.</val>
         <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück. Erstens pullen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -383,7 +383,7 @@
     </key>
     <key value="Pull_With_Conflicts">
         <comment>The massage displayed when you pull while having conflicts</comment>
-        <val lang="en_US">Cannot Pull. Please resolve conflicts</val>
+        <val lang="en_US">Cannot pull. Please resolve conflicts</val>
         <val lang="de_DE">Pull nicht möglich. Bitte Konflikte lösen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -391,7 +391,7 @@
     </key>
     <key value="Pull_Successful_Conflicts">
         <comment>The massage displayed when your pull is successful but has conflicts</comment>
-        <val lang="en_US">Pull Successful with conflicts: </val>
+        <val lang="en_US">Pull successful with conflicts: </val>
         <val lang="de_DE">Beim Pullen sind Konflikte aufgetreten: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
