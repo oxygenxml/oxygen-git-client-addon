@@ -26,7 +26,7 @@
 
 	<dependencies>
 	<!-- Used from tests -->
-	<!--  
+	
 	<dependency>
 		<artifactId>abc</artifactId>
 		<groupId>xyz</groupId>
@@ -34,7 +34,7 @@
 		<scope>system</scope>
 		<systemPath>${project.basedir}/test_lib/org.eclipse.jgit-5.4.2.201908231537-r.jar</systemPath>
 	</dependency>
-	 -->
+	 
 	  <dependency>
         <groupId>net.sf.jfcunit</groupId>
         <artifactId>jfcunit</artifactId>
