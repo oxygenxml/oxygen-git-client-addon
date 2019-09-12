@@ -136,6 +136,9 @@ public class HistoryDialog extends OKCancelDialog {
 
 			// preliminary select the first row in the historyTable
 			historyTable.setRowSelectionInterval(0, 0);
+			
+			// set minimum width for commit message column
+			historyTable.getColumnModel().getColumn(0).setMinWidth(400);
 
 			JScrollPane commitDescriptionScrollPane = new JScrollPane(commitDescriptionPane);
 			JScrollPane fileHierarchyScrollPane = new JScrollPane(new JEditorPane());

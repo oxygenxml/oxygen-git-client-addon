@@ -2020,15 +2020,15 @@ public class GitAccess {
 	 */
 	public Map<String, List<String>> getBranchMap(Repository repository, String branchType) {
 		Map<String, List<String>> branchMap = new LinkedHashMap<>();
-		List<String> branchList = new ArrayList<>();
+		
 		String HEADS = "heads/";
 		String REMOTES = "remotes/";
 		
 		if (branchType.equals(LOCAL)) {
 			List<Ref> localBranchList = getLocalBranchList();
+			List<String> branchList = new ArrayList<>();
 			for (Ref ref : localBranchList) {
 			  // refresh and populate local branch list for each commit
-				branchList.clear();
 				int refIdx = ref.getName().indexOf(HEADS) + HEADS.length();
 				String branchName = ref.getName().substring(refIdx);
 				branchList.add(branchName);
@@ -2036,9 +2036,9 @@ public class GitAccess {
 			}
 		} else if (branchType.equals(REMOTE)) {
 			List<Ref> remoteBranchList = getRemoteBrachListForCurrentRepo();
+			List<String> branchList = new ArrayList<>();
 			for (Ref ref : remoteBranchList) {
 				// refresh and populate remote branch list for each commit
-				branchList.clear();
 				int refIdx = ref.getName().indexOf(REMOTES) + REMOTES.length();
 				String branchName = ref.getName().substring(refIdx);
 				branchList.add(branchName);
