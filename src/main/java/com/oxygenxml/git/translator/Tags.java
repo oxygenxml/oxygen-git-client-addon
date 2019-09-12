@@ -614,4 +614,10 @@ public class Tags {
    * Pull from.
    */
   public static final String PULL_FROM = "Pull_from";
+  
+  /**
+   * Commit History.
+   */
+  public static final String GIT_COMMIT_HISTORY = "Git_Commit_History";
+    
 }

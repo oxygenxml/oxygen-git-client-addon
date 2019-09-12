@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
@@ -21,6 +22,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
@@ -38,6 +40,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.dialog.BranchSelectDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
+import com.oxygenxml.git.view.dialog.HistoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
@@ -83,6 +86,11 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private ToolbarButton pushButton;
 
+	/**
+	 * Button for history
+	 */
+	private ToolbarButton historyButton;
+	
 	/**
 	 * Button for pull
 	 */
@@ -234,14 +242,15 @@ public class ToolbarPanel extends JPanel {
     cloneRepositoryButton.setEnabled(enabled);
     submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
     branchSelectButton.setEnabled(enabled);
+    historyButton.setEnabled(enabled);
     
   }
-  
-  public ToolbarButton getSubmoduleSelectButton() {
-    return submoduleSelectButton;
-  }
 
-  public JButton getPushButton() {
+	public ToolbarButton getSubmoduleSelectButton() {
+		return submoduleSelectButton;
+	}
+
+	public JButton getPushButton() {
 		return pushButton;
 	}
 
@@ -251,6 +260,10 @@ public class ToolbarPanel extends JPanel {
 
 	public JButton getCloneRepositoryButton() {
 		return cloneRepositoryButton;
+	}
+
+	public JButton getHistoryButton() {
+		return historyButton;
 	}
 
 	/**
@@ -282,8 +295,9 @@ public class ToolbarPanel extends JPanel {
 		} else {
 			submoduleSelectButton.setEnabled(false);
 		}
+		addHistoryButton();
 		this.add(gitToolbar, gbc);
-
+				
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
@@ -296,6 +310,7 @@ public class ToolbarPanel extends JPanel {
 
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
+
 
 	private void addCloneRepositoryButton() {
 		Action cloneRepositoryAction = new AbstractAction() {
@@ -318,6 +333,33 @@ public class ToolbarPanel extends JPanel {
 		setCustomWidthOn(cloneRepositoryButton);
 
 		gitToolbar.add(cloneRepositoryButton);
+	}
+	
+	private void addHistoryButton() {
+		Action historyAction = new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					new HistoryDialog();
+				} catch (IOException | GitAPIException e1) {
+					logger.debug(e1, e1);
+				}
+			}
+		};
+
+		historyButton = new ToolbarButton(historyAction, false);
+		URL resource = getClass().getResource(ImageConstants.GIT_HISTORY);
+		if (resource != null) {
+			ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+			historyButton.setIcon(icon);
+		}
+
+		historyButton.setToolTipText(translator.getTranslation(Tags.GIT_COMMIT_HISTORY));
+		setCustomWidthOn(historyButton);
+
+		gitToolbar.add(historyButton);
+
 	}
 
 	/**

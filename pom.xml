@@ -26,6 +26,7 @@
 
 	<dependencies>
 	<!-- Used from tests -->
+	<!--  
 	<dependency>
 		<artifactId>abc</artifactId>
 		<groupId>xyz</groupId>
@@ -33,6 +34,7 @@
 		<scope>system</scope>
 		<systemPath>${project.basedir}/test_lib/org.eclipse.jgit-5.4.2.201908231537-r.jar</systemPath>
 	</dependency>
+	 -->
 	  <dependency>
         <groupId>net.sf.jfcunit</groupId>
         <artifactId>jfcunit</artifactId>
@@ -213,5 +215,40 @@
 					</executions>
 				</plugin>
 			</plugins>
+			<pluginManagement>
+				<plugins>
+					<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+					<plugin>
+						<groupId>org.eclipse.m2e</groupId>
+						<artifactId>lifecycle-mapping</artifactId>
+						<version>1.0.0</version>
+						<configuration>
+							<lifecycleMappingMetadata>
+								<pluginExecutions>
+									<pluginExecution>
+										<pluginExecutionFilter>
+											<groupId>
+												org.apache.maven.plugins
+											</groupId>
+											<artifactId>
+												maven-assembly-plugin
+											</artifactId>
+											<versionRange>
+												[2.4,)
+											</versionRange>
+											<goals>
+												<goal>single</goal>
+											</goals>
+										</pluginExecutionFilter>
+										<action>
+											<ignore></ignore>
+										</action>
+									</pluginExecution>
+								</pluginExecutions>
+							</lifecycleMappingMetadata>
+						</configuration>
+					</plugin>
+				</plugins>
+			</pluginManagement>
 	</build>
 </project>

@@ -163,6 +163,11 @@ public class GitAccessCommitFileContentTest {
 		ObjectLoader open = gitAccess.getRepository().open(commit);
 		String actual = new String(open.getBytes());
 		String expected = "hellllo\n";
+		
+		actual.chars().forEach(value -> {
+			System.out.println("X" + value);
+		});
+		
 		assertEquals(expected, actual);
 	}
 

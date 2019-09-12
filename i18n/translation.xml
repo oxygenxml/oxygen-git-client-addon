@@ -901,4 +901,12 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
+     <key value="Git_Commit_History">
+        <comment>The text is displayed when you open the Git Commit History dialog </comment>
+        <val lang="en_US">Git Commit History </val>
+        <val lang="de_DE">Git Commit Geschichte </val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
 </translation>

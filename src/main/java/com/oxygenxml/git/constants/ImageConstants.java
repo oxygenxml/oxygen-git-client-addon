@@ -30,4 +30,6 @@ public class ImageConstants {
 	public static final String VALIDATION_ERROR = "/images/ValidationError12.png";
 	public static final String WARNING_ICON = "/images/Warning32@2x.png";
 	public static final String LOADING_ICON = "/images/Loading16.gif";
+	// TODO change icon for Git history
+	public static final String GIT_HISTORY = "/images/History16.png";
 }
