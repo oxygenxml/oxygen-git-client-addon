@@ -740,90 +740,107 @@ public class GitAccess {
 		}
 		return branches;
 	}
+	
+	 /**
+   * Gets all the remote branches for the current repository.
+   * 
+   * @return All the remote branches from the repository or an empty list.
+   */
+  public List<Ref> getRemoteBrachListForCurrentRepo() {
+    List<Ref> branches = Collections.emptyList();
+    try {
+      branches = git.branchList().setListMode(ListMode.REMOTE).call();
+    } catch (GitAPIException e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+    return branches;
+  }
+  
+  /**
+   * List the remote branches for the given repository URL.
+   * 
+   * @param urlString         The repository URL.
+   * @param excMessPresenter  Exception message presenter.
+   * 
+   * @return the collection of remote branches or an empty set.
+   */
+  public Collection<Ref> listRemoteBranchesForURL(
+      URIish sourceURL,
+      AuthExceptionMessagePresenter excMessPresenter) {
+    AuthenticationInterceptor.bind(sourceURL.getHost());
+    return doListRemoteBranchesInternal(sourceURL, excMessPresenter);
+  }
 
-	/**
-	 * Gets all the remote branches for the current repository.
-	 * 
-	 * @return All the remote branches from the repository or an empty list.
-	 */
-	public List<Ref> getRemoteBrachListForCurrentRepo() {
-		List<Ref> branches = Collections.emptyList();
-		try {
-			branches = git.branchList().setListMode(ListMode.REMOTE).call();
-		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		}
-		return branches;
-	}
-
-	/**
-	 * List the remote branches for the given repository URL.
-	 * 
-	 * @param urlString        The repository URL.
-	 * @param excMessPresenter Exception message presenter.
-	 * 
-	 * @return the collection of remote branches or an empty set.
-	 */
-	public Collection<Ref> listRemoteBranchesForURL(URIish sourceURL, AuthExceptionMessagePresenter excMessPresenter) {
-		AuthenticationInterceptor.bind(sourceURL.getHost());
-		return doListRemoteBranchesInternal(sourceURL, excMessPresenter);
-	}
-
-	/**
-	 * Do list remote branches internal.
-	 * 
-	 * @param repoURL          The repository URL.
-	 * @param excMessPresenter Exception message presenter.
-	 * 
-	 * @return the remote branches or an empty list.
-	 */
-	private Collection<Ref> doListRemoteBranchesInternal(URIish repoURL, AuthExceptionMessagePresenter excMessPresenter) {
-		Collection<Ref> remoteRefs = Collections.emptySet();
-		String host = repoURL.getHost();
-		boolean shouldStopTryingLogin = false;
-		if (logger.isDebugEnabled()) {
-			logger.debug("START LISTING REMOTE BRANCHES FOR: " + repoURL);
-		}
-		do {
-			final UserCredentials[] gitCredentials = new UserCredentials[] {
-					OptionsManager.getInstance().getGitCredentials(host) };
-			String username = gitCredentials[0].getUsername();
-			String password = gitCredentials[0].getPassword();
-			if (logger.isDebugEnabled()) {
-				logger.debug("Try login with user: " + username + " and password: " + password);
-			}
-			SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(username, password,
-					OptionsManager.getInstance().getSshPassphrase(), host);
-			try {
-				logger.debug("Now do list the remote branches...");
-				remoteRefs = Git.lsRemoteRepository().setHeads(true).setRemote(repoURL.toString())
-						.setCredentialsProvider(credentialsProvider).call();
-				if (logger.isDebugEnabled()) {
-					logger.debug("BRANCHES: " + remoteRefs);
-				}
-				shouldStopTryingLogin = true;
-			} catch (TransportException ex) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(ex, ex);
-				}
-				boolean retryLogin = AuthUtil.handleAuthException(ex, host,
-						new UserCredentials(credentialsProvider.getUsername(), credentialsProvider.getPassword(), host),
-						excMessPresenter, !credentialsProvider.wasResetCalled());
-				if (!retryLogin || credentialsProvider.shouldCancelLogin()) {
-					logger.debug("STOP TRYING TO LOGIN!");
-					shouldStopTryingLogin = true;
-				}
-			} catch (GitAPIException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
-			}
-		} while (!shouldStopTryingLogin);
-
-		return remoteRefs;
-	}
+  /**
+   * Do list remote branches internal.
+   * 
+   * @param repoURL The repository URL.
+   * @param excMessPresenter  Exception message presenter.
+   * 
+   * @return the remote branches or an empty list.
+   */
+  private Collection<Ref> doListRemoteBranchesInternal(
+      URIish repoURL,
+      AuthExceptionMessagePresenter excMessPresenter) {
+    Collection<Ref> remoteRefs = Collections.emptySet();
+    String host = repoURL.getHost();
+    boolean shouldStopTryingLogin = false;
+    if (logger.isDebugEnabled()) {
+      logger.debug("START LISTING REMOTE BRANCHES FOR: " + repoURL);
+    }
+    do {
+      final UserCredentials[] gitCredentials = 
+          new UserCredentials[] {OptionsManager.getInstance().getGitCredentials(host)};
+      String username = gitCredentials[0].getUsername();
+      String password = gitCredentials[0].getPassword();
+      if (logger.isDebugEnabled()) {
+        logger.debug("Try login with user: " + username 
+            + " and a password that I won't tell you.");
+      }
+      SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(
+          username,
+          password,
+          OptionsManager.getInstance().getSshPassphrase(),
+          host);
+      try {
+        logger.debug("Now do list the remote branches...");
+        remoteRefs = Git.lsRemoteRepository()
+            .setHeads(true)
+            .setRemote(repoURL.toString())
+            .setCredentialsProvider(credentialsProvider)
+            .call();
+        if (logger.isDebugEnabled()) {
+          logger.debug("BRANCHES: " + remoteRefs);
+        }
+        shouldStopTryingLogin = true;
+      } catch (TransportException ex) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(ex, ex);
+        }
+        boolean retryLogin = AuthUtil.handleAuthException(
+            ex,
+            host,
+            new UserCredentials(
+                credentialsProvider.getUsername(),
+                credentialsProvider.getPassword(),
+                host),
+            excMessPresenter,
+            !credentialsProvider.wasResetCalled());
+        if (!retryLogin || credentialsProvider.shouldCancelLogin()) {
+          logger.debug("STOP TRYING TO LOGIN!");
+          shouldStopTryingLogin = true;
+        }
+      } catch (GitAPIException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
+      }
+    } while (!shouldStopTryingLogin);
+    
+    return remoteRefs;
+  }
 
 	/**
 	 * Creates a new branch in the repository
@@ -866,40 +883,42 @@ public class GitAccess {
 	 * @throws TransportException
 	 * @throws InvalidRemoteException
 	 */
-	public PushResponse push(final String username, final String password) throws GitAPIException {
+	public PushResponse push(final String username, final String password)
+	    throws GitAPIException {
 
-		AuthenticationInterceptor.install();
-		PushResponse response = new PushResponse();
+	  AuthenticationInterceptor.install();
+	  PushResponse response = new PushResponse();
 
-		RepositoryState repositoryState = git.getRepository().getRepositoryState();
+	  RepositoryState repositoryState = git.getRepository().getRepositoryState();
+	  if (repositoryState == RepositoryState.MERGING) {
+	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	    response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
+	    return response;
+	  }
+	  
+	  if (getPullsBehind() > 0) {
+	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	    response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
+	    return response;
+	  }
+	  
+	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+	  Iterable<PushResult> call = git.push().setCredentialsProvider(
+	      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
+	  logger.debug("Push Ended");
+	  
+	  Iterator<PushResult> results = call.iterator();
+	  while (results.hasNext()) {
+	    PushResult result = results.next();
+	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
+	      response.setStatus(info.getStatus());
+	      return response;
+	    }
+	  }
 
-		if (repositoryState == RepositoryState.MERGING) {
-			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-			response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
-			return response;
-		}
-		if (getPullsBehind() > 0) {
-			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-			response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
-			return response;
-		}
-		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		Iterable<PushResult> call = git.push()
-				.setCredentialsProvider(new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName()))
-				.call();
-		Iterator<PushResult> results = call.iterator();
-		logger.debug("Push Ended");
-		while (results.hasNext()) {
-			PushResult result = results.next();
-			for (RemoteRefUpdate info : result.getRemoteUpdates()) {
-				response.setStatus(info.getStatus());
-				return response;
-			}
-		}
-
-		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-		response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
-		return response;
+	  response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	  response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
+	  return response;
 	}
 
 	/**

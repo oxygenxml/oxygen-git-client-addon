@@ -58,7 +58,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	    if ((item instanceof CredentialItem.StringType || item instanceof CredentialItem.Password)
 	        && item.getPromptText().startsWith("Passphrase")) {
 	      
-	      logger.debug("Passphrase required. Stored passphrase is: '" + passphrase + "'");
+	      logger.debug("Passphrase required.");
 	      
 	      // A not so great method to check that the pass phrase is requested.
 	      passphaseRequested = true;
@@ -66,7 +66,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	      if (passphrase == null || "".equals(passphrase)) {
 	        logger.debug("Ask for new passphrase...");
 	        passphrase = new PassphraseDialog(item.getPromptText()).getPassphrase();
-	        logger.debug("New passphrase is: '" + passphrase + "'");
+	        logger.debug("New passphrase added.");
 	      }
 
 	      if (item instanceof CredentialItem.StringType) {

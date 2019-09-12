@@ -271,7 +271,7 @@ public class PushPullController implements Subject<PushPullEvent> {
         message = translator.getTranslation(Tags.PUSH_SUCCESSFUL);
       } else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage("Push failed, please get your repository up to date(PULL)");
+            .showWarningMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
       } else if (Status.UP_TO_DATE == response.getStatus()) {
         message = translator.getTranslation(Tags.PUSH_UP_TO_DATE);
       } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
