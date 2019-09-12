@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -104,7 +105,8 @@ public class HistoryDialog extends OKCancelDialog {
 			Container contentPane = this.getContentPane();
 			contentPane.setLayout(new BorderLayout());
 
-			JLabel currentRepoLabel = new JLabel(SHOWING_HISTORY_FOR + gitAccess.getRepository().getDirectory().toString());
+			JLabel showCurrentRepoLabel = new JLabel(SHOWING_HISTORY_FOR + gitAccess.getRepository().getDirectory().toString());
+			showCurrentRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
 
 			try {
 				Class tableClass = Class.forName("ro.sync.exml.workspace.api.standalone.ui.Table");
@@ -136,7 +138,7 @@ public class HistoryDialog extends OKCancelDialog {
 
 			// preliminary select the first row in the historyTable
 			historyTable.setRowSelectionInterval(0, 0);
-			
+
 			// set minimum width for commit message column
 			historyTable.getColumnModel().getColumn(0).setMinWidth(400);
 
@@ -152,7 +154,7 @@ public class HistoryDialog extends OKCancelDialog {
 			infoBoxesSplitPane.setDividerLocation(0.5);
 			infoBoxesSplitPane.setOneTouchExpandable(true);
 
-			contentPane.add(currentRepoLabel, BorderLayout.NORTH);
+			contentPane.add(showCurrentRepoLabel, BorderLayout.NORTH);
 
 			JSplitPane centerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tableScrollPane, infoBoxesSplitPane);
 			centerSplitPane.setDividerLocation(0.7);
