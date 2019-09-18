@@ -14,6 +14,10 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Message shown when invoking the diff on an unchanged file.
+   */
+  public static final String NO_CHANGES = "No_changes";
+  /**
    * Message shown when trying to clone from an invalid remote.
    * 
    * en: Submodule_load_fail

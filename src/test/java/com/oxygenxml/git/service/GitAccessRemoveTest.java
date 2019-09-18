@@ -14,7 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
@@ -51,7 +50,7 @@ public class GitAccessRemoveTest {
 		gitAccess.addAll(files);
 		gitAccess.resetAll(files);
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
-		List<FileStatus> expected = new ArrayList<FileStatus>();
+		List<FileStatus> expected = new ArrayList<>();
 		expected.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
 		assertEquals(expected, actual);
 	}
@@ -68,7 +67,7 @@ public class GitAccessRemoveTest {
 		gitAccess.addAll(files);
 		gitAccess.resetAll(files);
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
-		List<FileStatus> expected = new ArrayList<FileStatus>();
+		List<FileStatus> expected = new ArrayList<>();
 		expected.add(new FileStatus(GitChangeType.UNTRACKED, "add.txt"));
 		assertEquals(expected, actual);
 	}
@@ -82,14 +81,14 @@ public class GitAccessRemoveTest {
 		gitAccess.addAll(files);
 		gitAccess.resetAll(files);
 		List<FileStatus> actual = gitAccess.getUnstagedFiles();
-		List<FileStatus> expected = new ArrayList<FileStatus>();
+		List<FileStatus> expected = new ArrayList<>();
 		expected.add(new FileStatus(GitChangeType.MISSING, "test.txt"));
 		assertEquals(expected, actual);
 	}
 
 	@After
 	public void freeResources() {
-		gitAccess.close();
+		gitAccess.closeRepo();
 		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 		try {
 			FileUtils.deleteDirectory(dirToDelete);

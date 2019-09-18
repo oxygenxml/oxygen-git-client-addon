@@ -14,7 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
@@ -84,7 +83,7 @@ public class GItAccessStagedFilesTest {
 	
 	@After
 	public void freeResources() {
-		gitAccess.close();
+		gitAccess.closeRepo();
 		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 		try {
 			FileUtils.deleteDirectory(dirToDelete);

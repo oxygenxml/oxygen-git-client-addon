@@ -1,5 +1,7 @@
 package com.oxygenxml.git.service;
 
+import java.io.File;
+
 import com.oxygenxml.git.view.event.ChangeEvent;
 
 /**
@@ -15,11 +17,26 @@ import com.oxygenxml.git.view.event.ChangeEvent;
  */
 public interface GitEventListener {
   /**
+   * A repository is about to be opened.
+   * 
+   * @param repo The repository.
+   */
+  void repositoryIsAboutToOpen(File repo);
+  
+  /**
    * A new repository was loaded.
    * 
    * @param repository The path of the new repository.
    */
   void repositoryChanged();
+  
+  /**
+   * A repository could not be opened.
+   * 
+   * @param repo The repository.
+   * @param ex   The exception that broke the opening. May be <code>null</code>.
+   */
+  void repositoryOpeningFailed(File repo, Throwable ex);
   
   /**
    * The state of some files changed because of a specific command.

@@ -57,7 +57,7 @@ public class GitCloneTest extends GitTestBase {
       bindLocalToRemote(localRepo, remoteRepo);
 
       GitAccess gitAccess = GitAccess.getInstance();
-      gitAccess.setRepository(localRepoLoc);
+      gitAccess.setRepositorySynchronously(localRepoLoc);
 
       // Push a file in order to create the remote master branch
       localDir.mkdirs();
@@ -123,7 +123,7 @@ public class GitCloneTest extends GitTestBase {
       
     } finally {
       // Free the resources and clean the destination folders
-      GitAccess.getInstance().close();
+      GitAccess.getInstance().closeRepo();
       FileUtils.deleteDirectory(cloneDest);
       FileUtils.deleteDirectory(cloneDest2);
     }
@@ -151,7 +151,7 @@ public class GitCloneTest extends GitTestBase {
     bindLocalToRemote(localRepoP, remoteRepoP);
     
     // Do a commit to bind the repositories together.
-    gitAccess.setRepository(localTestRepositoryP);
+    gitAccess.setRepositorySynchronously(localTestRepositoryP);
     // A setup is performed on the first commit.
     gitAccess.commit("");
     gitAccess.push("", "");
@@ -159,11 +159,11 @@ public class GitCloneTest extends GitTestBase {
     // SUBMODULE repos
     String remoteTestRepositorySubModule = "target/test-resources/GitCloneTest/testCloneSubmodules-remoteCS-SubModule/";
     Repository remoteRepoSubModule = createRepository(remoteTestRepositorySubModule);
-    gitAccess.setRepository(remoteTestRepositorySubModule);
+    gitAccess.setRepositorySynchronously(remoteTestRepositorySubModule);
     gitAccess.commit("Commit");
     
     // Link the submodule in the main repository.
-    gitAccess.setRepository(localTestRepositoryP);
+    gitAccess.setRepositorySynchronously(localTestRepositoryP);
     // Add SUBMODULE
     SubmoduleAddCommand addCommand = gitAccess.submoduleAdd();
     addCommand.setURI(remoteRepoSubModule.getDirectory().toURI().toString());
@@ -171,7 +171,7 @@ public class GitCloneTest extends GitTestBase {
     Repository subRepo = addCommand.call();
     subRepo.close();
     
-    gitAccess.setRepository(localTestRepositoryP);
+    gitAccess.setRepositorySynchronously(localTestRepositoryP);
     gitAccess.commit("Submodule add");
     gitAccess.push("", "");
     

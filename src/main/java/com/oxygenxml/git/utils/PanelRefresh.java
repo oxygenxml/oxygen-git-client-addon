@@ -265,7 +265,7 @@ public class PanelRefresh implements GitRefreshSupport {
 		if (FileHelper.isGitRepository(pathToCheck)) {
 			projectPahtIsGit = true;
 			
-			GitAccess.getInstance().setRepository(pathToCheck);
+			GitAccess.getInstance().setRepositorySynchronously(pathToCheck);
 		}
 		
 		return projectPahtIsGit;

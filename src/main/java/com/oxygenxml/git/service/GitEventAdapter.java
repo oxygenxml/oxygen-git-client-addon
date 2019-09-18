@@ -1,5 +1,7 @@
 package com.oxygenxml.git.service;
 
+import java.io.File;
+
 import com.oxygenxml.git.view.event.ChangeEvent;
 
 /**
@@ -17,6 +19,16 @@ public class GitEventAdapter implements GitEventListener {
   @Override
   public void stateChanged(ChangeEvent changeEvent) {
     // Adapter. Empty implementation.
+  }
+
+  @Override
+  public void repositoryIsAboutToOpen(File repo) {
+    // Auto-generated method stub
+  }
+
+  @Override
+  public void repositoryOpeningFailed(File repo, Throwable ex) {
+    // Auto-generated method stub
   }
 
 }

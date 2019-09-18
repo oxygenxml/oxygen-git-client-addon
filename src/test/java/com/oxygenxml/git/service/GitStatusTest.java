@@ -35,7 +35,7 @@ public class GitStatusTest extends GitTestBase {
     commitOneFile(REMOTE_TEST_REPOSITORY, "remote.txt", "remote");
     
 
-    gitAccess.setRepository(LOCAL_TEST_REPOSITORY);
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     StoredConfig config = gitAccess.getRepository().getConfig();
     RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
     URIish uri = new URIish(remoteRepo.getDirectory().toURI().toURL());
@@ -51,7 +51,7 @@ public class GitStatusTest extends GitTestBase {
     
     config.save();
 
-    gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
     config = gitAccess.getRepository().getConfig();
     remoteConfig = new RemoteConfig(config, "origin");
     uri = new URIish(remoteRepo.getDirectory().toURI().toURL());
@@ -81,7 +81,7 @@ public class GitStatusTest extends GitTestBase {
      * Repo2 commits something in the local repository.
      */
     commitOneFile(SECOND_LOCAL_TEST_REPOSITORY, "test.txt", "hello");
-    gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 
     // Fetch the remote.
     gitAccess.fetch();
@@ -99,7 +99,7 @@ public class GitStatusTest extends GitTestBase {
    * @throws Exception If it fails.
    */
   public void testNoPullsBehind() throws Exception{
-    gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
     
     int actual = gitAccess.getPullsBehind();
     int expected = 0;

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -46,7 +47,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -54,6 +54,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
+import com.jidesoft.utils.SwingWorker;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -207,16 +208,30 @@ public class ChangesPanel extends JPanel {
           try {
             Repository repository = gitAccess.getRepository();
             if (repository != null) {
-              List<FileStatus> files = null;
-              if (forStagedResources) {
-                files = gitAccess.getStagedFiles();
-              } else {
-                files = gitAccess.getUnstagedFiles();
-              }
-
-              ChangesPanel.this.repositoryChanged(files);
-
-              getChangeSelectedButton().setEnabled(true);
+              new SwingWorker<List<FileStatus>, Void>() {
+                @Override
+                protected List<FileStatus> doInBackground() throws Exception {
+                  if (forStagedResources) {
+                    return gitAccess.getStagedFiles();
+                  } else {
+                    return gitAccess.getUnstagedFiles();
+                  }
+                }
+                @Override
+                protected void done() {
+                  List<FileStatus> files = Collections.emptyList();
+                  try {
+                    files = get();
+                  } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.error(e, e);
+                  } catch (ExecutionException e) {
+                    logger.error(e, e);
+                  }
+                  ChangesPanel.this.repositoryChanged(files);
+                  getChangeSelectedButton().setEnabled(true);
+                }
+              }.execute();
             }
           } catch (NoRepositorySelected ex) {
             logger.debug(ex, ex);

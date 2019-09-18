@@ -41,7 +41,7 @@ public class GitAccessPullTest {
 		gitAccess.createNewRepository(REMOTE_TEST_REPOSITPRY);
 		db3 = gitAccess.getRepository();
 
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		file.createNewFile();	
 		StoredConfig config = gitAccess.getRepository().getConfig();
@@ -53,7 +53,7 @@ public class GitAccessPullTest {
 		remoteConfig.update(config);
 		config.save();
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		config = gitAccess.getRepository().getConfig();
 		remoteConfig = new RemoteConfig(config, "origin");
 		uri = new URIish(db3.getDirectory().toURI().toURL());
@@ -69,7 +69,7 @@ public class GitAccessPullTest {
 	public void testPullOK() throws Exception {
 		pushOneFileToRemote();
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		PullResponse response = gitAccess.pull("", "");
 		PullStatus actual = response.getStatus();
@@ -81,7 +81,7 @@ public class GitAccessPullTest {
 	public void testPullUncomitedFiles() throws Exception {
 		pushOneFileToRemote();
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test2.txt");
 		file.createNewFile();
 
@@ -95,7 +95,7 @@ public class GitAccessPullTest {
 	public void testPullConflicts() throws Exception {
 		pushOneFileToRemote();
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();
@@ -123,7 +123,7 @@ public class GitAccessPullTest {
 	  // When an object is collected by the GC, it releases a file lock.
     WindowCache.getInstance().cleanup();
 
-		gitAccess.close();
+		gitAccess.closeRepo();
 		db1.close();
 		db2.close();
 		db3.close();
@@ -145,7 +145,7 @@ public class GitAccessPullTest {
 	 * @throws Exception If it fails.
 	 */
 	protected void pushOneFileToRemote() throws Exception {
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		OptionsManager.getInstance().saveSelectedRepository(LOCAL_TEST_REPOSITPRY);
 
 		PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");

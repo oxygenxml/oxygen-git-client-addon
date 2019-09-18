@@ -49,7 +49,7 @@ public class GitAccessCommitFileContentTest {
 		gitAccess.createNewRepository(REMOTE_TEST_REPOSITPRY);
 		remoteRepo = gitAccess.getRepository();
 
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		file.createNewFile();
 		StoredConfig config = gitAccess.getRepository().getConfig();
@@ -59,7 +59,7 @@ public class GitAccessCommitFileContentTest {
 		remoteConfig.update(config);
 		config.save();
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		config = gitAccess.getRepository().getConfig();
 		remoteConfig = new RemoteConfig(config, "origin");
@@ -77,7 +77,7 @@ public class GitAccessCommitFileContentTest {
 			TransportException, IOException, GitAPIException, NoRepositorySelected, InterruptedException {
 		pushOneFileToRemote("hellllo");
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();
@@ -102,14 +102,14 @@ public class GitAccessCommitFileContentTest {
 
 		pushOneFileToRemote("test 1");
 		
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		gitAccess.pull("", "");
-		gitAccess.close();
+		gitAccess.closeRepo();
 
 		gitAccess = GitAccess.getInstance();
 		pushOneFileToRemote("test 2");
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		PrintWriter out = new PrintWriter(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		out.println("teeeeeest");
@@ -147,7 +147,7 @@ public class GitAccessCommitFileContentTest {
 			TransportException, IOException, GitAPIException, NoRepositorySelected, InterruptedException {
 		pushOneFileToRemote("hellllo");
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();
@@ -168,7 +168,7 @@ public class GitAccessCommitFileContentTest {
 
 	protected void pushOneFileToRemote(String message) throws IOException, RepositoryNotFoundException,
 			FileNotFoundException, InvalidRemoteException, TransportException, GitAPIException, InterruptedException {
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		OptionsManager.getInstance().saveSelectedRepository(LOCAL_TEST_REPOSITPRY);
 
 		PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
@@ -185,7 +185,7 @@ public class GitAccessCommitFileContentTest {
     // When an object is collected by the GC, it releases a file lock.
     WindowCache.getInstance().cleanup();
 
-		gitAccess.close();
+		gitAccess.closeRepo();
 		localRepo1.close();
 		localRepo2.close();
 		remoteRepo.close();

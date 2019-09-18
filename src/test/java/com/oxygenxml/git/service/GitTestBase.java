@@ -345,7 +345,7 @@ public class GitTestBase extends JFCTestCase {
     flushAWT();
     
     // Only one repository is open at a given time.
-    GitAccess.getInstance().close();
+    GitAccess.getInstance().closeRepo();
     
     for (Repository repository : loadedRepos) {
       // Remove the file system resources.
@@ -380,7 +380,7 @@ public class GitTestBase extends JFCTestCase {
    */
   protected final void commitOneFile(String repository, String fileName, String fileContent) throws Exception {
     GitAccess gitAccess = GitAccess.getInstance();
-    gitAccess.setRepository(repository);
+    gitAccess.setRepositorySynchronously(repository);
 
     PrintWriter out = new PrintWriter(repository + "/" + fileName);
     out.println(fileContent);

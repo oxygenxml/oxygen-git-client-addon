@@ -57,7 +57,7 @@ public class GitAccessPushTest {
 	@Test(expected = MissingObjectException.class)
 	public void testRemoteRepositoryHasNoCommitst()
 			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		final StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
 		URIish uri = new URIish(db2.getDirectory().toURI().toURL());
@@ -75,7 +75,7 @@ public class GitAccessPushTest {
 	@Test
 	public void testPushOK()
 			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		final StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
 		URIish uri = new URIish(db2.getDirectory().toURI().toURL());
@@ -96,7 +96,7 @@ public class GitAccessPushTest {
 	@Test
 	public void testAPushRejected()
 			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
 		URIish uri = new URIish(db2.getDirectory().toURI().toURL());
@@ -108,7 +108,7 @@ public class GitAccessPushTest {
 		gitAccess.commit("file test added");
 		gitAccess.push("", "");
 		
-		gitAccess.setRepository(SECOND_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(SECOND_TEST_REPOSITPRY);
 		config = gitAccess.getRepository().getConfig();
 		remoteConfig = new RemoteConfig(config, "origin");
 		uri = new URIish(db2.getDirectory().toURI().toURL());
@@ -127,7 +127,7 @@ public class GitAccessPushTest {
 	
 	@Test
 	public void testNoPushesAhead() throws RepositoryNotFoundException, IOException, URISyntaxException, NoRepositorySelected, InvalidRemoteException, TransportException, GitAPIException{
-		gitAccess.setRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		final StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
 		URIish uri = new URIish(db2.getDirectory().toURI().toURL());
@@ -144,7 +144,7 @@ public class GitAccessPushTest {
 
 	@After
 	public void freeResources() {
-		gitAccess.close();
+		gitAccess.closeRepo();
 		db1.close();
 		db2.close();
 		db3.close();

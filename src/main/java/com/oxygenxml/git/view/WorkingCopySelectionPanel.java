@@ -85,7 +85,57 @@ public class WorkingCopySelectionPanel extends JPanel {
    * Constructor.
    */
 	public WorkingCopySelectionPanel() {
-		createGUI();
+	  createGUI();
+	  gitAccess.addGitListener(new GitEventAdapter() {
+	    @Override
+	    public void repositoryIsAboutToOpen(File repo) {
+	      setWCSelectorsEnabled(false);
+	    }
+	    @Override
+	    public void repositoryChanged() {
+	      setWCSelectorsEnabled(true);
+	    }
+	    private void setWCSelectorsEnabled(boolean isEnabled) {
+        if (workingCopyCombo != null) {
+          workingCopyCombo.setEnabled(isEnabled);
+        }
+        if (browseButton != null) {
+          browseButton.setEnabled(isEnabled);
+        }
+      }
+	    @Override
+	    public void repositoryOpeningFailed(File repo, Throwable ex) {
+	      if (workingCopyCombo != null) {
+	        if (ex instanceof RepositoryNotFoundException) {
+	          // We are here if the selected Repository doesn't exists anymore
+	          OptionsManager.getInstance().removeRepositoryLocation(repo.getAbsolutePath());
+	          if (workingCopyCombo.getItemCount() > 0) {
+	            workingCopyCombo.setSelectedItem(0);
+	          } else {
+	            workingCopyCombo.setSelectedItem(null);
+	            gitAccess.closeRepo();
+	          }
+	          workingCopyCombo.removeItem(repo.getAbsoluteFile());
+
+	          SwingUtilities.invokeLater(new Runnable() {
+	            @Override
+	            public void run() {
+	              PluginWorkspaceProvider.getPluginWorkspace()
+	              .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
+	            }
+	          });
+	        } else if (ex instanceof IOException) {
+	          JOptionPane.showMessageDialog(
+	              (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+	              "Could not load the repository. " + ex.getMessage());
+	        }
+	        workingCopyCombo.setEnabled(true);
+	      }
+	      if (browseButton != null) {
+          browseButton.setEnabled(true);
+        }
+	    }
+	  });
 	}
 
 	public JComboBox<String> getWorkingCopyCombo() {
@@ -170,61 +220,26 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * new working copy is selected this listener will execute
 	 */
 	private void addWorkingCopySelectorListener() {
-		workingCopyCombo.addItemListener(new ItemListener() {
-
-		  @Override
-      public void itemStateChanged(ItemEvent e) {
-		    // Don't do anything if the event was originated by us.
-		    if (!inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
-		      inhibitRepoUpdate = true;
-		      try {
-		        // get and save the selected Option so that at restart the same
-		        // repository will be selected
-		        String path = (String) workingCopyCombo.getSelectedItem();
-		        if (logger.isDebugEnabled()) {
-		          logger.debug("Working copy " + path);
-		        }
-		        
-
-		        try {
-		          gitAccess.setRepository(path);
-		          
-		          OptionsManager.getInstance().saveSelectedRepository(path);
-		        } catch (RepositoryNotFoundException ex) {
-		          if (logger.isDebugEnabled()) {
-		            logger.debug(ex, ex);
-		          }
-		          // We are here if the selected Repository doesn't exists anymore
-		          OptionsManager.getInstance().removeRepositoryLocation(path);
-		          if (workingCopyCombo.getItemCount() > 0) {
-		            workingCopyCombo.setSelectedItem(0);
-		          } else {
-		            workingCopyCombo.setSelectedItem(null);
-		            gitAccess.close();
-		          }
-		          workingCopyCombo.removeItem(path);
-
-		          SwingUtilities.invokeLater(new Runnable() {
-		            @Override
-                public void run() {
-		              PluginWorkspaceProvider.getPluginWorkspace()
-		              .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
-		            }
-		          });
-		        } catch (IOException e1) {
-		          if (logger.isDebugEnabled()) {
-		            logger.debug(e1, e1);
-		          }
-		          JOptionPane.showMessageDialog((Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		              "Could not load the repository. " + e1.getMessage());
-		        }
-		      } finally {
-		        inhibitRepoUpdate = false;
-		      }
-		    }
-		  }
-		});
-
+	  workingCopyCombo.addItemListener(new ItemListener() {
+	    @Override
+	    public void itemStateChanged(ItemEvent e) {
+	      // Don't do anything if the event was originated by us.
+	      if (!inhibitRepoUpdate && e.getStateChange() == ItemEvent.SELECTED) {
+	        inhibitRepoUpdate = true;
+	        try {
+	          // get and save the selected Option so that at restart the same
+	          // repository will be selected
+	          String path = (String) workingCopyCombo.getSelectedItem();
+	          if (logger.isDebugEnabled()) {
+	            logger.debug("Working copy " + path);
+	          }
+	          gitAccess.setRepositoryAsync(path);
+	        } finally {
+	          inhibitRepoUpdate = false;
+	        }
+	      }
+	    }
+	  });
 	}
 
 	/**

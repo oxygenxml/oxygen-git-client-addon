@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="No_changes">
+        <comment>Message shown when invoking the diff on an unchanged file.</comment>
+        <val lang="en_US">No changes.</val>
+        <val lang="de_DE">No changes.</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
     <key value="Push_to">
         <comment>Push to</comment>
         <val lang="en_US">Push to</val>

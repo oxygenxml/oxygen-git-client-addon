@@ -9,27 +9,15 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
-import com.oxygenxml.git.service.PullStatus;
-import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.StageController;
-
-import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
 * Base for the test classes related to the actions performed
@@ -110,6 +98,9 @@ public class FlatViewTestBase extends GitTestBase {
    * @param indexExpected Expected for the staged model.
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
+    flushAWT();
+    sleep(200);
+    
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTable filesTable = unstagedChangesPanel.getFilesTable();
     StagingResourcesTableModel uModel = (StagingResourcesTableModel) filesTable.getModel();
@@ -151,6 +142,9 @@ public class FlatViewTestBase extends GitTestBase {
    * @param indexExpected Expected for the staged model.
    */
   protected void assertTreeModels(String unstagedExpected, String indexExpected) {
+    flushAWT();
+    sleep(200);
+    
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTree filesTable = unstagedChangesPanel.getTreeView();
     StagingResourcesTreeModel uModel = (StagingResourcesTreeModel) filesTable.getModel();

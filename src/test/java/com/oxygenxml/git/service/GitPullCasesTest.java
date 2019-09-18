@@ -2,8 +2,9 @@ package com.oxygenxml.git.service;
 
 import java.io.File;
 
-
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -41,7 +42,7 @@ public class GitPullCasesTest extends GitTestBase {
     // LOCAL 1
     //----------------
     GitAccess instance = GitAccess.getInstance();
-    instance.setRepository(local1Repository);
+    instance.setRepositorySynchronously(local1Repository);
     // Create a file in the remote.
     File remoteParent = new File(local1Repository);
     remoteParent.mkdirs();
@@ -55,7 +56,7 @@ public class GitPullCasesTest extends GitTestBase {
     //----------------
     // LOCAL 2
     //----------------
-    instance.setRepository(local2Repository);
+    instance.setRepositorySynchronously(local2Repository);
     PullResponse pull = instance.pull("", "");
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
@@ -70,13 +71,14 @@ public class GitPullCasesTest extends GitTestBase {
     // LOCAL 1
     //----------------
     
-    instance.setRepository(local1Repository);
+    instance.setRepositorySynchronously(local1Repository);
     setFileContent(local1File, "changed in local 1");
     
     final StringBuilder pullWithConflicts = new StringBuilder();
     final org.eclipse.jgit.api.errors.CheckoutConflictException[] ex = new 
         org.eclipse.jgit.api.errors.CheckoutConflictException[1];
     PushPullController pc = new PushPullController() {
+      @Override
       protected void showPullFailedBecauseofConflict(org.eclipse.jgit.api.errors.CheckoutConflictException e) {
         ex[0] = e;
       };
@@ -142,7 +144,7 @@ public class GitPullCasesTest extends GitTestBase {
     // LOCAL 1
     //----------------
     GitAccess instance = GitAccess.getInstance();
-    instance.setRepository(local1Repository);
+    instance.setRepositorySynchronously(local1Repository);
     // Create a file in the remote.
     File remoteParent = new File(local1Repository);
     remoteParent.mkdirs();
@@ -159,7 +161,7 @@ public class GitPullCasesTest extends GitTestBase {
     //----------------
     // LOCAL 2
     //----------------
-    instance.setRepository(local2Repository);
+    instance.setRepositorySynchronously(local2Repository);
     PullResponse pull = instance.pull("", "");
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
@@ -174,13 +176,14 @@ public class GitPullCasesTest extends GitTestBase {
     // LOCAL 1
     //----------------
     
-    instance.setRepository(local1Repository);
+    instance.setRepositorySynchronously(local1Repository);
     setFileContent(local1File, "changed in local 1");
     
     final StringBuilder pullWithConflicts = new StringBuilder();
     final org.eclipse.jgit.api.errors.CheckoutConflictException[] ex = new 
         org.eclipse.jgit.api.errors.CheckoutConflictException[1];
     PushPullController pc = new PushPullController() {
+      @Override
       protected void showPullFailedBecauseofConflict(org.eclipse.jgit.api.errors.CheckoutConflictException e) {
         ex[0] = e;
       };

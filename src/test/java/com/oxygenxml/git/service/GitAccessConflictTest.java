@@ -51,7 +51,7 @@ public class GitAccessConflictTest extends GitAccessPullTest {
 	public void testResolveUsingTheirs() throws Exception {
 		pushOneFileToRemote();
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();
@@ -87,7 +87,7 @@ public class GitAccessConflictTest extends GitAccessPullTest {
 	public void testRestartMerge() throws Exception {
 		pushOneFileToRemote();
 
-		gitAccess.setRepository(SECOND_LOCAL_TEST_REPOSITORY);
+		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();

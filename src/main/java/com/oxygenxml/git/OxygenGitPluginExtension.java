@@ -1,10 +1,12 @@
 package com.oxygenxml.git;
 
+import java.awt.Cursor;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -18,6 +20,7 @@ import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
@@ -96,6 +99,21 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			      gitRefreshSupport.setPanel(stagingPanel);
 			      
 			      viewInfo.setComponent(stagingPanel);
+			      
+			      GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+			        @Override
+			        public void repositoryIsAboutToOpen(File repo) {
+                viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			        }
+			        @Override
+              public void repositoryChanged() {
+                viewInfo.getComponent().setCursor(Cursor.getDefaultCursor());
+			        }
+			        @Override
+              public void repositoryOpeningFailed(File repo, Throwable ex) {
+                viewInfo.getComponent().setCursor(Cursor.getDefaultCursor());
+			        }
+			      });
 			      
 			      // Start the thread that populates the view.
 			      gitRefreshSupport.call();
@@ -203,7 +221,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 		// EXM-42867: wait for the refresh to execute
 		gitRefreshSupport.shutdown();
 		
-		GitAccess.getInstance().close();
+		GitAccess.getInstance().closeRepo();
 		
 		// Close application.
 		return true;

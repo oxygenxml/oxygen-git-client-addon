@@ -271,7 +271,7 @@ public class DiffPresenterTest extends GitTestBase {
     gitAccess.commit("Commit");
     
     // Set the PARENT repo as the current one, to which we'll add the submodule
-    gitAccess.setRepository(localTestRepositoryP);
+    gitAccess.setRepositorySynchronously(localTestRepositoryP);
     
     // Add SUBMODULE
     SubmoduleAddCommand addCommand = gitAccess.submoduleAdd();

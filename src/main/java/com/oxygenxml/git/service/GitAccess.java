@@ -18,6 +18,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
@@ -167,10 +170,8 @@ public class GitAccess {
 	 */
 	public void clone(URIish url, File directory, final ProgressDialog progressDialog, String branchName)
 			throws GitAPIException {
-		if (git != null) {
-		  AuthenticationInterceptor.unbind(getHostName());
-			git.close();
-		}
+	  closeRepo();
+	  
 		// Intercept all authentication requests.
     String host = url.getHost();
     AuthenticationInterceptor.bind(host);
@@ -252,45 +253,118 @@ public class GitAccess {
 	}
 
 	/**
-	 * Sets the Git repository. The file path must exist.
-	 * 
-	 * @param path A string that specifies the Git repository folder.
+	 * Opens a repository on a thread and then updates the GUI on AWT.
 	 */
-	public void setRepository(String path) throws IOException {
-	  File currentRepo = new File(path + "/.git");
-	  boolean sameOldRepo = git != null && currentRepo.equals(git.getRepository().getDirectory());
+	private final class RepositoryOpener extends SwingWorker<Git, Void> {
 	  
-	  // Change the repository only if it is a different one
-	  if (!sameOldRepo ) {
-	    if (git != null) {
-	      // Stop intercepting authentication requests.
-	      AuthenticationInterceptor.unbind(getHostName());
-	      git.close();
-	    }
-
-	    git = Git.open(currentRepo);
-	    // Start intercepting authentication requests.
-	    AuthenticationInterceptor.bind(getHostName());
-
-	    if (logger.isDebugEnabled()) {
-	      logSshKeyLoadingData(path);
-	    }
-
-	    fireRepositoryChanged();
-	  }
+    private File repo;
+	  
+    public RepositoryOpener(File repo) {
+      this.repo = repo;
+    }
+    
+    @Override
+    protected Git doInBackground() throws Exception {
+      return openRepository(repo);
+    }
+    
+    @Override
+    protected void done() {
+      try {
+        git = get();
+        repositoryOpened();
+      } catch (InterruptedException e) {
+        // Shouldn't happen.
+        fireRepositoryOpenFailed(repo, e);
+        Thread.currentThread().interrupt();
+        logger.error(e, e);
+      } catch (ExecutionException e) {
+        fireRepositoryOpenFailed(repo, e.getCause());
+        logger.debug(e, e);
+      }
+    }
 	}
+	
+	/**
+   * Sets the Git repository asynchronously, on a new thread, and at the end updates the
+   * GUI on AWT. The repository file path must exist.
+   * 
+   * @param path A string that specifies the Git repository folder.
+   */
+  public void setRepositoryAsync(String path) {
+    final File repo = new File(path + "/.git");
+    if (!isCurrentRepo(repo)) {
+      RepositoryOpener repoOpener = new RepositoryOpener(repo);
+      repoOpener.execute();
+    }
+  }
+  
+  /**
+   * Sets the Git repository on the current thread. The repository file path must exist.
+   * 
+   * @param path A string that specifies the Git repository folder.
+   */
+  public void setRepositorySynchronously(String path) throws IOException {
+    final File repo = new File(path + "/.git");
+    if (!isCurrentRepo(repo) ) {
+      git = openRepository(repo);
+      repositoryOpened();
+    }
+  }
+
+  /**
+   * Check if the given repository is the current one.
+   * 
+   * @param repo Repository.
+   * 
+   * @return <code>true</code> if the given repository is the current one.
+   */
+  private boolean isCurrentRepo(final File repo) {
+    return git != null && repo.equals(git.getRepository().getDirectory());
+  }
+
+  /**
+   * Open repo.
+   * 
+   * @param currentRepo The repo to open.
+   * 
+   * @return a {@link org.eclipse.jgit.api.Git} object for the existing git repository.
+   * 
+   * @throws IOException
+   */
+  private Git openRepository(File currentRepo) throws IOException {
+    closeRepo();
+    fireRepositoryIsAboutToOpen(currentRepo);
+    return Git.open(currentRepo);
+  }
+
+  /**
+   * Actions to do after a repository was opened.
+   */
+  private void repositoryOpened() {
+    // Start intercepting authentication requests.
+    AuthenticationInterceptor.bind(getHostName());
+
+    if (logger.isDebugEnabled()) {
+      logSshKeyLoadingData();
+    }
+
+    fireRepositoryChanged();
+  }
 
 	/**
 	 * Log SSH key loading location data.
 	 * 
 	 * @param path The path to the Git repository folder.
 	 */
-  private void logSshKeyLoadingData(String path) {
+  private void logSshKeyLoadingData() {
     // Debug data for the SSH key load location.
     logger.debug("Java env user home: " + System.getProperty("user.home"));
-    logger.debug("Load repository " + path);
     try {
-      FS fs = getRepository().getFS();
+      Repository repository = getRepository();
+      logger.debug("Load repository " + repository.getDirectory());
+      
+      FS fs = repository.getFS();
       if (fs != null) {
         File userHome = fs.userHome();
         logger.debug("User home " + userHome);
@@ -322,6 +396,25 @@ public class GitAccess {
     }
   }
 	
+	/**
+   * Notify the listeners about the fact that a repository is about to be open.
+   */
+  private void fireRepositoryIsAboutToOpen(File repo) {
+    for (GitEventListener gitEventListener : listeners) {
+      gitEventListener.repositoryIsAboutToOpen(repo);
+    }
+  }
+  
+  /**
+   * Notify the listeners about the fact that the opening of a repository has failed.
+   */
+  private void fireRepositoryOpenFailed(File repo, Throwable ex) {
+    for (GitEventListener gitEventListener : listeners) {
+      gitEventListener.repositoryOpeningFailed(repo, ex);
+    }
+  }
+  
+	
   /**
    * Notify the some files changed their state.
    */
@@ -331,13 +424,20 @@ public class GitAccess {
     }
   }
 	
-	public void addGitListener(GitEventListener l) {
-	  listeners.add(l);
-  }
-
   /**
+   * Add a listener that gets notified about file or repository changes.
+   * 
+   * @param listener The listener to add.
+   */
+	public void addGitListener(GitEventListener listener) {
+	  listeners.add(listener);
+  }
+	
+  /**
+	 * Get repository.
 	 * 
-	 * @return the git Repository
+	 * @return the Git repository.
+	 * 
 	 * @throws NoRepositorySelected
 	 */
 	public Repository getRepository() throws NoRepositorySelected {
@@ -711,11 +811,11 @@ public class GitAccess {
   /**
 	 * Frees resources associated with the git instance.
 	 */
-	public void close() {
+	public void closeRepo() {
 		if (git != null) {
+		  AuthenticationInterceptor.unbind(getHostName());
 			git.close();
 		}
-
 	}
 
 	/**

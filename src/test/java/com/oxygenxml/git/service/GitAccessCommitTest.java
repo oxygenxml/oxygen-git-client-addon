@@ -18,8 +18,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
@@ -49,7 +47,7 @@ public class GitAccessCommitTest {
 
 		RevWalk walk = null;
 		TreeWalk treeWalk = null;
-		List<String> actualFileNamesPath = new ArrayList<String>();
+		List<String> actualFileNamesPath = new ArrayList<>();
 		String actualMessage = null;
 		try {
 			Ref head = repository.exactRef(Constants.HEAD);
@@ -72,7 +70,7 @@ public class GitAccessCommitTest {
 		}
 
 		String expectedMessage = "single file added";
-		List<String> expectedFileNamesPath = new ArrayList<String>();
+		List<String> expectedFileNamesPath = new ArrayList<>();
 		expectedFileNamesPath.add("test.txt");
 
 		assertEquals(actualMessage, expectedMessage);
@@ -82,7 +80,7 @@ public class GitAccessCommitTest {
 	@Test
 	public void testMultipleFileCommit() throws NoRepositorySelected {
 		int n = 3;
-		List<FileStatus> files = new ArrayList<FileStatus>();
+		List<FileStatus> files = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
 			File file = new File(LOCAL_TEST_REPOSITPRY + "/test" + i + ".txt");
 			files.add(new FileStatus(GitChangeType.ADD, file.getName()));
@@ -100,7 +98,7 @@ public class GitAccessCommitTest {
 
 		RevWalk walk = null;
 		TreeWalk treeWalk = null;
-		List<String> actualFileNamesPath = new ArrayList<String>();
+		List<String> actualFileNamesPath = new ArrayList<>();
 		String actualMessage = null;
 		try {
 			Ref head = repository.exactRef(Constants.HEAD);
@@ -123,7 +121,7 @@ public class GitAccessCommitTest {
 		}
 
 		String expectedMessage = "multiple files added";
-		List<String> expectedFileNamesPath = new ArrayList<String>();
+		List<String> expectedFileNamesPath = new ArrayList<>();
 		expectedFileNamesPath.add("test0.txt");
 		expectedFileNamesPath.add("test1.txt");
 		expectedFileNamesPath.add("test2.txt");
@@ -134,7 +132,7 @@ public class GitAccessCommitTest {
 
 	@After
 	public void freeResources() {
-		gitAccess.close();
+		gitAccess.closeRepo();
 		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
 		try {
 			FileUtils.deleteDirectory(dirToDelete);

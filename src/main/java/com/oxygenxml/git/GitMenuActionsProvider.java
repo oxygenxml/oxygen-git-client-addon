@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +14,6 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -113,7 +111,7 @@ public class GitMenuActionsProvider {
           try {
             String previousRepository = OptionsManager.getInstance().getSelectedRepository();
             if (!repository.equals(previousRepository)) {
-              GitAccess.getInstance().setRepository(repository);
+              GitAccess.getInstance().setRepositorySynchronously(repository);
             }
             
             List<FileStatus> gitFiles = new ArrayList<>();
@@ -122,12 +120,16 @@ public class GitMenuActionsProvider {
             gitFiles.addAll(status.getStagedFiles());
             
             String selectedFilePath = FileHelper.rewriteSeparator(selectedFiles[0].getAbsolutePath());
-            for (FileStatus fileStatus : gitFiles) {
-              if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-                DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl);
-                diff.showDiff();
-                break;
+            if (!gitFiles.isEmpty()) {
+              for (FileStatus fileStatus : gitFiles) {
+                if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
+                  DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl);
+                  diff.showDiff();
+                  break;
+                }
               }
+            } else {
+              pluginWorkspaceAccess.showInformationMessage(translator.getTranslation(Tags.NO_CHANGES));
             }
           } catch (Exception e1) {
             if (logger.isDebugEnabled()) {
@@ -155,7 +157,7 @@ public class GitMenuActionsProvider {
           try {
             String previousRepository = OptionsManager.getInstance().getSelectedRepository();
             if (!repository.equals(previousRepository)) {
-              GitAccess.getInstance().setRepository(repository);
+              GitAccess.getInstance().setRepositorySynchronously(repository);
             }
             
             stageFiles(repository);
@@ -204,58 +206,9 @@ public class GitMenuActionsProvider {
         // disable the diff action if there are 2 or more files selected or if
         // the files selected is a directory
         shouldEnable = false;
-      } else if (selectedFiles.length == 1) {
-        String repository = getRepositoryForFiles(selectedFiles);
-        if (repository != null) {
-          shouldEnable = isGitDiffEnabledBasedOnSelectedFileStatus(selectedFiles[0], repository);
-        }
       }
     }
     return shouldEnable;
-  }
-
-  /**
-   * Check if "Git diff" is enabled, based on the status of the selected files.
-   * 
-   * @param selectedFile  The selected file.
-   * @param repository    The current repository.
-   * 
-   * @return <code>true</code> if "Git diff" should be enabled.
-   */
-  private boolean isGitDiffEnabledBasedOnSelectedFileStatus(File selectedFile, String repository) {
-    boolean isEnabled = false;
-    try {
-      // Use the repository from the project view
-      String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-      if (!repository.equals(previousRepository)) {
-        GitAccess.getInstance().setRepository(repository);
-      }
-
-      String relativePath = FileHelper.getPath(selectedFile);
-      GitStatus status = GitAccess.getInstance().getStatus(Arrays.asList(relativePath));
-      
-      FileStatus selectedFileStatus = null;
-      List<FileStatus> unstagedFiles = status.getUnstagedFiles();
-      List<FileStatus> stagedFiles = status.getStagedFiles();
-      if (!unstagedFiles.isEmpty()) {
-        selectedFileStatus = unstagedFiles.get(0);
-      } else if (!stagedFiles.isEmpty()) {
-        selectedFileStatus = stagedFiles.get(0);
-      }
-      
-      if (selectedFileStatus != null
-          // Diff is not possible for any of these statuses.
-          && selectedFileStatus.getChangeType() != GitChangeType.ADD
-          && selectedFileStatus.getChangeType() != GitChangeType.UNTRACKED
-          && selectedFileStatus.getChangeType() != GitChangeType.MISSING
-          && selectedFileStatus.getChangeType() != GitChangeType.REMOVED) {
-        isEnabled = true;
-      }
-    } catch (IOException | NoRepositorySelected e) {
-      logger.error(e, e);
-    }
-    
-    return isEnabled;
   }
 
   /**
