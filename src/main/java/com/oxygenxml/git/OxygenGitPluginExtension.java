@@ -97,21 +97,20 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			    if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
 			      stagingPanel = new StagingPanel(gitRefreshSupport, stageController);
 			      gitRefreshSupport.setPanel(stagingPanel);
-			      
 			      viewInfo.setComponent(stagingPanel);
 			      
 			      GitAccess.getInstance().addGitListener(new GitEventAdapter() {
 			        @Override
 			        public void repositoryIsAboutToOpen(File repo) {
-                viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
 			        }
 			        @Override
               public void repositoryChanged() {
-                viewInfo.getComponent().setCursor(Cursor.getDefaultCursor());
+			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
 			        }
 			        @Override
               public void repositoryOpeningFailed(File repo, Throwable ex) {
-                viewInfo.getComponent().setCursor(Cursor.getDefaultCursor());
+			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
 			        }
 			      });
 			      

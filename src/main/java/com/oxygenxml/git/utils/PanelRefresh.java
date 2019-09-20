@@ -90,42 +90,23 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * Refresh task.
 	 */
 	private Runnable refreshRunnable = () -> {
-	  logger.debug("Start update on thread.");
+	  logger.debug("Start refresh on thread.");
 
-	  GitStatus status = GitAccess.getInstance().getStatus();
-	  updateFiles(
-	      stagingPanel.getUnstagedChangesPanel(), 
-	      status.getUnstagedFiles());
-	  updateFiles(
-	      stagingPanel.getStagedChangesPanel(), 
-	      status.getStagedFiles());
-	  updateCounters();
-
-	  logger.debug("End update on thread.");
-	};
-  
-  @Override
-  public void call() {
-	  // Check if the current Oxygen project is a Git repository.
-    boolean isAfterRestart = lastSelectedProject.isEmpty(); 
-	  boolean repoChanged = loadRepositoryFromOxygenProject();
-	  
+	  boolean isAfterRestart = lastSelectedProject.isEmpty(); 
 	  // No point in refreshing if we've just changed the repository.
+	  boolean repoChanged = loadRepositoryFromOxygenProject();
 	  if (!repoChanged || isAfterRestart) {
 	    // Check the current repository.
 	    try {
 	      if (gitAccess.getRepository() != null) {
-	        if (refreshFuture != null && !refreshFuture.isDone()) {
-	          logger.debug("cancel task");
-	          refreshFuture.cancel(true);
-	        }
-	        
-	        if (refreshExecutor.isShutdown()) {
-	          // A shutdown operation was canceled.
-	          refreshExecutor = new ScheduledThreadPoolExecutor(1);
-	        }
-	        
-	        refreshFuture = refreshExecutor.schedule(refreshRunnable, 500, TimeUnit.MILLISECONDS);
+	        GitStatus status = GitAccess.getInstance().getStatus();
+	        updateFiles(
+	            stagingPanel.getUnstagedChangesPanel(), 
+	            status.getUnstagedFiles());
+	        updateFiles(
+	            stagingPanel.getStagedChangesPanel(), 
+	            status.getStagedFiles());
+	        updateCounters();
 	      }
 	    } catch (NoRepositorySelected e) {
 	      if (logger.isDebugEnabled()) {
@@ -133,7 +114,24 @@ public class PanelRefresh implements GitRefreshSupport {
 	      }
 	    }
 	  }
-	}
+
+	  logger.debug("End refresh on thread.");
+	};
+  
+  @Override
+  public void call() {
+    if (refreshFuture != null && !refreshFuture.isDone()) {
+      logger.debug("cancel refresh task");
+      refreshFuture.cancel(true);
+    }
+
+    if (refreshExecutor.isShutdown()) {
+      // A shutdown operation was canceled.
+      refreshExecutor = new ScheduledThreadPoolExecutor(1);
+    }
+
+    refreshFuture = refreshExecutor.schedule(refreshRunnable, 500, TimeUnit.MILLISECONDS);
+  }
 
   /**
    * Checks the current loaded project and:

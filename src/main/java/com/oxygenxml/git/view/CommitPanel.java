@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolTip;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
@@ -323,17 +324,36 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
       enable = true;
     } else {
       try {
-        RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
-        if (repositoryState == RepositoryState.MERGING_RESOLVED
-            && gitAccess.getStagedFiles().isEmpty()
-            && gitAccess.getUnstagedFiles().isEmpty()) {
-          enable = true;
-          commitMessage.setText(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
-        } else if (!gitAccess.getStagedFiles().isEmpty()) {
-          enable = true;
-        } else if (repositoryState == RepositoryState.MERGING
+        final RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
+        if (repositoryState == RepositoryState.MERGING
             && translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE).equals(commitMessage.getText())) {
           commitMessage.setText("");
+        } else {
+          // Possible time consuming operations.
+          new SwingWorker<Void, Void>() {
+            boolean enable = false;
+            String message = null;
+            @Override
+            protected Void doInBackground() throws Exception {
+              if (repositoryState == RepositoryState.MERGING_RESOLVED
+                  && gitAccess.getStagedFiles().isEmpty()
+                  && gitAccess.getUnstagedFiles().isEmpty()) {
+                enable = true;
+                message = translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE);
+              } else if (!gitAccess.getStagedFiles().isEmpty()) {
+                enable = true;
+              }
+              return null;
+            }
+            
+            @Override
+            protected void done() {
+              if (message != null) {
+                commitMessage.setText(message);
+              }
+              commitButton.setEnabled(enable);
+            }
+          };
         }
       } catch (NoRepositorySelected e) {
         // Remains disabled

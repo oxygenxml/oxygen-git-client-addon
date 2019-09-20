@@ -93,7 +93,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 	    }
 	    @Override
 	    public void repositoryChanged() {
-	      setWCSelectorsEnabled(true);
+	      if (!SwingUtilities.isEventDispatchThread()) {
+	        SwingUtilities.invokeLater(() -> setWCSelectorsEnabled(true));
+	      } else {
+	        setWCSelectorsEnabled(true);
+	      }
 	    }
 	    private void setWCSelectorsEnabled(boolean isEnabled) {
         if (workingCopyCombo != null) {
