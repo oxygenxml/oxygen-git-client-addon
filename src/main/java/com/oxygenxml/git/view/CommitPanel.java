@@ -353,7 +353,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
               }
               commitButton.setEnabled(enable);
             }
-          };
+          }.execute();
         }
       } catch (NoRepositorySelected e) {
         // Remains disabled
