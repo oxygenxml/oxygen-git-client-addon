@@ -44,7 +44,7 @@ public class OptionsManager {
   /**
    * The filename in which all the options are saved
    */
-  private static final String PLUGIN_OPTIONS_FILENAME = "Options.xml";
+  private static final String OPTIONS_FILENAME_FOR_TESTS = "Options.xml";
 
   /**
    * Constant for how many commits messages to be saved
@@ -90,11 +90,11 @@ public class OptionsManager {
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         if (OxygenGitPlugin.getInstance() == null) {
           // Running outside Oxygen, for example from tests.
-          File optionsFile = getOptionsFile();
-          if (optionsFile.exists()) {
-            options = (Options) jaxbUnmarshaller.unmarshal(optionsFile);
+          File optionsFileForTests = getOptionsFileForTests();
+          if (optionsFileForTests.exists()) {
+            options = (Options) jaxbUnmarshaller.unmarshal(optionsFileForTests);
           } else {
-            logger.warn("Options file doesn't exist:" + optionsFile.getAbsolutePath());
+            logger.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
           }
         } else {
           // Running in Oxygen's context. Save inside Oxygen's options. 
@@ -129,18 +129,20 @@ public class OptionsManager {
   }
 
   /**
+   * !!! FOR TESTS !!!
+   * 
    * Creates the the options file and returns it
    * 
    * @return the options file
    */
-  private File getOptionsFile() {
+  private File getOptionsFileForTests() {
     File baseDir = null;
     if (OxygenGitPlugin.getInstance() != null) {
       baseDir = OxygenGitPlugin.getInstance().getDescriptor().getBaseDir();
     } else {
       baseDir = new File("");
     }
-    return new File(baseDir, PLUGIN_OPTIONS_FILENAME);
+    return new File(baseDir, OPTIONS_FILENAME_FOR_TESTS);
   }
 
   /**
@@ -158,7 +160,7 @@ public class OptionsManager {
       Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
       jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       if (OxygenGitPlugin.getInstance() == null) {
-        jaxbMarshaller.marshal(options, getOptionsFile());
+        jaxbMarshaller.marshal(options, getOptionsFileForTests());
       } else {
         jaxbMarshaller.marshal(options, optionsWriter);
       }
