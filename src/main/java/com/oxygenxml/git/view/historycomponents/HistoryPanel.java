@@ -127,7 +127,7 @@ public class HistoryPanel extends JPanel {
     GitAccess gitAccess = GitAccess.getInstance();
     try {
       showCurrentRepoLabel.setText(
-          Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + gitAccess.getRepository().getDirectory().toString());
+          Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + gitAccess.getRepository().getDirectory().toString());
       showCurrentRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
       
       historyTable.setDefaultRenderer(CommitCharacteristics.class, new HistoryTableRenderer(gitAccess, gitAccess.getRepository()));

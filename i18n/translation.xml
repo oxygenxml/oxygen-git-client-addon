@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Showing_history_for">
+        <comment>Showing history for:</comment>
+        <val lang="en_US">Showing history for:</val>
+        <val lang="de_DE">Showing history for:</val>
+        <val lang="fr_FR">Showing history for:</val>
+        <val lang="ja_JP">Showing history for:</val>
+        <val lang="nl_NL">Showing history for:</val>
+    </key>
     <key value="Push_to">
         <comment>Push to</comment>
         <val lang="en_US">Push to</val>

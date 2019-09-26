@@ -623,6 +623,6 @@ public class Tags {
   /**
    * Label inside the history view.
    */
-  public static final String SHOWING_HISTORY_FOR = "Showing history for: ";
+  public static final String SHOWING_HISTORY_FOR = "Showing_history_for";
     
 }
