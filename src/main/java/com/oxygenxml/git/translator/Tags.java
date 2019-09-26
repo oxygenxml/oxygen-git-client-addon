@@ -619,5 +619,10 @@ public class Tags {
    * Commit History.
    */
   public static final String GIT_COMMIT_HISTORY = "Git_Commit_History";
+  
+  /**
+   * Label inside the history view.
+   */
+  public static final String SHOWING_HISTORY_FOR = "Showing history for: ";
     
 }

@@ -1,22 +1,25 @@
 package com.oxygenxml.git.view.historycomponents;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+/**
+ * When the user clicks on a revision, it selects that revision in the table.
+ */
 public class HistoryHyperlinkListener implements HyperlinkListener {
 
 	/**
 	 * Table for showing commit history.
 	 */
-	JTable historyTable;
+	private JTable historyTable;
 	
 	/**
 	 * The Vector with CommitCharcteristics.
 	 */
-	Vector<CommitCharacteristics> commitCharacteristicsVector;
+	private List<CommitCharacteristics> commitCharacteristicsVector;
 
 	/**
 	 * Construct HyperlinkListener parent commit id shown in commitDescriptionPane.
@@ -24,7 +27,7 @@ public class HistoryHyperlinkListener implements HyperlinkListener {
 	 * @param historyTable                The historyTable
 	 * @param commitCharacteristicsVector The Vector with commitCharacterstics.
 	 */
-	public HistoryHyperlinkListener(JTable historyTable, Vector<CommitCharacteristics> commitCharacteristicsVector) {
+	public HistoryHyperlinkListener(JTable historyTable, List<CommitCharacteristics> commitCharacteristicsVector) {
 		this.historyTable = historyTable;
 		this.commitCharacteristicsVector = commitCharacteristicsVector;
 	}

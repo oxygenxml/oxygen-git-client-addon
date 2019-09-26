@@ -646,7 +646,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
     
     // ================= Set submodule ====================
-    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport) {
+    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null) {
       @Override
       boolean gitRepoHasSubmodules() {
         return true;

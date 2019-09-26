@@ -23,4 +23,5 @@
     
     <!--The sample view which will present messages from the sample plugin.-->
     <view id="GitStagingView" initialSide="WEST" initialRow="0"/>
+    <view id="GitHistoryView" initialSide="SOUTH" initialRow="0" initialState="hidden"/>
 </plugin>

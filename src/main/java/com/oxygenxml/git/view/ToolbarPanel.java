@@ -9,7 +9,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
@@ -22,7 +21,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
@@ -40,15 +38,16 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.dialog.BranchSelectDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
-import com.oxygenxml.git.view.dialog.HistoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -140,15 +139,17 @@ public class ToolbarPanel extends JPanel {
    * Constructor.
    * @param pushPullController Push/pull controller.
    * @param refreshSupport     The refresh support.
+   * @param historyController History controller.
    */
 	public ToolbarPanel(
 	    PushPullController pushPullController, 
-	    GitRefreshSupport refreshSupport) {
+	    GitRefreshSupport refreshSupport,
+	    HistoryController historyController) {
 	  this.pushPullController = pushPullController;
 	  this.statusInformationLabel = new JLabel();
 	  this.refreshSupport = refreshSupport;
 
-	  createGUI();
+	  createGUI(historyController);
 
 	  GitAccess.getInstance().addGitListener(new GitEventAdapter() {
 	    @Override
@@ -269,8 +270,9 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Sets the panel layout and creates all the buttons with their functionality
 	 * making them visible
+	 * @param historyController History controller.
 	 */
-	public void createGUI() {
+	public void createGUI(HistoryController historyController) {
 		gitToolbar = new JToolBar();
 		gitToolbar.setOpaque(false);
 		gitToolbar.setFloatable(false);
@@ -295,7 +297,7 @@ public class ToolbarPanel extends JPanel {
 		} else {
 			submoduleSelectButton.setEnabled(false);
 		}
-		addHistoryButton();
+		addHistoryButton(historyController);
 		this.add(gitToolbar, gbc);
 				
 		gbc.insets = new Insets(0, 0, 0, 0);
@@ -335,16 +337,14 @@ public class ToolbarPanel extends JPanel {
 		gitToolbar.add(cloneRepositoryButton);
 	}
 	
-	private void addHistoryButton() {
+	/**
+	 * @param historyController History interface.
+	 */
+	private void addHistoryButton(HistoryController historyController) {
 		Action historyAction = new AbstractAction() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					new HistoryDialog();
-				} catch (IOException | GitAPIException e1) {
-					logger.debug(e1, e1);
-				}
+				historyController.showRepositoryHistory();
 			}
 		};
 

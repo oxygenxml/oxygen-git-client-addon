@@ -46,7 +46,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -68,6 +67,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
@@ -179,15 +179,24 @@ public class ChangesPanel extends JPanel {
 	 * <code>true</code> if the contextual menu is showing for the resources in the tree view.
 	 */
 	private boolean isContextMenuShowing = false;
-
+	/**
+	 * History interface.
+	 */
+  private HistoryController historyController;
+  
 	/**
 	 * Constructor.
 	 * 
 	 * @param stageController     Staging controller.
+	 * @param historyController   History interface.
 	 * @param forStagedResources  <code>true</code> if for staged resources.
 	 */
-	public ChangesPanel(StageController stageController, boolean forStagedResources) {
-		this.forStagedResources = forStagedResources;
+	public ChangesPanel(
+	    StageController stageController, 
+	    HistoryController historyController, 
+	    boolean forStagedResources) {
+		this.historyController = historyController;
+    this.forStagedResources = forStagedResources;
 		this.stageController = stageController;
 		
 		tree = createTree();
@@ -662,6 +671,7 @@ public class ChangesPanel extends JPanel {
           }
         },
         stageController,
+        historyController,
         forStagedResources,
         isRepoInMergingState());
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
@@ -1147,6 +1157,7 @@ public class ChangesPanel extends JPanel {
           }
         },
         stageController,
+        historyController,
         forStagedResources,
         isRepoInMergingState());
     

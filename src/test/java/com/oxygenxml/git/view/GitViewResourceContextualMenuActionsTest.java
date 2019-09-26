@@ -47,7 +47,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -93,7 +93,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -139,7 +139,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -184,7 +184,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -237,7 +237,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -292,7 +292,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -347,7 +347,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -393,7 +393,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         false);
@@ -439,7 +439,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         false);
@@ -485,7 +485,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         false);
@@ -530,7 +530,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -576,7 +576,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -622,7 +622,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -667,7 +667,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         false);
@@ -713,7 +713,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         false);
@@ -759,7 +759,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         false);
@@ -804,7 +804,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         false);
@@ -850,7 +850,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         false);
@@ -896,7 +896,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -941,7 +941,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         false);
@@ -992,7 +992,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return Collections.emptyList();
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         // In merging state

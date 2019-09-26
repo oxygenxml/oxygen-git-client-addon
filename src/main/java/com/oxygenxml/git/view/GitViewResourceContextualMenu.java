@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
@@ -19,8 +21,10 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
+import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -56,21 +60,28 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	 * <code>true</code> if the repository is in merging state.
 	 */
 	private boolean isRepoInMergingState;
+	/**
+	 * History interface.
+	 */
+  private HistoryController historyController;
 
   /**
    * Constructor.
    * 
    * @param selResProvider        Provides the resources that will be processed by the menu's actions. 
    * @param stageController       Staging controller.
+   * @param historyController     History interface.
    * @param isStage               <code>true</code> if we create the menu for the staged resources.
 	 * @param isRepoInMergingState  <code>true</code> if the repository is in merging state.
    */
   public GitViewResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
       StageController stageController,
+      HistoryController historyController,
       boolean isStage,
       boolean isRepoInMergingState) {
     this.stageController = stageController;
+    this.historyController = historyController;
     this.isRepoInMergingState = isRepoInMergingState;
     populateMenu(selResProvider, isStage);
   }
@@ -187,6 +198,22 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    this.add(stageUnstageAction);
 	    this.add(resolveConflict);
 	    this.add(discardAction);
+	    
+	    AbstractAction blameAction = new AbstractAction("Blame") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          if (allSelectedResources.size() > 0) {
+            try {
+              BlameManager.getInstance().doBlame(
+                  allSelectedResources.get(0).getFileLocation(), 
+                  historyController);
+            } catch (IOException | GitAPIException e1) {
+              logger.error(e1, e1);
+            }
+          }
+        }
+      };
+      this.add(blameAction);
 
 	    boolean allSelResHaveSameChangeType = true;
 	    boolean selectionContainsConflicts = false;

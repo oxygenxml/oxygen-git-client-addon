@@ -1,6 +1,6 @@
 package com.oxygenxml.git.view.historycomponents;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -31,14 +31,14 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	/**
 	 * The internal representation of the model.
 	 */
-	private Vector<CommitCharacteristics> commitVector;
+	private List<CommitCharacteristics> commitVector;
 
 	/**
 	 * Construct the Table Model with a Vector containing all commitCharacteristics.
 	 * 
 	 * @param commitVector The computed commitVector
 	 */
-	public HistoryCommitTableModel(Vector<CommitCharacteristics> commitVector) {
+	public HistoryCommitTableModel(List<CommitCharacteristics> commitVector) {
 		this.commitVector = commitVector;
 	}
 	
@@ -124,5 +124,9 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 		}		
 		return columnName;	
 	}
+	
+	public List<CommitCharacteristics> getCommitVector() {
+    return commitVector;
+  }
 
 }

@@ -2,7 +2,7 @@ package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTable;
@@ -29,17 +29,17 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	/**
 	 * Table for Commit History.
 	 */
-	JTable historyTable;
+	private JTable historyTable;
 
 	/**
 	 * The CommitDescription EditorPane.
 	 */
-	JEditorPane commitDescriptionPane;
+	private JEditorPane commitDescriptionPane;
 
 	/**
 	 * The Vector with CommitCharcteristics.
 	 */
-	Vector<CommitCharacteristics> commitCharacteristicsVector;
+	private List<CommitCharacteristics> commitCharacteristicsVector;
 
 	/*
 	 * Coalescing for selecting the row in HistoryTable.
@@ -56,7 +56,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * @param commitCharacteristicsVector The commitCharacteristicsVector
 	 */
 	public RowHistoryTableSelectionListener(JTable historyTable, JEditorPane commitDescriptionPane,
-			Vector<CommitCharacteristics> commitCharacteristicsVector) {
+			List<CommitCharacteristics> commitCharacteristicsVector) {
 		this.updateTableTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;

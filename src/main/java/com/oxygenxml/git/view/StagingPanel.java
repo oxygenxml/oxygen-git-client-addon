@@ -40,6 +40,7 @@ import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.event.Subject;
+import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -116,14 +117,16 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
    * 
    * @param refreshSupport   Refresh support.        
    * @param stageController  Staging controller.
+   * @param historyController History related interaction.
    */
   public StagingPanel(
       GitRefreshSupport refreshSupport, 
-      StageController stageController) {
+      StageController stageController, 
+      HistoryController historyController) {
 		this.refreshSupport = refreshSupport;
 		this.stageController = stageController;
 		
-		createGUI();
+		createGUI(historyController);
 	}
 
   /**
@@ -167,18 +170,20 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 	/**
 	 * Create the GUI.
+	 * 
+	 * @param historyController History related interaction.
 	 */
-	public void createGUI() {
+	public void createGUI(HistoryController historyController) {
 		this.setLayout(new GridBagLayout());
 
 		pushPullController = createPushPullController();
 
 		// Creates the panels objects that will be in the staging panel
-		unstagedChangesPanel = new ChangesPanel(stageController, false);
-		stagedChangesPanel = new ChangesPanel(stageController, true);
+		unstagedChangesPanel = new ChangesPanel(stageController, historyController, false);
+		stagedChangesPanel = new ChangesPanel(stageController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel();
 		commitPanel = new CommitPanel();
-		toolbarPanel = new ToolbarPanel(pushPullController, refreshSupport);
+		toolbarPanel = new ToolbarPanel(pushPullController, refreshSupport, historyController);
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);

@@ -117,7 +117,7 @@ public class CommitCharacteristics {
 	 * @param commitId                    The CommitId
 	 * @return the specific element index in the table. Returns <code>-1</code> if no match.
 	 */
-	public static int getCommitTableIndex(Vector<CommitCharacteristics> commitCharacteristicsVector, String commitId) {	
+	public static int getCommitTableIndex(List<CommitCharacteristics> commitCharacteristicsVector, String commitId) {	
 		for (int i = 0 ; i < commitCharacteristicsVector.size(); i++) {
 			if (commitCharacteristicsVector.get(i).getCommitAbbreviatedId().equals(commitId)) {
 				return i;
