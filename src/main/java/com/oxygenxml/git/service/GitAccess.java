@@ -30,7 +30,9 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
+import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.RmCommand;
@@ -102,6 +104,7 @@ import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.PullType;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -408,6 +411,34 @@ public class GitAccess {
   /**
    * Notify the listeners about the fact that the opening of a repository has failed.
    */
+  // TODO: sa sincronizam metodele de fire?
+  
+//  Exception in thread "AWT-EventQueue-0" java.util.ConcurrentModificationException
+//  at java.util.LinkedHashMap$LinkedHashIterator.nextNode(LinkedHashMap.java:719)
+//  at java.util.LinkedHashMap$LinkedKeyIterator.next(LinkedHashMap.java:742)
+//  at com.oxygenxml.git.service.GitAccess.fireRepositoryOpenFailed(GitAccess.java:415)
+//  at com.oxygenxml.git.service.GitAccess.access$3(GitAccess.java:414)
+//  at com.oxygenxml.git.service.GitAccess$RepositoryOpener.done(GitAccess.java:285)
+//  at javax.swing.SwingWorker$5.run(SwingWorker.java:737)
+//  at javax.swing.SwingWorker$DoSubmitAccumulativeRunnable.run(SwingWorker.java:832)
+//  at sun.swing.AccumulativeRunnable.run(AccumulativeRunnable.java:112)
+//  at javax.swing.SwingWorker$DoSubmitAccumulativeRunnable.actionPerformed(SwingWorker.java:842)
+//  at javax.swing.Timer.fireActionPerformed(Timer.java:313)
+//  at javax.swing.Timer$DoPostEvent.run(Timer.java:245)
+//  at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+//  at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:758)
+//  at java.awt.EventQueue.access$500(EventQueue.java:97)
+//  at java.awt.EventQueue$3.run(EventQueue.java:709)
+//  at java.awt.EventQueue$3.run(EventQueue.java:703)
+//  at java.security.AccessController.doPrivileged(Native Method)
+//  at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
+//  at java.awt.EventQueue.dispatchEvent(EventQueue.java:728)
+//  at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:205)
+//  at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+//  at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+//  at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+//  at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+//  at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
   private void fireRepositoryOpenFailed(File repo, Throwable ex) {
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.repositoryOpeningFailed(repo, ex);
@@ -488,57 +519,19 @@ public class GitAccess {
 	public GitStatus getStatus() {
 	  GitStatus gitStatus = null;
 	  if (git != null) {
-	    StatusCommand statusCmd = git.status();
-
 	    try {
-	      Status status = statusCmd.call();
-	      List<FileStatus> unstagedFiles = getUnstagedFiles(status);
-	      List<FileStatus> stagedFiles = getStagedFiles(status);
-
-	      gitStatus = new GitStatus(unstagedFiles, stagedFiles);
+	      Status status = git.status().call();
+	      gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status));
 	    } catch (GitAPIException e) {
 	      if (logger.isDebugEnabled()) {
 	        logger.debug(e, e);
 	      }
 	    }
 	  }
-    
-    return gitStatus != null ? gitStatus : new GitStatus(Collections.emptyList(), Collections.emptyList());
+    return gitStatus != null ? gitStatus 
+        : new GitStatus(Collections.emptyList(),Collections.emptyList());
   }
 	
-	/**
-	 * 
-	 * 
-	 * @param paths A subset of interest.
-	 *  
-   * @return A status of the Working Copy, with the unstaged and staged files.
-   */
-  public GitStatus getStatus(Collection<String> paths) {
-    GitStatus gitStatus = null;
-    if (git != null) {
-      StatusCommand statusCmd = git.status();
-      for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
-        String path = iterator.next();
-
-        statusCmd.addPath(path);
-      }
-
-      try {
-        Status status = statusCmd.call();
-        List<FileStatus> unstagedFiles = getUnstagedFiles(status);
-        List<FileStatus> stagedFiles = getStagedFiles(status);
-
-        gitStatus = new GitStatus(unstagedFiles, stagedFiles);
-      } catch (GitAPIException e) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e, e);
-        }
-      }
-    }
-    
-    return gitStatus != null ? gitStatus : new GitStatus(Collections.emptyList(), Collections.emptyList());
-  }
-
 	 /**
    * Makes a diff between the files from the last commit and the files from the
    * working directory. If there are diffs, they will be saved and returned.
@@ -1018,6 +1011,24 @@ public class GitAccess {
 	  response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 	  return response;
 	}
+	
+	 /**
+   * Pulls the files that are not on the local repository from the remote
+   * repository
+   * 
+   * @param username Git username
+   * @param password Git password
+   * @param pullType One of ff, no-ff, ff-only, rebase.
+   * 
+   * @return The result, if successful.
+   *  
+   * @throws CheckoutConflictException There is a conflict between the local repository and the remote one.
+   *  The same file that is in conflict is changed inside the working copy so operation is aborted.
+   * @throws GitAPIException other errors.
+   */
+  public PullResponse pull(String username, String password) throws GitAPIException {
+    return pull(username, password, PullType.MERGE_FF);
+  }
 
 	/**
 	 * Pulls the files that are not on the local repository from the remote
@@ -1025,6 +1036,7 @@ public class GitAccess {
 	 * 
 	 * @param username Git username
 	 * @param password Git password
+	 * @param pullType One of ff, no-ff, ff-only, rebase.
 	 * 
 	 * @return The result, if successful.
 	 *  
@@ -1032,7 +1044,7 @@ public class GitAccess {
 	 *  The same file that is in conflict is changed inside the working copy so operation is aborted.
 	 * @throws GitAPIException other errors.
 	 */
-	public PullResponse pull(String username, String password) throws GitAPIException {
+  public PullResponse pull(String username, String password, PullType pullType) throws GitAPIException {
 	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<String>());
 	  AuthenticationInterceptor.install();
 
@@ -1047,7 +1059,10 @@ public class GitAccess {
 		  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 		  SSHCapableUserCredentialsProvider credentialsProvider = 
 		      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName());
-      PullResult pullCommandResult = git.pull().setCredentialsProvider(credentialsProvider).call();
+      PullCommand pullCmd = git.pull()
+          .setRebase(PullType.REBASE == pullType)
+          .setCredentialsProvider(credentialsProvider);
+      PullResult pullCommandResult = pullCmd.call();
 
 		  // Get fetch result
 		  Collection<TrackingRefUpdate> trackingRefUpdates = pullCommandResult.getFetchResult().getTrackingRefUpdates();
@@ -1063,8 +1078,17 @@ public class GitAccess {
 		      refreshProject(repository, oldHead, head);
 		    }
 
-		    // Treat merge result
-		    treatMergeResult(pullResponseToReturn, pullCommandResult.getMergeResult());
+		    RebaseResult rebaseResult = pullCommandResult.getRebaseResult();
+		    if (rebaseResult != null) {
+		      Collection<TrackingRefUpdate> trackingRefUpdates2 = pullCommandResult.getFetchResult().getTrackingRefUpdates();
+		      for (TrackingRefUpdate trackingRefUpdate : trackingRefUpdates2) {
+            System.err.println(trackingRefUpdate.getResult());
+          }
+          System.err.println("TRACKING REFS: " + trackingRefUpdates2);
+		      treatRebaseResult(pullResponseToReturn, rebaseResult);
+		    } else { 
+		      treatMergeResult(pullResponseToReturn, pullCommandResult.getMergeResult());
+		    }
 		  }
 		}
 		
@@ -1072,7 +1096,37 @@ public class GitAccess {
 
 	}
 
-	/**
+  /**
+   * Treat rebase result.
+   * 
+   * @param pullResponseToReturn The pull response to alter.
+   * @param rebaseResult         The result of the rebase operation.
+   * 
+   * @throws CheckoutConflictException when the command can't succeed because of unresolved conflicts.
+   */
+  private void treatRebaseResult(PullResponse pullResponseToReturn, RebaseResult rebaseResult) throws CheckoutConflictException {
+    RebaseResult.Status status = rebaseResult.getStatus();
+    if (logger.isDebugEnabled()) {
+      logger.debug("Rebase result status: " + status);
+    }
+    if (status == RebaseResult.Status.UP_TO_DATE) {
+      pullResponseToReturn.setStatus(PullStatus.UP_TO_DATE);
+    } else if (status == RebaseResult.Status.CONFLICTS) {
+      // Local changes would be overwritten by the pull 
+      if (logger.isDebugEnabled()) {
+        logRebaseFailure(rebaseResult);
+      }
+      throw new CheckoutConflictException(
+          new ArrayList<>(rebaseResult.getConflicts()),
+          new org.eclipse.jgit.errors.CheckoutConflictException(""));
+    } else if (status == RebaseResult.Status.STOPPED) {
+      // Trying to pull generated a real conflict
+      pullResponseToReturn.setConflictingFiles(new HashSet<>(getConflictingFiles()));
+      pullResponseToReturn.setStatus(PullStatus.CONFLICTS);
+    }
+  }
+
+  /**
 	 * Resolve HEAD.
 	 * 
 	 * @param repository The repo.
@@ -1097,7 +1151,7 @@ public class GitAccess {
 	 * @param pullResponse   Pull response.
 	 * @param mergeResult    Merge result.
 	 * 
-	 * @throws CheckoutConflictException when a command can't succeed because of unresolvedconflicts.
+	 * @throws CheckoutConflictException when the command can't succeed because of unresolved conflicts.
 	 */
   private void treatMergeResult(PullResponse pullResponse, MergeResult mergeResult) throws CheckoutConflictException {
     if (mergeResult != null) {
@@ -1105,9 +1159,12 @@ public class GitAccess {
         logger.debug("Merge result " + mergeResult);
         logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
       }
-
+System.err.println("MR: " +  mergeResult.getMergeStatus());
+System.err.println(mergeResult.getConflicts());
       if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
-        logMergeFailure(mergeResult);
+        if (logger.isDebugEnabled()) {
+          logMergeFailure(mergeResult);
+        }
         throw new CheckoutConflictException(
             new ArrayList<>(mergeResult.getFailingPaths().keySet()), 
             new org.eclipse.jgit.errors.CheckoutConflictException(""));
@@ -1130,14 +1187,29 @@ public class GitAccess {
    * @param mergeResult The merge result.
    */
   private void logMergeFailure(MergeResult mergeResult) {
-    if (logger.isDebugEnabled()) {
-      Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
-      if (failingPaths != null) {
-        Set<String> keySet = failingPaths.keySet();
-        for (String string : keySet) {
-          logger.debug("path " + string);
-          logger.debug("reason " + failingPaths.get(string));
-        }
+    logFailingPaths(mergeResult.getFailingPaths());
+  }
+  
+  /**
+   * Log rebase failure.
+   * 
+   * @param rebaseResult The rebase result.
+   */
+  private void logRebaseFailure(RebaseResult rebaseResult) {
+    logFailingPaths(rebaseResult.getFailingPaths());
+  }
+
+  /**
+   * Log failing paths.
+   * 
+   * @param failingPaths Failing paths.
+   */
+  private void logFailingPaths(Map<String, MergeFailureReason> failingPaths) {
+    if (failingPaths != null) {
+      Set<String> keySet = failingPaths.keySet();
+      for (String string : keySet) {
+        logger.debug("path " + string);
+        logger.debug("reason " + failingPaths.get(string));
       }
     }
   }
@@ -1393,26 +1465,19 @@ public class GitAccess {
 	/**
 	 * Gets the conflicting file from the git status
 	 * 
-	 * @return the conflicting files list
+	 * @return the conflicting files list. Never <code>null</code>.
 	 */
-	public List<FileStatus> getConflictingFiles() {
+	public Set<String> getConflictingFiles() {
 		if (git != null) {
 			try {
-				Status status = git.status().call();
-				List<FileStatus> stagedFiles = new ArrayList<>();
-				for (String fileName : status.getConflicting()) {
-					stagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
-				}
-
-				return stagedFiles;
+				return git.status().call().getConflicting();
 			} catch (GitAPIException e) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e, e);
 				}
 			}
 		}
-
-		return new ArrayList<>();
+		return Collections.emptySet();
 	}
 
 	/**

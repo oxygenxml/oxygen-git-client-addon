@@ -14,7 +14,6 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
-import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.GitCommand;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -642,7 +641,7 @@ public class FlatViewTest extends FlatViewTestBase {
    */
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
     // ================= No submodules ====================
-    stagingPanel.getPushPullController().execute(Command.PULL);
+    stagingPanel.getPushPullController().pull();
     sleep(500);
     
     assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
@@ -654,7 +653,7 @@ public class FlatViewTest extends FlatViewTestBase {
         return true;
       }
     });
-    stagingPanel.getPushPullController().execute(Command.PULL);
+    stagingPanel.getPushPullController().pull();
     sleep(500);
     
     assertTrue(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());

@@ -108,6 +108,7 @@ public class GitTestBase extends JFCTestCase {
     RefSpec spec = new RefSpec("+refs/heads/*:refs/remotes/origin/*");
     remoteConfig.addFetchRefSpec(spec);
     remoteConfig.update(config);
+    config.setString("core", null, "autocrlf", "false");
     config.save();
     
     remoteRepos.add(remoteRepo);

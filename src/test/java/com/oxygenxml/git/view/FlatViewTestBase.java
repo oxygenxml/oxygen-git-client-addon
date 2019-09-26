@@ -15,7 +15,6 @@ import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.StageController;
 
@@ -55,7 +54,7 @@ public class FlatViewTestBase extends GitTestBase {
       public PushPullController createPushPullController() {
         return new PushPullController() {
           @Override
-          protected void showPullConflicts(PullResponse response) {
+          protected void showPullSuccessfulWithConflicts(PullResponse response) {
             // Nothing to do.
           }
         };
@@ -88,7 +87,7 @@ public class FlatViewTestBase extends GitTestBase {
    */
   protected void pull() throws Exception {
     // Execute pull command and wait for it to finish.
-    stagingPanel.getPushPullController().execute(Command.PULL).get();
+    stagingPanel.getPushPullController().pull().get();
   }
   
   /**

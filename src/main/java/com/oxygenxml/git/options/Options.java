@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+import com.oxygenxml.git.view.event.PullType;
 
 /**
  * Entity for the JAXB to store the plugin options
@@ -51,8 +52,14 @@ public class Options {
 	 */
 	@XmlElement(name = "commitMessages")
 	private CommitMessages commitMessages = new CommitMessages();
-
+	
 	/**
+	 * The default pull type: with merge or rebase.
+	 */
+	@XmlElement(name = "defaultPullType")
+	private PullType defaultPullType = PullType.MERGE_FF;
+
+  /**
 	 * Wrapper for a list of project.xpr that were tested if they want to be a git
 	 * repository
 	 */
@@ -82,6 +89,14 @@ public class Options {
    */
 	@XmlElement(name = "unstagedResViewMode")
   private ResourcesViewMode unstagedResViewMode = ResourcesViewMode.FLAT_VIEW;
+  
+  public PullType getDefaultPullType() {
+    return defaultPullType;
+  }
+
+  public void setDefaultPullType(PullType defaultPullType) {
+    this.defaultPullType = defaultPullType;
+  }
   
   public ResourcesViewMode getUnstagedResViewMode() {
     return unstagedResViewMode;
@@ -206,7 +221,8 @@ public class Options {
 	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
 	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())
-	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode);
+	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode)
+	        && Equaler.verifyEquals(defaultPullType, opt.defaultPullType);
 	  }
 	  return toReturn;
 	}
@@ -216,7 +232,8 @@ public class Options {
 		return "Options [repositoryLocations=" + repositoryLocations + ", selectedRepository=" + selectedRepository
 				+ ", userCredentialsList=" + "CLASSIFIED" + ", commitMessages=" + commitMessages
 				+ ", prjectsTestsForGit=" + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase="
-				+ "CLASSIFIED" + ", resourcesViewMode=" + stagedResViewMode + "]";
+				+ "CLASSIFIED" + ", resourcesViewMode=" + stagedResViewMode
+				+ ", defaultPullType=" + defaultPullType + "]";
 	}
 
 }

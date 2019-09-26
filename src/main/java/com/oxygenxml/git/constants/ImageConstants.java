@@ -1,12 +1,11 @@
 package com.oxygenxml.git.constants;
 
 /**
- * All image locations that are used in this plugin
- * 
- * @author Beniamin Savu 
- *
+ * Image utility class.
  */
 public class ImageConstants {
+  
+  // TODO: create and use getIcon() everywhere
   
   private ImageConstants() {
     // Nothing.

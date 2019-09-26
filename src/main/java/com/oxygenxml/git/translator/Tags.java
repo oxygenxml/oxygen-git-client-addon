@@ -569,10 +569,9 @@ public class Tags {
 	public static final String CONCLUDE_MERGE_MESSAGE = "Conclude_Merge_Message";
 
 	/**
-	 * The text is displayed when you pull but it fails because the files that are
-	 * modified might become in conflict
+	 * The text is displayed when you pull but it fails because there are uncommitted changes.
 	 */
-	public static final String PULL_CHECKOUT_CONFLICT_MESSAGE = "Pull_Checkout_Conflict_Message";
+	public static final String PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES = "Pull_would_overwrite_uncommitted_changes";
 	
 	/**
 	 * Lock failed when pulling.
@@ -618,4 +617,34 @@ public class Tags {
    * Pull from.
    */
   public static final String PULL_FROM = "Pull_from";
+  
+  /**
+   * Pull rebase.
+   */
+  public static final String PULL_REBASE = "Pull_rebase";
+  
+  /**
+   * Pull rebase from {0}.
+   */
+  public static final String PULL_REBASE_FROM = "Pull_rebase_from";
+  
+  /**
+   * Pull merge.
+   */
+  public static final String PULL_MERGE = "Pull_merge";
+  
+  /**
+   * Pull merge.
+   */
+  public static final String PULL_MERGE_FROM = "Pull_merge_from";
+  
+  /**
+   * Pull failed.
+   */
+  public static final String PULL_FAILED = "Pull_failed";
+  
+  /**
+   * Push failed.
+   */
+  public static final String PUSH_FAILED = "Push_failed";
 }

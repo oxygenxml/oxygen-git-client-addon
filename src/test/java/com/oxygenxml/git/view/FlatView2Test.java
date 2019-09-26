@@ -14,7 +14,6 @@ import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.event.Command;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -78,7 +77,7 @@ public class FlatView2Test extends FlatViewTestBase {
       PullResponse pullResponse = gitAccess.pull("", "");
       assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
       assertTrue(showErrorMessageCalled[0]);
-      Future<?> execute = stagingPanel.getPushPullController().execute(Command.PULL);
+      Future<?> execute = stagingPanel.getPushPullController().pull();
       execute.get();
       flushAWT();
       assertEquals("Lock_failed", stagingPanel.getCommitPanel().getStatusLabel().getText());

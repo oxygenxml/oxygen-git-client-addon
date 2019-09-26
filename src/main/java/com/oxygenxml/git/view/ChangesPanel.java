@@ -640,17 +640,20 @@ public class ChangesPanel extends JPanel {
 	}
 	
 	/**
-   * Check if the repository is in merging state.
+   * Check if the repository is merging or rebasing.
    * 
-   * @return <code>true</code> if the repository is in merging state.
+   * @return <code>true</code> if the repository merging or rebasing.
    */
-	private boolean isRepoInMergingState() {
+	private boolean isRepoMergingOrRebasing() {
 	  boolean toReturn = false;
 	  Repository repo = getCurrentRepository();
 	  if (repo != null) {
 	    RepositoryState repositoryState = repo.getRepositoryState();
-	    toReturn = repositoryState == RepositoryState.MERGING_RESOLVED
-	        || repositoryState == RepositoryState.MERGING;
+	    toReturn = repositoryState == RepositoryState.MERGING
+	        || repositoryState == RepositoryState.MERGING_RESOLVED
+	        || repositoryState == RepositoryState.REBASING
+	        || repositoryState == RepositoryState.REBASING_MERGE
+	        || repositoryState == RepositoryState.REBASING_REBASING;
 	  }
 	  return toReturn;
 	}
@@ -678,7 +681,7 @@ public class ChangesPanel extends JPanel {
         },
         stageController,
         forStagedResources,
-        isRepoInMergingState());
+        isRepoMergingOrRebasing());
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -1163,7 +1166,7 @@ public class ChangesPanel extends JPanel {
         },
         stageController,
         forStagedResources,
-        isRepoInMergingState());
+        isRepoMergingOrRebasing());
     
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override

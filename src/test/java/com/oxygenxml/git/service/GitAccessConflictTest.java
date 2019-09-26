@@ -19,7 +19,6 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -77,7 +76,7 @@ public class GitAccessConflictTest extends GitAccessPullTest {
     assertEquals(RepositoryState.MERGING_RESOLVED, gitAccess.getRepository().getRepositoryState());
 
     PushPullController ppc = new PushPullController();
-    ppc.execute(Command.PULL);
+    ppc.pull();
     Thread.sleep(1200);
 
     assertEquals("Conclude_Merge_Message", shownWarningMess[0]);

@@ -37,6 +37,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -335,12 +336,13 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
             String message = null;
             @Override
             protected Void doInBackground() throws Exception {
+              GitStatus status = gitAccess.getStatus();
               if (repositoryState == RepositoryState.MERGING_RESOLVED
-                  && gitAccess.getStagedFiles().isEmpty()
-                  && gitAccess.getUnstagedFiles().isEmpty()) {
+                  && status.getStagedFiles().isEmpty()
+                  && status.getUnstagedFiles().isEmpty()) {
                 enable = true;
                 message = translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE);
-              } else if (!gitAccess.getStagedFiles().isEmpty()) {
+              } else if (!status.getStagedFiles().isEmpty()) {
                 enable = true;
               }
               return null;

@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -9,14 +8,19 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
+import java.text.MessageFormat;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
@@ -41,11 +45,12 @@ import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
-import com.oxygenxml.git.view.event.Command;
+import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
+import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -56,6 +61,40 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  *
  */
 public class ToolbarPanel extends JPanel {
+  
+  /**
+   * Pull action.
+   */
+  private final class PullAction extends AbstractAction {
+    
+    private static final String PULL_TYPE_ACTION_PROP = "pullType";
+    
+    private PullType pullType;
+
+    public PullAction(String name, PullType pullType) {
+      super(name);
+      this.pullType = pullType;
+      putValue(PULL_TYPE_ACTION_PROP, pullType);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      try {
+        if (GitAccess.getInstance().getRepository() != null) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Pull action invoked");
+          }
+          pushPullController.pull(pullType);
+          pullsBehind = 0;
+          OptionsManager.getInstance().saveDefaultPullType(pullType);
+        }
+      } catch (NoRepositorySelected e1) {
+        if(logger.isDebugEnabled()) {
+          logger.debug(e1, e1);
+        }
+      }
+    }
+  }
 
 	/**
 	 * Logger for logging.
@@ -71,7 +110,7 @@ public class ToolbarPanel extends JPanel {
 	 * Status presenting on which branch the user is and whether the repository is
 	 * up to date or not
 	 */
-	private JLabel statusInformationLabel;
+	private JLabel remoteAndBranchInfoLabel;
 
 	/**
 	 * Used to execute the push and pull commands
@@ -84,9 +123,9 @@ public class ToolbarPanel extends JPanel {
 	private ToolbarButton pushButton;
 
 	/**
-	 * Button for pull
+	 * Button with menu for pull (with merge or rebase).
 	 */
-	private ToolbarButton pullButton;
+	private SplitMenuButton pullMenuButton;
 
 	/**
 	 * Button for selecting the submodules
@@ -137,7 +176,7 @@ public class ToolbarPanel extends JPanel {
 	    PushPullController pushPullController, 
 	    GitRefreshSupport refreshSupport) {
 	  this.pushPullController = pushPullController;
-	  this.statusInformationLabel = new JLabel();
+	  this.remoteAndBranchInfoLabel = new JLabel();
 	  this.refreshSupport = refreshSupport;
 
 	  createGUI();
@@ -230,7 +269,7 @@ public class ToolbarPanel extends JPanel {
    */
   public void updateButtonState(boolean enabled) {
     pushButton.setEnabled(enabled);
-    pullButton.setEnabled(enabled);
+    pullMenuButton.setEnabled(enabled);
     cloneRepositoryButton.setEnabled(enabled);
     submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
     branchSelectButton.setEnabled(enabled);
@@ -240,18 +279,6 @@ public class ToolbarPanel extends JPanel {
   public ToolbarButton getSubmoduleSelectButton() {
     return submoduleSelectButton;
   }
-
-  public JButton getPushButton() {
-		return pushButton;
-	}
-
-	public JButton getPullButton() {
-		return pullButton;
-	}
-
-	public JButton getCloneRepositoryButton() {
-		return cloneRepositoryButton;
-	}
 
 	/**
 	 * Sets the panel layout and creates all the buttons with their functionality
@@ -273,6 +300,7 @@ public class ToolbarPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
+		
 		addCloneRepositoryButton();
 		addPushAndPullButtons();
 		addBranchSelectButton();
@@ -292,7 +320,7 @@ public class ToolbarPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		updateStatus();
-		this.add(statusInformationLabel, gbc);
+		this.add(remoteAndBranchInfoLabel, gbc);
 
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
@@ -315,7 +343,7 @@ public class ToolbarPanel extends JPanel {
 		  cloneRepositoryButton.setIcon(icon);
 		}
 		cloneRepositoryButton.setToolTipText(translator.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
-		setCustomWidthOn(cloneRepositoryButton);
+		setDefaultToolbarButtonWidth(cloneRepositoryButton);
 
 		gitToolbar.add(cloneRepositoryButton);
 	}
@@ -347,7 +375,7 @@ public class ToolbarPanel extends JPanel {
 		  submoduleSelectButton.setIcon(icon);
 		}
 		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
-		setCustomWidthOn(submoduleSelectButton);
+		setDefaultToolbarButtonWidth(submoduleSelectButton);
 
 		gitToolbar.add(submoduleSelectButton);
 	}
@@ -380,7 +408,7 @@ public class ToolbarPanel extends JPanel {
 		  branchSelectButton.setIcon(icon);
 		}
 		branchSelectButton.setToolTipText(translator.getTranslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
-		setCustomWidthOn(branchSelectButton);
+		setDefaultToolbarButtonWidth(branchSelectButton);
 
 		gitToolbar.add(branchSelectButton);
 	}
@@ -391,63 +419,76 @@ public class ToolbarPanel extends JPanel {
 	 */
 	public void updateStatus() {
     this.pullsBehind = GitAccess.getInstance().getPullsBehind();
-    pullButton.repaint();
+    pullMenuButton.repaint();
     
     this.pushesAhead = GitAccess.getInstance().getPushesAhead();
     pushButton.repaint();
     
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
-		String message = "";
+		String branchInfoText = "";
 		if (branchInfo.isDetached()) {
-			message += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
-			statusInformationLabel
-					.setToolTipText(translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD) + " "
+			branchInfoText += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
+			remoteAndBranchInfoLabel.setToolTipText(
+			    translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
+			        + " "
 							+ branchInfo.getBranchName());
 				pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
-				pullButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
+				pullMenuButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		} else {
-		  String ttMessage = null;
 			String currentBranch = branchInfo.getBranchName();
+			branchInfoText = "<html><b>" + currentBranch + "</b></html>";
+			String remoteAndBranchTooltipMessage = null;
 			if (!"".equals(currentBranch)) {
-			  message = "<html><b>" + currentBranch + "</b></html>";
-			  
 			  String remoteName = null;
         try {
           remoteName = GitAccess.getInstance().getRemote(currentBranch);
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
         }
-				ttMessage = "<html>"
+				String remoteAndBranchInfo = (remoteName == null ? "" : remoteName + "/") + currentBranch;
+        remoteAndBranchTooltipMessage = "<html>"
 				    + (remoteName == null ? "" : translator.getTranslation(Tags.REMOTE) + "/")
 				    + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH).toLowerCase()
 				    + " <b>"
-				    + (remoteName == null ? "" : remoteName + "/")
-				    + currentBranch 
+				    + remoteAndBranchInfo
 				    + "</b> - ";
-				pushButton.setToolTipText(
-				    translator.getTranslation(Tags.PUSH_TO)
-				      + " "
-				      + (remoteName == null ? "" : remoteName + "/")
-				      + currentBranch );
-				pullButton.setToolTipText(
-				    translator.getTranslation(Tags.PULL_FROM)
-				      + " "
-				      + (remoteName == null ? "" : remoteName + "/") 
-				      + currentBranch );
 				if (pullsBehind == 0) {
-				  ttMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+				  remoteAndBranchTooltipMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
 				} else if (pullsBehind == 1) {
-				  ttMessage += pullsBehind + " " + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
+				  remoteAndBranchTooltipMessage += pullsBehind + " "
+				      + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
 				} else {
-				  ttMessage += pullsBehind + " "
+				  remoteAndBranchTooltipMessage += pullsBehind + " "
 							+ translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
 				}
-				ttMessage += "</html>";
+				remoteAndBranchTooltipMessage += "</html>";
+				
+				// Push tooltip
+				pushButton.setToolTipText(
+            MessageFormat.format(
+                translator.getTranslation(Tags.PUSH_TO),
+                remoteAndBranchInfo));
+				
+				// Pull tooltip
+				String pullFromTag = Tags.PULL_FROM;
+				Object value = pullMenuButton.getAction().getValue(PullAction.PULL_TYPE_ACTION_PROP);
+				if (value instanceof PullType) {
+				  PullType pt = (PullType) value;
+				  if (pt == PullType.REBASE) {
+				    pullFromTag = Tags.PULL_REBASE_FROM;
+				  } else if (pt != PullType.UKNOWN) {
+				    pullFromTag = Tags.PULL_MERGE_FROM;
+				  }
+				}
+        pullMenuButton.setToolTipText(
+            MessageFormat.format(
+                translator.getTranslation(pullFromTag),
+                remoteAndBranchInfo));
 			}
-			statusInformationLabel.setToolTipText(ttMessage);
+			remoteAndBranchInfoLabel.setToolTipText(remoteAndBranchTooltipMessage);
 		}
 		
-		statusInformationLabel.setText(message);
+		remoteAndBranchInfoLabel.setText(branchInfoText);
 	}
 
 	/**
@@ -462,21 +503,18 @@ public class ToolbarPanel extends JPanel {
 		  icon = (ImageIcon) imageUtilities.loadIcon(resource);
 		  pushButton.setIcon(icon);
 		}
-		pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
-		setCustomWidthOn(pushButton);
+		setDefaultToolbarButtonWidth(pushButton);
 
 		// PULL
-		pullButton = createPullButton();
-		resource = getClass().getResource(ImageConstants.GIT_PULL_ICON);
-		if (resource != null) {
-		  icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  pullButton.setIcon(icon);
-		}
-		pullButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
-		setCustomWidthOn(pullButton);
+		pullMenuButton = createPullButton();
+    Dimension d = pullMenuButton.getPreferredSize();
+    d.width = 42;
+    pullMenuButton.setPreferredSize(d);
+    pullMenuButton.setMinimumSize(d);
+    pullMenuButton.setMaximumSize(d);
 
 		gitToolbar.add(pushButton);
-		gitToolbar.add(pullButton);
+		gitToolbar.add(pullMenuButton);
 	}
 
 	/**
@@ -484,60 +522,108 @@ public class ToolbarPanel extends JPanel {
 	 * 
 	 * @return the "Pull" button.
 	 */
-  private ToolbarButton createPullButton() {
-    return new ToolbarButton(createPullAction(), false) {
-			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-
-				String str = "";
-				if (pullsBehind > 0) {
-					str = "" + pullsBehind;
-				}
-				if (pullsBehind > 9) {
-					pullButton.setHorizontalAlignment(SwingConstants.LEFT);
-				} else {
-					pullButton.setHorizontalAlignment(SwingConstants.CENTER);
-				}
-				g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
-				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
-				int stringWidth = fontMetrics.stringWidth(str);
-				int stringHeight = fontMetrics.getHeight();
-				g.setColor(new Color(255, 255, 255, 100));
-				g.fillRect(pullButton.getWidth() - stringWidth, 0, stringWidth, stringHeight);
-				g.setColor(Color.BLACK);
-				g.drawString(str, pullButton.getWidth() - stringWidth,
-						fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
-			}
-		};
-  }
-
-  /**
-   * Create "Pull" action.
-   * 
-   * @return the "Pull" action.
-   */
-  private AbstractAction createPullAction() {
-    return new AbstractAction() {
+	private SplitMenuButton createPullButton() {
+	  SplitMenuButton pullSplitMenuButton = new SplitMenuButton(
+	      null,
+	      getPullIcon(),
+	      false,
+	      false,
+	      false,
+	      true) {
       @Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					if (GitAccess.getInstance().getRepository() != null) {
-						if (logger.isDebugEnabled()) {
-							logger.debug("Pull Button Clicked");
-						}
-						pushPullController.execute(Command.PULL);
-						pullsBehind = 0;
-					}
-				} catch (NoRepositorySelected e1) {
-				  if(logger.isDebugEnabled()) {
-            logger.debug(e1, e1);
-          }
-				}
-			}
-		};
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintPullsBehind(g);
+      }
+      
+      /**
+       * Paint the number of pulls behind.
+       * 
+       * @param g Graphics.
+       */
+      private void paintPullsBehind(Graphics g) {
+        String noOfPullsBehindString = "";
+        if (pullsBehind > 0) {
+          noOfPullsBehindString += pullsBehind;
+        }
+        if (pullsBehind > 9) {
+          setHorizontalAlignment(SwingConstants.LEFT);
+        } else {
+          setHorizontalAlignment(SwingConstants.CENTER);
+        }
+        g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
+        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+        int stringWidth = fontMetrics.stringWidth(noOfPullsBehindString);
+        g.setColor(getForeground());
+        g.drawString(noOfPullsBehindString,
+            // X TODO: use scaling factor for that magic number (13)
+            getWidth() - stringWidth - 13,
+            // Y
+            fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
+      }
+	  };
+	  
+	  addPullActionsToMenu(pullSplitMenuButton);
+	  
+	  return pullSplitMenuButton;
+	}
+
+	/**
+	 * Add the pull actions (pull + merge, pull + rebase, etc) to the pull menu.
+	 * 
+	 * @param splitMenuButton The menu button to add to.
+	 */
+  private void addPullActionsToMenu(SplitMenuButton splitMenuButton) {
+    ButtonGroup pullActionsGroup = new ButtonGroup();
+	  
+	  ActionListener radioMenuItemActionListener = e -> {
+      if (e.getSource() instanceof JMenuItem) {
+        splitMenuButton.setAction(((JMenuItem) e.getSource()).getAction());
+      }
+    };
+    
+    // Pull (merge)
+    PullAction pullMergeAction = new PullAction(
+        translator.getTranslation(Tags.PULL_MERGE),
+        PullType.MERGE_FF);
+    JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(pullMergeAction);
+    pullMergeMenuItem.addActionListener(radioMenuItemActionListener);
+    splitMenuButton.add(pullMergeMenuItem);
+    pullActionsGroup.add(pullMergeMenuItem);
+    
+    // Pull (rebase)
+    PullAction pullRebaseAction = new PullAction(
+        translator.getTranslation(Tags.PULL_REBASE),
+        PullType.REBASE);
+    JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(pullRebaseAction);
+    pullRebaseMenuItem.addActionListener(radioMenuItemActionListener);
+	  splitMenuButton.add(pullRebaseMenuItem);
+	  pullActionsGroup.add(pullRebaseMenuItem);
+	  
+	  PullType defaultPullType = OptionsManager.getInstance().getDefaultPullType();
+	  if (defaultPullType == PullType.REBASE) {
+	    splitMenuButton.setAction(pullRebaseMenuItem.getAction());
+	    pullRebaseMenuItem.setSelected(true);
+	  } else if (defaultPullType != PullType.UKNOWN) {
+	    splitMenuButton.setAction(pullMergeMenuItem.getAction());
+	    pullMergeMenuItem.setSelected(true);
+	  }
   }
 
+	/**
+	 * Get pull icon.
+	 * 
+	 * @return The pull icon or <code>null</code>.
+	 */
+  private ImageIcon getPullIcon() {
+    URL resource = getClass().getResource(ImageConstants.GIT_PULL_ICON);
+	  ImageIcon icon = null;
+	  if (resource != null) {
+	    icon = (ImageIcon) imageUtilities.loadIcon(resource);
+	  }
+    return icon;
+  }
+	
 	/**
 	 * Create the "Push" button.
 	 * 
@@ -548,10 +634,18 @@ public class ToolbarPanel extends JPanel {
 			@Override
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
-
-				String str = "";
+				paintPushesAhead(g);
+			}
+			
+			/**
+			 * Paint the number pushes ahead.
+			 * 
+			 * @param g Graphics.
+			 */
+      private void paintPushesAhead(Graphics g) {
+        String noOfPushesAheadString = "";
 				if (pushesAhead > 0) {
-					str = "" + pushesAhead;
+					noOfPushesAheadString = "" + pushesAhead;
 				}
 				if (pushesAhead > 9) {
 					pushButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -560,14 +654,15 @@ public class ToolbarPanel extends JPanel {
 				}
 				g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
-				int stringWidth = fontMetrics.stringWidth(str);
-				int stringHeight = fontMetrics.getHeight();
-				g.setColor(new Color(255, 255, 255, 100));
-				g.fillRect(pushButton.getWidth() - stringWidth - 1, pushButton.getHeight() - stringHeight, stringWidth,
-						stringHeight);
-				g.setColor(Color.BLACK);
-				g.drawString(str, pushButton.getWidth() - stringWidth, pushButton.getHeight() - fontMetrics.getDescent());
-			}
+				int stringWidth = fontMetrics.stringWidth(noOfPushesAheadString);
+				g.setColor(getForeground());
+				g.drawString(
+				    noOfPushesAheadString,
+				    // X
+				    pushButton.getWidth() - stringWidth,
+				    // Y
+				    pushButton.getHeight() - fontMetrics.getDescent());
+      }
 		};
   }
 
@@ -586,7 +681,7 @@ public class ToolbarPanel extends JPanel {
 							logger.debug("Push Button Clicked");
 						}
 
-						pushPullController.execute(Command.PUSH);
+						pushPullController.push();
 						if (pullsBehind == 0) {
 							pushesAhead = 0;
 						}
@@ -603,10 +698,9 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Sets a custom width on the given button
 	 * 
-	 * @param button
-	 *          - the button to set the width
+	 * @param button the button to set the width to.
 	 */
-	private void setCustomWidthOn(ToolbarButton button) {
+	private void setDefaultToolbarButtonWidth(AbstractButton button) {
 		Dimension d = button.getPreferredSize();
 		d.width = 30;
 		button.setPreferredSize(d);
