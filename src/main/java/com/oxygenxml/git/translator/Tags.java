@@ -647,4 +647,18 @@ public class Tags {
    * Push failed.
    */
   public static final String PUSH_FAILED = "Push_failed";
+  
+  /**
+   * Rebase in progress.
+   */
+  public static final String REBASE_IN_PROGRESS = "Rebase_in_progress";
+  
+  /**
+   * Something like: "It seems you have a rebase in progress that was probably interrupted
+   *  because of a conflict. You should first resolve the conflicts.
+   *  If you have already resolved them, choose whether to continue or abort the rebase."
+   */
+  public static final String INTERRUPTED_REBASE = "Interrupted_rebase";
+  
+  
 }

@@ -20,6 +20,7 @@ import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.dialog.InterruptedRebaseDialog;
 import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -182,10 +183,7 @@ public class PushPullController implements Subject<PushPullEvent> {
         if (logger.isDebugEnabled()) {
           logger.info(e.getConflictingPaths());
         }
-        
-        e.printStackTrace();
       } catch (GitAPIException e) {
-        e.printStackTrace();
         // Exception handling.
         boolean shouldTryAgain = AuthUtil.handleAuthException(
             e,
@@ -203,7 +201,6 @@ public class PushPullController implements Subject<PushPullEvent> {
         }
       } finally {
         if (notifyFinish) {
-          System.err.println("final message: " + message);
           PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);
           notifyObservers(pushPullEvent);
         }
@@ -292,20 +289,12 @@ public class PushPullController implements Subject<PushPullEvent> {
         logger.debug("Repo state: " + repositoryState);
       }
       
-      System.err.println("Repo state: " + repositoryState);
-
       if (repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED) {
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
       } else if (repositoryState == RepositoryState.REBASING_MERGE
           || repositoryState == RepositoryState.REBASING_REBASING) {
-        // TODO: translate
-        // TODO: butoane de continue si abort (poate si skip???)
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage("It seems you have a rebase in progress that was probably"
-                + " interrupted because of a conflict. You should first resolve the conflicts. "
-                + "If you've already resolved them,"
-                + " choose whether to continue or abort (ar mai fi si skip cica) the rebase.");
+        new InterruptedRebaseDialog().setVisible(true);
       } else {
         PullResponse response = gitAccess.pull(
             userCredentials.getUsername(),
@@ -333,7 +322,6 @@ public class PushPullController implements Subject<PushPullEvent> {
             break;
         }
       }
-      System.err.println("MESSAGE: " + message);
       return message;
     }
 
@@ -360,7 +348,6 @@ public class PushPullController implements Subject<PushPullEvent> {
       logger.warn(e);
       // Restore interrupted state...
       Thread.currentThread().interrupt();
-
     }    
   }
 }

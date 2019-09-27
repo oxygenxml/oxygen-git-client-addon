@@ -32,6 +32,7 @@ import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.RebaseCommand.Operation;
 import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
@@ -1080,11 +1081,6 @@ public class GitAccess {
 
 		    RebaseResult rebaseResult = pullCommandResult.getRebaseResult();
 		    if (rebaseResult != null) {
-		      Collection<TrackingRefUpdate> trackingRefUpdates2 = pullCommandResult.getFetchResult().getTrackingRefUpdates();
-		      for (TrackingRefUpdate trackingRefUpdate : trackingRefUpdates2) {
-            System.err.println(trackingRefUpdate.getResult());
-          }
-          System.err.println("TRACKING REFS: " + trackingRefUpdates2);
 		      treatRebaseResult(pullResponseToReturn, rebaseResult);
 		    } else { 
 		      treatMergeResult(pullResponseToReturn, pullCommandResult.getMergeResult());
@@ -2069,4 +2065,41 @@ System.err.println(mergeResult.getConflicts());
     return rootFolder;
   }
 
+  /**
+   * Aborts and resets the current rebase
+   */
+  public void abortRebase() {
+    try {
+      git.rebase().setOperation(Operation.ABORT).call();
+    } catch (GitAPIException e) {
+      logger.debug(e, e);
+    }
+  }
+  
+  /**
+   * Continue rebase after a conflict resolution.
+   */
+  public void continueRebase() {
+    try {
+      RebaseResult result = git.rebase().setOperation(Operation.CONTINUE).call();
+      if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {
+        skipCommit();
+      }
+    } catch (GitAPIException e) {
+      e.printStackTrace();
+      logger.debug(e, e);
+    }
+  }
+  
+  /**
+   * Skip the current commit when rebasing.
+   */
+  private void skipCommit() {
+    try {
+      git.rebase().setOperation(Operation.SKIP).call();
+    } catch (GitAPIException e) {
+      logger.debug(e, e);
+    }
+  }
+  
 }
