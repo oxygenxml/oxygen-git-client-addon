@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
@@ -201,8 +202,11 @@ public class WorkingCopySelectionPanel extends JPanel {
           }
           
           if (GitAccess.getInstance().getBranchInfo().isDetached()) {
-            PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+            RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
+            if (repositoryState != RepositoryState.REBASING_MERGE) {
+              PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+                  translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+            }
           }
         } catch (NoRepositorySelected e) {
             logger.debug(e, e);
