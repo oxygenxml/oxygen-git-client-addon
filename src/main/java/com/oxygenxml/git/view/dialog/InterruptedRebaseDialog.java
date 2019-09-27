@@ -50,8 +50,8 @@ public class InterruptedRebaseDialog extends JDialog {
     createGUI();
 
     setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
-    setLocationByPlatform(true);
-    setSize(new Dimension(450, getPreferredSize().height));
+    setLocationRelativeTo(parentFrame);
+    setSize(new Dimension(475, getPreferredSize().height));
     setResizable(false);
     
   }
@@ -93,8 +93,8 @@ public class InterruptedRebaseDialog extends JDialog {
     return new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        GitAccess.getInstance().continueRebase();
         setVisible(false);
+        GitAccess.getInstance().continueRebase();
       }
     };
   }
@@ -106,8 +106,8 @@ public class InterruptedRebaseDialog extends JDialog {
     return new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        GitAccess.getInstance().abortRebase();
         setVisible(false);
+        GitAccess.getInstance().abortRebase();
       }
     };
   }
