@@ -654,6 +654,11 @@ public class Tags {
   public static final String REBASE_IN_PROGRESS = "Rebase_in_progress";
   
   /**
+   * Something like: "Cannot continue rebasing. You have conflicts in the working copy that need to be resolved."
+   */
+  public static final String CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS = "Cannot_continue_rebase_because_of_conflicts";
+  
+  /**
    * Something like: "It seems you have a rebase in progress that was probably interrupted
    *  because of a conflict. You should first resolve the conflicts.
    *  If you have already resolved them, choose whether to continue or abort the rebase."

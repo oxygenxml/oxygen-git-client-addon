@@ -49,6 +49,7 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.dircache.DirCache;
@@ -2085,8 +2086,11 @@ System.err.println(mergeResult.getConflicts());
       if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {
         skipCommit();
       }
+    } catch (UnmergedPathsException e) {
+      logger.debug(e, e);
+      ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+          .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
     } catch (GitAPIException e) {
-      e.printStackTrace();
       logger.debug(e, e);
     }
   }

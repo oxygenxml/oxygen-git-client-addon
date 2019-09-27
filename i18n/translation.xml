@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Cannot_continue_rebase_because_of_conflicts">
+        <comment>Message shown when rebasing cannot continue because of conflicts.</comment>
+        <val lang="en_US">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="de_DE">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="fr_FR">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="ja_JP">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="nl_NL">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+    </key>
     <key value="Interrupted_rebase">
         <comment>Interrupted rebase information.</comment>
         <val lang="en_US">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
