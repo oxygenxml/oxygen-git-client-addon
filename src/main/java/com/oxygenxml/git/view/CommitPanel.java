@@ -41,6 +41,7 @@ import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.event.ActionStatus;
@@ -331,7 +332,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
           commitMessage.setText("");
         } else {
           // Possible time consuming operations.
-          new SwingWorker<Void, Void>() {
+          SwingWorker<Void, Void> updateTask = new SwingWorker<Void, Void>() {
             boolean enable = false;
             String message = null;
             @Override
@@ -355,7 +356,9 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
               }
               commitButton.setEnabled(enable);
             }
-          }.execute();
+          };
+          
+          GitOperationScheduler.getInstance().schedule(updateTask);
         }
       } catch (NoRepositorySelected e) {
         // Remains disabled
