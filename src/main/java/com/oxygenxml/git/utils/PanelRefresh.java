@@ -7,10 +7,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
@@ -81,7 +78,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Refresh executor.
 	 */
-	private ScheduledExecutorService refreshExecutor = new ScheduledThreadPoolExecutor(1);
+	private GitOperationScheduler refreshExecutor = GitOperationScheduler.getInstance();
 	/**
 	 * Refresh future (representing pending completion of the task).
 	 */
@@ -125,12 +122,7 @@ public class PanelRefresh implements GitRefreshSupport {
       refreshFuture.cancel(true);
     }
 
-    if (refreshExecutor.isShutdown()) {
-      // A shutdown operation was canceled.
-      refreshExecutor = new ScheduledThreadPoolExecutor(1);
-    }
-
-    refreshFuture = refreshExecutor.schedule(refreshRunnable, 500, TimeUnit.MILLISECONDS);
+    refreshFuture = refreshExecutor.schedule(refreshRunnable);
   }
 
   /**
@@ -344,14 +336,6 @@ public class PanelRefresh implements GitRefreshSupport {
       refreshFuture.cancel(false);
     }
     refreshExecutor.shutdown();
-    try {
-      refreshExecutor.awaitTermination(2000, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException e) {
-      logger.warn(e);
-      // Restore interrupted state...
-      Thread.currentThread().interrupt();
-
-    }    
   }
 
 }

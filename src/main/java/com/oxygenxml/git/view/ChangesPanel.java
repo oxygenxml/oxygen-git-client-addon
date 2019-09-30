@@ -66,6 +66,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.StageController;
@@ -208,7 +209,7 @@ public class ChangesPanel extends JPanel {
           try {
             Repository repository = gitAccess.getRepository();
             if (repository != null) {
-              new SwingWorker<List<FileStatus>, Void>() {
+              Runnable updateTask = new SwingWorker<List<FileStatus>, Void>() {
                 @Override
                 protected List<FileStatus> doInBackground() throws Exception {
                   if (forStagedResources) {
@@ -231,7 +232,9 @@ public class ChangesPanel extends JPanel {
                   ChangesPanel.this.repositoryChanged(files);
                   getChangeSelectedButton().setEnabled(true);
                 }
-              }.execute();
+              };
+              
+              GitOperationScheduler.getInstance().schedule(updateTask);
             }
           } catch (NoRepositorySelected ex) {
             logger.debug(ex, ex);
@@ -790,6 +793,7 @@ public class ChangesPanel extends JPanel {
 	    if (logger.isDebugEnabled()) {
 	      logger.debug("Table model " + filesStatuses);
 	    }
+	    logger.info("Table model " + filesStatuses);
 	    
 	     // Create the tree with the new model
       tree.setModel(

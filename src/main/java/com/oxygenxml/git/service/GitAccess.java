@@ -18,9 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
@@ -99,6 +96,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.GitCommand;
@@ -251,39 +249,6 @@ public class GitAccess {
 		
 		fireRepositoryChanged();
 	}
-
-	/**
-	 * Opens a repository on a thread and then updates the GUI on AWT.
-	 */
-	private final class RepositoryOpener extends SwingWorker<Git, Void> {
-	  
-    private File repo;
-	  
-    public RepositoryOpener(File repo) {
-      this.repo = repo;
-    }
-    
-    @Override
-    protected Git doInBackground() throws Exception {
-      return openRepository(repo);
-    }
-    
-    @Override
-    protected void done() {
-      try {
-        git = get();
-        repositoryOpened();
-      } catch (InterruptedException e) {
-        // Shouldn't happen.
-        fireRepositoryOpenFailed(repo, e);
-        Thread.currentThread().interrupt();
-        logger.error(e, e);
-      } catch (ExecutionException e) {
-        fireRepositoryOpenFailed(repo, e.getCause());
-        logger.debug(e, e);
-      }
-    }
-	}
 	
 	/**
    * Sets the Git repository asynchronously, on a new thread, and at the end updates the
@@ -291,13 +256,15 @@ public class GitAccess {
    * 
    * @param path A string that specifies the Git repository folder.
    */
-  public void setRepositoryAsync(String path) {
-    final File repo = new File(path + "/.git");
-    if (!isCurrentRepo(repo)) {
-      RepositoryOpener repoOpener = new RepositoryOpener(repo);
-      repoOpener.execute();
-    }
-  }
+	public void setRepositoryAsync(String path) {
+	  GitOperationScheduler.getInstance().schedule(() -> {
+	    try {
+	      openRepository(path);
+	    } catch (IOException e) {
+	      logger.debug(e, e);
+	    }
+	  });
+	}
   
   /**
    * Sets the Git repository on the current thread. The repository file path must exist.
@@ -305,11 +272,7 @@ public class GitAccess {
    * @param path A string that specifies the Git repository folder.
    */
   public void setRepositorySynchronously(String path) throws IOException {
-    final File repo = new File(path + "/.git");
-    if (!isCurrentRepo(repo) ) {
-      git = openRepository(repo);
-      repositoryOpened();
-    }
+    openRepository(path);
   }
 
   /**
@@ -332,10 +295,23 @@ public class GitAccess {
    * 
    * @throws IOException
    */
-  private Git openRepository(File currentRepo) throws IOException {
-    closeRepo();
-    fireRepositoryIsAboutToOpen(currentRepo);
-    return Git.open(currentRepo);
+  private void openRepository(String path) throws IOException {
+    final File repo = new File(path + "/.git");
+    if (!isCurrentRepo(repo) ) {
+      closeRepo();
+
+      fireRepositoryIsAboutToOpen(repo);
+
+      try {
+        git = Git.open(repo);
+        
+        repositoryOpened();
+      } catch (IOException e) {
+        fireRepositoryOpenFailed(repo, e.getCause());
+        
+        throw e;
+      }
+    }
   }
 
   /**
@@ -1999,7 +1975,7 @@ public class GitAccess {
       rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
     } catch (NoRepositorySelected e) {
       // Never happens.
-      logger.error(e, e);
+      logger.debug(e, e);
     }
     return rootFolder;
   }
