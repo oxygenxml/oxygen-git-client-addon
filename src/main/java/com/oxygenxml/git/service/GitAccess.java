@@ -1132,8 +1132,7 @@ public class GitAccess {
         logger.debug("Merge result " + mergeResult);
         logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
       }
-System.err.println("MR: " +  mergeResult.getMergeStatus());
-System.err.println(mergeResult.getConflicts());
+
       if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
         if (logger.isDebugEnabled()) {
           logMergeFailure(mergeResult);
