@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.historycomponents;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -19,7 +20,7 @@ public class CommitCharacteristics {
 	/**
 	 * The commit date.
 	 */
-	private String date;
+	private Date date;
 
 	/**
 	 * The commit author with its email.
@@ -51,18 +52,18 @@ public class CommitCharacteristics {
 	 * 
 	 * @param graph               The graph representation
 	 * @param commitMessage       The commit message
-	 * @param date                The date
+	 * @param authorDate                The date
 	 * @param author              The commit author
 	 * @param commitAbbreviatedId The abbreviated commit id
 	 * @param commitId            The commit id
 	 * @param committer           The committer
 	 * @param parentCommitId      The parent commit id
 	 */
-	public CommitCharacteristics(String commitMessage, String date, String author,
+	public CommitCharacteristics(String commitMessage, Date authorDate, String author,
 			String commitAbbreviatedId, String commitId, String committer, List<String> parentCommitId) {
 
 		this.commitMessage = commitMessage;
-		this.date = date;
+		this.date = authorDate;
 		this.author = author;
 		this.commitAbbreviatedId = commitAbbreviatedId;
 		this.commitId = commitId;
@@ -81,7 +82,7 @@ public class CommitCharacteristics {
 		return commitMessage;
 	}
 
-	public String getDate() {
+	public Date getDate() {
 		return date;
 	}
 

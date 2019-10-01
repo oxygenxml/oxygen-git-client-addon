@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
@@ -1898,20 +1897,15 @@ public class GitAccess {
 	 * 
 	 * @return a Vector with commits characteristics of the current repository.
 	 */
-	public Vector<CommitCharacteristics> getCommitsCharacteristics() {
-		Vector<CommitCharacteristics> commitVector = new Vector<>();
+	public List<CommitCharacteristics> getCommitsCharacteristics() {
+		List<CommitCharacteristics> commitVector = new ArrayList<>();
 
 		try {
 			Repository repository = this.getRepository();
-			Status status;
-			try {
-				status = git.status().call();
-				if (status.hasUncommittedChanges()) {
-					commitVector.add(
-							new CommitCharacteristics(UNCOMMITTED_CHANGES, new Date().toString(), "*", "*", "*", null, null));
-				}
-			} catch (NoWorkTreeException | GitAPIException e) {
-				e.printStackTrace();
+			Status status = git.status().call();
+			if (status.hasUncommittedChanges()) {
+				commitVector.add(
+						new CommitCharacteristics(UNCOMMITTED_CHANGES, new Date(), "*", "*", "*", null, null));
 			}
 
 			Collection<Ref> allRefs = repository.getAllRefs().values();
@@ -1926,7 +1920,7 @@ public class GitAccess {
 					String commitMessage = commit.getFullMessage();
 					PersonIdent authorIdent = commit.getAuthorIdent();
 					String author = authorIdent.getName() + " <" + authorIdent.getEmailAddress() + ">";
-					String authorDate = authorIdent.getWhen().toString();
+					Date authorDate = authorIdent.getWhen();
 					String abbreviatedId = commit.getId().abbreviate(7).name();
 					String id = commit.getId().getName();
 
@@ -1940,13 +1934,10 @@ public class GitAccess {
 				}
 			}
 
-		} catch (NoRepositorySelected e) {
+		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
 			logger.debug(e, e);
-			e.printStackTrace();
-		} catch (IOException e) {
-			logger.debug(e, e);
-			e.printStackTrace();
 		}
+		
 		return commitVector;
 	}
 

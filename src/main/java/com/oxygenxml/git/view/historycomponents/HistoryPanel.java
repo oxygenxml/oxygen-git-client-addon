@@ -2,30 +2,43 @@ package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.Date;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.jidesoft.swing.JideSplitPane;
+import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+
+import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
  * Presents the commits for a given resource. 
@@ -41,9 +54,15 @@ public class HistoryPanel extends JPanel {
   private JTable historyTable;
   private JEditorPane commitDescriptionPane;
   /**
+   * Toolbar in which the button will be placed
+   */
+  private JToolBar toolbar;
+  /**
    * The label that shows the resource for which we present the history.
    */
   private JLabel showCurrentRepoLabel;
+  private HistoryHyperlinkListener hyperlinkListener;
+  private RowHistoryTableSelectionListener selectionListener;
   
   public HistoryPanel() {
     setLayout(new BorderLayout());
@@ -55,50 +74,112 @@ public class HistoryPanel extends JPanel {
 
     // set Commit Description Pane with HTML content and hyperlink.
     commitDescriptionPane = new JEditorPane();
-    commitDescriptionPane.setContentType("text/html");
+    init(commitDescriptionPane);
 
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
-    commitDescriptionPane.setEditable(false);
-
-    // set minimum width for commit message column
-    TableColumnModel columnModel = historyTable.getColumnModel();
-    columnModel.addColumn(new TableColumn(0));
-    columnModel.getColumn(0).setMinWidth(400);
-
     JScrollPane commitDescriptionScrollPane = new JScrollPane(commitDescriptionPane);
-    JScrollPane fileHierarchyScrollPane = new JScrollPane(new JEditorPane());
+    JScrollPane fileHierarchyScrollPane = new JScrollPane();
 
     Dimension minimumSize = new Dimension(500, 150);
     commitDescriptionScrollPane.setPreferredSize(minimumSize);
     fileHierarchyScrollPane.setPreferredSize(minimumSize);
 
-    JSplitPane infoBoxesSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, commitDescriptionScrollPane,
-        fileHierarchyScrollPane);
-    infoBoxesSplitPane.setDividerLocation(0.5);
-    infoBoxesSplitPane.setOneTouchExpandable(true);
 
+    //----------
+    // Top panel
+    //----------
+    
     showCurrentRepoLabel = new JLabel();
-    add(showCurrentRepoLabel, BorderLayout.NORTH);
+    JPanel topPanel = new JPanel(new BorderLayout());
+    createToolbar(topPanel);
 
-    JSplitPane centerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tableScrollPane, infoBoxesSplitPane);
+    JPanel infoBoxesSplitPane = createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, commitDescriptionScrollPane,
+        fileHierarchyScrollPane);
+    JideSplitPane centerSplitPane = createSplitPane(JideSplitPane.VERTICAL_SPLIT, tableScrollPane, infoBoxesSplitPane);
+    centerSplitPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     
     //Customize the split pane.
-    centerSplitPane.setBorder(BorderFactory.createEmptyBorder());
-    centerSplitPane.setContinuousLayout(true);
     this.addComponentListener(new ComponentAdapter() {
       @Override
       public void componentShown(ComponentEvent e) {
-        centerSplitPane.setDividerLocation(0.7);
+        
+        int h = centerSplitPane.getHeight();
+        centerSplitPane.setDividerLocation(0, (int)(h * 0.6));
         
         removeComponentListener(this);
       }
     });
 
-    centerSplitPane.setResizeWeight(0.6);
-    centerSplitPane.setDividerSize(3);
-    
     add(centerSplitPane, BorderLayout.CENTER);
+  }
+  
+  /**
+   * Creates a split pane and puts the two components in it.
+   * 
+   * @param splitType {@link JideSplitPane#HORIZONTAL_SPLIT} or {@link JideSplitPane#VERTICAL_SPLIT} 
+   * @param firstComponent Fist component to add.
+   * @param secondComponent Second component to add.
+   * 
+   * @return The split pane.
+   */
+  private JideSplitPane createSplitPane(int splitType, JComponent firstComponent, JComponent secondComponent) {
+    JideSplitPane splitPane = new JideSplitPane(splitType);
+    
+    splitPane.add(firstComponent);
+    splitPane.add(secondComponent);
+    
+    splitPane.setDividerSize(5);
+    splitPane.setContinuousLayout(true);
+    splitPane.setOneTouchExpandable(false);
+    splitPane.setBorder(null);
+    
+    return splitPane;
+  }
+  
+  /**
+   * Initializes the split with the proper font and other properties.
+   * 
+   * @param editorPane Editor pane to initialize.
+   */
+  private static void init(JEditorPane editorPane) {
+    // Forces the JEditorPane to take the font from the UI, rather than the HTML document.
+    editorPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+    Font font = UIManager.getDefaults().getFont("TextArea.font");
+    if(font != null){
+      editorPane.setFont(font);
+    }
+    editorPane.setBorder(null);
+    
+    editorPane.setContentType("text/html");
+    editorPane.setEditable(false);
+
+  }
+
+  /**
+   * Creates the toolbar. 
+   * 
+   * @param topPanel Parent for the toolbar.
+   */
+  private void createToolbar(JPanel topPanel) {
+    toolbar = new JToolBar();
+    toolbar.setOpaque(false);
+    toolbar.setFloatable(false);
+    topPanel.add(showCurrentRepoLabel, BorderLayout.WEST);
+    topPanel.add(toolbar, BorderLayout.EAST);
+    
+    Action refreshAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        showRepositoryHistory();
+      }
+    };
+    refreshAction.putValue(Action.SMALL_ICON, ImageConstants.getIcon(ImageConstants.REFRESH_ICON));
+    refreshAction.putValue(Action.SHORT_DESCRIPTION, "refresh");
+    ToolbarButton refreshButton = new ToolbarButton(refreshAction, false);
+    toolbar.add(refreshButton);
+    
+    add(topPanel, BorderLayout.NORTH);
   }
 
   /**
@@ -126,26 +207,60 @@ public class HistoryPanel extends JPanel {
   public void showRepositoryHistory() {
     GitAccess gitAccess = GitAccess.getInstance();
     try {
+      File directory = gitAccess.getWorkingCopy();
       showCurrentRepoLabel.setText(
-          Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + gitAccess.getRepository().getDirectory().toString());
+          Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + directory.getName());
+      showCurrentRepoLabel.setToolTipText(directory.getAbsolutePath());
       showCurrentRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
       
       historyTable.setDefaultRenderer(CommitCharacteristics.class, new HistoryTableRenderer(gitAccess, gitAccess.getRepository()));
+      historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
 
       List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics();
 
       historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
-      historyTable.getSelectionModel().addListSelectionListener(
-          new RowHistoryTableSelectionListener(historyTable, commitDescriptionPane, commitCharacteristicsVector));
+      
+      updateTableWidths();
+      
+      // Install selection listener.
+      if (selectionListener != null) {
+        historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
+      }
+      selectionListener = new RowHistoryTableSelectionListener(historyTable, commitDescriptionPane, commitCharacteristicsVector);
+      historyTable.getSelectionModel().addListSelectionListener(selectionListener);
 
-      commitDescriptionPane
-      .addHyperlinkListener(new HistoryHyperlinkListener(historyTable, commitCharacteristicsVector));
+      // Install hyperlink listener.
+      if (hyperlinkListener != null) {
+        commitDescriptionPane.removeHyperlinkListener(hyperlinkListener);  
+      }
+      
+      hyperlinkListener = new HistoryHyperlinkListener(historyTable, commitCharacteristicsVector);
+      commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
 
       // preliminary select the first row in the historyTable
       historyTable.setRowSelectionInterval(0, 0);
     } catch (NoRepositorySelected e) {
       LOGGER.debug(e, e);
     }
+  }
+
+  /**
+   * Distribute widths to the columns according to their content.
+   */
+  private void updateTableWidths() {
+    TableColumnModel tcm = historyTable.getColumnModel();
+    int available = historyTable.getWidth();
+    TableColumn column = tcm.getColumn(0);
+    column.setPreferredWidth(available - 3 * 100);
+    
+    column = tcm.getColumn(1);
+    column.setPreferredWidth(100);
+
+    column = tcm.getColumn(2);
+    column.setPreferredWidth(120);
+
+    column = tcm.getColumn(3);
+    column.setPreferredWidth(80);
   }
 
   /**

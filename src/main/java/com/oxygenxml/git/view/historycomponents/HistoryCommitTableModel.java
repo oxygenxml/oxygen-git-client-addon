@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.historycomponents;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -74,7 +75,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 			clazz = CommitCharacteristics.class;
 			break;
 		case DATE:
-			clazz = String.class;
+			clazz = Date.class;
 			break;
 		case AUTHOR:
 			clazz = String.class;
