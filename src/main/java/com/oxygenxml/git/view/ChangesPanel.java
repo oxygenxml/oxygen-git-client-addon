@@ -843,18 +843,12 @@ public class ChangesPanel extends JPanel {
   private void updateChangeViewButton() {
     if (switchViewButton != null) {
       if (currentViewMode == ResourcesViewMode.TREE_VIEW) {
-        URL resource = getClass().getResource(ImageConstants.TABLE_VIEW);
-        if (resource != null) {
-          ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-          switchViewButton.setIcon(icon);
-        }
+        Icon icon = getIcon(ImageConstants.TABLE_VIEW);
+        switchViewButton.setIcon(icon);
         switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
       } else {
-        URL resource = getClass().getResource(ImageConstants.TREE_VIEW);
-        if (resource != null) {
-          ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-          switchViewButton.setIcon(icon);
-        }
+        Icon icon = getIcon(ImageConstants.TREE_VIEW);
+        switchViewButton.setIcon(icon);
         switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
       }
     }
@@ -957,13 +951,12 @@ public class ChangesPanel extends JPanel {
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
 		switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
-		URL resource = currentViewMode == ResourcesViewMode.FLAT_VIEW 
-		    ? getClass().getResource(ImageConstants.TREE_VIEW)
-		    : getClass().getResource(ImageConstants.TABLE_VIEW);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  switchViewButton.setIcon(icon);
-		}
+		
+		String iconType = currentViewMode == ResourcesViewMode.FLAT_VIEW 
+		    ? ImageConstants.TREE_VIEW
+		    : ImageConstants.TABLE_VIEW;
+	  Icon icon = ImageConstants.getIcon(iconType);
+	  switchViewButton.setIcon(icon);
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
 		toolbar.setOpaque(false);
@@ -993,14 +986,11 @@ public class ChangesPanel extends JPanel {
 		filesTable.setTableHeader(null);
 		filesTable.setShowGrid(false);
 		
-		URL resource = getClass().getResource(ImageConstants.GIT_ADD_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  int iconWidth = icon.getIconWidth();
-		  TableColumn statusCol = filesTable.getColumnModel().getColumn(StagingResourcesTableModel.FILE_STATUS_COLUMN);
-      statusCol.setPreferredWidth(iconWidth);
-		  statusCol.setMaxWidth(iconWidth + 4);
-		}
+		Icon icon = ImageConstants.getIcon(ImageConstants.GIT_ADD_ICON);
+	  int iconWidth = icon.getIconWidth();
+	  TableColumn statusCol = filesTable.getColumnModel().getColumn(StagingResourcesTableModel.FILE_STATUS_COLUMN);
+    statusCol.setPreferredWidth(iconWidth);
+	  statusCol.setMaxWidth(iconWidth + 4);
 
 		filesTable.setDefaultRenderer(Object.class, new ChangesTableCellRenderer());
 		filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -1236,11 +1226,7 @@ public class ChangesPanel extends JPanel {
 
 			JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-			URL resource = getClass().getResource(ImageConstants.FOLDER_TREE_ICON);
-			Icon icon = null;
-			if (resource != null) {
-			  icon = (Icon) imageUtilities.loadIcon(resource);
-			}
+			Icon icon = ImageConstants.getIcon(ImageConstants.FOLDER_TREE_ICON);
 			String toolTip = null;
 
 			StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
@@ -1395,12 +1381,7 @@ public class ChangesPanel extends JPanel {
 	 * @return the icon.
 	 */
   private Icon getIcon(String imgKey) {
-    Icon toReturn = null;
-    URL resource = getClass().getResource(imgKey);
-    if (resource != null) {
-      toReturn = (Icon) imageUtilities.loadIcon(resource);
-    }
-    return toReturn;
+    return ImageConstants.getIcon(imgKey);
   }
 	
 	/**

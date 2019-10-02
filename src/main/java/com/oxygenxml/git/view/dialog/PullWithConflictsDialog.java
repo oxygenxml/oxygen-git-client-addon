@@ -56,12 +56,7 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JLabel iconLabel = new JLabel();
-		ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-		URL resource = getClass().getResource(ImageConstants.WARNING_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  iconLabel.setIcon(icon);
-		}
+		iconLabel.setIcon(ImageConstants.getIcon(ImageConstants.WARNING_ICON));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;

@@ -5,9 +5,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -27,8 +26,6 @@ import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.historycomponents.HistoryPanel;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
@@ -109,12 +106,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			      // Start the thread that populates the view.
 			      gitRefreshSupport.call();
 			      
-			      ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-			      URL resource = getClass().getResource(ImageConstants.GIT_ICON);
-			      if (resource != null) {
-			        ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-			        viewInfo.setIcon(icon);
-			      }
+			      Icon icon = ImageConstants.getIcon(ImageConstants.GIT_ICON);
+			      viewInfo.setIcon(icon);
+			      
 			      viewInfo.setTitle("Git Staging");
 					} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
 					  historyView = new HistoryPanel();

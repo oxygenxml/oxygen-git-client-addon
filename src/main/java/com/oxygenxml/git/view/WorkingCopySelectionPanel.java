@@ -346,12 +346,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		browseButton = new ToolbarButton(null, false);
-		ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-		URL resource = getClass().getResource(ImageConstants.FILE_CHOOSER_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  browseButton.setIcon(icon);
-		}
+		browseButton.setIcon(ImageConstants.getIcon(ImageConstants.FILE_CHOOSER_ICON));
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);

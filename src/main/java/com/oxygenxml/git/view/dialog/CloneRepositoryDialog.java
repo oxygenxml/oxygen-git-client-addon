@@ -6,11 +6,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -386,7 +385,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
   /**
    * Load icon.
    */
-  private ImageIcon loadIcon;
+  private Icon loadIcon;
 	
 	/**
 	 * Constructor.
@@ -486,11 +485,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
     });
     
     // Loading icon
-    URL loadingIconURL = getClass().getResource(ImageConstants.LOADING_ICON);
-    if (loadingIconURL != null) {
-      Image img = Toolkit.getDefaultToolkit().createImage(loadingIconURL);
-      loadIcon = new ImageIcon(img);
-    }
+    loadIcon = ImageConstants.getIcon(ImageConstants.LOADING_ICON);
     
     // "Destination path" label
 		JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
@@ -536,12 +531,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			}
 		};
 		ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
-		ImageUtilities imageUtilities = pluginWorkspace.getImageUtilities();
-		URL resource = getClass().getResource(ImageConstants.FILE_CHOOSER_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  browseButton.setIcon(icon);
-		}
+		browseButton.setIcon(ImageConstants.getIcon(ImageConstants.FILE_CHOOSER_ICON));
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		browseButton.setOpaque(false);
 

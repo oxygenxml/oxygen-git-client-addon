@@ -13,10 +13,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.net.URL;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -369,12 +368,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	public void setStatus(final RepositoryStatus status) {
 		if (RepositoryStatus.UNAVAILABLE == status) {
 			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
-			ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-			URL resource = getClass().getResource(ImageConstants.VALIDATION_ERROR);
-			if (resource != null) {
-			  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-			  statusLabel.setIcon(icon);
-			}
+		  statusLabel.setIcon(ImageConstants.getIcon(ImageConstants.VALIDATION_ERROR));
 		} else if (RepositoryStatus.AVAILABLE == status) {
 		  statusLabel.setText(null);
 		  statusLabel.setIcon(null);
