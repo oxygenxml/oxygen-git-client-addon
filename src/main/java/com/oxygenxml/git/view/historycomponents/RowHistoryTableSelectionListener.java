@@ -114,31 +114,31 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 */
 	private void setCommitDescription() {
 		CommitCharacteristics commitCharacteristics = commitCharacteristicsVector.get(historyTable.getSelectedRow());
-		String commitDescription = "";
+		StringBuilder commitDescription = new StringBuilder();
 		// Case for already committed changes.
 		if (commitCharacteristics.getCommitter() != null) {
-			commitDescription = "<html><b>" + COMMIT + "</b>: " + commitCharacteristics.getCommitId() + " ["
-					+ commitCharacteristics.getCommitAbbreviatedId() + "]";
+			commitDescription.append("<html><b>").append(COMMIT).append("</b>: ")
+			.append(commitCharacteristics.getCommitId())
+			.append(" [").append(commitCharacteristics.getCommitAbbreviatedId()).append("]");
 
 			// Add all parent commit IDs to the text
 			if (commitCharacteristics.getParentCommitId() != null) {
-				commitDescription += "<br> <b>" + PARENTS + "</b>: ";
+				commitDescription.append("<br> <b>").append(PARENTS).append("</b>: ");
 				int parentSize = commitCharacteristics.getParentCommitId().size();
 
 				for (int j = 0; j < parentSize - 1; j++) {
-					commitDescription += "<a href=\"" + PARENT_COMMIT_URL + commitCharacteristics.getParentCommitId().get(j)
-							+ "\">" + commitCharacteristics.getParentCommitId().get(j) + "</a> , ";
+					commitDescription.append("<a href=\"").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(j)).append("\">")
+					.append(commitCharacteristics.getParentCommitId().get(j)).append("</a> , ");
 				}
-				commitDescription += "<a href=\" " + PARENT_COMMIT_URL
-						+ commitCharacteristics.getParentCommitId().get(parentSize - 1) + "\">"
-						+ commitCharacteristics.getParentCommitId().get(parentSize - 1) + "</a> ";
+				commitDescription.append("<a href=\" ").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("\">")
+						.append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("</a> ");
 			}
-			commitDescription += "<br> <b>" + AUTHOR + "</b>: " + commitCharacteristics.getAuthor() + "<br>" 
-					+ "<b>" + DATE + "</b>: " + commitCharacteristics.getDate() + "<br>" 
-					+ "<b>" + COMMITTER + "</b>: " + commitCharacteristics.getCommitter() + "<br><br>"
-					+ commitCharacteristics.getCommitMessage() + "</html>";
+			commitDescription.append("<br> <b>").append(AUTHOR).append("</b>: ").append(commitCharacteristics.getAuthor()).append("<br>") 
+					.append("<b>").append(DATE).append("</b>: ").append(commitCharacteristics.getDate()).append("<br>") 
+					.append("<b>").append(COMMITTER).append("</b>: ").append(commitCharacteristics.getCommitter()).append("<br><br>")
+					.append(commitCharacteristics.getCommitMessage()).append("</html>");
 		}
-		commitDescriptionPane.setText(commitDescription);
+		commitDescriptionPane.setText(commitDescription.toString());
 		commitDescriptionPane.setCaretPosition(0);
 
 		StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
