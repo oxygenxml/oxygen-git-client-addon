@@ -19,7 +19,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
@@ -37,6 +36,8 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.StagingResourcesTableModel;
+import com.oxygenxml.git.view.dialog.UIUtil;
 
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -61,9 +62,22 @@ public class HistoryPanel extends JPanel {
    * The label that shows the resource for which we present the history.
    */
   private JLabel showCurrentRepoLabel;
+  /**
+   * Intercepts clicks in the commit details area.
+   */
   private HistoryHyperlinkListener hyperlinkListener;
+  /**
+   * Commit selection listener that updates all the views with details.
+   */
   private RowHistoryTableSelectionListener selectionListener;
+  /**
+   * The changed files from a commit.
+   */
+  private JTable changesTable;
   
+  /**
+   * Constructor.
+   */
   public HistoryPanel() {
     setLayout(new BorderLayout());
 
@@ -79,7 +93,10 @@ public class HistoryPanel extends JPanel {
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
     JScrollPane commitDescriptionScrollPane = new JScrollPane(commitDescriptionPane);
-    JScrollPane fileHierarchyScrollPane = new JScrollPane();
+    
+    changesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(null, true), () -> false);
+    
+    JScrollPane fileHierarchyScrollPane = new JScrollPane(changesTable);
 
     Dimension minimumSize = new Dimension(500, 150);
     commitDescriptionScrollPane.setPreferredSize(minimumSize);
@@ -226,7 +243,7 @@ public class HistoryPanel extends JPanel {
       if (selectionListener != null) {
         historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
       }
-      selectionListener = new RowHistoryTableSelectionListener(historyTable, commitDescriptionPane, commitCharacteristicsVector);
+      selectionListener = new RowHistoryTableSelectionListener(historyTable, commitDescriptionPane, commitCharacteristicsVector, changesTable);
       historyTable.getSelectionModel().addListSelectionListener(selectionListener);
 
       // Install hyperlink listener.

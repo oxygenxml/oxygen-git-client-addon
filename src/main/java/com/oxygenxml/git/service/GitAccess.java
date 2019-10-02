@@ -118,6 +118,10 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 public class GitAccess {
 	public static final String UNCOMMITTED_CHANGES = "Uncommitted changes";
 	/**
+	 * A synthetic object representing the uncommitted changes.
+	 */
+  public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(UNCOMMITTED_CHANGES, new Date(), "*", "*", "*", null, null);
+	/**
 	 * "remote"
 	 */
 	public static final String REMOTE = "remote";
@@ -1904,8 +1908,7 @@ public class GitAccess {
 			Repository repository = this.getRepository();
 			Status status = git.status().call();
 			if (status.hasUncommittedChanges()) {
-				commitVector.add(
-						new CommitCharacteristics(UNCOMMITTED_CHANGES, new Date(), "*", "*", "*", null, null));
+				commitVector.add(UNCOMMITED_CHANGES);
 			}
 
 			Collection<Ref> allRefs = repository.getAllRefs().values();

@@ -2,6 +2,8 @@ package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JEditorPane;
@@ -10,7 +12,25 @@ import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.view.StagingResourcesTableModel;
+
 public class RowHistoryTableSelectionListener implements ListSelectionListener {
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(RowHistoryTableSelectionListener.class);
 
 	/**
 	 * The fields of commitDescription EditorPane.
@@ -47,6 +67,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	private static final int TIMER_DELAY = 500;
 	private ActionListener rowTableTimerListener = new TableTimerListener();
 	private Timer updateTableTimer = new Timer(TIMER_DELAY, rowTableTimerListener);
+  private JTable changesTable;
 
 	/**
 	 * Construct the SelectionListener for HistoryTable.
@@ -54,10 +75,15 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * @param historyTable                The historyTable
 	 * @param commitDescriptionPane       The commitDescriptionPane
 	 * @param commitCharacteristicsVector The commitCharacteristicsVector
+	 * @param changesTable                The table that presents the files chaged in a commit.
 	 */
-	public RowHistoryTableSelectionListener(JTable historyTable, JEditorPane commitDescriptionPane,
-			List<CommitCharacteristics> commitCharacteristicsVector) {
-		this.updateTableTimer.setRepeats(false);
+	public RowHistoryTableSelectionListener(
+	    JTable historyTable, 
+	    JEditorPane commitDescriptionPane,
+			List<CommitCharacteristics> commitCharacteristicsVector, 
+			JTable changesTable) {
+		this.changesTable = changesTable;
+    this.updateTableTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
 		this.commitCharacteristicsVector = commitCharacteristicsVector;
@@ -115,6 +141,27 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		commitDescriptionPane.setText(commitDescription);
 		commitDescriptionPane.setCaretPosition(0);
 
+		StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
+		if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
+		  try {
+		    Repository repository = GitAccess.getInstance().getRepository();
+		    ObjectId head = repository.resolve(commitCharacteristics.getCommitId());
+		    ObjectId old = repository.resolve(commitCharacteristics.getParentCommitId().get(0));
+
+		    try (RevWalk rw = new RevWalk(GitAccess.getInstance().getRepository())) {
+		      RevCommit commit = rw.parseCommit(head);
+		      RevCommit oldC = rw.parseCommit(old);
+		      List<FileStatus> changes = RevCommitUtil.getChanges(repository, commit, oldC);
+
+		      dataModel.setFilesStatus(changes);
+		    }
+		  } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
+		    logger.error(e, e);
+		  }
+		} else {
+		  // TODO Actually, the uncommitted changes are the files changed. A diff between head and working copy.
+		  dataModel.setFilesStatus(Collections.emptyList());
+		}
 	}
 
 }
