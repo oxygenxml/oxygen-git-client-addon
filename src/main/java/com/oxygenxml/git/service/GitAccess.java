@@ -120,7 +120,7 @@ public class GitAccess {
 	/**
 	 * A synthetic object representing the uncommitted changes.
 	 */
-  public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(UNCOMMITTED_CHANGES, new Date(), "*", "*", "*", null, null);
+  public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(UNCOMMITTED_CHANGES, null, "*", "*", "*", null, null);
 	/**
 	 * "remote"
 	 */

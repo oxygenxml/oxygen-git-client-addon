@@ -6,13 +6,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
@@ -23,10 +27,54 @@ import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
  * Utility methods for working with commits.
  */
 public class RevCommitUtil {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(RevCommitUtil.class);
+  
   /**
    * Utility class. Not indented to be instantiated.
    */
   private RevCommitUtil() {}
+  
+  /**
+   * Get changed files as compared with the parent version.
+   * 
+   * @param commitID The commit ID.
+   * 
+   * @return A list with changed files. Never <code>null</code>.
+   * 
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  public static List<FileStatus> getChanges(String commitID) throws IOException, GitAPIException {
+    List<FileStatus> changes = Collections.emptyList();
+    try {
+      Repository repository = GitAccess.getInstance().getRepository();
+      if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != commitID) {
+        ObjectId head = repository.resolve(commitID);
+
+        try (RevWalk rw = new RevWalk(repository)) {
+          RevCommit commit = rw.parseCommit(head);
+          
+          if (commit.getParentCount() > 0) {
+            RevCommit oldC = rw.parseCommit(commit.getParent(0));
+
+            changes = RevCommitUtil.getChanges(repository, commit, oldC);
+          } else {
+            changes = RevCommitUtil.getFiles(repository, commit);
+          }
+        }
+      } else {
+        changes = GitAccess.getInstance().getUnstagedFiles();
+      }
+    } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
+      logger.error(e, e);
+    }
+
+    return changes;
+  }
 
   /**
    * Gets all the files changed between two revisions.
@@ -39,7 +87,7 @@ public class RevCommitUtil {
    * @throws IOException
    * @throws GitAPIException
    */
-  public static List<FileStatus> getChanges(Repository repository, RevCommit newCommit, RevCommit oldCommit) throws IOException, GitAPIException {
+  private static List<FileStatus> getChanges(Repository repository, RevCommit newCommit, RevCommit oldCommit) throws IOException, GitAPIException {
     List<FileStatus> collect = Collections.emptyList();
     try (ObjectReader reader = repository.newObjectReader()) {
       CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
@@ -80,7 +128,7 @@ public class RevCommitUtil {
    * @throws IOException If it fails.
    * @throws GitAPIException If it fails.
    */
-  public static List<FileStatus> getFiles(Repository repository, RevCommit commit) throws IOException, GitAPIException {
+  private static List<FileStatus> getFiles(Repository repository, RevCommit commit) throws IOException, GitAPIException {
     List<FileStatus> collect = new LinkedList<>();
 
     try (DiffFormatter diffFmt = new DiffFormatter(NullOutputStream.INSTANCE)) {

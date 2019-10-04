@@ -239,7 +239,7 @@ public class HistoryPanel extends JPanel {
       showCurrentRepoLabel.setToolTipText(directory.getAbsolutePath());
       showCurrentRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
       
-      historyTable.setDefaultRenderer(CommitCharacteristics.class, new HistoryTableRenderer(gitAccess, gitAccess.getRepository()));
+      historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess, gitAccess.getRepository()));
       historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
 
       List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);

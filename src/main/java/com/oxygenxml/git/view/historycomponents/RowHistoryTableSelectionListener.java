@@ -3,7 +3,6 @@ package com.oxygenxml.git.view.historycomponents;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JEditorPane;
@@ -15,13 +14,8 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
@@ -144,27 +138,10 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
 		if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
 		  try {
-		    Repository repository = GitAccess.getInstance().getRepository();
-		    ObjectId head = repository.resolve(commitCharacteristics.getCommitId());
-		    List<String> parentCommitId = commitCharacteristics.getParentCommitId();
-		    ObjectId old = null;
-		    if (parentCommitId != null) {
-          old = repository.resolve(parentCommitId.get(0));
-		    }
+        List<FileStatus> changes = RevCommitUtil.getChanges(commitCharacteristics.getCommitId());
 
-		    try (RevWalk rw = new RevWalk(GitAccess.getInstance().getRepository())) {
-		      RevCommit commit = rw.parseCommit(head);
-		      if (old != null) {
-		        RevCommit oldC = rw.parseCommit(old);
-
-		        List<FileStatus> changes = RevCommitUtil.getChanges(repository, commit, oldC);
-
-		        dataModel.setFilesStatus(changes);
-		      } else {
-		        dataModel.setFilesStatus(RevCommitUtil.getFiles(repository, commit));
-		      }
-		    }
-		  } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
+        dataModel.setFilesStatus(changes);
+		  } catch (GitAPIException | RevisionSyntaxException | IOException e) {
 		    logger.error(e, e);
 		  }
 		} else {

@@ -32,11 +32,11 @@ import sun.swing.DefaultLookup;
  * @Alexandra_Dinisor
  *
  */
-public class HistoryTableRenderer extends JPanel implements TableCellRenderer {
+public class CommitMessageTableRenderer extends JPanel implements TableCellRenderer {
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(HistoryTableRenderer.class);
+	private static Logger logger = Logger.getLogger(CommitMessageTableRenderer.class);
 
 	/**
 	 * Git access.
@@ -54,7 +54,7 @@ public class HistoryTableRenderer extends JPanel implements TableCellRenderer {
 	 * @param gitAccess  The gitAccess instance
 	 * @param repository The current repository
 	 */
-	public HistoryTableRenderer(GitAccess gitAccess, Repository repository) {
+	public CommitMessageTableRenderer(GitAccess gitAccess, Repository repository) {
 		this.gitAccess = gitAccess;
 		this.repository = repository;
 
