@@ -11,6 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Highlighter;
@@ -188,7 +189,8 @@ public class BlamePerformer {
               activeRevCommit = nextRevCommit;
               textArea.repaint();
 
-              historyController.showCommit(filePath, activeRevCommit);
+              SwingUtilities.invokeLater(() -> {historyController.showCommit(filePath, activeRevCommit);});
+              
             }
           } catch (BadLocationException e1) {
             if (LOGGER.isDebugEnabled()) {

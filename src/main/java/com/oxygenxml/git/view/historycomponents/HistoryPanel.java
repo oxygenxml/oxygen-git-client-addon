@@ -222,6 +222,15 @@ public class HistoryPanel extends JPanel {
    * Shows the commit history for the entire repository.
    */
   public void showRepositoryHistory() {
+    showHistory(null);
+  }
+
+  /**
+   * Shows the commit history for the entire repository.
+   * 
+   * @param filePath File for which to present the commit that changed him.
+   */
+  public void showHistory(String filePath) {
     GitAccess gitAccess = GitAccess.getInstance();
     try {
       File directory = gitAccess.getWorkingCopy();
@@ -233,7 +242,7 @@ public class HistoryPanel extends JPanel {
       historyTable.setDefaultRenderer(CommitCharacteristics.class, new HistoryTableRenderer(gitAccess, gitAccess.getRepository()));
       historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
 
-      List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics();
+      List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
 
       historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
       
@@ -287,7 +296,8 @@ public class HistoryPanel extends JPanel {
    * @param activeRevCommit The commit to select in the view.
    */
   public void showCommit(String filePath, RevCommit activeRevCommit) {
-    // TODO Present revisions just for the given resource.
+    // TODO Check if we don't already present the history for this path!!!!
+    showHistory(filePath);
     if (activeRevCommit != null) {
       HistoryCommitTableModel model =  (HistoryCommitTableModel) historyTable.getModel();
       List<CommitCharacteristics> commitVector = model.getCommitVector();
@@ -296,12 +306,9 @@ public class HistoryPanel extends JPanel {
 
         if (activeRevCommit.getId().getName().equals(commitCharacteristics.getCommitId())) {
           final int sel = i;
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              historyTable.scrollRectToVisible(historyTable.getCellRect(sel, 0, true));
-              historyTable.getSelectionModel().setSelectionInterval(sel, sel);
-            }
+          SwingUtilities.invokeLater(() -> {
+            historyTable.scrollRectToVisible(historyTable.getCellRect(sel, 0, true));
+            historyTable.getSelectionModel().setSelectionInterval(sel, sel);
           });
           break;
         }

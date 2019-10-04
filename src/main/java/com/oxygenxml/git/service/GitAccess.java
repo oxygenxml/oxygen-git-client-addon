@@ -1899,9 +1899,12 @@ public class GitAccess {
 	/**
 	 * Compute a Vector with the characteristics of each commit.
 	 * 
+	 * @param filePath A resource for which we are interested in its history. If <code>null</code>, 
+	 * the repository history will be computed.
+	 * 
 	 * @return a Vector with commits characteristics of the current repository.
 	 */
-	public List<CommitCharacteristics> getCommitsCharacteristics() {
+	public List<CommitCharacteristics> getCommitsCharacteristics(String filePath) {
 		List<CommitCharacteristics> commitVector = new ArrayList<>();
 
 		try {
@@ -1917,6 +1920,10 @@ public class GitAccess {
 			try (RevWalk revWalk = new RevWalk(repository)) {
 				for (Ref ref : allRefs) {
 					revWalk.markStart(revWalk.parseCommit(ref.getObjectId()));
+				}
+				
+				if (filePath != null) { 
+				  revWalk.setTreeFilter(PathFilter.create(filePath));
 				}
 
 				for (RevCommit commit : revWalk) {

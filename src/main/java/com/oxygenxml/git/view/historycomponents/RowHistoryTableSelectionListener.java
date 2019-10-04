@@ -146,21 +146,29 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		  try {
 		    Repository repository = GitAccess.getInstance().getRepository();
 		    ObjectId head = repository.resolve(commitCharacteristics.getCommitId());
-		    ObjectId old = repository.resolve(commitCharacteristics.getParentCommitId().get(0));
+		    List<String> parentCommitId = commitCharacteristics.getParentCommitId();
+		    ObjectId old = null;
+		    if (parentCommitId != null) {
+          old = repository.resolve(parentCommitId.get(0));
+		    }
 
 		    try (RevWalk rw = new RevWalk(GitAccess.getInstance().getRepository())) {
 		      RevCommit commit = rw.parseCommit(head);
-		      RevCommit oldC = rw.parseCommit(old);
-		      List<FileStatus> changes = RevCommitUtil.getChanges(repository, commit, oldC);
+		      if (old != null) {
+		        RevCommit oldC = rw.parseCommit(old);
 
-		      dataModel.setFilesStatus(changes);
+		        List<FileStatus> changes = RevCommitUtil.getChanges(repository, commit, oldC);
+
+		        dataModel.setFilesStatus(changes);
+		      } else {
+		        dataModel.setFilesStatus(RevCommitUtil.getFiles(repository, commit));
+		      }
 		    }
 		  } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
 		    logger.error(e, e);
 		  }
 		} else {
-		  // TODO Actually, the uncommitted changes are the files changed. A diff between head and working copy.
-		  dataModel.setFilesStatus(Collections.emptyList());
+		  dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles());
 		}
 	}
 
