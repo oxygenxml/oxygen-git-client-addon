@@ -4,6 +4,62 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Restart_merge_confirmation">
+        <comment>Confirmation message for "Restart merge"</comment>
+        <val lang="en_US">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
+        <val lang="de_DE">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Mine">
+        <comment>Mine</comment>
+        <val lang="en_US">Mine</val>
+        <val lang="de_DE">Meins</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Mine">
+        <comment>Mine</comment>
+        <val lang="en_US">Mine</val>
+        <val lang="de_DE">Meins</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Theirs">
+        <comment>Theirs</comment>
+        <val lang="en_US">Theirs</val>
+        <val lang="de_DE">Ihres</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="The_working_branch">
+        <comment>The working branch</comment>
+        <val lang="en_US">the working branch</val>
+        <val lang="de_DE">the working branch</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="The_upstream_branch">
+        <comment>The upstream branch</comment>
+        <val lang="en_US">the upstream branch</val>
+        <val lang="de_DE">the upstream branch</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Continue_resolving_rebase_conflict_using_mine_or_theirs">
+        <comment>Message shown when invoking "Resolve using Mine" or "Resolve using Theirs" for a conflict generated when trying to rebase.</comment>
+        <val lang="en_US">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
+        <val lang="de_DE">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
     <key value="Cannot_continue_rebase_because_of_conflicts">
         <comment>Message shown when rebasing cannot continue because of conflicts.</comment>
         <val lang="en_US">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
@@ -477,7 +533,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Open_In_Compare">
+    <key value="Open_In_Compare">
         <comment>The text displayed for the "Open in compare editor" contextual menu item </comment>
         <val lang="en_US">Open in compare editor</val>
         <val lang="de_DE">Änderungen anzeigen</val>
@@ -485,7 +541,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Open">
+    <key value="Open">
         <comment>The text displayed for the "Open" contextual menu item</comment>
         <val lang="en_US">Open</val>
         <val lang="de_DE">Öffnen</val>
@@ -493,7 +549,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Unstage">
+    <key value="Unstage">
         <comment>The text displayed for the "Unstage" contextual menu item</comment>
         <val lang="en_US">Unstage</val>
         <val lang="de_DE">Nicht mehr vormerken</val>
@@ -501,7 +557,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Stage">
+    <key value="Stage">
         <comment>The text displayed for the "Stage" contextual menu item</comment>
         <val lang="en_US">Stage</val>
         <val lang="de_DE">Für Commit vormerken</val>
@@ -509,15 +565,15 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Resolve_Conflict">
-        <comment>The text displayed for the "Resolve_Conflict" contextual menu item</comment>
+    <key value="Resolve_Conflict">
+        <comment>The text displayed for "Resolve_Conflict".</comment>
         <val lang="en_US">Resolve Conflict</val>
         <val lang="de_DE">Konflikt lösen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Discard">
+    <key value="Discard">
         <comment>The text displayed for the "Discard" contextual menu item</comment>
         <val lang="en_US">Discard</val>
         <val lang="de_DE">Änderung verwerfen</val>
@@ -525,7 +581,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Discard_Confirmation_Message">
+    <key value="Discard_Confirmation_Message">
         <comment>The text displayed when you click on the "Discard" contextual menu item</comment>
         <val lang="en_US">Are you sure you want to discard your changes?</val>
         <val lang="de_DE">Sind Sie sicher, dass Sie die Änderungen verwerfen wollen?</val>
@@ -533,23 +589,23 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Resolve_Using_Mine">
-        <comment>The text displayed for the "Resolve Using "Mine" " contextual menu item</comment>
+    <key value="Resolve_Using_Mine">
+        <comment>The text displayed for " Resolve Using "Mine" ".</comment>
         <val lang="en_US">Resolve Using "Mine"</val>
         <val lang="de_DE">Konflikt lösen mit "Meins"</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Resolve_Using_Theirs">
-        <comment>The text displayed for the "Resolve Using "Theirs" " contextual menu item</comment>
+    <key value="Resolve_Using_Theirs">
+        <comment>The text displayed for " Resolve Using "Theirs" ".</comment>
         <val lang="en_US">Resolve Using "Theirs"</val>
         <val lang="de_DE">Konflikt lösen mit "Ihres"</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Restart_Merge">
+    <key value="Restart_Merge">
         <comment>The text displayed for the "Restart Merge " contextual menu item</comment>
         <val lang="en_US">Restart Merge</val>
         <val lang="de_DE">Merge erneut starten</val>
@@ -557,7 +613,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Mark_Resolved">
+    <key value="Mark_Resolved">
         <comment>The text displayed for the "Mark Resolved" contextual menu item</comment>
         <val lang="en_US">Mark Resolved</val>
         <val lang="de_DE">Als gelöst markieren</val>
@@ -813,7 +869,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Project_View_Git_Contextual_Menu_Item">
+    <key value="Git">
         <comment>The text displayed for the "Git" contextual menu item in the project view </comment>
         <val lang="en_US">Git</val>
         <val lang="de_DE">Git</val>
@@ -821,7 +877,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Project_View_Git_Diff_Contextual_Menu_Item">
+    <key value="Git_Diff">
         <comment>The text displayed for the "Git Diff" contextual menu item in the project view </comment>
         <val lang="en_US">Git Diff</val>
         <val lang="de_DE">Git-Diff</val>
@@ -829,7 +885,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Project_View_Commit_Contextual_Menu_Item">
+    <key value="Commit">
         <comment>The text displayed for the "Commit" contextual menu item in the project view </comment>
         <val lang="en_US">Commit</val>
         <val lang="de_DE">Commit</val>

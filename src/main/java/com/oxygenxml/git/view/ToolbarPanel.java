@@ -25,6 +25,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.constants.UIConstants;
@@ -427,13 +429,24 @@ public class ToolbarPanel extends JPanel {
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
 		String branchInfoText = "";
 		if (branchInfo.isDetached()) {
-			branchInfoText += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
-			remoteAndBranchInfoLabel.setToolTipText(
-			    translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
-			        + " "
-							+ branchInfo.getBranchName());
-				pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
-				pullMenuButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
+		  Repository repo = null;
+		  try {
+		    repo = GitAccess.getInstance().getRepository();
+		  } catch (NoRepositorySelected e) {
+		    logger.debug(e, e);
+		  }
+      branchInfoText += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
+		  String tooltipText = "<html>"
+		      + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
+		      + " "
+		      + branchInfo.getBranchName();
+		  if (repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
+		    tooltipText += "<br>" + translator.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
+		  }
+		  tooltipText += "</html>";
+		  remoteAndBranchInfoLabel.setToolTipText(tooltipText);
+		  pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
+		  pullMenuButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		} else {
 			String currentBranch = branchInfo.getBranchName();
 			branchInfoText = "<html><b>" + currentBranch + "</b></html>";

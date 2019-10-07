@@ -19,8 +19,9 @@ public class UIConstants {
 	public static final int COMPONENT_LEFT_PADDING = 3;
 	public static final int COMPONENT_RIGHT_PADDING = 3;
 	public static final int PANEL_WIDTH = 320;
-	public static final int TOOLBAR_PANEL_HEIGHT = 40;
-	public static final int WORKINGCOPY_PANEL_HEIGHT = 40;
-	public static final int STAGING_PANEL_HEIGHT = 0;
-	public static final int COMMIT_PANEL_HEIGHT = 140;
+	public static final int TOOLBAR_PANEL_HEIGHT = 35;
+	public static final int WORKINGCOPY_PANEL_HEIGHT = 35;
+	public static final int STAGING_PANEL_MIN_HEIGHT = 75;
+	public static final int COMMIT_PANEL_MIN_HEIGHT = 130;
+	public static final int COMMIT_PANEL_PREF_HEIGHT = 150;
 }

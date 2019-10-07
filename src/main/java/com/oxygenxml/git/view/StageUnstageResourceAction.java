@@ -42,8 +42,8 @@ public class StageUnstageResourceAction extends AbstractAction {
       List<FileStatus> fileStatuses,
       boolean isStage,
       StageController stageCtrl) {
-    super(isStage ? Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_STAGE)
-        : Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_UNSTAGE));
+    super(isStage ? Translator.getInstance().getTranslation(Tags.STAGE)
+        : Translator.getInstance().getTranslation(Tags.UNSTAGE));
     this.fileStatuses = fileStatuses;
     this.isStage = isStage;
     this.stageCtrl = stageCtrl;

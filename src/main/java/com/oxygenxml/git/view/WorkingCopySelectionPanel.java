@@ -319,7 +319,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	  gbc.gridx = 1;
 	  gbc.gridy = 0;
 	  gbc.weightx = 1;
-	  gbc.weighty = 1;
+	  gbc.weighty = 0;
 
 	  workingCopyCombo = new JComboBox<>();
 	  WorkingCopyToolTipRenderer renderer = new WorkingCopyToolTipRenderer();

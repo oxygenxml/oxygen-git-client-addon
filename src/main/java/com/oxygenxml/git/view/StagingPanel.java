@@ -184,7 +184,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		splitPane.add(unstagedChangesPanel);
 		splitPane.add(stagedChangesPanel);
 		splitPane.add(commitPanel);
-		splitPane.setDividerSize(15);
+		splitPane.setDividerSize(10);
 		splitPane.setContinuousLayout(true);
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setBorder(null);

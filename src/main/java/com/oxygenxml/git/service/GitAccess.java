@@ -1816,15 +1816,25 @@ public class GitAccess {
 	 */
 	public void restartMerge() {
 		try {
-			AnyObjectId commitToMerge = git.getRepository().resolve("MERGE_HEAD");
-			git.clean().call();
-			git.reset().setMode(ResetType.HARD).call();
-			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
+		  // TODO: TC for restart rebase merge
+		  RepositoryState repositoryState = getRepository().getRepositoryState();
+			if (repositoryState == RepositoryState.REBASING_MERGE) {
+			  abortRebase();
+			  UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
+		    String username = gitCredentials.getUsername();
+		    String password = gitCredentials.getPassword();
+			  pull(username, password, PullType.REBASE);
+			} else {
+			  AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
+			  git.clean().call();
+			  git.reset().setMode(ResetType.HARD).call();
+			  git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
+			}
 			
 			fireFileStateChanged(new ChangeEvent(GitCommand.MERGE_RESTART, Collections.<String> emptyList()));
-		} catch (GitAPIException | IOException e) {
+    } catch (IOException | NoRepositorySelected | GitAPIException e) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(END_FETCH_DEBUG_MESSAGE);
+				logger.debug(e, e);
 			}
 		}
 	}

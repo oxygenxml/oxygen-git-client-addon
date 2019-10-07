@@ -23,30 +23,30 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessPullTest {
-	protected final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/local";
+	protected final static String FIRST_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/local";
 	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessPullTest/local2";
 	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/remote";
-	private Repository db1;
-	private Repository db2;
-	private Repository db3;
+	private Repository localRepo1;
+	private Repository localRepo2;
+	private Repository remoteRepo;
 	protected GitAccess gitAccess;
 
 	@Before
 	public void init() throws Exception {
 		gitAccess = GitAccess.getInstance();
-		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
-		db1 = gitAccess.getRepository();
+		gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITPRY);
+		localRepo1 = gitAccess.getRepository();
 		gitAccess.createNewRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		db2 = gitAccess.getRepository();
+		localRepo2 = gitAccess.getRepository();
 		gitAccess.createNewRepository(REMOTE_TEST_REPOSITPRY);
-		db3 = gitAccess.getRepository();
+		remoteRepo = gitAccess.getRepository();
 
-		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
-		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
+		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+		File file = new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
 		file.createNewFile();	
 		StoredConfig config = gitAccess.getRepository().getConfig();
 		RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
-		URIish uri = new URIish(db3.getDirectory().toURI().toURL());
+		URIish uri = new URIish(remoteRepo.getDirectory().toURI().toURL());
 		remoteConfig.addURI(uri);
 		RefSpec spec1 = new RefSpec("+refs/heads/*:refs/remotes/origin/*");
     remoteConfig.addFetchRefSpec(spec1);
@@ -56,7 +56,7 @@ public class GitAccessPullTest {
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		config = gitAccess.getRepository().getConfig();
 		remoteConfig = new RemoteConfig(config, "origin");
-		uri = new URIish(db3.getDirectory().toURI().toURL());
+		uri = new URIish(remoteRepo.getDirectory().toURI().toURL());
 		remoteConfig.addURI(uri);
 		RefSpec spec = new RefSpec("+refs/heads/*:refs/remotes/origin/*");
 		remoteConfig.addFetchRefSpec(spec);
@@ -100,7 +100,7 @@ public class GitAccessPullTest {
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();
 		
-		PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
+		PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
 		out.println("teeeeeest");
 		out.close();
 		
@@ -124,10 +124,10 @@ public class GitAccessPullTest {
     WindowCache.getInstance().cleanup();
 
 		gitAccess.closeRepo();
-		db1.close();
-		db2.close();
-		db3.close();
-		File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
+		localRepo1.close();
+		localRepo2.close();
+		remoteRepo.close();
+		File dirToDelete = new File(FIRST_LOCAL_TEST_REPOSITPRY);
 		try {
 			FileUtils.deleteDirectory(dirToDelete);
 			dirToDelete = new File(REMOTE_TEST_REPOSITPRY);
@@ -145,10 +145,10 @@ public class GitAccessPullTest {
 	 * @throws Exception If it fails.
 	 */
 	protected void pushOneFileToRemote() throws Exception {
-		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
-		OptionsManager.getInstance().saveSelectedRepository(LOCAL_TEST_REPOSITPRY);
+		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+		OptionsManager.getInstance().saveSelectedRepository(FIRST_LOCAL_TEST_REPOSITPRY);
 
-		PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
+		PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
 		out.println("hellllo");
 		out.close();
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));

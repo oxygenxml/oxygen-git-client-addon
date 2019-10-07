@@ -152,6 +152,13 @@ public class PushPullController implements Subject<PushPullEvent> {
         e.getConflictingPaths(), 
         translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
   }
+  
+  /**
+   * Show the "Interrupted rebase" dialog. It allows the user to continue or abort the rebase.
+   */
+  protected void showInterruptedRebaseDialog() {
+    new InterruptedRebaseDialog().setVisible(true);
+  }
 
   /**
    * Execute push / pull.
@@ -294,7 +301,7 @@ public class PushPullController implements Subject<PushPullEvent> {
             .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
       } else if (repositoryState == RepositoryState.REBASING_MERGE
           || repositoryState == RepositoryState.REBASING_REBASING) {
-        new InterruptedRebaseDialog().setVisible(true);
+        showInterruptedRebaseDialog();
       } else {
         PullResponse response = gitAccess.pull(
             userCredentials.getUsername(),
