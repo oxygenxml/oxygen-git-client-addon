@@ -1914,13 +1914,13 @@ public class GitAccess {
 				commitVector.add(UNCOMMITED_CHANGES);
 			}
 
-			Collection<Ref> allRefs = repository.getAllRefs().values();
+			// EXM-44307 Show current branch commits only.
+			String fullBranch = repository.getFullBranch();
+			Ref branchHead = repository.exactRef(fullBranch);
 
 			// a RevWalk allows to walk over commits based on some filtering that is defined
 			try (RevWalk revWalk = new RevWalk(repository)) {
-				for (Ref ref : allRefs) {
-					revWalk.markStart(revWalk.parseCommit(ref.getObjectId()));
-				}
+			  revWalk.markStart(revWalk.parseCommit(branchHead.getObjectId()));
 				
 				if (filePath != null) { 
 				  revWalk.setTreeFilter(PathFilter.create(filePath));

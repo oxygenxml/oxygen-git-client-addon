@@ -72,7 +72,6 @@ public class GitHistoryTest extends GitTestBase {
   }
   
   /**
-   * TODO
    * Tests the files that are contained in each commit.
    * 
    * @throws Exception
@@ -80,7 +79,6 @@ public class GitHistoryTest extends GitTestBase {
   @Test
   public void testCommitFiles() throws Exception {
     File repository = new File("target/test-resources/repos/history");
-
 
     File gitRepos = initRepository(repository);
     try {
@@ -132,8 +130,8 @@ public class GitHistoryTest extends GitTestBase {
         assertEquals("Unnexpected file list for commit id " + commitID, expected.get(commitID), fileLists.get(commitID));
       }
     } finally {
-      cleanRepository(gitRepos);
       GitAccess.getInstance().close();
+      cleanRepository(gitRepos);
     }
   }
 
@@ -165,7 +163,7 @@ public class GitHistoryTest extends GitTestBase {
    */
   private void cleanRepository(File gitRepos) {
     File originalRepos = new File(gitRepos.getParentFile(), "git");
-    FileSystemUtil.renameFileTo(gitRepos, gitRepos);
+    FileSystemUtil.renameFileTo(gitRepos, originalRepos);
   }
 
   /**
@@ -181,6 +179,125 @@ public class GitHistoryTest extends GitTestBase {
     commitsCharacteristics.stream().forEach(t -> b.append(t).append("\n"));
 
     return b.toString();
+  }
+
+  /**
+   * We have a repository with multiple branches. The history should present the history for the current branch only.
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testHistoryBranch() throws Exception {
+    URL resource = getClass().getClassLoader().getResource("repos/history-branches");
+    File repository = URLUtil.getCanonicalFileFromFileUrl(resource);
+  
+    File gitRepos = initRepository(repository);
+    try {
+      String absolutePath = repository.getAbsolutePath();
+      GitAccess.getInstance().setRepository(absolutePath);
+      
+      System.out.println(GitAccess.getInstance().getGitForTests().status().call().hasUncommittedChanges());
+      
+      GitAccess.getInstance().setBranch("master");
+  
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+  
+      String dump = dump(commitsCharacteristics);
+  
+      assertEquals(
+          "[ Changed on master branch.\n" + 
+          " , Mon Oct 07 09:34:51 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 7267d76 , 7267d76288835637cb349090f2fe2e903d887e22 , AlexJitianu , [011cd47] ]\n" + 
+          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
+          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
+          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
+          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
+          "", dump);
+  
+  
+      GitAccess.getInstance().setBranch("feature");
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+  
+      dump = dump(commitsCharacteristics);
+  
+      assertEquals(
+          "[ Changed on feature branch.\n" + 
+          " , Mon Oct 07 09:33:45 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 679624f , 679624f7aa1f4a60a31cff9d31c4c9307118cd98 , AlexJitianu , [a227369] ]\n" + 
+          "[ Feature branch commit.\n" + 
+          " , Mon Oct 07 09:32:44 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , a227369 , a227369a580868f45c9764995f8da36a095c424e , AlexJitianu , [011cd47] ]\n" + 
+          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
+          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
+          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
+          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
+          "", dump);
+    } finally {
+      GitAccess.getInstance().close();
+      cleanRepository(gitRepos);
+    }
+  }
+
+  /**
+   * We have a repository with multiple branches. The history should present the history for the current branch only.
+   * When a branch is merged into another, the common revisions appear in both branches.
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testHistoryBranchMerged() throws Exception {
+    URL resource = getClass().getClassLoader().getResource("repos/history-branches-merged");
+    File repository = URLUtil.getCanonicalFileFromFileUrl(resource);
+  
+    File gitRepos = initRepository(repository);
+    try {
+      String absolutePath = repository.getAbsolutePath();
+      GitAccess.getInstance().setRepository(absolutePath);
+      
+      System.out.println(GitAccess.getInstance().getGitForTests().status().call().hasUncommittedChanges());
+      
+      GitAccess.getInstance().setBranch("master");
+  
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+  
+      String dump = dump(commitsCharacteristics);
+  
+      assertEquals(
+          "[ Another commit on master.\n" + 
+          " , Mon Oct 07 10:04:34 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 8b3feaa , 8b3feaa9ba6243326534c9cc4e624196033f9a1a , AlexJitianu , [c0672a3] ]\n" + 
+          "[ Merge branch 'feature'\n" + 
+          " , Mon Oct 07 09:55:41 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , c0672a3 , c0672a3e109ba28879c043e8d7945110dfe2c683 , AlexJitianu , [7267d76, 679624f] ]\n" + 
+          "[ Changed on master branch.\n" + 
+          " , Mon Oct 07 09:34:51 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 7267d76 , 7267d76288835637cb349090f2fe2e903d887e22 , AlexJitianu , [011cd47] ]\n" + 
+          "[ Changed on feature branch.\n" + 
+          " , Mon Oct 07 09:33:45 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 679624f , 679624f7aa1f4a60a31cff9d31c4c9307118cd98 , AlexJitianu , [a227369] ]\n" + 
+          "[ Feature branch commit.\n" + 
+          " , Mon Oct 07 09:32:44 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , a227369 , a227369a580868f45c9764995f8da36a095c424e , AlexJitianu , [011cd47] ]\n" + 
+          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
+          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
+          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
+          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
+          "", dump);
+  
+  
+      GitAccess.getInstance().setBranch("feature");
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+  
+      dump = dump(commitsCharacteristics);
+  
+      assertEquals(
+          "[ Anotehr commit of feature branch.\n" + 
+          " , Mon Oct 07 10:05:10 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 4aebeb5 , 4aebeb5b67a28a5af43e9cb3682d926bd05758b2 , AlexJitianu , [679624f] ]\n" + 
+          "[ Changed on feature branch.\n" + 
+          " , Mon Oct 07 09:33:45 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 679624f , 679624f7aa1f4a60a31cff9d31c4c9307118cd98 , AlexJitianu , [a227369] ]\n" + 
+          "[ Feature branch commit.\n" + 
+          " , Mon Oct 07 09:32:44 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , a227369 , a227369a580868f45c9764995f8da36a095c424e , AlexJitianu , [011cd47] ]\n" + 
+          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
+          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
+          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
+          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
+          "", dump);
+    } finally {
+      GitAccess.getInstance().close();
+      cleanRepository(gitRepos);
+    }
   }
 
 }
