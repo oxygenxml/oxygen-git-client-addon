@@ -212,25 +212,6 @@
 								</resources>
 							</configuration>
 						</execution>
-						
-						<execution>
-							<id>copy-test-resources</id>
-							<!-- here the phase you need -->
-							<phase>test</phase>
-							<goals>
-								<goal>testResources</goal>
-							</goals>
-							<configuration>
-								<outputDirectory>${basedir}/target/test-resources/repos</outputDirectory>
-								<resources>
-									<resource>
-										<directory>${project.basedir}/src/test/resources/repos</directory>
-										
-									</resource>
-								</resources>
-							</configuration>
-						</execution>
-						
 					</executions>
 				</plugin>
 			</plugins>

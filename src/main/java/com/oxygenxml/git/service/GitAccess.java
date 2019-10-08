@@ -59,6 +59,7 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
+import org.eclipse.jgit.lib.BranchConfig;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
@@ -1781,6 +1782,39 @@ public class GitAccess {
 		Repository repository = GitAccess.getInstance().getRepository();
 		return repository.getConfig().getString("branch", branchName, REMOTE);
 	}
+	
+	/**
+	 * Gets the full remote-tracking branch name or null is the local branch is not tracking a remote branch.
+	 * 
+	 * ex: refs/remotes/origin/dev
+	 * 
+	 * @param branchName The short branch name.
+	 * 
+	 * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
+	 */
+	public String getUpstreamBranch(String branchName) throws NoRepositorySelected {
+    BranchConfig branchConfig = new BranchConfig(git.getRepository().getConfig(), branchName);
+    return branchConfig.getRemoteTrackingBranch();
+  }
+	
+	 /**
+   * Gets Get a shortened more user friendly ref name for the remote-tracking branch name or null is the local branch is not tracking a remote branch.
+   * 
+   * ex: origin/dev
+   * 
+   * @param branchName The short branch name.
+   * 
+   * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
+   */
+	public String getUpstreamBranchShort(String branchName) throws NoRepositorySelected {
+	  String remoteTrackingBranch = getUpstreamBranch(branchName);
+
+	  if (remoteTrackingBranch != null) {
+	    return org.eclipse.jgit.lib.Repository.shortenRefName(remoteTrackingBranch);
+	  }
+
+	  return null;
+	}
 
 	/**
 	 * Returns the SHA-1 commit id for a file by specifying what commit to get for
@@ -1914,13 +1948,23 @@ public class GitAccess {
 				commitVector.add(UNCOMMITED_CHANGES);
 			}
 
-			// EXM-44307 Show current branch commits only.
-			String fullBranch = repository.getFullBranch();
-			Ref branchHead = repository.exactRef(fullBranch);
-
 			// a RevWalk allows to walk over commits based on some filtering that is defined
 			try (RevWalk revWalk = new RevWalk(repository)) {
+			  // EXM-44307 Show current branch commits only.
+			  String fullBranch = repository.getFullBranch();
+			  Ref branchHead = repository.exactRef(fullBranch);
 			  revWalk.markStart(revWalk.parseCommit(branchHead.getObjectId()));
+
+			  // If we have a remote, put it as well.
+			  String fullRemoteBranchName = getUpstreamBranch(repository.getBranch());
+			  System.out.println("fullRemoteBranchName " + fullRemoteBranchName);
+			  if (fullRemoteBranchName != null) {
+			    // TODO Should we fetch???
+			    Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
+			    if (fullRemoteBranchHead != null) {
+			      revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
+			    }
+			  }
 				
 				if (filePath != null) { 
 				  revWalk.setTreeFilter(PathFilter.create(filePath));
@@ -2022,30 +2066,25 @@ public class GitAccess {
 	public Map<String, List<String>> getBranchMap(Repository repository, String branchType) {
 		Map<String, List<String>> branchMap = new LinkedHashMap<>();
 		
-		String HEADS = "heads/";
-		String REMOTES = "remotes/";
-		
+		List<Ref> localBranchList = null;
+		String prefix = null;
 		if (branchType.equals(LOCAL)) {
-			List<Ref> localBranchList = getLocalBranchList();
-			List<String> branchList = new ArrayList<>();
-			for (Ref ref : localBranchList) {
-			  // refresh and populate local branch list for each commit
-				int refIdx = ref.getName().indexOf(HEADS) + HEADS.length();
-				String branchName = ref.getName().substring(refIdx);
-				branchList.add(branchName);
-				branchMap.put(ref.getObjectId().getName().toString().substring(0, 7), branchList);
-			}
+			localBranchList = getLocalBranchList();
+			prefix = "heads/";
 		} else if (branchType.equals(REMOTE)) {
-			List<Ref> remoteBranchList = getRemoteBrachListForCurrentRepo();
-			List<String> branchList = new ArrayList<>();
-			for (Ref ref : remoteBranchList) {
-				// refresh and populate remote branch list for each commit
-				int refIdx = ref.getName().indexOf(REMOTES) + REMOTES.length();
-				String branchName = ref.getName().substring(refIdx);
-				branchList.add(branchName);
-				branchMap.put(ref.getObjectId().getName().toString().substring(0, 7), branchList);
-			}
+			localBranchList = getRemoteBrachListForCurrentRepo();
+			prefix = "remotes/";
 		}
+		
+		for (Ref ref : localBranchList) {
+      // refresh and populate local branch list for each commit
+      int refIdx = ref.getName().indexOf(prefix) + prefix.length();
+      String branchName = ref.getName().substring(refIdx);
+      
+      String commit = ref.getObjectId().getName().substring(0, 7);
+      List<String> values = branchMap.computeIfAbsent(commit, t -> new ArrayList<>());
+      values.add(branchName);
+    }
 
 		return branchMap;
 	}

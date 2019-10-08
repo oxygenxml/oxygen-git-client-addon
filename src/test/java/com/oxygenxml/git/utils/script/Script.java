@@ -1,0 +1,217 @@
+package com.oxygenxml.git.utils.script;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.MergeResult;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.junit.Test;
+
+import com.oxygenxml.git.service.GitAccess;
+
+/**
+ * A Git repository creation script. 
+ */
+@XmlRootElement(name = "script")
+public class Script {
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(Script.class);
+  /**
+   * A set of changes to be applied on the repository.
+   */
+  @XmlElement(name = "changeSet")
+  ArrayList<ChangeSet> changeSet;
+
+  /**
+   * Executes the change in the context of the given working tree directory.
+   * 
+   * @param wcTree Working tree directory.
+   * @param c Change to execute.
+   * 
+   * @throws IOException If it fails.
+   */
+  private static void applyChange(File wcTree, Change c) throws IOException {
+    File f = new File(wcTree, c.path);
+    f.getParentFile().mkdirs();
+    
+    if (logger.isDebugEnabled()) {
+      logger.debug(c.path + " " + c.type);
+    }
+    if (c.type.equals("delete")) {
+      f.delete();
+    } else {
+      FileUtils.writeStringToFile(f, c.content, "UTF-8");
+    }
+  }
+
+  /**
+   * Generate a repository using the given script.
+   * 
+   * @param script Operations to be performed on the repository.
+   * @param wcTree Working tree location.
+   */
+  public static void generateRepository(Script script, File wcTree) {
+    initGit(wcTree);
+    
+    script.changeSet.forEach(ch -> applyChanges(wcTree, ch));
+  }
+
+  /**
+   * Generate a repository using the given script.
+   * 
+   * @param script Operations to be performed on the repository.
+   * @param wcTree Working tree location.
+   */
+  public static void generateRepository(URL script, File wcTree) throws Exception {
+    try (Reader r = new InputStreamReader(script.openStream(), "UTF-8")) {
+    generateRepository(loadScript(IOUtils.toString(r)), wcTree);
+    }
+  }
+
+  /**
+   * Create a new repository.
+   * 
+   * @param wcTree Working tree directory.
+   */
+  private static void initGit(File wcTree) {
+    wcTree.mkdirs();
+    GitAccess.getInstance().createNewRepository(wcTree.getAbsolutePath());
+  }
+
+  /**
+   * Loads the given script.
+   * 
+   * @param script Serizlied script.
+   * 
+   * @return The script object.
+   * 
+   * @throws JAXBException Fails to load the script.
+   */
+  static Script loadScript(String script) throws JAXBException {
+    JAXBContext jaxbContext = JAXBContext.newInstance(Script.class);
+    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+     
+    //We had written this file in marshalling example
+    Script emps = (Script) jaxbUnmarshaller.unmarshal(new StringReader(script));
+    return emps;
+  }
+
+  /**
+   * Applies the set of changes on the repository.
+   * 
+   * @param wcTree Working tree directory.
+   * @param ch Change set.
+   */
+  private static void applyChanges(File wcTree, ChangeSet ch) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("change set " + ch.message);
+    }
+    
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug(ch.branch);
+      }
+      if (ch.branch != null) {
+        boolean anyMatch = GitAccess.getInstance().getLocalBranchList().stream().anyMatch(r -> ch.branch.equals(Repository.shortenRefName(r.getName())));
+        if (logger.isDebugEnabled()) {
+          logger.debug("Branch detected " + anyMatch);
+        }
+        if (!anyMatch) {
+          try {
+            // Not sure why we need this. Without it, the order of changes is messed up. 
+            Thread.sleep(1000);
+          } catch (InterruptedException e1) {
+            logger.error(e1, e1);
+          }
+          GitAccess.getInstance().createBranch(ch.branch);
+          GitAccess.getInstance().setBranch(ch.branch);
+        } else {
+          GitAccess.getInstance().setBranch(ch.branch);
+        }
+
+        if (logger.isDebugEnabled()) {
+          logger.debug("On branch " + GitAccess.getInstance().getBranchInfo().getBranchName());
+        }
+
+        if (ch.mergeBranch != null) {
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e1) {
+            // Not sure why we need this. Without it the order of changes is messed up.
+            logger.error(e1, e1);
+          }
+
+          List<Ref> collect = GitAccess.getInstance().getLocalBranchList().stream().filter(r -> ch.mergeBranch.equals(Repository.shortenRefName(r.getName()))).collect(Collectors.toList());
+          MergeResult call = GitAccess.getInstance().getGitForTests().merge().setMessage(ch.message).include(collect.get(0)).call();
+
+          if (logger.isDebugEnabled()) {
+            logger.debug("Merge result: " + call);
+          }
+        }
+      }
+    } catch (Exception ex) {
+      logger.error(ex, ex);
+    }
+    
+    if (ch.changes != null) {
+      ch.changes.forEach(c -> {
+        try {
+          applyChange(wcTree, c);
+          GitAccess.getInstance().add(c.toFileStatus());
+        } catch (IOException e) {
+          logger.error(e, e);
+        }
+      });
+      
+      try {
+        GitAccess.getInstance().getGitForTests().commit().setAuthor("Alex", "alex_jitianu@sync.ro").setMessage(ch.message).call();
+      } catch (GitAPIException e) {
+        logger.error(e, e);
+      }
+    }
+  }
+
+  @Test
+  public void generateGitRepository() throws Exception {
+    Script script = loadScript(
+        "<script>\n" + 
+        "    <changeSet message=\"First commit.\">\n" + 
+        "        <change path=\"f1/file1.txt\" type=\"add\">file 1 content</change>\n" + 
+        "        <change path=\"f2/file2.txt\" type=\"add\">file 2 content</change>\n" + 
+        "        <change path=\"f2/file3.txt\" type=\"add\">file 3 content</change>\n" +
+        "        <change path=\"f2/file4.txt\" type=\"add\">file 3 content</change>\n" +
+        "        <change path=\"newProject.xpr\" type=\"add\">content</change>\n" +
+        "    </changeSet>\n" + 
+        "    \n" + 
+        "    <changeSet message=\"Changes.\">\n" + 
+        "        <change path=\"f1/file1.txt\" type=\"change\">file content</change>\n" + 
+        "        <change path=\"f1/file2.txt\" type=\"change\">new content</change>\n" + 
+        "        <change path=\"f2/file1.txt\" type=\"delete\"/>\n" + 
+        "    </changeSet>\n" + 
+        "</script>\n" + 
+        "");
+  
+    File wcTree = new File("target/gen/GenerateScript_generateGitRepository");
+    generateRepository(script, wcTree);
+  }
+}

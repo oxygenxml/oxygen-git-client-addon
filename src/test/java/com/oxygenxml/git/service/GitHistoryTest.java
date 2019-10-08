@@ -1,25 +1,26 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.script.Script;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
-
-import ro.sync.io.FileSystemUtil;
-import ro.sync.util.URLUtil;
 
 /**
  * Tests for the code related with history.
@@ -33,41 +34,51 @@ public class GitHistoryTest extends GitTestBase {
    */
   @Test
   public void testHistory() throws Exception {
-    URL resource = getClass().getClassLoader().getResource("repos/history");
-    File repository = URLUtil.getCanonicalFileFromFileUrl(resource);
-
-
-    File gitRepos = initRepository(repository);
+    URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
+    
+    File wcTree = new File("target/gen/GitHistoryTest_testHistory");
+    Script.generateRepository(script, wcTree);
+    
     try {
-      String absolutePath = repository.getAbsolutePath();
-      GitAccess.getInstance().setRepository(absolutePath);
+      
+      FileUtils.writeStringToFile(new File(wcTree, "root.txt"), "changed" , "UTF-8");
+      
+      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
 
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
 
       String dump = dump(commitsCharacteristics);
+      System.out.println(dump);
 
-      assertEquals(
-          "[ Uncommitted changes , null , * , * , * , null , null ]\n" + 
-          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
-          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
-          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
-          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
-          "", dump);
+      String expected = "[ Uncommitted changes , {date} , * , * , null , null ]\n" + 
+          "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+          "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+          "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n" + 
+          "";
+      
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+      
+//      assertEquals(
+//          expected, dump);
 
 
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("root.txt");
 
       dump = dump(commitsCharacteristics);
 
+      expected = "[ Uncommitted changes , {date} , * , * , null , null ]\n" + 
+          "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n" + 
+          "";
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
       assertEquals(
           "root.txt was created and changed in the last two commit",
-          "[ Uncommitted changes , null , * , * , * , null , null ]\n" + 
-          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
-          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , null ]\n" + 
-          "", dump);
+          expected, dump);
     } finally {
       GitAccess.getInstance().close();
-      cleanRepository(gitRepos);
+      
+      FileUtils.deleteDirectory(wcTree);
     }
   }
   
@@ -78,12 +89,16 @@ public class GitHistoryTest extends GitTestBase {
    */
   @Test
   public void testCommitFiles() throws Exception {
-    File repository = new File("target/test-resources/repos/history");
-
-    File gitRepos = initRepository(repository);
+    URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
+    
+    File wcTree = new File("target/gen/GitHistoryTest_testHistory");
+    Script.generateRepository(script, wcTree);
+    
     try {
-      String absolutePath = repository.getAbsolutePath();
-      GitAccess.getInstance().setRepository(absolutePath);
+      
+      FileUtils.writeStringToFile(new File(wcTree, "root.txt"), "changed" , "UTF-8");
+      
+      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
 
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
       assertEquals(5, commitsCharacteristics.size());
@@ -91,9 +106,9 @@ public class GitHistoryTest extends GitTestBase {
       Map<String, String> fileLists = new LinkedHashMap<>();
       commitsCharacteristics.stream().forEach(t -> {
         try {
-          fileLists.put(t.getCommitAbbreviatedId(), dumpFS(RevCommitUtil.getChanges(t.getCommitId())));
+          fileLists.put(getAssertableID(t.getCommitAbbreviatedId()), dumpFS(RevCommitUtil.getChanges(t.getCommitId())));
         } catch (IOException | GitAPIException e) {
-          fileLists.put(t.getCommitAbbreviatedId(), e.getMessage());
+          fileLists.put(getAssertableID(t.getCommitAbbreviatedId()), e.getMessage());
         }
       });
       
@@ -106,23 +121,23 @@ public class GitHistoryTest extends GitTestBase {
       
       Map<String, String> expected = new LinkedHashMap<>();
       expected.put("*", "(changeType=MODIFIED, fileLocation=root.txt)\n");
-      expected.put("011cd47", "(changeType=CHANGED, fileLocation=root.txt)\n");
-      expected.put("969e9c3", "(changeType=ADD, fileLocation=root.txt)\n");
+      expected.put("1", "(changeType=CHANGED, fileLocation=root.txt)\n");
+      expected.put("2", "(changeType=ADD, fileLocation=root.txt)\n");
       expected.put(
-          "c902b75", "(changeType=ADD, fileLocation=f2/file1.txt)\n" + 
+          "3", "(changeType=ADD, fileLocation=f2/file1.txt)\n" + 
           "(changeType=CHANGED, fileLocation=f2/file2.txt)\n" + 
           "(changeType=REMOVED, fileLocation=f2/file3.txt)\n" + 
           "(changeType=ADD, fileLocation=f2/file3_renamed.txt)\n" + 
           "(changeType=REMOVED, fileLocation=f2/file4.txt)\n");
       expected.put(
-          "18245ad", "(changeType=ADD, fileLocation=f1/file1.txt)\n" + 
+          "4", "(changeType=ADD, fileLocation=f1/file1.txt)\n" + 
           "(changeType=ADD, fileLocation=f2/file2.txt)\n" + 
           "(changeType=ADD, fileLocation=f2/file3.txt)\n" + 
           "(changeType=ADD, fileLocation=f2/file4.txt)\n" + 
           "(changeType=ADD, fileLocation=newProject.xpr)\n" + 
           "");
       
-      assertEquals(expected.keySet(), fileLists.keySet());
+      assertEquals(expected.keySet().toString(), fileLists.keySet().toString());
       
       
       Set<String> keySet = expected.keySet();
@@ -131,7 +146,8 @@ public class GitHistoryTest extends GitTestBase {
       }
     } finally {
       GitAccess.getInstance().close();
-      cleanRepository(gitRepos);
+      
+      FileUtils.deleteDirectory(wcTree);
     }
   }
 
@@ -139,31 +155,6 @@ public class GitHistoryTest extends GitTestBase {
     StringBuilder b = new StringBuilder();
     changes.stream().forEach(t -> b.append(t.toString()).append("\n"));
     return b.toString();
-  }
-
-  /**
-   * Initializes a Git repository for test that was renamed.
-   * 
-   * @param workingTreeDir The working tree directory.
-   * 
-   * @return The repository direcotry.
-   */
-  private File initRepository(File workingTreeDir) {
-    File gitRepos = new File(workingTreeDir, ".git");
-    FileSystemUtil.renameFileTo(new File(workingTreeDir, "git"), gitRepos);
-    return gitRepos;
-  }
-  
-  /**
-   * Initializes a Git repository for test that was renamed.
-   * 
-   * @param gitRepos The working tree directory.
-   * 
-   * @return The repository direcotry.
-   */
-  private void cleanRepository(File gitRepos) {
-    File originalRepos = new File(gitRepos.getParentFile(), "git");
-    FileSystemUtil.renameFileTo(gitRepos, originalRepos);
   }
 
   /**
@@ -176,9 +167,62 @@ public class GitHistoryTest extends GitTestBase {
   private String dump(List<CommitCharacteristics> commitsCharacteristics) {
     StringBuilder b = new StringBuilder();
 
-    commitsCharacteristics.stream().forEach(t -> b.append(t).append("\n"));
+    commitsCharacteristics.stream().forEach(t -> b.append(toString(t)).append("\n"));
 
     return b.toString();
+  }
+  
+  /**
+   * Maps Git revision IDs into predictable values that can be asserted in a test.
+   */
+  private Map<String, String> idMapper = new HashMap<String, String>();
+  /**
+   * Id generation counter.
+   */
+  private int counter = 1;
+  
+  /**
+   * Maps Git revision IDs into predictable values that can be asserted in a test.
+   * 
+   * @param id Git commit id.
+   * 
+   * @return A value that can be asserted in a test.
+   */
+  private String getAssertableID(String id) {
+    if (id == null || "*".equals(id)) {
+      return id;
+    }
+    String putIfAbsent = idMapper.putIfAbsent(id, String.valueOf(counter));
+    if (putIfAbsent == null) {
+      counter ++;
+    }
+    
+    return idMapper.get(id);
+  }
+  
+  /**
+   * Serialize the given commit.
+   * 
+   * @param c Commit data.
+   * 
+   * @return A string representation that can be asserted.
+   */
+  public String toString(CommitCharacteristics c) {
+    return "[ " + c.getCommitMessage() + " , " + dumpDate(c) + " , " + c.getAuthor() + " , " + getAssertableID(c.getCommitAbbreviatedId()) + " , " 
+        + c.getCommitter() + " , " + ( c.getParentCommitId() != null ? c.getParentCommitId().stream().map(id -> getAssertableID(id)).collect(Collectors.toList()) : null) + " ]";
+
+  }
+
+  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy");
+  /**
+   * Serializes the commit date into a "d MMM yyyy" format that can be asserted inside tests.
+   * 
+   * @param c Commit data.
+   * 
+   * @return A string representation.
+   */
+  private String dumpDate(CommitCharacteristics c) {
+    return c.getDate() != null ? DATE_FORMAT.format(c.getDate()) : DATE_FORMAT.format(new Date());
   }
 
   /**
@@ -188,13 +232,13 @@ public class GitHistoryTest extends GitTestBase {
    */
   @Test
   public void testHistoryBranch() throws Exception {
-    URL resource = getClass().getClassLoader().getResource("repos/history-branches");
-    File repository = URLUtil.getCanonicalFileFromFileUrl(resource);
-  
-    File gitRepos = initRepository(repository);
+    URL script = getClass().getClassLoader().getResource("scripts/history_script_branches.txt");
+    
+    File wcTree = new File("target/gen/GitHistoryTest_testHistoryBranch");
+    Script.generateRepository(script, wcTree);
+    
     try {
-      String absolutePath = repository.getAbsolutePath();
-      GitAccess.getInstance().setRepository(absolutePath);
+      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
       
       System.out.println(GitAccess.getInstance().getGitForTests().status().call().hasUncommittedChanges());
       
@@ -204,14 +248,29 @@ public class GitHistoryTest extends GitTestBase {
   
       String dump = dump(commitsCharacteristics);
   
+      String expected = 
+          "[ Changed on master branch. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+          "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+          "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n" + 
+          "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n" + 
+          "";
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+      
       assertEquals(
-          "[ Changed on master branch.\n" + 
-          " , Mon Oct 07 09:34:51 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 7267d76 , 7267d76288835637cb349090f2fe2e903d887e22 , AlexJitianu , [011cd47] ]\n" + 
-          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
-          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
-          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
-          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
-          "", dump);
+          expected, dump);
+      
+      Map<String, List<String>> branchMap = GitAccess.getInstance().getBranchMap(GitAccess.getInstance().getRepository(), GitAccess.LOCAL);
+      
+      //---------------
+      // Assert the branch names.
+      //----------------
+      final StringBuilder mapDump = new StringBuilder();
+      branchMap.forEach((k,v ) -> {mapDump.append(getAssertableID(k)).append(" -> ").append(v.toString()).append("\n");});
+      assertEquals(
+          "6 -> [feature]\n" + 
+          "1 -> [master]\n" + 
+          "", mapDump.toString());
   
   
       GitAccess.getInstance().setBranch("feature");
@@ -219,19 +278,22 @@ public class GitHistoryTest extends GitTestBase {
   
       dump = dump(commitsCharacteristics);
   
+      expected = "[ Changed on feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [7] ]\n" + 
+          "[ Feature branch commit. , {date} , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [2] ]\n" + 
+          "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+          "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+          "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n" + 
+          "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n" + 
+          "";
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+      
       assertEquals(
-          "[ Changed on feature branch.\n" + 
-          " , Mon Oct 07 09:33:45 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 679624f , 679624f7aa1f4a60a31cff9d31c4c9307118cd98 , AlexJitianu , [a227369] ]\n" + 
-          "[ Feature branch commit.\n" + 
-          " , Mon Oct 07 09:32:44 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , a227369 , a227369a580868f45c9764995f8da36a095c424e , AlexJitianu , [011cd47] ]\n" + 
-          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
-          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
-          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
-          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
-          "", dump);
+          expected, dump);
+      
     } finally {
       GitAccess.getInstance().close();
-      cleanRepository(gitRepos);
+      
+      FileUtils.deleteDirectory(wcTree);
     }
   }
 
@@ -243,38 +305,37 @@ public class GitHistoryTest extends GitTestBase {
    */
   @Test
   public void testHistoryBranchMerged() throws Exception {
-    URL resource = getClass().getClassLoader().getResource("repos/history-branches-merged");
-    File repository = URLUtil.getCanonicalFileFromFileUrl(resource);
-  
-    File gitRepos = initRepository(repository);
+    URL script = getClass().getClassLoader().getResource("scripts/history_script_branches_merged.txt");
+    
+    File wcTree = new File("target/gen/GitHistoryTest_testHistoryBranchMerged");
+    Script.generateRepository(script, wcTree);
+    
     try {
-      String absolutePath = repository.getAbsolutePath();
-      GitAccess.getInstance().setRepository(absolutePath);
+      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
       
       System.out.println(GitAccess.getInstance().getGitForTests().status().call().hasUncommittedChanges());
       
       GitAccess.getInstance().setBranch("master");
-  
+      
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
       String dump = dump(commitsCharacteristics);
   
+      String expected = 
+          "[ Another commit on master. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Merge branch 'feature' , {date} , AlexJitianu <jitianualex83@gmail.com> , 2 , AlexJitianu , [3, 4] ]\n" + 
+          "[ Changed on master branch. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [5] ]\n" + 
+          "[ Changed on feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [6] ]\n" + 
+          "[ Feature branch commit. , {date} , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [5] ]\n" + 
+          "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , [7] ]\n" + 
+          "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [8] ]\n" + 
+          "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 8 , AlexJitianu , [9] ]\n" + 
+          "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 9 , AlexJitianu , null ]\n" + 
+          "";
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+      
       assertEquals(
-          "[ Another commit on master.\n" + 
-          " , Mon Oct 07 10:04:34 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 8b3feaa , 8b3feaa9ba6243326534c9cc4e624196033f9a1a , AlexJitianu , [c0672a3] ]\n" + 
-          "[ Merge branch 'feature'\n" + 
-          " , Mon Oct 07 09:55:41 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , c0672a3 , c0672a3e109ba28879c043e8d7945110dfe2c683 , AlexJitianu , [7267d76, 679624f] ]\n" + 
-          "[ Changed on master branch.\n" + 
-          " , Mon Oct 07 09:34:51 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 7267d76 , 7267d76288835637cb349090f2fe2e903d887e22 , AlexJitianu , [011cd47] ]\n" + 
-          "[ Changed on feature branch.\n" + 
-          " , Mon Oct 07 09:33:45 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 679624f , 679624f7aa1f4a60a31cff9d31c4c9307118cd98 , AlexJitianu , [a227369] ]\n" + 
-          "[ Feature branch commit.\n" + 
-          " , Mon Oct 07 09:32:44 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , a227369 , a227369a580868f45c9764995f8da36a095c424e , AlexJitianu , [011cd47] ]\n" + 
-          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
-          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
-          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
-          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
-          "", dump);
+          expected, dump);
   
   
       GitAccess.getInstance().setBranch("feature");
@@ -282,22 +343,88 @@ public class GitHistoryTest extends GitTestBase {
   
       dump = dump(commitsCharacteristics);
   
+      expected = 
+          "[ Anotehr commit of feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 10 , AlexJitianu , [4] ]\n" + 
+          "[ Changed on feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [6] ]\n" + 
+          "[ Feature branch commit. , {date} , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [5] ]\n" + 
+          "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , [7] ]\n" + 
+          "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [8] ]\n" + 
+          "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 8 , AlexJitianu , [9] ]\n" + 
+          "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 9 , AlexJitianu , null ]\n" + 
+          "";
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+      
       assertEquals(
-          "[ Anotehr commit of feature branch.\n" + 
-          " , Mon Oct 07 10:05:10 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 4aebeb5 , 4aebeb5b67a28a5af43e9cb3682d926bd05758b2 , AlexJitianu , [679624f] ]\n" + 
-          "[ Changed on feature branch.\n" + 
-          " , Mon Oct 07 09:33:45 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 679624f , 679624f7aa1f4a60a31cff9d31c4c9307118cd98 , AlexJitianu , [a227369] ]\n" + 
-          "[ Feature branch commit.\n" + 
-          " , Mon Oct 07 09:32:44 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , a227369 , a227369a580868f45c9764995f8da36a095c424e , AlexJitianu , [011cd47] ]\n" + 
-          "[ Root file changed. , Fri Oct 04 12:18:23 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 011cd47 , 011cd47dc880998e3d40098cd6257859b3b14f34 , AlexJitianu , [969e9c3] ]\n" + 
-          "[ Root file. , Fri Oct 04 12:18:09 EEST 2019 , AlexJitianu <jitianualex83@gmail.com> , 969e9c3 , 969e9c3c0011b3ed0c65d5619559b0340d38e91f , AlexJitianu , [c902b75] ]\n" + 
-          "[ Changes. , Fri Oct 04 10:42:09 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , c902b75 , c902b758113c8703f75883aa5a3dbe4addaa4d8f , AlexJitianu , [18245ad] ]\n" + 
-          "[ First commit. , Fri Oct 04 10:41:16 EEST 2019 , AlexJitianu <alex_jitianu@sync.ro> , 18245ad , 18245ad2c01f1466adbde681056e2864e85adaa8 , AlexJitianu , null ]\n" + 
-          "", dump);
+          expected, dump);
     } finally {
       GitAccess.getInstance().close();
-      cleanRepository(gitRepos);
+      
+      FileUtils.deleteDirectory(wcTree);
     }
   }
 
+  /**
+   * The upstream branch is ahead. In the history we should present the upstream branch as well.
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testHistory_UpstreamBranchAhead() throws Exception {
+    URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
+    
+    File wcTree = new File("target/gen/GitHistoryTest_testHistoryRemote");
+    Script.generateRepository(script, wcTree);
+    
+    File remoteDir = new File("target/gen/GitHistoryTest_testHistoryRemote_RemoteRepo");
+    Repository remoteRepository = null;
+    try {
+      
+      Repository localRepository = GitAccess.getInstance().getRepository();
+      remoteDir.mkdirs();
+      GitAccess.getInstance().createNewRepository(remoteDir.getAbsolutePath());
+      remoteRepository = GitAccess.getInstance().getRepository();
+      bindLocalToRemote(localRepository, remoteRepository);
+      
+      GitAccess.getInstance().setRepository(localRepository.getWorkTree().getAbsolutePath());
+      GitAccess.getInstance().push("Alex", "");
+      
+      // Make the remote evolve.
+      // Not sure why we need this sleep. Commit order is messed up with out it.
+      Thread.sleep(1000);
+      GitAccess.getInstance().setRepository(remoteRepository.getWorkTree().getAbsolutePath());
+      FileUtils.writeStringToFile(new File(remoteRepository.getWorkTree(), "root.txt"), "changed on the remote" , "UTF-8");
+      GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "root.txt"));
+      GitAccess.getInstance().commit("Change on the remote.");
+
+      // Switch to local.
+      GitAccess.getInstance().setRepository(localRepository.getWorkTree().getAbsolutePath());
+      GitAccess.getInstance().fetch();
+      
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+
+      String dump = dump(commitsCharacteristics);
+      System.out.println(dump);
+
+      String expected = 
+          "[ Change on the remote. , {date} , AlexJitianu <jitianualex83@gmail.com> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+          "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+          "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n" + 
+          "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n" + 
+          "";
+      
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+      
+      assertEquals(
+          "root.txt was created and changed in the last two commit",
+          expected, dump);
+    } finally {
+      GitAccess.getInstance().close();
+      remoteRepository.close();
+      
+      FileUtils.deleteDirectory(wcTree);
+      FileUtils.deleteDirectory(remoteDir);
+    }
+  
+  }
 }
