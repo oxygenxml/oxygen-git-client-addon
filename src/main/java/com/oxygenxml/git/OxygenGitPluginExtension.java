@@ -15,7 +15,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
@@ -106,7 +106,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			      // Start the thread that populates the view.
 			      gitRefreshSupport.call();
 			      
-			      Icon icon = ImageConstants.getIcon(ImageConstants.GIT_ICON);
+			      Icon icon = Icons.getIcon(Icons.GIT_ICON);
 			      viewInfo.setIcon(icon);
 			      
 			      viewInfo.setTitle("Git Staging");

@@ -35,7 +35,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.jidesoft.swing.JideSplitPane;
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
@@ -198,7 +198,7 @@ public class HistoryPanel extends JPanel {
         showRepositoryHistory();
       }
     };
-    refreshAction.putValue(Action.SMALL_ICON, ImageConstants.getIcon(ImageConstants.REFRESH_ICON));
+    refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
     refreshAction.putValue(Action.SHORT_DESCRIPTION, "refresh");
     ToolbarButton refreshButton = new ToolbarButton(refreshAction, false);
     toolbar.add(refreshButton);

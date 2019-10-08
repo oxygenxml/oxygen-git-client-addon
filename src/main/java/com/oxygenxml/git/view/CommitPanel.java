@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -368,7 +368,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	public void setStatus(final RepositoryStatus status) {
 		if (RepositoryStatus.UNAVAILABLE == status) {
 			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
-		  statusLabel.setIcon(ImageConstants.getIcon(ImageConstants.VALIDATION_ERROR));
+		  statusLabel.setIcon(Icons.getIcon(Icons.VALIDATION_ERROR));
 		} else if (RepositoryStatus.AVAILABLE == status) {
 		  statusLabel.setText(null);
 		  statusLabel.setIcon(null);

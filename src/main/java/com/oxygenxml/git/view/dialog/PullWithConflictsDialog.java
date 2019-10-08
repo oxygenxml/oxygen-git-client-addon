@@ -16,7 +16,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -56,7 +56,7 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JLabel iconLabel = new JLabel();
-		iconLabel.setIcon(ImageConstants.getIcon(ImageConstants.WARNING_ICON));
+		iconLabel.setIcon(Icons.getIcon(Icons.WARNING_ICON));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;

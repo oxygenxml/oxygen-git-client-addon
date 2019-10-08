@@ -10,7 +10,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
@@ -46,7 +46,7 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-		Icon icon = ImageConstants.getIcon(ImageConstants.FOLDER_TREE_ICON);
+		Icon icon = Icons.getIcon(Icons.FOLDER_TREE_ICON);
 		String toolTip = null;
 
 		StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();

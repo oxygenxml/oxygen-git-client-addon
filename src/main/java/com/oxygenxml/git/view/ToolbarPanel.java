@@ -22,7 +22,7 @@ import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -326,7 +326,7 @@ public class ToolbarPanel extends JPanel {
 		};
 
 		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
-		cloneRepositoryButton.setIcon(ImageConstants.getIcon(ImageConstants.GIT_CLONE_REPOSITORY_ICON));
+		cloneRepositoryButton.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
 		cloneRepositoryButton.setToolTipText(translator.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
 		setCustomWidthOn(cloneRepositoryButton);
 
@@ -345,7 +345,7 @@ public class ToolbarPanel extends JPanel {
 		};
 
 		historyButton = new ToolbarButton(historyAction, false);
-		historyButton.setIcon(ImageConstants.getIcon(ImageConstants.GIT_HISTORY));
+		historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
 		historyButton.setToolTipText(translator.getTranslation(Tags.GIT_COMMIT_HISTORY));
 		setCustomWidthOn(historyButton);
 
@@ -374,7 +374,7 @@ public class ToolbarPanel extends JPanel {
 	    }
 	  };
 		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
-		submoduleSelectButton.setIcon(ImageConstants.getIcon(ImageConstants.GIT_SUBMODULE_ICON));
+		submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
 		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
 		setCustomWidthOn(submoduleSelectButton);
 
@@ -403,7 +403,7 @@ public class ToolbarPanel extends JPanel {
 			}
 		};
 		branchSelectButton = new ToolbarButton(branchSelectAction, false);
-		branchSelectButton.setIcon(ImageConstants.getIcon(ImageConstants.GIT_BRANCH_ICON));
+		branchSelectButton.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
 		branchSelectButton.setToolTipText(translator.getTranslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
 		setCustomWidthOn(branchSelectButton);
 
@@ -487,13 +487,13 @@ public class ToolbarPanel extends JPanel {
 	private void addPushAndPullButtons() {
 		// PUSH
 		pushButton = createPushButton();
-		pushButton.setIcon(ImageConstants.getIcon(ImageConstants.GIT_PUSH_ICON));
+		pushButton.setIcon(Icons.getIcon(Icons.GIT_PUSH_ICON));
 		pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
 		setCustomWidthOn(pushButton);
 
 		// PULL
 		pullButton = createPullButton();
-		pullButton.setIcon(ImageConstants.getIcon(ImageConstants.GIT_PULL_ICON));
+		pullButton.setIcon(Icons.getIcon(Icons.GIT_PULL_ICON));
 		pullButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		setCustomWidthOn(pullButton);
 

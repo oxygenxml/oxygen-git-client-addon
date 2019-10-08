@@ -30,7 +30,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -346,7 +346,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		browseButton = new ToolbarButton(null, false);
-		browseButton.setIcon(ImageConstants.getIcon(ImageConstants.FILE_CHOOSER_ICON));
+		browseButton.setIcon(Icons.getIcon(Icons.FILE_CHOOSER_ICON));
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		JToolBar browswtoolbar = new JToolBar();
 		browswtoolbar.add(browseButton);

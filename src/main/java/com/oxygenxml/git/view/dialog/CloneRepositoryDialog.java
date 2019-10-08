@@ -54,7 +54,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Ref.Storage;
 import org.eclipse.jgit.transport.URIish;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -485,7 +485,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
     });
     
     // Loading icon
-    loadIcon = ImageConstants.getIcon(ImageConstants.LOADING_ICON);
+    loadIcon = Icons.getIcon(Icons.LOADING_ICON);
     
     // "Destination path" label
 		JLabel lblPath = new JLabel(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_DESTINATION_PATH_LABEL));
@@ -531,7 +531,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 			}
 		};
 		ToolbarButton browseButton = new ToolbarButton(browseButtonAction, false);
-		browseButton.setIcon(ImageConstants.getIcon(ImageConstants.FILE_CHOOSER_ICON));
+		browseButton.setIcon(Icons.getIcon(Icons.FILE_CHOOSER_ICON));
 		browseButton.setToolTipText(translator.getTranslation(Tags.BROWSE_BUTTON_TOOLTIP));
 		browseButton.setOpaque(false);
 

@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -835,11 +835,11 @@ public class ChangesPanel extends JPanel {
   private void updateChangeViewButton() {
     if (switchViewButton != null) {
       if (currentViewMode == ResourcesViewMode.TREE_VIEW) {
-        Icon icon = ImageConstants.getIcon(ImageConstants.TABLE_VIEW);
+        Icon icon = Icons.getIcon(Icons.TABLE_VIEW);
         switchViewButton.setIcon(icon);
         switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
       } else {
-        Icon icon = ImageConstants.getIcon(ImageConstants.TREE_VIEW);
+        Icon icon = Icons.getIcon(Icons.TREE_VIEW);
         switchViewButton.setIcon(icon);
         switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
       }
@@ -945,9 +945,9 @@ public class ChangesPanel extends JPanel {
 		switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
 		
 		String iconType = currentViewMode == ResourcesViewMode.FLAT_VIEW 
-		    ? ImageConstants.TREE_VIEW
-		    : ImageConstants.TABLE_VIEW;
-	  Icon icon = ImageConstants.getIcon(iconType);
+		    ? Icons.TREE_VIEW
+		    : Icons.TABLE_VIEW;
+	  Icon icon = Icons.getIcon(iconType);
 	  switchViewButton.setIcon(icon);
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);

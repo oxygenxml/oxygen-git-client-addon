@@ -7,7 +7,7 @@ import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -34,23 +34,23 @@ public class RendererUtil {
     RenderingInfo renderingInfo = null;
     if (GitChangeType.ADD == changeType || GitChangeType.UNTRACKED == changeType) {
       renderingInfo = new RenderingInfo(
-          ImageConstants.getIcon(ImageConstants.GIT_ADD_ICON),
+          Icons.getIcon(Icons.GIT_ADD_ICON),
           translator.getTranslation(Tags.ADD_ICON_TOOLTIP));
     } else if (GitChangeType.MODIFIED == changeType || GitChangeType.CHANGED == changeType) {
       renderingInfo = new RenderingInfo(
-          ImageConstants.getIcon(ImageConstants.GIT_MODIFIED_ICON),
+          Icons.getIcon(Icons.GIT_MODIFIED_ICON),
           translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP));
     } else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
       renderingInfo = new RenderingInfo(
-          ImageConstants.getIcon(ImageConstants.GIT_DELETE_ICON),
+          Icons.getIcon(Icons.GIT_DELETE_ICON),
           translator.getTranslation(Tags.DELETE_ICON_TOOLTIP));
     } else if (GitChangeType.CONFLICT == changeType) {
       renderingInfo = new RenderingInfo(
-          ImageConstants.getIcon(ImageConstants.GIT_CONFLICT_ICON),
+          Icons.getIcon(Icons.GIT_CONFLICT_ICON),
           translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP));
     } else if (GitChangeType.SUBMODULE == changeType) {
       renderingInfo = new RenderingInfo(
-          ImageConstants.getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON),
+          Icons.getIcon(Icons.GIT_SUBMODULE_FILE_ICON),
           translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP));
     }
     return renderingInfo;

@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
@@ -71,7 +71,7 @@ public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.re
 	      projectContextMenu.addSeparator();
 	      JMenu gitMenu = new JMenu(translator.getTranslation(Tags.PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM));
 	      
-	      Icon icon = ImageConstants.getIcon(ImageConstants.GIT_ICON);
+	      Icon icon = Icons.getIcon(Icons.GIT_ICON);
 	      gitMenu.setIcon(icon);
 	      
 	      for (AbstractAction action : gitActionsProvider.getActionsForProjectViewSelection()) {

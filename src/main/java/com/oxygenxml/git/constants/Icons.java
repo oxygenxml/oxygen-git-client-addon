@@ -12,9 +12,9 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * @author Beniamin Savu 
  *
  */
-public class ImageConstants {
+public class Icons {
   
-  private ImageConstants() {
+  private Icons() {
     // Nothing.
   }
 
@@ -50,7 +50,7 @@ public class ImageConstants {
    */
   public static Icon getIcon(String imgKey) {
     Icon toReturn = null;
-    URL resource = ImageConstants.class.getResource(imgKey);
+    URL resource = Icons.class.getResource(imgKey);
     if (resource != null) {
       toReturn = (Icon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
     }

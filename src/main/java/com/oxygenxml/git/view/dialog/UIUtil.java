@@ -10,7 +10,7 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.renderer.StagingResourcesTableCellRenderer;
@@ -110,7 +110,7 @@ public class UIUtil {
     table.setShowGrid(false);
     
     
-    Icon icon = ImageConstants.getIcon(ImageConstants.GIT_ADD_ICON);
+    Icon icon = Icons.getIcon(Icons.GIT_ADD_ICON);
     int iconWidth = icon.getIconWidth();
     TableColumn statusCol = table.getColumnModel().getColumn(StagingResourcesTableModel.FILE_STATUS_COLUMN);
     statusCol.setPreferredWidth(iconWidth);
