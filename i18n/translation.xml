@@ -14,11 +14,11 @@
     </key>
     <key value="Showing_history_for">
         <comment>Showing history for:</comment>
-        <val lang="en_US">Showing history for:</val>
-        <val lang="de_DE">Showing history for:</val>
-        <val lang="fr_FR">Showing history for:</val>
-        <val lang="ja_JP">Showing history for:</val>
-        <val lang="nl_NL">Showing history for:</val>
+        <val lang="en_US">Showing current branch history for:</val>
+        <val lang="de_DE">Showing current branch history for:</val>
+        <val lang="fr_FR">Showing current branch history for:</val>
+        <val lang="ja_JP">Showing current branch history for:</val>
+        <val lang="nl_NL">Showing current branch history for:</val>
     </key>
     <key value="Push_to">
         <comment>Push to</comment>

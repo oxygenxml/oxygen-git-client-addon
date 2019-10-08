@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Date;
 import java.util.List;
@@ -28,12 +29,18 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.ImageConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.PrivateRepositoryException;
+import com.oxygenxml.git.service.RepositoryUnavailableException;
+import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
@@ -232,7 +239,11 @@ public class HistoryPanel extends JPanel {
    */
   public void showHistory(String filePath) {
     GitAccess gitAccess = GitAccess.getInstance();
+    
     try {
+      // Make sure we know about the remote as well, to present data about the upstream branch.
+      gitAccess.fetch();
+      
       File directory = gitAccess.getWorkingCopy();
       showCurrentRepoLabel.setText(
           Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + directory.getName());
@@ -263,9 +274,14 @@ public class HistoryPanel extends JPanel {
       hyperlinkListener = new HistoryHyperlinkListener(historyTable, commitCharacteristicsVector);
       commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
 
-      // preliminary select the first row in the historyTable
-      historyTable.setRowSelectionInterval(0, 0);
-    } catch (NoRepositorySelected e) {
+      // Select the local branch HEAD.
+      Repository repository = gitAccess.getRepository();
+      String fullBranch = repository.getFullBranch();
+      Ref branchHead = repository.exactRef(fullBranch);
+      ObjectId objectId = branchHead.getObjectId();
+      selectCommit(objectId);
+      
+    } catch (NoRepositorySelected | SSHPassphraseRequiredException | PrivateRepositoryException | RepositoryUnavailableException | IOException e) {
       LOGGER.debug(e, e);
     }
   }
@@ -299,19 +315,29 @@ public class HistoryPanel extends JPanel {
     // TODO Check if we don't already present the history for this path!!!!
     showHistory(filePath);
     if (activeRevCommit != null) {
-      HistoryCommitTableModel model =  (HistoryCommitTableModel) historyTable.getModel();
-      List<CommitCharacteristics> commitVector = model.getCommitVector();
-      for (int i = 0; i < commitVector.size(); i++) {
-        CommitCharacteristics commitCharacteristics = commitVector.get(i);
+      ObjectId id = activeRevCommit.getId();
+      selectCommit(id);
+    }
+  }
 
-        if (activeRevCommit.getId().getName().equals(commitCharacteristics.getCommitId())) {
-          final int sel = i;
-          SwingUtilities.invokeLater(() -> {
-            historyTable.scrollRectToVisible(historyTable.getCellRect(sel, 0, true));
-            historyTable.getSelectionModel().setSelectionInterval(sel, sel);
-          });
-          break;
-        }
+  /**
+   * Selects the commit with the given ID.
+   * 
+   * @param id Id of the repository to select.
+   */
+  private void selectCommit(ObjectId id) {
+    HistoryCommitTableModel model =  (HistoryCommitTableModel) historyTable.getModel();
+    List<CommitCharacteristics> commitVector = model.getCommitVector();
+    for (int i = 0; i < commitVector.size(); i++) {
+      CommitCharacteristics commitCharacteristics = commitVector.get(i);
+
+      if (id.getName().equals(commitCharacteristics.getCommitId())) {
+        final int sel = i;
+        SwingUtilities.invokeLater(() -> {
+          historyTable.scrollRectToVisible(historyTable.getCellRect(sel, 0, true));
+          historyTable.getSelectionModel().setSelectionInterval(sel, sel);
+        });
+        break;
       }
     }
   }
