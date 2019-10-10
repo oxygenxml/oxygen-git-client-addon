@@ -96,7 +96,10 @@ public class UIUtil {
   }
   
   /**
+   * Creates a git resource table widget and install renderers on it.
+   * 
    * @param fileTableModel The model for the table.
+   * @param contextMenuShowing Can tell if a contextual menu is showing over the table.
    * 
    * @return The table that presents the resources.
    */

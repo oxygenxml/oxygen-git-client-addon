@@ -48,8 +48,8 @@ public class RevCommitUtil {
    * @throws IOException
    * @throws GitAPIException
    */
-  public static List<FileStatus> getChanges(String commitID) throws IOException, GitAPIException {
-    List<FileStatus> changes = Collections.emptyList();
+  public static List<FileStatus> getChangedFiles(String commitID) throws IOException, GitAPIException {
+    List<FileStatus> changedFiles = Collections.emptyList();
     try {
       Repository repository = GitAccess.getInstance().getRepository();
       if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != commitID) {
@@ -61,19 +61,19 @@ public class RevCommitUtil {
           if (commit.getParentCount() > 0) {
             RevCommit oldC = rw.parseCommit(commit.getParent(0));
 
-            changes = RevCommitUtil.getChanges(repository, commit, oldC);
+            changedFiles = RevCommitUtil.getChanges(repository, commit, oldC);
           } else {
-            changes = RevCommitUtil.getFiles(repository, commit);
+            changedFiles = RevCommitUtil.getFiles(repository, commit);
           }
         }
       } else {
-        changes = GitAccess.getInstance().getUnstagedFiles();
+        changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
     } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
       logger.error(e, e);
     }
 
-    return changes;
+    return changedFiles;
   }
 
   /**
@@ -91,15 +91,11 @@ public class RevCommitUtil {
     List<FileStatus> collect = Collections.emptyList();
     try (ObjectReader reader = repository.newObjectReader()) {
       CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
-      newTreeIter.reset(reader, newCommit.
-          getTree().
-          getId());
+      newTreeIter.reset(reader, newCommit.getTree().getId());
       
       CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
       if (oldCommit != null) {
-        oldTreeIter.reset(reader, oldCommit.
-            getTree().
-            getId());
+        oldTreeIter.reset(reader, oldCommit.getTree().getId());
       }
       
 

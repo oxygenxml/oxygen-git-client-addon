@@ -106,7 +106,7 @@ public class GitHistoryTest extends GitTestBase {
       Map<String, String> fileLists = new LinkedHashMap<>();
       commitsCharacteristics.stream().forEach(t -> {
         try {
-          fileLists.put(getAssertableID(t.getCommitAbbreviatedId()), dumpFS(RevCommitUtil.getChanges(t.getCommitId())));
+          fileLists.put(getAssertableID(t.getCommitAbbreviatedId()), dumpFS(RevCommitUtil.getChangedFiles(t.getCommitId())));
         } catch (IOException | GitAPIException e) {
           fileLists.put(getAssertableID(t.getCommitAbbreviatedId()), e.getMessage());
         }

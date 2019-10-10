@@ -31,10 +31,15 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Tells if a contextual menu is active over the component.
    */
-  private Supplier<Boolean> contextualMenuProvider;
+  private Supplier<Boolean> contextMenuShowing;
   
-  public ChangesTreeCellRenderer(Supplier<Boolean> contextualMenuProvider) {
-    this.contextualMenuProvider = contextualMenuProvider;
+  /**
+   * Constructor.
+   * 
+   * @param contextualMenuShowing Tells if a contextual menu is active over the component.
+   */
+  public ChangesTreeCellRenderer(Supplier<Boolean> contextualMenuShowing) {
+    this.contextMenuShowing = contextualMenuShowing;
   }
   
   /**
@@ -76,7 +81,8 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 		  if (sel) {
 		    if (tree.hasFocus()) {
 		      setBackgroundSelectionColor(defaultSelectionColor);
-		    } else if (!contextualMenuProvider.get()) {
+		    } else if (!contextMenuShowing.get()) {
+		      // Do nor render the tree as inactive if we have a contextual menu over it.
 		      setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
 		    }
 		  }

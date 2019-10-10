@@ -138,7 +138,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
 		if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
 		  try {
-        List<FileStatus> changes = RevCommitUtil.getChanges(commitCharacteristics.getCommitId());
+        List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
 
         dataModel.setFilesStatus(changes);
 		  } catch (GitAPIException | RevisionSyntaxException | IOException e) {

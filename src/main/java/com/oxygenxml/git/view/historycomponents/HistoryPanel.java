@@ -43,6 +43,7 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
@@ -81,6 +82,11 @@ public class HistoryPanel extends JPanel {
    * The changed files from a commit.
    */
   private JTable changesTable;
+  /**
+   * The file path of the resource for which we are currently presenting the history. If <code>null</code>, we 
+   * present the history for the entire repository.
+   */
+  private String activeFilePath;
   
   /**
    * Constructor.
@@ -195,7 +201,7 @@ public class HistoryPanel extends JPanel {
     Action refreshAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        showRepositoryHistory();
+        showHistory(activeFilePath, true);
       }
     };
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
@@ -231,58 +237,72 @@ public class HistoryPanel extends JPanel {
   public void showRepositoryHistory() {
     showHistory(null);
   }
-
+  
   /**
    * Shows the commit history for the entire repository.
    * 
    * @param filePath File for which to present the commit that changed him.
    */
   public void showHistory(String filePath) {
-    GitAccess gitAccess = GitAccess.getInstance();
-    
-    try {
-      // Make sure we know about the remote as well, to present data about the upstream branch.
-      gitAccess.fetch();
-      
-      File directory = gitAccess.getWorkingCopy();
-      showCurrentRepoLabel.setText(
-          Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + directory.getName());
-      showCurrentRepoLabel.setToolTipText(directory.getAbsolutePath());
-      showCurrentRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
-      
-      historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess, gitAccess.getRepository()));
-      historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
+    showHistory(filePath, false);
+  }
 
-      List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
+  /**
+   * Shows the commit history for the entire repository.
+   * 
+   * @param filePath File for which to present the commit that changed him.
+   * @param force <code>true</code> to recompute the hisotry data even if the view already presents the history for the given resource.
+   */
+  private void showHistory(String filePath, boolean force) {
+    // Check if we don't already present the history for this path!!!!
+    if (force || !Equaler.verifyEquals(filePath, activeFilePath)) {
+      this.activeFilePath = filePath;
+      GitAccess gitAccess = GitAccess.getInstance();
 
-      historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
-      
-      updateTableWidths();
-      
-      // Install selection listener.
-      if (selectionListener != null) {
-        historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
+      try {
+        // Make sure we know about the remote as well, to present data about the upstream branch.
+        gitAccess.fetch();
+
+        File directory = gitAccess.getWorkingCopy();
+        showCurrentRepoLabel.setText(
+            Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + directory.getName());
+        showCurrentRepoLabel.setToolTipText(directory.getAbsolutePath());
+        showCurrentRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
+
+        historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess, gitAccess.getRepository()));
+        historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
+
+        List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
+
+        historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
+
+        updateTableWidths();
+
+        // Install selection listener.
+        if (selectionListener != null) {
+          historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
+        }
+        selectionListener = new RowHistoryTableSelectionListener(historyTable, commitDescriptionPane, commitCharacteristicsVector, changesTable);
+        historyTable.getSelectionModel().addListSelectionListener(selectionListener);
+
+        // Install hyperlink listener.
+        if (hyperlinkListener != null) {
+          commitDescriptionPane.removeHyperlinkListener(hyperlinkListener);  
+        }
+
+        hyperlinkListener = new HistoryHyperlinkListener(historyTable, commitCharacteristicsVector);
+        commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
+
+        // Select the local branch HEAD.
+        Repository repository = gitAccess.getRepository();
+        String fullBranch = repository.getFullBranch();
+        Ref branchHead = repository.exactRef(fullBranch);
+        ObjectId objectId = branchHead.getObjectId();
+        selectCommit(objectId);
+
+      } catch (NoRepositorySelected | SSHPassphraseRequiredException | PrivateRepositoryException | RepositoryUnavailableException | IOException e) {
+        LOGGER.debug(e, e);
       }
-      selectionListener = new RowHistoryTableSelectionListener(historyTable, commitDescriptionPane, commitCharacteristicsVector, changesTable);
-      historyTable.getSelectionModel().addListSelectionListener(selectionListener);
-
-      // Install hyperlink listener.
-      if (hyperlinkListener != null) {
-        commitDescriptionPane.removeHyperlinkListener(hyperlinkListener);  
-      }
-      
-      hyperlinkListener = new HistoryHyperlinkListener(historyTable, commitCharacteristicsVector);
-      commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
-
-      // Select the local branch HEAD.
-      Repository repository = gitAccess.getRepository();
-      String fullBranch = repository.getFullBranch();
-      Ref branchHead = repository.exactRef(fullBranch);
-      ObjectId objectId = branchHead.getObjectId();
-      selectCommit(objectId);
-      
-    } catch (NoRepositorySelected | SSHPassphraseRequiredException | PrivateRepositoryException | RepositoryUnavailableException | IOException e) {
-      LOGGER.debug(e, e);
     }
   }
 
@@ -312,7 +332,6 @@ public class HistoryPanel extends JPanel {
    * @param activeRevCommit The commit to select in the view.
    */
   public void showCommit(String filePath, RevCommit activeRevCommit) {
-    // TODO Check if we don't already present the history for this path!!!!
     showHistory(filePath);
     if (activeRevCommit != null) {
       ObjectId id = activeRevCommit.getId();
