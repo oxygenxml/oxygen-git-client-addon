@@ -20,7 +20,6 @@ import com.oxygenxml.git.view.HiDPIUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
-import ro.sync.ui.hidpi.RetinaDetector;
 
 /**
  * Dialog shown when an operation is tried to be performed
@@ -129,7 +128,7 @@ public class InterruptedRebaseDialog extends JDialog {
    */
   @Override
   public void pack() {
-    if (!dlgHiDPIUpdated && RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
+    if (!dlgHiDPIUpdated && HiDPIUtil.isRetinaNoImplicitSupport()) {
       HiDPIUtil.updateComponentsForHiDPI(getContentPane(), true);
       dlgHiDPIUpdated = true;
     }
@@ -163,7 +162,7 @@ public class InterruptedRebaseDialog extends JDialog {
    */
   private Dimension getHiDPIAwareDimension(Dimension initialDimension) {
     Dimension dim = initialDimension;
-    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
+    if (HiDPIUtil.isRetinaNoImplicitSupport()) {
       if (!dlgHiDPIUpdated) {
         HiDPIUtil.updateComponentsForHiDPI(getContentPane(), true);
         dlgHiDPIUpdated = true;
@@ -180,7 +179,7 @@ public class InterruptedRebaseDialog extends JDialog {
   public void setVisible(boolean visible) {
     if (visible) {
       if (!dlgHiDPIUpdated) {
-        if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
+        if (HiDPIUtil.isRetinaNoImplicitSupport()) {
           HiDPIUtil.updateComponentsForHiDPI(getContentPane(), true);
           dlgHiDPIUpdated = true;
         }

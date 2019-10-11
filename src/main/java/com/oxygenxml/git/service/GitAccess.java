@@ -391,7 +391,7 @@ public class GitAccess {
    * Notify the listeners about the fact that the opening of a repository has failed.
    */
   // TODO: sa sincronizam metodele de fire?
-  
+  // XXX: asta se intampla din teste
 //  Exception in thread "AWT-EventQueue-0" java.util.ConcurrentModificationException
 //  at java.util.LinkedHashMap$LinkedHashIterator.nextNode(LinkedHashMap.java:719)
 //  at java.util.LinkedHashMap$LinkedKeyIterator.next(LinkedHashMap.java:742)

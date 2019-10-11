@@ -98,7 +98,7 @@ public class FlatViewTestBase extends GitTestBase {
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
     flushAWT();
-    sleep(200);
+    sleep(300);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTable filesTable = unstagedChangesPanel.getFilesTable();
@@ -142,7 +142,7 @@ public class FlatViewTestBase extends GitTestBase {
    */
   protected void assertTreeModels(String unstagedExpected, String indexExpected) {
     flushAWT();
-    sleep(200);
+    sleep(300);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTree filesTable = unstagedChangesPanel.getTreeView();

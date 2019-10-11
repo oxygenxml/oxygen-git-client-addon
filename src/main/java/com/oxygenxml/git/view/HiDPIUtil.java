@@ -17,8 +17,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.lang.reflect.Method;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
@@ -33,11 +33,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.html.HTMLEditorKit;
 
-import ro.sync.svn.trees.treetable.SVNTreeTableColumnInfoPO;
-import ro.sync.ui.hidpi.RetinaDetector;
-import ro.sync.ui.table.TableColumnInfo;
-import ro.sync.ui.table.TableColumnModelInfo;
-import ro.sync.util.PlatformDetector;
+import org.apache.log4j.Logger;
 
 /**
  * Class that holds utility methods used when HiDPI is detected.
@@ -45,6 +41,12 @@ import ro.sync.util.PlatformDetector;
  * @author alina_iordache
  */
 public class HiDPIUtil {
+  
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(HiDPIUtil.class.getName());
   
   /**
    * Constructor.
@@ -61,7 +63,7 @@ public class HiDPIUtil {
    * scaling factor when support is activated.
    */
   public static Insets getHiDPIInsets(Insets insets) {
-    return getHiDPIInsets(insets, RetinaDetector.getInstance().getScalingFactor());
+    return getHiDPIInsets(insets, getScalingFactor());
   }
   
   /**
@@ -73,8 +75,7 @@ public class HiDPIUtil {
    * scaling factor when support is activated.
    */
   public static Insets getHiDPIInsets(Insets insets, float scalingFactor) {
-    if (insets != null && 
-        RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
+    if (insets != null && isRetinaNoImplicitSupport()) {
       insets = new Insets(
           (int) (insets.top * scalingFactor), 
           (int) (insets.left * scalingFactor), 
@@ -99,8 +100,8 @@ public class HiDPIUtil {
    * @see #getHiDPIDimension(Dimension)
    */
   public static Dimension getHiDPIDimension(int width, int height) {
-    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
-      float scalingFactor = RetinaDetector.getInstance().getScalingFactor();
+    if (isRetinaNoImplicitSupport()) {
+      float scalingFactor = getScalingFactor();
       width = (int) (width * scalingFactor);
       height = (int) (height * scalingFactor);
     }
@@ -124,7 +125,7 @@ public class HiDPIUtil {
    * @see #getHiDPIDimension(int, int)
    */
   public static Dimension getHiDPIDimension(Dimension dimension) {
-    return getHiDPIDimension(dimension, RetinaDetector.getInstance().getScalingFactor());
+    return getHiDPIDimension(dimension, getScalingFactor());
   }
   
   /**
@@ -144,8 +145,7 @@ public class HiDPIUtil {
    * @see #getHiDPIDimension(int, int)
    */
   public static Dimension getHiDPIDimension(Dimension dimension, float scalingFactor) {
-    if (dimension != null && 
-        RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
+    if (dimension != null && isRetinaNoImplicitSupport()) {
       dimension = new Dimension(
           (int) (dimension.width * scalingFactor), 
           (int) (dimension.height * scalingFactor));
@@ -193,7 +193,7 @@ public class HiDPIUtil {
    */
   private static void updatePanelForHiDPI(JPanel panel, boolean updatePreferredWidth, boolean updatePreferredHeight, boolean reset) { 
     LayoutManager layout = panel.getLayout();
-    float scalingFactor = RetinaDetector.getInstance().getScalingFactor();
+    float scalingFactor = getScalingFactor();
     if (reset) {
       scalingFactor = 1 / scalingFactor;
     }
@@ -347,63 +347,6 @@ public class HiDPIUtil {
   }
   
   /**
-   * Scale columns width.
-   * 
-   * @param tableColumnModel The table columns model.
-   * @param onSave <code>true</code> if scaling is invoked when column model is saved.
-   * @return The column model with scaled columns width.
-   */
-  public static TableColumnModelInfo<? extends TableColumnInfo> scaleColumnsWidth(
-      TableColumnModelInfo<? extends TableColumnInfo> tableColumnModel, boolean onSave) {
-    TableColumnModelInfo<? extends TableColumnInfo> scaledTableColumnsModel = 
-        tableColumnModel != null ? (TableColumnModelInfo<? extends TableColumnInfo>) tableColumnModel.clone() : null;
-    if (scaledTableColumnsModel != null && 
-        RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
-      float scalingFactor = RetinaDetector.getInstance().getScalingFactor();
-      if (onSave) {
-        scalingFactor = 1 / scalingFactor;
-      }
-      List<? extends TableColumnInfo> columns = scaledTableColumnsModel.getColumnsInfo();
-      for (TableColumnInfo column : columns) {
-        column.setMaxWidth((int) (column.getMaxWidth() * scalingFactor));
-        column.setMinWidth((int) (column.getMinWidth() * scalingFactor));
-        column.setWidth((int) (column.getWidth() * scalingFactor));
-      }
-    }
-    return scaledTableColumnsModel;
-  }
-  
-  /**
-   * Scale SVN columns width.
-   * 
-   * @param svnColumnInfoPOs The array of the SVN tree table columns.
-   * @param onSave <code>true</code> if scaling is invoked when column model is saved.
-   * @return The array of the SVN tree table columns scaled.
-   */
-  public static SVNTreeTableColumnInfoPO[] scaleSVNColumnsWidth(SVNTreeTableColumnInfoPO[] svnColumnInfoPOs, boolean onSave) {
-    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
-      SVNTreeTableColumnInfoPO[] newSvnColumnInfoPOs = new SVNTreeTableColumnInfoPO[svnColumnInfoPOs.length];
-      
-      float scalingFactor = RetinaDetector.getInstance().getScalingFactor();
-      if (onSave) {
-        scalingFactor = 1 / scalingFactor;
-      }
-      
-      for (int i = 0; i < svnColumnInfoPOs.length; i++) {
-        newSvnColumnInfoPOs[i] = svnColumnInfoPOs[i].clone();
-        int minimumWidth = svnColumnInfoPOs[i].getMinimumWidth();
-        int preferredWidth = svnColumnInfoPOs[i].getPreferredWidth();
-        newSvnColumnInfoPOs[i].setMinimumWidth((int) (minimumWidth * scalingFactor));
-        newSvnColumnInfoPOs[i].setPreferredWidth((int) (preferredWidth * scalingFactor));
-      }
-      
-      return newSvnColumnInfoPOs;
-    } else {
-      return svnColumnInfoPOs;
-    }
-  }
-  
-  /**
    * Compute the dialog dimension for a HiDPI screen with no implicit support from the OS.
    * 
    * @param initialDimension  The initial dimension.
@@ -413,9 +356,14 @@ public class HiDPIUtil {
    */
   public static Dimension computeHiDPIDimensionForNoImplicitSupport(Dimension initialDimension, Dimension preferredSize) {
     Dimension newDim = initialDimension;
-    float scalingFactor = RetinaDetector.getInstance().getScalingFactor();
+    float scalingFactor = getScalingFactor();
+
+    String osName = System.getProperty("os.name");
+    osName = osName.toUpperCase();
+    boolean isWin = osName.startsWith("WIN");
+    
     if (initialDimension.width < preferredSize.width) {
-      if (PlatformDetector.isWin32()) {
+      if (isWin) {
         newDim.width *= scalingFactor;
         if (newDim.width < preferredSize.width) {
           newDim.width = preferredSize.width;
@@ -426,7 +374,7 @@ public class HiDPIUtil {
       }
     }
     if (initialDimension.height < preferredSize.height) {
-      if (PlatformDetector.isWin32()) {
+      if (isWin) {
         newDim.height *= scalingFactor;
         if (newDim.height < preferredSize.height) {
           newDim.height = preferredSize.height;
@@ -439,4 +387,41 @@ public class HiDPIUtil {
     
     return newDim;
   }
+  
+  /**
+   * @return <code>true</code> if it is the Windows style Retina, where the application
+   * must explicitly change its font and use double sized icons. 
+   */
+  public static boolean isRetinaNoImplicitSupport() {
+    boolean isRetinaNoImplicitSupport = false;
+    try {
+      Class<?> retinaDetectorClass = Class.forName("ro.sync.ui.hidpi.RetinaDetector");
+      Method getInstanceMethod = retinaDetectorClass.getMethod("getInstance");
+      Object retinaDetectorObj = getInstanceMethod.invoke(null);
+      Method isRetinaNoImplicitSupportMethod = retinaDetectorClass.getMethod("isRetinaNoImplicitSupport");
+      isRetinaNoImplicitSupport = (boolean) isRetinaNoImplicitSupportMethod.invoke(retinaDetectorObj);
+    } catch (Exception e) {
+     logger.debug(e, e);
+    }
+    return isRetinaNoImplicitSupport;
+  }
+  
+  /**
+   * @return Returns the HiDPI scaling factor, or 1 if there is no scaling. 
+   * On Mac OS X with retina display this factor is 2.  
+   */
+  public static float getScalingFactor() {
+    float scalingFactor = 1.0f;
+    try {
+      Class<?> retinaDetectorClass = Class.forName("ro.sync.ui.hidpi.RetinaDetector");
+      Method getInstanceMethod = retinaDetectorClass.getMethod("getInstance");
+      Object retinaDetectorObj = getInstanceMethod.invoke(null);
+      Method getScalingFactorMethod = retinaDetectorClass.getMethod("getScalingFactor");
+      scalingFactor = (float) getScalingFactorMethod.invoke(retinaDetectorObj);
+    } catch (Exception e) {
+     logger.debug(e, e);
+    }
+    return scalingFactor;
+  }
+  
 }
