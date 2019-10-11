@@ -694,4 +694,14 @@ public class Tags {
    * Confirmation message for "Restart merge".
    */
   public static final String RESTART_MERGE_CONFIRMATION = "Restart_merge_confirmation";
+  
+  /**
+   * Abort rebase.
+   */
+  public static final String ABORT_REBASE = "Abort_rebase";
+  
+  /**
+   * Continue rebase.
+   */
+  public static final String CONTINUE_REBASE = "Continue_rebase";
 }

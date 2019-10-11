@@ -100,6 +100,8 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
       List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() :
         GitAccess.getInstance().getUnstagedFiles();
       insertNodes(fileStatuses);
+    } else if (changeEvent.getCommand() == GitCommand.ABORT_REBASE) {
+      filesStatuses.clear();
     }
 
 		fireTreeStructureChanged(this, null, null, null);

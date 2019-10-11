@@ -85,6 +85,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * The staging area
 	 */
 	private ChangesPanel stagedChangesPanel;
+	
+	/**
+	 * Rebase panel (continue, abort rebase buttons).
+	 */
+	private RebasePanel rebasePanel;
 
 	/**
 	 * The commit panel
@@ -179,6 +184,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		workingCopySelectionPanel = new WorkingCopySelectionPanel();
 		commitPanel = new CommitPanel();
 		toolbarPanel = new ToolbarPanel(pushPullController, refreshSupport);
+		rebasePanel = new RebasePanel();
+		
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
 		splitPane.add(unstagedChangesPanel);
@@ -193,6 +200,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		GridBagConstraints gbc = new GridBagConstraints();
 		addToolbatPanel(gbc);
 		addWorkingCopySelectionPanel(gbc);
+		addRebasePanel(gbc);
 		addSplitPanel(gbc, splitPane);
 
 		// creates the actual GUI for each panel
@@ -265,6 +273,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			@Override
 			public void focusGained(final FocusEvent e) {
 				focusGained = true;
+        
 				// The focus is somewhere in he view.
 				if (!inTheView) {
 				  // EXM-40880: Invoke later so that the focus event gets processed.
@@ -300,6 +309,22 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 			}
 		});
 	}
+
+	/**
+	 * Add rebase panel.
+	 * 
+	 * @param gbc Constraints.
+	 */
+  private void addRebasePanel(GridBagConstraints gbc) {
+    gbc.gridx = 0;
+		gbc.gridy ++;
+		gbc.insets = new Insets(10, 2, 10, 0);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+		add(rebasePanel, gbc);
+  }
 
 	/**
 	 * Create the push/pull controller.
@@ -359,7 +384,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
-		gbc.gridy = 2;
+		gbc.gridy++;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		this.add(splitPane, gbc);
@@ -393,7 +418,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy++;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		this.add(workingCopySelectionPanel, gbc);
@@ -431,6 +456,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
         } else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
           commitPanel.setStatus(pushPullEvent.getMessage());
           toolbarPanel.updateStatus();
+        } else if (pushPullEvent.getActionStatus() == ActionStatus.PULL_REBASE_CONFLICT_GENERATED) {
+          rebasePanel.setVisible(true);
         }
       }
     });

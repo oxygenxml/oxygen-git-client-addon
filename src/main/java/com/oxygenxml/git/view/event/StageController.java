@@ -146,8 +146,7 @@ public class StageController {
 	 */
   private void resolveUsingTheirs(List<FileStatus> filesStatuses) {
     for (FileStatus file : filesStatuses) {
-      gitAccess.reset(file);
-      gitAccess.updateWithRemoteFile(file.getFileLocation());
+      gitAccess.replaceWithRemoteContent(file.getFileLocation());
     }
     gitAccess.addAll(filesStatuses);
   }

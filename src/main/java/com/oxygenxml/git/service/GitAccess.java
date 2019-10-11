@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CheckoutCommand.Stage;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
@@ -1796,13 +1797,14 @@ public class GitAccess {
 		}
 	}
 
-	public void updateWithRemoteFile(String filePath) {
+	/**
+	 * Replace with remote content. Useful when resolving a conflict using 'theirs'.
+	 * 
+	 * @param filePath File path.
+	 */
+	public void replaceWithRemoteContent(String filePath) {
 		try {
-			RevWalk walk = new RevWalk(git.getRepository());
-			walk.reset();
-			RevCommit commit = walk.parseCommit(git.getRepository().resolve("MERGE_HEAD"));
-			git.checkout().setStartPoint(commit).addPath(filePath).call();
-			walk.close();
+			git.checkout().setStage(Stage.THEIRS).addPath(filePath).call();
 		} catch (Exception e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -1819,7 +1821,7 @@ public class GitAccess {
 		  // TODO: TC for restart rebase merge
 		  RepositoryState repositoryState = getRepository().getRepositoryState();
 			if (repositoryState == RepositoryState.REBASING_MERGE) {
-			  abortRebase();
+		    git.rebase().setOperation(Operation.ABORT).call();
 			  UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
 		    String username = gitCredentials.getUsername();
 		    String password = gitCredentials.getPassword();
@@ -1947,13 +1949,13 @@ public class GitAccess {
 	  ObjectId toReturn = null;
 		try {
 		  List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
-			boolean baseIsNull = false;
-			if (entries.size() == 2) {
-				baseIsNull = true;
+			boolean isTwoWayDiff = false;
+			if (entries.size() < 3) {
+				isTwoWayDiff = true;
 			}
 			int index = 0;
 			if (commit == Commit.MINE) {
-				if (baseIsNull) {
+				if (isTwoWayDiff) {
 					index = 0;
 				} else {
 					index = 1;
@@ -1964,7 +1966,7 @@ public class GitAccess {
 				}
 				toReturn =  entries.get(index).getOldId().toObjectId();
 			} else if (commit == Commit.THEIRS) {
-				if (baseIsNull) {
+				if (isTwoWayDiff) {
 					index = 1;
 				} else {
 					index = 2;
@@ -2055,29 +2057,35 @@ public class GitAccess {
    * Aborts and resets the current rebase
    */
   public void abortRebase() {
-    try {
-      git.rebase().setOperation(Operation.ABORT).call();
-    } catch (GitAPIException e) {
-      logger.debug(e, e);
-    }
+    GitOperationScheduler.getInstance().schedule(() -> {
+      try {
+        git.rebase().setOperation(Operation.ABORT).call();
+        fireFileStateChanged(new ChangeEvent(GitCommand.ABORT_REBASE, Collections.<String> emptyList()));
+      } catch (GitAPIException e) {
+        logger.debug(e, e);
+      }
+    });
   }
   
   /**
    * Continue rebase after a conflict resolution.
    */
   public void continueRebase() {
-    try {
-      RebaseResult result = git.rebase().setOperation(Operation.CONTINUE).call();
-      if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {
-        skipCommit();
+    GitOperationScheduler.getInstance().schedule(() -> {
+      try {
+        RebaseResult result = git.rebase().setOperation(Operation.CONTINUE).call();
+        if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {
+          skipCommit();
+        }
+        fireFileStateChanged(new ChangeEvent(GitCommand.CONTINUE_REBASE, Collections.<String> emptyList()));
+      } catch (UnmergedPathsException e) {
+        logger.debug(e, e);
+        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+        .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
+      } catch (GitAPIException e) {
+        logger.debug(e, e);
       }
-    } catch (UnmergedPathsException e) {
-      logger.debug(e, e);
-      ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-          .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
-    } catch (GitAPIException e) {
-      logger.debug(e, e);
-    }
+    });
   }
   
   /**

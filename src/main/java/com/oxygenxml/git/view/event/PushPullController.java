@@ -313,6 +313,11 @@ public class PushPullController implements Subject<PushPullEvent> {
             break;
           case CONFLICTS:
             showPullSuccessfulWithConflicts(response);
+            if (pullType == PullType.REBASE) {
+              PushPullEvent pushPullEvent = new PushPullEvent(
+                  ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
+              notifyObservers(pushPullEvent);
+            }
             break;
           case REPOSITORY_HAS_CONFLICTS:
             ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())

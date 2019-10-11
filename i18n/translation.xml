@@ -4,6 +4,22 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Continue_rebase">
+        <comment>Continue rebase</comment>
+        <val lang="en_US">Continue rebase</val>
+        <val lang="de_DE">Continue rebase</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Abort_rebase">
+        <comment>Abort rebase</comment>
+        <val lang="en_US">Abort rebase</val>
+        <val lang="de_DE">Abort rebase</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
     <key value="Restart_merge_confirmation">
         <comment>Confirmation message for "Restart merge"</comment>
         <val lang="en_US">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>

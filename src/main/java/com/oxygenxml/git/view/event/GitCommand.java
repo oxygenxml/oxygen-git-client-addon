@@ -29,4 +29,12 @@ public enum GitCommand {
    * Restart the merge process.
    */
   MERGE_RESTART,
+  /**
+   * Abort rebase.
+   */
+  ABORT_REBASE,
+  /**
+   * Successfully continued rebase
+   */
+  CONTINUE_REBASE;
 }
