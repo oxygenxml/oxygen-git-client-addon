@@ -42,19 +42,9 @@ public class RebasePanel extends JPanel {
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void repositoryChanged() {
-        boolean shouldBeVisible = false;
-        try {
-          Repository repository = GitAccess.getInstance().getRepository();
-          RepositoryState repoState = repository.getRepositoryState();
-          shouldBeVisible = repoState == RepositoryState.REBASING
-              || repoState == RepositoryState.REBASING_MERGE
-              || repoState == RepositoryState.REBASING_REBASING;
-        } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
-        }
-        RebasePanel.this.setVisible(shouldBeVisible);
+        updateVisibilityBasedOnRepoState();
       }
-      
+
       @Override
       public void stateChanged(ChangeEvent changeEvent) {
         GitCommand cmd = changeEvent.getCommand();
@@ -85,6 +75,23 @@ public class RebasePanel extends JPanel {
       GitAccess.getInstance().continueRebase();
     });
     add(continueRebaseButton);
+  }
+  
+  /**
+   * Update panel visibility.
+   */
+  public void updateVisibilityBasedOnRepoState() {
+    boolean shouldBeVisible = false;
+    try {
+      Repository repository = GitAccess.getInstance().getRepository();
+      RepositoryState repoState = repository.getRepositoryState();
+      shouldBeVisible = repoState == RepositoryState.REBASING
+          || repoState == RepositoryState.REBASING_MERGE
+          || repoState == RepositoryState.REBASING_REBASING;
+    } catch (NoRepositorySelected e) {
+      logger.debug(e, e);
+    }
+    RebasePanel.this.setVisible(shouldBeVisible);
   }
   
 }
