@@ -232,7 +232,8 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		  List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() :
 		    GitAccess.getInstance().getUnstagedFiles();
 		  insertRows(fileStatuses);
-		} else if (changeEvent.getCommand() == GitCommand.ABORT_REBASE) {
+		} else if (changeEvent.getCommand() == GitCommand.ABORT_REBASE
+		    || changeEvent.getCommand() == GitCommand.CONTINUE_REBASE) {
 		  filesStatuses.clear();
 		}
 		
