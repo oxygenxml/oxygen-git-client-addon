@@ -24,6 +24,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -111,6 +112,13 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			        @Override
               public void repositoryOpeningFailed(File repo, Throwable ex) {
 			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+			        }
+			        @Override
+			        public void stateChanged(com.oxygenxml.git.view.event.ChangeEvent changeEvent) {
+			          GitCommand cmd = changeEvent.getCommand();
+                if (cmd == GitCommand.CONTINUE_REBASE) {
+			            gitRefreshSupport.call();
+			          }
 			        }
 			      });
 			      
