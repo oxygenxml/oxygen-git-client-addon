@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -41,19 +40,12 @@ import org.eclipse.jgit.api.SubmoduleAddCommand;
 import org.eclipse.jgit.api.SubmoduleStatusCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.dircache.DirCache;
-import org.eclipse.jgit.errors.CorruptObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoMergeBaseException;
 import org.eclipse.jgit.errors.NoMergeBaseException.MergeBaseFailureReason;
 import org.eclipse.jgit.errors.NoWorkTreeException;
@@ -170,7 +162,6 @@ public class GitAccess {
 	 * @param branchName The name of the branch to clone and checkout. Must be specified as full ref names (e.g. "refs/heads/hotfixes/17.0").
 	 * 
 	 * @throws GitAPIException
-	 * @throws URISyntaxException
 	 */
 	public void clone(URIish url, File directory, final ProgressDialog progressDialog, String branchName)
 			throws GitAPIException {
@@ -685,6 +676,7 @@ public class GitAccess {
 	 *          - the path to get the submodule
 	 * @param index
 	 *          - boolean to determine what commit id to return
+	 *          
 	 * @return the SHA-1 id
 	 */
 	public ObjectId submoduleCompare(String submodulePath, boolean index) {
@@ -728,6 +720,7 @@ public class GitAccess {
 	 * 
 	 * @param submodule
 	 *          - the name of the submodule
+	 *          
 	 * @throws IOException Failed to load the submodule.
 	 * @throws GitAPIException Failed to load the submodule.
 	 */
@@ -950,8 +943,6 @@ public class GitAccess {
 	 *          - Git password
 	 *          
 	 * @throws GitAPIException
-	 * @throws TransportException
-	 * @throws InvalidRemoteException
 	 */
 	public PushResponse push(final String username, final String password)
 	    throws GitAPIException {
@@ -1114,7 +1105,6 @@ public class GitAccess {
         // Nothing
         break;
     }
-    
   }
 
   /**
@@ -1180,15 +1170,6 @@ public class GitAccess {
     logFailingPaths(mergeResult.getFailingPaths());
   }
   
-  /**
-   * Log rebase failure.
-   * 
-   * @param rebaseResult The rebase result.
-   */
-  private void logRebaseFailure(RebaseResult rebaseResult) {
-    logFailingPaths(rebaseResult.getFailingPaths());
-  }
-
   /**
    * Log failing paths.
    * 
@@ -1289,8 +1270,9 @@ public class GitAccess {
 	 *          - commit "a"
 	 * @param b
 	 *          - commit "b"
-	 * @return the bese commit
-	 * @throws IncorrectObjectTypeException
+	 *          
+	 * @return the base commit
+	 * 
 	 * @throws IOException
 	 */
 	private RevCommit getCommonAncestor(RevWalk walk, RevCommit a, RevCommit b)
@@ -1622,11 +1604,10 @@ public class GitAccess {
 	 * @param commit
 	 *          - the commit from which to get the loader
 	 * @param path
-	 *          - the path to the file
+	 *          - the path to the file+
+	 *          
 	 * @return the loader
-	 * @throws MissingObjectException
-	 * @throws IncorrectObjectTypeException
-	 * @throws CorruptObjectException
+	 * 
 	 * @throws IOException
 	 */
 	public ObjectLoader getLoaderFrom(ObjectId commit, String path)
@@ -1896,10 +1877,7 @@ public class GitAccess {
 	 * Sets the given branch as the current branch
 	 * 
 	 * @param selectedBranch
-	 * @throws RefAlreadyExistsException
-	 * @throws RefNotFoundException
-	 * @throws InvalidRefNameException
-	 * @throws CheckoutConflictException
+	 * 
 	 * @throws GitAPIException
 	 */
 	public void setBranch(String selectedBranch) throws GitAPIException {
