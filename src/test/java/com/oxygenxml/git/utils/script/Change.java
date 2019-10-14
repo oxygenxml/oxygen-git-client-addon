@@ -7,18 +7,30 @@ import javax.xml.bind.annotation.XmlValue;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
+/**
+ * A changed to perform on a file.
+ */
 @XmlRootElement(name = "change")
 public class Change {
-  
+  /**
+   * Type of change: add, change, delete
+   */
   @XmlAttribute(name = "type")
   String type;
-  
+  /**
+   * path relative to the working tree directory.
+   */
   @XmlAttribute(name = "path")
   String path;
-  
+  /**
+   * New file content.
+   */
   @XmlValue
   String content;
   
+  /**
+   * @return The change type as an {@link GitChangeType} value.
+   */
   private GitChangeType getChangeType() {
     if ("add".equals(type)) {
       return GitChangeType.UNTRACKED;
@@ -31,6 +43,9 @@ public class Change {
     return GitChangeType.UNTRACKED;
   }
   
+  /**
+   * @return An identical file change, as a {@link FileStatus}
+   */
   FileStatus toFileStatus() {
     return new FileStatus(getChangeType(), path);
   }

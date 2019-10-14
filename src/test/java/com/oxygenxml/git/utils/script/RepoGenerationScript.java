@@ -20,7 +20,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.MergeResult;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
+import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidMergeHeadsException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NoMessageException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
@@ -28,14 +34,14 @@ import org.junit.Test;
 import com.oxygenxml.git.service.GitAccess;
 
 /**
- * A Git repository creation script. 
+ * A script for creating/changing a Git repository. 
  */
 @XmlRootElement(name = "script")
-public class Script {
+public class RepoGenerationScript {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(Script.class);
+  private static Logger logger = Logger.getLogger(RepoGenerationScript.class);
   /**
    * A set of changes to be applied on the repository.
    */
@@ -45,13 +51,13 @@ public class Script {
   /**
    * Executes the change in the context of the given working tree directory.
    * 
-   * @param wcTree Working tree directory.
+   * @param wcTreeDir Working tree directory.
    * @param c Change to execute.
    * 
    * @throws IOException If it fails.
    */
-  private static void applyChange(File wcTree, Change c) throws IOException {
-    File f = new File(wcTree, c.path);
+  private static void applyChange(File wcTreeDir, Change c) throws IOException {
+    File f = new File(wcTreeDir, c.path);
     f.getParentFile().mkdirs();
     
     if (logger.isDebugEnabled()) {
@@ -70,7 +76,7 @@ public class Script {
    * @param script Operations to be performed on the repository.
    * @param wcTree Working tree location.
    */
-  public static void generateRepository(Script script, File wcTree) {
+  public static void generateRepository(RepoGenerationScript script, File wcTree) {
     initGit(wcTree);
     
     script.changeSet.forEach(ch -> applyChanges(wcTree, ch));
@@ -107,12 +113,12 @@ public class Script {
    * 
    * @throws JAXBException Fails to load the script.
    */
-  static Script loadScript(String script) throws JAXBException {
-    JAXBContext jaxbContext = JAXBContext.newInstance(Script.class);
+  static RepoGenerationScript loadScript(String script) throws JAXBException {
+    JAXBContext jaxbContext = JAXBContext.newInstance(RepoGenerationScript.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
      
     //We had written this file in marshalling example
-    Script emps = (Script) jaxbUnmarshaller.unmarshal(new StringReader(script));
+    RepoGenerationScript emps = (RepoGenerationScript) jaxbUnmarshaller.unmarshal(new StringReader(script));
     return emps;
   }
 
@@ -131,44 +137,9 @@ public class Script {
       if (logger.isDebugEnabled()) {
         logger.debug(ch.branch);
       }
-      if (ch.branch != null) {
-        boolean anyMatch = GitAccess.getInstance().getLocalBranchList().stream().anyMatch(r -> ch.branch.equals(Repository.shortenRefName(r.getName())));
-        if (logger.isDebugEnabled()) {
-          logger.debug("Branch detected " + anyMatch);
-        }
-        if (!anyMatch) {
-          try {
-            // Not sure why we need this. Without it, the order of changes is messed up. 
-            Thread.sleep(1000);
-          } catch (InterruptedException e1) {
-            logger.error(e1, e1);
-          }
-          GitAccess.getInstance().createBranch(ch.branch);
-          GitAccess.getInstance().setBranch(ch.branch);
-        } else {
-          GitAccess.getInstance().setBranch(ch.branch);
-        }
-
-        if (logger.isDebugEnabled()) {
-          logger.debug("On branch " + GitAccess.getInstance().getBranchInfo().getBranchName());
-        }
-
-        if (ch.mergeBranch != null) {
-          try {
-            Thread.sleep(1000);
-          } catch (InterruptedException e1) {
-            // Not sure why we need this. Without it the order of changes is messed up.
-            logger.error(e1, e1);
-          }
-
-          List<Ref> collect = GitAccess.getInstance().getLocalBranchList().stream().filter(r -> ch.mergeBranch.equals(Repository.shortenRefName(r.getName()))).collect(Collectors.toList());
-          MergeResult call = GitAccess.getInstance().getGitForTests().merge().setMessage(ch.message).include(collect.get(0)).call();
-
-          if (logger.isDebugEnabled()) {
-            logger.debug("Merge result: " + call);
-          }
-        }
-      }
+      setLocalBranch(ch.branch);
+      
+      mergeBranch(ch.mergeBranch, ch.message);
     } catch (Exception ex) {
       logger.error(ex, ex);
     }
@@ -191,9 +162,67 @@ public class Script {
     }
   }
 
+  /**
+   * Sets up the branch related aspects: current branch, merge another branch. 
+   *  
+   * @param localBranchShortNameShort name of the local branch.
+   * 
+   * @throws GitAPIException
+   */
+  private static void setLocalBranch(String localBranchShortName) throws GitAPIException {
+    if (localBranchShortName != null) {
+      boolean anyMatch = GitAccess.getInstance().getLocalBranchList().stream().anyMatch(r -> localBranchShortName.equals(Repository.shortenRefName(r.getName())));
+      if (logger.isDebugEnabled()) {
+        logger.debug("Branch detected " + anyMatch);
+      }
+      if (!anyMatch) {
+        try {
+          // Not sure why we need this. Without it, the order of changes is messed up. 
+          Thread.sleep(1000);
+        } catch (InterruptedException e1) {
+          logger.error(e1, e1);
+        }
+        GitAccess.getInstance().createBranch(localBranchShortName);
+        GitAccess.getInstance().setBranch(localBranchShortName);
+      } else {
+        GitAccess.getInstance().setBranch(localBranchShortName);
+      }
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("On branch " + GitAccess.getInstance().getBranchInfo().getBranchName());
+      }
+    }
+  }
+
+  /**
+   * Merges a branch into the current branch.
+   * 
+   * @param mergeBranchShortName Short name of the branch to merge.
+   * @param commitMessage Commit message.
+   * 
+   * @throws GitAPIException
+   */
+  private static void mergeBranch(String mergeBranchShortName, String commitMessage) throws GitAPIException {
+    if (mergeBranchShortName != null) {
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e1) {
+        // Not sure why we need this. Without it the order of changes is messed up.
+        logger.error(e1, e1);
+      }
+
+      List<Ref> collect = GitAccess.getInstance().getLocalBranchList().stream().filter(r -> mergeBranchShortName.equals(Repository.shortenRefName(r.getName()))).collect(Collectors.toList());
+      MergeResult call = GitAccess.getInstance().getGitForTests().merge().setMessage(commitMessage).include(collect.get(0)).call();
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Merge result: " + call);
+      }
+    }
+  }
+
   @Test
   public void generateGitRepository() throws Exception {
-    Script script = loadScript(
+    RepoGenerationScript script = loadScript(
         "<script>\n" + 
         "    <changeSet message=\"First commit.\">\n" + 
         "        <change path=\"f1/file1.txt\" type=\"add\">file 1 content</change>\n" + 

@@ -629,5 +629,10 @@ public class Tags {
    * Action in the history panel.
    */
   public static final String REFRESH = "Refresh";
+  /**
+   * Message presented on a tooltip when the local branch is not connected to any upstream branch.
+   */
+  public static final String NO_UPSTREAM_BRANCH = "No_upstream_branch";
+  
     
 }

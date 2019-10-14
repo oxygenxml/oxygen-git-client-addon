@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.script.Script;
+import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 
 /**
@@ -37,7 +37,7 @@ public class GitHistoryTest extends GitTestBase {
     URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
     
     File wcTree = new File("target/gen/GitHistoryTest_testHistory");
-    Script.generateRepository(script, wcTree);
+    RepoGenerationScript.generateRepository(script, wcTree);
     
     try {
       
@@ -92,7 +92,7 @@ public class GitHistoryTest extends GitTestBase {
     URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
     
     File wcTree = new File("target/gen/GitHistoryTest_testHistory");
-    Script.generateRepository(script, wcTree);
+    RepoGenerationScript.generateRepository(script, wcTree);
     
     try {
       
@@ -235,7 +235,7 @@ public class GitHistoryTest extends GitTestBase {
     URL script = getClass().getClassLoader().getResource("scripts/history_script_branches.txt");
     
     File wcTree = new File("target/gen/GitHistoryTest_testHistoryBranch");
-    Script.generateRepository(script, wcTree);
+    RepoGenerationScript.generateRepository(script, wcTree);
     
     try {
       GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
@@ -308,7 +308,7 @@ public class GitHistoryTest extends GitTestBase {
     URL script = getClass().getClassLoader().getResource("scripts/history_script_branches_merged.txt");
     
     File wcTree = new File("target/gen/GitHistoryTest_testHistoryBranchMerged");
-    Script.generateRepository(script, wcTree);
+    RepoGenerationScript.generateRepository(script, wcTree);
     
     try {
       GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
@@ -373,7 +373,7 @@ public class GitHistoryTest extends GitTestBase {
     URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
     
     File wcTree = new File("target/gen/GitHistoryTest_testHistoryRemote");
-    Script.generateRepository(script, wcTree);
+    RepoGenerationScript.generateRepository(script, wcTree);
     
     File remoteDir = new File("target/gen/GitHistoryTest_testHistoryRemote_RemoteRepo");
     Repository remoteRepository = null;

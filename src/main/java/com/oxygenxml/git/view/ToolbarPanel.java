@@ -440,13 +440,13 @@ public class ToolbarPanel extends JPanel {
 			  String upstreamBranch = null;
         try {
           remoteName = GitAccess.getInstance().getRemote(currentBranch);
-          upstreamBranch = GitAccess.getInstance().getUpstreamBranchShort(currentBranch);
+          upstreamBranch = GitAccess.getInstance().getUpstreamBranchShortName(currentBranch);
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
         }
         
         if (upstreamBranch == null) {
-          upstreamBranch = "no upstream branch";
+          upstreamBranch = translator.getTranslation(Tags.NO_UPSTREAM_BRANCH);
         }
         
 				ttMessage = "<html>"
@@ -458,7 +458,7 @@ public class ToolbarPanel extends JPanel {
 				pushButton.setToolTipText(
 				    translator.getTranslation(Tags.PUSH_TO)
 				      + " "
-				      + (upstreamBranch == null ? "no upstream branch" : upstreamBranch) 
+				      + upstreamBranch 
 				      );
 				pullButton.setToolTipText(
 				    translator.getTranslation(Tags.PULL_FROM)

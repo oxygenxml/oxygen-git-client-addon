@@ -1788,12 +1788,12 @@ public class GitAccess {
 	 * 
 	 * ex: refs/remotes/origin/dev
 	 * 
-	 * @param branchName The short branch name.
+	 * @param localBranchShortName The short branch name.
 	 * 
 	 * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
 	 */
-	public String getUpstreamBranch(String branchName) throws NoRepositorySelected {
-    BranchConfig branchConfig = new BranchConfig(git.getRepository().getConfig(), branchName);
+	public String getUpstreamBranch(String localBranchShortName) {
+    BranchConfig branchConfig = new BranchConfig(git.getRepository().getConfig(), localBranchShortName);
     return branchConfig.getRemoteTrackingBranch();
   }
 	
@@ -1802,12 +1802,12 @@ public class GitAccess {
    * 
    * ex: origin/dev
    * 
-   * @param branchName The short branch name.
+   * @param localBranchShortName The short branch name.
    * 
    * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
    */
-	public String getUpstreamBranchShort(String branchName) throws NoRepositorySelected {
-	  String remoteTrackingBranch = getUpstreamBranch(branchName);
+	public String getUpstreamBranchShortName(String localBranchShortName) throws NoRepositorySelected {
+	  String remoteTrackingBranch = getUpstreamBranch(localBranchShortName);
 
 	  if (remoteTrackingBranch != null) {
 	    return org.eclipse.jgit.lib.Repository.shortenRefName(remoteTrackingBranch);
@@ -1959,7 +1959,6 @@ public class GitAccess {
 			  String fullRemoteBranchName = getUpstreamBranch(repository.getBranch());
 			  System.out.println("fullRemoteBranchName " + fullRemoteBranchName);
 			  if (fullRemoteBranchName != null) {
-			    // TODO Should we fetch???
 			    Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
 			    if (fullRemoteBranchHead != null) {
 			      revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));

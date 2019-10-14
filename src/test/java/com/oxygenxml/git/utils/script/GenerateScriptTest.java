@@ -7,11 +7,16 @@ import org.junit.Test;
 /**
  * Tests the loading of an update script into memory. 
  */
-public class GenerateScript {
+public class GenerateScriptTest {
 
+  /**
+   * Loads a Git repository change script.
+   * 
+   * @throws Exception If it fails.
+   */
   @Test
   public void testLoad() throws Exception {
-    Script emps = Script.loadScript(
+    RepoGenerationScript emps = RepoGenerationScript.loadScript(
         "<script>\n" + 
         "    <changeSet message=\"First commit.\">\n" + 
         "        <change path=\"f1/file1.txt\" type=\"add\">new file content</change>\n" + 

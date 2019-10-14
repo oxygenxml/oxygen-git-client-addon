@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="No_upstream_branch">
+        <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
+        <val lang="en_US">no upstream branch</val>
+        <val lang="de_DE">no upstream branch</val>
+        <val lang="fr_FR">no upstream branch</val>
+        <val lang="ja_JP">no upstream branch</val>
+        <val lang="nl_NL">no upstream branch</val>
+    </key>
     <key value="Refresh">
         <comment>Action in the history panel.</comment>
         <val lang="en_US">Refresh</val>
