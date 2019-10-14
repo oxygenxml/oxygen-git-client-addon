@@ -69,40 +69,50 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	  
 		List<FileStatus> oldStates = changeEvent.getOldStates();
     List<FileStatus> newStates = 
-        inIndex ? 
-            GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) :
-            GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
+        inIndex ? GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) 
+            : GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
             
-    if (changeEvent.getCommand() == GitCommand.STAGE) {
-			if (inIndex) {
-				insertNodes(newStates);
-			} else {
-				deleteNodes(oldStates);
-			}
-		} else if (changeEvent.getCommand() == GitCommand.UNSTAGE) {
-			if (inIndex) {
-				deleteNodes(oldStates);
-			} else {
-	       // Things were taken out of the INDEX. 
-        // The same resource might be present in the UnStaged and INDEX. Remove old states.
-			  deleteNodes(oldStates);
-				insertNodes(newStates);
-			}
-		} else if (changeEvent.getCommand() == GitCommand.COMMIT) {
-			if (inIndex) {
-				deleteNodes(filesStatuses);
-				filesStatuses.clear();
-			}
-		} else if (changeEvent.getCommand() == GitCommand.DISCARD) {
-			deleteNodes(oldStates);
-		} else if (changeEvent.getCommand() == GitCommand.MERGE_RESTART) {
-      filesStatuses.clear();
-      List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() :
-        GitAccess.getInstance().getUnstagedFiles();
-      insertNodes(fileStatuses);
-    } else if (changeEvent.getCommand() == GitCommand.ABORT_REBASE
-        || changeEvent.getCommand() == GitCommand.CONTINUE_REBASE) {
-      filesStatuses.clear();
+    GitCommand cmd = changeEvent.getCommand();
+    switch (cmd) {
+      case STAGE:
+        if (inIndex) {
+          insertNodes(newStates);
+        } else {
+          deleteNodes(oldStates);
+        }
+        break;
+      case UNSTAGE:
+        if (inIndex) {
+          deleteNodes(oldStates);
+        } else {
+           // Things were taken out of the index / "staged" area. 
+          // The same resource might be present in the Unstaged and Staged. Remove old states.
+          deleteNodes(oldStates);
+          insertNodes(newStates);
+        }
+        break;
+      case COMMIT:
+        if (inIndex) {
+          deleteNodes(filesStatuses);
+          filesStatuses.clear();
+        }
+        break;
+      case DISCARD:
+        deleteNodes(oldStates);
+        break;
+      case MERGE_RESTART:
+        filesStatuses.clear();
+        List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() 
+            : GitAccess.getInstance().getUnstagedFiles();
+        insertNodes(fileStatuses);
+        break;
+      case ABORT_REBASE:
+      case CONTINUE_REBASE:
+        filesStatuses.clear();
+        break;
+      default:
+        // Nothing
+        break;
     }
 
 		fireTreeStructureChanged(this, null, null, null);

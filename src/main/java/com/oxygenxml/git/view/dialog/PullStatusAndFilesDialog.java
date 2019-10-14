@@ -24,15 +24,14 @@ import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
- * A dialog that is shown when the pull is successful but has conflicts. It
- * shows an infromation message and the files that are in conflict
+ * Show pull status and corresponding files.
  * 
  * @author Beniamin Savu
  *
  */
-public class PullWithConflictsDialog extends OKCancelDialog {
+public class PullStatusAndFilesDialog extends OKCancelDialog {
 
-	public PullWithConflictsDialog(String title, Collection<String> conflictFiles, String message) {
+	public PullStatusAndFilesDialog(String title, Collection<String> conflictFiles, String message) {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), title, true);
 		JLabel label = new JLabel("<html>" + message + "</html>");
 

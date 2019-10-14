@@ -704,4 +704,14 @@ public class Tags {
    * Continue rebase.
    */
   public static final String CONTINUE_REBASE = "Continue_rebase";
+  
+  /**
+   * Message shown when pull (rebase) failed because of uncommitted files.
+   */
+  public static final String PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED = "Pull_rebase_failed_because_uncommitted";
+  
+  /**
+   * Message shown when pull (rebase) failed because of conflicting paths.
+   */
+  public static final String PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS = "Pull_rebase_failed_because_conflicting_paths";
 }

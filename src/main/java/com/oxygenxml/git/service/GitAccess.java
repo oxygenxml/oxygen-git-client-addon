@@ -972,6 +972,13 @@ public class GitAccess {
 	    return response;
 	  }
 	  
+	  // TODO TC
+	  if (getPushesAhead() == 0) {
+	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
+      response.setMessage(translator.getTranslation(Tags.PUSH_UP_TO_DATE));
+      return response;
+	  }
+	  
 	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 	  Iterable<PushResult> call = git.push().setCredentialsProvider(
 	      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
@@ -1077,27 +1084,37 @@ public class GitAccess {
    * @param rebaseResult         The result of the rebase operation.
    * 
    * @throws CheckoutConflictException when the command can't succeed because of unresolved conflicts.
+   * @throws RebaseUncommittedChangesException 
    */
-  private void treatRebaseResult(PullResponse pullResponseToReturn, RebaseResult rebaseResult) throws CheckoutConflictException {
+  private void treatRebaseResult(PullResponse pullResponseToReturn, RebaseResult rebaseResult) throws CheckoutConflictException, RebaseUncommittedChangesException {
     RebaseResult.Status status = rebaseResult.getStatus();
     if (logger.isDebugEnabled()) {
       logger.debug("Rebase result status: " + status);
     }
-    if (status == RebaseResult.Status.UP_TO_DATE) {
-      pullResponseToReturn.setStatus(PullStatus.UP_TO_DATE);
-    } else if (status == RebaseResult.Status.CONFLICTS) {
-      // Local changes would be overwritten by the pull 
-      if (logger.isDebugEnabled()) {
-        logRebaseFailure(rebaseResult);
-      }
-      throw new CheckoutConflictException(
-          new ArrayList<>(rebaseResult.getConflicts()),
-          new org.eclipse.jgit.errors.CheckoutConflictException(""));
-    } else if (status == RebaseResult.Status.STOPPED) {
-      // Trying to pull generated a real conflict
-      pullResponseToReturn.setConflictingFiles(new HashSet<>(getConflictingFiles()));
-      pullResponseToReturn.setStatus(PullStatus.CONFLICTS);
+    
+    // TODO: TEST CASES
+    switch (status) {
+      case UP_TO_DATE:
+        pullResponseToReturn.setStatus(PullStatus.UP_TO_DATE);
+        break;
+      case CONFLICTS:
+        // There are uncommitted and incoming changes in the same resource.
+        // If there are changes in different resources, the pull will be successful (fast-forward).
+        throw new RebaseConflictsException(rebaseResult.getConflicts());
+      case STOPPED:
+        // Trying to pull generated a real conflict, because of changes on the same line(s).
+        pullResponseToReturn.setConflictingFiles(new HashSet<>(getConflictingFiles()));
+        pullResponseToReturn.setStatus(PullStatus.CONFLICTS);
+        break;
+      case UNCOMMITTED_CHANGES:
+        // We had changes in X and Y locally, and an incoming change from remote on X. 
+        // We committed X and tried to pull with rebase, and we got into this situation...
+        throw new RebaseUncommittedChangesException(rebaseResult.getUncommittedChanges()); 
+      default:
+        // Nothing
+        break;
     }
+    
   }
 
   /**

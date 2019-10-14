@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.event;
 
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -18,10 +19,12 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PushResponse;
+import com.oxygenxml.git.service.RebaseConflictsException;
+import com.oxygenxml.git.service.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.InterruptedRebaseDialog;
-import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
+import com.oxygenxml.git.view.dialog.PullStatusAndFilesDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -134,7 +137,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * @param response Pull response.
 	 */
 	protected void showPullSuccessfulWithConflicts(PullResponse response) {
-    new PullWithConflictsDialog(
+    new PullStatusAndFilesDialog(
         translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
         response.getConflictingFiles(),
         translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
@@ -146,11 +149,14 @@ public class PushPullController implements Subject<PushPullEvent> {
    * 
    * @param e Exception.
    */
-  protected void showPullFailedBecauseofUncommitedFiles(CheckoutConflictException e) {
-    new PullWithConflictsDialog(
+  protected void showPullFailedBecauseOfCertainChanges(List<String> filesWithChanges, String message) {
+    if (logger.isDebugEnabled()) {
+      logger.info("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
+    }
+    new PullStatusAndFilesDialog(
         translator.getTranslation(Tags.PULL_STATUS), 
-        e.getConflictingPaths(), 
-        translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
+        filesWithChanges, 
+        message);
   }
   
   /**
@@ -183,13 +189,18 @@ public class PushPullController implements Subject<PushPullEvent> {
           logger.debug("Preparing for push/pull command");
         }
         message = doOperation(userCredentials);
+      } catch (RebaseUncommittedChangesException e) {
+        showPullFailedBecauseOfCertainChanges(
+            e.getUncommittedChanges(),
+            translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED));
+      } catch (RebaseConflictsException e) {
+        showPullFailedBecauseOfCertainChanges(
+            e.getConflictingPaths(),
+            translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
       } catch (CheckoutConflictException e) {
-        // Notify that there are conflicts that should be resolved in the staging area.
-        showPullFailedBecauseofUncommitedFiles(e);
-
-        if (logger.isDebugEnabled()) {
-          logger.info(e.getConflictingPaths());
-        }
+        showPullFailedBecauseOfCertainChanges(
+            e.getConflictingPaths(),
+            translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
       } catch (GitAPIException e) {
         // Exception handling.
         boolean shouldTryAgain = AuthUtil.handleAuthException(
@@ -206,6 +217,8 @@ public class PushPullController implements Subject<PushPullEvent> {
         } else {
           message = composeAndReturnFailureMessage(e.getMessage());
         }
+      } catch (Exception e) {
+        logger.error(e, e);
       } finally {
         if (notifyFinish) {
           PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);

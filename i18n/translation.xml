@@ -4,6 +4,22 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Pull_rebase_failed_because_uncommitted">
+        <comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
+        <val lang="en_US">Cannot pull with rebase because of the following uncommitted files:</val>
+        <val lang="de_DE">Cannot pull with rebase because of the following uncommitted files:</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Pull_rebase_failed_because_conflicting_paths">
+        <comment>Message shown when pull (rebase) failed because of conflicting paths.</comment>
+        <val lang="en_US">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
+        <val lang="de_DE">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
     <key value="Continue_rebase">
         <comment>Continue rebase</comment>
         <val lang="en_US">Continue rebase</val>
