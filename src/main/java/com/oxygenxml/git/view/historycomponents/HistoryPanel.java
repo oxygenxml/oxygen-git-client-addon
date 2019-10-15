@@ -445,16 +445,17 @@ public class HistoryPanel extends JPanel {
         historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess, gitAccess.getRepository()));
         historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
 
+        // Install selection listener.
+        if (selectionListener != null) {
+          historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
+        }
+        
         List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
 
         historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
 
         updateTableWidths();
 
-        // Install selection listener.
-        if (selectionListener != null) {
-          historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
-        }
         selectionListener = new RowHistoryTableSelectionListener(historyTable, commitDescriptionPane, commitCharacteristicsVector, changesTable);
         historyTable.getSelectionModel().addListSelectionListener(selectionListener);
 
