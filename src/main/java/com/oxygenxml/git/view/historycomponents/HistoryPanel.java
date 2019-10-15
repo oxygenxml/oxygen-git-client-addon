@@ -48,6 +48,7 @@ import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import ro.sync.ui.hidpi.RetinaDetector;
 
 /**
  * Presents the commits for a given resource. 
@@ -313,17 +314,38 @@ public class HistoryPanel extends JPanel {
     TableColumnModel tcm = historyTable.getColumnModel();
     int available = historyTable.getWidth();
     TableColumn column = tcm.getColumn(0);
-    column.setPreferredWidth(available - 3 * 100);
+    int columnDate = scaleColumnsWidth(100);
+    int columnAuthor = scaleColumnsWidth(120);
+    int columnCommitId = scaleColumnsWidth(80);
+    
+    column.setPreferredWidth(available - columnAuthor - columnAuthor - columnDate);
     
     column = tcm.getColumn(1);
-    column.setPreferredWidth(100);
+    column.setPreferredWidth(columnDate);
 
     column = tcm.getColumn(2);
-    column.setPreferredWidth(120);
+    column.setPreferredWidth(columnAuthor);
 
     column = tcm.getColumn(3);
-    column.setPreferredWidth(80);
+    column.setPreferredWidth(columnCommitId);
   }
+  
+  /**
+   * Applies a scaling factor depending if we are on a hidpi display.
+   * 
+   * @param width Width to scale.
+   * 
+   * @return A scaled width.
+   */
+  public static int scaleColumnsWidth(int width) {
+    float scalingFactor = (float) 1.0;
+    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
+      scalingFactor = RetinaDetector.getInstance().getScalingFactor();
+    }
+    
+    return (int) (scalingFactor * width);
+  }
+  
 
   /**
    *  Shows the commit history for the given file.
