@@ -306,7 +306,7 @@ public class ToolbarPanel extends JPanel {
       this.pushesAhead = GitAccess.getInstance().getPushesAhead();
     } catch (RepoNotInitializedException e) {
       this.pushesAhead = -1;
-      logger.error(e, e);
+      logger.debug(e, e);
     }
 		this.pullsBehind = GitAccess.getInstance().getPullsBehind();
 
@@ -443,7 +443,7 @@ public class ToolbarPanel extends JPanel {
       this.pushesAhead = GitAccess.getInstance().getPushesAhead();
     } catch (RepoNotInitializedException e) {
       this.pushesAhead = -1;
-      logger.error(e, e);
+      logger.debug(e, e);
     }
     pushButton.repaint();
     
