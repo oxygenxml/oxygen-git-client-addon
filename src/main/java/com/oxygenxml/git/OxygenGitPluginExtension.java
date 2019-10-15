@@ -111,7 +111,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			      
 			      viewInfo.setTitle("Git Staging");
 					} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
-					  historyView = new HistoryPanel();
+					  historyView = new HistoryPanel(stageController);
             viewInfo.setComponent(historyView);
 					}
 				}

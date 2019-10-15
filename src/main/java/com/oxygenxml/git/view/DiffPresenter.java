@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Optional;
 
 import javax.swing.JFrame;
 
@@ -46,61 +47,37 @@ public class DiffPresenter {
 	private static Logger logger = Logger.getLogger(DiffPresenter.class);
 
 	/**
-	 * The file on which the diffPresenter works
-	 */
-	private FileStatus file;
-
-	/**
-	 * The frame of the oxygen's diff
-	 */
-	private JFrame diffFrame;
-
-	/**
-	 * Controller used for staging and unstaging
-	 */
-	private StageController stageController;
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param file Fiel to DIFF.
-	 * @param stageController Stage controller to issue commands.
-	 */
-	public DiffPresenter(FileStatus file, StageController stageController) {
-		this.stageController = stageController;
-		this.file = file;
-	}
-
-	/**
 	 * Perform different actions depending on the file change type. If the file is
 	 * a conflict file then a 3-way diff is presented. If the file is a modified
 	 * one then a 2-way diff is presented. And if a file is added then the file is
 	 * opened
+	 * @param stageCtrl 
+	 * @param fileStatus 
 	 * 
 	 */
-	public void showDiff() {
+	public static void showDiff(FileStatus fileStatus, StageController stageCtrl) {
 	  try {
-	    GitChangeType changeType = file.getChangeType();
+	    GitChangeType changeType = fileStatus.getChangeType();
 	    switch (changeType) {
 	      case CONFLICT:
-	        showConflictDiff();
+	        showConflictDiff(fileStatus, stageCtrl);
 	        break;
 	      case CHANGED:
-	        showDiffIndexWithHead();
+	        showDiffIndexWithHead(fileStatus.getFileLocation());
 	        break;
 	      case MODIFIED:
-	        showDiffViewForModified();
+	        showDiffViewForModified(fileStatus.getFileLocation());
 	        break;
 	      case ADD:
 	      case UNTRACKED:
-	        diffViewForAddedAndUntracked();
+	        diffViewForAddedAndUntracked(fileStatus);
 	        break;
 	      case SUBMODULE:
-	        showSubmoduleDiff();
+	        showSubmoduleDiff(fileStatus.getFileLocation());
 	        break;
 	      case MISSING:
 	      case REMOVED:
-	        diffViewForMissingAndRemoved();
+	        diffViewForMissingAndRemoved(fileStatus.getFileLocation());
 	        break;
 	      default:
 	        break;
@@ -116,17 +93,19 @@ public class DiffPresenter {
 
 	/**
 	 * Diff for added/untracked resources.
+	 * 
+	 * @param fileStatus File to compare.
 	 */
-	private void diffViewForAddedAndUntracked() {
+	private static void diffViewForAddedAndUntracked(FileStatus fileStatus) {
 	  URL url = null;
 	  try {
-	    GitChangeType changeType = file.getChangeType();
+	    GitChangeType changeType = fileStatus.getChangeType();
 	    if (changeType == GitChangeType.ADD) {
 	      url = GitRevisionURLHandler.encodeURL(
 	          VersionIdentifier.INDEX_OR_LAST_COMMIT, 
-	          file.getFileLocation());
+	          fileStatus.getFileLocation());
 	    } else {
-	      url = FileHelper.getFileURL(file.getFileLocation());  
+	      url = FileHelper.getFileURL(fileStatus.getFileLocation());  
 	    }
 	  } catch (MalformedURLException | NoRepositorySelected e) {
 	    // Shouldn't rreally happen
@@ -134,36 +113,40 @@ public class DiffPresenter {
 	      logger.debug(e, e);
 	    }
 	  }
-	  showDiffFrame(url, null, null);
+	  showDiffFrame(url, null, null, fileStatus.getFileLocation());
 	}
 
 	/**
 	 * Diff for missing/deleted resources.
+	 * 
+	 * @param path The path of the file to compare. Relative to the working tree.
 	 */
-	private void diffViewForMissingAndRemoved() {
+	private static void diffViewForMissingAndRemoved(String path) {
 	  URL lastCommitedFileURL = null;
 	  try {
 	    lastCommitedFileURL = GitRevisionURLHandler.encodeURL(
-	        VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
+	        VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
 	  } catch (MalformedURLException e1) {
 	    if (logger.isDebugEnabled()) {
 	      logger.debug(e1, e1);
 	    }
 	  }
-	  showDiffFrame(null, lastCommitedFileURL, null);
+	  showDiffFrame(null, lastCommitedFileURL, null, path);
 	}
 
 	/**
 	 * Submodule diff.
+	 * 
+	 * @param path The path of the file to compare. Relative to the working tree.
 	 */
-	private void showSubmoduleDiff() {
-		GitAccess.getInstance().submoduleCompare(file.getFileLocation(), true);
+	private static void showSubmoduleDiff(String path) {
+		GitAccess.getInstance().submoduleCompare(path, true);
 		try {
-			URL currentSubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.CURRENT_SUBMODULE, file.getFileLocation());
+			URL currentSubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.CURRENT_SUBMODULE, path);
 			URL previouslySubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.PREVIOUSLY_SUBMODULE,
-					file.getFileLocation());
+			    path);
 			
-			showDiffFrame(currentSubmoduleCommit, previouslySubmoduleCommit, previouslySubmoduleCommit);
+			showDiffFrame(currentSubmoduleCommit, previouslySubmoduleCommit, previouslySubmoduleCommit, path);
 		} catch (MalformedURLException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
@@ -174,55 +157,58 @@ public class DiffPresenter {
 	/**
 	 * Presents a 2-way diff
 	 * 
+	 * @param path The path of the file to compare. Relative to the working tree.
+	 * 
 	 * @throws NoRepositorySelected 
 	 */
-	private void showDiffViewForModified() throws NoRepositorySelected {
+	private static void showDiffViewForModified(String path) throws NoRepositorySelected {
 	  // The local (WC) version.
-		URL fileURL = FileHelper.getFileURL(file.getFileLocation());
+		URL fileURL = FileHelper.getFileURL(path);
 		URL lastCommitedFileURL = null;
 
 		try {
 			lastCommitedFileURL = GitRevisionURLHandler.encodeURL(
-			    VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
+			    VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
 		} catch (MalformedURLException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
 		}
 		
-		showDiffFrame(fileURL, lastCommitedFileURL, lastCommitedFileURL);
+		showDiffFrame(fileURL, lastCommitedFileURL, lastCommitedFileURL, path);
 	}
 	
   /**
    * Presents a 2-way diff
    * 
-   * @param changeType The type of change.
+   * @param path The path of the file to compare. Relative to the working tree.
    *  
    * @throws NoRepositorySelected 
    */
-  private void showDiffIndexWithHead() throws NoRepositorySelected {    
+  private static void showDiffIndexWithHead(String path) throws NoRepositorySelected {    
     // The local (WC) version.
-    URL leftSideURL = FileHelper.getFileURL(file.getFileLocation());
+    URL leftSideURL = FileHelper.getFileURL(path);
     URL rightSideURL = null;
 
     try {
-      leftSideURL  = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, file.getFileLocation());
+      leftSideURL  = GitRevisionURLHandler.encodeURL(VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
       
-      rightSideURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.LAST_COMMIT, file.getFileLocation());
+      rightSideURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.LAST_COMMIT, path);
     } catch (MalformedURLException e1) {
       if (logger.isDebugEnabled()) {
         logger.debug(e1, e1);
       }
     }
 
-    showDiffFrame(leftSideURL, rightSideURL, rightSideURL);
+    showDiffFrame(leftSideURL, rightSideURL, rightSideURL, path);
 
   }
 
 	/**
 	 * Presents a 3-way diff
+	 * @param file 
 	 */
-	private void showConflictDiff() {
+	private static void showConflictDiff(FileStatus file, StageController stageController) {
 		try {
 			// builds the URL for the files
 			URL local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());
@@ -235,40 +221,58 @@ public class DiffPresenter {
 			// time stamp used for detecting if the file was changed in the diff view
 			final long diffStartedTimeStamp = localCopy.lastModified();
 
-			showDiffFrame(local, remote, base);
+			Optional<JFrame> diffFrame = showDiffFrame(local, remote, base, file.getFileLocation());
 			// checks if the file in conflict has been resolved or not after the diff
 			// view was closed
-			diffFrame.addComponentListener(new ComponentAdapter() {
-				@Override
-				public void componentHidden(ComponentEvent e) {
-					long diffClosedTimeStamp = localCopy.lastModified();
-
-					if (diffClosedTimeStamp == diffStartedTimeStamp) {
-
-						String[] options = new String[] { "   Yes   ", "   No   " };
-						int[] optonsId = new int[] { 0, 1 };
-						int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-						    Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
-						    Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
-						if (response == 0) {
-							stageController.doGitCommand(Arrays.asList(file), GitCommand.RESOLVE_USING_MINE);
-						}
-					} else {
-					  // Instead of requesting the file status again, we just mark it as modified.
-						file.setChangeType(GitChangeType.MODIFIED);
-						
-						stageController.doGitCommand(Arrays.asList(file), GitCommand.STAGE);
-					}
-					
-					diffFrame.removeComponentListener(this);
-				}
-			});
+			diffFrame.ifPresent(d -> 
+			  d.addComponentListener(new ComponentAdapter() {
+			    @Override
+			    public void componentHidden(ComponentEvent e) {
+			      long diffClosedTimeStamp = localCopy.lastModified();
+			      
+			      if (diffClosedTimeStamp == diffStartedTimeStamp) {
+			        
+			        String[] options = new String[] { "   Yes   ", "   No   " };
+			        int[] optonsId = new int[] { 0, 1 };
+			        int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+			            Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
+			            Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
+			        if (response == 0) {
+			          stageController.doGitCommand(Arrays.asList(file), GitCommand.RESOLVE_USING_MINE);
+			        }
+			      } else {
+			        // Instead of requesting the file status again, we just mark it as modified.
+			        file.setChangeType(GitChangeType.MODIFIED);
+			        
+			        stageController.doGitCommand(Arrays.asList(file), GitCommand.STAGE);
+			      }
+			      
+			      d.removeComponentListener(this);
+			    }
+			  })
+			);
 
 		} catch (MalformedURLException e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
 		}
+	}
+	
+	/**
+	 * Shows a two way diff between the two revisions of a file.
+	 * 
+	 * @param leftCommitID The first revision to compare.
+	 * @param rightCommitID The second revision to comapre.
+	 * @param filePath The path of the file. Relative to the working tree.
+	 * 
+	 * @throws MalformedURLException Unable to build the URL.
+	 */
+	public static void showTwoWayDiff(String leftCommitID, String rightCommitID, String filePath) throws MalformedURLException {
+	  URL left = GitRevisionURLHandler.encodeURL(leftCommitID, filePath);
+	  URL right = GitRevisionURLHandler.encodeURL(rightCommitID, filePath);
+	  
+	  showDiffFrame(left, right, null, filePath);
 	}
 
 	/**
@@ -277,8 +281,10 @@ public class DiffPresenter {
 	 * @param localURL  URL to the local resource.
 	 * @param remoteUL  URL to the remote resource.
 	 * @param baseURL   URL to the base version of the resource.
+	 * 
+	 * @return The DIFF frame.
 	 */
-	private void showDiffFrame(URL localURL, URL remoteUL, URL baseURL) {
+	private static Optional<JFrame> showDiffFrame(URL localURL, URL remoteUL, URL baseURL, String filePath) {
 	  if (logger.isDebugEnabled()) {
 	    logger.debug("Local  " + localURL);
 	    logger.debug("Remote " + remoteUL);
@@ -292,7 +298,7 @@ public class DiffPresenter {
 	      // diff is presented
 	      ObjectId baseCommit = GitAccess.getInstance().getBaseCommit(null);
 	      if (baseCommit == null 
-	          || GitAccess.getInstance().getLoaderFrom(baseCommit, file.getFileLocation()) == null) {
+	          || GitAccess.getInstance().getLoaderFrom(baseCommit, filePath) == null) {
 	        threeWays = false;
 	      }
 	    }
@@ -301,8 +307,9 @@ public class DiffPresenter {
 	    logger.error(e, e);
 	  }
 
+	  JFrame diffFrame = null;
 	  if (threeWays) {
-	    diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+      diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
 	        .openDiffFilesApplication(localURL, remoteUL, baseURL);
 	  } else {
 	    diffFrame = (JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
@@ -311,13 +318,16 @@ public class DiffPresenter {
 	  
 	  // The "openDiffFilesApplication()" API may return null
 	  if (diffFrame != null) {
+	    final JFrame fDiffFrame = diffFrame;
 	    diffFrame.addWindowListener(new WindowAdapter() {
 	      @Override
 	      public void windowOpened(WindowEvent e) {
-	        diffFrame.removeWindowListener(this);
+	        fDiffFrame.removeWindowListener(this);
 	        AuthenticationInterceptor.install();
 	      }
 	    });
 	  }
+	  
+	  return Optional.ofNullable(diffFrame);
 	}
 }

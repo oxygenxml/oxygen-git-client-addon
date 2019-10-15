@@ -124,8 +124,7 @@ public class GitMenuActionsProvider {
             String selectedFilePath = FileHelper.rewriteSeparator(selectedFiles[0].getAbsolutePath());
             for (FileStatus fileStatus : gitFiles) {
               if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-                DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl);
-                diff.showDiff();
+                DiffPresenter.showDiff(fileStatus, stageCtrl);
                 break;
               }
             }

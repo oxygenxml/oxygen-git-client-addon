@@ -104,7 +104,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        new DiffPresenter(selectedLeaves.get(0), stageController).showDiff();
+	        DiffPresenter.showDiff(selectedLeaves.get(0), stageController);
 	      }
 	    };
 

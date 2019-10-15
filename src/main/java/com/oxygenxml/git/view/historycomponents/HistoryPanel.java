@@ -3,12 +3,16 @@ package com.oxygenxml.git.view.historycomponents;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +23,7 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -36,16 +41,21 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
+import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
+import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
+import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
+import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -89,11 +99,18 @@ public class HistoryPanel extends JPanel {
    * present the history for the entire repository.
    */
   private String activeFilePath;
+  /**
+   * Executes GIT commands.
+   */
+  private transient StageController stageController;
   
   /**
    * Constructor.
+   * 
+   * @param stageController Executes a set of Git commands.
    */
-  public HistoryPanel() {
+  public HistoryPanel(StageController stageController) {
+    this.stageController = stageController;
     setLayout(new BorderLayout());
 
     historyTable = createTable();
@@ -109,7 +126,7 @@ public class HistoryPanel extends JPanel {
     
     JScrollPane commitDescriptionScrollPane = new JScrollPane(commitDescriptionPane);
     
-    changesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(null, true), () -> false);
+    changesTable = createResourcesTable();
     
     JScrollPane fileHierarchyScrollPane = new JScrollPane(changesTable);
 
@@ -145,7 +162,147 @@ public class HistoryPanel extends JPanel {
 
     add(centerSplitPane, BorderLayout.CENTER);
   }
+
+  /**
+   * Creates the view that presents the files changed in a revision.
+   * 
+   * @return The view that presents the files.
+   */
+  private JTable createResourcesTable() {
+    JTable createResourcesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(null, true), () -> false);
+    createResourcesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    
+    createResourcesTable.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(java.awt.event.MouseEvent e) {
+        if (e.isPopupTrigger()) {
+          showResourcesContextualMenu(createResourcesTable, e.getPoint());
+        }
+      }
+
+      @Override
+      public void mouseReleased(java.awt.event.MouseEvent e) {
+        if (e.isPopupTrigger()) {
+          showResourcesContextualMenu(createResourcesTable, e.getPoint());
+        }
+      }
+    });
+    
+    return createResourcesTable;
+  }
   
+  /**
+   * Show the contextual menu on the resources changed on a revision.
+   * 
+   * @param commitResourcesTable The table with the files from a committed on a revision.
+   * @param point The point where to show the contextual menu.
+   */
+  protected void showResourcesContextualMenu(JTable commitResourcesTable, Point point) {
+    int rowAtPoint = commitResourcesTable.rowAtPoint(point);
+    if (rowAtPoint != -1) {
+      commitResourcesTable.getSelectionModel().setSelectionInterval(rowAtPoint, rowAtPoint);
+      
+      StagingResourcesTableModel model = (StagingResourcesTableModel) commitResourcesTable.getModel();
+      int convertedSelectedRow = commitResourcesTable.convertRowIndexToModel(rowAtPoint);
+      FileStatus file = model.getFileStatus(convertedSelectedRow);
+      
+      JPopupMenu jPopupMenu = new JPopupMenu();
+      
+      jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_OPEN)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          String revisionID = ((CommitCharacteristics) historyTable.getModel().getValueAt(historyTable.getSelectedRow(), 0)).getCommitId();
+          try {
+            URL fileURL = GitRevisionURLHandler.encodeURL(revisionID, file.getFileLocation());
+            PluginWorkspaceProvider.getPluginWorkspace().open(fileURL);
+          } catch (MalformedURLException e1) {
+            LOGGER.error(e1, e1);
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+          } 
+        }
+      });
+      
+      HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
+      CommitCharacteristics commitCharacteristics = historyTableModel.getCommitVector().get(historyTable.getSelectedRow());
+      
+      populateDiffActions(jPopupMenu, commitCharacteristics, file);
+      
+      
+      jPopupMenu.show(commitResourcesTable, point.x, point.y);
+    }
+  }
+
+  /**
+   * Contributes the DIFF actions between the current revision and the previous ones on the contextual menu.
+   * 
+   * @param jPopupMenu Contextual menu.
+   * @param commitCharacteristics Current commit data.
+   * @param fileStatus File path do diff.
+   */
+  private void populateDiffActions(
+      JPopupMenu jPopupMenu,  
+      CommitCharacteristics commitCharacteristics,
+      FileStatus fileStatus) {
+    String filePath = fileStatus.getFileLocation();
+    if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != commitCharacteristics.getCommitId()) {
+      List<String> parents = commitCharacteristics.getParentCommitId();
+      if (parents != null && !parents.isEmpty()) {
+        try {
+          RevCommit[] parentsRevCommits = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(), commitCharacteristics.getCommitId());
+          boolean addParentID = parents.size() > 1;
+          for (RevCommit parentID : parentsRevCommits) {
+            // Just one parent.
+            jPopupMenu.add(createDiffAction(filePath, commitCharacteristics.getCommitId(), parentID, addParentID));
+          }
+        } catch (IOException | NoRepositorySelected e2) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e2.getMessage());
+          LOGGER.error(e2, e2);
+        }
+      }
+    } else {
+      // Uncommitted changes. Compare between local and HEAD.
+      jPopupMenu.add(new AbstractAction(
+          Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          DiffPresenter.showDiff(fileStatus, stageController);
+        }
+      });
+    }
+  }
+
+  /**
+   * Creates an action that invokes Oxygen's DIFF.
+   * 
+   * @param filePath File to compare. Path relative to the working tree.
+   * @param commitID The current commit id. First version to compare.
+   * @param parentRevCommit The parent revision. Second version to comapre.
+   * @param addParentIDInActionName <code>true</code> to put the ID of the parent version in the action's name.
+   * 
+   * @return The action that invokes the DIFF.
+   */
+  private AbstractAction createDiffAction(
+      String filePath,
+      String commitID, 
+      RevCommit parentRevCommit,
+      boolean addParentIDInActionName) {
+    String translation = Translator.getInstance().getTranslation("Compare with previous version");
+    if (addParentIDInActionName) {
+      translation += " " + parentRevCommit.abbreviate(7).name();
+    }
+    return new AbstractAction(translation) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          DiffPresenter.showTwoWayDiff(commitID, parentRevCommit.name(), filePath);
+        } catch (MalformedURLException e1) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e1.getMessage());
+          LOGGER.error(e1, e1);
+        }
+      }
+    };
+  }
+
   /**
    * Creates a split pane and puts the two components in it.
    * 

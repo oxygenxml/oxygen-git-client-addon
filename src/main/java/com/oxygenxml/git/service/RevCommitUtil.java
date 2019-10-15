@@ -18,6 +18,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -74,6 +75,29 @@ public class RevCommitUtil {
     }
 
     return changedFiles;
+  }
+  
+  /**
+   * Gets the Object ID for a file path at a given revision.
+   * 
+   * @param repository Git repository.
+   * @param commitID Revision commit ID.
+   * @param path File path, relative to the working tree directory.
+   * 
+   * @return The Object identifying the file at the given revision.
+   * 
+   * @throws IOException Unable to identify the commit.
+   */
+  public static ObjectId getObjectID(Repository repository, String commitID, String path) throws IOException {
+    ObjectId head = repository.resolve(commitID);
+
+    try (RevWalk rw = new RevWalk(repository)) {
+      RevCommit commit = rw.parseCommit(head);
+      
+      try (TreeWalk treeWalk = TreeWalk.forPath(repository, path, commit.getTree())) {
+        return treeWalk.getObjectId(0);
+      }
+    }
   }
 
   /**
@@ -136,5 +160,28 @@ public class RevCommitUtil {
     }
 
     return collect;
+  }
+
+  /**
+   * Get changed files as compared with the parent version.
+   * 
+   * @param commitID The commit ID.
+   * 
+   * @return A list with changed files. Can be <code>null</code>.
+   * 
+   * @throws IOException Unable to retrieve commit information.
+   */
+  public static RevCommit[] getParents(Repository repository, String commitID) throws IOException {
+    if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != commitID) {
+      ObjectId head = repository.resolve(commitID);
+
+      try (RevWalk rw = new RevWalk(repository)) {
+        RevCommit commit = rw.parseCommit(head);
+
+        return commit.getParents();
+      }
+    }
+
+    return null;
   }
 }

@@ -431,8 +431,7 @@ public class ChangesPanel extends JPanel {
 		        if (model != null && node != null
 		            && model.isLeaf(node) && !model.getRoot().equals(node)) {
 		          FileStatus file = model.getFileByPath(stringPath);
-		          DiffPresenter diff = new DiffPresenter(file, stageController);
-		          diff.showDiff();
+		          DiffPresenter.showDiff(file, stageController);
 		        }
 		      }
 		    } else if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
@@ -577,8 +576,7 @@ public class ChangesPanel extends JPanel {
 	          GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 	          if (model.isLeaf(node) && !model.getRoot().equals(node)) {
 	            FileStatus file = model.getFileByPath(stringPath);
-	            DiffPresenter diff = new DiffPresenter(file, stageController);
-	            diff.showDiff();
+	            DiffPresenter.showDiff(file, stageController);
 	          }
 	        }
 	      }
@@ -1162,8 +1160,7 @@ public class ChangesPanel extends JPanel {
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 		int convertedRow = filesTable.convertRowIndexToModel(row);
 		FileStatus file = model.getUnstageFile(convertedRow);
-		DiffPresenter diff = new DiffPresenter(file, stageController);
-		diff.showDiff();
+		DiffPresenter.showDiff(file, stageController);
 	}
 
 	/**
