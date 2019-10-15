@@ -37,6 +37,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
+import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
@@ -301,7 +302,12 @@ public class ToolbarPanel extends JPanel {
 		gitToolbar.setOpaque(false);
 		gitToolbar.setFloatable(false);
 		this.setLayout(new GridBagLayout());
-		this.pushesAhead = GitAccess.getInstance().getPushesAhead();
+		try {
+      this.pushesAhead = GitAccess.getInstance().getPushesAhead();
+    } catch (RepoNotInitializedException e) {
+      this.pushesAhead = -1;
+      logger.error(e, e);
+    }
 		this.pullsBehind = GitAccess.getInstance().getPullsBehind();
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -433,7 +439,12 @@ public class ToolbarPanel extends JPanel {
     this.pullsBehind = GitAccess.getInstance().getPullsBehind();
     pullMenuButton.repaint();
     
-    this.pushesAhead = GitAccess.getInstance().getPushesAhead();
+    try {
+      this.pushesAhead = GitAccess.getInstance().getPushesAhead();
+    } catch (RepoNotInitializedException e) {
+      this.pushesAhead = -1;
+      logger.error(e, e);
+    }
     pushButton.repaint();
     
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();

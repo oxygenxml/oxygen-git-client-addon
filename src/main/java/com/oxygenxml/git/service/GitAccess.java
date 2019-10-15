@@ -963,12 +963,16 @@ public class GitAccess {
 	    return response;
 	  }
 	  
-	  // TODO TC
-	  if (getPushesAhead() == 0) {
-	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
-      response.setMessage(translator.getTranslation(Tags.PUSH_UP_TO_DATE));
-      return response;
-	  }
+	   // TODO TC
+    try {
+      if (getPushesAhead() == 0) {
+        response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
+        response.setMessage(translator.getTranslation(Tags.PUSH_UP_TO_DATE));
+        return response;
+      }
+    } catch (RepoNotInitializedException e) {
+      logger.error(e, e);
+    }
 	  
 	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
 	  Iterable<PushResult> call = git.push().setCredentialsProvider(
@@ -1700,8 +1704,10 @@ public class GitAccess {
 	 * local repository base commit
 	 * 
 	 * @return the number of commits ahead
+	 * 
+	 * @throws RepoNotInitializedException when the remote repo has not been initialized.
 	 */
-	public int getPushesAhead() {
+	public int getPushesAhead() throws RepoNotInitializedException {
 		int numberOfCommits = 0;
 		
 	  try {
@@ -1710,6 +1716,8 @@ public class GitAccess {
 	      BranchTrackingStatus bts = BranchTrackingStatus.of(getRepository(), branchName);
 	      if (bts != null) {
 	        numberOfCommits = bts.getAheadCount();
+	      } else {
+	        throw new RepoNotInitializedException();
 	      }
 	    }
 	  } catch (IOException | NoRepositorySelected e) {
