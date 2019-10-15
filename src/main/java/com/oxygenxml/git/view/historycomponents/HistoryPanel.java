@@ -437,6 +437,9 @@ public class HistoryPanel extends JPanel {
         gitAccess.fetch();
 
         File directory = gitAccess.getWorkingCopy();
+        if (filePath != null) {
+          directory = new File(directory, filePath);
+        }
         showCurrentRepoLabel.setText(
             Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + directory.getName());
         showCurrentRepoLabel.setToolTipText(directory.getAbsolutePath());
