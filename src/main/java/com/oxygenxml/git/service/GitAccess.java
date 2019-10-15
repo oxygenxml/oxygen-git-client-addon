@@ -1823,7 +1823,6 @@ public class GitAccess {
 	 */
 	public void restartMerge() {
 		try {
-		  // TODO: TC for restart rebase merge
 		  RepositoryState repositoryState = getRepository().getRepositoryState();
 			if (repositoryState == RepositoryState.REBASING_MERGE) {
 		    git.rebase().setOperation(Operation.ABORT).call();
