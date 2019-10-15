@@ -109,7 +109,7 @@ public class StageController {
 	 * 
 	 * @return <code>true</code> to continue.
 	 */
-	private boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
 	  boolean isResolveUsingMine = cmd == GitCommand.RESOLVE_USING_MINE;
     String actionName = isResolveUsingMine ? translator.getTranslation(Tags.RESOLVE_USING_MINE)
 	      : translator.getTranslation(Tags.RESOLVE_USING_THEIRS);

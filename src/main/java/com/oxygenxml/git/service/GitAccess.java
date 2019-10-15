@@ -963,7 +963,6 @@ public class GitAccess {
 	    return response;
 	  }
 	  
-	   // TODO TC
     try {
       if (getPushesAhead() == 0) {
         response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
@@ -2084,7 +2083,7 @@ public class GitAccess {
       } catch (UnmergedPathsException e) {
         logger.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-        .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
+            .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
         logger.debug(e, e);
       }

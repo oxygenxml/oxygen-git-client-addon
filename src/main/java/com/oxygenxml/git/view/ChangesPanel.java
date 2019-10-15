@@ -777,7 +777,6 @@ public class ChangesPanel extends JPanel {
 	    if (logger.isDebugEnabled()) {
 	      logger.debug("Table model " + filesStatuses);
 	    }
-	    logger.info("Table model " + filesStatuses);
 	    
 	     // Create the tree with the new model
       tree.setModel(
