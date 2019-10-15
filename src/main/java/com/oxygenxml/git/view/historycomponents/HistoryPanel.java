@@ -47,6 +47,7 @@ import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.ui.hidpi.RetinaDetector;
 
@@ -295,14 +296,17 @@ public class HistoryPanel extends JPanel {
         commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
 
         // Select the local branch HEAD.
-        Repository repository = gitAccess.getRepository();
-        String fullBranch = repository.getFullBranch();
-        Ref branchHead = repository.exactRef(fullBranch);
-        ObjectId objectId = branchHead.getObjectId();
-        selectCommit(objectId);
+        if (!commitCharacteristicsVector.isEmpty()) {
+          Repository repository = gitAccess.getRepository();
+          String fullBranch = repository.getFullBranch();
+          Ref branchHead = repository.exactRef(fullBranch);
+          ObjectId objectId = branchHead.getObjectId();
+          selectCommit(objectId);
+        }
 
       } catch (NoRepositorySelected | SSHPassphraseRequiredException | PrivateRepositoryException | RepositoryUnavailableException | IOException e) {
         LOGGER.debug(e, e);
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to present history because of: " + e.getMessage());
       }
     }
   }

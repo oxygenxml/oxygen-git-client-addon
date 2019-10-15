@@ -1953,38 +1953,45 @@ public class GitAccess {
 			  // EXM-44307 Show current branch commits only.
 			  String fullBranch = repository.getFullBranch();
 			  Ref branchHead = repository.exactRef(fullBranch);
-			  revWalk.markStart(revWalk.parseCommit(branchHead.getObjectId()));
+			  if (branchHead != null) {
+			    revWalk.markStart(
+			        revWalk.
+			        parseCommit(
+			            branchHead.
+			            getObjectId()));
 
-			  // If we have a remote, put it as well.
-			  String fullRemoteBranchName = getUpstreamBranchName(repository.getBranch());
-			  System.out.println("fullRemoteBranchName " + fullRemoteBranchName);
-			  if (fullRemoteBranchName != null) {
-			    Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
-			    if (fullRemoteBranchHead != null) {
-			      revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
+			    // If we have a remote, put it as well.
+			    String fullRemoteBranchName = getUpstreamBranchName(repository.getBranch());
+			    if (fullRemoteBranchName != null) {
+			      Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
+			      if (fullRemoteBranchHead != null) {
+			        revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
+			      }
 			    }
+
+			    if (filePath != null) { 
+			      revWalk.setTreeFilter(PathFilter.create(filePath));
+			    }
+
+			    for (RevCommit commit : revWalk) {
+			      String commitMessage = commit.getFullMessage();
+			      PersonIdent authorIdent = commit.getAuthorIdent();
+			      String author = authorIdent.getName() + " <" + authorIdent.getEmailAddress() + ">";
+			      Date authorDate = authorIdent.getWhen();
+			      String abbreviatedId = commit.getId().abbreviate(7).name();
+			      String id = commit.getId().getName();
+
+			      PersonIdent committerIdent = commit.getCommitterIdent();
+			      String committer = committerIdent.getName();
+			      List<String> parentsIds = getParentsId(commit);
+
+			      // add commit element in vector
+			      commitVector.add(new CommitCharacteristics(commitMessage, authorDate, author, abbreviatedId, id,
+			          committer, parentsIds));
+			    }
+			  } else {
+			    // Probably a new repository without any history. 
 			  }
-				
-				if (filePath != null) { 
-				  revWalk.setTreeFilter(PathFilter.create(filePath));
-				}
-
-				for (RevCommit commit : revWalk) {
-					String commitMessage = commit.getFullMessage();
-					PersonIdent authorIdent = commit.getAuthorIdent();
-					String author = authorIdent.getName() + " <" + authorIdent.getEmailAddress() + ">";
-					Date authorDate = authorIdent.getWhen();
-					String abbreviatedId = commit.getId().abbreviate(7).name();
-					String id = commit.getId().getName();
-
-					PersonIdent committerIdent = commit.getCommitterIdent();
-					String committer = committerIdent.getName();
-					List<String> parentsIds = getParentsId(commit);
-
-					// add commit element in vector
-					commitVector.add(new CommitCharacteristics(commitMessage, authorDate, author, abbreviatedId, id,
-							committer, parentsIds));
-				}
 			}
 
 		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
