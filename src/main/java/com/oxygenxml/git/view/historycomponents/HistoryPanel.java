@@ -235,7 +235,7 @@ public class HistoryPanel extends JPanel {
    * Shows the commit history for the entire repository.
    */
   public void showRepositoryHistory() {
-    showHistory(null);
+    showHistory(null, true);
   }
   
   /**
