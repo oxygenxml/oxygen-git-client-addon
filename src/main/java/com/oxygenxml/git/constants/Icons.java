@@ -51,7 +51,7 @@ public class Icons {
   public static Icon getIcon(String imgKey) {
     Icon toReturn = null;
     URL resource = Icons.class.getResource(imgKey);
-    if (resource != null) {
+    if (resource != null && PluginWorkspaceProvider.getPluginWorkspace() != null && PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities() != null) {
       toReturn = (Icon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
     }
     return toReturn;
