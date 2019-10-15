@@ -26,6 +26,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
+import org.junit.Ignore;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -48,6 +49,7 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  * 
  * @author alex_jitianu
  */
+@Ignore
 public class GitTestBase extends JFCTestCase {
   /**
    * Logger for logging.

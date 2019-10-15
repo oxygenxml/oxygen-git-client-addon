@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
+import org.junit.Ignore;
+
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
@@ -22,6 +24,7 @@ import com.oxygenxml.git.view.event.StageController;
 * Base for the test classes related to the actions performed
 * on the staged/unstaged resources seen in the flat view.
 */
+@Ignore
 public class FlatViewTestBase extends GitTestBase {
   /**
    * Access to the Git API.
