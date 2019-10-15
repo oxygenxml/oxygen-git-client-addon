@@ -141,7 +141,7 @@ public class OptionsManager {
     if (OxygenGitPlugin.getInstance() != null) {
       baseDir = OxygenGitPlugin.getInstance().getDescriptor().getBaseDir();
     } else {
-      baseDir = new File("");
+      baseDir = new File("src/test/resources");
     }
     return new File(baseDir, OPTIONS_FILENAME_FOR_TESTS);
   }

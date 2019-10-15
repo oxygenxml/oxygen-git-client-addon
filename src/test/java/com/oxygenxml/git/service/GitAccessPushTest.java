@@ -25,9 +25,9 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessPushTest {
-	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resource/GitAccessPushTest/local";
-	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resource/GitAccessPushTest/remote";
-	private final static String SECOND_TEST_REPOSITPRY = "target/test-resource/GitAccessPushTest/local2";
+	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/local";
+	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/remote";
+	private final static String SECOND_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/local2";
 	private Repository db1;
 	private Repository db2;
 	private Repository db3;
