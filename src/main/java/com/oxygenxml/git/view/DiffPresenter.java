@@ -330,4 +330,20 @@ public class DiffPresenter {
 	  
 	  return Optional.ofNullable(diffFrame);
 	}
+
+	/**
+	 * Shows a two-way diff between the local copy and the copy at the given revision.
+	 * 
+	 * @param filePath File to compare.
+	 * @param commitId Revision ID.
+	 * 
+	 * @throws NoRepositorySelected
+	 * @throws MalformedURLException
+	 */
+  public static void showTwoWayDiffWithLocal(String filePath, String commitId) throws NoRepositorySelected, MalformedURLException {
+    URL left = FileHelper.getFileURL(filePath);
+    URL right = GitRevisionURLHandler.encodeURL(commitId, filePath);
+    
+    showDiffFrame(left, right, null, filePath);
+  }
 }

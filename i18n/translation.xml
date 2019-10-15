@@ -4,6 +4,22 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Compare_with_working_tree_version">
+        <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
+        <val lang="en_US">Compare with working copy version</val>
+        <val lang="de_DE">Compare with working copy version</val>
+        <val lang="fr_FR">Compare with working copy version</val>
+        <val lang="ja_JP">Compare with working copy version</val>
+        <val lang="nl_NL">Compare with working copy version</val>
+    </key>
+    <key value="Compare_with_previous_version">
+        <comment>Action name to compare a file with its previous version.</comment>
+        <val lang="en_US">Compare with previous version</val>
+        <val lang="de_DE">Compare with previous version</val>
+        <val lang="fr_FR">Compare with previous version</val>
+        <val lang="ja_JP">Compare with previous version</val>
+        <val lang="nl_NL">Compare with previous version</val>
+    </key>
     <key value="No_upstream_branch">
         <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
         <val lang="en_US">no upstream branch</val>

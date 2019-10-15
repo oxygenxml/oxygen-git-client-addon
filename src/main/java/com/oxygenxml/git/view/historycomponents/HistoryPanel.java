@@ -245,6 +245,7 @@ public class HistoryPanel extends JPanel {
       FileStatus fileStatus) {
     String filePath = fileStatus.getFileLocation();
     if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != commitCharacteristics.getCommitId()) {
+      // A revision.
       List<String> parents = commitCharacteristics.getParentCommitId();
       if (parents != null && !parents.isEmpty()) {
         try {
@@ -254,6 +255,19 @@ public class HistoryPanel extends JPanel {
             // Just one parent.
             jPopupMenu.add(createDiffAction(filePath, commitCharacteristics.getCommitId(), parentID, addParentID));
           }
+          
+          jPopupMenu.add(new AbstractAction(
+              Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION)) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              try {
+                DiffPresenter.showTwoWayDiffWithLocal(filePath, commitCharacteristics.getCommitId());
+              } catch (MalformedURLException | NoRepositorySelected e1) {
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e1.getMessage());
+                LOGGER.error(e1, e1);
+              }
+            }
+          });
         } catch (IOException | NoRepositorySelected e2) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e2.getMessage());
           LOGGER.error(e2, e2);
@@ -286,7 +300,7 @@ public class HistoryPanel extends JPanel {
       String commitID, 
       RevCommit parentRevCommit,
       boolean addParentIDInActionName) {
-    String translation = Translator.getInstance().getTranslation("Compare with previous version");
+    String translation = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
     if (addParentIDInActionName) {
       translation += " " + parentRevCommit.abbreviate(7).name();
     }

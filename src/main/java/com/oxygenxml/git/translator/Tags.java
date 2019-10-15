@@ -633,6 +633,14 @@ public class Tags {
    * Message presented on a tooltip when the local branch is not connected to any upstream branch.
    */
   public static final String NO_UPSTREAM_BRANCH = "No_upstream_branch";
+  /**
+   * Action name to compare a file with its previous version.
+   */
+  public static final String COMPARE_WITH_PREVIOUS_VERSION = "Compare_with_previous_version";
+  /**
+   * Action name to compare a file at a given revision with the version from the working tree/copy.
+   */
+  public static final String COMPARE_WITH_WORKING_TREE_VERSION = "Compare_with_working_tree_version";
   
     
 }
