@@ -1,6 +1,8 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -75,12 +77,11 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "changed in local 1");
     
     final StringBuilder pullWithConflicts = new StringBuilder();
-    final org.eclipse.jgit.api.errors.CheckoutConflictException[] ex = new 
-        org.eclipse.jgit.api.errors.CheckoutConflictException[1];
+    final List<String> filesWithChanges = new ArrayList<>();
     PushPullController pc = new PushPullController() {
       @Override
-      protected void showPullFailedBecauseofUncommitedFiles(org.eclipse.jgit.api.errors.CheckoutConflictException e) {
-        ex[0] = e;
+      protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
+        filesWithChanges.addAll(files);
       };
       
       @Override
@@ -99,13 +100,12 @@ public class GitPullCasesTest extends GitTestBase {
     
     pc.pull().get();
     
-    assertNotNull(ex[0]);
-    assertEquals("[test.txt]", ex[0].getConflictingPaths().toString());
+    assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
         "Status: FINISHED, message: \n" + 
         "", b.toString());
     
-    ex[0] = null;
+    filesWithChanges.clear();
     // Commit.
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Another");
@@ -113,7 +113,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     pc.pull().get();
     
-    assertNull(ex[0]);
+    assertTrue(filesWithChanges.isEmpty());
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
   }
   
@@ -172,12 +172,11 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "changed in local 1");
     
     final StringBuilder pullWithConflicts = new StringBuilder();
-    final org.eclipse.jgit.api.errors.CheckoutConflictException[] ex = new 
-        org.eclipse.jgit.api.errors.CheckoutConflictException[1];
+    final List<String> filesWithChanges = new ArrayList<>();
     PushPullController pc = new PushPullController() {
       @Override
-      protected void showPullFailedBecauseofUncommitedFiles(org.eclipse.jgit.api.errors.CheckoutConflictException e) {
-        ex[0] = e;
+      protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
+        filesWithChanges.addAll(files);
       };
       
       @Override
@@ -196,13 +195,12 @@ public class GitPullCasesTest extends GitTestBase {
     
     pc.pull(PullType.REBASE).get();
     
-    assertNotNull(ex[0]);
-    assertEquals("[test.txt]", ex[0].getConflictingPaths().toString());
+    assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
         "Status: FINISHED, message: \n" + 
         "", b.toString());
     
-    ex[0] = null;
+    filesWithChanges.clear();
     // Commit.
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Another");
@@ -210,7 +208,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     pc.pull(PullType.REBASE).get();
     
-    assertNull(ex[0]);
+    assertTrue(filesWithChanges.isEmpty());
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
   }
   
@@ -277,12 +275,11 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "changed in local 1");
     
     final StringBuilder pullWithConflicts = new StringBuilder();
-    final org.eclipse.jgit.api.errors.CheckoutConflictException[] ex = new 
-        org.eclipse.jgit.api.errors.CheckoutConflictException[1];
+    final List<String> filesWithChanges = new ArrayList<>();
     PushPullController pc = new PushPullController() {
       @Override
-      protected void showPullFailedBecauseofUncommitedFiles(org.eclipse.jgit.api.errors.CheckoutConflictException e) {
-        ex[0] = e;
+      protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
+        filesWithChanges.addAll(files);
       };
       
       @Override
@@ -301,13 +298,12 @@ public class GitPullCasesTest extends GitTestBase {
     
     pc.pull().get();
     
-    assertNotNull(ex[0]);
-    assertEquals("[test.txt]", ex[0].getConflictingPaths().toString());
+    assertEquals("[test.txt]", filesWithChanges.toString());
     assertEquals("Status: STARTED, message: Pull_In_Progress\n" + 
         "Status: FINISHED, message: \n" + 
         "", b.toString());
     
-    ex[0] = null;
+    filesWithChanges.clear();
     // Commit.
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Another");
@@ -315,7 +311,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     pc.pull().get();
     
-    assertNull(ex[0]);
+    assertTrue(filesWithChanges.isEmpty());
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflicts.toString());
   }
 

@@ -58,7 +58,7 @@ public class SourceFilesIteratorTest extends JFCTestCase {
     
     // Get all the "ro.sync" imports
     BufferedReader br = null;
-    Set<String> importedOxyClasses = new HashSet<String>();
+    Set<String> importedOxyClasses = new HashSet<>();
     while (srcFilesIterator.hasNext()) {
       File file = srcFilesIterator.next();
       try {
@@ -94,7 +94,10 @@ public class SourceFilesIteratorTest extends JFCTestCase {
       } else {
         for (API api : annotationsByType) {
           if (api.toString().contains("INTERNAL")) {
-            classesToReport.add(importedClass);
+            if (!importedClass.contains("ro.sync.exml.workspace.api.standalone.ui.Button")) {
+              // The Button API was erroneously annotated as private, but this was fixed in 22.0 API
+              classesToReport.add(importedClass);
+            }
             break;
           }
         }
