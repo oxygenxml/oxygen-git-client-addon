@@ -67,7 +67,7 @@ public class GitHistoryTest extends GitTestBase {
 
       dump = dump(commitsCharacteristics);
 
-      expected = "[ Uncommitted changes , {date} , * , * , null , null ]\n" + 
+      expected = 
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
           "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n" + 
           "";

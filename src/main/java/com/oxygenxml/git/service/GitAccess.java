@@ -87,7 +87,10 @@ import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
+import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
 
 import com.oxygenxml.git.ProjectViewManager;
@@ -1943,8 +1946,7 @@ public class GitAccess {
 
 		try {
 			Repository repository = this.getRepository();
-			Status status = git.status().call();
-			if (status.hasUncommittedChanges()) {
+			if (filePath == null && git.status().call().hasUncommittedChanges()) {
 				commitVector.add(UNCOMMITED_CHANGES);
 			}
 
@@ -1970,7 +1972,12 @@ public class GitAccess {
 			    }
 
 			    if (filePath != null) { 
-			      revWalk.setTreeFilter(PathFilter.create(filePath));
+			      revWalk.setTreeFilter(
+			          AndTreeFilter.create(
+			                  PathFilterGroup.createFromStrings(filePath),
+			                  TreeFilter.ANY_DIFF)
+			  );
+			      
 			    }
 
 			    for (RevCommit commit : revWalk) {
