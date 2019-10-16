@@ -511,4 +511,13 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   public void updateRebasePanelVisibilityBasedOnRepoState() {
     rebasePanel.updateVisibilityBasedOnRepoState();
   }
+  
+  /**
+   * !!!!!!! FOR TESTS !!!!!!
+   * 
+   * @return The rebase panel.
+   */
+  public RebasePanel getRebasePanel() {
+    return rebasePanel;
+  }
 }
