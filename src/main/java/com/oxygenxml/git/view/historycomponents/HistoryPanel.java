@@ -14,6 +14,7 @@ import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -544,6 +545,11 @@ public class HistoryPanel extends JPanel {
         if (selectionListener != null) {
           historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
         }
+        
+        StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
+        dataModel.setFilesStatus(Collections.emptyList());
+        commitDescriptionPane.setText("");
+        
         
         List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
 
