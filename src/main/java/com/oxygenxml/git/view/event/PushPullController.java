@@ -25,7 +25,7 @@ import com.oxygenxml.git.service.RebaseConflictsException;
 import com.oxygenxml.git.service.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.InterruptedRebaseDialog;
+import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 import com.oxygenxml.git.view.dialog.PullStatusAndFilesDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -165,7 +165,7 @@ public class PushPullController implements Subject<PushPullEvent> {
    * Show the "Interrupted rebase" dialog. It allows the user to continue or abort the rebase.
    */
   protected void showInterruptedRebaseDialog() {
-    new InterruptedRebaseDialog().setVisible(true);
+    new RebaseInProgressDialog().setVisible(true);
   }
 
   /**

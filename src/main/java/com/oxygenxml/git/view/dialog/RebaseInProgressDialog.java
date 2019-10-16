@@ -25,7 +25,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * Dialog shown when an operation is tried to be performed
  * while the repo has a rebasing in progress.
  */
-public class InterruptedRebaseDialog extends JDialog {
+public class RebaseInProgressDialog extends JDialog {
   /**
    * i18n
    */
@@ -38,18 +38,25 @@ public class InterruptedRebaseDialog extends JDialog {
   /**
    * Constructor.
    */
-  public InterruptedRebaseDialog() {
-    super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+  public RebaseInProgressDialog() {
+    super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
         translator.getTranslation(Tags.REBASE_IN_PROGRESS),
         true);
     
-    JFrame parentFrame = (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame();
-    setIconImage(parentFrame.getIconImage());
+    JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
+    
+    if (parentFrame != null) {
+      setIconImage(parentFrame.getIconImage());
+    }
     
     createGUI();
 
     setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
-    setLocationRelativeTo(parentFrame);
+    if (parentFrame != null) {
+      setLocationRelativeTo(parentFrame);
+    }
     setSize(new Dimension(475, getPreferredSize().height));
     setResizable(false);
     

@@ -1,5 +1,8 @@
 package com.oxygenxml.git.service;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Window;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -34,8 +39,11 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Translator;
 
 import junit.extensions.jfcunit.JFCTestCase;
+import junit.extensions.jfcunit.WindowMonitor;
+import junit.extensions.jfcunit.finder.ComponentFinder;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
@@ -55,6 +63,10 @@ public class GitTestBase extends JFCTestCase {
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(GitTestBase.class);
+  /**
+   * i18n
+   */
+  protected static final Translator translator = Translator.getInstance();
   /**
    * The loaded reposiltories.
    */
@@ -391,4 +403,79 @@ public class GitTestBase extends JFCTestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
     gitAccess.commit("New file: " + fileName);
   }
+  
+  /**
+   * Searches for a visible dialog with the specified text in the title.
+   * 
+   * @param title The title of the dialog.
+   * 
+   * @return The dialog, or null if there is no dialog having that title.
+   */
+  protected JDialog findDialog(String title){
+    
+    JDialog dialogToReturn = null;
+    
+    for (int i = 0; i < 5; i++) {
+
+      // Wait for WindowMonitor to get the correct opened windows
+      flushAWT();
+      // Get the opened windows
+      Window[] windows = WindowMonitor.getWindows();
+      if (windows != null && windows.length > 0) {
+        for (Window window : windows) { 
+          if (window.isActive() && window instanceof JDialog) {
+            JDialog dialog = (JDialog) window;
+            String dialogTitle = dialog.getTitle();
+            if (dialogTitle != null) {
+              // If the dialog title is the same or starts with the given title
+              // return this dialog
+              if (title.equals(dialogTitle) || dialogTitle.startsWith(title)) {
+                dialogToReturn = dialog;
+              }
+            }
+          }
+        }
+      }                
+      if(dialogToReturn != null) {
+        break;
+      } else {
+        logger.warn("Cannot find the dialog using the search string '" + title + "' - throttling..");
+        try {
+          Thread.sleep(200);
+        } catch (InterruptedException e) {
+          // Does not happen.
+        }
+      }
+    }
+    return dialogToReturn;
+  }
+  
+  /**
+   * Searches for the first button with the specified text in the container.
+   * 
+   * @param parent  The parent container.
+   * @param index   The index of the button in the list of all buttons having that text.
+   * @return        The button, or null if there is no button having that text.
+   */
+  protected JButton findFirstButton(Container parent, String text){
+    
+    JButton result = null;
+    
+    // Gets all the buttons.
+    ComponentFinder cf = new ComponentFinder(JButton.class);
+    List<Component> allButtons = cf.findAll(parent);
+    
+    // Selects the one with the given text.
+    for (Iterator<Component> iterator = allButtons.iterator(); iterator.hasNext();) {
+      JButton button = (JButton) iterator.next();
+      boolean equals = button.getText() != null && button.getText().equals(text);
+      if(equals){
+        result = button;
+        break;
+      }
+    }
+    
+    return result;      
+  }
+  
 }
