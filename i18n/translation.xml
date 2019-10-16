@@ -4,6 +4,30 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Compare_file_with_working_tree_version">
+        <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
+        <val lang="en_US">Compare {0} with working copy version</val>
+        <val lang="de_DE">Compare {0} with working copy version</val>
+        <val lang="fr_FR">Compare {0} with working copy version</val>
+        <val lang="ja_JP">Compare {0} with working copy version</val>
+        <val lang="nl_NL">Compare {0} with working copy version</val>
+    </key>
+    <key value="Compare_file_with_previous_version">
+        <comment>Action name to compare a file with its previous version.</comment>
+        <val lang="en_US">Compare {0} with previous version</val>
+        <val lang="de_DE">Compare {0} with previous version</val>
+        <val lang="fr_FR">Compare {0} with previous version</val>
+        <val lang="ja_JP">Compare {0} with previous version</val>
+        <val lang="nl_NL">Compare {0} with previous version</val>
+    </key>
+    <key value="Open_file">
+        <comment>Open file action name.</comment>
+        <val lang="en_US">Open {0}</val>
+        <val lang="de_DE">Open {0}</val>
+        <val lang="fr_FR">Open {0}</val>
+        <val lang="ja_JP">Open {0}</val>
+        <val lang="nl_NL">Open {0}</val>
+    </key>
     <key value="Compare_with_working_tree_version">
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
         <val lang="en_US">Compare with working copy version</val>

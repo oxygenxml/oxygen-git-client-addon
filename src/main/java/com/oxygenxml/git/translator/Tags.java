@@ -641,6 +641,23 @@ public class Tags {
    * Action name to compare a file at a given revision with the version from the working tree/copy.
    */
   public static final String COMPARE_WITH_WORKING_TREE_VERSION = "Compare_with_working_tree_version";
-  
-    
+
+  /**
+   * Action name that opens a file and presents the file name as well.
+   * 
+   * en: Open {0}
+   */
+  public static final String OPEN_FILE = "Open_file";
+  /**
+   * Action name to compare a file with its previous version.
+   * 
+   * en: Compare {0} with previous version
+   */
+  public static final String COMPARE_FILE_WITH_PREVIOUS_VERSION = "Compare_file_with_previous_version";
+  /**
+   * Action name to compare a file at a given revision with the version from the working tree/copy.
+   * 
+   * en: Compare {0} with working copy version
+   */
+  public static final String COMPARE_FILE_WITH_WORKING_TREE_VERSION = "Compare_file_with_working_tree_version";
 }
