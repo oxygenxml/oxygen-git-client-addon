@@ -5,8 +5,6 @@ package com.oxygenxml.git.constants;
  */
 public class ImageConstants {
   
-  // TODO: create and use getIcon() everywhere
-  
   private ImageConstants() {
     // Nothing.
   }
