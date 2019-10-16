@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -34,6 +35,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -114,6 +116,22 @@ public class HistoryPanel extends JPanel {
     setLayout(new BorderLayout());
 
     historyTable = createTable();
+    
+    historyTable.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(java.awt.event.MouseEvent e) {
+        if (e.isPopupTrigger()) {
+          showHistoryContextualMenu(historyTable, e.getPoint());
+        }
+      }
+
+      @Override
+      public void mouseReleased(java.awt.event.MouseEvent e) {
+        if (e.isPopupTrigger()) {
+          showHistoryContextualMenu(historyTable, e.getPoint());
+        }
+      }
+    });
 
     JScrollPane tableScrollPane = new JScrollPane(historyTable);
     historyTable.setFillsViewportHeight(true);
@@ -208,28 +226,75 @@ public class HistoryPanel extends JPanel {
       
       JPopupMenu jPopupMenu = new JPopupMenu();
       
-      jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_OPEN)) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          String revisionID = ((CommitCharacteristics) historyTable.getModel().getValueAt(historyTable.getSelectedRow(), 0)).getCommitId();
-          try {
-            URL fileURL = GitRevisionURLHandler.encodeURL(revisionID, file.getFileLocation());
-            PluginWorkspaceProvider.getPluginWorkspace().open(fileURL);
-          } catch (MalformedURLException e1) {
-            LOGGER.error(e1, e1);
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
-          } 
-        }
-      });
-      
       HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
       CommitCharacteristics commitCharacteristics = historyTableModel.getCommitVector().get(historyTable.getSelectedRow());
+      
+      jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), file.getFileLocation()));
+      
       
       populateDiffActions(jPopupMenu, commitCharacteristics, file);
       
       
       jPopupMenu.show(commitResourcesTable, point.x, point.y);
     }
+  }
+  
+  /**
+   * Show the contextual menu on the hisotry table.
+   * 
+   * @param commitResourcesTable The table with the files from a committed on a revision.
+   * @param point The point where to show the contextual menu.
+   */
+  protected void showHistoryContextualMenu(JTable historyTable, Point point) {
+    if (activeFilePath != null) {
+      // If we present the history for a specific file.
+      int rowAtPoint = historyTable.rowAtPoint(point);
+      if (rowAtPoint != -1) {
+        historyTable.getSelectionModel().setSelectionInterval(rowAtPoint, rowAtPoint);
+        int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
+
+        JPopupMenu jPopupMenu = new JPopupMenu();
+
+        HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
+        CommitCharacteristics commitCharacteristics = historyTableModel.getCommitVector().get(convertedSelectedRow);
+        jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), activeFilePath));
+
+        try {
+          List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
+          Optional<FileStatus> findFirst = changes.stream().filter(f -> activeFilePath.equals(f.getFileLocation())).findFirst();
+          if (findFirst.isPresent()) {
+            populateDiffActions(jPopupMenu, commitCharacteristics, findFirst.get());
+          }
+        } catch (IOException | GitAPIException e) {
+          LOGGER.error(e, e);
+        }
+
+        jPopupMenu.show(historyTable, point.x, point.y);
+      }
+    }
+  }
+
+  /**
+   * Creates an action to open a file at a given revision.
+   * 
+   * @param revisionID Revision ID.
+   * @param filePath File path, relative to the working copy.
+   * 
+   * @return The action that will open the file when invoked.
+   */
+  private AbstractAction createOpenFileAction(String revisionID, String filePath) {
+    return new AbstractAction(Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_OPEN)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          URL fileURL = GitRevisionURLHandler.encodeURL(revisionID, filePath);
+          PluginWorkspaceProvider.getPluginWorkspace().open(fileURL);
+        } catch (MalformedURLException e1) {
+          LOGGER.error(e1, e1);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+        } 
+      }
+    };
   }
 
   /**
