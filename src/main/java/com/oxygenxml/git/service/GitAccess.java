@@ -381,34 +381,6 @@ public class GitAccess {
   /**
    * Notify the listeners about the fact that the opening of a repository has failed.
    */
-  // TODO: sa sincronizam metodele de fire?
-  // XXX: asta se intampla din teste
-//  Exception in thread "AWT-EventQueue-0" java.util.ConcurrentModificationException
-//  at java.util.LinkedHashMap$LinkedHashIterator.nextNode(LinkedHashMap.java:719)
-//  at java.util.LinkedHashMap$LinkedKeyIterator.next(LinkedHashMap.java:742)
-//  at com.oxygenxml.git.service.GitAccess.fireRepositoryOpenFailed(GitAccess.java:415)
-//  at com.oxygenxml.git.service.GitAccess.access$3(GitAccess.java:414)
-//  at com.oxygenxml.git.service.GitAccess$RepositoryOpener.done(GitAccess.java:285)
-//  at javax.swing.SwingWorker$5.run(SwingWorker.java:737)
-//  at javax.swing.SwingWorker$DoSubmitAccumulativeRunnable.run(SwingWorker.java:832)
-//  at sun.swing.AccumulativeRunnable.run(AccumulativeRunnable.java:112)
-//  at javax.swing.SwingWorker$DoSubmitAccumulativeRunnable.actionPerformed(SwingWorker.java:842)
-//  at javax.swing.Timer.fireActionPerformed(Timer.java:313)
-//  at javax.swing.Timer$DoPostEvent.run(Timer.java:245)
-//  at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
-//  at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:758)
-//  at java.awt.EventQueue.access$500(EventQueue.java:97)
-//  at java.awt.EventQueue$3.run(EventQueue.java:709)
-//  at java.awt.EventQueue$3.run(EventQueue.java:703)
-//  at java.security.AccessController.doPrivileged(Native Method)
-//  at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
-//  at java.awt.EventQueue.dispatchEvent(EventQueue.java:728)
-//  at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:205)
-//  at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
-//  at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
-//  at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
-//  at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
-//  at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
   private void fireRepositoryOpenFailed(File repo, Throwable ex) {
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.repositoryOpeningFailed(repo, ex);
@@ -1086,7 +1058,6 @@ public class GitAccess {
       logger.debug("Rebase result status: " + status);
     }
     
-    // TODO: TEST CASES
     switch (status) {
       case UP_TO_DATE:
         pullResponseToReturn.setStatus(PullStatus.UP_TO_DATE);

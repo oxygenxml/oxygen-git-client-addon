@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.event;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -9,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
@@ -189,6 +191,16 @@ public class PushPullController implements Subject<PushPullEvent> {
           logger.debug("Preparing for push/pull command");
         }
         message = doOperation(userCredentials);
+      } catch (JGitInternalException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
+          String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
+          showPullFailedBecauseOfCertainChanges(
+              Arrays.asList(conflictingFile),
+              translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
+        } else {
+          throw e;
+        }
       } catch (RebaseUncommittedChangesException e) {
         showPullFailedBecauseOfCertainChanges(
             e.getUncommittedChanges(),

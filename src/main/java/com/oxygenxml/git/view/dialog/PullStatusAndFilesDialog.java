@@ -32,7 +32,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 public class PullStatusAndFilesDialog extends OKCancelDialog {
 
 	public PullStatusAndFilesDialog(String title, Collection<String> conflictFiles, String message) {
-		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), title, true);
+		super(
+		    PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
+		    title,
+		    true);
 		JLabel label = new JLabel("<html>" + message + "</html>");
 
 
@@ -55,11 +59,13 @@ public class PullStatusAndFilesDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JLabel iconLabel = new JLabel();
-		ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-		URL resource = getClass().getResource(ImageConstants.WARNING_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  iconLabel.setIcon(icon);
+		if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
+		  ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+		  URL resource = getClass().getResource(ImageConstants.WARNING_ICON);
+		  if (resource != null) {
+		    ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		    iconLabel.setIcon(icon);
+		  }
 		}
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
@@ -101,7 +107,9 @@ public class PullStatusAndFilesDialog extends OKCancelDialog {
 		this.setMinimumSize(new Dimension(420, 220));
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
 		this.pack();
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
+		  this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		}
 		this.setVisible(true);
 	}
 

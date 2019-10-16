@@ -459,7 +459,236 @@ public class GitPullCasesTest extends GitTestBase {
         "    Edited first line\n" + 
         "    First commit\n" + 
         "", sb.toString());
+  }
+  
+  @Test
+  public void testPullWithRebase_UncommittedNewFileConflict() throws Exception {
+    String local1Repository = "target/test-resources/GitPullCasesTest/testPullWithRebase_UncommittedNewFileConflict-local";
+    String local2Repository = "target/test-resources/GitPullCasesTest/testPullWithRebase_UncommittedNewFileConflict-local-second";
+    String remoteRepository = "target/test-resources/GitPullCasesTest/testPullWithRebase_UncommittedNewFileConflict-remote";
+    
+    Repository local1Repo = createRepository(local1Repository);
+    Repository local2Repos= createRepository(local2Repository);
+    Repository remoteRepo = createRepository(remoteRepository);
+    
+    bindLocalToRemote(local1Repo, remoteRepo);
+    bindLocalToRemote(local2Repos, remoteRepo);
+    
+    //----------------
+    // LOCAL 1
+    //----------------
+    GitAccess instance = GitAccess.getInstance();
+    instance.setRepositorySynchronously(local1Repository);
+    // Create a file in the remote.
+    File remoteParent = new File(local1Repository);
+    remoteParent.mkdirs();
+    File local1File = new File(local1Repository, "test.txt");
+    setFileContent(local1File, "original");
+    instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    instance.commit("Primul");
+    instance.push("", "");
+    
+    
+    //----------------
+    // LOCAL 2
+    //----------------
+    instance.setRepositorySynchronously(local2Repository);
+    File local2File = new File( new File(local2Repository), "test.txt");
+    local2File.createNewFile();
+    
+    final StringBuilder pullWithConflicts = new StringBuilder();
+    final List<String> filesWithChanges = new ArrayList<>();
+    final List<String> messages = new ArrayList<>();
+    PushPullController pc = new PushPullController() {
+      @Override
+      protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
+        filesWithChanges.addAll(files);
+        messages.add(message);
+      };
+      
+      @Override
+      protected void showPullSuccessfulWithConflicts(PullResponse response) {
+        pullWithConflicts.append(response);
+      }
+    };
+    
+    final StringBuilder b = new StringBuilder();
+    pc.addObserver(new Observer<PushPullEvent>() {
+      @Override
+      public void stateChanged(PushPullEvent changeEvent) {
+        b.append(changeEvent).append("\n");
+      }
+    });
+    
+    pc.pull(PullType.REBASE).get();
 
+    assertEquals(
+        "[Pull_rebase_failed_because_conflicting_paths] FOR [test.txt]",
+        messages + " FOR " + filesWithChanges);
+  }
+  
+  @Test
+  public void testPullWithMerge_UncommittedNewFileConflict() throws Exception {
+    String local1Repository = "target/test-resources/GitPullCasesTest/testPullWithMerge_UncommittedNewFileConflict-local";
+    String local2Repository = "target/test-resources/GitPullCasesTest/testPullWithMerge_UncommittedNewFileConflict-local-second";
+    String remoteRepository = "target/test-resources/GitPullCasesTest/testPullWithMerge_UncommittedNewFileConflict-remote";
+    
+    Repository local1Repo = createRepository(local1Repository);
+    Repository local2Repos= createRepository(local2Repository);
+    Repository remoteRepo = createRepository(remoteRepository);
+    
+    bindLocalToRemote(local1Repo, remoteRepo);
+    bindLocalToRemote(local2Repos, remoteRepo);
+    
+    //----------------
+    // LOCAL 1
+    //----------------
+    GitAccess instance = GitAccess.getInstance();
+    instance.setRepositorySynchronously(local1Repository);
+    // Create a file in the remote.
+    File remoteParent = new File(local1Repository);
+    remoteParent.mkdirs();
+    File local1File = new File(local1Repository, "test.txt");
+    setFileContent(local1File, "original");
+    instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    instance.commit("Primul");
+    instance.push("", "");
+    
+    
+    //----------------
+    // LOCAL 2
+    //----------------
+    instance.setRepositorySynchronously(local2Repository);
+    File local2File = new File( new File(local2Repository), "test.txt");
+    local2File.createNewFile();
+    
+    final StringBuilder pullWithConflicts = new StringBuilder();
+    final List<String> filesWithChanges = new ArrayList<>();
+    final List<String> messages = new ArrayList<>();
+    PushPullController pc = new PushPullController() {
+      @Override
+      protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
+        filesWithChanges.addAll(files);
+        messages.add(message);
+      };
+      
+      @Override
+      protected void showPullSuccessfulWithConflicts(PullResponse response) {
+        pullWithConflicts.append(response);
+      }
+    };
+    
+    final StringBuilder b = new StringBuilder();
+    pc.addObserver(new Observer<PushPullEvent>() {
+      @Override
+      public void stateChanged(PushPullEvent changeEvent) {
+        b.append(changeEvent).append("\n");
+      }
+    });
+    
+    pc.pull().get();
+
+    assertEquals(
+        "[Pull_would_overwrite_uncommitted_changes] FOR [test.txt]",
+        messages + " FOR " + filesWithChanges);
+  }
+  
+  /**
+   * We had changes in X and Y locally, and an incoming change from remote on X. 
+   * We committed X and tried to pull with rebase, and we got into this situation...
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testPullRebaseUncommittedChanges() throws Exception {
+    String local1Repository = "target/test-resources/GitPullCasesTest/testPullRebaseUncommittedChanges-rebase-local";
+    String local2Repository = "target/test-resources/GitPullCasesTest/testPullRebaseUncommittedChanges-rebase-local-second";
+    String remoteRepository = "target/test-resources/GitPullCasesTest/testPullRebaseUncommittedChanges-rebase-remote";
+    
+    Repository local1Repo = createRepository(local1Repository);
+    Repository local2Repos= createRepository(local2Repository);
+    Repository remoteRepo = createRepository(remoteRepository);
+    
+    bindLocalToRemote(local1Repo, remoteRepo);
+    bindLocalToRemote(local2Repos, remoteRepo);
+    
+    //----------------
+    // LOCAL 1
+    //----------------
+    GitAccess instance = GitAccess.getInstance();
+    instance.setRepositorySynchronously(local1Repository);
+    // Create a file in the remote.
+    File remoteParent = new File(local1Repository);
+    remoteParent.mkdirs();
+    File local1File = new File(local1Repository, "test.txt");
+    setFileContent(local1File, "original");
+    instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    instance.commit("Primul");
+    instance.push("", "");
+    
+    File local1_2File = new File(local1Repository, "test_1_2.txt");
+    setFileContent(local1_2File, "original 1 2");
+    instance.add(new FileStatus(GitChangeType.ADD, "test_1_2.txt"));
+    instance.commit("Primul 1 2");
+    instance.push("", "");
+    
+    
+    //----------------
+    // LOCAL 2
+    //----------------
+    instance.setRepositorySynchronously(local2Repository);
+    PullResponse pull = instance.pull("", "");
+    assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
+    File local2File = new File( new File(local2Repository), "test.txt");
+    assertEquals("original", read(local2File.toURI().toURL()));
+    
+    setFileContent(local2File, "changed in local 2");
+    instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    instance.commit("Al doilea");
+    instance.push("", "");
+
+    //----------------
+    // LOCAL 1
+    //----------------
+    
+    final StringBuilder pullWithConflicts = new StringBuilder();
+    final List<String> filesWithChanges = new ArrayList<>();
+    final List<String> messages = new ArrayList<>();
+    PushPullController pc = new PushPullController() {
+      @Override
+      protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
+        filesWithChanges.addAll(files);
+        messages.add(message);
+      };
+      
+      @Override
+      protected void showPullSuccessfulWithConflicts(PullResponse response) {
+        pullWithConflicts.append(response);
+      }
+    };
+    
+    final StringBuilder b = new StringBuilder();
+    pc.addObserver(new Observer<PushPullEvent>() {
+      @Override
+      public void stateChanged(PushPullEvent changeEvent) {
+        b.append(changeEvent).append("\n");
+      }
+    });
+    
+    // FIRST REPO
+    instance.setRepositorySynchronously(local1Repository);
+    setFileContent(local1File, "changed in local 1");
+    instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    instance.commit("Another");
+    
+    // Another change, uncommitted
+    setFileContent(local1_2File, "updated 1 2");
+    
+    pc.pull(PullType.REBASE).get();
+    
+    assertEquals(
+        "[Pull_rebase_failed_because_uncommitted] FOR [test_1_2.txt]",
+        messages + " FOR " + filesWithChanges);
   }
   
 }

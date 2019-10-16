@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
@@ -24,13 +23,9 @@ import org.junit.Test;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.event.PullType;
 
 public class GitAccessPullTest {
-  
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(GitAccessPullTest.class.getName());
   
 	protected final static String FIRST_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/local";
 	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessPullTest/local2";
@@ -95,7 +90,43 @@ public class GitAccessPullTest {
 		PullStatus expected = PullStatus.OK;
 		assertEquals(expected, actual);
 	}
+	
+	 @Test
+	  public void testPullRebaseOK() throws Exception {
+	    pushOneFileToRemote();
 
+	    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
+	    OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
+	    PullResponse response = gitAccess.pull("", "", PullType.REBASE);
+	    PullStatus actual = response.getStatus();
+	    PullStatus expected = PullStatus.OK;
+	    assertEquals(expected, actual);
+	  }
+	 
+   @Test
+   public void testPullRebaseUpToDate() throws Exception {
+     pushOneFileToRemote();
+
+     PullResponse response = gitAccess.pull("", "", PullType.REBASE);
+     PullStatus actual = response.getStatus();
+     PullStatus expected = PullStatus.UP_TO_DATE;
+     assertEquals(expected, actual);
+   }
+   
+   @Test
+   public void testPullRebaseFastForwardWhenAnotherUncommittedFile() throws Exception {
+     pushOneFileToRemote();
+
+     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
+     File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test2.txt");
+     file.createNewFile();
+
+     PullResponse response = gitAccess.pull("", "", PullType.REBASE);
+     PullStatus actual = response.getStatus();
+     PullStatus expected = PullStatus.OK;
+     assertEquals(expected, actual);
+   }
+   
 	@Test
 	public void testPullUncomitedFiles() throws Exception {
 		pushOneFileToRemote();
@@ -170,6 +201,7 @@ public class GitAccessPullTest {
 		PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
 		out.println("hellllo");
 		out.close();
+		
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("file test added");
 		gitAccess.push("", "");
