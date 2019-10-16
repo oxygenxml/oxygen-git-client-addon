@@ -199,10 +199,20 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    this.add(resolveConflict);
 	    this.add(discardAction);
 	    
+	     AbstractAction historyAction = new AbstractAction(translator.getTranslation(Tags.SHOW_IN_HISTORY)) {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	          if (!allSelectedResources.isEmpty()) {
+              historyController.showResourceHistory(allSelectedResources.get(0).getFileLocation());
+	          }
+	        }
+	      };
+	      this.add(historyAction);
+	    
 	    AbstractAction blameAction = new AbstractAction("Blame") {
         @Override
         public void actionPerformed(ActionEvent e) {
-          if (allSelectedResources.size() > 0) {
+          if (!allSelectedResources.isEmpty()) {
             try {
               BlameManager.getInstance().doBlame(
                   allSelectedResources.get(0).getFileLocation(), 

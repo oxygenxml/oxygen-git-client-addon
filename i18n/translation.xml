@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Show_in_history">
+        <comment>Contextual action in the staging panel.</comment>
+        <val lang="en_US">Show in history</val>
+        <val lang="de_DE">Show in history</val>
+        <val lang="fr_FR">Show in history</val>
+        <val lang="ja_JP">Show in history</val>
+        <val lang="nl_NL">Show in history</val>
+    </key>
     <key value="Compare_file_with_working_tree_version">
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
         <val lang="en_US">Compare {0} with working copy version</val>

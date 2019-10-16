@@ -660,4 +660,10 @@ public class Tags {
    * en: Compare {0} with working copy version
    */
   public static final String COMPARE_FILE_WITH_WORKING_TREE_VERSION = "Compare_file_with_working_tree_version";
+  /**
+   * Contextual action in the staging panel.
+   * 
+   * en: Show in History
+   */
+  public static final String SHOW_IN_HISTORY = "Show_in_history";
 }

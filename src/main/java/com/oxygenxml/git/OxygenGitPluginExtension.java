@@ -223,9 +223,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
   @Override
   public void showResourceHistory(String path) {
-    // TODO Show the history just for the given resource.
     pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_HISTORY_VIEW, true);
-    historyView.showRepositoryHistory();    
+    historyView.showHistory(path);    
   }
 
   @Override
