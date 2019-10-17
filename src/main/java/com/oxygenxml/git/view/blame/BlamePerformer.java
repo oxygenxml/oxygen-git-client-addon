@@ -125,12 +125,12 @@ public class BlamePerformer {
     // prepare a new test-repository
     BlameCommand blamer = new BlameCommand(repository);
     
-    // TODO This is how you do it on a specific commit. If left out, it's performed on the WC instance.
+    // This is how you do it on a specific commit. If left out, it's performed on the WC instance.
 //    ObjectId commitID = repository.resolve("HEAD~~");
 //    blamer.setStartCommit(commitID);
     blamer.setFilePath(filePath);
     BlameResult blame = blamer.call();
-    textpage = (WSTextEditorPage) currentPage;
+    textpage = currentPage;
     JTextArea textArea = (JTextArea) textpage.getTextComponent();
     Highlighter highlighter = textArea.getHighlighter();
     
@@ -180,29 +180,15 @@ public class BlamePerformer {
       caretSyncTask = new TimerTask() {
         @Override
         public void run() {
-          try {
-            int line = textpage.getLineOfOffset(e.getDot());
-            
-            RevCommit nextRevCommit = l2r.get(line - 1);
-            // The active highlight might have changed.
-            if (!Equaler.verifyEquals(activeRevCommit , nextRevCommit)) {
-              activeRevCommit = nextRevCommit;
-              textArea.repaint();
-
-              SwingUtilities.invokeLater(() -> {historyController.showCommit(filePath, activeRevCommit);});
-              
-            }
-          } catch (BadLocationException e1) {
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug(e1, e1);
-            }
-          }
+          syncCaretWithHistory(filePath, historyController, textArea, e.getDot());
         }
       };
       
       caretSyncTimer.schedule(caretSyncTask, 400);
     };
     textArea.addCaretListener(caretListener);
+    
+    syncCaretWithHistory(filePath, historyController, textArea, textArea.getCaretPosition());
   }
   
   /**
@@ -211,6 +197,35 @@ public class BlamePerformer {
   private void cancelCaretSyncTask() {
     if (caretSyncTask != null) {
       caretSyncTask.cancel();
+    }
+  }
+  
+  /**
+   * Synchronizes the history view with the caret position.
+   * 
+   * @param filePath The file we show blame for.
+   * @param historyController History controller.
+   * @param textArea The text area presenting the content of the file.
+   * @param caret Caret position.
+   */
+  private void syncCaretWithHistory(String filePath, HistoryController historyController, JTextArea textArea, int caret) {
+    try {
+      int line = textpage.getLineOfOffset(caret);
+      
+      RevCommit nextRevCommit = l2r.get(line - 1);
+      // The active highlight might have changed.
+      
+      if (!Equaler.verifyEquals(activeRevCommit , nextRevCommit)) {
+        activeRevCommit = nextRevCommit;
+        textArea.repaint();
+
+        SwingUtilities.invokeLater(() -> {historyController.showCommit(filePath, activeRevCommit);});
+        
+      }
+    } catch (BadLocationException e1) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e1, e1);
+      }
     }
   }
 

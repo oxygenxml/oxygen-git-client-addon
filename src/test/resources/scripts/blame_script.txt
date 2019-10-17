@@ -1,0 +1,42 @@
+<script>
+    <changeSet message="First commit.">
+        <change path="file1.txt" type="add">Line 1
+Line 1
+Line 1
+Line 1
+Line 1</change>
+    </changeSet>
+    
+    <changeSet message="Change 2">
+            <change path="file1.txt" type="change">Line 1
+Line 2
+Line 1
+Line 1
+Line 1</change>
+    </changeSet>
+    
+    <changeSet message="Change 3">
+            <change path="file1.txt" type="change">Line 1
+Line 2
+Line 3
+Line 1
+Line 1</change>
+    </changeSet>
+    
+        <changeSet message="Change 4">
+            <change path="file1.txt" type="change">Line 1
+Line 2
+Line 3
+Line 4
+Line 1</change>
+    </changeSet>
+    
+            <changeSet message="Change 5">
+            <change path="file1.txt" type="change">Line 1
+Line 2
+Line 3
+Line 4
+Line 5</change>
+    </changeSet>
+
+</script>
