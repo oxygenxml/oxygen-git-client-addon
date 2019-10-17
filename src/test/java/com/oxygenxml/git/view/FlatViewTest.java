@@ -49,6 +49,7 @@ public class FlatViewTest extends FlatViewTestBase {
       
       JButton ssButton = unstagedChangesPanel.getChangeSelectedButton();
       filesTable.getSelectionModel().setSelectionInterval(index, index);
+      flushAWT();
       
       assertTrue(ssButton.isEnabled());
       ssButton.doClick();
@@ -58,9 +59,13 @@ public class FlatViewTest extends FlatViewTestBase {
       
       JButton usButton = stagedChangesPanel.getChangeSelectedButton();
       stFilesTable.getSelectionModel().setSelectionInterval(index, index);
+      flushAWT();
+      
       assertTrue(usButton.isEnabled());
       usButton.doClick();
     }
+    
+    flushAWT();
   }
   
   /**
