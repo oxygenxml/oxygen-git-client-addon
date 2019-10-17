@@ -199,31 +199,33 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    this.add(resolveConflict);
 	    this.add(discardAction);
 	    
-	     AbstractAction historyAction = new AbstractAction(translator.getTranslation(Tags.SHOW_IN_HISTORY)) {
+	    if (!forStagedRes) {
+	      AbstractAction historyAction = new AbstractAction(translator.getTranslation(Tags.SHOW_IN_HISTORY)) {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
 	          if (!allSelectedResources.isEmpty()) {
-              historyController.showResourceHistory(allSelectedResources.get(0).getFileLocation());
+	            historyController.showResourceHistory(allSelectedResources.get(0).getFileLocation());
 	          }
 	        }
 	      };
 	      this.add(historyAction);
-	    
-	    AbstractAction blameAction = new AbstractAction(translator.getTranslation(Tags.SHOW_BLAME)) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          if (!allSelectedResources.isEmpty()) {
-            try {
-              BlameManager.getInstance().doBlame(
-                  allSelectedResources.get(0).getFileLocation(), 
-                  historyController);
-            } catch (IOException | GitAPIException e1) {
-              logger.error(e1, e1);
-            }
-          }
-        }
-      };
-      this.add(blameAction);
+
+	      AbstractAction blameAction = new AbstractAction(translator.getTranslation(Tags.SHOW_BLAME)) {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	          if (!allSelectedResources.isEmpty()) {
+	            try {
+	              BlameManager.getInstance().doBlame(
+	                  allSelectedResources.get(0).getFileLocation(), 
+	                  historyController);
+	            } catch (IOException | GitAPIException e1) {
+	              logger.error(e1, e1);
+	            }
+	          }
+	        }
+	      };
+	      this.add(blameAction);
+	    }
 
 	    boolean allSelResHaveSameChangeType = true;
 	    boolean selectionContainsConflicts = false;
