@@ -38,7 +38,7 @@ public class BlameManager {
   /**
    * All active blames. 
    */
-  private Map<URL, BlamePerformer> activeBlames = new HashMap<>();
+  private Map<String, BlamePerformer> activeBlames = new HashMap<>();
   
   /**
    * Private constructor.
@@ -55,9 +55,9 @@ public class BlameManager {
       @Override
       public void repositoryChanged() {
         // Dispose all blames from the previous repository.
-        Iterator<URL> iterator = activeBlames.keySet().iterator();
+        Iterator<String> iterator = activeBlames.keySet().iterator();
         while (iterator.hasNext()) {
-          URL url = iterator.next();
+          String url = iterator.next();
           BlamePerformer remove = activeBlames.remove(url);
           if (remove != null) {
             remove.dispose();
@@ -108,7 +108,8 @@ public class BlameManager {
         BlamePerformer showBlame = new BlamePerformer();
         showBlame.doit(GitAccess.getInstance().getRepository(), filePath, editor, historyController);
         
-        activeBlames.put(URLUtil.correct(url), showBlame);
+        String key = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().correctURL(url.toExternalForm());
+        activeBlames.put(key, showBlame);
       }
     } catch (NoRepositorySelected e) {
       LOGGER.error(e, e);
@@ -121,13 +122,10 @@ public class BlameManager {
    * @param editorLocation Editor location.
    */
   private void dispose(URL editorLocation) {
-    try {
-      BlamePerformer blame = activeBlames.remove(URLUtil.correct(editorLocation));
-      if (blame != null) {
-        blame.dispose();
-      }
-    } catch (MalformedURLException e) {
-      LOGGER.error(e, e);
+    String key = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().correctURL(editorLocation.toExternalForm());
+    BlamePerformer blame = activeBlames.remove(key);
+    if (blame != null) {
+      blame.dispose();
     }
   }
 }

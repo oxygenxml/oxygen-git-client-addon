@@ -64,7 +64,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -110,7 +112,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -156,7 +160,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -201,7 +207,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -255,7 +263,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [ENABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
-        "Contextual_Menu_Discard [DISABLED]",
+        "Contextual_Menu_Discard [DISABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -310,7 +320,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [ENABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
-        "Contextual_Menu_Discard [DISABLED]",
+        "Contextual_Menu_Discard [DISABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -365,7 +377,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
-        "Contextual_Menu_Discard [DISABLED]",
+        "Contextual_Menu_Discard [DISABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -410,7 +424,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -456,7 +472,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -502,7 +520,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -547,7 +567,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -593,7 +615,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -639,7 +663,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -684,7 +710,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -730,7 +758,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -776,7 +806,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -821,7 +853,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -867,7 +901,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -913,7 +949,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -958,7 +996,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "Contextual_Menu_Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -1010,7 +1050,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
-        "Contextual_Menu_Discard [DISABLED]",
+        "Contextual_Menu_Discard [DISABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
