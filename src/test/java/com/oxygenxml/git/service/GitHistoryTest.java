@@ -43,7 +43,7 @@ public class GitHistoryTest extends GitTestBase {
       
       FileUtils.writeStringToFile(new File(wcTree, "root.txt"), "changed" , "UTF-8");
       
-      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
 
@@ -76,7 +76,7 @@ public class GitHistoryTest extends GitTestBase {
           "root.txt was created and changed in the last two commit",
           expected, dump);
     } finally {
-      GitAccess.getInstance().close();
+      GitAccess.getInstance().closeRepo();
       
       FileUtils.deleteDirectory(wcTree);
     }
@@ -98,7 +98,7 @@ public class GitHistoryTest extends GitTestBase {
       
       FileUtils.writeStringToFile(new File(wcTree, "root.txt"), "changed" , "UTF-8");
       
-      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
       assertEquals(5, commitsCharacteristics.size());
@@ -145,7 +145,7 @@ public class GitHistoryTest extends GitTestBase {
         assertEquals("Unnexpected file list for commit id " + commitID, expected.get(commitID), fileLists.get(commitID));
       }
     } finally {
-      GitAccess.getInstance().close();
+      GitAccess.getInstance().closeRepo();
       
       FileUtils.deleteDirectory(wcTree);
     }
@@ -238,7 +238,7 @@ public class GitHistoryTest extends GitTestBase {
     RepoGenerationScript.generateRepository(script, wcTree);
     
     try {
-      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
       
       System.out.println(GitAccess.getInstance().getGitForTests().status().call().hasUncommittedChanges());
       
@@ -291,7 +291,7 @@ public class GitHistoryTest extends GitTestBase {
           expected, dump);
       
     } finally {
-      GitAccess.getInstance().close();
+      GitAccess.getInstance().closeRepo();
       
       FileUtils.deleteDirectory(wcTree);
     }
@@ -311,7 +311,7 @@ public class GitHistoryTest extends GitTestBase {
     RepoGenerationScript.generateRepository(script, wcTree);
     
     try {
-      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
       
       System.out.println(GitAccess.getInstance().getGitForTests().status().call().hasUncommittedChanges());
       
@@ -357,7 +357,7 @@ public class GitHistoryTest extends GitTestBase {
       assertEquals(
           expected, dump);
     } finally {
-      GitAccess.getInstance().close();
+      GitAccess.getInstance().closeRepo();
       
       FileUtils.deleteDirectory(wcTree);
     }
@@ -385,19 +385,19 @@ public class GitHistoryTest extends GitTestBase {
       remoteRepository = GitAccess.getInstance().getRepository();
       bindLocalToRemote(localRepository, remoteRepository);
       
-      GitAccess.getInstance().setRepository(localRepository.getWorkTree().getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(localRepository.getWorkTree().getAbsolutePath());
       GitAccess.getInstance().push("Alex", "");
       
       // Make the remote evolve.
       // Not sure why we need this sleep. Commit order is messed up with out it.
       Thread.sleep(1000);
-      GitAccess.getInstance().setRepository(remoteRepository.getWorkTree().getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(remoteRepository.getWorkTree().getAbsolutePath());
       FileUtils.writeStringToFile(new File(remoteRepository.getWorkTree(), "root.txt"), "changed on the remote" , "UTF-8");
       GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "root.txt"));
       GitAccess.getInstance().commit("Change on the remote.");
 
       // Switch to local.
-      GitAccess.getInstance().setRepository(localRepository.getWorkTree().getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(localRepository.getWorkTree().getAbsolutePath());
       GitAccess.getInstance().fetch();
       
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
@@ -419,7 +419,7 @@ public class GitHistoryTest extends GitTestBase {
           "root.txt was created and changed in the last two commit",
           expected, dump);
     } finally {
-      GitAccess.getInstance().close();
+      GitAccess.getInstance().closeRepo();
       remoteRepository.close();
       
       FileUtils.deleteDirectory(wcTree);

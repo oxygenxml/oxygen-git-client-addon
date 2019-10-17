@@ -89,7 +89,7 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
     RepoGenerationScript.generateRepository(script, wcTree);
     
     try {
-      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
       String indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/file1.txt";
       assertEquals("file 1 Third commit.", read(new URL(indexVersionURL)));
@@ -122,7 +122,7 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
       
       
     } finally {
-      GitAccess.getInstance().close();
+      GitAccess.getInstance().closeRepo();
       
       FileUtils.deleteDirectory(wcTree);
     }

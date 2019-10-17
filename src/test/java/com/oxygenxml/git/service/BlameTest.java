@@ -39,7 +39,7 @@ public class BlameTest extends GitTestBase{
     RepoGenerationScript.generateRepository(script, wcTree);
     
     try {
-      GitAccess.getInstance().setRepository(wcTree.getAbsolutePath());
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
       
       String content = 
           "Line 1\n" + 
@@ -136,7 +136,7 @@ public class BlameTest extends GitTestBase{
           "", dumpCommits(commits));
 
     } finally {
-      GitAccess.getInstance().close();
+      GitAccess.getInstance().closeRepo();
       
       FileUtils.deleteDirectory(wcTree);
     }
