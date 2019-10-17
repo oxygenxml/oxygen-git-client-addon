@@ -618,4 +618,62 @@ public class Tags {
    * Pull from.
    */
   public static final String PULL_FROM = "Pull_from";
+  
+  /**
+   * Commit History.
+   */
+  public static final String GIT_COMMIT_HISTORY = "Git_Commit_History";
+  
+  /**
+   * Label inside the history view.
+   */
+  public static final String SHOWING_HISTORY_FOR = "Showing_history_for";
+  
+  /**
+   * Action in the history panel.
+   */
+  public static final String REFRESH = "Refresh";
+  /**
+   * Message presented on a tooltip when the local branch is not connected to any upstream branch.
+   */
+  public static final String NO_UPSTREAM_BRANCH = "No_upstream_branch";
+  /**
+   * Action name to compare a file with its previous version.
+   */
+  public static final String COMPARE_WITH_PREVIOUS_VERSION = "Compare_with_previous_version";
+  /**
+   * Action name to compare a file at a given revision with the version from the working tree/copy.
+   */
+  public static final String COMPARE_WITH_WORKING_TREE_VERSION = "Compare_with_working_tree_version";
+
+  /**
+   * Action name that opens a file and presents the file name as well.
+   * 
+   * en: Open {0}
+   */
+  public static final String OPEN_FILE = "Open_file";
+  /**
+   * Action name to compare a file with its previous version.
+   * 
+   * en: Compare {0} with previous version
+   */
+  public static final String COMPARE_FILE_WITH_PREVIOUS_VERSION = "Compare_file_with_previous_version";
+  /**
+   * Action name to compare a file at a given revision with the version from the working tree/copy.
+   * 
+   * en: Compare {0} with working copy version
+   */
+  public static final String COMPARE_FILE_WITH_WORKING_TREE_VERSION = "Compare_file_with_working_tree_version";
+  /**
+   * Contextual action in the staging panel.
+   * 
+   * en: Show in History
+   */
+  public static final String SHOW_IN_HISTORY = "Show_in_history";
+  /**
+   * Contextual action in the staging panel.
+   * 
+   * en: Show blame
+   */
+  public static final String SHOW_BLAME = "Show_blame";
 }

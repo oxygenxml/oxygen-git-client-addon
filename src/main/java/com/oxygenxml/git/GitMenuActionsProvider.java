@@ -123,8 +123,7 @@ public class GitMenuActionsProvider {
             if (!gitFiles.isEmpty()) {
               for (FileStatus fileStatus : gitFiles) {
                 if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-                  DiffPresenter diff = new DiffPresenter(fileStatus, stageCtrl);
-                  diff.showDiff();
+                DiffPresenter.showDiff(fileStatus, stageCtrl);
                   break;
                 }
               }

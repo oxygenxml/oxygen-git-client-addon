@@ -11,13 +11,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
@@ -25,6 +28,7 @@ import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
+import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullResult;
@@ -55,11 +59,13 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
+import org.eclipse.jgit.lib.BranchConfig;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.RefUpdate;
@@ -81,7 +87,10 @@ import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
+import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
 
 import com.oxygenxml.git.ProjectViewManager;
@@ -100,6 +109,7 @@ import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -111,11 +121,20 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author Beniamin Savu
  */
 public class GitAccess {
+	public static final String UNCOMMITTED_CHANGES = "Uncommitted changes";
   /**
+	 * A synthetic object representing the uncommitted changes.
+	 */
+  public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(UNCOMMITTED_CHANGES, null, "*", "*", "*", null, null);
+	/**
    * "remote"
    */
-  private static final String REMOTE = "remote";
+	public static final String REMOTE = "remote";
   /**
+	 * "local"
+	 */
+	public static final String LOCAL = "local";
+	/**
    * "End fetch" debug message.
    */
 	private static final String END_FETCH_DEBUG_MESSAGE = "End fetch";
@@ -143,7 +162,8 @@ public class GitAccess {
 	 /**
    * Singleton instance.
    */
-	private GitAccess() {}
+	private GitAccess() {
+	}
 
 	 /**
    * Singleton instance.
@@ -161,7 +181,9 @@ public class GitAccess {
 	 * @param url Remote repository to clone.
 	 * @param directory Local directory in which to create the clone.
 	 * @param progressDialog Progress support.
-	 * @param branchName The name of the branch to clone and checkout. Must be specified as full ref names (e.g. "refs/heads/hotfixes/17.0").
+	 * @param branchName     The name of the branch to clone and checkout. Must be
+	 *                       specified as full ref names (e.g.
+	 *                       "refs/heads/hotfixes/17.0").
 	 * 
 	 * @throws GitAPIException
 	 * @throws URISyntaxException
@@ -233,16 +255,11 @@ public class GitAccess {
 		}
 		
 		String pass = OptionsManager.getInstance().getSshPassphrase();
-    CloneCommand cloneCommand = Git.cloneRepository()
-		    .setURI(url.toString())
-		    .setDirectory(directory)
+		CloneCommand cloneCommand = Git.cloneRepository().setURI(url.toString()).setDirectory(directory)
 		    .setCredentialsProvider(new SSHCapableUserCredentialsProvider(username, password, pass, url.getHost()))
 		    .setProgressMonitor(p);
 		if (branchName != null) {
-      git = cloneCommand
-		      .setBranchesToClone(Arrays.asList(branchName))
-		      .setBranch(branchName)
-		      .call();
+			git = cloneCommand.setBranchesToClone(Arrays.asList(branchName)).setBranch(branchName).call();
 		} else {
 		  git = cloneCommand.call();
 		}
@@ -437,8 +454,7 @@ public class GitAccess {
 	/**
 	 * Creates a blank new Repository.
 	 * 
-	 * @param path
-	 *          - A string that specifies the git Repository folder
+	 * @param path - A string that specifies the git Repository folder
 	 */
 	public void createNewRepository(String path) {
     if (git != null) {
@@ -531,8 +547,8 @@ public class GitAccess {
    * 
    * @param paths A subset of interest.
    * 
-   * @return - A list with the files from the given set htat are un-staged as well as 
-   * their states.
+	 * @return - A list with the files from the given set htat are un-staged as well
+	 *         as their states.
    */
   public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
     if (git != null) {
@@ -603,7 +619,8 @@ public class GitAccess {
   }
 
   /**
-   * Add missing files to the list of resources that are not staged (not in the INDEX).
+	 * Add missing files to the list of resources that are not staged (not in the
+	 * INDEX).
    * 
    * @param status        The repository's status.
    * @param unstagedFiles The list of unstaged (not in the INDEX) files.
@@ -621,7 +638,8 @@ public class GitAccess {
   }
 
   /**
-   * Add modified files to the list of resources that are not staged (not in the INDEX).
+	 * Add modified files to the list of resources that are not staged (not in the
+	 * INDEX).
    * 
    * @param status        The repository's status.
    * @param unstagedFiles The list of unstaged (not in the INDEX) files.
@@ -640,8 +658,8 @@ public class GitAccess {
   }
 
   /**
-   * Add untracked files (i.e. newly created files) to the list of resources
-   * that are not staged (not in the INDEX).
+	 * Add untracked files (i.e. newly created files) to the list of resources that
+	 * are not staged (not in the INDEX).
    * 
    * @param status        The repository's status.
    * @param unstagedFiles The list of unstaged (not in the INDEX) files.
@@ -664,7 +682,8 @@ public class GitAccess {
    * @param unstagedFiles The list of unstaged (not in the INDEX) files.
    * @param submodules    The set of submodules.
    * 
-   * @throws GitAPIException When an error occurs when trying to check the submodules status.
+	 * @throws GitAPIException When an error occurs when trying to check the
+	 *                         submodules status.
    */
   private void addSubmodulesToUnstaged(List<FileStatus> unstagedFiles, Set<String> submodules) throws GitAPIException {
     if (logger.isDebugEnabled()) {
@@ -672,8 +691,7 @@ public class GitAccess {
     }
     for (String string : submodules) {
     	SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
-    	if (submoduleStatus != null 
-    	    && submoduleStatus.getHeadId() != null
+			if (submoduleStatus != null && submoduleStatus.getHeadId() != null
     	    && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
     		unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
     	}
@@ -682,13 +700,11 @@ public class GitAccess {
 
 	/**
 	 * Returns for the given submodule the SHA-1 commit id for the Index if the
-	 * given index boolean is <code>true</code> or the SHA-1 commit id for the
-	 * HEAD if the given index boolean is <code>false</code>
+	 * given index boolean is <code>true</code> or the SHA-1 commit id for the HEAD
+	 * if the given index boolean is <code>false</code>
 	 * 
-	 * @param submodulePath
-	 *          - the path to get the submodule
-	 * @param index
-	 *          - boolean to determine what commit id to return
+	 * @param submodulePath - the path to get the submodule
+	 * @param index         - boolean to determine what commit id to return
 	 * @return the SHA-1 id
 	 */
 	public ObjectId submoduleCompare(String submodulePath, boolean index) {
@@ -730,8 +746,7 @@ public class GitAccess {
 	/**
 	 * Sets the given submodule as the current repository
 	 * 
-	 * @param submodule
-	 *          - the name of the submodule
+	 * @param submodule - the name of the submodule
 	 * @throws IOException Failed to load the submodule.
 	 * @throws GitAPIException Failed to load the submodule.
 	 */
@@ -755,10 +770,8 @@ public class GitAccess {
 	/**
 	 * Commits a single file locally
 	 * 
-	 * @param file
-	 *          - File to be commited
-	 * @param message
-	 *          - Message for the commit
+	 * @param file    - File to be commited
+	 * @param message - Message for the commit
 	 */
 	public void commit(String message) {
 		try {
@@ -915,8 +928,7 @@ public class GitAccess {
 	/**
 	 * Creates a new branch in the repository
 	 * 
-	 * @param branchName
-	 *          - Name for the new branch
+	 * @param branchName - Name for the new branch
 	 */
 	public void createBranch(String branchName) {
 		try {
@@ -932,8 +944,7 @@ public class GitAccess {
 	/**
 	 * Delete a branch from the repository
 	 * 
-	 * @param branchName
-	 *          - Name for the branch to delete
+	 * @param branchName - Name for the branch to delete
 	 */
 	public void deleteBranch(String branchName) {
 		try {
@@ -948,10 +959,8 @@ public class GitAccess {
 	/**
 	 * Pushes all the commits from the local repository to the remote repository
 	 * 
-	 * @param username
-	 *          - Git username
-	 * @param password
-	 *          - Git password
+	 * @param username - Git username
+	 * @param password - Git password
 	 *          
 	 * @throws GitAPIException
 	 * @throws TransportException
@@ -1004,8 +1013,10 @@ public class GitAccess {
 	 * 
 	 * @return The result, if successful.
 	 *  
-	 * @throws CheckoutConflictException There is a conflict between the local repository and the remote one.
-	 *  The same file that is in conflict is changed inside the working copy so operation is aborted.
+	 * @throws CheckoutConflictException There is a conflict between the local
+	 *                                   repository and the remote one. The same
+	 *                                   file that is in conflict is changed inside
+	 *                                   the working copy so operation is aborted.
 	 * @throws GitAPIException other errors.
 	 */
 	public PullResponse pull(String username, String password) throws GitAPIException {
@@ -1021,8 +1032,8 @@ public class GitAccess {
 		  Repository repository = git.getRepository();
 		  ObjectId oldHead = resolveHead(repository);
 		  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		  SSHCapableUserCredentialsProvider credentialsProvider = 
-		      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName());
+			SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(username, password,
+					sshPassphrase, getHostName());
       PullResult pullCommandResult = git.pull().setCredentialsProvider(credentialsProvider).call();
 
 		  // Get fetch result
@@ -1073,7 +1084,8 @@ public class GitAccess {
 	 * @param pullResponse   Pull response.
 	 * @param mergeResult    Merge result.
 	 * 
-	 * @throws CheckoutConflictException when a command can't succeed because of unresolvedconflicts.
+	 * @throws CheckoutConflictException when a command can't succeed because of
+	 *                                   unresolvedconflicts.
 	 */
   private void treatMergeResult(PullResponse pullResponse, MergeResult mergeResult) throws CheckoutConflictException {
     if (mergeResult != null) {
@@ -1084,8 +1096,7 @@ public class GitAccess {
 
       if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
         logMergeFailure(mergeResult);
-        throw new CheckoutConflictException(
-            new ArrayList<>(mergeResult.getFailingPaths().keySet()), 
+				throw new CheckoutConflictException(new ArrayList<>(mergeResult.getFailingPaths().keySet()),
             new org.eclipse.jgit.errors.CheckoutConflictException(""));
       } else if (mergeResult.getMergeStatus() == MergeStatus.ALREADY_UP_TO_DATE) {
         pullResponse.setStatus(PullStatus.UP_TO_DATE);
@@ -1134,15 +1145,15 @@ public class GitAccess {
           fetchResultStringBuilder.append("\n\n");
         }
         fetchResultStringBuilder.append(translator.getTranslation(Tags.ERROR) + ": ");
-        fetchResultStringBuilder.append(MessageFormat.format(
-            translator.getTranslation(Tags.CANNOT_LOCK_REF),
-            trackingRefUpdate.getLocalName()) + " ");
+				fetchResultStringBuilder.append(
+						MessageFormat.format(translator.getTranslation(Tags.CANNOT_LOCK_REF), trackingRefUpdate.getLocalName())
+								+ " ");
         try {
           String repoDir = getRepository().getDirectory().getAbsolutePath();
           File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock");
-          fetchResultStringBuilder.append(MessageFormat.format(
-              translator.getTranslation(Tags.UNABLE_TO_CREATE_FILE),
-              lockFile.getAbsolutePath()) + " ");
+					fetchResultStringBuilder.append(
+							MessageFormat.format(translator.getTranslation(Tags.UNABLE_TO_CREATE_FILE), lockFile.getAbsolutePath())
+									+ " ");
           if (lockFile.exists()) {
             fetchResultStringBuilder.append(translator.getTranslation(Tags.FILE_EXISTS) + "\n");
           }
@@ -1171,10 +1182,7 @@ public class GitAccess {
       ObjectReader reader = repository.newObjectReader();
       oldTreeIter.reset(reader, oldHead);
       newTreeIter.reset(reader, head);
-      List<DiffEntry> diffs= git.diff()
-          .setNewTree(newTreeIter)
-          .setOldTree(oldTreeIter)
-          .call();
+			List<DiffEntry> diffs = git.diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
       
       Set<File> pulledFilesParentDirs = new HashSet<>();
       String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
@@ -1186,7 +1194,7 @@ public class GitAccess {
         }
       }
       // Refresh the Project view
-      ProjectViewManager.refreshFolders(new File[] {FileHelper.getCommonDir(pulledFilesParentDirs)});
+			ProjectViewManager.refreshFolders(new File[] { FileHelper.getCommonDir(pulledFilesParentDirs) });
     } catch (IOException e) {
       if (logger.isDebugEnabled()) {
         logger.debug(e, e);
@@ -1197,18 +1205,14 @@ public class GitAccess {
 	/**
 	 * Finds the common base for the given commit "a" and the given commit "b"
 	 * 
-	 * @param walk
-	 *          - used to browse through commits
-	 * @param a
-	 *          - commit "a"
-	 * @param b
-	 *          - commit "b"
+	 * @param walk - used to browse through commits
+	 * @param a    - commit "a"
+	 * @param b    - commit "b"
 	 * @return the bese commit
 	 * @throws IncorrectObjectTypeException
 	 * @throws IOException
 	 */
-	private RevCommit getCommonAncestor(RevWalk walk, RevCommit a, RevCommit b)
-			throws IOException {
+	private RevCommit getCommonAncestor(RevWalk walk, RevCommit a, RevCommit b) throws IOException {
 		walk.reset();
 		walk.setRevFilter(RevFilter.MERGE_BASE);
 		walk.markStart(a);
@@ -1227,8 +1231,7 @@ public class GitAccess {
 	/**
 	 * Adds a single file to the staging area. Preparing it for commit
 	 * 
-	 * @param file
-	 *          - the name of the file to be added
+	 * @param file - the name of the file to be added
 	 */
 	public void add(FileStatus file) {
 		try {
@@ -1249,8 +1252,7 @@ public class GitAccess {
 	/**
 	 * Adds multiple files to the staging area. Preparing the for commit
 	 * 
-	 * @param fileNames
-	 *          - the names of the files to be added
+	 * @param fileNames - the names of the files to be added
 	 */
 	public void addAll(List<FileStatus> files) {
 
@@ -1272,7 +1274,6 @@ public class GitAccess {
           addCmd.addFilepattern(file.getFileLocation());
 				}
 			}
-			
 			
 			if (addCmd != null) {
 			  addCmd.call();
@@ -1300,7 +1301,8 @@ public class GitAccess {
   }
   
   /**
-   * Checks which files from the given subset are in the Index and returns their state.
+	 * Checks which files from the given subset are in the Index and returns their
+	 * state.
    * 
    * @param paths The files of interest.
    * 
@@ -1317,7 +1319,7 @@ public class GitAccess {
       try {
         Status status = statusCmd.call();
         return getStagedFiles(status);
-      }catch (GitAPIException e) {
+			} catch (GitAPIException e) {
         if (logger.isDebugEnabled()) {
           logger.debug(e, e);
         }
@@ -1328,7 +1330,8 @@ public class GitAccess {
   }
 
 	/**
-	 * Checks which files from the given subset are in the Index and returns their state.
+	 * Checks which files from the given subset are in the Index and returns their
+	 * state.
 	 * 
 	 * @param statusCmd Status command to execute.
 	 * 
@@ -1394,8 +1397,7 @@ public class GitAccess {
 	/**
 	 * Reset a single file from the staging area.
 	 * 
-	 * @param fileName
-	 *          - the file to be removed from the staging area
+	 * @param fileName - the file to be removed from the staging area
 	 */
 	public void reset(FileStatus file) {
 		try {
@@ -1415,8 +1417,7 @@ public class GitAccess {
 	/**
 	 * Reset all the specified files from the staging area.
 	 * 
-	 * @param fileNames
-	 *          - the list of file to be removed
+	 * @param fileNames - the list of file to be removed
 	 */
 	public void resetAll(List<FileStatus> files) {
 		try {
@@ -1441,7 +1442,8 @@ public class GitAccess {
 	/**
 	 * Gets the host name from the repositoryURL
 	 * 
-	 * @return The host name. An empty string if not connected. Never <code>null</code>.
+	 * @return The host name. An empty string if not connected. Never
+	 *         <code>null</code>.
 	 */
 	public String getHostName() {
 		if (git != null) {
@@ -1540,18 +1542,15 @@ public class GitAccess {
 	/**
 	 * Gets the loader for a file from a specified commit and its path
 	 * 
-	 * @param commit
-	 *          - the commit from which to get the loader
-	 * @param path
-	 *          - the path to the file
+	 * @param commit - the commit from which to get the loader
+	 * @param path   - the path to the file
 	 * @return the loader
 	 * @throws MissingObjectException
 	 * @throws IncorrectObjectTypeException
 	 * @throws CorruptObjectException
 	 * @throws IOException
 	 */
-	public ObjectLoader getLoaderFrom(ObjectId commit, String path)
-			throws IOException {
+	public ObjectLoader getLoaderFrom(ObjectId commit, String path) throws IOException {
 		Repository repository = git.getRepository();
 		RevWalk revWalk = new RevWalk(repository);
 		RevCommit revCommit = revWalk.parseCommit(commit);
@@ -1577,10 +1576,8 @@ public class GitAccess {
 	 * Gets the InputStream for the file that is found in the given commit at the
 	 * given path
 	 * 
-	 * @param commitID
-	 *          - the commit in which the file exists
-	 * @param path
-	 *          - the path to the file
+	 * @param commitID - the commit in which the file exists
+	 * @param path     - the path to the file
 	 *          
 	 * @return the InputStream for the file
 	 * 
@@ -1618,8 +1615,7 @@ public class GitAccess {
 	 * Restores the last commit file content to the local file at the given path.
 	 * Both files must have the same path, otherwise it will not work.
 	 * 
-	 * @param file
-	 *          - the path to the file you want to restore
+	 * @param file - the path to the file you want to restore
 	 */
 	public void restoreLastCommitFile(List<String> paths) {
 		try {
@@ -1684,14 +1680,16 @@ public class GitAccess {
 	    }
 	  }
 
-	  return numberOfCommits;}
+		return numberOfCommits;
+	}
 
 	/**
 	 * Brings all the commits to the local repository but does not merge them.
 	 * 
 	 * @throws PrivateRepositoryException 
 	 */
-	public void fetch() throws SSHPassphraseRequiredException, PrivateRepositoryException, RepositoryUnavailableException {
+	public void fetch()
+			throws SSHPassphraseRequiredException, PrivateRepositoryException, RepositoryUnavailableException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Begin fetch");
 		}
@@ -1701,8 +1699,8 @@ public class GitAccess {
 		String username = gitCredentials.getUsername();
 		String password = gitCredentials.getPassword();
 		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		SSHCapableUserCredentialsProvider credentialsProvider = 
-		    new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName());
+		SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(username, password,
+				sshPassphrase, getHostName());
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
@@ -1760,7 +1758,7 @@ public class GitAccess {
 			git.reset().setMode(ResetType.HARD).call();
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 			
-			fireFileStateChanged(new ChangeEvent(GitCommand.MERGE_RESTART, Collections.<String> emptyList()));
+			fireFileStateChanged(new ChangeEvent(GitCommand.MERGE_RESTART, Collections.<String>emptyList()));
 		} catch (GitAPIException | IOException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(END_FETCH_DEBUG_MESSAGE);
@@ -1770,8 +1768,8 @@ public class GitAccess {
 
 	/**
 	 * Checks whether or not he branch is detached. If the branch is detached it
-	 * stores the state and the name of the commit on which it is. If the branch
-	 * is not detached then it stores the branch name. After this it returns this
+	 * stores the state and the name of the commit on which it is. If the branch is
+	 * not detached then it stores the branch name. After this it returns this
 	 * information
 	 * 
 	 * @return An object specifying the branch name and if it is detached or not
@@ -1820,7 +1818,8 @@ public class GitAccess {
 	/**
 	 * Return the submodule head commit to the previously one
 	 * 
-	 * @throws GitAPIException when an error occurs while trying to discard the submodule.
+	 * @throws GitAPIException when an error occurs while trying to discard the
+	 *                         submodule.
 	 */
 	public void discardSubmodule() throws GitAPIException {
 	  git.submoduleSync().call();
@@ -1851,7 +1850,8 @@ public class GitAccess {
 	/**
 	 * Get the name of the remote for the given branch.
 	 * 
-	 * @param branchName The name of the branch for which to retrieve the remote name.
+	 * @param branchName The name of the branch for which to retrieve the remote
+	 *                   name.
 	 * 
 	 * @return The name of the remote.
 	 * 
@@ -1863,13 +1863,44 @@ public class GitAccess {
 	}
 
 	/**
+	 * Gets the full remote-tracking branch name or null is the local branch is not tracking a remote branch.
+	 * 
+	 * ex: refs/remotes/origin/dev
+	 * 
+	 * @param localBranchShortName The short branch name.
+	 * 
+	 * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
+	 */
+	public String getUpstreamBranchName(String localBranchShortName) {
+    BranchConfig branchConfig = new BranchConfig(git.getRepository().getConfig(), localBranchShortName);
+    return branchConfig.getRemoteTrackingBranch();
+  }
+	
+	 /**
+   * Gets Get a shortened more user friendly ref name for the remote-tracking branch name or null is the local branch is not tracking a remote branch.
+   * 
+   * ex: origin/dev
+   * 
+   * @param localBranchShortName The short branch name.
+   * 
+   * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
+   */
+	public String getUpstreamBranchShortName(String localBranchShortName) throws NoRepositorySelected {
+	  String remoteTrackingBranch = getUpstreamBranchName(localBranchShortName);
+
+	  if (remoteTrackingBranch != null) {
+	    return org.eclipse.jgit.lib.Repository.shortenRefName(remoteTrackingBranch);
+	  }
+
+	  return null;
+	}
+
+	/**
 	 * Returns the SHA-1 commit id for a file by specifying what commit to get for
 	 * that file and it's path
 	 * 
-	 * @param commit
-	 *          - specifies the commit to return(MINE, THEIRS, BASE, LOCAL)
-	 * @param path
-	 *          - the file path for the specified commit
+	 * @param commit - specifies the commit to return(MINE, THEIRS, BASE, LOCAL)
+	 * @param path   - the file path for the specified commit
 	 * @return the SHA-1 commit id
 	 */
 	public ObjectId getCommit(Commit commit, String path) {
@@ -1888,8 +1919,7 @@ public class GitAccess {
 					index = 1;
 				}
 				if (index >= entries.size()) {
-				  throw new IOException("No diff info available for path: '" + path
-				      + "' and commit: '" + commit + "'");
+					throw new IOException("No diff info available for path: '" + path + "' and commit: '" + commit + "'");
 				}
 				toReturn =  entries.get(index).getOldId().toObjectId();
 			} else if (commit == Commit.THEIRS) {
@@ -1899,8 +1929,7 @@ public class GitAccess {
 					index = 2;
 				}
 				if (index >= entries.size()) {
-          throw new IOException("No diff info available for path: '" + path
-              + "' and commit: '" + commit + "'");
+					throw new IOException("No diff info available for path: '" + path + "' and commit: '" + commit + "'");
         }
 				toReturn =  entries.get(index).getOldId().toObjectId();
 			} else if (commit == Commit.BASE) {
@@ -1954,8 +1983,7 @@ public class GitAccess {
 	/**
 	 * !!! FOR TESTS !!!
 	 * 
-	 * Get the {@link Git} object through which
-	 * to interact with the repository.
+	 * Get the {@link Git} object through which to interact with the repository.
 	 */
 	public Git getGitForTests() {
 	  return git;
@@ -1967,7 +1995,8 @@ public class GitAccess {
   public static final String NO_REPOSITORY = "[No repository]";
 
   /**
-   * @return The name of the Workking copy or {@link NO_REPOSITORY} if there is no working copy opened.
+	 * @return The name of the Workking copy or {@link NO_REPOSITORY} if there is no
+	 *         working copy opened.
    */
   public String getWorkingCopyName() {
     String rootFolder = NO_REPOSITORY;
@@ -1979,5 +2008,174 @@ public class GitAccess {
     }
     return rootFolder;
   }
+
+	/**
+	 * Compute a Vector with the characteristics of each commit.
+	 * 
+	 * @param filePath A resource for which we are interested in its history. If <code>null</code>, 
+	 * the repository history will be computed.
+	 * 
+	 * @return a Vector with commits characteristics of the current repository.
+	 */
+	public List<CommitCharacteristics> getCommitsCharacteristics(String filePath) {
+		List<CommitCharacteristics> commitVector = new ArrayList<>();
+
+		try {
+			Repository repository = this.getRepository();
+			if (filePath == null && git.status().call().hasUncommittedChanges()) {
+				commitVector.add(UNCOMMITED_CHANGES);
+}
+
+			// a RevWalk allows to walk over commits based on some filtering that is defined
+			try (RevWalk revWalk = new RevWalk(repository)) {
+			  // EXM-44307 Show current branch commits only.
+			  String fullBranch = repository.getFullBranch();
+			  Ref branchHead = repository.exactRef(fullBranch);
+			  if (branchHead != null) {
+			    revWalk.markStart(
+			        revWalk.
+			        parseCommit(
+			            branchHead.
+			            getObjectId()));
+
+			    // If we have a remote, put it as well.
+			    String fullRemoteBranchName = getUpstreamBranchName(repository.getBranch());
+			    if (fullRemoteBranchName != null) {
+			      Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
+			      if (fullRemoteBranchHead != null) {
+			        revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
+			      }
+			    }
+
+			    if (filePath != null) { 
+			      revWalk.setTreeFilter(
+			          AndTreeFilter.create(
+			                  PathFilterGroup.createFromStrings(filePath),
+			                  TreeFilter.ANY_DIFF)
+			  );
+			      
+			    }
+
+			    for (RevCommit commit : revWalk) {
+			      String commitMessage = commit.getFullMessage();
+			      PersonIdent authorIdent = commit.getAuthorIdent();
+			      String author = authorIdent.getName() + " <" + authorIdent.getEmailAddress() + ">";
+			      Date authorDate = authorIdent.getWhen();
+			      String abbreviatedId = commit.getId().abbreviate(7).name();
+			      String id = commit.getId().getName();
+
+			      PersonIdent committerIdent = commit.getCommitterIdent();
+			      String committer = committerIdent.getName();
+			      List<String> parentsIds = getParentsId(commit);
+
+			      // add commit element in vector
+			      commitVector.add(new CommitCharacteristics(commitMessage, authorDate, author, abbreviatedId, id,
+			          committer, parentsIds));
+			    }
+			  } else {
+			    // Probably a new repository without any history. 
+			  }
+			}
+
+		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
+			logger.debug(e, e);
+		}
+		
+		return commitVector;
+	}
+
+
+	/**
+	 * Get a list with all the parent IDs of the current commit.
+	 * 
+	 * @param commit The current commit.
+	 * @return The list with parents commit IDs.
+	 */
+	private List<String> getParentsId(RevCommit commit) {
+		List<String> parentsIds = null;
+
+		// add list of parent commits.
+		if (commit.getParentCount() > 0) {
+			parentsIds = new ArrayList<String>();
+			for (RevCommit parentCommit : commit.getParents()) {
+				parentsIds.add(parentCommit.getId().abbreviate(7).name());
+			}
+		}
+		return parentsIds;
+	}
+
+	/**
+	 * Get a LinkedHashMap with all tag names in current repository.
+	 * Map shows: key = commitID, value = list of tag names.
+	 * 
+	 * @param repository The current repository.
+	 * @return
+	 * @throws IOException
+	 * @throws MissingObjectException
+	 * @throws IncorrectObjectTypeException
+	 * @throws GitAPIException
+	 * @throws NoHeadException
+	 */
+	public Map<String, List<String>> getTagMap(Repository repository)
+			throws IOException, MissingObjectException, IncorrectObjectTypeException, GitAPIException, NoHeadException {
+		Map<String, List<String>> commitTagMap = new LinkedHashMap<>();
+		List<Ref> call = git.tagList().call();
+		
+		// search through all commits for tags
+		for (Ref ref : call) {
+			List<String> tagList = new ArrayList<String>();
+			String tagName = ref.getName();
+			StringTokenizer st = new StringTokenizer(tagName, "/");
+			while (st.hasMoreTokens()) {
+				tagName = st.nextToken();
+			}
+			LogCommand log = git.log();
+
+			Ref peeledRef = repository.getRefDatabase().peel(ref);
+			if (peeledRef.getPeeledObjectId() != null) {
+				log.add(peeledRef.getPeeledObjectId());
+			} else {
+				log.add(ref.getObjectId());
+			}
+			Iterable<RevCommit> logs = log.call();
+			tagList.add(tagName);
+			commitTagMap.put(logs.iterator().next().getId().abbreviate(7).name(), tagList);
+		}
+		return commitTagMap;
+	}
+	
+	/**
+	 * Get the linkedHashMap with all local/remote branch names in current repository.
+	 * Map shows: key = commitID, value = list of branch names.
+	 * 
+	 * @param repository The current repository.
+	 * @param branchType The local / remote branch.
+	 * @return the local / remote branchMap
+	 */
+	public Map<String, List<String>> getBranchMap(Repository repository, String branchType) {
+		Map<String, List<String>> branchMap = new LinkedHashMap<>();
+		
+		List<Ref> localBranchList = null;
+		String prefix = null;
+		if (branchType.equals(LOCAL)) {
+			localBranchList = getLocalBranchList();
+			prefix = "heads/";
+		} else if (branchType.equals(REMOTE)) {
+			localBranchList = getRemoteBrachListForCurrentRepo();
+			prefix = "remotes/";
+		}
+		
+		for (Ref ref : localBranchList) {
+      // refresh and populate local branch list for each commit
+      int refIdx = ref.getName().indexOf(prefix) + prefix.length();
+      String branchName = ref.getName().substring(refIdx);
+      
+      String commit = ref.getObjectId().getName().substring(0, 7);
+      List<String> values = branchMap.computeIfAbsent(commit, t -> new ArrayList<>());
+      values.add(branchName);
+    }
+
+		return branchMap;
+	}
 
 }

@@ -18,6 +18,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.utils.FileHelper;
 
 /**
@@ -113,7 +114,12 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			} else if (VersionIdentifier.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
 			  fileObject = gitAccess.submoduleCompare(path, true);
 			} else {
-			  throw new IOException("Not able to extract GIT data from: " + getURL());
+			  // Probably an ID.
+			  try {
+          fileObject = RevCommitUtil.getObjectID(gitAccess.getRepository(), currentHost, path);
+        } catch (IOException | NoRepositorySelected e) {
+          throw new IOException("Unable to extract GIT data from: " + getURL(), e);
+        }
 			}
 
 			if (fileObject == null) {

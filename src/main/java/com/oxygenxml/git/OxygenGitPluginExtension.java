@@ -9,15 +9,16 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
@@ -25,10 +26,10 @@ import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.historycomponents.HistoryController;
+import com.oxygenxml.git.view.historycomponents.HistoryPanel;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
@@ -38,7 +39,7 @@ import ro.sync.exml.workspace.api.standalone.ViewInfo;
  * 
  * @author Beniamin Savu
  */
-public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension {
+public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension, HistoryController {
 
 	/**
 	 * Logger for logging.
@@ -49,6 +50,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 	 * ID of the Git staging view. Defined in plugin.xml.
 	 */
 	static final String GIT_STAGING_VIEW = "GitStagingView";
+	public static final String GIT_HISTORY_VIEW = "GitHistoryView";
 
 	/**
 	 * Refresh support.
@@ -63,6 +65,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
    * Plugin workspace access.
    */
   private StandalonePluginWorkspace pluginWorkspaceAccess;
+	
+	/**
+   * History view.
+   */
+  public HistoryPanel historyView;
 	
 	/**
 	 * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
@@ -95,7 +102,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			  public void customizeView(ViewInfo viewInfo) {
 			    // The constant's value is defined in plugin.xml
 			    if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
-			      stagingPanel = new StagingPanel(gitRefreshSupport, stageController);
+			      stagingPanel = new StagingPanel(gitRefreshSupport, stageController, OxygenGitPluginExtension.this);
 			      gitRefreshSupport.setPanel(stagingPanel);
 			      viewInfo.setComponent(stagingPanel);
 			      
@@ -117,13 +124,13 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 			      // Start the thread that populates the view.
 			      gitRefreshSupport.call();
 			      
-			      ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-			      URL resource = getClass().getResource(ImageConstants.GIT_ICON);
-			      if (resource != null) {
-			        ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+			      Icon icon = Icons.getIcon(Icons.GIT_ICON);
 			        viewInfo.setIcon(icon);
-			      }
+			      
 			      viewInfo.setTitle("Git Staging");
+					} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
+					  historyView = new HistoryPanel(stageController);
+            viewInfo.setComponent(historyView);
 					}
 				}
 			});
@@ -225,5 +232,23 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension 
 		// Close application.
 		return true;
 	}
+
+  @Override
+  public void showRepositoryHistory() {
+    pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_HISTORY_VIEW, true);
+    historyView.showRepositoryHistory();    
+  }
+
+  @Override
+  public void showResourceHistory(String path) {
+    pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_HISTORY_VIEW, true);
+    historyView.showHistory(path);    
+  }
+
+  @Override
+  public void showCommit(String filePath, RevCommit activeRevCommit) {
+    pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_HISTORY_VIEW, false);
+    historyView.showCommit(filePath, activeRevCommit);
+  }
 
 }

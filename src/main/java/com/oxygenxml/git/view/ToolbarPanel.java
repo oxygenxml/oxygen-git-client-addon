@@ -22,7 +22,7 @@ import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -43,9 +43,11 @@ import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -83,6 +85,11 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private ToolbarButton pushButton;
 
+	/**
+	 * Button for history
+	 */
+	private ToolbarButton historyButton;
+	
 	/**
 	 * Button for pull
 	 */
@@ -132,15 +139,17 @@ public class ToolbarPanel extends JPanel {
    * Constructor.
    * @param pushPullController Push/pull controller.
    * @param refreshSupport     The refresh support.
+   * @param historyController History controller.
    */
 	public ToolbarPanel(
 	    PushPullController pushPullController, 
-	    GitRefreshSupport refreshSupport) {
+	    GitRefreshSupport refreshSupport,
+	    HistoryController historyController) {
 	  this.pushPullController = pushPullController;
 	  this.statusInformationLabel = new JLabel();
 	  this.refreshSupport = refreshSupport;
 
-	  createGUI();
+	  createGUI(historyController);
 
 	  GitAccess.getInstance().addGitListener(new GitEventAdapter() {
 	    @Override
@@ -234,14 +243,15 @@ public class ToolbarPanel extends JPanel {
     cloneRepositoryButton.setEnabled(enabled);
     submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
     branchSelectButton.setEnabled(enabled);
+    historyButton.setEnabled(enabled);
     
   }
-  
-  public ToolbarButton getSubmoduleSelectButton() {
-    return submoduleSelectButton;
-  }
 
-  public JButton getPushButton() {
+	public ToolbarButton getSubmoduleSelectButton() {
+		return submoduleSelectButton;
+	}
+
+	public JButton getPushButton() {
 		return pushButton;
 	}
 
@@ -253,11 +263,16 @@ public class ToolbarPanel extends JPanel {
 		return cloneRepositoryButton;
 	}
 
+	public JButton getHistoryButton() {
+		return historyButton;
+	}
+
 	/**
 	 * Sets the panel layout and creates all the buttons with their functionality
 	 * making them visible
+	 * @param historyController History controller.
 	 */
-	public void createGUI() {
+	public void createGUI(HistoryController historyController) {
 		gitToolbar = new JToolBar();
 		gitToolbar.setOpaque(false);
 		gitToolbar.setFloatable(false);
@@ -282,8 +297,9 @@ public class ToolbarPanel extends JPanel {
 		} else {
 			submoduleSelectButton.setEnabled(false);
 		}
+		addHistoryButton(historyController);
 		this.add(gitToolbar, gbc);
-
+				
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
@@ -297,6 +313,7 @@ public class ToolbarPanel extends JPanel {
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
 
+
 	private void addCloneRepositoryButton() {
 		Action cloneRepositoryAction = new AbstractAction() {
 		  /**
@@ -309,15 +326,31 @@ public class ToolbarPanel extends JPanel {
 		};
 
 		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
-		URL resource = getClass().getResource(ImageConstants.GIT_CLONE_REPOSITORY_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  cloneRepositoryButton.setIcon(icon);
-		}
+		cloneRepositoryButton.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
 		cloneRepositoryButton.setToolTipText(translator.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
 		setCustomWidthOn(cloneRepositoryButton);
 
 		gitToolbar.add(cloneRepositoryButton);
+	}
+	
+	/**
+	 * @param historyController History interface.
+	 */
+	private void addHistoryButton(HistoryController historyController) {
+		Action historyAction = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				historyController.showRepositoryHistory();
+			}
+		};
+
+		historyButton = new ToolbarButton(historyAction, false);
+		historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
+		historyButton.setToolTipText(translator.getTranslation(Tags.GIT_COMMIT_HISTORY));
+		setCustomWidthOn(historyButton);
+
+		gitToolbar.add(historyButton);
+
 	}
 
 	/**
@@ -341,11 +374,7 @@ public class ToolbarPanel extends JPanel {
 	    }
 	  };
 		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
-		URL resource = getClass().getResource(ImageConstants.GIT_SUBMODULE_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  submoduleSelectButton.setIcon(icon);
-		}
+		submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
 		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
 		setCustomWidthOn(submoduleSelectButton);
 
@@ -374,11 +403,7 @@ public class ToolbarPanel extends JPanel {
 			}
 		};
 		branchSelectButton = new ToolbarButton(branchSelectAction, false);
-		URL resource = getClass().getResource(ImageConstants.GIT_BRANCH_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  branchSelectButton.setIcon(icon);
-		}
+		branchSelectButton.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
 		branchSelectButton.setToolTipText(translator.getTranslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
 		setCustomWidthOn(branchSelectButton);
 
@@ -412,28 +437,34 @@ public class ToolbarPanel extends JPanel {
 			  message = "<html><b>" + currentBranch + "</b></html>";
 			  
 			  String remoteName = null;
+			  String upstreamBranch = null;
         try {
           remoteName = GitAccess.getInstance().getRemote(currentBranch);
+          upstreamBranch = GitAccess.getInstance().getUpstreamBranchShortName(currentBranch);
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
         }
+        
+        if (upstreamBranch == null) {
+          upstreamBranch = translator.getTranslation(Tags.NO_UPSTREAM_BRANCH);
+        }
+        
 				ttMessage = "<html>"
 				    + (remoteName == null ? "" : translator.getTranslation(Tags.REMOTE) + "/")
 				    + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH).toLowerCase()
 				    + " <b>"
-				    + (remoteName == null ? "" : remoteName + "/")
-				    + currentBranch 
+				    + upstreamBranch 
 				    + "</b> - ";
 				pushButton.setToolTipText(
 				    translator.getTranslation(Tags.PUSH_TO)
 				      + " "
-				      + (remoteName == null ? "" : remoteName + "/")
-				      + currentBranch );
+				      + upstreamBranch 
+				      );
 				pullButton.setToolTipText(
 				    translator.getTranslation(Tags.PULL_FROM)
 				      + " "
-				      + (remoteName == null ? "" : remoteName + "/") 
-				      + currentBranch );
+				      + upstreamBranch 
+				      );
 				if (pullsBehind == 0) {
 				  ttMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
 				} else if (pullsBehind == 1) {
@@ -456,22 +487,13 @@ public class ToolbarPanel extends JPanel {
 	private void addPushAndPullButtons() {
 		// PUSH
 		pushButton = createPushButton();
-		URL resource = getClass().getResource(ImageConstants.GIT_PUSH_ICON);
-		ImageIcon icon = null;
-		if (resource != null) {
-		  icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  pushButton.setIcon(icon);
-		}
+		pushButton.setIcon(Icons.getIcon(Icons.GIT_PUSH_ICON));
 		pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
 		setCustomWidthOn(pushButton);
 
 		// PULL
 		pullButton = createPullButton();
-		resource = getClass().getResource(ImageConstants.GIT_PULL_ICON);
-		if (resource != null) {
-		  icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  pullButton.setIcon(icon);
-		}
+		pullButton.setIcon(Icons.getIcon(Icons.GIT_PULL_ICON));
 		pullButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		setCustomWidthOn(pullButton);
 

@@ -1,0 +1,27 @@
+<script>
+    <changeSet message="First commit.">
+        <change path="f1/file1.txt" type="add">file 1 content</change>
+        <change path="f2/file2.txt" type="add">file 2 content</change>
+        <change path="f2/file3.txt" type="add">file 3 content</change>
+        <change path="f2/file4.txt" type="add">file 3 content</change>
+        <change path="newProject.xpr" type="add">content</change>
+    </changeSet>
+    
+    <changeSet message="Changes.">
+        <change path="f2/file2.txt" type="change">file 2 content changed</change>
+        <change path="f2/file1.txt" type="add">1</change>
+        <change path="f2/file4.txt" type="delete"/>
+        
+        <change path="f2/file3.txt" type="delete"/>
+        <change path="f2/file3_renamed.txt" type="add">file 3 content</change>
+    </changeSet>
+    
+    <changeSet message="Root file.">
+        <change path="root.txt" type="add">1</change>
+    </changeSet>
+
+    <changeSet message="Root file changed.">
+        <change path="root.txt" type="change">2</change>
+    </changeSet>
+
+</script>

@@ -12,6 +12,86 @@
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
+    <key value="Show_blame">
+        <comment>Contextual action in the staging panel to present Git blame.</comment>
+        <val lang="en_US">Show blame</val>
+        <val lang="de_DE">Show blame</val>
+        <val lang="fr_FR">Show blame</val>
+        <val lang="ja_JP">Show blame</val>
+        <val lang="nl_NL">Show blame</val>
+    </key>
+    <key value="Show_in_history">
+        <comment>Contextual action in the staging panel.</comment>
+        <val lang="en_US">Show in history</val>
+        <val lang="de_DE">Show in history</val>
+        <val lang="fr_FR">Show in history</val>
+        <val lang="ja_JP">Show in history</val>
+        <val lang="nl_NL">Show in history</val>
+    </key>
+    <key value="Compare_file_with_working_tree_version">
+        <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
+        <val lang="en_US">Compare {0} with working copy version</val>
+        <val lang="de_DE">Compare {0} with working copy version</val>
+        <val lang="fr_FR">Compare {0} with working copy version</val>
+        <val lang="ja_JP">Compare {0} with working copy version</val>
+        <val lang="nl_NL">Compare {0} with working copy version</val>
+    </key>
+    <key value="Compare_file_with_previous_version">
+        <comment>Action name to compare a file with its previous version.</comment>
+        <val lang="en_US">Compare {0} with previous version</val>
+        <val lang="de_DE">Compare {0} with previous version</val>
+        <val lang="fr_FR">Compare {0} with previous version</val>
+        <val lang="ja_JP">Compare {0} with previous version</val>
+        <val lang="nl_NL">Compare {0} with previous version</val>
+    </key>
+    <key value="Open_file">
+        <comment>Open file action name.</comment>
+        <val lang="en_US">Open {0}</val>
+        <val lang="de_DE">Open {0}</val>
+        <val lang="fr_FR">Open {0}</val>
+        <val lang="ja_JP">Open {0}</val>
+        <val lang="nl_NL">Open {0}</val>
+    </key>
+    <key value="Compare_with_working_tree_version">
+        <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
+        <val lang="en_US">Compare with working copy version</val>
+        <val lang="de_DE">Compare with working copy version</val>
+        <val lang="fr_FR">Compare with working copy version</val>
+        <val lang="ja_JP">Compare with working copy version</val>
+        <val lang="nl_NL">Compare with working copy version</val>
+    </key>
+    <key value="Compare_with_previous_version">
+        <comment>Action name to compare a file with its previous version.</comment>
+        <val lang="en_US">Compare with previous version</val>
+        <val lang="de_DE">Compare with previous version</val>
+        <val lang="fr_FR">Compare with previous version</val>
+        <val lang="ja_JP">Compare with previous version</val>
+        <val lang="nl_NL">Compare with previous version</val>
+    </key>
+    <key value="No_upstream_branch">
+        <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
+        <val lang="en_US">no upstream branch</val>
+        <val lang="de_DE">no upstream branch</val>
+        <val lang="fr_FR">no upstream branch</val>
+        <val lang="ja_JP">no upstream branch</val>
+        <val lang="nl_NL">no upstream branch</val>
+    </key>
+    <key value="Refresh">
+        <comment>Action in the history panel.</comment>
+        <val lang="en_US">Refresh</val>
+        <val lang="de_DE">Refresh</val>
+        <val lang="fr_FR">Refresh</val>
+        <val lang="ja_JP">Refresh</val>
+        <val lang="nl_NL">Refresh</val>
+    </key>
+    <key value="Showing_history_for">
+        <comment>Showing history for:</comment>
+        <val lang="en_US">Showing current branch history for:</val>
+        <val lang="de_DE">Showing current branch history for:</val>
+        <val lang="fr_FR">Showing current branch history for:</val>
+        <val lang="ja_JP">Showing current branch history for:</val>
+        <val lang="nl_NL">Showing current branch history for:</val>
+    </key>
     <key value="Push_to">
         <comment>Push to</comment>
         <val lang="en_US">Push to</val>
