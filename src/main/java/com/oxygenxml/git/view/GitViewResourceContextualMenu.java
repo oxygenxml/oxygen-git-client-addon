@@ -209,7 +209,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	      };
 	      this.add(historyAction);
 	    
-	    AbstractAction blameAction = new AbstractAction("Blame") {
+	    AbstractAction blameAction = new AbstractAction(translator.getTranslation(Tags.SHOW_BLAME)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           if (!allSelectedResources.isEmpty()) {

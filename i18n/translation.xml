@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Show_blame">
+        <comment>Contextual action in the staging panel to present Git blame.</comment>
+        <val lang="en_US">Show blame</val>
+        <val lang="de_DE">Show blame</val>
+        <val lang="fr_FR">Show blame</val>
+        <val lang="ja_JP">Show blame</val>
+        <val lang="nl_NL">Show blame</val>
+    </key>
     <key value="Show_in_history">
         <comment>Contextual action in the staging panel.</comment>
         <val lang="en_US">Show in history</val>

@@ -666,4 +666,10 @@ public class Tags {
    * en: Show in History
    */
   public static final String SHOW_IN_HISTORY = "Show_in_history";
+  /**
+   * Contextual action in the staging panel.
+   * 
+   * en: Show blame
+   */
+  public static final String SHOW_BLAME = "Show_blame";
 }
