@@ -60,12 +60,12 @@ public class BlamePerformer {
   /**
    * Highlight to Revision mapping.
    */
-  private  Map<Object, RevCommit> h2r = new HashMap<>();
+  private  Map<Object, RevCommit> highlightsToRevCommits = new HashMap<>();
   
   /**
    * Line to Revision mapping.
    */
-  private  Map<Integer, RevCommit> l2r = new HashMap<>();
+  private  Map<Integer, RevCommit> lineIndicesToRevCommits = new HashMap<>();
   /**
    * The bind text page.
    */
@@ -122,7 +122,6 @@ public class BlamePerformer {
       String filePath, 
       HistoryController historyController, 
       WSTextEditorPage currentPage) throws GitAPIException {
-    // prepare a new test-repository
     BlameCommand blamer = new BlameCommand(repository);
     
     // This is how you do it on a specific commit. If left out, it's performed on the WC instance.
@@ -139,7 +138,7 @@ public class BlamePerformer {
     for (int i = 0; i < lines; i++) {
       RevCommit commit = blame.getSourceCommit(i);
       
-      l2r.put(i, commit);
+      lineIndicesToRevCommits.put(i, commit);
 
       if (commit != null) {
         try {
@@ -147,7 +146,7 @@ public class BlamePerformer {
           int offsetOfLineEnd = textpage.getOffsetOfLineEnd(i + 1);
 
           Object addHighlight = highlighter.addHighlight(offsetOfLineStart, offsetOfLineEnd, getPainter(commit, textpage));
-          h2r.put(addHighlight, commit);
+          highlightsToRevCommits.put(addHighlight, commit);
         } catch (BadLocationException e) {
           LOGGER.error(e, e);
         }
@@ -212,7 +211,7 @@ public class BlamePerformer {
     try {
       int line = textpage.getLineOfOffset(caret);
       
-      RevCommit nextRevCommit = l2r.get(line - 1);
+      RevCommit nextRevCommit = lineIndicesToRevCommits.get(line - 1);
       // The active highlight might have changed.
       
       if (!Equaler.verifyEquals(activeRevCommit , nextRevCommit)) {
@@ -245,7 +244,7 @@ public class BlamePerformer {
       float g = rand.nextFloat();
       float b = rand.nextFloat();
       Color randomColor = new Color(r, g, b, (float) 0.4);
-      return new CommitHighlightPainter(randomColor, textpage, l2r, () -> activeRevCommit);
+      return new CommitHighlightPainter(randomColor, textpage, lineIndicesToRevCommits, () -> activeRevCommit);
     });
   }
 
@@ -263,7 +262,7 @@ public class BlamePerformer {
       JTextArea textArea = (JTextArea) textpage.getTextComponent();
       Highlighter highlighter = textArea.getHighlighter();
       
-      Iterator<Object> iterator = h2r.keySet().iterator();
+      Iterator<Object> iterator = highlightsToRevCommits.keySet().iterator();
       while (iterator.hasNext()) {
         Object h = iterator.next();
         highlighter.removeHighlight(h);

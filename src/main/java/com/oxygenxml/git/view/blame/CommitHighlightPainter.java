@@ -38,7 +38,7 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
   /**
    * Mapping between lines and revisions in which that line was last changed.
    */
-  private Map<Integer, RevCommit> l2r;
+  private Map<Integer, RevCommit> lineToRevCommitMap;
   /**
    * The active commit is the commit under the caret.
    */
@@ -52,14 +52,16 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
    * Constructs a new highlight painter. If <code>c</code> is null,
    * the JTextComponent will be queried for its selection color.
    *
-   * @param c the color for the highlight
-   * @param l2r 
-   * @param textpage 
+   * @param color               The color for the highlight
+   * @param lineToRevCommitMap  Mapping between lines and revisions in which that line was last changed.
+   * @param textpage            The text page.
+   * @param activeCommit        The commit under the caret.
    */
-  public CommitHighlightPainter(Color c, WSTextEditorPage textpage, Map<Integer, RevCommit> l2r, Supplier<RevCommit> activeCommit) {
-    color = c;
+  public CommitHighlightPainter(Color color, WSTextEditorPage textpage,
+      Map<Integer, RevCommit> lineToRevCommitMap , Supplier<RevCommit> activeCommit) {
+    this.color = color;
     this.textpage = textpage;
-    this.l2r = l2r;
+    this.lineToRevCommitMap = lineToRevCommitMap;
     this.activeCommit = activeCommit;
   }
 
@@ -73,30 +75,29 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
     return color;
   }
 
-  // --- HighlightPainter methods ---------------------------------------
-
   /**
    * Paints a highlight.
    *
    * @param g the graphics context
-   * @param offs0 the starting model offset &gt;= 0
-   * @param offs1 the ending model offset &gt;= offs1
+   * @param startOffset the starting model offset &gt;= 0
+   * @param endOffset the ending model offset &gt;= offs1
    * @param bounds the bounding box for the highlight
-   * @param c the editor
+   * @param textComp the editor
    */
-  public void paint(Graphics g, int offs0, int offs1, Shape bounds, JTextComponent c) {
+  @Override
+  public void paint(Graphics g, int startOffset, int endOffset, Shape bounds, JTextComponent textComp) {
     Rectangle alloc = bounds.getBounds();
     try {
       // --- determine locations ---
-      TextUI mapper = c.getUI();
-      Rectangle p0 = mapper.modelToView(c, offs0);
-      Rectangle p1 = mapper.modelToView(c, offs1);
+      TextUI mapper = textComp.getUI();
+      Rectangle p0 = mapper.modelToView(textComp, startOffset);
+      Rectangle p1 = mapper.modelToView(textComp, endOffset);
 
       // --- render ---
       Color color = getColor();
 
       if (color == null) {
-        g.setColor(c.getSelectionColor());
+        g.setColor(textComp.getSelectionColor());
       }
       else {
         g.setColor(color);
@@ -120,68 +121,67 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
     }
   }
 
-  // --- LayerPainter methods ----------------------------
   /**
    * Paints a portion of a highlight.
    *
    * @param g the graphics context
-   * @param offs0 the starting model offset &gt;= 0
-   * @param offs1 the ending model offset &gt;= offs1
+   * @param stOffs the starting model offset &gt;= 0
+   * @param endOffs the ending model offset &gt;= offs1
    * @param bounds the bounding box of the view, which is not
    *        necessarily the region to paint.
-   * @param c the editor
+   * @param textComp the editor
    * @param view View painting for
    * @return region drawing occurred in
    */
-  public Shape paintLayer(Graphics g, int offs0, int offs1,
-      Shape bounds, JTextComponent c, View view) {
+  @Override
+  public Shape paintLayer(Graphics g, int stOffs, int endOffs,
+      Shape bounds, JTextComponent textComp, View view) {
     Color color = getColor();
 
     if (color == null) {
-      g.setColor(c.getSelectionColor());
+      g.setColor(textComp.getSelectionColor());
     }
     else {
       g.setColor(color);
     }
 
-    Rectangle r;
+    Rectangle rect;
 
-    if (offs0 == view.getStartOffset() &&
-        offs1 == view.getEndOffset()) {
+    if (stOffs == view.getStartOffset() && endOffs == view.getEndOffset()) {
       // Contained in view, can just use bounds.
       if (bounds instanceof Rectangle) {
-        r = (Rectangle) bounds;
+        rect = (Rectangle) bounds;
       }
       else {
-        r = bounds.getBounds();
+        rect = bounds.getBounds();
       }
     }
     else {
       // Should only render part of View.
       try {
         // --- determine locations ---
-        Shape shape = view.modelToView(offs0, Position.Bias.Forward,
-            offs1,Position.Bias.Backward,
+        Shape shape = view.modelToView(stOffs, Position.Bias.Forward,
+            endOffs,Position.Bias.Backward,
             bounds);
-        r = (shape instanceof Rectangle) ?
+        rect = (shape instanceof Rectangle) ?
             (Rectangle)shape : shape.getBounds();
       } catch (BadLocationException e) {
         // can't render
-        r = null;
+        rect = null;
       }
     }
 
-    if (r != null) {
+    if (rect != null) {
       // If we are asked to highlight, we should draw something even
       // if the model-to-view projection is of zero width (6340106).
-      r.width = Math.max(r.width, 1);
+      rect.width = Math.max(rect.width, 1);
 
-      int delta = getYDelta(offs0, g);
+      int delta = getYDelta(stOffs, g);
 
-      g.fillRect(r.x, r.y + delta, r.width, r.height - delta);
+      g.fillRect(rect.x, rect.y + delta, rect.width, rect.height - delta);
     }
 
-    return r;
+    return rect;
   }
 
   /**
@@ -200,10 +200,10 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
       int lineOfOffset = textpage.getLineOfOffset(offset);
 
       int key = lineOfOffset - 1;
-      RevCommit revCommit = l2r.get(key);
+      RevCommit revCommit = lineToRevCommitMap.get(key);
       if (lineOfOffset > 1) {
         // Not the first line.
-        RevCommit prevRevCommit = l2r.get(key - 1);
+        RevCommit prevRevCommit = lineToRevCommitMap.get(key - 1);
 
         boolean same = Equaler.verifyEquals(revCommit, prevRevCommit);
         if (!same) {
