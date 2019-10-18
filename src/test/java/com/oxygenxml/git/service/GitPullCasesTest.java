@@ -457,11 +457,6 @@ public class GitPullCasesTest extends GitTestBase {
         .toString();
     String osName = System.getProperty("os.name");
     osName = osName.toUpperCase();
-    System.out.println();
-    System.out.println("================================================================");
-    System.out.println(osName);
-    System.out.println("================================================================");
-    System.out.println();
     boolean isWin = osName.startsWith("WIN");
     if (repoURI.startsWith("file:/")
         && !repoURI.startsWith("file:///")
