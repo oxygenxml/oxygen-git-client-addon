@@ -19,17 +19,17 @@ public class HistoryHyperlinkListener implements HyperlinkListener {
 	/**
 	 * The Vector with CommitCharcteristics.
 	 */
-	private List<CommitCharacteristics> commitCharacteristicsVector;
+	private List<CommitCharacteristics> commits;
 
 	/**
 	 * Construct HyperlinkListener parent commit id shown in commitDescriptionPane.
 	 * 
-	 * @param historyTable                The historyTable
-	 * @param commitCharacteristicsVector The Vector with commitCharacterstics.
+	 * @param historyTable   The historyTable
+	 * @param commits        The list with commitCharacterstics.
 	 */
-	public HistoryHyperlinkListener(JTable historyTable, List<CommitCharacteristics> commitCharacteristicsVector) {
+	public HistoryHyperlinkListener(JTable historyTable, List<CommitCharacteristics> commits) {
 		this.historyTable = historyTable;
-		this.commitCharacteristicsVector = commitCharacteristicsVector;
+		this.commits = commits;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class HistoryHyperlinkListener implements HyperlinkListener {
 			String query = event.getURL().getQuery();
 			int parentStringIdx = query.indexOf("=") + 1;
 			String parentCommitId = query.substring(parentStringIdx);
-			int parentTableIndex = CommitCharacteristics.getCommitTableIndex(commitCharacteristicsVector, parentCommitId);
+			int parentTableIndex = CommitCharacteristics.getCommitTableIndex(commits, parentCommitId);
 			if (parentTableIndex != -1) {
 				historyTable.getSelectionModel().setSelectionInterval(parentTableIndex, parentTableIndex);
 			}

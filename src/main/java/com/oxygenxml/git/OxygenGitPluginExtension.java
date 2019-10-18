@@ -7,7 +7,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.net.URL;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -50,6 +49,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * ID of the Git staging view. Defined in plugin.xml.
 	 */
 	static final String GIT_STAGING_VIEW = "GitStagingView";
+	/**
+	 * ID of the Git History view.
+	 */
 	public static final String GIT_HISTORY_VIEW = "GitHistoryView";
 
 	/**

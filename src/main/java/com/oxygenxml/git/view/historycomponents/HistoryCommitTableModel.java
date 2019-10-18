@@ -32,7 +32,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	/**
 	 * The internal representation of the model.
 	 */
-	private List<CommitCharacteristics> commitVector;
+	private List<CommitCharacteristics> allCommitsCharacteristics;
 
 	/**
 	 * Construct the Table Model with a Vector containing all commitCharacteristics.
@@ -40,12 +40,12 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 * @param commitVector The computed commitVector
 	 */
 	public HistoryCommitTableModel(List<CommitCharacteristics> commitVector) {
-		this.commitVector = commitVector;
+		this.allCommitsCharacteristics = commitVector;
 	}
 	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		CommitCharacteristics commitCharacteristics = commitVector.get(rowIndex);
+		CommitCharacteristics commitCharacteristics = allCommitsCharacteristics.get(rowIndex);
 		Object temp = null;
 
 		switch (columnIndex) {
@@ -96,7 +96,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		return commitVector != null ? commitVector.size() : 0;
+		return allCommitsCharacteristics != null ? allCommitsCharacteristics.size() : 0;
 	}
 
 	@Override
@@ -126,8 +126,8 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 		return columnName;	
 	}
 	
-	public List<CommitCharacteristics> getCommitVector() {
-    return commitVector;
+	public List<CommitCharacteristics> getAllCommits() {
+    return allCommitsCharacteristics;
   }
 
 }

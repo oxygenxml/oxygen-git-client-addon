@@ -26,7 +26,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
    */
   private static final Logger logger = Logger.getLogger(RowHistoryTableSelectionListener.class);
 
-	/**
+	/*
 	 * The fields of commitDescription EditorPane.
 	 */
 	private final static String COMMIT = "Commit";
@@ -46,16 +46,16 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	private JTable historyTable;
 
 	/**
-	 * The CommitDescription EditorPane.
+	 * Panel for commit description (author, date, etc.).
 	 */
 	private JEditorPane commitDescriptionPane;
 
 	/**
-	 * The Vector with CommitCharcteristics.
+	 * The list of commits and their characteristics.
 	 */
-	private List<CommitCharacteristics> commitCharacteristicsVector;
+	private List<CommitCharacteristics> allCommits;
 
-	/*
+	/**
 	 * Coalescing for selecting the row in HistoryTable.
 	 */
 	private static final int TIMER_DELAY = 500;
@@ -68,19 +68,19 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * 
 	 * @param historyTable                The historyTable
 	 * @param commitDescriptionPane       The commitDescriptionPane
-	 * @param commitCharacteristicsVector The commitCharacteristicsVector
-	 * @param changesTable                The table that presents the files chaged in a commit.
+	 * @param commits                     The list of commits and their characteristics.
+	 * @param changesTable                The table that presents the files changed in a commit.
 	 */
 	public RowHistoryTableSelectionListener(
 	    JTable historyTable, 
 	    JEditorPane commitDescriptionPane,
-			List<CommitCharacteristics> commitCharacteristicsVector, 
+			List<CommitCharacteristics> commits, 
 			JTable changesTable) {
 		this.changesTable = changesTable;
     this.updateTableTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
-		this.commitCharacteristicsVector = commitCharacteristicsVector;
+		this.allCommits = commits;
 	}
 
 	@Override
@@ -90,9 +90,6 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
 	/**
 	 * Timer Listener when selecting a row in HistoryTable.
-	 * 
-	 * @author Alexandra_Dinisor
-	 *
 	 */
 	private class TableTimerListener implements ActionListener {
 		@Override
@@ -102,14 +99,13 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	}
 	
 	/**
-	 * Set the commitDescription in a non-editable EditorPane, including: CommitID,
+	 * Set the commit description in a non-editable editor pane, including: CommitID,
 	 * Parents IDs with hyperlink, Author, Committer and Commit Message.
-	 * 
 	 */
 	private void setCommitDescription() {
 		int selectedRow = historyTable.getSelectedRow();
 		if (selectedRow != -1) {
-		  CommitCharacteristics commitCharacteristics = commitCharacteristicsVector.get(selectedRow);
+		  CommitCharacteristics commitCharacteristics = allCommits.get(selectedRow);
 		  StringBuilder commitDescription = new StringBuilder();
 		  // Case for already committed changes.
 		  if (commitCharacteristics.getCommitter() != null) {

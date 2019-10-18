@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.blame;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,7 +20,6 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
-import ro.sync.util.URLUtil;
 
 /**
  * Manages all blame requests.
@@ -32,7 +30,7 @@ public class BlameManager {
    */
   private static final Logger LOGGER = Logger.getLogger(BlameManager.class);
   /**
-   * Singleton isntance.
+   * Singleton instance.
    */
   private static BlameManager instance;
   /**
@@ -62,10 +60,10 @@ public class BlameManager {
           if (remove != null) {
             remove.dispose();
           }
-          
         }
       }
     });
+    
   }
   
   /**
@@ -75,7 +73,6 @@ public class BlameManager {
     if (instance == null) {
       instance = new BlameManager();
     }
-    
     return instance;
   }
   
@@ -97,19 +94,18 @@ public class BlameManager {
       // Check if another blame is already active and dispose it.
       dispose(url);
 
-      // Imposing the text page will open even a DITA MAp inside the main editing area.
+      // Imposing the text page will open even a DITA Map inside the main editing area.
       boolean open = PluginWorkspaceProvider.getPluginWorkspace().open(url, EditorPageConstants.PAGE_TEXT, null);
-      
       if (open) {
         WSEditor editor = PluginWorkspaceProvider.getPluginWorkspace().getEditorAccess(url, PluginWorkspace.MAIN_EDITING_AREA);
         // Currently we only support text page highlights.
         editor.changePage(EditorPageConstants.PAGE_TEXT);
 
-        BlamePerformer showBlame = new BlamePerformer();
-        showBlame.doit(GitAccess.getInstance().getRepository(), filePath, editor, historyController);
+        BlamePerformer blamePerformer = new BlamePerformer();
+        blamePerformer.doit(GitAccess.getInstance().getRepository(), filePath, editor, historyController);
         
         String key = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().correctURL(url.toExternalForm());
-        activeBlames.put(key, showBlame);
+        activeBlames.put(key, blamePerformer);
       }
     } catch (NoRepositorySelected e) {
       LOGGER.error(e, e);

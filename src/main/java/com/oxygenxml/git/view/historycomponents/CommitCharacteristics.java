@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.historycomponents;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Class for Commit Characteristics shown in historyTable.
@@ -114,13 +113,14 @@ public class CommitCharacteristics {
 	/**
 	 * Get the correspondent CommitCharacterstics element index from history table.
 	 * 
-	 * @param commitCharacteristicsVector The CommitCharactersitics Vector
-	 * @param commitId                    The CommitId
+	 * @param commits    The CommitCharactersitics list.
+	 * @param commitId   The CommitId
+	 * 
 	 * @return the specific element index in the table. Returns <code>-1</code> if no match.
 	 */
-	public static int getCommitTableIndex(List<CommitCharacteristics> commitCharacteristicsVector, String commitId) {	
-		for (int i = 0 ; i < commitCharacteristicsVector.size(); i++) {
-			if (commitCharacteristicsVector.get(i).getCommitAbbreviatedId().equals(commitId)) {
+	public static int getCommitTableIndex(List<CommitCharacteristics> commits, String commitId) {	
+		for (int i = 0 ; i < commits.size(); i++) {
+			if (commits.get(i).getCommitAbbreviatedId().equals(commitId)) {
 				return i;
 			}
 		}

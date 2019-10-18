@@ -79,15 +79,14 @@ public class HistoryPanel extends JPanel {
    * Table view that presents the commits.
    */
   private JTable historyTable;
-  private JEditorPane commitDescriptionPane;
   /**
-   * Toolbar in which the button will be placed
+   * Panel presenting a detailed description of the commit (author, date, etc).
    */
-  private JToolBar toolbar;
+  private JEditorPane commitDescriptionPane;
   /**
    * The label that shows the resource for which we present the history.
    */
-  private JLabel showCurrentRepoLabel;
+  private JLabel showingHistoryForRepoLabel;
   /**
    * Intercepts clicks in the commit details area.
    */
@@ -99,14 +98,14 @@ public class HistoryPanel extends JPanel {
   /**
    * The changed files from a commit.
    */
-  private JTable changesTable;
+  private JTable affectedFilesTable;
   /**
    * The file path of the resource for which we are currently presenting the history. If <code>null</code>, we 
    * present the history for the entire repository.
    */
   private String activeFilePath;
   /**
-   * Executes GIT commands.
+   * Executes GIT commands (stage, unstage, discard, etc).
    */
   private transient StageController stageController;
   
@@ -120,61 +119,60 @@ public class HistoryPanel extends JPanel {
     setLayout(new BorderLayout());
 
     historyTable = createTable();
-    
+    historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     historyTable.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(java.awt.event.MouseEvent e) {
         if (e.isPopupTrigger()) {
-          showHistoryContextualMenu(historyTable, e.getPoint());
+          showHistoryTableContextualMenu(historyTable, e.getPoint());
         }
       }
 
       @Override
       public void mouseReleased(java.awt.event.MouseEvent e) {
         if (e.isPopupTrigger()) {
-          showHistoryContextualMenu(historyTable, e.getPoint());
+          showHistoryTableContextualMenu(historyTable, e.getPoint());
         }
       }
     });
 
-    JScrollPane tableScrollPane = new JScrollPane(historyTable);
+    JScrollPane historyTableScrollPane = new JScrollPane(historyTable);
     historyTable.setFillsViewportHeight(true);
 
-    // set Commit Description Pane with HTML content and hyperlink.
     commitDescriptionPane = new JEditorPane();
-    init(commitDescriptionPane);
-
-    historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    
+    initEditorPane(commitDescriptionPane);
     JScrollPane commitDescriptionScrollPane = new JScrollPane(commitDescriptionPane);
     
-    changesTable = createResourcesTable();
-    
-    JScrollPane fileHierarchyScrollPane = new JScrollPane(changesTable);
+    affectedFilesTable = createAffectedFilesTable();
+    JScrollPane affectedFilesTableScrollPane = new JScrollPane(affectedFilesTable);
 
     Dimension minimumSize = new Dimension(500, 150);
     commitDescriptionScrollPane.setPreferredSize(minimumSize);
-    fileHierarchyScrollPane.setPreferredSize(minimumSize);
-
+    affectedFilesTableScrollPane.setPreferredSize(minimumSize);
 
     //----------
-    // Top panel
+    // Top panel (with the "Showing history" label and the "Refresh" action
     //----------
     
-    showCurrentRepoLabel = new JLabel();
     JPanel topPanel = new JPanel(new BorderLayout());
-    createToolbar(topPanel);
+    showingHistoryForRepoLabel = new JLabel();
+    topPanel.add(showingHistoryForRepoLabel, BorderLayout.WEST);
+    createAndAddToolbarToTopPanel(topPanel);
 
-    JPanel infoBoxesSplitPane = createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, commitDescriptionScrollPane,
-        fileHierarchyScrollPane);
-    JideSplitPane centerSplitPane = createSplitPane(JideSplitPane.VERTICAL_SPLIT, tableScrollPane, infoBoxesSplitPane);
+    JPanel infoBoxesSplitPane = createSplitPane(
+        JideSplitPane.HORIZONTAL_SPLIT,
+        commitDescriptionScrollPane,
+        affectedFilesTableScrollPane);
+    JideSplitPane centerSplitPane = createSplitPane(
+        JideSplitPane.VERTICAL_SPLIT,
+        historyTableScrollPane,
+        infoBoxesSplitPane);
     centerSplitPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     
     //Customize the split pane.
     this.addComponentListener(new ComponentAdapter() {
       @Override
       public void componentShown(ComponentEvent e) {
-        
         int h = centerSplitPane.getHeight();
         centerSplitPane.setDividerLocation(0, (int)(h * 0.6));
         
@@ -186,81 +184,77 @@ public class HistoryPanel extends JPanel {
   }
 
   /**
-   * Creates the view that presents the files changed in a revision.
+   * Creates the table that presents the files changed in a revision.
    * 
-   * @return The view that presents the files.
+   * @return The table that presents the files.
    */
-  private JTable createResourcesTable() {
-    JTable createResourcesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(null, true), () -> false);
-    createResourcesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+  private JTable createAffectedFilesTable() {
+    JTable table = UIUtil.createResourcesTable(
+        new StagingResourcesTableModel(null, true),
+        () -> false);
+    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
-    createResourcesTable.addMouseListener(new MouseAdapter() {
+    table.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(java.awt.event.MouseEvent e) {
         if (e.isPopupTrigger()) {
-          showResourcesContextualMenu(createResourcesTable, e.getPoint());
+          showResourcesContextualMenu(table, e.getPoint());
         }
       }
-
       @Override
       public void mouseReleased(java.awt.event.MouseEvent e) {
         if (e.isPopupTrigger()) {
-          showResourcesContextualMenu(createResourcesTable, e.getPoint());
+          showResourcesContextualMenu(table, e.getPoint());
         }
       }
     });
     
-    return createResourcesTable;
+    return table;
   }
   
   /**
    * Show the contextual menu on the resources changed on a revision.
    * 
-   * @param commitResourcesTable The table with the files from a committed on a revision.
-   * @param point The point where to show the contextual menu.
+   * @param affectedFilesTable The table with the files from a committed on a revision.
+   * @param point              The point where to show the contextual menu.
    */
-  protected void showResourcesContextualMenu(JTable commitResourcesTable, Point point) {
-    int rowAtPoint = commitResourcesTable.rowAtPoint(point);
+  protected void showResourcesContextualMenu(JTable affectedFilesTable, Point point) {
+    int rowAtPoint = affectedFilesTable.rowAtPoint(point);
     if (rowAtPoint != -1) {
-      commitResourcesTable.getSelectionModel().setSelectionInterval(rowAtPoint, rowAtPoint);
+      affectedFilesTable.getSelectionModel().setSelectionInterval(rowAtPoint, rowAtPoint);
       
-      StagingResourcesTableModel model = (StagingResourcesTableModel) commitResourcesTable.getModel();
-      int convertedSelectedRow = commitResourcesTable.convertRowIndexToModel(rowAtPoint);
+      StagingResourcesTableModel model = (StagingResourcesTableModel) affectedFilesTable.getModel();
+      int convertedSelectedRow = affectedFilesTable.convertRowIndexToModel(rowAtPoint);
       FileStatus file = model.getFileStatus(convertedSelectedRow);
       
-      JPopupMenu jPopupMenu = new JPopupMenu();
-      
       HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
-      CommitCharacteristics commitCharacteristics = historyTableModel.getCommitVector().get(historyTable.getSelectedRow());
+      CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(historyTable.getSelectedRow());
       
+      JPopupMenu jPopupMenu = new JPopupMenu();
       jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), file.getFileLocation(), false));
-      
       populateDiffActions(jPopupMenu, commitCharacteristics, file, false);
-      
-      jPopupMenu.show(commitResourcesTable, point.x, point.y);
+      jPopupMenu.show(affectedFilesTable, point.x, point.y);
     }
   }
   
   /**
-   * Show the contextual menu on the hisotry table.
+   * Show the contextual menu on the history table.
    * 
    * @param commitResourcesTable The table with the files from a committed on a revision.
-   * @param point The point where to show the contextual menu.
+   * @param point                The point where to show the contextual menu.
    */
-  protected void showHistoryContextualMenu(JTable historyTable, Point point) {
+  protected void showHistoryTableContextualMenu(JTable historyTable, Point point) {
     if (activeFilePath != null) {
       // If we present the history for a specific file.
       int rowAtPoint = historyTable.rowAtPoint(point);
       if (rowAtPoint != -1) {
         historyTable.getSelectionModel().setSelectionInterval(rowAtPoint, rowAtPoint);
-        int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
-
-        JPopupMenu jPopupMenu = new JPopupMenu();
 
         HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
-        CommitCharacteristics commitCharacteristics = historyTableModel.getCommitVector().get(convertedSelectedRow);
+        int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
+        CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
+        JPopupMenu jPopupMenu = new JPopupMenu();
         jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), activeFilePath, true));
-
         try {
           List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
           Optional<FileStatus> fileStatusOptional = changes.stream().filter(f -> activeFilePath.equals(f.getFileLocation())).findFirst();
@@ -270,7 +264,6 @@ public class HistoryPanel extends JPanel {
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
         }
-
         jPopupMenu.show(historyTable, point.x, point.y);
       }
     }
@@ -389,15 +382,16 @@ public class HistoryPanel extends JPanel {
       RevCommit parentRevCommit,
       boolean addParentIDInActionName, 
       boolean addFileName) {
+    
     String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
       actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_PREVIOUS_VERSION), fileName);
     }
-    
     if (addParentIDInActionName) {
       actionName += " " + parentRevCommit.abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
     }
+    
     return new AbstractAction(actionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -409,6 +403,7 @@ public class HistoryPanel extends JPanel {
         }
       }
     };
+    
   }
 
   /**
@@ -439,7 +434,7 @@ public class HistoryPanel extends JPanel {
    * 
    * @param editorPane Editor pane to initialize.
    */
-  private static void init(JEditorPane editorPane) {
+  private static void initEditorPane(JEditorPane editorPane) {
     // Forces the JEditorPane to take the font from the UI, rather than the HTML document.
     editorPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
     Font font = UIManager.getDefaults().getFont("TextArea.font");
@@ -447,7 +442,6 @@ public class HistoryPanel extends JPanel {
       editorPane.setFont(font);
     }
     editorPane.setBorder(null);
-    
     editorPane.setContentType("text/html");
     editorPane.setEditable(false);
 
@@ -458,13 +452,13 @@ public class HistoryPanel extends JPanel {
    * 
    * @param topPanel Parent for the toolbar.
    */
-  private void createToolbar(JPanel topPanel) {
-    toolbar = new JToolBar();
+  private void createAndAddToolbarToTopPanel(JPanel topPanel) {
+    JToolBar toolbar = new JToolBar();
     toolbar.setOpaque(false);
     toolbar.setFloatable(false);
-    topPanel.add(showCurrentRepoLabel, BorderLayout.WEST);
     topPanel.add(toolbar, BorderLayout.EAST);
     
+    // Add the Refresh action to the toolbar
     Action refreshAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -518,7 +512,9 @@ public class HistoryPanel extends JPanel {
    * Shows the commit history for the entire repository.
    * 
    * @param filePath File for which to present the commit that changed him.
-   * @param force <code>true</code> to recompute the hisotry data even if the view already presents the history for the given resource.
+   * @param force    <code>true</code> to recompute the history data,
+   *                     even if the view already presents the history
+   *                      for the given resource.
    */
   private void showHistory(String filePath, boolean force) {
     // Check if we don't already present the history for this path!!!!
@@ -534,10 +530,10 @@ public class HistoryPanel extends JPanel {
         if (filePath != null) {
           directory = new File(directory, filePath);
         }
-        showCurrentRepoLabel.setText(
+        showingHistoryForRepoLabel.setText(
             Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + directory.getName());
-        showCurrentRepoLabel.setToolTipText(directory.getAbsolutePath());
-        showCurrentRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
+        showingHistoryForRepoLabel.setToolTipText(directory.getAbsolutePath());
+        showingHistoryForRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
 
         historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess, gitAccess.getRepository()));
         historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
@@ -547,25 +543,23 @@ public class HistoryPanel extends JPanel {
           historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
         }
         
-        StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
+        StagingResourcesTableModel dataModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
         dataModel.setFilesStatus(Collections.emptyList());
         commitDescriptionPane.setText("");
         
         
         List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
-
         historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
+        updateHistoryTableWidths();
 
-        updateTableWidths();
-
-        selectionListener = new RowHistoryTableSelectionListener(historyTable, commitDescriptionPane, commitCharacteristicsVector, changesTable);
+        selectionListener = new RowHistoryTableSelectionListener(
+            historyTable, commitDescriptionPane, commitCharacteristicsVector, affectedFilesTable);
         historyTable.getSelectionModel().addListSelectionListener(selectionListener);
 
         // Install hyperlink listener.
         if (hyperlinkListener != null) {
           commitDescriptionPane.removeHyperlinkListener(hyperlinkListener);  
         }
-
         hyperlinkListener = new HistoryHyperlinkListener(historyTable, commitCharacteristicsVector);
         commitDescriptionPane.addHyperlinkListener(hyperlinkListener);
 
@@ -588,24 +582,23 @@ public class HistoryPanel extends JPanel {
   /**
    * Distribute widths to the columns according to their content.
    */
-  private void updateTableWidths() {
-    TableColumnModel tcm = historyTable.getColumnModel();
-    int available = historyTable.getWidth();
-    TableColumn column = tcm.getColumn(0);
-    int columnDate = scaleColumnsWidth(100);
-    int columnAuthor = scaleColumnsWidth(120);
-    int columnCommitId = scaleColumnsWidth(80);
+  private void updateHistoryTableWidths() {
+    int dateColWidth = scaleColumnsWidth(100);
+    int authorColWidth = scaleColumnsWidth(120);
+    int commitIdColWidth = scaleColumnsWidth(80);
     
-    column.setPreferredWidth(available - columnAuthor - columnAuthor - columnDate);
+    TableColumnModel tcm = historyTable.getColumnModel();
+    TableColumn column = tcm.getColumn(0);
+    column.setPreferredWidth(historyTable.getWidth() - authorColWidth - authorColWidth - dateColWidth);
     
     column = tcm.getColumn(1);
-    column.setPreferredWidth(columnDate);
+    column.setPreferredWidth(dateColWidth);
 
     column = tcm.getColumn(2);
-    column.setPreferredWidth(columnAuthor);
+    column.setPreferredWidth(authorColWidth);
 
     column = tcm.getColumn(3);
-    column.setPreferredWidth(columnCommitId);
+    column.setPreferredWidth(commitIdColWidth);
   }
   
   /**
@@ -646,10 +639,9 @@ public class HistoryPanel extends JPanel {
    */
   private void selectCommit(ObjectId id) {
     HistoryCommitTableModel model =  (HistoryCommitTableModel) historyTable.getModel();
-    List<CommitCharacteristics> commitVector = model.getCommitVector();
-    for (int i = 0; i < commitVector.size(); i++) {
-      CommitCharacteristics commitCharacteristics = commitVector.get(i);
-
+    List<CommitCharacteristics> commits = model.getAllCommits();
+    for (int i = 0; i < commits.size(); i++) {
+      CommitCharacteristics commitCharacteristics = commits.get(i);
       if (id.getName().equals(commitCharacteristics.getCommitId())) {
         final int sel = i;
         SwingUtilities.invokeLater(() -> {
