@@ -98,7 +98,7 @@ public class AuthUtil {
       tryAgainOutside  = new AddRemoteDialog().linkRemote();
     } else if (lowercaseMsg.contains("auth fail")) {
       // This message is thrown for SSH.
-      String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
+      String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();
       tryAgainOutside = passphrase != null;
     } else if (ex.getCause() instanceof NoRemoteRepositoryException

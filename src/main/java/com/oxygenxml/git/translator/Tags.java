@@ -49,7 +49,7 @@ public class Tags {
    * 
    * en: The previous passphrase is invalid.
    */
-  public static final String PREVIOUS_PASSPHRASE_INVALID = "Previous_passphrase_invalid";
+  public static final String PREVIOUS_PASS_PHRASE_INVALID = "Previous_passphrase_invalid";
   /**
    * Label.
    * 
@@ -61,7 +61,7 @@ public class Tags {
    * 
    * en: Please enter your SSH passphrase.
    */
-  public static final String ENTER_SSH_PASSPHRASE = "Enter_ssh_passphrase";
+  public static final String ENTER_SSH_PASS_PHRASE = "Enter_ssh_passphrase";
   /**
    * Shown when a command is aborted.
    * 

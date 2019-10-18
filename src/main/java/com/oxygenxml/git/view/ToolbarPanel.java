@@ -240,11 +240,11 @@ public class ToolbarPanel extends JPanel {
     } catch (SSHPassphraseRequiredException e) {
       String message = null;
       if (firstRun) {
-        message = translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
+        message = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       } else {
-        message = translator.getTranslation(Tags.PREVIOUS_PASSPHRASE_INVALID) 
+        message = translator.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID) 
             + " " 
-            + translator.getTranslation(Tags.ENTER_SSH_PASSPHRASE);
+            + translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       }
 
       String passphrase = new PassphraseDialog(message).getPassphrase();
