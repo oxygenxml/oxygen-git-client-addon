@@ -26,6 +26,8 @@ import javax.swing.JDialog;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.internal.storage.file.WindowCache;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
@@ -121,6 +123,13 @@ public class GitTestBase extends JFCTestCase {
     remoteConfig.addURI(uri);
     RefSpec spec = new RefSpec("+refs/heads/*:refs/remotes/origin/*");
     remoteConfig.addFetchRefSpec(spec);
+    
+    String branchName = "master";
+    String remoteName = "origin";
+    config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
+    config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
+
+    
     remoteConfig.update(config);
     config.setString("core", null, "autocrlf", "false");
     config.save();

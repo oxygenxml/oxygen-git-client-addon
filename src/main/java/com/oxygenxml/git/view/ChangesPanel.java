@@ -1,7 +1,5 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,8 +12,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -24,10 +20,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -55,7 +49,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.jidesoft.utils.SwingWorker;
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -63,13 +57,15 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.ChangeEvent;
 import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.historycomponents.HistoryController;
+import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
@@ -181,14 +177,23 @@ public class ChangesPanel extends JPanel {
 	 * <code>true</code> if the contextual menu is showing for the resources in the tree view.
 	 */
 	private boolean isContextMenuShowing = false;
+	/**
+	 * History interface.
+	 */
+  private HistoryController historyController;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param stageController     Staging controller.
+	 * @param historyController   History interface.
 	 * @param forStagedResources  <code>true</code> if for staged resources.
 	 */
-	public ChangesPanel(StageController stageController, boolean forStagedResources) {
+	public ChangesPanel(
+	    StageController stageController, 
+	    HistoryController historyController, 
+	    boolean forStagedResources) {
+		this.historyController = historyController;
 		this.forStagedResources = forStagedResources;
 		this.stageController = stageController;
 		
@@ -448,8 +453,7 @@ public class ChangesPanel extends JPanel {
 		        if (model != null && node != null
 		            && model.isLeaf(node) && !model.getRoot().equals(node)) {
 		          FileStatus file = model.getFileByPath(stringPath);
-		          DiffPresenter diff = new DiffPresenter(file, stageController);
-		          diff.showDiff();
+		          DiffPresenter.showDiff(file, stageController);
 		        }
 		      }
 		    } else if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
@@ -594,8 +598,7 @@ public class ChangesPanel extends JPanel {
 	          GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
 	          if (model.isLeaf(node) && !model.getRoot().equals(node)) {
 	            FileStatus file = model.getFileByPath(stringPath);
-	            DiffPresenter diff = new DiffPresenter(file, stageController);
-	            diff.showDiff();
+	            DiffPresenter.showDiff(file, stageController);
 	          }
 	        }
 	      }
@@ -664,6 +667,7 @@ public class ChangesPanel extends JPanel {
           }
         },
         stageController,
+        historyController,
         forStagedResources,
         getRepositoryState());
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
@@ -835,18 +839,12 @@ public class ChangesPanel extends JPanel {
   private void updateChangeViewButton() {
     if (switchViewButton != null) {
       if (currentViewMode == ResourcesViewMode.TREE_VIEW) {
-        URL resource = getClass().getResource(ImageConstants.TABLE_VIEW);
-        if (resource != null) {
-          ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+        Icon icon = Icons.getIcon(Icons.TABLE_VIEW);
           switchViewButton.setIcon(icon);
-        }
         switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
       } else {
-        URL resource = getClass().getResource(ImageConstants.TREE_VIEW);
-        if (resource != null) {
-          ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+        Icon icon = Icons.getIcon(Icons.TREE_VIEW);
           switchViewButton.setIcon(icon);
-        }
         switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
       }
     }
@@ -949,13 +947,12 @@ public class ChangesPanel extends JPanel {
 		JToolBar toolbar = new JToolBar();
 		switchViewButton = new ToolbarButton(null, false);
 		switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
-		URL resource = currentViewMode == ResourcesViewMode.FLAT_VIEW 
-		    ? getClass().getResource(ImageConstants.TREE_VIEW)
-		    : getClass().getResource(ImageConstants.TABLE_VIEW);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
+		
+		String iconType = currentViewMode == ResourcesViewMode.FLAT_VIEW 
+		    ? Icons.TREE_VIEW
+		    : Icons.TABLE_VIEW;
+	  Icon icon = Icons.getIcon(iconType);
 		  switchViewButton.setIcon(icon);
-		}
 		toolbar.add(switchViewButton);
 		toolbar.setFloatable(false);
 		toolbar.setOpaque(false);
@@ -979,22 +976,10 @@ public class ChangesPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 3;
-		StagingResourcesTableModel fileTableModel = new StagingResourcesTableModel(stageController, forStagedResources);
 		
-		filesTable = createTable(fileTableModel);
-		filesTable.setTableHeader(null);
-		filesTable.setShowGrid(false);
+		filesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(stageController, forStagedResources), ()-> isContextMenuShowing);
 		
-		URL resource = getClass().getResource(ImageConstants.GIT_ADD_ICON);
-		if (resource != null) {
-		  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-		  int iconWidth = icon.getIconWidth();
-		  TableColumn statusCol = filesTable.getColumnModel().getColumn(StagingResourcesTableModel.FILE_STATUS_COLUMN);
-      statusCol.setPreferredWidth(iconWidth);
-		  statusCol.setMaxWidth(iconWidth + 4);
-		}
 
-		filesTable.setDefaultRenderer(Object.class, new ChangesTableCellRenderer());
 		filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent e) {
@@ -1149,6 +1134,7 @@ public class ChangesPanel extends JPanel {
           }
         },
         stageController,
+        historyController,
         forStagedResources,
         getRepositoryState());
     
@@ -1180,8 +1166,7 @@ public class ChangesPanel extends JPanel {
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 		int convertedRow = filesTable.convertRowIndexToModel(row);
 		FileStatus file = model.getUnstageFile(convertedRow);
-		DiffPresenter diff = new DiffPresenter(file, stageController);
-		diff.showDiff();
+		DiffPresenter.showDiff(file, stageController);
 	}
 
 	/**
@@ -1206,278 +1191,18 @@ public class ChangesPanel extends JPanel {
 	  }
 
 	/**
-	 * Renderer for the leafs icon in the tree, based on the git change type file
-	 * status.
-	 * 
-	 * @author Beniamin Savu
-	 *
-	 */
-	private final class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
-	  /**
-	   * Default selection color.
-	   */
-	  private final Color defaultSelectionColor = getBackgroundSelectionColor();
-	  
-	  /**
-	   * @see javax.swing.tree.DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
-	   */
-		@Override
-		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
-				int row, boolean hasFocus) {
-
-			JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-
-			URL resource = getClass().getResource(ImageConstants.FOLDER_TREE_ICON);
-			Icon icon = null;
-			if (resource != null) {
-			  icon = (Icon) imageUtilities.loadIcon(resource);
-			}
-			String toolTip = null;
-
-			StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-			TreePath treePath = tree.getPathForRow(row);
-			if (treePath != null) {
-				String path = TreeFormatter.getStringPath(treePath);
-				if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
-					FileStatus file = model.getFileByPath(path);
-					if (file != null) {
-					  GitChangeType changeType = file.getChangeType();
-					  RenderingInfo renderingInfo = getRenderingInfo(changeType);
-					  if (renderingInfo != null) {
-					    icon = renderingInfo.getIcon();
-					    toolTip = renderingInfo.getTooltip();
-					  }
-					} else {
-					  label = null;
-					}
-				}
-			}
-			
-			if (label != null) {
-			  label.setIcon(icon);
-			  label.setToolTipText(toolTip);
-
-			  // Active/inactive table selection
-			  if (sel) {
-			    if (tree.hasFocus()) {
-			      setBackgroundSelectionColor(defaultSelectionColor);
-			    } else if (!isContextMenuShowing) {
-			      setBackgroundSelectionColor(getInactiveSelectionColor(defaultSelectionColor));
-			    }
-			  }
-			}
-
-      return label;
-		}
-	}
-
-	/**
-	 * Get inactive selection color.
-	 * 
-	 * @return the color.
-	 */
-	private Color getInactiveSelectionColor(Color defaultColor) {
-	  Color inactiveBgColor = defaultColor;
-	  try {
-	    Class<?> colorProviderClass = Class.forName("ro.sync.ui.theme.SAThemeColorProvider");
-	    Object colorProvider = colorProviderClass.newInstance();
-	    Method getInactiveSelBgColorMethod = colorProviderClass.getMethod("getInactiveSelectionBgColor");
-	    int[] rgb = (int[]) getInactiveSelBgColorMethod.invoke(colorProvider);
-	    inactiveBgColor = new Color(rgb[0], rgb[1], rgb[2]);
-	  } catch (Exception e) {
-	    if (isDoubleBuffered()) {
-	      logger.debug(e, e);
-	    }
-	  }
-	  return inactiveBgColor;
-	}
-
-	/**
-	 * Renderer for the staged/unstaged tables.
-	 */
-	private final class ChangesTableCellRenderer extends DefaultTableCellRenderer {
-	  /**
-	   * @see javax.swing.table.TableCellRenderer.getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)
-	   */
-	  @Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-		    int row, int column) {
-	    Icon icon = null;
-	    String tooltipText = null;
-	    String labelText = "";
-	    
-	    JLabel tableCellRendererComponent = (JLabel) super.getTableCellRendererComponent(
-	        table, value, isSelected, hasFocus, row, column);
-	    
-	    if (value instanceof GitChangeType) {
-	      RenderingInfo renderingInfo = getRenderingInfo((GitChangeType) value);
-	      if (renderingInfo != null) {
-	        icon = renderingInfo.getIcon();
-	        tooltipText = renderingInfo.getTooltip();
-	      }
-	    } else if (value instanceof String) {
-	      tooltipText = (String) value;
-	      String fileName = tooltipText.substring(tooltipText.lastIndexOf('/') + 1);
-	      if (!fileName.equals(tooltipText)) {
-	        tooltipText = tooltipText.replace("/" + fileName, "");
-	        tooltipText = fileName + " - " + tooltipText;
-	      }
-	      labelText = (String) value;
-	    }
-	    
-	    tableCellRendererComponent.setIcon(icon);
-	    tableCellRendererComponent.setToolTipText(tooltipText);
-	    tableCellRendererComponent.setText(labelText);
-	    
-	    // Active/inactive table selection
-	    if (table.isRowSelected(row)) {
-	      if (table.hasFocus()) {
-	        tableCellRendererComponent.setBackground(table.getSelectionBackground());
-	      } else if (!isContextMenuShowing) {
-	        Color defaultColor = table.getSelectionBackground();
-	        tableCellRendererComponent.setBackground(getInactiveSelectionColor(defaultColor));
-	      }
-	    } else {
-	      tableCellRendererComponent.setBackground(table.getBackground());
-	    }
-
-	    return tableCellRendererComponent;
-	  }
-	}
-
-	/**
-	 * Get the rendering info (such as icon or tooltip text) for the given Git change type.
-	 * 
-	 * @param changeType The Git change type.
-	 * 
-	 * @return the rendering info.
-	 */
-	private RenderingInfo getRenderingInfo(GitChangeType changeType) {
-	  RenderingInfo renderingInfo = null;
-	  if (GitChangeType.ADD == changeType || GitChangeType.UNTRACKED == changeType) {
-	    renderingInfo = new RenderingInfo(
-	        getIcon(ImageConstants.GIT_ADD_ICON),
-	        translator.getTranslation(Tags.ADD_ICON_TOOLTIP));
-    } else if (GitChangeType.MODIFIED == changeType || GitChangeType.CHANGED == changeType) {
-      renderingInfo = new RenderingInfo(
-          getIcon(ImageConstants.GIT_MODIFIED_ICON),
-          translator.getTranslation(Tags.MODIFIED_ICON_TOOLTIP));
-    } else if (GitChangeType.MISSING == changeType || GitChangeType.REMOVED == changeType) {
-      renderingInfo = new RenderingInfo(
-          getIcon(ImageConstants.GIT_DELETE_ICON),
-          translator.getTranslation(Tags.DELETE_ICON_TOOLTIP));
-    } else if (GitChangeType.CONFLICT == changeType) {
-      renderingInfo = new RenderingInfo(
-          getIcon(ImageConstants.GIT_CONFLICT_ICON),
-          translator.getTranslation(Tags.CONFLICT_ICON_TOOLTIP));
-    } else if (GitChangeType.SUBMODULE == changeType) {
-      renderingInfo = new RenderingInfo(
-          getIcon(ImageConstants.GIT_SUBMODULE_FILE_ICON),
-          translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP));
-    }
-	  return renderingInfo;
-	}
-
-	/**
-	 * Get icon.
-	 *  
-	 * @param imgKey The image key.
-	 * 
-	 * @return the icon.
-	 */
-  private Icon getIcon(String imgKey) {
-    Icon toReturn = null;
-    URL resource = getClass().getResource(imgKey);
-    if (resource != null) {
-      toReturn = (Icon) imageUtilities.loadIcon(resource);
-    }
-    return toReturn;
-  }
-	
-	/**
-	 * Rendering info.
-	 */
-	private static final class RenderingInfo {
-	  /**
-	   * Icon.
-	   */
-	  private Icon icon;
-	  /**
-	   * Tootlip text.
-	   */
-	  private String tooltip;
-	  
-    /**
-     * Constructor.
-     * 
-     * @param icon     Icon.
-     * @param tooltip  Tooltip text.
-     */
-    public RenderingInfo(Icon icon, String tooltip) {
-      this.icon = icon;
-      this.tooltip = tooltip;
-    }
-    
-    /**
-     * @return the icon
-     */
-    public Icon getIcon() {
-      return icon;
-    }
-    
-    /**
-     * @return the tooltip
-     */
-    public String getTooltip() {
-      return tooltip;
-    }
-	}
-	
-	/**
 	 * @return The tree that presents the resources. 
 	 */
 	private JTree createTree() {
-	  JTree t = null;
-	  try {
-      Class<?> treeClass = getClass().getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Tree");
-      t = (JTree) treeClass.newInstance();
-    } catch (Exception e) {
-      logger.debug(e, e);
-    }
+	  JTree t = UIUtil.createTree();
 	  
-	  if (t == null) {
-	    t = new JTree();
-	  }
-	  
-	  t.setCellRenderer(new ChangesTreeCellRenderer());
+	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(stageController, null, forStagedResources, null));
 	  
     return t;
   }
 	
-	/**
-	 * @param fileTableModel The model for the table.
-	 * 
-	 * @return The table that presents the resources.
-	 */
-  private JTable createTable(StagingResourcesTableModel fileTableModel) {
-    JTable table = null;
-    try {
-      Class<?> tableClass = getClass().getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Table");
-      table = (JTable) tableClass.newInstance();
-    } catch (Exception e) {
-      logger.debug(e, e);
-    }
     
-    if (table == null) {
-      table = new JTable();
-    }
-    
-    table.setModel(fileTableModel);
-    
-    return table;
-  }
-
   /**
    * The repository changed.
    * 

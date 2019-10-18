@@ -52,7 +52,8 @@ public class FlatViewTestBase extends GitTestBase {
     refreshSupport = new PanelRefresh();
     stagingPanel = new StagingPanel(
         refreshSupport,
-        new StageController()) {
+        new StageController(),
+        null) {
       @Override
       public PushPullController createPushPullController() {
         return new PushPullController() {

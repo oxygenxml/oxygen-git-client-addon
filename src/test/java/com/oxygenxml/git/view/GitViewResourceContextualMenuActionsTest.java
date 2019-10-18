@@ -48,7 +48,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -94,7 +94,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -140,7 +140,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -185,7 +185,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -238,7 +238,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -293,7 +293,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -348,7 +348,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -394,7 +394,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -411,7 +411,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]",
+        "Discard [ENABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -440,7 +442,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -457,7 +459,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]",
+        "Discard [ENABLED]\n" + 
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -486,7 +490,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -503,7 +507,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]",
+        "Discard [ENABLED]\n" +
+        "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -531,7 +537,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -577,7 +583,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -623,7 +629,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -668,7 +674,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -685,7 +691,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]",
+        "Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -714,7 +722,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -731,7 +739,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]",
+        "Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -760,7 +770,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -777,7 +787,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]",
+        "Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -805,7 +817,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -822,7 +834,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]",
+        "Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -851,7 +865,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -868,7 +882,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]",
+        "Discard [ENABLED]\n"
+        + "Show_in_history [ENABLED]\n" + 
+        "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -897,7 +913,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -942,7 +958,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -993,7 +1009,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return Collections.emptyList();
           }
         },
-        stagingCtrl,
+        stagingCtrl, null,
         // For staged resources
         true,
         // In merging state

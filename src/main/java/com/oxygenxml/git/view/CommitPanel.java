@@ -13,10 +13,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.net.URL;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -32,7 +31,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.constants.ImageConstants;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
@@ -394,12 +393,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	public void setStatus(final RepositoryStatus status) {
 		if (RepositoryStatus.UNAVAILABLE == status) {
 			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
-			ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-			URL resource = getClass().getResource(ImageConstants.VALIDATION_ERROR);
-			if (resource != null) {
-			  ImageIcon icon = (ImageIcon) imageUtilities.loadIcon(resource);
-			  statusLabel.setIcon(icon);
-			}
+		  statusLabel.setIcon(Icons.getIcon(Icons.VALIDATION_ERROR));
 		} else if (RepositoryStatus.AVAILABLE == status) {
 		  statusLabel.setText(null);
 		  statusLabel.setIcon(null);

@@ -118,9 +118,7 @@ public class DiffPresenterTest extends GitTestBase {
     });
     
     // Diff the first WC local file.
-    DiffPresenter diffPresenter = new DiffPresenter(fileStatus, stageController);
-    
-    diffPresenter.showDiff();
+    DiffPresenter.showDiff(fileStatus, stageController);
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);
@@ -134,9 +132,8 @@ public class DiffPresenterTest extends GitTestBase {
     rightDiff = null;
     // Diff the index file.
     fileStatus = new FileStatus(GitChangeType.ADD, "test.txt");
-    diffPresenter = new DiffPresenter(fileStatus, stageController);
     
-    diffPresenter.showDiff();
+    DiffPresenter.showDiff(fileStatus, stageController);
     
     // On the left we present the Index version.
     assertEquals("git://IndexOrLastCommit/test.txt", leftDiff.toString());
@@ -211,9 +208,7 @@ public class DiffPresenterTest extends GitTestBase {
     });
     
     // Diff the first WC local file.
-    DiffPresenter diffPresenter = new DiffPresenter(fileStatus, stageController);
-    
-    diffPresenter.showDiff();
+    DiffPresenter.showDiff(fileStatus, stageController);
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);
@@ -227,9 +222,8 @@ public class DiffPresenterTest extends GitTestBase {
     rightDiff = null;
     // Diff the index file.
     fileStatus = new FileStatus(GitChangeType.CHANGED, "test.txt");
-    diffPresenter = new DiffPresenter(fileStatus, stageController);
     
-    diffPresenter.showDiff();
+    DiffPresenter.showDiff(fileStatus, stageController);
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);
@@ -292,11 +286,10 @@ public class DiffPresenterTest extends GitTestBase {
     assertEquals(SubmoduleStatusType.INITIALIZED, status.getType());
     
     // SHOW DIFF
-    DiffPresenter diffPresenter = new DiffPresenter(
+    DiffPresenter.showDiff(
         // The submodule
         gitAccess.getStagedFiles().get(1),
         Mockito.mock(StageController.class));
-    diffPresenter.showDiff();
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);

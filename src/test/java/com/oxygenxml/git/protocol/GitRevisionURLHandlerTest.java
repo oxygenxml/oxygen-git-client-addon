@@ -2,7 +2,11 @@ package com.oxygenxml.git.protocol;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
 
@@ -10,6 +14,8 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.script.RepoGenerationScript;
+import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 
 /**
  * Tests for obtaining different versions of a file ({@link VersionIdentifier}) through a protocol.
@@ -46,8 +52,7 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
     
     // Create a new file.
     File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    // Modify the newly created file.
+    file.createNewFile();    // Modify the newly created file.
     setFileContent(file, "initial content");
     
     // Add it to the index.
@@ -71,9 +76,56 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
     assertEquals("initial content", read(new URL(headVersionURL)));
   }
   
+  /**
+   * Tests the URL form that can get the file content from any revision.
+   * 
+   * @throws Exception If it fails.
+   */
   @Test
-  public void testConflict() throws Exception {
-    // TODO Use GitAccessConflictTest as inspiration.
+  public void testCommitID() throws Exception {
+    URL script = getClass().getClassLoader().getResource("scripts/file_content_script.txt");
+    
+    File wcTree = new File("target/gen/GitRevisionURLHandlerTest_testCommitID");
+    RepoGenerationScript.generateRepository(script, wcTree);
+    
+    try {
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
+
+      String indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/file1.txt";
+      assertEquals("file 1 Third commit.", read(new URL(indexVersionURL)));
+      
+      indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/file1.txt";
+      assertEquals("file 1 Third commit.", read(new URL(indexVersionURL)));
+      
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      
+      assertEquals(3, commitsCharacteristics.size());
+      
+      Iterator<CommitCharacteristics> iterator = commitsCharacteristics.iterator();
+      CommitCharacteristics revCommit = iterator.next();
+      
+      assertEquals("Third.", revCommit.getCommitMessage());
+      indexVersionURL = "git://" + revCommit.getCommitId() + "/file1.txt";
+      assertEquals("file 1 Third commit.", read(new URL(indexVersionURL)));
+      
+      revCommit = iterator.next();
+      assertEquals("Second.", revCommit.getCommitMessage());
+      indexVersionURL = "git://" + revCommit.getCommitId() + "/file1.txt";
+      assertEquals("file 1 Second commit.", read(new URL(indexVersionURL)));
+      
+      revCommit = iterator.next();
+      assertEquals("First commit.", revCommit.getCommitMessage());
+      indexVersionURL = "git://" + revCommit.getCommitId() + "/file1.txt";
+      assertEquals("file 1 First commit.", read(new URL(indexVersionURL)));
+      
+      
+      
+      
+    } finally {
+      GitAccess.getInstance().closeRepo();
+      
+      FileUtils.deleteDirectory(wcTree);
+    }
   }
 
 }

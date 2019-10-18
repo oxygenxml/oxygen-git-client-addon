@@ -48,6 +48,7 @@ public class FlatViewTest extends FlatViewTestBase {
       
       JButton ssButton = unstagedChangesPanel.getChangeSelectedButton();
       filesTable.getSelectionModel().setSelectionInterval(index, index);
+      flushAWT();
       
       assertTrue(ssButton.isEnabled());
       ssButton.doClick();
@@ -57,9 +58,13 @@ public class FlatViewTest extends FlatViewTestBase {
       
       JButton usButton = stagedChangesPanel.getChangeSelectedButton();
       stFilesTable.getSelectionModel().setSelectionInterval(index, index);
+      flushAWT();
+      
       assertTrue(usButton.isEnabled());
       usButton.doClick();
     }
+    
+    flushAWT();
   }
   
   /**
@@ -647,7 +652,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
     
     // ================= Set submodule ====================
-    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport) {
+    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null) {
       @Override
       boolean gitRepoHasSubmodules() {
         return true;

@@ -58,6 +58,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     TreePath treePath = TreeFormatter.getTreePath(filesTree.getModel(), fileToSelect);
     filesTree.getSelectionModel().setSelectionPath(treePath);
+    flushAWT();
     
     assertTrue(ssButton.isEnabled());
     ssButton.doClick();

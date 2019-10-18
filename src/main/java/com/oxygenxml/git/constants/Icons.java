@@ -1,11 +1,17 @@
 package com.oxygenxml.git.constants;
 
+import java.net.URL;
+
+import javax.swing.Icon;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+
 /**
  * Image utility class.
  */
-public class ImageConstants {
+public class Icons {
   
-  private ImageConstants() {
+  private Icons() {
     // Nothing.
   }
 
@@ -27,4 +33,24 @@ public class ImageConstants {
 	public static final String VALIDATION_ERROR = "/images/ValidationError12.png";
 	public static final String WARNING_ICON = "/images/Warning32@2x.png";
 	public static final String LOADING_ICON = "/images/Loading16.gif";
+	// TODO change icon for Git history
+	public static final String GIT_HISTORY = "/images/History16.png";
+	public static final String REFRESH_ICON = "/images/Refresh16.png";
+	
+
+  /**
+   * Get icon.
+   *  
+   * @param imgKey The image key.
+   * 
+   * @return the icon.
+   */
+  public static Icon getIcon(String imgKey) {
+    Icon toReturn = null;
+    URL resource = Icons.class.getResource(imgKey);
+    if (resource != null && PluginWorkspaceProvider.getPluginWorkspace() != null && PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities() != null) {
+      toReturn = (Icon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
+    }
+    return toReturn;
+  }
 }
