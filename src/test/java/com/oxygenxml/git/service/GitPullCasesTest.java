@@ -455,12 +455,10 @@ public class GitPullCasesTest extends GitTestBase {
     String repoURI = new File("target/test-resources/GitPullCasesTest/testPullRebase-remote/.git/")
         .toURI()
         .toString();
-    String osName = System.getProperty("os.name");
-    osName = osName.toUpperCase();
-    boolean isWin = osName.startsWith("WIN");
     if (repoURI.startsWith("file:/")
         && !repoURI.startsWith("file:///")
-        && isWin) {
+        // Only on Windows
+        && System.getProperty("os.name").toUpperCase().startsWith("WIN")) {
       repoURI = "file:///" + repoURI.substring("file:/".length());
     }
     assertEquals(
