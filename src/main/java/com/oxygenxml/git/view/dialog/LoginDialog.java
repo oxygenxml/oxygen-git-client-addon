@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
@@ -76,7 +77,7 @@ public class LoginDialog extends OKCancelDialog {
 
 		this.setMinimumSize(new Dimension(250, 200));
 		this.setResizable(true);
-		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.pack();
 		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setVisible(true);

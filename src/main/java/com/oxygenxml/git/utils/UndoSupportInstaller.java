@@ -1,6 +1,7 @@
 package com.oxygenxml.git.utils;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -71,7 +72,7 @@ public class UndoSupportInstaller {
   private static class UndoManager extends AbstractUndoableEdit implements UndoableEditListener {
   	String lastEditName = null;
   	int lastOffset = -1;
-  	ArrayList<MyCompoundEdit> edits = new ArrayList<>();
+  	private ArrayList<MyCompoundEdit> edits = new ArrayList<>();
   	MyCompoundEdit current;
   	int pointer = -1;
   	@Override
@@ -178,7 +179,7 @@ public class UndoSupportInstaller {
   
   	// Bind the undo action to ctl-Z
   	String osName = System.getProperty("os.name").toLowerCase();
-  	int modifier = osName.contains("mac") ? KeyEvent.META_DOWN_MASK : KeyEvent.CTRL_DOWN_MASK;
+  	int modifier = osName.contains("mac") ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
   	
   	commitMessage.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, modifier), "Undo");
   
