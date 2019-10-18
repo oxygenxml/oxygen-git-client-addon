@@ -175,7 +175,7 @@ public class GitHistoryTest extends GitTestBase {
   /**
    * Maps Git revision IDs into predictable values that can be asserted in a test.
    */
-  private Map<String, String> idMapper = new HashMap<String, String>();
+  private Map<String, String> idMapper = new HashMap<>();
   /**
    * Id generation counter.
    */
@@ -323,7 +323,7 @@ public class GitHistoryTest extends GitTestBase {
   
       String expected = 
           "[ Another commit on master. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
-          "[ Merge branch 'feature' , {date} , AlexJitianu <jitianualex83@gmail.com> , 2 , AlexJitianu , [3, 4] ]\n" + 
+          "[ Merge branch 'feature' , {date} , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3, 4] ]\n" + 
           "[ Changed on master branch. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [5] ]\n" + 
           "[ Changed on feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [6] ]\n" + 
           "[ Feature branch commit. , {date} , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [5] ]\n" + 
@@ -386,6 +386,7 @@ public class GitHistoryTest extends GitTestBase {
       bindLocalToRemote(localRepository, remoteRepository);
       
       GitAccess.getInstance().setRepositorySynchronously(localRepository.getWorkTree().getAbsolutePath());
+      
       GitAccess.getInstance().push("Alex", "");
       
       // Make the remote evolve.
@@ -394,6 +395,8 @@ public class GitHistoryTest extends GitTestBase {
       GitAccess.getInstance().setRepositorySynchronously(remoteRepository.getWorkTree().getAbsolutePath());
       FileUtils.writeStringToFile(new File(remoteRepository.getWorkTree(), "root.txt"), "changed on the remote" , "UTF-8");
       GitAccess.getInstance().add(new FileStatus(GitChangeType.MODIFIED, "root.txt"));
+      
+      RepoGenerationScript.setUserCredentials();
       GitAccess.getInstance().commit("Change on the remote.");
 
       // Switch to local.
@@ -406,7 +409,7 @@ public class GitHistoryTest extends GitTestBase {
       System.out.println(dump);
 
       String expected = 
-          "[ Change on the remote. , {date} , AlexJitianu <jitianualex83@gmail.com> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Change on the remote. , {date} , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
           "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
           "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n" + 

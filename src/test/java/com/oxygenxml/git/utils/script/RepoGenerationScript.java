@@ -23,9 +23,11 @@ import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 
 /**
  * A script for creating/changing a Git repository. 
@@ -96,6 +98,21 @@ public class RepoGenerationScript {
   private static void initGit(File wcTree) {
     wcTree.mkdirs();
     GitAccess.getInstance().createNewRepository(wcTree.getAbsolutePath());
+    
+    setUserCredentials();
+  }
+
+  public static void setUserCredentials() {
+    try {
+      StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
+      
+      config.setString("user", null, "name", "AlexJitianu");
+      config.setString("user", null, "email", "alex_jitianu@sync.ro");
+      
+      config.save();
+    } catch (NoRepositorySelected | IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -149,6 +166,8 @@ public class RepoGenerationScript {
       });
       
       try {
+        setUserCredentials();
+        
         GitAccess.getInstance().getGitForTests().commit().setAuthor("Alex", "alex_jitianu@sync.ro").setMessage(ch.message).call();
       } catch (GitAPIException e) {
         logger.error(e, e);
