@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -452,9 +453,11 @@ public class GitPullCasesTest extends GitTestBase {
     for (RevCommit commit : commits) {
       sb.append("    ").append(commit.getFullMessage()).append("\n");
     }
+    URI repoURI = new File("target/test-resources/GitPullCasesTest/testPullRebase-remote/.git/").toURI();
+    String repoURIString = repoURI.toString().replace("file:/", "file:///");
     assertEquals(
         "Commits from last to first:\n" + 
-        "    Merge branch 'master' of file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitPullCasesTest/testPullRebase-remote/.git/\n" + 
+        "    Merge branch 'master' of " + repoURIString + "\n" + 
         "    Edited last line\n" + 
         "    Edited first line\n" + 
         "    First commit\n" + 
