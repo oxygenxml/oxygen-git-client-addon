@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -42,7 +43,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.ADD, "test.xml"));
             return fileStatuses;
           }
@@ -50,21 +51,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
+        "Open_In_Compare [ENABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -87,7 +88,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.ADD, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.ADD, "test2.xml"));
             return fileStatuses;
@@ -96,21 +97,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -133,7 +134,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.ADD, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.CHANGED, "test2.xml"));
             return fileStatuses;
@@ -142,21 +143,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -179,7 +180,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.CHANGED, "test.xml"));
             return fileStatuses;
           }
@@ -187,21 +188,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
+        "Open_In_Compare [ENABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -232,7 +233,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.CONFLICT, "test.xml"));
             return fileStatuses;
           }
@@ -241,21 +242,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         // For staged resources
         true,
         // In merging state
-        true);
+        RepositoryState.MERGING);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Unstage [DISABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [ENABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
+        "Open_In_Compare [ENABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Unstage [DISABLED]\n" + 
+        "Resolve_Conflict [ENABLED]\n" + 
+        "  Open_In_Compare [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [ENABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [ENABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [ENABLED]\n" + 
+        "  Resolve_Using_Mine [ENABLED]\n" + 
+        "  Resolve_Using_Theirs [ENABLED]\n" + 
+        "  Mark_Resolved [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
-        "Contextual_Menu_Discard [DISABLED]",
+        "  Restart_Merge [ENABLED]\n" + 
+        "Discard [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -286,7 +287,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.CONFLICT, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.CONFLICT, "test2.xml"));
             return fileStatuses;
@@ -296,21 +297,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         // For staged resources
         true,
         // In merging state
-        true);
+        RepositoryState.MERGING);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Unstage [DISABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [ENABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Unstage [DISABLED]\n" + 
+        "Resolve_Conflict [ENABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [ENABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [ENABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [ENABLED]\n" + 
+        "  Resolve_Using_Mine [ENABLED]\n" + 
+        "  Resolve_Using_Theirs [ENABLED]\n" + 
+        "  Mark_Resolved [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
-        "Contextual_Menu_Discard [DISABLED]",
+        "  Restart_Merge [ENABLED]\n" + 
+        "Discard [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -341,7 +342,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.CONFLICT, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.ADD, "test2.xml"));
             return fileStatuses;
@@ -351,21 +352,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         // For staged resources
         true,
         // In merging state
-        true);
+        RepositoryState.MERGING);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Unstage [DISABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [ENABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Unstage [DISABLED]\n" + 
+        "Resolve_Conflict [ENABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
-        "Contextual_Menu_Discard [DISABLED]",
+        "  Restart_Merge [ENABLED]\n" + 
+        "Discard [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -388,7 +389,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.MISSING, "test.xml"));
             return fileStatuses;
           }
@@ -396,21 +397,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For unstaged resources
         false,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
-        "Contextual_Menu_Open [DISABLED]\n" + 
-        "Contextual_Menu_Stage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
+        "Open_In_Compare [ENABLED]\n" + 
+        "Open [DISABLED]\n" + 
+        "Stage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]\n" + 
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]\n" + 
         "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
@@ -435,7 +436,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.MISSING, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.MISSING, "test2.xml"));
             return fileStatuses;
@@ -444,21 +445,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For unstaged resources
         false,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [DISABLED]\n" + 
-        "Contextual_Menu_Stage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [DISABLED]\n" + 
+        "Stage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]\n" + 
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]\n" + 
         "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
@@ -483,7 +484,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.MISSING, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.UNTRACKED, "test2.xml"));
             return fileStatuses;
@@ -492,22 +493,22 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For unstaged resources
         false,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [DISABLED]\n" + 
-        "Contextual_Menu_Stage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [DISABLED]\n" + 
+        "Stage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]\n"
-        + "Show_in_history [ENABLED]\n" + 
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]\n" +
+        "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -531,7 +532,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.REMOVED, "test.xml"));
             return fileStatuses;
           }
@@ -539,21 +540,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
-        "Contextual_Menu_Open [DISABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
+        "Open_In_Compare [ENABLED]\n" + 
+        "Open [DISABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -576,7 +577,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.REMOVED, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.REMOVED, "test2.xml"));
             return fileStatuses;
@@ -585,21 +586,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [DISABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [DISABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -622,7 +623,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.REMOVED, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.CHANGED, "test2.xml"));
             return fileStatuses;
@@ -631,21 +632,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [DISABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [DISABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -668,7 +669,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.UNTRACKED, "test.xml"));
             return fileStatuses;
           }
@@ -676,21 +677,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For unstaged resources
         false,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Stage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
+        "Open_In_Compare [ENABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Stage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]\n"
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]\n"
         + "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
@@ -715,7 +716,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.UNTRACKED, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.UNTRACKED, "test2.xml"));
             return fileStatuses;
@@ -724,21 +725,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For unstaged resources
         false,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Stage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Stage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]\n"
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]\n"
         + "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
@@ -763,7 +764,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.UNTRACKED, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.MODIFIED, "test2.xml"));
             return fileStatuses;
@@ -772,21 +773,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For unstaged resources
         false,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Stage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Stage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]\n"
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]\n"
         + "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
@@ -811,7 +812,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.MODIFIED, "test2.xml"));
             return fileStatuses;
           }
@@ -819,21 +820,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For unstaged resources
         false,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Stage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
+        "Open_In_Compare [ENABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Stage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]\n"
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]\n"
         + "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
@@ -858,7 +859,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.MODIFIED, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.MODIFIED, "test2.xml"));
             return fileStatuses;
@@ -867,21 +868,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For unstaged resources
         false,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Stage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Stage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]\n"
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]\n"
         + "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
@@ -906,7 +907,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.CHANGED, "test.xml"));
             fileStatuses.add(new FileStatus(GitChangeType.CHANGED, "test2.xml"));
             return fileStatuses;
@@ -915,21 +916,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [ENABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -952,7 +953,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
           
           @Override
           public List<FileStatus> getAllSelectedResources() {
-            List<FileStatus> fileStatuses = new ArrayList<FileStatus>();
+            List<FileStatus> fileStatuses = new ArrayList<>();
             fileStatuses.add(new FileStatus(GitChangeType.SUBMODULE, "test.xml"));
             return fileStatuses;
           }
@@ -960,21 +961,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         stagingCtrl, null,
         // For staged resources
         true,
-        false);
+        RepositoryState.SAFE);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
-        "Contextual_Menu_Open [DISABLED]\n" + 
-        "Contextual_Menu_Unstage [ENABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [DISABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [ENABLED]\n" + 
+        "Open_In_Compare [ENABLED]\n" + 
+        "Open [DISABLED]\n" + 
+        "Unstage [ENABLED]\n" + 
+        "Resolve_Conflict [DISABLED]\n" + 
+        "  Open_In_Compare [ENABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [DISABLED]\n" + 
-        "Contextual_Menu_Discard [ENABLED]",
+        "  Restart_Merge [DISABLED]\n" + 
+        "Discard [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -1012,21 +1013,21 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         // For staged resources
         true,
         // In merging state
-        true);
+        RepositoryState.MERGING);
     
     assertEquals("\n" + 
-        "Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
-        "Contextual_Menu_Open [DISABLED]\n" + 
-        "Contextual_Menu_Unstage [DISABLED]\n" + 
-        "Contextual_Menu_Resolve_Conflict [ENABLED]\n" + 
-        "  Contextual_Menu_Open_In_Compare [DISABLED]\n" + 
+        "Open_In_Compare [DISABLED]\n" + 
+        "Open [DISABLED]\n" + 
+        "Unstage [DISABLED]\n" + 
+        "Resolve_Conflict [ENABLED]\n" + 
+        "  Open_In_Compare [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Resolve_Using_Mine [DISABLED]\n" + 
-        "  Contextual_Menu_Resolve_Using_Theirs [DISABLED]\n" + 
-        "  Contextual_Menu_Mark_Resolved [DISABLED]\n" + 
+        "  Resolve_Using_Mine [DISABLED]\n" + 
+        "  Resolve_Using_Theirs [DISABLED]\n" + 
+        "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
-        "  Contextual_Menu_Restart_Merge [ENABLED]\n" + 
-        "Contextual_Menu_Discard [DISABLED]",
+        "  Restart_Merge [ENABLED]\n" + 
+        "Discard [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   

@@ -473,7 +473,7 @@ public class ChangesPanel extends JPanel {
 		  }
 		});
 
-		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_MIN_HEIGHT));
 	}
 
 	/**
@@ -645,22 +645,6 @@ public class ChangesPanel extends JPanel {
 	  return repo;
 	}
 	
-	/**
-   * Check if the repository is in merging state.
-   * 
-   * @return <code>true</code> if the repository is in merging state.
-   */
-	private boolean isRepoInMergingState() {
-	  boolean toReturn = false;
-	  Repository repo = getCurrentRepository();
-	  if (repo != null) {
-	    RepositoryState repositoryState = repo.getRepositoryState();
-	    toReturn = repositoryState == RepositoryState.MERGING_RESOLVED
-	        || repositoryState == RepositoryState.MERGING;
-	  }
-	  return toReturn;
-	}
-  
 	 /**
    * Show contextual menu
    * 
@@ -685,7 +669,7 @@ public class ChangesPanel extends JPanel {
         stageController,
         historyController,
         forStagedResources,
-        isRepoInMergingState());
+        getRepositoryState());
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -951,7 +935,7 @@ public class ChangesPanel extends JPanel {
 	 *          - the constraints used for this component
 	 */
 	private void addSwitchViewButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+		gbc.insets = new Insets(0, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
@@ -984,7 +968,7 @@ public class ChangesPanel extends JPanel {
 	 */
 	private void addFilesPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+				0, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
@@ -1152,7 +1136,7 @@ public class ChangesPanel extends JPanel {
         stageController,
         historyController,
         forStagedResources,
-        isRepoInMergingState());
+        getRepositoryState());
     
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override

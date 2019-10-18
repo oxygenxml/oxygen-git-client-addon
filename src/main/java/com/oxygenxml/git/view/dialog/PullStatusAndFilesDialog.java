@@ -24,16 +24,19 @@ import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
- * A dialog that is shown when the pull is successful but has conflicts. It
- * shows an infromation message and the files that are in conflict
+ * Show pull status and corresponding files.
  * 
  * @author Beniamin Savu
  *
  */
-public class PullWithConflictsDialog extends OKCancelDialog {
+public class PullStatusAndFilesDialog extends OKCancelDialog {
 
-	public PullWithConflictsDialog(String title, Collection<String> conflictFiles, String message) {
-		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), title, true);
+	public PullStatusAndFilesDialog(String title, Collection<String> conflictFiles, String message) {
+		super(
+		    PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
+		    title,
+		    true);
 		JLabel label = new JLabel("<html>" + message + "</html>");
 
 
@@ -56,7 +59,7 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JLabel iconLabel = new JLabel();
-		iconLabel.setIcon(Icons.getIcon(Icons.WARNING_ICON));
+        iconLabel.setIcon(Icons.getIcon(Icons.WARNING_ICON));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -97,7 +100,9 @@ public class PullWithConflictsDialog extends OKCancelDialog {
 		this.setMinimumSize(new Dimension(420, 220));
 		this.setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
 		this.pack();
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
+		  this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		}
 		this.setVisible(true);
 	}
 

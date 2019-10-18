@@ -13,7 +13,7 @@ import org.junit.Test;
 
 public class FileHelperTest {
 
-	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resource/FileHelperTest/local";
+	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/FileHelperTest/local";
 	
 	@Test
 	public void testIsNotGitRepositoery() throws IOException{

@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.OxygenGitPlugin;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+import com.oxygenxml.git.view.event.PullType;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -140,7 +141,7 @@ public class OptionsManager {
     if (OxygenGitPlugin.getInstance() != null) {
       baseDir = OxygenGitPlugin.getInstance().getDescriptor().getBaseDir();
     } else {
-      baseDir = new File("");
+      baseDir = new File("src/test/resources");
     }
     return new File(baseDir, OPTIONS_FILENAME_FOR_TESTS);
   }
@@ -186,6 +187,16 @@ public class OptionsManager {
   public void saveStagedResViewMode(ResourcesViewMode stagedResViewMode) {
     loadOptions();
     options.setStagedResViewMode(stagedResViewMode);
+  }
+  
+  /**
+   * Save the default pull type: with merge or with rebase.
+   * 
+   * @param pullType The pull type.
+   */
+  public void saveDefaultPullType(PullType pullType) {
+    loadOptions();
+    options.setDefaultPullType(pullType);
   }
   
   /**
@@ -418,6 +429,15 @@ public class OptionsManager {
     loadOptions();
     
     return options.getStagedResViewMode();
+  }
+  
+  /**
+   * @return The default pull type.
+   */
+  public PullType getDefaultPullType() {
+    loadOptions();
+    
+    return options.getDefaultPullType();
   }
   
   /**

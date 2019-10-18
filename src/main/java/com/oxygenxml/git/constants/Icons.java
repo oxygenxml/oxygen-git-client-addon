@@ -7,10 +7,7 @@ import javax.swing.Icon;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
- * All image locations that are used in this plugin
- * 
- * @author Beniamin Savu 
- *
+ * Image utility class.
  */
 public class Icons {
   

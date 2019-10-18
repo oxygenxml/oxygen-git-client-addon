@@ -96,6 +96,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	    // Check the current repository.
 	    try {
 	      if (gitAccess.getRepository() != null) {
+	        stagingPanel.updateRebasePanelVisibilityBasedOnRepoState();
 	        GitStatus status = GitAccess.getInstance().getStatus();
 	        updateFiles(
 	            stagingPanel.getUnstagedChangesPanel(), 

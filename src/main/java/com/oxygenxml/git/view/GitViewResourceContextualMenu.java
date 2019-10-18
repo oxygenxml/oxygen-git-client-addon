@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
@@ -7,9 +8,11 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
@@ -57,13 +60,14 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	private GitAccess gitAccess = GitAccess.getInstance();
 	
 	/**
-	 * <code>true</code> if the repository is in merging state.
+	 * Repository state.
 	 */
-	private boolean isRepoInMergingState;
+	private RepositoryState repoState;
+
 	/**
 	 * History interface.
 	 */
-  private HistoryController historyController;
+    private HistoryController historyController;
 
   /**
    * Constructor.
@@ -71,18 +75,19 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
    * @param selResProvider        Provides the resources that will be processed by the menu's actions. 
    * @param stageController       Staging controller.
    * @param historyController     History interface.
-   * @param isStage               <code>true</code> if we create the menu for the staged resources.
-	 * @param isRepoInMergingState  <code>true</code> if the repository is in merging state.
+   * @param isStage               <code>true</code> if we create the menu for the staged resources,
+   *                                  <code>false</code> for the unstaged resources.
+	 * @param repoState             Repository state.
    */
   public GitViewResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
       StageController stageController,
       HistoryController historyController,
       boolean isStage,
-      boolean isRepoInMergingState) {
+      RepositoryState repoState) {
     this.stageController = stageController;
     this.historyController = historyController;
-    this.isRepoInMergingState = isRepoInMergingState;
+    this.repoState = repoState;
     populateMenu(selResProvider, isStage);
   }
 
@@ -95,13 +100,13 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	private void populateMenu(
 	    final SelectedResourcesProvider selResProvider, 
 	    final boolean forStagedRes) {
-	  if (!selResProvider.getAllSelectedResources().isEmpty() || isRepoInMergingState) {
+	  if (!selResProvider.getAllSelectedResources().isEmpty() || isRepoMergingOrRebasing()) {
 	    final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
 	    final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
 
 	    // "Open in compare editor" action
 	    AbstractAction showDiffAction = new AbstractAction(
-	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE)) {
+	        translator.getTranslation(Tags.OPEN_IN_COMPARE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
 	        DiffPresenter.showDiff(selectedLeaves.get(0), stageController);
@@ -110,7 +115,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    // "Open" action
 	    AbstractAction openAction = new AbstractAction(
-	        translator.getTranslation(Tags.CONTEXTUAL_MENU_OPEN)) {
+	        translator.getTranslation(Tags.OPEN)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
 	        for (FileStatus file : allSelectedResources) {
@@ -144,7 +149,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    // Resolve using "mine"
 	    AbstractAction resolveUsingMineAction = new AbstractAction(
-	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_MINE)) {
+	        translator.getTranslation(Tags.RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
 	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_MINE);
@@ -153,7 +158,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    // Resolve using "theirs"
 	    AbstractAction resolveUsingTheirsAction = new AbstractAction(
-	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_USING_THEIRS)) {
+	        translator.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
 	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_THEIRS);
@@ -162,7 +167,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    // "Mark resolved" action
 	    AbstractAction markResolvedAction = new AbstractAction(
-	        translator.getTranslation(Tags.CONTEXTUAL_MENU_MARK_RESOLVED)) {
+	        translator.getTranslation(Tags.MARK_RESOLVED)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
 	        stageController.doGitCommand(allSelectedResources, GitCommand.STAGE);
@@ -171,10 +176,18 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    // "Restart Merge" action
 	    AbstractAction restartMergeAction = new AbstractAction(
-	        translator.getTranslation(Tags.CONTEXTUAL_MENU_RESTART_MERGE)) {
+	        translator.getTranslation(Tags.RESTART_MERGE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        gitAccess.restartMerge();
+	        int result = JOptionPane.showConfirmDialog(
+	            (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+	            translator.getTranslation(Tags.RESTART_MERGE_CONFIRMATION),
+	            translator.getTranslation(Tags.RESTART_MERGE),
+	            JOptionPane.YES_NO_OPTION,
+	            JOptionPane.WARNING_MESSAGE);
+	        if (result == JOptionPane.YES_OPTION) {
+	          gitAccess.restartMerge();
+	        }
 	      }
 	    };
 	    
@@ -183,7 +196,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    // Resolve Conflict
 	    JMenu resolveConflict = new JMenu();
-	    resolveConflict.setText(translator.getTranslation(Tags.CONTEXTUAL_MENU_RESOLVE_CONFLICT));
+	    resolveConflict.setText(translator.getTranslation(Tags.RESOLVE_CONFLICT));
 	    resolveConflict.add(showDiffAction);
 	    resolveConflict.addSeparator();
 	    resolveConflict.add(resolveUsingMineAction);
@@ -198,7 +211,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    this.add(stageUnstageAction);
 	    this.add(resolveConflict);
 	    this.add(discardAction);
-	    
+
 	    if (!forStagedRes) {
 	      AbstractAction historyAction = new AbstractAction(translator.getTranslation(Tags.SHOW_IN_HISTORY)) {
 	        @Override
@@ -253,19 +266,29 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    showDiffAction.setEnabled(selectedLeaves.size() == 1);
 	    openAction.setEnabled(!selectionContainsDeletions && !selectionContainsSubmodule && !allSelectedResources.isEmpty());
 	    stageUnstageAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
-	    resolveConflict.setEnabled(isRepoInMergingState);
+	    resolveConflict.setEnabled(isRepoMergingOrRebasing());
 	    resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 	    resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 	    markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
-	    restartMergeAction.setEnabled(isRepoInMergingState);
+	    restartMergeAction.setEnabled(isRepoMergingOrRebasing());
 	    discardAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
 	  }
 	}
 	
-	/**
-   * @param inMergingState <code>true</code> if the repository is in merging state.
+	 /**
+   * Get repo state
+   * 
+   * @return <code>true</code> if the repository merging or rebasing.
    */
-  void setRepoInMergingState(boolean inMergingState) {
-    isRepoInMergingState = inMergingState;
+  private boolean isRepoMergingOrRebasing() {
+    boolean toReturn = false;
+    if (repoState != null) {
+      toReturn = repoState == RepositoryState.MERGING
+          || repoState == RepositoryState.MERGING_RESOLVED
+          || repoState == RepositoryState.REBASING
+          || repoState == RepositoryState.REBASING_MERGE
+          || repoState == RepositoryState.REBASING_REBASING;
+    }
+    return toReturn;
   }
 }

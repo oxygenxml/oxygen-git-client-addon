@@ -59,13 +59,13 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.DiffPresenter;
+import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
-import ro.sync.ui.hidpi.RetinaDetector;
 
 /**
  * Presents the commits for a given resource. 
@@ -279,7 +279,7 @@ public class HistoryPanel extends JPanel {
    * @return The action that will open the file when invoked.
    */
   private AbstractAction createOpenFileAction(String revisionID, String filePath, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_OPEN);
+    String actionName = Translator.getInstance().getTranslation(Tags.OPEN);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
       actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
@@ -356,7 +356,7 @@ public class HistoryPanel extends JPanel {
     } else {
       // Uncommitted changes. Compare between local and HEAD.
       jPopupMenu.add(new AbstractAction(
-          Translator.getInstance().getTranslation(Tags.CONTEXTUAL_MENU_OPEN_IN_COMPARE)) {
+          Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           DiffPresenter.showDiff(fileStatus, stageController);
@@ -610,8 +610,8 @@ public class HistoryPanel extends JPanel {
    */
   public static int scaleColumnsWidth(int width) {
     float scalingFactor = (float) 1.0;
-    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
-      scalingFactor = RetinaDetector.getInstance().getScalingFactor();
+    if (HiDPIUtil.isRetinaNoImplicitSupport()) {
+      scalingFactor = HiDPIUtil.getScalingFactor();
     }
     
     return (int) (scalingFactor * width);

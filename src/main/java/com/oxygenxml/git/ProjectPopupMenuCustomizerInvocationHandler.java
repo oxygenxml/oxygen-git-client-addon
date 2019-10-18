@@ -2,11 +2,9 @@ package com.oxygenxml.git;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
@@ -15,8 +13,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
@@ -69,14 +65,12 @@ public class ProjectPopupMenuCustomizerInvocationHandler implements java.lang.re
 	    // Proceed only if the selected file pertain to a Git repository
 	    if (areSelectedFilesFromGitRepo()) {
 	      projectContextMenu.addSeparator();
-	      JMenu gitMenu = new JMenu(translator.getTranslation(Tags.PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM));
-	      
-	      Icon icon = Icons.getIcon(Icons.GIT_ICON);
+	      JMenu gitMenu = new JMenu(translator.getTranslation(Tags.GIT));
+        Icon icon = Icons.getIcon(Icons.GIT_ICON);
 	      gitMenu.setIcon(icon);
-	      
 	      for (AbstractAction action : gitActionsProvider.getActionsForProjectViewSelection()) {
-          gitMenu.add(action);
-        }
+            gitMenu.add(action);
+          }
 	      projectContextMenu.add(gitMenu);
 	    }
 	  }

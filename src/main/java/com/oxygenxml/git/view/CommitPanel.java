@@ -36,6 +36,7 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -136,8 +137,8 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		addCommitButton(gbc);
 
 		addCommitButtonListener();
-		this.setPreferredSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_HEIGHT));
-		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_HEIGHT));
+		this.setPreferredSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_MIN_HEIGHT));
 	}
 
 	private void addCommitButtonListener() {
@@ -172,7 +173,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 
 	private void addLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+				0, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;
@@ -184,11 +185,11 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	}
 
 	private void addPreviouslyMessagesComboBox(GridBagConstraints gbc) {
-		gbc.insets = new Insets(
-		    UIConstants.COMPONENT_TOP_PADDING, 
-		    UIConstants.COMPONENT_LEFT_PADDING,
-			UIConstants.COMPONENT_BOTTOM_PADDING, 
-			UIConstants.COMPONENT_RIGHT_PADDING);
+	  gbc.insets = new Insets(
+	      UIConstants.COMPONENT_TOP_PADDING, 
+	      UIConstants.COMPONENT_LEFT_PADDING,
+	      3, 
+	      UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
@@ -299,7 +300,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	}
 
 	private void addCommitButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+		gbc.insets = new Insets(0, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
@@ -335,12 +336,13 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
             String message = null;
             @Override
             protected Void doInBackground() throws Exception {
+              GitStatus status = gitAccess.getStatus();
               if (repositoryState == RepositoryState.MERGING_RESOLVED
-                  && gitAccess.getStagedFiles().isEmpty()
-                  && gitAccess.getUnstagedFiles().isEmpty()) {
+                  && status.getStagedFiles().isEmpty()
+                  && status.getUnstagedFiles().isEmpty()) {
                 enable = true;
                 message = translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE);
-              } else if (!gitAccess.getStagedFiles().isEmpty()) {
+              } else if (!status.getStagedFiles().isEmpty()) {
                 enable = true;
               }
               return null;

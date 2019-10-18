@@ -101,7 +101,7 @@ public class GitMenuActionsProvider {
    * Create the "Git Diff" action.
    */
   private void createGitDiffAction() {
-    gitDiffAction = new AbstractAction(translator.getTranslation(Tags.PROJECT_VIEW_GIT_DIFF_CONTEXTUAL_MENU_ITEM)) {
+    gitDiffAction = new AbstractAction(translator.getTranslation(Tags.GIT)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
@@ -144,7 +144,7 @@ public class GitMenuActionsProvider {
    * Create the "Commit" action.
    */
   private void createCommitAction() {
-    commitAction = new AbstractAction(translator.getTranslation(Tags.PROJECT_VIEW_COMMIT_CONTEXTUAL_MENU_ITEM)) {
+    commitAction = new AbstractAction(translator.getTranslation(Tags.COMMIT)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         pluginWorkspaceAccess.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true);

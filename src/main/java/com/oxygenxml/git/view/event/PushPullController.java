@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.event;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -8,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
@@ -18,9 +21,12 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PushResponse;
+import com.oxygenxml.git.service.RebaseConflictsException;
+import com.oxygenxml.git.service.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.PullWithConflictsDialog;
+import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
+import com.oxygenxml.git.view.dialog.PullStatusAndFilesDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -59,34 +65,48 @@ public class PushPullController implements Subject<PushPullEvent> {
   private ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(1);
 
 	/**
-	 * Creates a new Thread to do the action depending on the given command(Push
-	 * or Pull) so that the application will not freeze.
+	 * Execute an push or pull action, depending on the given command.	 * 
 	 * 
+	 * @param command The command runnable to execute.
 	 * 
-	 * @param command
-	 *          - The command to execute
-	 * @return The thread that executes the command.
+	 * @return The result of the operation execution.
 	 */
-	public Future<?> execute(final Command command) {
+	private Future<?> execute(String message, ExecuteCommandRunnable command) {
 	  if (executor.isShutdown()) {
 	    // A close event was canceled. Create a new executor.
 	    executor = new ScheduledThreadPoolExecutor(1);
 	  }
 	  
-		String message = "";
-		if (command == Command.PUSH) {
-			message = translator.getTranslation(Tags.PUSH_IN_PROGRESS);
-		} else {
-			message = translator.getTranslation(Tags.PULL_IN_PROGRESS);
-		}
-		
 		// Notify push about to start.
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
 		notifyObservers(pushPullEvent);
 		
-		return executor.submit(new ExecuteCommandRunnable(command));
+		return executor.submit(command);
 	}
-
+	
+	/**
+	 * Push.
+	 */
+	public Future<?> push() {
+	  return execute(translator.getTranslation(Tags.PUSH_IN_PROGRESS), new ExecutePushRunnable());
+	}
+	
+	/**
+	 * Pull.
+	 */
+	public Future<?> pull() {
+    return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(PullType.MERGE_FF));
+  }
+	
+	/**
+	 * Pull and choose the merging strategy.
+	 * 
+	 * @param pullType The pull type / merging strategy.
+	 */
+	public Future<?> pull(PullType pullType) {
+    return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType));
+  }
+	
 	/**
 	 * Notifies the observer to update it's state with the given Event fired from
 	 * a Push or Pull action
@@ -118,54 +138,50 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 *  
 	 * @param response Pull response.
 	 */
-	protected void showPullConflicts(PullResponse response) {
-    new PullWithConflictsDialog(translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
-        response.getConflictingFiles(), translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
+	protected void showPullSuccessfulWithConflicts(PullResponse response) {
+    new PullStatusAndFilesDialog(
+        translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
+        response.getConflictingFiles(),
+        translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
   }
 	
 
   /**
-   * Pull failed because there are uncommitted files that would be in conflict
-   * after the pull.
+   * Pull failed because there are uncommitted files that would be overwritten.
    * 
    * @param e Exception.
    */
-  protected void showPullFailedBecauseofConflict(CheckoutConflictException e) {
-    new PullWithConflictsDialog(
+  protected void showPullFailedBecauseOfCertainChanges(List<String> filesWithChanges, String message) {
+    if (logger.isDebugEnabled()) {
+      logger.info("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
+    }
+    new PullStatusAndFilesDialog(
         translator.getTranslation(Tags.PULL_STATUS), 
-        e.getConflictingPaths(), 
-        translator.getTranslation(Tags.PULL_CHECKOUT_CONFLICT_MESSAGE));
+        filesWithChanges, 
+        message);
+  }
+  
+  /**
+   * Show the "Interrupted rebase" dialog. It allows the user to continue or abort the rebase.
+   */
+  protected void showInterruptedRebaseDialog() {
+    new RebaseInProgressDialog().setVisible(true);
   }
 
   /**
-   * Execute command runnable.
+   * Execute push / pull.
    */
-  private class ExecuteCommandRunnable implements Runnable {
-    /**
-     * The command to execute (push or pull).
-     */
-    private Command command;
-
-    /**
-     * Constructor.
-     * 
-     * @param command The command to execute (push or pull).
-     */
-    private ExecuteCommandRunnable(Command command) {
-      this.command = command;
-    }
+  private abstract class ExecuteCommandRunnable implements Runnable {
 
     @Override
     public void run() {
-      executeCommand(command);
+      executeCommand();
     }
 
     /**
-     * Executes the given command.
-     * 
-     * @param command Command to execute.
+     * Executes the command. If authentication is to be tried again, the method will be called recursively.
      */
-    private void executeCommand(final Command command) {
+    private void executeCommand() {
       String hostName = gitAccess.getHostName();
       UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
       String message = "";
@@ -174,18 +190,29 @@ public class PushPullController implements Subject<PushPullEvent> {
         if (logger.isDebugEnabled()) {
           logger.debug("Preparing for push/pull command");
         }
-        if (command == Command.PUSH) {
-          message = push(userCredentials);
+        message = doOperation(userCredentials);
+      } catch (JGitInternalException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
+          String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
+          showPullFailedBecauseOfCertainChanges(
+              Arrays.asList(conflictingFile),
+              translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
         } else {
-          message = pull(userCredentials);
+          throw e;
         }
+      } catch (RebaseUncommittedChangesException e) {
+        showPullFailedBecauseOfCertainChanges(
+            e.getUncommittedChanges(),
+            translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED));
+      } catch (RebaseConflictsException e) {
+        showPullFailedBecauseOfCertainChanges(
+            e.getConflictingPaths(),
+            translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
       } catch (CheckoutConflictException e) {
-        // Notify that there are conflicts that should be resolved in the staging area.
-        showPullFailedBecauseofConflict(e);
-
-        if (logger.isDebugEnabled()) {
-          logger.info(e.getConflictingPaths());
-        }
+        showPullFailedBecauseOfCertainChanges(
+            e.getConflictingPaths(),
+            translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
       } catch (GitAPIException e) {
         // Exception handling.
         boolean shouldTryAgain = AuthUtil.handleAuthException(
@@ -198,10 +225,12 @@ public class PushPullController implements Subject<PushPullEvent> {
           // Skip notification now. We try again.
           notifyFinish = false;
           // Try again.
-          executeCommand(command);
+          executeCommand();
         } else {
-          message = (command == Command.PUSH ? "Push failed: " : "Pull failed: ") + e.getMessage();
+          message = composeAndReturnFailureMessage(e.getMessage());
         }
+      } catch (Exception e) {
+        logger.error(e, e);
       } finally {
         if (notifyFinish) {
           PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);
@@ -211,13 +240,73 @@ public class PushPullController implements Subject<PushPullEvent> {
     }
 
     /**
+     * Compose and return failure message.
+     */
+    protected abstract String composeAndReturnFailureMessage(String message);
+
+    /**
+     * Push or pull, depending on the implementation.
+     */
+    protected abstract String doOperation(UserCredentials userCredentials) throws CheckoutConflictException, GitAPIException;
+
+  }
+
+  /**
+   * Execute PUSH.
+   */
+  private class ExecutePushRunnable extends ExecuteCommandRunnable {
+  
+    /**
+     * Push the changes and inform the user with messages depending on the result status.
+     * 
+     * @param userCredentials The credentials used to push the changes.
+  
+     * @throws GitAPIException
+     */
+    @Override
+    protected String doOperation(UserCredentials userCredentials)
+        throws CheckoutConflictException, GitAPIException {
+      PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+      String message = "";
+      if (Status.OK == response.getStatus()) {
+        message = translator.getTranslation(Tags.PUSH_SUCCESSFUL);
+      } else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
+        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+            .showWarningMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
+      } else if (Status.UP_TO_DATE == response.getStatus()) {
+        message = translator.getTranslation(Tags.PUSH_UP_TO_DATE);
+      } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
+        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+            .showWarningMessage(response.getMessage());
+      }
+      return message;
+    }
+
+    @Override
+    protected String composeAndReturnFailureMessage(String message) {
+      return translator.getTranslation(Tags.PUSH_FAILED) + ": " + message;
+    }
+  }
+
+  /**
+   * Execute command runnable.
+   */
+  private class ExecutePullRunnable extends ExecuteCommandRunnable {
+    
+    private PullType pullType;
+
+    public ExecutePullRunnable(PullType pullType) {
+      this.pullType = pullType;
+    }
+    /**
      * Pull the changes and inform the user with messages depending on the result status.
      * 
      * @param userCredentials The credentials used to pull the new changes made by others.
      *          
      * @throws GitAPIException
      */
-    private String pull(final UserCredentials userCredentials) throws GitAPIException {
+    @Override
+    protected String doOperation(UserCredentials userCredentials) throws CheckoutConflictException, GitAPIException {
       String message = "";
 
       RepositoryState repositoryState = null;
@@ -226,18 +315,34 @@ public class PushPullController implements Subject<PushPullEvent> {
       } catch (NoRepositorySelected e) {
         logger.debug(e, e);
       }
-
+      
+      if (logger.isDebugEnabled()) {
+        logger.debug("Do pull. Pull type: " + pullType);
+        logger.debug("Repo state: " + repositoryState);
+      }
+      
       if (repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED) {
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
+      } else if (repositoryState == RepositoryState.REBASING_MERGE
+          || repositoryState == RepositoryState.REBASING_REBASING) {
+        showInterruptedRebaseDialog();
       } else {
-        PullResponse response = gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
+        PullResponse response = gitAccess.pull(
+            userCredentials.getUsername(),
+            userCredentials.getPassword(),
+            pullType);
         switch (response.getStatus()) {
           case OK:
             message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
             break;
           case CONFLICTS:
-            showPullConflicts(response);
+            showPullSuccessfulWithConflicts(response);
+            if (pullType == PullType.REBASE) {
+              PushPullEvent pushPullEvent = new PushPullEvent(
+                  ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
+              notifyObservers(pushPullEvent);
+            }
             break;
           case REPOSITORY_HAS_CONFLICTS:
             ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
@@ -257,28 +362,9 @@ public class PushPullController implements Subject<PushPullEvent> {
       return message;
     }
 
-    /**
-     * Push the changes and inform the user with messages depending on the result status.
-     * 
-     * @param userCredentials The credentials used to push the changes.
-
-     * @throws GitAPIException
-     */
-    private String push(final UserCredentials userCredentials) throws GitAPIException {
-      PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
-      String message = "";
-      if (Status.OK == response.getStatus()) {
-        message = translator.getTranslation(Tags.PUSH_SUCCESSFUL);
-      } else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
-      } else if (Status.UP_TO_DATE == response.getStatus()) {
-        message = translator.getTranslation(Tags.PUSH_UP_TO_DATE);
-      } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage(response.getMessage());
-      }
-      return message;
+    @Override
+    protected String composeAndReturnFailureMessage(String message) {
+      return translator.getTranslation(Tags.PULL_FAILED) + ": " + message;
     }
   }
 
@@ -299,7 +385,6 @@ public class PushPullController implements Subject<PushPullEvent> {
       logger.warn(e);
       // Restore interrupted state...
       Thread.currentThread().interrupt();
-
     }    
   }
 }

@@ -223,57 +223,57 @@ public class Tags {
 	/**
 	 * The text displayed for the "Open in compare editor" contextual menu item
 	 */
-	public static final String CONTEXTUAL_MENU_OPEN_IN_COMPARE = "Contextual_Menu_Open_In_Compare";
+	public static final String OPEN_IN_COMPARE = "Open_In_Compare";
 
 	/**
 	 * The text displayed for the "Open" contextual menu item
 	 */
-	public static final String CONTEXTUAL_MENU_OPEN = "Contextual_Menu_Open";
+	public static final String OPEN = "Open";
 
 	/**
 	 * The text displayed for the "Stage" contextual menu item
 	 */
-	public static final String CONTEXTUAL_MENU_STAGE = "Contextual_Menu_Stage";
+	public static final String STAGE = "Stage";
 
 	/**
 	 * The text displayed for the "Unstage" contextual menu item
 	 */
-	public static final String CONTEXTUAL_MENU_UNSTAGE = "Contextual_Menu_Unstage";
+	public static final String UNSTAGE = "Unstage";
 
 	/**
-	 * The text displayed for the "Resolve_Conflict" contextual menu item
+	 * The text displayed for "Resolve_Conflict".
 	 */
-	public static final String CONTEXTUAL_MENU_RESOLVE_CONFLICT = "Contextual_Menu_Resolve_Conflict";
+	public static final String RESOLVE_CONFLICT = "Resolve_Conflict";
 
 	/**
 	 * The text displayed for the "Discard" contextual menu item
 	 */
-	public static final String CONTEXTUAL_MENU_DISCARD = "Contextual_Menu_Discard";
+	public static final String DISCARD = "Discard";
 
 	/**
 	 * The text displayed when you click on the "Discard" contextual menu item
 	 */
-	public static final String CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE = "Contextual_Menu_Discard_Confirmation_Message";
+	public static final String DISCARD_CONFIRMATION_MESSAGE = "Discard_Confirmation_Message";
 
 	/**
-	 * The text displayed for the "Resolve Using "Mine" " contextual menu item
+	 * The text displayed for " Resolve Using "Mine" ".
 	 */
-	public static final String CONTEXTUAL_MENU_RESOLVE_USING_MINE = "Contextual_Menu_Resolve_Using_Mine";
+	public static final String RESOLVE_USING_MINE = "Resolve_Using_Mine";
 
 	/**
-	 * The text displayed for the "Resolve Using "Theirs" " contextual menu item
+	 * The text displayed for " Resolve Using "Theirs" ".
 	 */
-	public static final String CONTEXTUAL_MENU_RESOLVE_USING_THEIRS = "Contextual_Menu_Resolve_Using_Theirs";
+	public static final String RESOLVE_USING_THEIRS = "Resolve_Using_Theirs";
 
 	/**
 	 * The text displayed for the "Restart Merge " contextual menu item
 	 */
-	public static final String CONTEXTUAL_MENU_RESTART_MERGE = "Contextual_Menu_Restart_Merge";
+	public static final String RESTART_MERGE = "Restart_Merge";
 
 	/**
 	 * The text displayed for the "Mark Resolved" contextual menu item
 	 */
-	public static final String CONTEXTUAL_MENU_MARK_RESOLVED = "Contextual_Menu_Mark_Resolved";
+	public static final String MARK_RESOLVED = "Mark_Resolved";
 
 	/**
 	 * The text displayed when the user selects a repository from the working copy
@@ -456,19 +456,19 @@ public class Tags {
 	/**
 	 * The text displayed for the "Git" contextual menu item in the project view
 	 */
-	public static final String PROJECT_VIEW_GIT_CONTEXTUAL_MENU_ITEM = "Project_View_Git_Contextual_Menu_Item";
+	public static final String GIT = "Git";
 
 	/**
 	 * The text displayed for the "Git Diff" contextual menu item in the project
 	 * view
 	 */
-	public static final String PROJECT_VIEW_GIT_DIFF_CONTEXTUAL_MENU_ITEM = "Project_View_Git_Diff_Contextual_Menu_Item";
+	public static final String GIT_DIFF = "Git_Diff";
 
 	/**
 	 * The text displayed for the "Commit" contextual menu item in the project
 	 * view
 	 */
-	public static final String PROJECT_VIEW_COMMIT_CONTEXTUAL_MENU_ITEM = "Project_View_Commit_Contextual_Menu_Item";
+	public static final String COMMIT= "Commit";
 
 	/**
 	 * The text displayed when you push but don't have rights for that repository
@@ -569,10 +569,9 @@ public class Tags {
 	public static final String CONCLUDE_MERGE_MESSAGE = "Conclude_Merge_Message";
 
 	/**
-	 * The text is displayed when you pull but it fails because the files that are
-	 * modified might become in conflict
+	 * The text is displayed when you pull but it fails because there are uncommitted changes.
 	 */
-	public static final String PULL_CHECKOUT_CONFLICT_MESSAGE = "Pull_Checkout_Conflict_Message";
+	public static final String PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES = "Pull_would_overwrite_uncommitted_changes";
 	
 	/**
 	 * Lock failed when pulling.
@@ -620,6 +619,103 @@ public class Tags {
   public static final String PULL_FROM = "Pull_from";
   
   /**
+   * Pull rebase.
+   */
+  public static final String PULL_REBASE = "Pull_rebase";
+  
+  /**
+   * Pull rebase from {0}.
+   */
+  public static final String PULL_REBASE_FROM = "Pull_rebase_from";
+  
+  /**
+   * Pull merge.
+   */
+  public static final String PULL_MERGE = "Pull_merge";
+  
+  /**
+   * Pull merge.
+   */
+  public static final String PULL_MERGE_FROM = "Pull_merge_from";
+  
+  /**
+   * Pull failed.
+   */
+  public static final String PULL_FAILED = "Pull_failed";
+  
+  /**
+   * Push failed.
+   */
+  public static final String PUSH_FAILED = "Push_failed";
+  
+  /**
+   * Rebase in progress.
+   */
+  public static final String REBASE_IN_PROGRESS = "Rebase_in_progress";
+  
+  /**
+   * Something like: "Cannot continue rebasing. You have conflicts in the working copy that need to be resolved."
+   */
+  public static final String CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS = "Cannot_continue_rebase_because_of_conflicts";
+  
+  /**
+   * Something like: "It seems you have a rebase in progress that was probably interrupted
+   *  because of a conflict. You should first resolve the conflicts.
+   *  If you have already resolved them, choose whether to continue or abort the rebase."
+   */
+  public static final String INTERRUPTED_REBASE = "Interrupted_rebase";
+  
+  /**
+   * Mine.
+   */
+  public static final String MINE = "Mine";
+  
+  /**
+   * Theirs.
+   */
+  public static final String THEIRS = "Theirs";
+  
+  /**
+   * Message shown when invoking "Resolve using Mine" or "Resolve using Theirs" for a conflict generated when trying to rebase.
+   */
+  public static final String CONTINUE_RESOLVING_REBASE_CONFLICT_USING_MINE_OR_THEIRS = "Continue_resolving_rebase_conflict_using_mine_or_theirs";
+  
+  /**
+   * The working branch.
+   */
+  public static final String THE_WORKING_BRANCH = "The_working_branch";
+  
+  /**
+   * The upstream branch.
+   */
+  public static final String THE_UPSTREAM_BRANCH = "The_upstream_branch";
+  
+  /**
+   * Confirmation message for "Restart merge".
+   */
+  public static final String RESTART_MERGE_CONFIRMATION = "Restart_merge_confirmation";
+  
+  /**
+   * Abort rebase.
+   */
+  public static final String ABORT_REBASE = "Abort_rebase";
+  
+  /**
+   * Continue rebase.
+   */
+  public static final String CONTINUE_REBASE = "Continue_rebase";
+  
+  /**
+   * Message shown when pull (rebase) failed because of uncommitted files.
+   */
+  public static final String PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED = "Pull_rebase_failed_because_uncommitted";
+  
+  /**
+   * Message shown when pull (rebase) failed because of conflicting paths.
+   */
+  public static final String PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS = "Pull_rebase_failed_because_conflicting_paths";
+
+/**
    * Commit History.
    */
   public static final String GIT_COMMIT_HISTORY = "Git_Commit_History";

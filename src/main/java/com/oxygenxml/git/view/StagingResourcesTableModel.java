@@ -199,40 +199,51 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	  }
 	  
 		List<FileStatus> newStates = 
-		    inIndex ? 
-		        GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) :
-		        GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
+		    inIndex ? GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) 
+		        : GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
     List<FileStatus> oldStates = changeEvent.getOldStates();
     
-    if (changeEvent.getCommand() == GitCommand.STAGE) {
-			if (inIndex) {
-				insertRows(newStates);
-			} else {
-				deleteRows(oldStates);
-			}
-		} else if (changeEvent.getCommand() == GitCommand.UNSTAGE) {
-			if (inIndex) {
-				deleteRows(oldStates);
-			} else {
-			  // Things were taken out of the INDEX. 
-			  // The same resource might be present in the UnStaged and INDEX. Remove old states.
-			  deleteRows(oldStates);
-				insertRows(newStates);
-			}
-		} else if (changeEvent.getCommand() == GitCommand.COMMIT) {
-			if (inIndex) {
-			  // Committed files are removed from the INDEX.
-				filesStatuses.clear();
-			}
-		} else if (changeEvent.getCommand() == GitCommand.DISCARD) {
-		  // Discarded files are no longer presented by neither model.
-			deleteRows(oldStates);
-		} else if (changeEvent.getCommand() == GitCommand.MERGE_RESTART) {
-		  filesStatuses.clear();
-		  List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() :
-		    GitAccess.getInstance().getUnstagedFiles();
-		  insertRows(fileStatuses);
-		}
+    GitCommand cmd = changeEvent.getCommand();
+    switch (cmd) {
+      case STAGE:
+        if (inIndex) {
+          insertRows(newStates);
+        } else {
+          deleteRows(oldStates);
+        }
+        break;
+      case UNSTAGE:
+        if (inIndex) {
+          deleteRows(oldStates);
+        } else {
+          // Things were taken out of the INDEX. 
+          // The same resource might be present in the UnStaged and INDEX. Remove old states.
+          deleteRows(oldStates);
+          insertRows(newStates);
+        }
+        break;
+      case COMMIT:
+        if (inIndex) {
+          // Committed files are removed from the INDEX.
+          filesStatuses.clear();
+        }
+        break;
+      case DISCARD:
+        deleteRows(oldStates);
+        break;
+      case MERGE_RESTART:
+        filesStatuses.clear();
+        List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles()
+            : GitAccess.getInstance().getUnstagedFiles();
+        insertRows(fileStatuses);
+        break;
+      case ABORT_REBASE:
+      case CONTINUE_REBASE:
+        filesStatuses.clear();
+        break;
+      default:
+        break;
+    }
 		
 		removeDuplicates();
 		Collections.sort(filesStatuses, fileStatusComparator);

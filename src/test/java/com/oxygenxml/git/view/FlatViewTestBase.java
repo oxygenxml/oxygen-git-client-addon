@@ -9,13 +9,14 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
+import org.junit.Ignore;
+
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.event.Command;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.StageController;
 
@@ -23,6 +24,7 @@ import com.oxygenxml.git.view.event.StageController;
 * Base for the test classes related to the actions performed
 * on the staged/unstaged resources seen in the flat view.
 */
+@Ignore
 public class FlatViewTestBase extends GitTestBase {
   /**
    * Access to the Git API.
@@ -56,7 +58,7 @@ public class FlatViewTestBase extends GitTestBase {
       public PushPullController createPushPullController() {
         return new PushPullController() {
           @Override
-          protected void showPullConflicts(PullResponse response) {
+          protected void showPullSuccessfulWithConflicts(PullResponse response) {
             // Nothing to do.
           }
         };
@@ -89,7 +91,7 @@ public class FlatViewTestBase extends GitTestBase {
    */
   protected void pull() throws Exception {
     // Execute pull command and wait for it to finish.
-    stagingPanel.getPushPullController().execute(Command.PULL).get();
+    stagingPanel.getPushPullController().pull().get();
   }
   
   /**
@@ -100,7 +102,7 @@ public class FlatViewTestBase extends GitTestBase {
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
     flushAWT();
-    sleep(200);
+    sleep(300);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTable filesTable = unstagedChangesPanel.getFilesTable();
@@ -144,7 +146,7 @@ public class FlatViewTestBase extends GitTestBase {
    */
   protected void assertTreeModels(String unstagedExpected, String indexExpected) {
     flushAWT();
-    sleep(200);
+    sleep(300);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTree filesTable = unstagedChangesPanel.getTreeView();

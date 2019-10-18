@@ -4,6 +4,166 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Pull_rebase_failed_because_uncommitted">
+        <comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
+        <val lang="en_US">Cannot pull with rebase because of the following uncommitted files:</val>
+        <val lang="de_DE">Cannot pull with rebase because of the following uncommitted files:</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Pull_rebase_failed_because_conflicting_paths">
+        <comment>Message shown when pull (rebase) failed because of conflicting paths.</comment>
+        <val lang="en_US">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
+        <val lang="de_DE">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Continue_rebase">
+        <comment>Continue rebase</comment>
+        <val lang="en_US">Continue rebase</val>
+        <val lang="de_DE">Continue rebase</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Abort_rebase">
+        <comment>Abort rebase</comment>
+        <val lang="en_US">Abort rebase</val>
+        <val lang="de_DE">Abort rebase</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Restart_merge_confirmation">
+        <comment>Confirmation message for "Restart merge"</comment>
+        <val lang="en_US">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
+        <val lang="de_DE">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Mine">
+        <comment>Mine</comment>
+        <val lang="en_US">Mine</val>
+        <val lang="de_DE">Meins</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Mine">
+        <comment>Mine</comment>
+        <val lang="en_US">Mine</val>
+        <val lang="de_DE">Meins</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Theirs">
+        <comment>Theirs</comment>
+        <val lang="en_US">Theirs</val>
+        <val lang="de_DE">Ihres</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="The_working_branch">
+        <comment>The working branch</comment>
+        <val lang="en_US">the working branch</val>
+        <val lang="de_DE">the working branch</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="The_upstream_branch">
+        <comment>The upstream branch</comment>
+        <val lang="en_US">the upstream branch</val>
+        <val lang="de_DE">the upstream branch</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Continue_resolving_rebase_conflict_using_mine_or_theirs">
+        <comment>Message shown when invoking "Resolve using Mine" or "Resolve using Theirs" for a conflict generated when trying to rebase.</comment>
+        <val lang="en_US">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
+        <val lang="de_DE">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
+        <val lang="fr_FR"></val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Cannot_continue_rebase_because_of_conflicts">
+        <comment>Message shown when rebasing cannot continue because of conflicts.</comment>
+        <val lang="en_US">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="de_DE">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="fr_FR">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="ja_JP">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="nl_NL">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+    </key>
+    <key value="Interrupted_rebase">
+        <comment>Interrupted rebase information.</comment>
+        <val lang="en_US">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
+        <val lang="de_DE">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
+        <val lang="fr_FR">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
+        <val lang="ja_JP">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
+        <val lang="nl_NL">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
+    </key>
+    <key value="Rebase_in_progress">
+        <comment>Rebase in progress.</comment>
+        <val lang="en_US">Rebase in progress</val>
+        <val lang="de_DE">Rebase in progress</val>
+        <val lang="fr_FR">Rebase in progress</val>
+        <val lang="ja_JP">Rebase in progress</val>
+        <val lang="nl_NL">Rebase in progress</val>
+    </key>
+    <key value="Pull_rebase">
+        <comment>Pull (rebase)</comment>
+        <val lang="en_US">Pull (rebase)</val>
+        <val lang="de_DE">Pull (rebase)</val>
+        <val lang="fr_FR">Pull (rebase)</val>
+        <val lang="ja_JP">Pull (rebase)</val>
+        <val lang="nl_NL">Pull (rebase)</val>
+    </key>
+    <key value="Pull_merge">
+        <comment>Pull (merge)</comment>
+        <val lang="en_US">Pull (merge)</val>
+        <val lang="de_DE">Pull (merge)</val>
+        <val lang="fr_FR">Pull (merge)</val>
+        <val lang="ja_JP">Pull (merge)</val>
+        <val lang="nl_NL">Pull (merge)</val>
+    </key>
+    <key value="Pull_rebase_from">
+        <comment>Pull (rebase) from</comment>
+        <val lang="en_US">Pull (rebase) from {0}</val>
+        <val lang="de_DE">Pull (rebase) from {0}</val>
+        <val lang="fr_FR">Pull (rebase) from {0}</val>
+        <val lang="ja_JP">Pull (rebase) from {0}</val>
+        <val lang="nl_NL">Pull (rebase) from {0}</val>
+    </key>
+    <key value="Pull_merge_from">
+        <comment>Pull (merge) from</comment>
+        <val lang="en_US">Pull (merge) from {0}</val>
+        <val lang="de_DE">Pull (merge) from {0}</val>
+        <val lang="fr_FR">Pull (merge) from {0}</val>
+        <val lang="ja_JP">Pull (merge) from {0}</val>
+        <val lang="nl_NL">Pull (merge) from {0}</val>
+    </key>
+    <key value="Pull_failed">
+        <comment>Pull failed</comment>
+        <val lang="en_US">Pull failed</val>
+        <val lang="de_DE">Pull failed</val>
+        <val lang="fr_FR">Pull failed</val>
+        <val lang="ja_JP">Pull failed</val>
+        <val lang="nl_NL">Pull failed</val>
+    </key>
+        <key value="Push_failed">
+        <comment>Push failed</comment>
+        <val lang="en_US">Push failed</val>
+        <val lang="de_DE">Push failed</val>
+        <val lang="fr_FR">Push failed</val>
+        <val lang="ja_JP">Push failed</val>
+        <val lang="nl_NL">Push failed</val>
+    </key>
     <key value="No_changes">
         <comment>Message shown when invoking the diff on an unchanged file.</comment>
         <val lang="en_US">No changes.</val>
@@ -94,19 +254,19 @@
     </key>
     <key value="Push_to">
         <comment>Push to</comment>
-        <val lang="en_US">Push to</val>
-        <val lang="de_DE">Push an</val>
-        <val lang="fr_FR">Push to</val>
-        <val lang="ja_JP">Push to</val>
-        <val lang="nl_NL">Push to</val>
+        <val lang="en_US">Push to {0}</val>
+        <val lang="de_DE">Push an {0}</val>
+        <val lang="fr_FR">Push to {0}</val>
+        <val lang="ja_JP">Push to {0}</val>
+        <val lang="nl_NL">Push to {0}</val>
     </key>
     <key value="Pull_from">
         <comment>Pull from</comment>
-        <val lang="en_US">Pull from</val>
-        <val lang="de_DE">Pull von</val>
-        <val lang="fr_FR">Pull from</val>
-        <val lang="ja_JP">Pull from</val>
-        <val lang="nl_NL">Pull from</val>
+        <val lang="en_US">Pull from {0}</val>
+        <val lang="de_DE">Pull von {0}</val>
+        <val lang="fr_FR">Pull from {0}</val>
+        <val lang="ja_JP">Pull from {0}</val>
+        <val lang="nl_NL">Pull from {0}</val>
     </key>
     <key value="Remote">
         <comment>Remote</comment>
@@ -485,7 +645,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Open_In_Compare">
+    <key value="Open_In_Compare">
         <comment>The text displayed for the "Open in compare editor" contextual menu item </comment>
         <val lang="en_US">Open in compare editor</val>
         <val lang="de_DE">Änderungen anzeigen</val>
@@ -493,7 +653,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Open">
+    <key value="Open">
         <comment>The text displayed for the "Open" contextual menu item</comment>
         <val lang="en_US">Open</val>
         <val lang="de_DE">Öffnen</val>
@@ -501,7 +661,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Unstage">
+    <key value="Unstage">
         <comment>The text displayed for the "Unstage" contextual menu item</comment>
         <val lang="en_US">Unstage</val>
         <val lang="de_DE">Nicht mehr vormerken</val>
@@ -509,7 +669,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Stage">
+    <key value="Stage">
         <comment>The text displayed for the "Stage" contextual menu item</comment>
         <val lang="en_US">Stage</val>
         <val lang="de_DE">Für Commit vormerken</val>
@@ -517,15 +677,15 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Resolve_Conflict">
-        <comment>The text displayed for the "Resolve_Conflict" contextual menu item</comment>
+    <key value="Resolve_Conflict">
+        <comment>The text displayed for "Resolve_Conflict".</comment>
         <val lang="en_US">Resolve Conflict</val>
         <val lang="de_DE">Konflikt lösen</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Discard">
+    <key value="Discard">
         <comment>The text displayed for the "Discard" contextual menu item</comment>
         <val lang="en_US">Discard</val>
         <val lang="de_DE">Änderung verwerfen</val>
@@ -533,7 +693,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Discard_Confirmation_Message">
+    <key value="Discard_Confirmation_Message">
         <comment>The text displayed when you click on the "Discard" contextual menu item</comment>
         <val lang="en_US">Are you sure you want to discard your changes?</val>
         <val lang="de_DE">Sind Sie sicher, dass Sie die Änderungen verwerfen wollen?</val>
@@ -541,23 +701,23 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Resolve_Using_Mine">
-        <comment>The text displayed for the "Resolve Using "Mine" " contextual menu item</comment>
+    <key value="Resolve_Using_Mine">
+        <comment>The text displayed for " Resolve Using "Mine" ".</comment>
         <val lang="en_US">Resolve Using "Mine"</val>
         <val lang="de_DE">Konflikt lösen mit "Meins"</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Resolve_Using_Theirs">
-        <comment>The text displayed for the "Resolve Using "Theirs" " contextual menu item</comment>
+    <key value="Resolve_Using_Theirs">
+        <comment>The text displayed for " Resolve Using "Theirs" ".</comment>
         <val lang="en_US">Resolve Using "Theirs"</val>
         <val lang="de_DE">Konflikt lösen mit "Ihres"</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Restart_Merge">
+    <key value="Restart_Merge">
         <comment>The text displayed for the "Restart Merge " contextual menu item</comment>
         <val lang="en_US">Restart Merge</val>
         <val lang="de_DE">Merge erneut starten</val>
@@ -565,7 +725,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Contextual_Menu_Mark_Resolved">
+    <key value="Mark_Resolved">
         <comment>The text displayed for the "Mark Resolved" contextual menu item</comment>
         <val lang="en_US">Mark Resolved</val>
         <val lang="de_DE">Als gelöst markieren</val>
@@ -821,7 +981,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Project_View_Git_Contextual_Menu_Item">
+    <key value="Git">
         <comment>The text displayed for the "Git" contextual menu item in the project view </comment>
         <val lang="en_US">Git</val>
         <val lang="de_DE">Git</val>
@@ -829,7 +989,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Project_View_Git_Diff_Contextual_Menu_Item">
+    <key value="Git_Diff">
         <comment>The text displayed for the "Git Diff" contextual menu item in the project view </comment>
         <val lang="en_US">Git Diff</val>
         <val lang="de_DE">Git-Diff</val>
@@ -837,7 +997,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Project_View_Commit_Contextual_Menu_Item">
+    <key value="Commit">
         <comment>The text displayed for the "Commit" contextual menu item in the project view </comment>
         <val lang="en_US">Commit</val>
         <val lang="de_DE">Commit</val>
@@ -981,7 +1141,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Pull_Checkout_Conflict_Message">
+    <key value="Pull_would_overwrite_uncommitted_changes">
         <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
         <val lang="en_US">Cannot pull. Your uncommitted local changes done to the following files would be overwritten by merge: </val>
         <val lang="de_DE">Pull nicht möglich. Die folgenden nicht-committeten lokalen Änderungen würden bei einem Pull überschrieben werden: </val>

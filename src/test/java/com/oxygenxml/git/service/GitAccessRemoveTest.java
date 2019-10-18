@@ -19,7 +19,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 
 public class GitAccessRemoveTest {
 
-	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resource/GitAccessRemoveTest";
+	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessRemoveTest";
 	private GitAccess gitAccess;
 
 	@Before

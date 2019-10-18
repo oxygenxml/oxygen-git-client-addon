@@ -61,7 +61,7 @@ public class DiscardAction extends AbstractAction {
    * @param stageController   Staging controller.
    */
   public DiscardAction(List<FileStatus> fileStatuses, StageController stageController) {
-    super(translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD));
+    super(translator.getTranslation(Tags.DISCARD));
     this.fileStatuses = fileStatuses;
     this.stageController = stageController;
   }
@@ -78,8 +78,8 @@ public class DiscardAction extends AbstractAction {
         "   " + translator.getTranslation(Tags.NO) + "   "};
     int[] optonsId = new int[] { 0, 1 };
     int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-        translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD),
-        translator.getTranslation(Tags.CONTEXTUAL_MENU_DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
+        translator.getTranslation(Tags.DISCARD),
+        translator.getTranslation(Tags.DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
     if (response == 0) {
       Set<File> foldersToRefresh = new HashSet<>();
       Set<File> deletedFilesParentDirs = new HashSet<>();
