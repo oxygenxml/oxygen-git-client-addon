@@ -51,6 +51,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.RevCommitUtilBase;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
@@ -262,9 +263,9 @@ public class HistoryPanel extends JPanel {
 
         try {
           List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
-          Optional<FileStatus> findFirst = changes.stream().filter(f -> activeFilePath.equals(f.getFileLocation())).findFirst();
-          if (findFirst.isPresent()) {
-            populateDiffActions(jPopupMenu, commitCharacteristics, findFirst.get(), true);
+          Optional<FileStatus> fileStatusOptional = changes.stream().filter(f -> activeFilePath.equals(f.getFileLocation())).findFirst();
+          if (fileStatusOptional.isPresent()) {
+            populateDiffActions(jPopupMenu, commitCharacteristics, fileStatusOptional.get(), true);
           }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
@@ -395,7 +396,7 @@ public class HistoryPanel extends JPanel {
     }
     
     if (addParentIDInActionName) {
-      actionName += " " + parentRevCommit.abbreviate(7).name();
+      actionName += " " + parentRevCommit.abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
     }
     return new AbstractAction(actionName) {
       @Override

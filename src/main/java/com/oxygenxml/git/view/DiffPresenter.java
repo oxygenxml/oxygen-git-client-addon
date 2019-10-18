@@ -281,6 +281,7 @@ public class DiffPresenter {
 	 * @param localURL  URL to the local resource.
 	 * @param remoteUL  URL to the remote resource.
 	 * @param baseURL   URL to the base version of the resource.
+	 * @param filePath The path of the file. Relative to the working tree.
 	 * 
 	 * @return The DIFF frame.
 	 */

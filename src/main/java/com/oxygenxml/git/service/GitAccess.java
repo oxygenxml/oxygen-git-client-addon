@@ -1785,7 +1785,8 @@ public class GitAccess {
 				for (RevCommit revCommit : results) {
 					if (revCommit.getId().name().equals(branchName)) {
 						branchInfo.setDetached(true);
-						branchInfo.setShortBranchName(revCommit.getId().abbreviate(7).name());
+						branchInfo.setShortBranchName(
+						    revCommit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name());
 						break;
 					}
 				}
@@ -2061,7 +2062,7 @@ public class GitAccess {
 			      PersonIdent authorIdent = commit.getAuthorIdent();
 			      String author = authorIdent.getName() + " <" + authorIdent.getEmailAddress() + ">";
 			      Date authorDate = authorIdent.getWhen();
-			      String abbreviatedId = commit.getId().abbreviate(7).name();
+			      String abbreviatedId = commit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
 			      String id = commit.getId().getName();
 
 			      PersonIdent committerIdent = commit.getCommitterIdent();
@@ -2096,9 +2097,9 @@ public class GitAccess {
 
 		// add list of parent commits.
 		if (commit.getParentCount() > 0) {
-			parentsIds = new ArrayList<String>();
+			parentsIds = new ArrayList<>();
 			for (RevCommit parentCommit : commit.getParents()) {
-				parentsIds.add(parentCommit.getId().abbreviate(7).name());
+				parentsIds.add(parentCommit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name());
 			}
 		}
 		return parentsIds;
@@ -2123,7 +2124,7 @@ public class GitAccess {
 		
 		// search through all commits for tags
 		for (Ref ref : call) {
-			List<String> tagList = new ArrayList<String>();
+			List<String> tagList = new ArrayList<>();
 			String tagName = ref.getName();
 			StringTokenizer st = new StringTokenizer(tagName, "/");
 			while (st.hasMoreTokens()) {
@@ -2139,7 +2140,9 @@ public class GitAccess {
 			}
 			Iterable<RevCommit> logs = log.call();
 			tagList.add(tagName);
-			commitTagMap.put(logs.iterator().next().getId().abbreviate(7).name(), tagList);
+			commitTagMap.put(
+			    logs.iterator().next().getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name(),
+			    tagList);
 		}
 		return commitTagMap;
 	}

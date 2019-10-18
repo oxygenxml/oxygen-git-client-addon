@@ -165,6 +165,7 @@ public class RevCommitUtil {
   /**
    * Get changed files as compared with the parent version.
    * 
+   * @param repository The repository.
    * @param commitID The commit ID.
    * 
    * @return A list with changed files. Can be <code>null</code>.
