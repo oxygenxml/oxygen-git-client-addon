@@ -156,6 +156,7 @@ public class FlatView2Test extends FlatViewTestBase {
     // Now pull to generate conflict
     RebasePanel rebasePanel = stagingPanel.getRebasePanel();
     assertFalse(rebasePanel.isShowing());
+    flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
     flushAWT();
@@ -234,6 +235,7 @@ public class FlatView2Test extends FlatViewTestBase {
     // Now pull to generate conflict
     RebasePanel rebasePanel = stagingPanel.getRebasePanel();
     assertFalse(rebasePanel.isShowing());
+    flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
     flushAWT();
@@ -321,6 +323,7 @@ public class FlatView2Test extends FlatViewTestBase {
     // Now pull to generate conflict
     RebasePanel rebasePanel = stagingPanel.getRebasePanel();
     assertFalse(rebasePanel.isShowing());
+    flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
     flushAWT();
@@ -412,6 +415,7 @@ public class FlatView2Test extends FlatViewTestBase {
     // Now pull to generate conflict
     RebasePanel rebasePanel = stagingPanel.getRebasePanel();
     assertFalse(rebasePanel.isShowing());
+    flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
     flushAWT();
@@ -506,6 +510,7 @@ public class FlatView2Test extends FlatViewTestBase {
     // Now pull to generate conflict
     RebasePanel rebasePanel = stagingPanel.getRebasePanel();
     assertFalse(rebasePanel.isShowing());
+    flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
     flushAWT();
@@ -601,6 +606,7 @@ public class FlatView2Test extends FlatViewTestBase {
       // Now pull to generate conflict
       RebasePanel rebasePanel = stagingPanel.getRebasePanel();
       assertFalse(rebasePanel.isShowing());
+      flushAWT();
       PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
       refreshSupport.call();
       flushAWT();
