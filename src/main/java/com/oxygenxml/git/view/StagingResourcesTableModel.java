@@ -16,7 +16,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.StageController;
 
 /**
@@ -180,9 +180,9 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		  }
 		}
 
-		GitCommand action = GitCommand.UNSTAGE;
+		GitCommandState action = GitCommandState.UNSTAGE_STARTED;
 		if (!inIndex) {
-		  action = GitCommand.STAGE;
+		  action = GitCommandState.STAGE_STARTED;
 		}
 		
     stageController.doGitCommand(filesToBeUpdated, action);
@@ -203,16 +203,16 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		        : GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
     List<FileStatus> oldStates = changeEvent.getOldStates();
     
-    GitCommand cmd = changeEvent.getCommand();
+    GitCommandState cmd = changeEvent.getGitCommandState();
     switch (cmd) {
-      case STAGE:
+      case STAGE_ENDED:
         if (inIndex) {
           insertRows(newStates);
         } else {
           deleteRows(oldStates);
         }
         break;
-      case UNSTAGE:
+      case UNSTAGE_ENDED:
         if (inIndex) {
           deleteRows(oldStates);
         } else {
@@ -222,23 +222,23 @@ public class StagingResourcesTableModel extends AbstractTableModel {
           insertRows(newStates);
         }
         break;
-      case COMMIT:
+      case COMMIT_ENDED:
         if (inIndex) {
           // Committed files are removed from the INDEX.
           filesStatuses.clear();
         }
         break;
-      case DISCARD:
+      case DISCARD_ENDED:
         deleteRows(oldStates);
         break;
-      case MERGE_RESTART:
+      case MERGE_RESTART_ENDED:
         filesStatuses.clear();
         List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles()
             : GitAccess.getInstance().getUnstagedFiles();
         insertRows(fileStatuses);
         break;
-      case ABORT_REBASE:
-      case CONTINUE_REBASE:
+      case ABORT_REBASE_ENDED:
+      case CONTINUE_REBASE_ENDED:
         filesStatuses.clear();
         break;
       default:

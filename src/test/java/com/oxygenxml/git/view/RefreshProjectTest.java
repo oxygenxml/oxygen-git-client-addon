@@ -19,7 +19,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.StageController;
 
 import junit.framework.TestCase;
@@ -84,7 +84,7 @@ public class RefreshProjectTest extends TestCase {
           Arrays.asList(new FileStatus(GitChangeType.ADD, "test.txt")),
           new StageController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitCommandState action) {
               // Do nothing
             }
           });
@@ -134,7 +134,7 @@ public class RefreshProjectTest extends TestCase {
               new FileStatus(GitChangeType.UNTRACKED, "subFolder/test2.txt")),
           new StageController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitCommandState action) {
               // Do nothing
             }
           });
@@ -180,7 +180,7 @@ public class RefreshProjectTest extends TestCase {
           Arrays.asList(new FileStatus(GitChangeType.SUBMODULE, "subModule")),
           new StageController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitCommandState action) {
               // Do nothing
             }
           });

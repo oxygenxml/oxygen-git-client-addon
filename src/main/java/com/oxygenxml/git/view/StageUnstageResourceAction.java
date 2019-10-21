@@ -8,7 +8,7 @@ import javax.swing.AbstractAction;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.StageController;
 
 /**
@@ -51,7 +51,7 @@ public class StageUnstageResourceAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    GitCommand command = isStage ? GitCommand.STAGE : GitCommand.UNSTAGE;
+    GitCommandState command = isStage ? GitCommandState.STAGE_STARTED : GitCommandState.UNSTAGE_STARTED;
     stageCtrl.doGitCommand(fileStatuses, command);
   }
   

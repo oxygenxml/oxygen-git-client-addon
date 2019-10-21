@@ -47,7 +47,7 @@ import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
@@ -212,8 +212,9 @@ public class ToolbarPanel extends JPanel {
 	    
       @Override
       public void stateChanged(ChangeEvent changeEvent) {
-        GitCommand cmd = changeEvent.getCommand();
-        if (cmd == GitCommand.ABORT_REBASE || cmd == GitCommand.CONTINUE_REBASE) {
+        GitCommandState cmd = changeEvent.getGitCommandState();
+        if (cmd == GitCommandState.ABORT_REBASE_ENDED 
+            || cmd == GitCommandState.CONTINUE_REBASE_ENDED) {
           updateStatus();
         }
       }

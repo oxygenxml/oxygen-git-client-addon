@@ -20,7 +20,7 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.StageController;
@@ -333,13 +333,13 @@ public class FlatView2Test extends FlatViewTestBase {
     
     StageController sc = new StageController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
-        return cmd == GitCommand.RESOLVE_USING_MINE;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandState cmd) {
+        return cmd == GitCommandState.RESOLVE_USING_MINE_STARTED;
       }
     };
     sc.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommand.RESOLVE_USING_MINE);
+        GitCommandState.RESOLVE_USING_MINE_STARTED);
     flushAWT();
 
     JButton continueBtn = findFirstButton(
@@ -648,13 +648,13 @@ public class FlatView2Test extends FlatViewTestBase {
       // Resolve conflict
       StageController sc = new StageController() {
         @Override
-        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
-          return cmd == GitCommand.RESOLVE_USING_MINE;
+        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandState cmd) {
+          return cmd == GitCommandState.RESOLVE_USING_MINE_STARTED;
         }
       };
       sc.doGitCommand(
           Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-          GitCommand.RESOLVE_USING_MINE);
+          GitCommandState.RESOLVE_USING_MINE_STARTED);
       flushAWT();
       
       // Pull again.

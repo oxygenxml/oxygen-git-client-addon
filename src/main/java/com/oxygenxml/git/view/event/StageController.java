@@ -46,29 +46,30 @@ public class StageController {
 	 * 
 	 * @param filesStatuses The files to be processed. 
 	 * @param action        The action that is executed: stage, unstage, discard, resolve, etc.
+	 *                          One of the {@link GitCommandState} values that has the "STARTED" suffix.
 	 */
-	public void doGitCommand(List<FileStatus> filesStatuses, GitCommand action) {
+	public void doGitCommand(List<FileStatus> filesStatuses, GitCommandState action) {
 	  if (logger.isDebugEnabled()) {
 	    logger.debug("Do action " + action + " on " + filesStatuses);
 	  }
 	  
 	  switch (action) {
-	    case STAGE:
+	    case STAGE_STARTED:
 	      gitAccess.addAll(filesStatuses);
 	      break;
-	    case UNSTAGE:
+	    case UNSTAGE_STARTED:
         gitAccess.resetAll(filesStatuses);
         break;
-	    case DISCARD:
+	    case DISCARD_STARTED:
 	      discard(filesStatuses);
 	      break;
-	    case RESOLVE_USING_MINE:
-	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand.RESOLVE_USING_MINE)) {
+	    case RESOLVE_USING_MINE_STARTED:
+	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandState.RESOLVE_USING_MINE_STARTED)) {
 	        resolveUsingMine(filesStatuses);
 	      }
 	      break;
-	    case RESOLVE_USING_THEIRS:
-	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand.RESOLVE_USING_THEIRS)) {
+	    case RESOLVE_USING_THEIRS_STARTED:
+	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandState.RESOLVE_USING_THEIRS_STARTED)) {
 	        resolveUsingTheirs(filesStatuses);
 	      }
 	      break;
@@ -84,7 +85,7 @@ public class StageController {
 	 * 
 	 * @return <code>true</code> to continue resolving the conflict using 'mine' or 'theirs'.
 	 */
-  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand cmd) {
+  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandState cmd) {
     boolean shouldContinue = false;
     try {
       RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
@@ -105,12 +106,13 @@ public class StageController {
 	 * When having a conflict while rebasing, 'mine' and 'theirs' are reversed.
    * Tell this to the user and ask if they are OK with their choice.
    * 
-   * @param cmd GitCommand.RESOLVE_USING_MINE or GitCommand.RESOLVE_USING_THEIRS.
+   * @param cmd {@link GitCommandState#RESOLVE_USING_MINE_STARTED} or
+   *  {@link GitCommandState#RESOLVE_USING_THEIRS_STARTED}.
 	 * 
 	 * @return <code>true</code> to continue.
 	 */
-	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
-	  boolean isResolveUsingMine = cmd == GitCommand.RESOLVE_USING_MINE;
+	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandState cmd) {
+	  boolean isResolveUsingMine = cmd == GitCommandState.RESOLVE_USING_MINE_STARTED;
     String actionName = isResolveUsingMine ? translator.getTranslation(Tags.RESOLVE_USING_MINE)
 	      : translator.getTranslation(Tags.RESOLVE_USING_THEIRS);
 	  String side = isResolveUsingMine ? translator.getTranslation(Tags.MINE)

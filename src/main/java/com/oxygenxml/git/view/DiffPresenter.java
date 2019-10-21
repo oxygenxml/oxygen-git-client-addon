@@ -27,7 +27,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.StageController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -245,13 +245,15 @@ public class DiffPresenter {
 			            Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
 			            Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
 			        if (response == 0) {
-			          stageController.doGitCommand(Arrays.asList(file), GitCommand.RESOLVE_USING_MINE);
+			          stageController.doGitCommand(
+			              Arrays.asList(file),
+			              GitCommandState.RESOLVE_USING_MINE_STARTED);
 			        }
 			      } else {
 			        // Instead of requesting the file status again, we just mark it as modified.
 			        file.setChangeType(GitChangeType.MODIFIED);
 			        
-			        stageController.doGitCommand(Arrays.asList(file), GitCommand.STAGE);
+			        stageController.doGitCommand(Arrays.asList(file), GitCommandState.STAGE_STARTED);
 			      }
 			      
 			      d.removeComponentListener(this);

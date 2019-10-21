@@ -12,8 +12,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
@@ -25,7 +25,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.blame.BlameManager;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
@@ -152,7 +152,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_MINE);
+	        stageController.doGitCommand(allSelectedResources, GitCommandState.RESOLVE_USING_MINE_STARTED);
 	      }
 	    };
 
@@ -161,7 +161,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_THEIRS);
+	        stageController.doGitCommand(allSelectedResources, GitCommandState.RESOLVE_USING_THEIRS_STARTED);
 	      }
 	    };
 
@@ -170,7 +170,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.MARK_RESOLVED)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommand.STAGE);
+	        stageController.doGitCommand(allSelectedResources, GitCommandState.STAGE_STARTED);
 	      }
 	    };
 

@@ -18,9 +18,9 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 public class ChangeEvent {
 	
 	/**
-	 * The command that generated the change.
+	 * The state of the command that generated the change.
 	 */
-	private GitCommand command;
+	private GitCommandState gitCmdState;
 	
 	/**
 	 * The files that are changing their state
@@ -30,16 +30,16 @@ public class ChangeEvent {
 	/**
 	 * Object representing a state change.
 	 * 
-	 * @param command            Command that generated the change.
+	 * @param gitCmdState        The state of the command that generated the change.
 	 * @param filesToBeUpdated   The files that are changing their state.
 	 */
-	public ChangeEvent(GitCommand command, Collection<String> affectedFiles) {
-		this.command = command;
+	public ChangeEvent(GitCommandState gitCmdState, Collection<String> affectedFiles) {
+		this.gitCmdState = gitCmdState;
 		this.changedFiles = affectedFiles;
 	}
 
-	public GitCommand getCommand() {
-		return command;
+	public GitCommandState getGitCommandState() {
+		return gitCmdState;
 	}
 
 	public List<FileStatus> getOldStates() {
@@ -54,7 +54,7 @@ public class ChangeEvent {
 	
 	@Override
 	public String toString() {
-	  return " new state: " + command + " files: " + changedFiles;
+	  return " new state: " + gitCmdState + " files: " + changedFiles;
 	}
 	
 	public Collection<String> getChangedFiles() {
