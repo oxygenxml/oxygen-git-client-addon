@@ -53,7 +53,7 @@ public class RevCommitUtil {
     List<FileStatus> changedFiles = Collections.emptyList();
     try {
       Repository repository = GitAccess.getInstance().getRepository();
-      if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != commitID) {
+      if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitID)) {
         ObjectId head = repository.resolve(commitID);
 
         try (RevWalk rw = new RevWalk(repository)) {
@@ -146,9 +146,8 @@ public class RevCommitUtil {
    * @return All the files present in the repository at the time of that commit.
    * 
    * @throws IOException If it fails.
-   * @throws GitAPIException If it fails.
    */
-  private static List<FileStatus> getFiles(Repository repository, RevCommit commit) throws IOException, GitAPIException {
+  private static List<FileStatus> getFiles(Repository repository, RevCommit commit) throws IOException {
     List<FileStatus> collect = new LinkedList<>();
 
     try (DiffFormatter diffFmt = new DiffFormatter(NullOutputStream.INSTANCE)) {
@@ -173,7 +172,7 @@ public class RevCommitUtil {
    * @throws IOException Unable to retrieve commit information.
    */
   public static RevCommit[] getParents(Repository repository, String commitID) throws IOException {
-    if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != commitID) {
+    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitID)) {
       ObjectId head = repository.resolve(commitID);
 
       try (RevWalk rw = new RevWalk(repository)) {
@@ -183,6 +182,6 @@ public class RevCommitUtil {
       }
     }
 
-    return null;
+    return new RevCommit[0];
   }
 }

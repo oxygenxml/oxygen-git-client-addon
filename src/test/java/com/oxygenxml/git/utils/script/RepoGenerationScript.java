@@ -24,7 +24,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -233,7 +232,6 @@ public class RepoGenerationScript {
     }
   }
 
-  @Test
   public void generateGitRepository() throws Exception {
     RepoGenerationScript script = loadScript(
         "<script>\n" + 

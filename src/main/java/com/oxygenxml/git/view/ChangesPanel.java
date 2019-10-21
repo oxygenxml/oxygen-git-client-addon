@@ -30,17 +30,10 @@ import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.ToolTipManager;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -67,8 +60,6 @@ import com.oxygenxml.git.view.event.StageController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
 
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -167,12 +158,6 @@ public class ChangesPanel extends JPanel {
 	 */
 	private Translator translator = Translator.getInstance();
 
-	/**
-	 * Image utilities.
-	 */
-	private ImageUtilities imageUtilities = 
-	    PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-	
 	/**
 	 * <code>true</code> if the contextual menu is showing for the resources in the tree view.
 	 */
@@ -430,7 +415,7 @@ public class ChangesPanel extends JPanel {
 		addChangeAllButton(gbc);
 		addSwitchViewButton(gbc);
 
-		addSwitchButtonListener();
+		addSwitchViewButtonListener();
 		addChangeSelectedButtonListener();
 		addChangeAllButtonListener();
 		addTreeMouseListener();
@@ -511,12 +496,7 @@ public class ChangesPanel extends JPanel {
 	 * will be opened in the Oxygen
 	 */
 	private void addTreeMouseListener() {
-	  tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-      @Override
-      public void valueChanged(TreeSelectionEvent e) {
-        toggleSelectedButton();
-      }
-    });
+	  tree.getSelectionModel().addTreeSelectionListener(e -> toggleSelectedButton());
 	  
 	  tree.addMouseListener(new MouseAdapter() {
 	    @Override
@@ -693,19 +673,15 @@ public class ChangesPanel extends JPanel {
 	 * in the staging or unstaging area, depending on the forStaging variable
 	 */
 	private void addChangeAllButtonListener() {
-		changeAllButton.addActionListener(new ActionListener() {
-
-			@Override
-      public void actionPerformed(ActionEvent e) {
-			  if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
-			    StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
-			    fileTableModel.switchAllFilesStageState();
-			  } else {
-			    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-			    treeModel.switchAllFilesStageState();
-			  }
-			}
-		});
+		changeAllButton.addActionListener(e -> {
+      if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+        StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
+        fileTableModel.switchAllFilesStageState();
+      } else {
+        StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+        treeModel.switchAllFilesStageState();
+      }
+    });
 	}
 
 	/**
@@ -714,7 +690,8 @@ public class ChangesPanel extends JPanel {
 	 * forStaging variable
 	 */
 	private void addChangeSelectedButtonListener() {
-		changeSelectedButton.addActionListener(new ActionListener() {
+		changeSelectedButton.addActionListener(
+		    new ActionListener() { // NOSONAR
 			@Override
       public void actionPerformed(ActionEvent e) {
 			  List<FileStatus> fileStatuses = new ArrayList<>();
@@ -751,15 +728,12 @@ public class ChangesPanel extends JPanel {
 	 * will change. Also the selected files will be selected in the new view (the
 	 * selection is preserved between the view changes)
 	 */
-	private void addSwitchButtonListener() {
-		switchViewButton.addActionListener(new ActionListener() {
-			@Override
-      public void actionPerformed(ActionEvent e) {
-				setResourcesViewMode(currentViewMode == ResourcesViewMode.FLAT_VIEW ? 
-				    ResourcesViewMode.TREE_VIEW : ResourcesViewMode.FLAT_VIEW);
-				isContextMenuShowing = false;
-			}
-		});
+	private void addSwitchViewButtonListener() {
+		switchViewButton.addActionListener(e -> {
+    	setResourcesViewMode(currentViewMode == ResourcesViewMode.FLAT_VIEW ? 
+    	    ResourcesViewMode.TREE_VIEW : ResourcesViewMode.FLAT_VIEW);
+    	isContextMenuShowing = false;
+    });
 	}
 
 	/**
@@ -980,12 +954,9 @@ public class ChangesPanel extends JPanel {
 		filesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(stageController, forStagedResources), ()-> isContextMenuShowing);
 		
 
-		filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-        if (!e.getValueIsAdjusting()) {
-          toggleSelectedButton();
-        }
+		filesTable.getSelectionModel().addListSelectionListener(e -> {
+      if (!e.getValueIsAdjusting()) {
+        toggleSelectedButton();
       }
     });
 		
@@ -1174,12 +1145,10 @@ public class ChangesPanel extends JPanel {
 	 * something is selected in the current view(flat or tree)
 	 */
 	private void toggleSelectedButton() {
-		if (currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable.getSelectedRowCount() > 0
-				|| currentViewMode == ResourcesViewMode.TREE_VIEW && tree.getSelectionCount() > 0) {
-			changeSelectedButton.setEnabled(true);
-		} else {
-			changeSelectedButton.setEnabled(false);
-		}
+		boolean isEnabled = 
+		    currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable.getSelectedRowCount() > 0
+				    || currentViewMode == ResourcesViewMode.TREE_VIEW && tree.getSelectionCount() > 0;
+			changeSelectedButton.setEnabled(isEnabled);
 	}
 
 	public JButton getChangeSelectedButton() {

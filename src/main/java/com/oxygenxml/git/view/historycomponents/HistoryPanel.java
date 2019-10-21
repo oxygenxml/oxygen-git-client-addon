@@ -290,7 +290,7 @@ public class HistoryPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         try {
           URL fileURL = null;
-          if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != revisionID) {
+          if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(revisionID)) {
             fileURL = GitRevisionURLHandler.encodeURL(revisionID, filePath);
           } else {
             fileURL = FileHelper.getFileURL(filePath);
@@ -319,7 +319,7 @@ public class HistoryPanel extends JPanel {
       FileStatus fileStatus,
       boolean addFileName) {
     String filePath = fileStatus.getFileLocation();
-    if (GitAccess.UNCOMMITED_CHANGES.getCommitId() != commitCharacteristics.getCommitId()) {
+    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
       // A revision.
       List<String> parents = commitCharacteristics.getParentCommitId();
       if (parents != null && !parents.isEmpty()) {

@@ -25,8 +25,8 @@ import com.oxygenxml.git.service.RebaseConflictsException;
 import com.oxygenxml.git.service.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 import com.oxygenxml.git.view.dialog.PullStatusAndFilesDialog;
+import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -247,7 +247,7 @@ public class PushPullController implements Subject<PushPullEvent> {
     /**
      * Push or pull, depending on the implementation.
      */
-    protected abstract String doOperation(UserCredentials userCredentials) throws CheckoutConflictException, GitAPIException;
+    protected abstract String doOperation(UserCredentials userCredentials) throws GitAPIException;
 
   }
 
@@ -265,7 +265,7 @@ public class PushPullController implements Subject<PushPullEvent> {
      */
     @Override
     protected String doOperation(UserCredentials userCredentials)
-        throws CheckoutConflictException, GitAPIException {
+        throws  GitAPIException {
       PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
       String message = "";
       if (Status.OK == response.getStatus()) {
@@ -306,7 +306,7 @@ public class PushPullController implements Subject<PushPullEvent> {
      * @throws GitAPIException
      */
     @Override
-    protected String doOperation(UserCredentials userCredentials) throws CheckoutConflictException, GitAPIException {
+    protected String doOperation(UserCredentials userCredentials) throws GitAPIException {
       String message = "";
 
       RepositoryState repositoryState = null;

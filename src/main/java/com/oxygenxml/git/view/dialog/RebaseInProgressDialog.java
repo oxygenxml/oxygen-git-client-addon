@@ -3,7 +3,6 @@ package com.oxygenxml.git.view.dialog;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
@@ -11,6 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
@@ -19,7 +19,6 @@ import com.oxygenxml.git.view.HiDPIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Dialog shown when an operation is tried to be performed
@@ -53,7 +52,7 @@ public class RebaseInProgressDialog extends JDialog {
     
     createGUI();
 
-    setDefaultCloseOperation(OKCancelDialog.DISPOSE_ON_CLOSE);
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     if (parentFrame != null) {
       setLocationRelativeTo(parentFrame);
     }
@@ -96,12 +95,9 @@ public class RebaseInProgressDialog extends JDialog {
    * @return "Continue rebase" action listener.
    */
   private ActionListener createContinueActionListener() {
-    return new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setVisible(false);
-        GitAccess.getInstance().continueRebase();
-      }
+    return e -> {
+      setVisible(false);
+      GitAccess.getInstance().continueRebase();
     };
   }
   
@@ -109,12 +105,9 @@ public class RebaseInProgressDialog extends JDialog {
    * @return "Abort rebase" action listener.
    */
   private ActionListener createAbortRebaseActionListener() {
-    return new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setVisible(false);
-        GitAccess.getInstance().abortRebase();
-      }
+    return e -> {
+      setVisible(false);
+      GitAccess.getInstance().abortRebase();
     };
   }
   
@@ -122,12 +115,7 @@ public class RebaseInProgressDialog extends JDialog {
    * @return Cancel action listener.
    */
   private ActionListener createCancelActionListener() {
-    return new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setVisible(false);
-      }
-    };
+    return e -> setVisible(false);
   }
   
   /**
@@ -184,13 +172,11 @@ public class RebaseInProgressDialog extends JDialog {
    */
   @Override
   public void setVisible(boolean visible) {
-    if (visible) {
-      if (!dlgHiDPIUpdated) {
-        if (HiDPIUtil.isRetinaNoImplicitSupport()) {
-          HiDPIUtil.updateComponentsForHiDPI(getContentPane(), true);
-          dlgHiDPIUpdated = true;
-        }
-      }
+    if (visible
+        && !dlgHiDPIUpdated
+        && HiDPIUtil.isRetinaNoImplicitSupport()) {
+      HiDPIUtil.updateComponentsForHiDPI(getContentPane(), true);
+      dlgHiDPIUpdated = true;
     }
     super.setVisible(visible);
   }

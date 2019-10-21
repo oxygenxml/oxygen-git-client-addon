@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLInputFactory;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -199,6 +200,7 @@ public class PanelRefresh implements GitRefreshSupport {
 		  // Parse the XML file to detected the referred resources.
 		  SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 		  SAXParser saxParser = saxParserFactory.newSAXParser();
+		  saxParser.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
 			XPRHandler handler = new XPRHandler();
 			
 			File xmlFile = new File(projectDir, projectXprName);

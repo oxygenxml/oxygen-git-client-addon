@@ -2,7 +2,7 @@ package com.oxygenxml.git.view.renderer;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -10,7 +10,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.renderer.RenderingInfo;
 
 /**
  * Renderer for the staged/unstaged tables.
@@ -19,13 +18,13 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
   /**
    * Tells if a contextual menu is presented over the table.
    */
-  private Supplier<Boolean> contextMenuShowing;
+  private BooleanSupplier contextMenuShowing;
   /**
    * Constructor.
    * 
    * @param contextMenuShowing Tells if a contextual menu is presented over the table.
    */
-  public StagingResourcesTableCellRenderer(Supplier<Boolean> contextMenuShowing) {
+  public StagingResourcesTableCellRenderer(BooleanSupplier contextMenuShowing) {
     this.contextMenuShowing = contextMenuShowing;
   }
   
@@ -66,7 +65,7 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
     if (table.isRowSelected(row)) {
       if (table.hasFocus()) {
         tableCellRendererComponent.setBackground(table.getSelectionBackground());
-      } else if (!contextMenuShowing.get()) {
+      } else if (!contextMenuShowing.getAsBoolean()) {
         Color defaultColor = table.getSelectionBackground();
         tableCellRendererComponent.setBackground(RendererUtil.getInactiveSelectionColor(table, defaultColor));
       }

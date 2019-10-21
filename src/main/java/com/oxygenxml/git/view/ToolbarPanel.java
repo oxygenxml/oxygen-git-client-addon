@@ -472,7 +472,7 @@ public class ToolbarPanel extends JPanel {
 		      + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
 		      + " "
 		      + branchInfo.getBranchName();
-		  if (repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
+		  if (repo != null && repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
 		    tooltipText += "<br>" + translator.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
 		  }
 		  tooltipText += "</html>";

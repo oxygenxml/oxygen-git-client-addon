@@ -1,6 +1,6 @@
 package com.oxygenxml.git.view.dialog;
 
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 import javax.swing.Icon;
 import javax.swing.JTable;
@@ -105,7 +105,7 @@ public class UIUtil {
    */
   public static JTable createResourcesTable(
       StagingResourcesTableModel fileTableModel, 
-      Supplier<Boolean> contextMenuShowing) {
+      BooleanSupplier contextMenuShowing) {
     JTable table = UIUtil.createTable();
     table.setModel(fileTableModel);
     

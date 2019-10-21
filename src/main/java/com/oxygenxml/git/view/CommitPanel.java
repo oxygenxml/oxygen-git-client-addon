@@ -15,7 +15,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -49,9 +48,6 @@ import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.Subject;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.images.ImageUtilities;
 
 /**
  * Panel to insert the commit message and commit the staged files. 
@@ -142,7 +138,8 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	}
 
 	private void addCommitButtonListener() {
-		commitButton.addActionListener(new ActionListener() {
+		commitButton.addActionListener(
+		    new ActionListener() { // NOSONAR
 
 			@Override
       public void actionPerformed(ActionEvent e) {
@@ -209,7 +206,8 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		
 		previousMessages.setSelectedItem(getCommitHistoryHint());
 		
-		previousMessages.addItemListener(new ItemListener() {
+		previousMessages.addItemListener(
+		    new ItemListener() { // NOSONAR
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED
@@ -411,6 +409,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	/**
 	 * Renderer for the combo box presenting the previous commit messages. 
 	 */
+	@SuppressWarnings("squid:MaximumInheritanceDepth")
 	private static final class PreviousMessagesToolTipRenderer extends DefaultListCellRenderer {
 
 	  /**

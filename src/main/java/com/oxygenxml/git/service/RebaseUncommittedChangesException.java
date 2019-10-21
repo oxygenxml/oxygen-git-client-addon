@@ -6,7 +6,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 public class RebaseUncommittedChangesException extends GitAPIException {
 
-  private List<String> uncommittedChanges;
+  private final List<String> uncommittedChanges;
   
   public RebaseUncommittedChangesException(List<String> uncommittedChanges) {
     super("");

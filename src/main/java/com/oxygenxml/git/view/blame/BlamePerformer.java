@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.blame;
 import java.awt.Color;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -78,6 +79,10 @@ public class BlamePerformer {
    * Caret listener added on the text page.
    */
   private CaretListener caretListener;
+  /**
+   * Random number generator.
+   */
+  private Random rand = new SecureRandom();
   
   /**
    * Computes the blame for the given resource and adds highlights on the editor.
@@ -125,8 +130,8 @@ public class BlamePerformer {
     BlameCommand blamer = new BlameCommand(repository);
     
     // This is how you do it on a specific commit. If left out, it's performed on the WC instance.
-//    ObjectId commitID = repository.resolve("HEAD~~");
-//    blamer.setStartCommit(commitID);
+//    ObjectId commitID = repository.resolve("HEAD~~"); NOSONAR
+//    blamer.setStartCommit(commitID); NOSONAR
     blamer.setFilePath(filePath);
     BlameResult blame = blamer.call();
     textpage = currentPage;
@@ -238,8 +243,6 @@ public class BlamePerformer {
    */
   private  HighlightPainter getPainter(RevCommit rev, WSTextEditorPage textpage) {
     return painters.computeIfAbsent(rev.getId().name(), name1 -> {
-      Random rand = new Random();
-      
       float r = rand.nextFloat();
       float g = rand.nextFloat();
       float b = rand.nextFloat();

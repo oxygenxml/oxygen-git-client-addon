@@ -72,7 +72,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	/**
    * History view.
    */
-  public HistoryPanel historyView;
+  private HistoryPanel historyView;
 	
 	/**
 	 * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)

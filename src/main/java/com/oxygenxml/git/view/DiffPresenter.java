@@ -45,6 +45,13 @@ public class DiffPresenter {
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(DiffPresenter.class);
+	
+	/**
+	 * Avoid instantiation.
+	 */
+	public DiffPresenter() {
+	  // Nada
+	}
 
 	/**
 	 * Perform different actions depending on the file change type. If the file is

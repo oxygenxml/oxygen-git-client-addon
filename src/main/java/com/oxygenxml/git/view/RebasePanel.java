@@ -65,15 +65,11 @@ public class RebasePanel extends JPanel {
         0));
 
     Button abortRebaseButton = new Button(translator.getTranslation(Tags.ABORT_REBASE));
-    abortRebaseButton.addActionListener(e -> {
-      GitAccess.getInstance().abortRebase();
-    });
+    abortRebaseButton.addActionListener(e -> GitAccess.getInstance().abortRebase());
     add(abortRebaseButton);
 
     Button continueRebaseButton = new Button(translator.getTranslation(Tags.CONTINUE_REBASE));
-    continueRebaseButton.addActionListener(e -> {
-      GitAccess.getInstance().continueRebase();
-    });
+    continueRebaseButton.addActionListener(e -> GitAccess.getInstance().continueRebase());
     add(continueRebaseButton);
   }
   

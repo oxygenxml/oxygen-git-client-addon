@@ -50,8 +50,6 @@ import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.dircache.DirCache;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoMergeBaseException;
 import org.eclipse.jgit.errors.NoMergeBaseException.MergeBaseFailureReason;
 import org.eclipse.jgit.errors.NoWorkTreeException;
@@ -966,7 +964,7 @@ public class GitAccess {
 	    PushResult result = results.next();
 	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
 	      response.setStatus(info.getStatus());
-	      return response;
+	      return response; // NOSONAR
 	    }
 	  }
 
@@ -1932,7 +1930,7 @@ public class GitAccess {
    * 
    * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
    */
-	public String getUpstreamBranchShortName(String localBranchShortName) throws NoRepositorySelected {
+	public String getUpstreamBranchShortName(String localBranchShortName) {
 	  String remoteTrackingBranch = getUpstreamBranchName(localBranchShortName);
 
 	  if (remoteTrackingBranch != null) {
@@ -2202,15 +2200,14 @@ public class GitAccess {
 	 * Map shows: key = commitID, value = list of tag names.
 	 * 
 	 * @param repository The current repository.
-	 * @return
-	 * @throws IOException
-	 * @throws MissingObjectException
-	 * @throws IncorrectObjectTypeException
+	 * 
+	 * @return the map, never <code>null</code>.
+	 * 
 	 * @throws GitAPIException
-	 * @throws NoHeadException
+	 * @throws IOException
 	 */
 	public Map<String, List<String>> getTagMap(Repository repository)
-			throws IOException, MissingObjectException, IncorrectObjectTypeException, GitAPIException, NoHeadException {
+			throws GitAPIException, IOException {
 		Map<String, List<String>> commitTagMap = new LinkedHashMap<>();
 		List<Ref> call = git.tagList().call();
 		
@@ -2251,7 +2248,7 @@ public class GitAccess {
 		Map<String, List<String>> branchMap = new LinkedHashMap<>();
 		
 		List<Ref> localBranchList = null;
-		String prefix = null;
+		String prefix = "";
 		if (branchType.equals(LOCAL)) {
 			localBranchList = getLocalBranchList();
 			prefix = "heads/";
