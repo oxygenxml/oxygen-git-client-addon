@@ -436,7 +436,7 @@ public class FlatView2Test extends FlatViewTestBase {
         "Abort rebase");
     abortBtn.doClick();
     flushAWT();
-    sleep(300);
+    sleep(500);
     
     interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
     assertNull(interruptedRebaseDlg);
@@ -531,7 +531,7 @@ public class FlatView2Test extends FlatViewTestBase {
         "Cancel");
     abortBtn.doClick();
     flushAWT();
-    sleep(300);
+    sleep(500);
     
     interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
     assertNull(interruptedRebaseDlg);
@@ -672,7 +672,7 @@ public class FlatView2Test extends FlatViewTestBase {
           "Continue rebase");
       continueBtn.doClick();
       flushAWT();
-      sleep(300);
+      sleep(500);
 
       rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);
       assertNull(rebaseInProgressDlg);
