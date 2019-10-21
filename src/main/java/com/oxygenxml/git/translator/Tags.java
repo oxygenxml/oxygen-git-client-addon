@@ -772,4 +772,20 @@ public class Tags {
    * en: Show blame
    */
   public static final String SHOW_BLAME = "Show_blame";
+  /**
+   * History table column name. The person that made that commit.
+   */
+  public static final String PARENTS = "Parents";
+  /**
+   * 
+   */
+  public static final String AUTHOR = "Author";
+  /**
+   * History table column name.
+   */
+  public static final String DATE = "Date";
+  /**
+   * History table column name.
+   */
+  public static final String COMMITTER = "Comitter";
 }

@@ -18,6 +18,8 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 
 public class RowHistoryTableSelectionListener implements ListSelectionListener {
@@ -29,11 +31,6 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	/*
 	 * The fields of commitDescription EditorPane.
 	 */
-	private final static String COMMIT = "Commit";
-	private final static String PARENTS = "Parents";
-	private final static String AUTHOR = "Author";
-	private final static String DATE = "Date";
-	private final static String COMMITTER = "Comitter";
 	
 	/**
 	 * Fake commit URL to search for parents when using hyperlink.
@@ -59,8 +56,17 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 * Coalescing for selecting the row in HistoryTable.
 	 */
 	private static final int TIMER_DELAY = 500;
-	private ActionListener rowTableTimerListener = new TableTimerListener();
-	private Timer updateTableTimer = new Timer(TIMER_DELAY, rowTableTimerListener);
+	/**
+	 * Coalescing listener for updating commit related data.
+	 */
+	private ActionListener descriptionUpdateListener = new TableTimerListener();
+	/**
+	 * Coalescing support for updating commit related data.
+	 */
+	private Timer descriptionUpdateTimer = new Timer(TIMER_DELAY, descriptionUpdateListener);
+	/**
+	 * Table that presents the resources changed inside a commit.
+	 */
   private JTable changesTable;
 
 	/**
@@ -77,7 +83,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 			List<CommitCharacteristics> commits, 
 			JTable changesTable) {
 		this.changesTable = changesTable;
-    this.updateTableTimer.setRepeats(false);
+    this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
 		this.allCommits = commits;
@@ -85,7 +91,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		updateTableTimer.restart();
+		descriptionUpdateTimer.restart();
 	}
 
 	/**
@@ -109,13 +115,13 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		  StringBuilder commitDescription = new StringBuilder();
 		  // Case for already committed changes.
 		  if (commitCharacteristics.getCommitter() != null) {
-		    commitDescription.append("<html><b>").append(COMMIT).append("</b>: ")
+		    commitDescription.append("<html><b>").append(Translator.getInstance().getTranslation(Tags.COMMIT)).append("</b>: ")
 		    .append(commitCharacteristics.getCommitId())
 		    .append(" [").append(commitCharacteristics.getCommitAbbreviatedId()).append("]");
 
 		    // Add all parent commit IDs to the text
 		    if (commitCharacteristics.getParentCommitId() != null) {
-		      commitDescription.append("<br> <b>").append(PARENTS).append("</b>: ");
+		      commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.PARENTS)).append("</b>: ");
 		      int parentSize = commitCharacteristics.getParentCommitId().size();
 
 		      for (int j = 0; j < parentSize - 1; j++) {
@@ -125,9 +131,9 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		      commitDescription.append("<a href=\" ").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("\">")
 		      .append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("</a> ");
 		    }
-		    commitDescription.append("<br> <b>").append(AUTHOR).append("</b>: ").append(commitCharacteristics.getAuthor()).append("<br>") 
-		    .append("<b>").append(DATE).append("</b>: ").append(commitCharacteristics.getDate()).append("<br>") 
-		    .append("<b>").append(COMMITTER).append("</b>: ").append(commitCharacteristics.getCommitter()).append("<br><br>")
+		    commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR)).append("</b>: ").append(commitCharacteristics.getAuthor()).append("<br>") 
+		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.DATE)).append("</b>: ").append(commitCharacteristics.getDate()).append("<br>") 
+		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ").append(commitCharacteristics.getCommitter()).append("<br><br>")
 		    .append(commitCharacteristics.getCommitMessage()).append("</html>");
 		  }
 		  commitDescriptionPane.setText(commitDescription.toString());

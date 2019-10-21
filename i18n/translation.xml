@@ -4,6 +4,38 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Comitter">
+        <comment>History table column name.</comment>
+        <val lang="en_US">Comitter</val>
+        <val lang="de_DE">Comitter</val>
+        <val lang="fr_FR">Comitter</val>
+        <val lang="ja_JP">Comitter</val>
+        <val lang="nl_NL">Comitter</val>
+    </key>
+    <key value="Date">
+        <comment>History table column name.</comment>
+        <val lang="en_US">Date</val>
+        <val lang="de_DE">Date</val>
+        <val lang="fr_FR">Date</val>
+        <val lang="ja_JP">Date</val>
+        <val lang="nl_NL">Date</val>
+    </key>
+    <key value="Author">
+        <comment>History table column name. The person that made that commit.</comment>
+        <val lang="en_US">Author</val>
+        <val lang="de_DE">Author</val>
+        <val lang="fr_FR">Author</val>
+        <val lang="ja_JP">Author</val>
+        <val lang="nl_NL">Author</val>
+    </key>
+    <key value="Parents">
+        <comment>History table label.</comment>
+        <val lang="en_US">Parents</val>
+        <val lang="de_DE">Parents</val>
+        <val lang="fr_FR">Parents</val>
+        <val lang="ja_JP">Parents</val>
+        <val lang="nl_NL">Parents</val>
+    </key>
     <key value="Pull_rebase_failed_because_uncommitted">
         <comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
         <val lang="en_US">Cannot pull with rebase because of the following uncommitted files:</val>
