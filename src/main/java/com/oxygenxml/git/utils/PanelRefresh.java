@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.SwingUtilities;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -146,7 +147,6 @@ public class PanelRefresh implements GitRefreshSupport {
 	        && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectView)) {
 	      // Mark this project as tested.
 	      lastSelectedProject = projectView;
-	      try {
 	        boolean repoLoaded = checkForGitRepositoriesUpAndDownFrom(projectView);
 
 	        repoChanged = repoLoaded;
@@ -168,12 +168,6 @@ public class PanelRefresh implements GitRefreshSupport {
 	          // Don't ask the user again.
 	          OptionsManager.getInstance().saveProjectTestedForGit(projectView);
 	        }
-
-	      } catch (IOException e) {
-	        if (logger.isDebugEnabled()) {
-	          logger.debug(e, e);
-	        }
-	      }
 	    }
 	  }
     
@@ -191,13 +185,14 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * @throws FileNotFoundException The project file doesn't exist.
 	 * @throws IOException A Git repository was detected but not loaded.
 	 */
-	private boolean checkForGitRepositoriesUpAndDownFrom(String projectDir) throws IOException {
+	private boolean checkForGitRepositoriesUpAndDownFrom(String projectDir) {
 	  boolean projectPahtIsGit = false;
 		String projectName = EditorVariables.expandEditorVariables("${pn}", null);
 		String projectXprName = projectName + ".xpr";
 		try {
 		  // Parse the XML file to detected the referred resources.
 		  SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+		  saxParserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING , true);
 		  SAXParser saxParser = saxParserFactory.newSAXParser();
 			XPRHandler handler = new XPRHandler();
 			
