@@ -82,7 +82,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	  this.pluginWorkspaceAccess = pluginWorkspaceAccess;
 		try {
 		  // Uncomment this to start with fresh options. For testing purposes
-//			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null);
+//			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null); NOSONAR
 
 		  if (!"true".equals(System.getProperty(GitAddonSystemProperties.USE_JSCH_FOR_SSH_OPERATIONS))) {
   		  org.eclipse.jgit.transport.SshSessionFactory.setInstance(
@@ -97,7 +97,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			    pluginWorkspaceAccess,
 			    new GitMenuActionsProvider(pluginWorkspaceAccess, stageController));
 
-			pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
+			pluginWorkspaceAccess.addViewComponentCustomizer(
+			    new ViewComponentCustomizer() {// NOSONAR
 				/**
 				 * @see ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer#customizeView(ro.sync.exml.workspace.api.standalone.ViewInfo)
 				 */
@@ -182,7 +183,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 				@Override
 				public void windowDeactivated(WindowEvent e) {
 					super.windowDeactivated(e);
-					SwingUtilities.invokeLater(new Runnable() {
+					SwingUtilities.invokeLater(
+					    new Runnable() { // NOSONAR
 					  @Override
 						public void run() {
 							Object focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
@@ -208,7 +210,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
         }
       });
 			
-		} catch (Throwable t) {
+		} catch (Throwable t) { // NOSONAR
 			// Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
 			pluginWorkspaceAccess.showErrorMessage(t.getMessage());
 			logger.fatal(t, t);

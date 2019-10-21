@@ -60,7 +60,7 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  * @author alex_jitianu
  */
 @Ignore
-public class GitTestBase extends JFCTestCase {
+public class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * Logger for logging.
    */

@@ -11,13 +11,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -42,7 +40,6 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -122,13 +119,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	          }
 	          workingCopyCombo.removeItem(repo.getAbsoluteFile());
 
-	          SwingUtilities.invokeLater(new Runnable() {
-	            @Override
-	            public void run() {
-	              PluginWorkspaceProvider.getPluginWorkspace()
-	              .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND));
-	            }
-	          });
+	          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
+	                .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND)));
 	        } else if (ex instanceof IOException) {
 	          JOptionPane.showMessageDialog(
 	              (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
@@ -228,7 +220,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * new working copy is selected this listener will execute
 	 */
 	private void addWorkingCopySelectorListener() {
-	  workingCopyCombo.addItemListener(new ItemListener() {
+	  workingCopyCombo.addItemListener(
+	      new ItemListener() { // NOSONAR
 	    @Override
 	    public void itemStateChanged(ItemEvent e) {
 	      // Don't do anything if the event was originated by us.
@@ -257,7 +250,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 *          - the button to add a file chooser on
 	 */
 	private void addFileChooserOn(JButton button) {
-		button.addActionListener(new ActionListener() {
+		button.addActionListener(
+		    new ActionListener() { // NOSONAR
 
 			@Override
       public void actionPerformed(ActionEvent e) {

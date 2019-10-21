@@ -37,7 +37,7 @@ public class HistoryHyperlinkListener implements HyperlinkListener {
 		// select the row of parent commit in history Table
 		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			String query = event.getURL().getQuery();
-			int parentStringIdx = query.indexOf("=") + 1;
+			int parentStringIdx = query.indexOf('=') + 1;
 			String parentCommitId = query.substring(parentStringIdx);
 			int parentTableIndex = CommitCharacteristics.getCommitTableIndex(commits, parentCommitId);
 			if (parentTableIndex != -1) {

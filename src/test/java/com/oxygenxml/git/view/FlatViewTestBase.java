@@ -25,7 +25,7 @@ import com.oxygenxml.git.view.event.StageController;
 * on the staged/unstaged resources seen in the flat view.
 */
 @Ignore
-public class FlatViewTestBase extends GitTestBase {
+public class FlatViewTestBase extends GitTestBase { // NOSONAR
   /**
    * Access to the Git API.
    */

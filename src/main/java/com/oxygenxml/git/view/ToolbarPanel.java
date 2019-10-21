@@ -189,11 +189,7 @@ public class ToolbarPanel extends JPanel {
 	    @Override
       public void repositoryChanged() {
 	      // Repository changed. Update the toolbar buttons.
-	      if (gitRepoHasSubmodules()) {
-	        submoduleSelectButton.setEnabled(true);
-	      } else {
-	        submoduleSelectButton.setEnabled(false);
-	      }
+	      submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
 
 	      // Update the toobars.
 	      // calculate how many pushes ahead and pulls behind the current
@@ -324,11 +320,7 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton();
 		addSubmoduleSelectButton();
-		if (gitRepoHasSubmodules()) {
-			submoduleSelectButton.setEnabled(true);
-		} else {
-			submoduleSelectButton.setEnabled(false);
-		}
+		submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
 		addHistoryButton(historyController);
 		this.add(gitToolbar, gbc);
 

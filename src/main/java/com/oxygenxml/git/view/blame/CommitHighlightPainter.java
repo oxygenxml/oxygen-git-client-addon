@@ -94,14 +94,14 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
       Rectangle p1 = mapper.modelToView(textComp, endOffset);
 
       // --- render ---
-      Color color = getColor();
-
-      if (color == null) {
+      Color paintColor = getColor();
+      if (paintColor == null) {
         g.setColor(textComp.getSelectionColor());
       }
       else {
-        g.setColor(color);
+        g.setColor(paintColor);
       }
+      
       if (p0.y == p1.y) {
         // same line, render a rectangle
         Rectangle r = p0.union(p1);
@@ -136,13 +136,12 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
   @Override
   public Shape paintLayer(Graphics g, int stOffs, int endOffs,
       Shape bounds, JTextComponent textComp, View view) {
-    Color color = getColor();
-
-    if (color == null) {
+    Color paintColor = getColor();
+    if (paintColor == null) {
       g.setColor(textComp.getSelectionColor());
     }
     else {
-      g.setColor(color);
+      g.setColor(paintColor);
     }
 
     Rectangle rect;

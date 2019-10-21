@@ -281,12 +281,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 				// The focus is somewhere in he view.
 				if (!inTheView) {
 				  // EXM-40880: Invoke later so that the focus event gets processed.
-				  SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              refreshSupport.call();
-            }
-          });
+				  SwingUtilities.invokeLater(() -> refreshSupport.call());
 				}
 
 				inTheView = true;
@@ -430,7 +425,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 	@Override
   public void stateChanged(PushPullEvent pushPullEvent) {
-	  SwingUtilities.invokeLater(new Runnable() {
+	  SwingUtilities.invokeLater(
+	      new Runnable() { // NOSONAR
       @Override
       public void run() {
         if (pushPullEvent.getActionStatus() == ActionStatus.STARTED) {

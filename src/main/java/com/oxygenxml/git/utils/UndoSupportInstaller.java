@@ -36,7 +36,7 @@ public class UndoSupportInstaller {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(UndoSupportInstaller.MyCompoundEdit.class.getName());
+  private static final Logger logger = Logger.getLogger(UndoSupportInstaller.class.getName());
 
   private static class MyCompoundEdit extends CompoundEdit {
   	boolean isUnDone = false;

@@ -29,7 +29,7 @@ public class StageController {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(GitAccess.class);
+  private static Logger logger = Logger.getLogger(StageController.class);
   
   /**
    * Translator for the UI.
