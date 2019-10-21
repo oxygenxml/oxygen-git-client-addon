@@ -65,7 +65,7 @@ public class PushPullController implements Subject<PushPullEvent> {
   private ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(1);
 
 	/**
-	 * Execute an push or pull action, depending on the given command.	 * 
+	 * Execute an push or pull action, depending on the given command.
 	 * 
 	 * @param command The command runnable to execute.
 	 * 

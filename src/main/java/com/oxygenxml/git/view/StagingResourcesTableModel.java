@@ -195,7 +195,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 */
 	public void stateChanged(ChangeEvent changeEvent) {
 	  if (logger.isDebugEnabled()) {
-	    logger.debug("Change event " + (inIndex ? " un-staged " : "staged  ") + changeEvent);
+	    logger.debug("Change event in the " + (inIndex ? "'unstaged'" : "'staged'") + " area: " + changeEvent);
 	  }
 	  
 		List<FileStatus> newStates = 
