@@ -500,7 +500,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTableModels("", "");
 
     // Check the commit.
-    CommitPanel commitPanel = stagingPanel.getCommitPanel();
+    CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
     flushAWT();
     sleep(1000);
     assertEquals("Conclude_Merge_Message", commitPanel.getCommitMessage().getText());

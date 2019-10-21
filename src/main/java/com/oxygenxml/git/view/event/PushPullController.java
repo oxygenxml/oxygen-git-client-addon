@@ -162,9 +162,9 @@ public class PushPullController implements Subject<PushPullEvent> {
   }
   
   /**
-   * Show the "Interrupted rebase" dialog. It allows the user to continue or abort the rebase.
+   * Show the "Rebase in progress" dialog. It allows the user to continue or abort the rebase.
    */
-  protected void showInterruptedRebaseDialog() {
+  protected void showRebaseInProgressDialog() {
     new RebaseInProgressDialog().setVisible(true);
   }
 
@@ -326,7 +326,7 @@ public class PushPullController implements Subject<PushPullEvent> {
             .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
       } else if (repositoryState == RepositoryState.REBASING_MERGE
           || repositoryState == RepositoryState.REBASING_REBASING) {
-        showInterruptedRebaseDialog();
+        showRebaseInProgressDialog();
       } else {
         PullResponse response = gitAccess.pull(
             userCredentials.getUsername(),

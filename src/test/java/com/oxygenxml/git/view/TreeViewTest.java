@@ -438,7 +438,7 @@ public class TreeViewTest extends FlatViewTestBase {
     assertTreeModels("", "");
 
     // Check the commit.
-    CommitPanel commitPanel = stagingPanel.getCommitPanel();
+    CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
     flushAWT();
     sleep(1000);
     assertEquals("Conclude_Merge_Message", commitPanel.getCommitMessage().getText());

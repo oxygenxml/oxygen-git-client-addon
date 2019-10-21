@@ -273,7 +273,7 @@ public class PanelRefresh implements GitRefreshSupport {
 
     final RepositoryStatus fStatus = status;
 	  SwingUtilities.invokeLater(() -> {
-      stagingPanel.getCommitPanel().setStatus(fStatus);
+      stagingPanel.getCommitPanel().setRepoStatus(fStatus);
       stagingPanel.getToolbarPanel().updateStatus();
     });
 	}

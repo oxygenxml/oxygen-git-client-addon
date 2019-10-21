@@ -282,7 +282,7 @@ public class GitAccessConflictTest {
         pullWithConflictsSB.append(response);
       }
       @Override
-      protected void showInterruptedRebaseDialog() {
+      protected void showRebaseInProgressDialog() {
         wasRebaseInterrupted[0] = true;
       }
     };
@@ -405,7 +405,7 @@ public class GitAccessConflictTest {
         pullWithConflictsSB.append(response);
       }
       @Override
-      protected void showInterruptedRebaseDialog() {
+      protected void showRebaseInProgressDialog() {
         wasRebaseInterrupted[0] = true;
       }
     };
@@ -529,7 +529,7 @@ public class GitAccessConflictTest {
         pullWithConflictsSB.append(response);
       }
       @Override
-      protected void showInterruptedRebaseDialog() {
+      protected void showRebaseInProgressDialog() {
         wasRebaseInterrupted[0] = true;
       }
     };
@@ -655,7 +655,7 @@ public class GitAccessConflictTest {
         pullWithConflictsSB.append(response);
       }
       @Override
-      protected void showInterruptedRebaseDialog() {
+      protected void showRebaseInProgressDialog() {
         wasRebaseInterrupted[0] = true;
       }
     };
@@ -783,7 +783,7 @@ public class GitAccessConflictTest {
         pullWithConflictsSB.append(response);
       }
       @Override
-      protected void showInterruptedRebaseDialog() {
+      protected void showRebaseInProgressDialog() {
         wasRebaseInterrupted[0] = true;
       }
     };

@@ -52,11 +52,11 @@ import com.oxygenxml.git.view.event.Subject;
 /**
  * Panel to insert the commit message and commit the staged files. 
  */
-public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
+public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEvent> {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(CommitPanel.class);
+  private static Logger logger = Logger.getLogger(CommitAndStatusPanel.class);
   /**
    * Text area for the commit message.
    */
@@ -93,7 +93,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	/**
 	 * Constructor.
 	 */
-	public CommitPanel() {
+	public CommitAndStatusPanel() {
 	  createGUI();
 	  
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
@@ -388,7 +388,7 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 	 * 
 	 * @param the current status.
 	 */
-	public void setStatus(final RepositoryStatus status) {
+	public void setRepoStatus(final RepositoryStatus status) {
 		if (RepositoryStatus.UNAVAILABLE == status) {
 			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
 		  statusLabel.setIcon(Icons.getIcon(Icons.VALIDATION_ERROR));
@@ -397,6 +397,16 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
 		  statusLabel.setIcon(null);
 		}
 	}
+	
+	/**
+   * Update the status.
+   * 
+   * @param message New status.
+   */
+  public void setStatusMessage(String message) {
+    statusLabel.setIcon(null);
+    statusLabel.setText(message);
+  }
 
 	/**
 	 * Resets the panel. Clears any selection done by the user or inserted text.
@@ -440,16 +450,6 @@ public class CommitPanel extends JPanel implements Subject<PushPullEvent> {
     return commitMessage;
   }
 
-	/**
-	 * Update the status.
-	 * 
-	 * @param message New status.
-	 */
-  public void setStatus(String message) {
-    statusLabel.setIcon(null);
-    statusLabel.setText(message);
-  }
-  
   /**
    * @return the statusLabel
    */
