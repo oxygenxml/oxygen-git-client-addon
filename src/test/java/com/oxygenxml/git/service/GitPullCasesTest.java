@@ -456,22 +456,8 @@ public class GitPullCasesTest extends GitTestBase {
         .toURI()
         .toString();
     
-    System.err.println();
-    System.err.println("================================");
-    System.err.println("repoURI.startsWith(\"file:/\"): " + repoURI.startsWith("file:/"));
-    System.err.println("!repoURI.startsWith(\"file:///\"): " + !repoURI.startsWith("file:///"));
-    System.err.println("System.getProperty(\"os.name\").toUpperCase(): " + System.getProperty("os.name").toUpperCase());
-    System.err.println("isWin: " + System.getProperty("os.name").toUpperCase().startsWith("WIN"));
-    System.err.println("================================");
-    System.err.println();
-    
-    if (repoURI.startsWith("file:/")
-        && !repoURI.startsWith("file:///")
-        // Only on Windows
-        && System.getProperty("os.name").toUpperCase().startsWith("WIN")) {
-      System.err.println("OLD: " + repoURI);
+    if (repoURI.startsWith("file:/") && !repoURI.startsWith("file:///")) {
       repoURI = "file:///" + repoURI.substring("file:/".length());
-      System.err.println("NEW: " + repoURI);
     }
     assertEquals(
         "Commits from last to first:\n" + 
