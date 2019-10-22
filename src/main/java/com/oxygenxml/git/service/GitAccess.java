@@ -1802,10 +1802,7 @@ public class GitAccess {
 	 * repository has conflicts
 	 */
 	public void restartMerge() {
-	  fireStateChanged(
-	      new GitEvent(
-	          GitCommand.MERGE_RESTART,
-	          GitCommandState.STARTED));
+	  fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.STARTED));
 	  GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
 	      RepositoryState repositoryState = getRepository().getRepositoryState();
@@ -1821,15 +1818,9 @@ public class GitAccess {
 	        git.reset().setMode(ResetType.HARD).call();
 	        git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 	      }
-	      fireStateChanged(
-	          new GitEvent(
-	              GitCommand.MERGE_RESTART,
-	              GitCommandState.SUCCESSFULLY_ENDED));
+	      fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.SUCCESSFULLY_ENDED));
 	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
-	      fireStateChanged(
-	          new GitEvent(
-	              GitCommand.MERGE_RESTART,
-	              GitCommandState.FAILED));
+	      fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.FAILED));
 	      if (logger.isDebugEnabled()) {
 	        logger.debug(e, e);
 	      }
