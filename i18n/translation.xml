@@ -566,7 +566,7 @@
     </key>
     <key value="Commit_Message_Label">
         <comment>The massage displayed above the previously committed messages combo box</comment>
-        <val lang="en_US">Message for the commit: </val>
+        <val lang="en_US">Commit message: </val>
         <val lang="de_DE">Commit-Nachricht: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
