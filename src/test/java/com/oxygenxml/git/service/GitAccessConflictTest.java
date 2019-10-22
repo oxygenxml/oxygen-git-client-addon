@@ -221,6 +221,7 @@ public class GitAccessConflictTest {
 		assertEquals(expected, actual);
 		
 		gitAccess.restartMerge();
+		Thread.sleep(1000);
 		actual = gitAccess.getRepository().getRepositoryState();
 		expected = RepositoryState.MERGING;
 		assertEquals(expected, actual);
@@ -845,6 +846,7 @@ public class GitAccessConflictTest {
     
     // Restart merge
     gitAccess.restartMerge();
+    Thread.sleep(1000);
     
     repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
