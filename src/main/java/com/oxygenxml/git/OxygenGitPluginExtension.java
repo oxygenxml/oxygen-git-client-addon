@@ -11,6 +11,7 @@ import java.io.File;
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -124,15 +125,25 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
               public void repositoryOpeningFailed(File repo, Throwable ex) {
 			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
 			        }
+			       
+			        private Timer cursorTimer = new Timer(
+			            1000,
+			            e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
 			        @Override
 			        public void stateChanged(com.oxygenxml.git.view.event.GitEvent changeEvent) {
                 GitCommand cmd = changeEvent.getGitCommand();
                 GitCommandState cmdState = changeEvent.getGitComandState();
-                if (cmd == GitCommand.CONTINUE_REBASE
-                    && (cmdState == GitCommandState.SUCCESSFULLY_ENDED
-                        || cmdState == GitCommandState.FAILED)) {
-			            gitRefreshSupport.call();
-			          }
+                if (cmdState == GitCommandState.STARTED) {
+                  cursorTimer.restart();
+                } else if (cmdState == GitCommandState.SUCCESSFULLY_ENDED
+                    || cmdState == GitCommandState.FAILED) {
+                  cursorTimer.stop();
+                  SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+                
+                  if (cmd == GitCommand.CONTINUE_REBASE) {
+                    gitRefreshSupport.call();
+                  }
+                }
 			        }
 			      });
 			      

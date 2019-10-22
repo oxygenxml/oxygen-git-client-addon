@@ -1802,40 +1802,39 @@ public class GitAccess {
 	 * repository has conflicts
 	 */
 	public void restartMerge() {
-		try {
-		  fireStateChanged(
-          new GitEvent(
-              GitCommand.MERGE_RESTART,
-              GitCommandState.STARTED,
-              Collections.<String>emptyList()));
-		  RepositoryState repositoryState = getRepository().getRepositoryState();
-			if (repositoryState == RepositoryState.REBASING_MERGE) {
-		    git.rebase().setOperation(Operation.ABORT).call();
-			  UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
-		    String username = gitCredentials.getUsername();
-		    String password = gitCredentials.getPassword();
-			  pull(username, password, PullType.REBASE);
-			} else {
-			  AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
-			git.clean().call();
-			git.reset().setMode(ResetType.HARD).call();
-			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
-			}
-			fireStateChanged(
-			    new GitEvent(
-			        GitCommand.MERGE_RESTART,
-			        GitCommandState.SUCCESSFULLY_ENDED,
-			        Collections.<String>emptyList()));
-    } catch (IOException | NoRepositorySelected | GitAPIException e) {
-      fireStateChanged(
-          new GitEvent(
-              GitCommand.MERGE_RESTART,
-              GitCommandState.FAILED,
-              Collections.<String>emptyList()));
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		}
+	  fireStateChanged(
+	      new GitEvent(
+	          GitCommand.MERGE_RESTART,
+	          GitCommandState.STARTED));
+	  GitOperationScheduler.getInstance().schedule(() -> {
+	    try {
+	      RepositoryState repositoryState = getRepository().getRepositoryState();
+	      if (repositoryState == RepositoryState.REBASING_MERGE) {
+	        git.rebase().setOperation(Operation.ABORT).call();
+	        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
+	        String username = gitCredentials.getUsername();
+	        String password = gitCredentials.getPassword();
+	        pull(username, password, PullType.REBASE);
+	      } else {
+	        AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
+	        git.clean().call();
+	        git.reset().setMode(ResetType.HARD).call();
+	        git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
+	      }
+	      fireStateChanged(
+	          new GitEvent(
+	              GitCommand.MERGE_RESTART,
+	              GitCommandState.SUCCESSFULLY_ENDED));
+	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
+	      fireStateChanged(
+	          new GitEvent(
+	              GitCommand.MERGE_RESTART,
+	              GitCommandState.FAILED));
+	      if (logger.isDebugEnabled()) {
+	        logger.debug(e, e);
+	      }
+	    }
+	  });
 	}
 
 	/**
@@ -2083,9 +2082,9 @@ public class GitAccess {
    * Aborts and resets the current rebase
    */
   public void abortRebase() {
+    fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.STARTED));
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.STARTED));
         git.rebase().setOperation(Operation.ABORT).call();
         fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.SUCCESSFULLY_ENDED));
       } catch (GitAPIException e) {
@@ -2099,12 +2098,9 @@ public class GitAccess {
    * Continue rebase after a conflict resolution.
    */
   public void continueRebase() {
+    fireStateChanged(new GitEvent(GitCommand.CONTINUE_REBASE, GitCommandState.STARTED));
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        fireStateChanged(
-            new GitEvent(
-                GitCommand.CONTINUE_REBASE,
-                GitCommandState.STARTED));
         
         RebaseResult result = git.rebase().setOperation(Operation.CONTINUE).call();
         if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {

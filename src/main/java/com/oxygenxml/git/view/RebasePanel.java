@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Component;
 import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
@@ -49,9 +50,14 @@ public class RebasePanel extends JPanel {
       @Override
       public void stateChanged(GitEvent changeEvent) {
         GitCommand cmd = changeEvent.getGitCommand();
-        if ((cmd == GitCommand.ABORT_REBASE || cmd == GitCommand.CONTINUE_REBASE)
-            && changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED) {
-          RebasePanel.this.setVisible(false);
+        if (cmd == GitCommand.ABORT_REBASE || cmd == GitCommand.CONTINUE_REBASE) {
+          GitCommandState gitComandState = changeEvent.getGitComandState();
+          if (gitComandState == GitCommandState.SUCCESSFULLY_ENDED) {
+            RebasePanel.this.setEnabled(true);
+            RebasePanel.this.setVisible(false);
+          } else if (gitComandState == GitCommandState.STARTED) {
+            RebasePanel.this.setEnabled(false);
+          }
         }
       }
     });
@@ -90,6 +96,14 @@ public class RebasePanel extends JPanel {
       logger.debug(e, e);
     }
     RebasePanel.this.setVisible(shouldBeVisible);
+  }
+  
+  @Override
+  public void setEnabled(boolean enabled) {
+    Component[] components = getComponents();
+    for (Component component : components) {
+     component.setEnabled(enabled); 
+    }
   }
   
 }
