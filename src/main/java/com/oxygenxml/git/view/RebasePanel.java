@@ -55,6 +55,8 @@ public class RebasePanel extends JPanel {
           if (gitComandState == GitCommandState.SUCCESSFULLY_ENDED) {
             RebasePanel.this.setEnabled(true);
             RebasePanel.this.setVisible(false);
+          } else if (gitComandState == GitCommandState.FAILED) {
+            RebasePanel.this.setEnabled(true);
           } else if (gitComandState == GitCommandState.STARTED) {
             RebasePanel.this.setEnabled(false);
           }
