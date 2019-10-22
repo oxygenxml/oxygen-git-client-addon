@@ -8,8 +8,8 @@ import javax.swing.AbstractAction;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitController;
 
 /**
  * Moves files inside/outside the INDEX.
@@ -29,7 +29,7 @@ public class StageUnstageResourceAction extends AbstractAction {
   /**
    * Staging controller.
    */
-  private StageController stageCtrl;
+  private GitController stageCtrl;
 
   /**
    * Constructor.
@@ -41,7 +41,7 @@ public class StageUnstageResourceAction extends AbstractAction {
   public StageUnstageResourceAction(
       List<FileStatus> fileStatuses,
       boolean isStage,
-      StageController stageCtrl) {
+      GitController stageCtrl) {
     super(isStage ? Translator.getInstance().getTranslation(Tags.STAGE)
         : Translator.getInstance().getTranslation(Tags.UNSTAGE));
     this.fileStatuses = fileStatuses;
@@ -51,7 +51,7 @@ public class StageUnstageResourceAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    GitCommandState command = isStage ? GitCommandState.STAGE_STARTED : GitCommandState.UNSTAGE_STARTED;
+    GitCommandEvent command = isStage ? GitCommandEvent.STAGE_STARTED : GitCommandEvent.UNSTAGE_STARTED;
     stageCtrl.doGitCommand(fileStatuses, command);
   }
   

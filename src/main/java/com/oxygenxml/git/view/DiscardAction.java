@@ -21,8 +21,8 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -52,7 +52,7 @@ public class DiscardAction extends AbstractAction {
   /**
    * Staging controller.
    */
-  private StageController stageController;
+  private GitController stageController;
 
   /**
    * Constructor.
@@ -60,7 +60,7 @@ public class DiscardAction extends AbstractAction {
    * @param fileStatuses      File statuses.
    * @param stageController   Staging controller.
    */
-  public DiscardAction(List<FileStatus> fileStatuses, StageController stageController) {
+  public DiscardAction(List<FileStatus> fileStatuses, GitController stageController) {
     super(translator.getTranslation(Tags.DISCARD));
     this.fileStatuses = fileStatuses;
     this.stageController = stageController;
@@ -113,7 +113,7 @@ public class DiscardAction extends AbstractAction {
       }
       
       // Execute Git command
-      stageController.doGitCommand(fileStatuses, GitCommandState.DISCARD_STARTED);
+      stageController.doGitCommand(fileStatuses, GitCommandEvent.DISCARD_STARTED);
       
       // Refresh the Project view
       ProjectViewManager.refreshFolders(foldersToRefresh.toArray(new File[0]));

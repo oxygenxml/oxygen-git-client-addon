@@ -19,8 +19,8 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitController;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -82,9 +82,9 @@ public class RefreshProjectTest extends TestCase {
 
       DiscardAction discardAction = new DiscardAction(
           Arrays.asList(new FileStatus(GitChangeType.ADD, "test.txt")),
-          new StageController() {
+          new GitController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommandState action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitCommandEvent action) {
               // Do nothing
             }
           });
@@ -132,9 +132,9 @@ public class RefreshProjectTest extends TestCase {
       DiscardAction discardAction = new DiscardAction(
           Arrays.asList(new FileStatus(GitChangeType.UNTRACKED, "test.txt"),
               new FileStatus(GitChangeType.UNTRACKED, "subFolder/test2.txt")),
-          new StageController() {
+          new GitController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommandState action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitCommandEvent action) {
               // Do nothing
             }
           });
@@ -178,9 +178,9 @@ public class RefreshProjectTest extends TestCase {
       
       DiscardAction discardAction = new DiscardAction(
           Arrays.asList(new FileStatus(GitChangeType.SUBMODULE, "subModule")),
-          new StageController() {
+          new GitController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommandState action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitCommandEvent action) {
               // Do nothing
             }
           });

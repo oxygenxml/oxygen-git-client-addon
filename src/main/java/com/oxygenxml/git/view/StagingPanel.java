@@ -34,11 +34,11 @@ import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.GitCommandEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.Subject;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
@@ -110,7 +110,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
 	 * Staging controller.
 	 */
-	private StageController stageController;
+	private GitController stageController;
 	
 	/** 
 	 * Manages Push/Pull actions.
@@ -126,7 +126,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
    */
   public StagingPanel(
       GitRefreshSupport refreshSupport, 
-      StageController stageController, 
+      GitController stageController, 
       HistoryController historyController) {
 		this.refreshSupport = refreshSupport;
 		this.stageController = stageController;
@@ -257,7 +257,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
                           }
 
                           Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
-                          ChangeEvent changeEvent = new ChangeEvent(GitCommandState.UNSTAGE_ENDED, affectedFiles);
+                          ChangeEvent changeEvent = new ChangeEvent(GitCommandEvent.UNSTAGE_ENDED, affectedFiles);
                           unstagedChangesPanel.stateChanged(changeEvent);
                         }
                       } catch (NoRepositorySelected e) {
@@ -485,7 +485,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
    * @return the stageController
    */
-  public StageController getStageController() {
+  public GitController getStageController() {
     return stageController;
   }
   

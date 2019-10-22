@@ -56,7 +56,7 @@ import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
 
@@ -141,7 +141,7 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * Used to fire an event
 	 */
-	private StageController stageController;
+	private GitController stageController;
 
 	/**
 	 * Shows whether or not this is the panel for staged or unstaged resources. 
@@ -175,7 +175,7 @@ public class ChangesPanel extends JPanel {
 	 * @param forStagedResources  <code>true</code> if for staged resources.
 	 */
 	public ChangesPanel(
-	    StageController stageController, 
+	    GitController stageController, 
 	    HistoryController historyController, 
 	    boolean forStagedResources) {
 		this.historyController = historyController;

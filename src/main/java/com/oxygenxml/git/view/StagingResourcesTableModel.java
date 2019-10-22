@@ -16,8 +16,8 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitController;
 
 /**
  * Custom table model
@@ -68,7 +68,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * Staging controller.
 	 */
-  private StageController stageController;
+  private GitController stageController;
 
   /**
    * Constructor.
@@ -76,7 +76,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
    * @param stageController Staging controller.
    * @param inIndex         <code>true</code> if this is the model of the staged files.
    */
-	public StagingResourcesTableModel(StageController stageController, boolean inIndex) {
+	public StagingResourcesTableModel(GitController stageController, boolean inIndex) {
 		this.stageController = stageController;
     this.inIndex = inIndex;
 	}
@@ -180,9 +180,9 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		  }
 		}
 
-		GitCommandState action = GitCommandState.UNSTAGE_STARTED;
+		GitCommandEvent action = GitCommandEvent.UNSTAGE_STARTED;
 		if (!inIndex) {
-		  action = GitCommandState.STAGE_STARTED;
+		  action = GitCommandEvent.STAGE_STARTED;
 		}
 		
     stageController.doGitCommand(filesToBeUpdated, action);
@@ -203,7 +203,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		        : GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
     List<FileStatus> oldStates = changeEvent.getOldStates();
     
-    GitCommandState cmd = changeEvent.getGitCommandState();
+    GitCommandEvent cmd = changeEvent.getGitCommandState();
     switch (cmd) {
       case STAGE_ENDED:
         if (inIndex) {

@@ -27,8 +27,8 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -62,7 +62,7 @@ public class DiffPresenter {
 	 * @param fileStatus 
 	 * 
 	 */
-	public static void showDiff(FileStatus fileStatus, StageController stageCtrl) {
+	public static void showDiff(FileStatus fileStatus, GitController stageCtrl) {
 	  try {
 	    GitChangeType changeType = fileStatus.getChangeType();
 	    switch (changeType) {
@@ -215,7 +215,7 @@ public class DiffPresenter {
 	 * Presents a 3-way diff
 	 * @param file 
 	 */
-	private static void showConflictDiff(FileStatus file, StageController stageController) {
+	private static void showConflictDiff(FileStatus file, GitController stageController) {
 		try {
 			// builds the URL for the files
 			URL local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());
@@ -247,13 +247,13 @@ public class DiffPresenter {
 			        if (response == 0) {
 			          stageController.doGitCommand(
 			              Arrays.asList(file),
-			              GitCommandState.RESOLVE_USING_MINE_STARTED);
+			              GitCommandEvent.RESOLVE_USING_MINE_STARTED);
 			        }
 			      } else {
 			        // Instead of requesting the file status again, we just mark it as modified.
 			        file.setChangeType(GitChangeType.MODIFIED);
 			        
-			        stageController.doGitCommand(Arrays.asList(file), GitCommandState.STAGE_STARTED);
+			        stageController.doGitCommand(Arrays.asList(file), GitCommandEvent.STAGE_STARTED);
 			      }
 			      
 			      d.removeComponentListener(this);

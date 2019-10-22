@@ -25,11 +25,11 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  *  
  * @author Beniamin Savu
  */
-public class StageController {
+public class GitController {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(StageController.class);
+  private static Logger logger = Logger.getLogger(GitController.class);
   
   /**
    * Translator for the UI.
@@ -46,9 +46,9 @@ public class StageController {
 	 * 
 	 * @param filesStatuses The files to be processed. 
 	 * @param action        The action that is executed: stage, unstage, discard, resolve, etc.
-	 *                          One of the {@link GitCommandState} values that has the "STARTED" suffix.
+	 *                          One of the {@link GitCommandEvent} values that has the "STARTED" suffix.
 	 */
-	public void doGitCommand(List<FileStatus> filesStatuses, GitCommandState action) {
+	public void doGitCommand(List<FileStatus> filesStatuses, GitCommandEvent action) {
 	  if (logger.isDebugEnabled()) {
 	    logger.debug("Do action " + action + " on " + filesStatuses);
 	  }
@@ -64,15 +64,17 @@ public class StageController {
 	      discard(filesStatuses);
 	      break;
 	    case RESOLVE_USING_MINE_STARTED:
-	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandState.RESOLVE_USING_MINE_STARTED)) {
+	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandEvent.RESOLVE_USING_MINE_STARTED)) {
 	        resolveUsingMine(filesStatuses);
 	      }
 	      break;
 	    case RESOLVE_USING_THEIRS_STARTED:
-	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandState.RESOLVE_USING_THEIRS_STARTED)) {
+	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandEvent.RESOLVE_USING_THEIRS_STARTED)) {
 	        resolveUsingTheirs(filesStatuses);
 	      }
 	      break;
+	      // TODO: add the other commands: restart merge, abort rebase, continue rebase ???
+	      // XXX: Problema e ca PushPullController lucreaza cu GitAccess direct....
 	    default:
 	      break;
 	  }
@@ -85,7 +87,7 @@ public class StageController {
 	 * 
 	 * @return <code>true</code> to continue resolving the conflict using 'mine' or 'theirs'.
 	 */
-  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandState cmd) {
+  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandEvent cmd) {
     boolean shouldContinue = false;
     try {
       RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
@@ -106,13 +108,13 @@ public class StageController {
 	 * When having a conflict while rebasing, 'mine' and 'theirs' are reversed.
    * Tell this to the user and ask if they are OK with their choice.
    * 
-   * @param cmd {@link GitCommandState#RESOLVE_USING_MINE_STARTED} or
-   *  {@link GitCommandState#RESOLVE_USING_THEIRS_STARTED}.
+   * @param cmd {@link GitCommandEvent#RESOLVE_USING_MINE_STARTED} or
+   *  {@link GitCommandEvent#RESOLVE_USING_THEIRS_STARTED}.
 	 * 
 	 * @return <code>true</code> to continue.
 	 */
-	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandState cmd) {
-	  boolean isResolveUsingMine = cmd == GitCommandState.RESOLVE_USING_MINE_STARTED;
+	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
+	  boolean isResolveUsingMine = cmd == GitCommandEvent.RESOLVE_USING_MINE_STARTED;
     String actionName = isResolveUsingMine ? translator.getTranslation(Tags.RESOLVE_USING_MINE)
 	      : translator.getTranslation(Tags.RESOLVE_USING_THEIRS);
 	  String side = isResolveUsingMine ? translator.getTranslation(Tags.MINE)

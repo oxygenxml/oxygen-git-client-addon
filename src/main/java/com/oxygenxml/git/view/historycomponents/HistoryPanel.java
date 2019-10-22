@@ -62,7 +62,7 @@ import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -107,14 +107,14 @@ public class HistoryPanel extends JPanel {
   /**
    * Executes GIT commands (stage, unstage, discard, etc).
    */
-  private transient StageController stageController;
+  private transient GitController stageController;
   
   /**
    * Constructor.
    * 
    * @param stageController Executes a set of Git commands.
    */
-  public HistoryPanel(StageController stageController) {
+  public HistoryPanel(GitController stageController) {
     this.stageController = stageController;
     setLayout(new BorderLayout());
 

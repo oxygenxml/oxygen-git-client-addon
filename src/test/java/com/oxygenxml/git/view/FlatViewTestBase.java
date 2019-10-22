@@ -18,7 +18,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitController;
 
 /**
 * Base for the test classes related to the actions performed
@@ -52,7 +52,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     refreshSupport = new PanelRefresh();
     stagingPanel = new StagingPanel(
         refreshSupport,
-        new StageController(),
+        new GitController(),
         null) {
       @Override
       public PushPullController createPushPullController() {

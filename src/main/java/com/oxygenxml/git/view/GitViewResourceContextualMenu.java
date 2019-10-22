@@ -25,8 +25,8 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.blame.BlameManager;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -52,7 +52,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	/**
 	 * Controller used for staging and unstaging
 	 */
-	private StageController stageController;
+	private GitController stageController;
 
 	/**
 	 * The git API, containg the commands
@@ -81,7 +81,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
    */
   public GitViewResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
-      StageController stageController,
+      GitController stageController,
       HistoryController historyController,
       boolean isStage,
       RepositoryState repoState) {
@@ -152,7 +152,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommandState.RESOLVE_USING_MINE_STARTED);
+	        stageController.doGitCommand(allSelectedResources, GitCommandEvent.RESOLVE_USING_MINE_STARTED);
 	      }
 	    };
 
@@ -161,7 +161,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommandState.RESOLVE_USING_THEIRS_STARTED);
+	        stageController.doGitCommand(allSelectedResources, GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
 	      }
 	    };
 
@@ -170,7 +170,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.MARK_RESOLVED)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommandState.STAGE_STARTED);
+	        stageController.doGitCommand(allSelectedResources, GitCommandEvent.STAGE_STARTED);
 	      }
 	    };
 

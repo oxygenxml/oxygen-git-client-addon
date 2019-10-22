@@ -20,7 +20,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.DiffPresenter;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -45,7 +45,7 @@ public class GitMenuActionsProvider {
   /**
    * Stage controller.
    */
-  private StageController stageCtrl;
+  private GitController stageCtrl;
 
   /**
    * The "Commit" action.
@@ -67,7 +67,7 @@ public class GitMenuActionsProvider {
    * @param stageCtrl
    *          The staging panel.
    */
-  public GitMenuActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, StageController stageCtrl) {
+  public GitMenuActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, GitController stageCtrl) {
     this.pluginWorkspaceAccess = pluginWorkspaceAccess;
     this.stageCtrl = stageCtrl;
   }

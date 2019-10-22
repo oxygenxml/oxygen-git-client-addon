@@ -1,6 +1,6 @@
 package com.oxygenxml.git.view.event;
 
-public enum GitCommandState {
+public enum GitCommandEvent {
   /**
    * Stage the given files - START.
    */

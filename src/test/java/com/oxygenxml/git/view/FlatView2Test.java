@@ -20,10 +20,10 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.GitCommandEvent;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -331,15 +331,15 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    StageController sc = new StageController() {
+    GitController sc = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandState cmd) {
-        return cmd == GitCommandState.RESOLVE_USING_MINE_STARTED;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
+        return cmd == GitCommandEvent.RESOLVE_USING_MINE_STARTED;
       }
     };
     sc.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandState.RESOLVE_USING_MINE_STARTED);
+        GitCommandEvent.RESOLVE_USING_MINE_STARTED);
     flushAWT();
 
     JButton continueBtn = findFirstButton(
@@ -646,15 +646,15 @@ public class FlatView2Test extends FlatViewTestBase {
       assertEquals("Cannot_continue_rebase_because_of_conflicts", warnMessage[0]);
 
       // Resolve conflict
-      StageController sc = new StageController() {
+      GitController sc = new GitController() {
         @Override
-        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandState cmd) {
-          return cmd == GitCommandState.RESOLVE_USING_MINE_STARTED;
+        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
+          return cmd == GitCommandEvent.RESOLVE_USING_MINE_STARTED;
         }
       };
       sc.doGitCommand(
           Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-          GitCommandState.RESOLVE_USING_MINE_STARTED);
+          GitCommandEvent.RESOLVE_USING_MINE_STARTED);
       flushAWT();
       
       // Pull again.

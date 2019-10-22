@@ -24,8 +24,8 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.historycomponents.HistoryPanel;
 
@@ -91,7 +91,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		  
 		  AuthenticationInterceptor.install();
 
-			StageController stageController = new StageController();
+			GitController stageController = new GitController();
 			
 			ProjectViewManager.addPopUpMenuCustomizer(
 			    pluginWorkspaceAccess,
@@ -125,8 +125,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			        }
 			        @Override
 			        public void stateChanged(com.oxygenxml.git.view.event.ChangeEvent changeEvent) {
-			          GitCommandState cmd = changeEvent.getGitCommandState();
-                if (cmd == GitCommandState.CONTINUE_REBASE_ENDED) {
+			          GitCommandEvent cmd = changeEvent.getGitCommandState();
+                if (cmd == GitCommandEvent.CONTINUE_REBASE_ENDED) {
 			            gitRefreshSupport.call();
 			          }
 			        }

@@ -16,7 +16,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
-import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.GitCommandEvent;
 
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
@@ -433,7 +433,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandState.RESOLVE_USING_MINE_STARTED);
+        GitCommandEvent.RESOLVE_USING_MINE_STARTED);
     
     assertTreeModels("", "");
 
@@ -513,7 +513,7 @@ public class TreeViewTest extends FlatViewTestBase {
     // Resolve using theirs
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandState.RESOLVE_USING_THEIRS_STARTED);
+        GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
     flushAWT();
     assertTreeModels("", "CHANGED, test.txt");
     
@@ -525,7 +525,7 @@ public class TreeViewTest extends FlatViewTestBase {
     // Resolve again using theirs
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandState.RESOLVE_USING_THEIRS_STARTED);
+        GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
     flushAWT();
     assertTreeModels("", "CHANGED, test.txt");
     

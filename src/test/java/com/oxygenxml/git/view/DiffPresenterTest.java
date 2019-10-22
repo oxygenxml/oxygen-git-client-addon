@@ -21,7 +21,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -107,7 +107,7 @@ public class DiffPresenterTest extends GitTestBase {
     setFileContent(file, "content");
     
     FileStatus fileStatus = new FileStatus(GitChangeType.MODIFIED, "test.txt");
-    StageController stageController = Mockito.mock(StageController.class);
+    GitController stageController = Mockito.mock(GitController.class);
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
     Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
@@ -197,7 +197,7 @@ public class DiffPresenterTest extends GitTestBase {
     setFileContent(file, "local content");
     
     FileStatus fileStatus = new FileStatus(GitChangeType.MODIFIED, "test.txt");
-    StageController stageController = Mockito.mock(StageController.class);
+    GitController stageController = Mockito.mock(GitController.class);
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
     Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
@@ -289,7 +289,7 @@ public class DiffPresenterTest extends GitTestBase {
     DiffPresenter.showDiff(
         // The submodule
         gitAccess.getStagedFiles().get(1),
-        Mockito.mock(StageController.class));
+        Mockito.mock(GitController.class));
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);

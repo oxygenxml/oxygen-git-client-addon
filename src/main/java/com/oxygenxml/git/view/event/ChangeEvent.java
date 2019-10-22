@@ -20,7 +20,7 @@ public class ChangeEvent {
 	/**
 	 * The state of the command that generated the change.
 	 */
-	private GitCommandState gitCmdState;
+	private GitCommandEvent gitCmdState;
 	
 	/**
 	 * The files that are changing their state
@@ -33,12 +33,12 @@ public class ChangeEvent {
 	 * @param gitCmdState        The state of the command that generated the change.
 	 * @param filesToBeUpdated   The files that are changing their state.
 	 */
-	public ChangeEvent(GitCommandState gitCmdState, Collection<String> affectedFiles) {
+	public ChangeEvent(GitCommandEvent gitCmdState, Collection<String> affectedFiles) {
 		this.gitCmdState = gitCmdState;
 		this.changedFiles = affectedFiles;
 	}
 
-	public GitCommandState getGitCommandState() {
+	public GitCommandEvent getGitCommandState() {
 		return gitCmdState;
 	}
 

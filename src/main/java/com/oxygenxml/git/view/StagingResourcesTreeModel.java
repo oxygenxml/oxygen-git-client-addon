@@ -15,8 +15,8 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitController;
 
 /**
  * Custom tree model
@@ -43,7 +43,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	/**
 	 * Stage controller.
 	 */
-  private StageController stageController;
+  private GitController stageController;
 
 	/**
 	 * Constructor.
@@ -54,7 +54,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    * <code>false</code> if it presents the modified resources that can be put in the index.
 	 * @param filesStatus The files statuses in the model.
 	 */
-	public StagingResourcesTreeModel(StageController controller, String root, boolean inIndex, List<FileStatus> filesStatus) {
+	public StagingResourcesTreeModel(GitController controller, String root, boolean inIndex, List<FileStatus> filesStatus) {
 		super(new GitTreeNode(root != null ? root : ""));
     this.stageController = controller;
 		this.inIndex = inIndex;
@@ -72,7 +72,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
         inIndex ? GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) 
             : GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
             
-    GitCommandState cmd = changeEvent.getGitCommandState();
+    GitCommandEvent cmd = changeEvent.getGitCommandState();
     switch (cmd) {
       case STAGE_ENDED:
         if (inIndex) {
@@ -298,9 +298,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
       }
     }
     
-    GitCommandState action = GitCommandState.UNSTAGE_STARTED;
+    GitCommandEvent action = GitCommandEvent.UNSTAGE_STARTED;
     if (!inIndex) {
-      action = GitCommandState.STAGE_STARTED;
+      action = GitCommandEvent.STAGE_STARTED;
     }
     
     stageController.doGitCommand(filesToBeUpdated, action);

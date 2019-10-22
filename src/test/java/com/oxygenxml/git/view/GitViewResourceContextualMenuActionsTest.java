@@ -12,7 +12,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PopupMenuSerializer;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.event.StageController;
+import com.oxygenxml.git.view.event.GitController;
 
 /**
  * Test cases for the actions from the contextual menu of the staged/unstaged resources.
@@ -22,7 +22,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
   /**
    * Staging controller.
    */
-  private StageController stagingCtrl = new StageController();
+  private GitController stagingCtrl = new GitController();
   
   /**
    * <p><b>Description:</b> test the enabling state of the actions
