@@ -24,7 +24,8 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.historycomponents.HistoryPanel;
@@ -124,9 +125,12 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
 			        }
 			        @Override
-			        public void stateChanged(com.oxygenxml.git.view.event.ChangeEvent changeEvent) {
-			          GitCommandEvent cmd = changeEvent.getGitCommandState();
-                if (cmd == GitCommandEvent.CONTINUE_REBASE_ENDED) {
+			        public void stateChanged(com.oxygenxml.git.view.event.GitEvent changeEvent) {
+                GitCommand cmd = changeEvent.getGitCommand();
+                GitCommandState cmdState = changeEvent.getGitComandState();
+                if (cmd == GitCommand.CONTINUE_REBASE
+                    && (cmdState == GitCommandState.SUCCESSFULLY_ENDED
+                        || cmdState == GitCommandState.FAILED)) {
 			            gitRefreshSupport.call();
 			          }
 			        }

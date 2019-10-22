@@ -14,8 +14,9 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.GitEvent;
 
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 
@@ -46,10 +47,10 @@ public class RebasePanel extends JPanel {
       }
 
       @Override
-      public void stateChanged(ChangeEvent changeEvent) {
-        GitCommandEvent cmd = changeEvent.getGitCommandState();
-        if (cmd == GitCommandEvent.ABORT_REBASE_ENDED 
-            || cmd == GitCommandEvent.CONTINUE_REBASE_ENDED) {
+      public void stateChanged(GitEvent changeEvent) {
+        GitCommand cmd = changeEvent.getGitCommand();
+        if ((cmd == GitCommand.ABORT_REBASE || cmd == GitCommand.CONTINUE_REBASE)
+            && changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED) {
           RebasePanel.this.setVisible(false);
         }
       }

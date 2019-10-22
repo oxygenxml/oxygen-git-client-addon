@@ -104,8 +104,9 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 
@@ -410,7 +411,7 @@ public class GitAccess {
   /**
    * Notify the some files changed their state.
    */
-  private void fireFileStateChanged(ChangeEvent changeEvent) {
+  private void fireStateChanged(GitEvent changeEvent) {
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.stateChanged(changeEvent);
     }
@@ -735,27 +736,31 @@ public class GitAccess {
 	 * @param message - Message for the commit
 	 */
 	public void commit(String message) {
+	  List<FileStatus> files = getStagedFiles();
+	  Collection<String> filePaths = getFilePaths(files);
 		try {
-		  List<FileStatus> files = getStagedFiles();
-			git.commit().setMessage(message).call();
-      fireFileStateChanged(
-          new ChangeEvent(
-              GitCommandEvent.COMMIT_ENDED,
-              getPaths(files)));
+		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.STARTED, filePaths));
+		  git.commit().setMessage(message).call();
+		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.FAILED, filePaths));
+		  logger.debug(e, e);
 		}
 	}
 
-	private Collection<String> getPaths(List<FileStatus> files) {
+	/**
+	 * Get file paths for the given file statuses.
+	 * 
+	 * @param files The file statuses.
+	 * 
+	 * @return the paths.
+	 */
+	private Collection<String> getFilePaths(List<FileStatus> files) {
 	  List<String> paths = new LinkedList<>();
 	  for (Iterator<FileStatus> iterator = files.iterator(); iterator.hasNext();) {
       FileStatus fileStatus = iterator.next();
       paths.add(fileStatus.getFileLocation());
     }
-	  
 	  return paths;
   }
 
@@ -1277,18 +1282,20 @@ public class GitAccess {
 	 * @param file - the name of the file to be added
 	 */
 	public void add(FileStatus file) {
-		try {
-			if (file.getChangeType().equals(GitChangeType.REMOVED)) {
-				git.rm().addFilepattern(file.getFileLocation()).call();
-			} else {
-				git.add().addFilepattern(file.getFileLocation()).call();
-			}
-			
-			fireFileStateChanged(new ChangeEvent(GitCommandEvent.STAGE_ENDED, getPaths(Arrays.asList(file))));
-		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+	  Collection<String> filePaths = getFilePaths(Arrays.asList(file));
+	  try {
+	    fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.STARTED, filePaths));
+	    if (file.getChangeType().equals(GitChangeType.REMOVED)) {
+	      git.rm().addFilepattern(file.getFileLocation()).call();
+	    } else {
+	      git.add().addFilepattern(file.getFileLocation()).call();
+	    }
+	    fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
+	  } catch (GitAPIException e) {
+	    fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.FAILED, filePaths));
+	    if (logger.isDebugEnabled()) {
+	      logger.debug(e, e);
+	    }
 		}
 	}
 
@@ -1298,8 +1305,9 @@ public class GitAccess {
 	 * @param fileNames - the names of the files to be added
 	 */
 	public void addAll(List<FileStatus> files) {
-
+	  Collection<String> filePaths = getFilePaths(files);
 		try {
+		  fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.STARTED, filePaths));
 		  
 		  RmCommand removeCmd = null;
 		  AddCommand addCmd = null;
@@ -1326,8 +1334,9 @@ public class GitAccess {
 			  removeCmd.call();
 			}
 			
-			fireFileStateChanged(new ChangeEvent(GitCommandEvent.STAGE_ENDED, getPaths(files)));
+			fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
+		  fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.FAILED, filePaths));
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -1436,14 +1445,15 @@ public class GitAccess {
 	 * @param fileName - the file to be removed from the staging area
 	 */
 	public void reset(FileStatus file) {
+	  Collection<String> filePaths = getFilePaths(Arrays.asList(file));
 		try {
+		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.STARTED, filePaths));
 			ResetCommand reset = git.reset();
 			reset.addPath(file.getFileLocation());
 			reset.call();
-			
-			fireFileStateChanged(new ChangeEvent(GitCommandEvent.UNSTAGE_ENDED, getPaths(Arrays.asList(file))));
-			
+			fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
+		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.FAILED, filePaths));
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -1456,19 +1466,19 @@ public class GitAccess {
 	 * @param fileNames - the list of file to be removed
 	 */
 	public void resetAll(List<FileStatus> files) {
+	  Collection<String> filePaths = getFilePaths(files);
 		try {
+		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.STARTED, filePaths));
 			if (!files.isEmpty()) {
 				ResetCommand reset = git.reset();
 				for (FileStatus file : files) {
 					reset.addPath(file.getFileLocation());
-
 				}
 				reset.call();
 			}
-			
-	     fireFileStateChanged(new ChangeEvent(GitCommandEvent.UNSTAGE_ENDED, getPaths(files)));
-	     
+			fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
+		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.FAILED, filePaths));
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -1653,12 +1663,13 @@ public class GitAccess {
 	 */
 	public void restoreLastCommitFile(List<String> paths) {
 		try {
+		  fireStateChanged(new GitEvent(GitCommand.DISCARD, GitCommandState.STARTED, paths));
 		  CheckoutCommand checkoutCmd = git.checkout();
 		  checkoutCmd.addPaths(paths);
 			checkoutCmd.call();
-			
-			fireFileStateChanged(new ChangeEvent(GitCommandEvent.DISCARD_ENDED, paths));
+			fireStateChanged(new GitEvent(GitCommand.DISCARD, GitCommandState.SUCCESSFULLY_ENDED, paths));
 		} catch (GitAPIException e) {
+		  fireStateChanged(new GitEvent(GitCommand.DISCARD, GitCommandState.FAILED, paths));
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -1792,6 +1803,11 @@ public class GitAccess {
 	 */
 	public void restartMerge() {
 		try {
+		  fireStateChanged(
+          new GitEvent(
+              GitCommand.MERGE_RESTART,
+              GitCommandState.STARTED,
+              Collections.<String>emptyList()));
 		  RepositoryState repositoryState = getRepository().getRepositoryState();
 			if (repositoryState == RepositoryState.REBASING_MERGE) {
 		    git.rebase().setOperation(Operation.ABORT).call();
@@ -1805,12 +1821,17 @@ public class GitAccess {
 			git.reset().setMode(ResetType.HARD).call();
 			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 			}
-			
-			fireFileStateChanged(
-			    new ChangeEvent(
-    			    GitCommandEvent.MERGE_RESTART_ENDED,
-    			    Collections.<String>emptyList()));
+			fireStateChanged(
+			    new GitEvent(
+			        GitCommand.MERGE_RESTART,
+			        GitCommandState.SUCCESSFULLY_ENDED,
+			        Collections.<String>emptyList()));
     } catch (IOException | NoRepositorySelected | GitAPIException e) {
+      fireStateChanged(
+          new GitEvent(
+              GitCommand.MERGE_RESTART,
+              GitCommandState.FAILED,
+              Collections.<String>emptyList()));
 			if (logger.isDebugEnabled()) {
 				logger.debug(e, e);
 			}
@@ -2064,12 +2085,11 @@ public class GitAccess {
   public void abortRebase() {
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
+        fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.STARTED));
         git.rebase().setOperation(Operation.ABORT).call();
-        fireFileStateChanged(
-            new ChangeEvent(
-                GitCommandEvent.ABORT_REBASE_ENDED,
-                Collections.<String> emptyList()));
+        fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.SUCCESSFULLY_ENDED));
       } catch (GitAPIException e) {
+        fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.FAILED));
         logger.debug(e, e);
       }
     });
@@ -2081,19 +2101,36 @@ public class GitAccess {
   public void continueRebase() {
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
+        fireStateChanged(
+            new GitEvent(
+                GitCommand.CONTINUE_REBASE,
+                GitCommandState.STARTED));
+        
         RebaseResult result = git.rebase().setOperation(Operation.CONTINUE).call();
         if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {
           skipCommit();
         }
-        fireFileStateChanged(
-            new ChangeEvent(
-                GitCommandEvent.CONTINUE_REBASE_ENDED,
-                Collections.<String> emptyList()));
+        
+        fireStateChanged(
+            new GitEvent(
+                GitCommand.CONTINUE_REBASE,
+                GitCommandState.SUCCESSFULLY_ENDED));
       } catch (UnmergedPathsException e) {
+        fireStateChanged(
+            new GitEvent(
+                GitCommand.CONTINUE_REBASE,
+                GitCommandState.FAILED));
+        
+        // TODO: properly treat the exceptions in EXM-44416
         logger.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
+        fireStateChanged(
+            new GitEvent(
+                GitCommand.CONTINUE_REBASE,
+                GitCommandState.FAILED));
+        
         logger.debug(e, e);
       }
     });

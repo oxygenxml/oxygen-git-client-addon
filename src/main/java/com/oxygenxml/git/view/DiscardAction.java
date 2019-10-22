@@ -21,7 +21,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -97,13 +97,7 @@ public class DiscardAction extends AbstractAction {
             logger.error(e1, e1);
           }
         } else if (file.getChangeType() == GitChangeType.SUBMODULE) {
-          try {
-            GitAccess.getInstance().discardSubmodule();
-            // We will refresh the submodule directory
-            foldersToRefresh.add(new File(selectedRepository, file.getFileLocation()));
-          } catch (GitAPIException e1) {
-            logger.error(e1, e1);
-          }
+          discardSubmodule(file, foldersToRefresh, selectedRepository);
         }
       }
       
@@ -113,10 +107,29 @@ public class DiscardAction extends AbstractAction {
       }
       
       // Execute Git command
-      stageController.doGitCommand(fileStatuses, GitCommandEvent.DISCARD_STARTED);
+      stageController.doGitCommand(fileStatuses, GitCommand.DISCARD);
       
       // Refresh the Project view
       ProjectViewManager.refreshFolders(foldersToRefresh.toArray(new File[0]));
+    }
+  }
+
+  /**
+   * Discard submodule.
+   * 
+   * @param submoduleDir       The submodule directory.
+   * @param foldersToRefresh   The folders to refresh after the discard operation.
+   * @param selectedRepository The current repository.
+   */
+  private void discardSubmodule(
+      FileStatus submoduleDir,
+      Set<File> foldersToRefresh,
+      String selectedRepository) {
+    try {
+      GitAccess.getInstance().discardSubmodule();
+      foldersToRefresh.add(new File(selectedRepository, submoduleDir.getFileLocation()));
+    } catch (GitAPIException e1) {
+      logger.error(e1, e1);
     }
   }
 
