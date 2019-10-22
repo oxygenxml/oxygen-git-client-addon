@@ -98,14 +98,18 @@ public class BlameManager {
       boolean open = PluginWorkspaceProvider.getPluginWorkspace().open(url, EditorPageConstants.PAGE_TEXT, null);
       if (open) {
         WSEditor editor = PluginWorkspaceProvider.getPluginWorkspace().getEditorAccess(url, PluginWorkspace.MAIN_EDITING_AREA);
-        // Currently we only support text page highlights.
-        editor.changePage(EditorPageConstants.PAGE_TEXT);
+        if (editor != null) {
+          // Currently we only support text page highlights.
+          editor.changePage(EditorPageConstants.PAGE_TEXT);
 
-        BlamePerformer blamePerformer = new BlamePerformer();
-        blamePerformer.doit(GitAccess.getInstance().getRepository(), filePath, editor, historyController);
-        
-        String key = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().correctURL(url.toExternalForm());
-        activeBlames.put(key, blamePerformer);
+          BlamePerformer blamePerformer = new BlamePerformer();
+          blamePerformer.doit(GitAccess.getInstance().getRepository(), filePath, editor, historyController);
+
+          String key = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().correctURL(url.toExternalForm());
+          activeBlames.put(key, blamePerformer);
+        } else {
+          LOGGER.error("Editor not found: " + url);
+        }
       }
     } catch (NoRepositorySelected e) {
       LOGGER.error(e, e);
