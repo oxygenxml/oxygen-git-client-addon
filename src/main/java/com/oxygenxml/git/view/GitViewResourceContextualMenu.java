@@ -221,6 +221,8 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	          }
 	        }
 	      };
+	      
+	      historyAction.setEnabled(hasHistory(allSelectedResources));
 	      this.add(historyAction);
 
 	      AbstractAction blameAction = new AbstractAction(translator.getTranslation(Tags.SHOW_BLAME)) {
@@ -237,6 +239,9 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	          }
 	        }
 	      };
+	      
+	      blameAction.setEnabled(hasHistory(allSelectedResources));
+	      
 	      this.add(blameAction);
 	    }
 
@@ -274,6 +279,25 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    discardAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
 	  }
 	}
+
+	/**
+	 * Checks if we have just one resource and if it's a resource that is commited in the repository.
+	 * 
+	 * @param allSelectedResources A set of resources.
+	 * 
+	 * @return <code>true</code> if we have just one resource in the set and that resource is one with history.
+	 */
+  private boolean hasHistory(final List<FileStatus> allSelectedResources) {
+    boolean canDoBlame = false;
+    if (allSelectedResources.size() == 1) {
+      GitChangeType changeType = allSelectedResources.get(0).getChangeType(); 
+      canDoBlame = 
+          changeType == GitChangeType.CHANGED || 
+          changeType == GitChangeType.CONFLICT ||
+          changeType == GitChangeType.MODIFIED;
+    }
+    return canDoBlame;
+  }
 	
 	 /**
    * Get repo state
