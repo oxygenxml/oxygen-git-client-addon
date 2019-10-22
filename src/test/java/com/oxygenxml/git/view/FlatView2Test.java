@@ -20,10 +20,10 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -333,13 +333,13 @@ public class FlatView2Test extends FlatViewTestBase {
     
     GitController sc = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
-        return cmd == GitCommandEvent.RESOLVE_USING_MINE_STARTED;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+        return cmd == GitCommand.RESOLVE_USING_MINE;
       }
     };
     sc.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_MINE_STARTED);
+        GitCommand.RESOLVE_USING_MINE);
     flushAWT();
 
     JButton continueBtn = findFirstButton(
@@ -648,13 +648,13 @@ public class FlatView2Test extends FlatViewTestBase {
       // Resolve conflict
       GitController sc = new GitController() {
         @Override
-        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
-          return cmd == GitCommandEvent.RESOLVE_USING_MINE_STARTED;
+        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+          return cmd == GitCommand.RESOLVE_USING_MINE;
         }
       };
       sc.doGitCommand(
           Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-          GitCommandEvent.RESOLVE_USING_MINE_STARTED);
+          GitCommand.RESOLVE_USING_MINE);
       flushAWT();
       
       // Pull again.

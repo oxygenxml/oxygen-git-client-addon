@@ -2,7 +2,7 @@ package com.oxygenxml.git.service;
 
 import java.io.File;
 
-import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.GitEvent;
 
 /**
  * Receives notifications when the state of the Git repository changes.
@@ -43,5 +43,5 @@ public interface GitEventListener {
    * 
    * @param changeEvent Details about the change.
    */
-  void stateChanged(ChangeEvent changeEvent);
+  void stateChanged(GitEvent changeEvent);
 }

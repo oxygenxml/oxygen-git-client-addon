@@ -55,7 +55,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
@@ -235,7 +235,7 @@ public class ChangesPanel extends JPanel {
       }
       
       @Override
-      public void stateChanged(ChangeEvent changeEvent) {
+      public void stateChanged(GitEvent changeEvent) {
         // Update the table.
         ChangesPanel.this.stateChanged(changeEvent);
       }
@@ -347,7 +347,7 @@ public class ChangesPanel extends JPanel {
 	 * 
 	 * @param changeEvent Change event.
 	 */
-	public void stateChanged(ChangeEvent changeEvent) {
+	public void stateChanged(GitEvent changeEvent) {
 	  if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
 	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
 	    modelTable.stateChanged(changeEvent);

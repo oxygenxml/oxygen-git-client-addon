@@ -2,7 +2,7 @@ package com.oxygenxml.git.service;
 
 import java.io.File;
 
-import com.oxygenxml.git.view.event.ChangeEvent;
+import com.oxygenxml.git.view.event.GitEvent;
 
 /**
  * An adapter.
@@ -17,7 +17,7 @@ public class GitEventAdapter implements GitEventListener {
   }
 
   @Override
-  public void stateChanged(ChangeEvent changeEvent) {
+  public void stateChanged(GitEvent changeEvent) {
     // Adapter. Empty implementation.
   }
 

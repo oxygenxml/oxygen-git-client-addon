@@ -25,7 +25,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.blame.BlameManager;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
@@ -152,7 +152,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommandEvent.RESOLVE_USING_MINE_STARTED);
+	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_MINE);
 	      }
 	    };
 
@@ -161,7 +161,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
+	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_THEIRS);
 	      }
 	    };
 
@@ -170,7 +170,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.MARK_RESOLVED)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommandEvent.STAGE_STARTED);
+	        stageController.doGitCommand(allSelectedResources, GitCommand.STAGE);
 	      }
 	    };
 

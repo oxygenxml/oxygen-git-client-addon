@@ -46,35 +46,33 @@ public class GitController {
 	 * 
 	 * @param filesStatuses The files to be processed. 
 	 * @param action        The action that is executed: stage, unstage, discard, resolve, etc.
-	 *                          One of the {@link GitCommandEvent} values that has the "STARTED" suffix.
+	 *                          One of the {@link GitCommand} values that has the "STARTED" suffix.
 	 */
-	public void doGitCommand(List<FileStatus> filesStatuses, GitCommandEvent action) {
+	public void doGitCommand(List<FileStatus> filesStatuses, GitCommand action) {
 	  if (logger.isDebugEnabled()) {
 	    logger.debug("Do action " + action + " on " + filesStatuses);
 	  }
 	  
 	  switch (action) {
-	    case STAGE_STARTED:
+	    case STAGE:
 	      gitAccess.addAll(filesStatuses);
 	      break;
-	    case UNSTAGE_STARTED:
+	    case UNSTAGE:
         gitAccess.resetAll(filesStatuses);
         break;
-	    case DISCARD_STARTED:
+	    case DISCARD:
 	      discard(filesStatuses);
 	      break;
-	    case RESOLVE_USING_MINE_STARTED:
-	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandEvent.RESOLVE_USING_MINE_STARTED)) {
+	    case RESOLVE_USING_MINE:
+	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand.RESOLVE_USING_MINE)) {
 	        resolveUsingMine(filesStatuses);
 	      }
 	      break;
-	    case RESOLVE_USING_THEIRS_STARTED:
-	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandEvent.RESOLVE_USING_THEIRS_STARTED)) {
+	    case RESOLVE_USING_THEIRS:
+	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand.RESOLVE_USING_THEIRS)) {
 	        resolveUsingTheirs(filesStatuses);
 	      }
 	      break;
-	      // TODO: add the other commands: restart merge, abort rebase, continue rebase ???
-	      // XXX: Problema e ca PushPullController lucreaza cu GitAccess direct....
 	    default:
 	      break;
 	  }
@@ -87,7 +85,7 @@ public class GitController {
 	 * 
 	 * @return <code>true</code> to continue resolving the conflict using 'mine' or 'theirs'.
 	 */
-  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(GitCommandEvent cmd) {
+  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand cmd) {
     boolean shouldContinue = false;
     try {
       RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
@@ -108,13 +106,13 @@ public class GitController {
 	 * When having a conflict while rebasing, 'mine' and 'theirs' are reversed.
    * Tell this to the user and ask if they are OK with their choice.
    * 
-   * @param cmd {@link GitCommandEvent#RESOLVE_USING_MINE_STARTED} or
-   *  {@link GitCommandEvent#RESOLVE_USING_THEIRS_STARTED}.
+   * @param cmd {@link GitCommand#RESOLVE_USING_MINE} or
+   *  {@link GitCommand#RESOLVE_USING_THEIRS}.
 	 * 
 	 * @return <code>true</code> to continue.
 	 */
-	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
-	  boolean isResolveUsingMine = cmd == GitCommandEvent.RESOLVE_USING_MINE_STARTED;
+	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+	  boolean isResolveUsingMine = cmd == GitCommand.RESOLVE_USING_MINE;
     String actionName = isResolveUsingMine ? translator.getTranslation(Tags.RESOLVE_USING_MINE)
 	      : translator.getTranslation(Tags.RESOLVE_USING_THEIRS);
 	  String side = isResolveUsingMine ? translator.getTranslation(Tags.MINE)

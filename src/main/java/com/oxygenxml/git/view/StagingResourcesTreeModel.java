@@ -14,9 +14,10 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitEvent;
 
 /**
  * Custom tree model
@@ -62,60 +63,61 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
     setFilesStatus(filesStatus);
 	}
 
-	public void stateChanged(ChangeEvent changeEvent) {
+	public void stateChanged(GitEvent changeEvent) {
 	  if (logger.isDebugEnabled()) {
       logger.debug("Tree model for index: " + inIndex + " event " + changeEvent);
     }
 	  
-		List<FileStatus> oldStates = changeEvent.getOldStates();
-    List<FileStatus> newStates = 
-        inIndex ? GitAccess.getInstance().getStagedFile(changeEvent.getChangedFiles()) 
-            : GitAccess.getInstance().getUnstagedFiles(changeEvent.getChangedFiles());
-            
-    GitCommandEvent cmd = changeEvent.getGitCommandState();
-    switch (cmd) {
-      case STAGE_ENDED:
-        if (inIndex) {
-          insertNodes(newStates);
-        } else {
+  	if (changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED) {
+  		List<FileStatus> oldStates = changeEvent.getOldAffectedFiles();
+      List<FileStatus> newStates = 
+          inIndex ? GitAccess.getInstance().getStagedFile(changeEvent.getAffectedFiles()) 
+              : GitAccess.getInstance().getUnstagedFiles(changeEvent.getAffectedFiles());
+              
+      switch (changeEvent.getGitCommand()) {
+        case STAGE:
+          if (inIndex) {
+            insertNodes(newStates);
+          } else {
+            deleteNodes(oldStates);
+          }
+          break;
+        case UNSTAGE:
+          if (inIndex) {
+            deleteNodes(oldStates);
+          } else {
+             // Things were taken out of the index / "staged" area. 
+            // The same resource might be present in the Unstaged and Staged. Remove old states.
+            deleteNodes(oldStates);
+            insertNodes(newStates);
+          }
+          break;
+        case COMMIT:
+          if (inIndex) {
+            deleteNodes(filesStatuses);
+            filesStatuses.clear();
+          }
+          break;
+        case DISCARD:
           deleteNodes(oldStates);
-        }
-        break;
-      case UNSTAGE_ENDED:
-        if (inIndex) {
-          deleteNodes(oldStates);
-        } else {
-           // Things were taken out of the index / "staged" area. 
-          // The same resource might be present in the Unstaged and Staged. Remove old states.
-          deleteNodes(oldStates);
-          insertNodes(newStates);
-        }
-        break;
-      case COMMIT_ENDED:
-        if (inIndex) {
-          deleteNodes(filesStatuses);
+          break;
+        case MERGE_RESTART:
           filesStatuses.clear();
-        }
-        break;
-      case DISCARD_ENDED:
-        deleteNodes(oldStates);
-        break;
-      case MERGE_RESTART_ENDED:
-        filesStatuses.clear();
-        List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() 
-            : GitAccess.getInstance().getUnstagedFiles();
-        insertNodes(fileStatuses);
-        break;
-      case ABORT_REBASE_ENDED:
-      case CONTINUE_REBASE_ENDED:
-        filesStatuses.clear();
-        break;
-      default:
-        // Nothing
-        break;
-    }
-
-		fireTreeStructureChanged(this, null, null, null);
+          List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() 
+              : GitAccess.getInstance().getUnstagedFiles();
+          insertNodes(fileStatuses);
+          break;
+        case ABORT_REBASE:
+        case CONTINUE_REBASE:
+          filesStatuses.clear();
+          break;
+        default:
+          // Nothing
+          break;
+      }
+  
+  		fireTreeStructureChanged(this, null, null, null);
+  	}
 	}
 
 	/**
@@ -298,9 +300,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
       }
     }
     
-    GitCommandEvent action = GitCommandEvent.UNSTAGE_STARTED;
+    GitCommand action = GitCommand.UNSTAGE;
     if (!inIndex) {
-      action = GitCommandEvent.STAGE_STARTED;
+      action = GitCommand.STAGE;
     }
     
     stageController.doGitCommand(filesToBeUpdated, action);

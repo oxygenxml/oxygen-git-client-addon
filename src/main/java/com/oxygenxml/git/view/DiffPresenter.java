@@ -27,7 +27,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -49,7 +49,7 @@ public class DiffPresenter {
 	/**
 	 * Avoid instantiation.
 	 */
-	public DiffPresenter() {
+	private DiffPresenter() {
 	  // Nada
 	}
 
@@ -247,13 +247,13 @@ public class DiffPresenter {
 			        if (response == 0) {
 			          stageController.doGitCommand(
 			              Arrays.asList(file),
-			              GitCommandEvent.RESOLVE_USING_MINE_STARTED);
+			              GitCommand.RESOLVE_USING_MINE);
 			        }
 			      } else {
 			        // Instead of requesting the file status again, we just mark it as modified.
 			        file.setChangeType(GitChangeType.MODIFIED);
 			        
-			        stageController.doGitCommand(Arrays.asList(file), GitCommandEvent.STAGE_STARTED);
+			        stageController.doGitCommand(Arrays.asList(file), GitCommand.STAGE);
 			      }
 			      
 			      d.removeComponentListener(this);

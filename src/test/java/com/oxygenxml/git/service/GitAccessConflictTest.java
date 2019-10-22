@@ -36,12 +36,12 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
-import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -168,7 +168,7 @@ public class GitAccessConflictTest {
 		GitController stageCtrl = new GitController();
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
+        GitCommand.RESOLVE_USING_THEIRS);
 		
 		String expected = "hellllo";
 		String actual = getFileContent(testFileSecondRepo);
@@ -314,13 +314,13 @@ public class GitAccessConflictTest {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
-        return cmd == GitCommandEvent.RESOLVE_USING_MINE_STARTED;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+        return cmd == GitCommand.RESOLVE_USING_MINE;
       }
     };
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_MINE_STARTED);
+        GitCommand.RESOLVE_USING_MINE);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -437,13 +437,13 @@ public class GitAccessConflictTest {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
-        return cmd == GitCommandEvent.RESOLVE_USING_MINE_STARTED;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+        return cmd == GitCommand.RESOLVE_USING_MINE;
       }
     };
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_MINE_STARTED);
+        GitCommand.RESOLVE_USING_MINE);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -561,13 +561,13 @@ public class GitAccessConflictTest {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
-        return cmd == GitCommandEvent.RESOLVE_USING_THEIRS_STARTED;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+        return cmd == GitCommand.RESOLVE_USING_THEIRS;
       }
     };
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
+        GitCommand.RESOLVE_USING_THEIRS);
     
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
@@ -687,13 +687,13 @@ public class GitAccessConflictTest {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
-        return cmd == GitCommandEvent.RESOLVE_USING_THEIRS_STARTED;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+        return cmd == GitCommand.RESOLVE_USING_THEIRS;
       }
     };
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
+        GitCommand.RESOLVE_USING_THEIRS);
     
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
@@ -815,13 +815,13 @@ public class GitAccessConflictTest {
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommandEvent cmd) {
-        return cmd == GitCommandEvent.RESOLVE_USING_THEIRS_STARTED;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
+        return cmd == GitCommand.RESOLVE_USING_THEIRS;
       }
     };
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
+        GitCommand.RESOLVE_USING_THEIRS);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(

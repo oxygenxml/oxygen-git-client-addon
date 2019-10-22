@@ -14,7 +14,7 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -495,7 +495,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_MINE_STARTED);
+        GitCommand.RESOLVE_USING_MINE);
     
     assertTableModels("", "");
 
@@ -575,7 +575,7 @@ public class FlatViewTest extends FlatViewTestBase {
     // Resolve using theirs
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
+        GitCommand.RESOLVE_USING_THEIRS);
     assertTableModels("", "CHANGED, test.txt");
     
     // Restart merge
@@ -586,7 +586,7 @@ public class FlatViewTest extends FlatViewTestBase {
     // Resolve again using theirs
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommandEvent.RESOLVE_USING_THEIRS_STARTED);
+        GitCommand.RESOLVE_USING_THEIRS);
     assertTableModels("", "CHANGED, test.txt");
     
     // Commit

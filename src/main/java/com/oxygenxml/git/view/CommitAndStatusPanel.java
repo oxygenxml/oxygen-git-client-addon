@@ -43,8 +43,9 @@ import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.event.ActionStatus;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.Subject;
@@ -115,8 +116,10 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       }
       
       @Override
-      public void stateChanged(ChangeEvent changeEvent) {
-        toggleCommitButton(changeEvent.getGitCommandState() == GitCommandEvent.STAGE_ENDED);
+      public void stateChanged(GitEvent changeEvent) {
+        toggleCommitButton(
+            changeEvent.getGitCommand() == GitCommand.STAGE
+                && changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED);
       }
     });
   }

@@ -46,8 +46,9 @@ import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
@@ -199,22 +200,18 @@ public class ToolbarPanel extends JPanel {
 	      // selected this is triggered.
 	      // TODO Maybe the change of repository should triggered a fetch and a notification should
 	      // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
-	      new Thread(new Runnable() {
-	        @Override
-	        public void run() {
-	          fetch(true);
-
-	          // After the fetch is done, update the toolbar icons.
-	          updateStatus();
-	        }
-	      }).start();
+	      new Thread(() -> {
+          fetch(true);
+          // After the fetch is done, update the toolbar icons.
+          updateStatus();
+        }).start();
 	    }
 	    
       @Override
-      public void stateChanged(ChangeEvent changeEvent) {
-        GitCommandEvent cmd = changeEvent.getGitCommandState();
-        if (cmd == GitCommandEvent.ABORT_REBASE_ENDED 
-            || cmd == GitCommandEvent.CONTINUE_REBASE_ENDED) {
+      public void stateChanged(GitEvent changeEvent) {
+        GitCommand cmd = changeEvent.getGitCommand();
+        if ((cmd == GitCommand.ABORT_REBASE || cmd == GitCommand.CONTINUE_REBASE)
+            && changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED) {
           updateStatus();
         }
       }

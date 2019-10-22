@@ -33,12 +33,13 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
-import com.oxygenxml.git.view.event.ChangeEvent;
-import com.oxygenxml.git.view.event.GitCommandEvent;
+import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.Subject;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
@@ -257,7 +258,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
                           }
 
                           Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
-                          ChangeEvent changeEvent = new ChangeEvent(GitCommandEvent.UNSTAGE_ENDED, affectedFiles);
+                          GitEvent changeEvent = new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, affectedFiles);
                           unstagedChangesPanel.stateChanged(changeEvent);
                         }
                       } catch (NoRepositorySelected e) {
