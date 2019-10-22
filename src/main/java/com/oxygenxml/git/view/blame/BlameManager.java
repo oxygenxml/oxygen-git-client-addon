@@ -108,6 +108,7 @@ public class BlameManager {
           String key = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().correctURL(url.toExternalForm());
           activeBlames.put(key, blamePerformer);
         } else {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to open editor: " + url);
           LOGGER.error("Editor not found: " + url);
         }
       }
