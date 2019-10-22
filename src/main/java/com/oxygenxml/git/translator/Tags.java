@@ -715,10 +715,20 @@ public class Tags {
    */
   public static final String PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS = "Pull_rebase_failed_because_conflicting_paths";
 
-/**
+  /**
    * Commit History.
    */
-  public static final String GIT_COMMIT_HISTORY = "Git_Commit_History";
+  public static final String SHOW_HISTORY = "Show_history";
+  
+  /**
+   * Git History.
+   */
+  public static final String GIT_HISTORY = "Git_history";
+  
+  /**
+   * Git Staging.
+   */
+  public static final String GIT_STAGING = "Git_staging";
   
   /**
    * Label inside the history view.

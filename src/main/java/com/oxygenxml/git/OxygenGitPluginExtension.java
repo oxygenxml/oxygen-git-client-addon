@@ -8,7 +8,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
-import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -22,6 +21,8 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
@@ -150,13 +151,14 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			      // Start the thread that populates the view.
 			      gitRefreshSupport.call();
 			      
-			      Icon icon = Icons.getIcon(Icons.GIT_ICON);
-			        viewInfo.setIcon(icon);
-			      
-			      viewInfo.setTitle("Git Staging");
+			      viewInfo.setIcon(Icons.getIcon(Icons.GIT_ICON));
+			      viewInfo.setTitle(Translator.getInstance().getTranslation(Tags.GIT_STAGING));
 					} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
 					  historyView = new HistoryPanel(stageController);
             viewInfo.setComponent(historyView);
+            
+            viewInfo.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
+            viewInfo.setTitle(Translator.getInstance().getTranslation(Tags.GIT_HISTORY));
 					}
 				}
 			});

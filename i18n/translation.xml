@@ -4,6 +4,30 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Show_history">
+        <comment>Show history</comment>
+        <val lang="en_US">Show history</val>
+        <val lang="de_DE">Show history</val>
+        <val lang="fr_FR">Show history</val>
+        <val lang="ja_JP">Show history</val>
+        <val lang="nl_NL">Show history</val>
+    </key>
+    <key value="Git_history">
+        <comment>Git History</comment>
+        <val lang="en_US">Git History</val>
+        <val lang="de_DE">Git History</val>
+        <val lang="fr_FR">Git History</val>
+        <val lang="ja_JP">Git History</val>
+        <val lang="nl_NL">Git History</val>
+    </key>
+    <key value="Git_staging">
+        <comment>Git Staging.</comment>
+        <val lang="en_US">Git Staging</val>
+        <val lang="de_DE">Git Staging</val>
+        <val lang="fr_FR">Git Staging</val>
+        <val lang="ja_JP">Git Staging</val>
+        <val lang="nl_NL">Git Staging</val>
+    </key>
     <key value="Comitter">
         <comment>History table column name.</comment>
         <val lang="en_US">Comitter</val>

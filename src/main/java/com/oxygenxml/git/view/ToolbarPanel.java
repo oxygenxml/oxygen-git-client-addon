@@ -368,7 +368,7 @@ public class ToolbarPanel extends JPanel {
 
 		historyButton = new ToolbarButton(historyAction, false);
 		historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
-		historyButton.setToolTipText(translator.getTranslation(Tags.GIT_COMMIT_HISTORY));
+		historyButton.setToolTipText(translator.getTranslation(Tags.SHOW_HISTORY));
 		setDefaultToolbarButtonWidth(historyButton);
 
 		gitToolbar.add(historyButton);
@@ -486,12 +486,11 @@ public class ToolbarPanel extends JPanel {
           upstreamBranch = translator.getTranslation(Tags.NO_UPSTREAM_BRANCH);
         }
 
-				String remoteAndBranchInfo = (remoteName == null ? "" : remoteName + "/") + upstreamBranch;
         remoteAndBranchTooltipMessage = "<html>"
 				    + (remoteName == null ? "" : translator.getTranslation(Tags.REMOTE) + "/")
 				    + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH).toLowerCase()
 				    + " <b>"
-				    + remoteAndBranchInfo
+				    + upstreamBranch
 				    + "</b> - ";
 				if (pullsBehind == 0) {
 				  remoteAndBranchTooltipMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
@@ -508,7 +507,7 @@ public class ToolbarPanel extends JPanel {
 				pushButton.setToolTipText(
             MessageFormat.format(
                 translator.getTranslation(Tags.PUSH_TO),
-                remoteAndBranchInfo));
+                upstreamBranch));
 				
 				// Pull tooltip
 				String pullFromTag = Tags.PULL_FROM;
@@ -524,7 +523,7 @@ public class ToolbarPanel extends JPanel {
         pullMenuButton.setToolTipText(
             MessageFormat.format(
                 translator.getTranslation(pullFromTag),
-                remoteAndBranchInfo));
+                upstreamBranch));
 			}
 			remoteAndBranchInfoLabel.setToolTipText(remoteAndBranchTooltipMessage);
 		}
