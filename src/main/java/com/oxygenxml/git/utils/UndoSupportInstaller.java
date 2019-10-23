@@ -178,8 +178,7 @@ public class UndoSupportInstaller {
   	});
   
   	// Bind the undo action to ctl-Z
-  	String osName = System.getProperty("os.name").toLowerCase();
-  	int modifier = osName.contains("mac") ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
+  	int modifier = PlatformDetectionUtil.isMacOS() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
   	
   	commitMessage.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, modifier), "Undo");
   
