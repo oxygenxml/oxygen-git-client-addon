@@ -65,7 +65,12 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  */
 public class ToolbarPanel extends JPanel {
   
-  /**
+	/**
+	 * Distance between text and decoration
+	 */
+  private static final int DECORATION_DISPLACEMENT = 13;
+
+/**
    * Pull action.
    */
   private final class PullAction extends AbstractAction {
@@ -88,7 +93,6 @@ public class ToolbarPanel extends JPanel {
             logger.debug("Pull action invoked");
           }
           pushPullController.pull(pullType);
-          pullsBehind = 0;
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
       } catch (NoRepositorySelected e1) {
@@ -591,8 +595,8 @@ public class ToolbarPanel extends JPanel {
         int stringWidth = fontMetrics.stringWidth(noOfPullsBehindString);
         g.setColor(getForeground());
         g.drawString(noOfPullsBehindString,
-            // X TODO: use scaling factor for that magic number (13)
-            getWidth() - stringWidth - 13,
+            // X
+            getWidth() - stringWidth - DECORATION_DISPLACEMENT,
             // Y
             fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
       }
