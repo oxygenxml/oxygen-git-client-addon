@@ -529,7 +529,7 @@ public class FlatView2Test extends FlatViewTestBase {
 
     JButton abortBtn = findFirstButton(
         interruptedRebaseDlg.getRootPane(),
-        "Cancel");
+        Translator.getInstance().getTranslation(Tags.CANCEL));
     abortBtn.doClick();
     flushAWT();
     sleep(1000);
