@@ -10,7 +10,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -118,7 +117,7 @@ public class HistoryPanel extends JPanel {
     this.stageController = stageController;
     setLayout(new BorderLayout());
 
-    historyTable = createTable();
+    historyTable = UIUtil.createTable();
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     historyTable.addMouseListener(new MouseAdapter() {
       @Override
@@ -466,30 +465,11 @@ public class HistoryPanel extends JPanel {
       }
     };
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
-    refreshAction.putValue(Action.SHORT_DESCRIPTION, "refresh");
+    refreshAction.putValue(Action.SHORT_DESCRIPTION, Translator.getInstance().getTranslation(Tags.REFRESH));
     ToolbarButton refreshButton = new ToolbarButton(refreshAction, false);
     toolbar.add(refreshButton);
     
     add(topPanel, BorderLayout.NORTH);
-  }
-
-  /**
-   * Tries to use Oxygen's API to create a table.
-   * 
-   * @return An Oxygen's API table or a generic one if we run into an old Oxygen.
-   */
-  private JTable createTable() {
-    JTable table = null;
-    try {
-      Class tableClass = Class.forName("ro.sync.exml.workspace.api.standalone.ui.Table");
-      Constructor tableConstructor = tableClass.getConstructor();
-      table = (JTable) tableConstructor.newInstance();
-    } catch (Exception e) {
-      // Running in an Oxygen version that lacks this API.
-      table = new JTable();
-    }
-    
-    return table;
   }
 
   /**
@@ -535,7 +515,7 @@ public class HistoryPanel extends JPanel {
         showingHistoryForRepoLabel.setToolTipText(directory.getAbsolutePath());
         showingHistoryForRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
 
-        historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess, gitAccess.getRepository()));
+        historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess.getRepository()));
         historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
 
         // Install selection listener.
