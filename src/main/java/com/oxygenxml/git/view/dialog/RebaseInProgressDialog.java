@@ -83,8 +83,7 @@ public class RebaseInProgressDialog extends JDialog {
     Button abortRebaseButton = new Button(translator.getTranslation(Tags.ABORT_REBASE));
     abortRebaseButton.addActionListener(createAbortRebaseActionListener());
     buttonsPanel.add(abortRebaseButton);
-    //TODO translate cancel message.
-    Button cancelButton = new Button("Cancel");
+    Button cancelButton = new Button(translator.getTranslation(Tags.CANCEL));
     cancelButton.addActionListener(createCancelActionListener());
     buttonsPanel.add(cancelButton);
     mainPanel.add(buttonsPanel, BorderLayout.SOUTH);

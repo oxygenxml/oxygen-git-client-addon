@@ -798,4 +798,8 @@ public class Tags {
    * History table column name.
    */
   public static final String COMMITTER = "Comitter";
+  /**
+   * Cancel. Taken from oXygen's "translation.xml".
+   */
+  public static final String CANCEL = "Cancel";
 }
