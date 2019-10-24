@@ -384,6 +384,7 @@ public class GitAccess {
 	 * Notify that the loaded repository changed.
 	 */
 	private void fireRepositoryChanged() {
+	  logger.debug("FIRE REPO CHANGED");
 	  for (GitEventListener gitEventListener : listeners) {
       gitEventListener.repositoryChanged();
     }
@@ -393,6 +394,7 @@ public class GitAccess {
    * Notify the listeners about the fact that a repository is about to be open.
    */
   private void fireRepositoryIsAboutToOpen(File repo) {
+    logger.debug("FIRE REPO ABOUT TO OPEN");
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.repositoryIsAboutToOpen(repo);
     }
@@ -402,6 +404,7 @@ public class GitAccess {
    * Notify the listeners about the fact that the opening of a repository has failed.
    */
   private void fireRepositoryOpenFailed(File repo, Throwable ex) {
+    logger.debug("FIRE REPO OPENING FAILED");
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.repositoryOpeningFailed(repo, ex);
     }
@@ -412,6 +415,7 @@ public class GitAccess {
    * Notify the some files changed their state.
    */
   private void fireStateChanged(GitEvent changeEvent) {
+    logger.debug("STATE CHANGED: " + changeEvent);
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.stateChanged(changeEvent);
     }
@@ -517,21 +521,17 @@ public class GitAccess {
   public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
     if (git != null) {
       if (logger.isDebugEnabled()) {
-        logger.debug("GET UNSTAGED FILES");
-        logger.debug("Prepare fot Git status, in paths " + paths);
+        logger.debug("PUBLIC - GET UNSTAGED FILES");
+        logger.debug("Prepare fot JGit status, in paths " + paths);
       }
       
-      new Exception("GET UNSTAGED").printStackTrace(System.out);
-
       StatusCommand statusCmd = git.status();
       for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
-        String path = iterator.next();
-
-        statusCmd.addPath(path);
+        statusCmd.addPath(iterator.next());
       }
-
       try {
         Status status = statusCmd.call();
+        logger.debug("Status computed: " + status);
         return getUnstagedFiles(status);
       } catch (GitAPIException e) {
         if (logger.isDebugEnabled()) {
@@ -552,7 +552,7 @@ public class GitAccess {
 	 * @return The unstaged files and their states.
 	 */
 	private List<FileStatus> getUnstagedFiles(Status status) {
-	  logger.debug("GET UNSTAGE FOR GIVEN STATUS");
+	  logger.debug("PRIVATE - GET UNSTAGE FOR GIVEN STATUS " + status);
 		List<FileStatus> unstagedFiles = new ArrayList<>();
 		if (git != null) {
 			try {
