@@ -552,6 +552,7 @@ public class GitAccess {
 	 * @return The unstaged files and their states.
 	 */
 	private List<FileStatus> getUnstagedFiles(Status status) {
+	  logger.debug("GET UNSTAGE - INTERNAL");
 		List<FileStatus> unstagedFiles = new ArrayList<>();
 		if (git != null) {
 			try {
