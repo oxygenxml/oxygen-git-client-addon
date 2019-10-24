@@ -483,7 +483,7 @@ public class GitAccess {
 	    try {
 	      logger.debug("-- getStatus() --");
 	      Status status = git.status().call();
-	      logger.debug("-- status: " + status + " --");
+	      
 	      gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status));
 	    } catch (GitAPIException e) {
 	      if (logger.isDebugEnabled()) {
