@@ -415,7 +415,7 @@ public class GitAccess {
    * Notify the some files changed their state.
    */
   private void fireStateChanged(GitEvent changeEvent) {
-    logger.debug("STATE CHANGED: " + changeEvent);
+    logger.debug("FIRE STATE CHANGED: " + changeEvent);
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.stateChanged(changeEvent);
     }
