@@ -19,11 +19,14 @@ import com.oxygenxml.git.view.renderer.StagingResourcesTableCellRenderer;
  * Utility class for UI-related issues. 
  */
 public class UIUtil {
-  
   /**
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(UIUtil.class.getName());
+  /**
+   * Extra width for the icon column of the resources table (for beautifying reasons).
+   */
+  private static final int RESOURCE_TABLE_ICON_COLUMN_EXTRA_WIDTH = 3;
   
   /**
    * Hidden constructor.
@@ -115,9 +118,11 @@ public class UIUtil {
     
     Icon icon = Icons.getIcon(Icons.GIT_ADD_ICON);
     int iconWidth = icon.getIconWidth();
+    int colWidth = iconWidth + RESOURCE_TABLE_ICON_COLUMN_EXTRA_WIDTH;
     TableColumn statusCol = table.getColumnModel().getColumn(StagingResourcesTableModel.FILE_STATUS_COLUMN);
-    statusCol.setPreferredWidth(iconWidth);
-    statusCol.setMaxWidth(iconWidth + 4);
+    statusCol.setMinWidth(colWidth);
+    statusCol.setPreferredWidth(colWidth);
+    statusCol.setMaxWidth(colWidth);
 
     table.setDefaultRenderer(Object.class, new StagingResourcesTableCellRenderer(contextMenuShowing));
     

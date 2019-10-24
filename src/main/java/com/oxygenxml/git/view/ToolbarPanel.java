@@ -64,8 +64,17 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  *
  */
 public class ToolbarPanel extends JPanel {
-  
+  /**
+   * Pull button extra width, for beautifying reasons.
+   */
+	private static final int PULL_BUTTON_EXTRA_WIDTH = 4;
+
 	/**
+   * Toolbar button default extra width, for beautifying reasons.
+   */
+  private static final int TOOLBAR_BUTTON_DEFAULT_EXTRA_WIDTH = 8;
+
+  /**
 	 * Distance between text and decoration
 	 */
   private static final int DECORATION_DISPLACEMENT = 13;
@@ -547,7 +556,7 @@ public class ToolbarPanel extends JPanel {
 		// PULL
 		pullMenuButton = createPullButton();
     Dimension d = pullMenuButton.getPreferredSize();
-    d.width += 4;
+    d.width += PULL_BUTTON_EXTRA_WIDTH;
     pullMenuButton.setPreferredSize(d);
     pullMenuButton.setMinimumSize(d);
     pullMenuButton.setMaximumSize(d);
@@ -727,7 +736,7 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private void setDefaultToolbarButtonWidth(AbstractButton button) {
 		Dimension d = button.getPreferredSize();
-		d.width += 8;
+		d.width += TOOLBAR_BUTTON_DEFAULT_EXTRA_WIDTH;
 		button.setPreferredSize(d);
 		button.setMinimumSize(d);
 		button.setMaximumSize(d);
