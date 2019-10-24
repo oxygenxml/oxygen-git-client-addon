@@ -547,7 +547,7 @@ public class ToolbarPanel extends JPanel {
 		// PULL
 		pullMenuButton = createPullButton();
     Dimension d = pullMenuButton.getPreferredSize();
-    d.width = 42;
+    d.width += 4;
     pullMenuButton.setPreferredSize(d);
     pullMenuButton.setMinimumSize(d);
     pullMenuButton.setMaximumSize(d);
@@ -727,7 +727,7 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private void setDefaultToolbarButtonWidth(AbstractButton button) {
 		Dimension d = button.getPreferredSize();
-		d.width = 30;
+		d.width += 8;
 		button.setPreferredSize(d);
 		button.setMinimumSize(d);
 		button.setMaximumSize(d);
