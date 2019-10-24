@@ -485,9 +485,9 @@ public class GitAccess {
 	  GitStatus gitStatus = null;
 	  if (git != null) {
 	    try {
-	      logger.debug("-- getStatus() --");
+	      logger.debug("-- Compute our GitStatus -> getStatus() --");
 	      Status status = git.status().call();
-	      logger.debug("-- status computed --");
+	      logger.debug("-- Get JGit status -> git.status().call() --");
 	      gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status));
 	    } catch (GitAPIException e) {
 	      if (logger.isDebugEnabled()) {
@@ -531,7 +531,7 @@ public class GitAccess {
       }
       try {
         Status status = statusCmd.call();
-        logger.debug("Status computed: " + status);
+        logger.debug("JGit Status computed: " + status);
         return getUnstagedFiles(status);
       } catch (GitAPIException e) {
         if (logger.isDebugEnabled()) {
