@@ -574,7 +574,7 @@ public class GitAccess {
 	 */
   private void addConflictingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles) {
     if (logger.isDebugEnabled()) {
-      logger.debug("conflicting " + status.getConflicting());
+      logger.debug("addConflictingFilesToUnstaged: " + status.getConflicting());
     }
     for (String fileName : status.getConflicting()) {
       unstagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
@@ -591,7 +591,7 @@ public class GitAccess {
    */
   private void addMissingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (logger.isDebugEnabled()) {
-      logger.debug("missing " + status.getMissing());
+      logger.debug("addMissingFilesToUnstaged: " + status.getMissing());
     }
     for (String string : status.getMissing()) {
     	if (!submodules.contains(string)) {
@@ -610,7 +610,7 @@ public class GitAccess {
    */
   private void addModifiedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (logger.isDebugEnabled()) {
-      logger.debug("modified " + status.getModified());
+      logger.debug("addModifiedFilesToUnstaged " + status.getModified());
     }
     for (String string : status.getModified()) {
       // A file that was modified compared to the one from INDEX.
@@ -630,7 +630,7 @@ public class GitAccess {
    */
   private void addUntrackedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (logger.isDebugEnabled()) {
-      logger.debug("untracked " + status.getUntracked());
+      logger.debug("addUntrackedFilesToUnstaged " + status.getUntracked());
     }
     for (String string : status.getUntracked()) {
     	if (!submodules.contains(string)) {
@@ -650,7 +650,7 @@ public class GitAccess {
    */
   private void addSubmodulesToUnstaged(List<FileStatus> unstagedFiles, Set<String> submodules) throws GitAPIException {
     if (logger.isDebugEnabled()) {
-      logger.debug("submodules " + submodules);
+      logger.debug("addSubmodulesToUnstaged " + submodules);
     }
     for (String string : submodules) {
     	SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
@@ -1129,8 +1129,8 @@ public class GitAccess {
   private void treatMergeResult(PullResponse pullResponse, MergeResult mergeResult) throws CheckoutConflictException {
     if (mergeResult != null) {
       if (logger.isDebugEnabled()) {
-        logger.debug("Merge result " + mergeResult);
-        logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
+        logger.debug("Merge result: " + mergeResult);
+        logger.debug("Merge result status: " + mergeResult.getMergeStatus());
       }
 
       if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
@@ -1159,24 +1159,20 @@ public class GitAccess {
    * @param mergeResult The merge result.
    */
   private void logMergeFailure(MergeResult mergeResult) {
-    logFailingPaths(mergeResult.getFailingPaths());
-  }
-  
-  /**
-   * Log failing paths.
-   * 
-   * @param failingPaths Failing paths.
-   */
-  private void logFailingPaths(Map<String, MergeFailureReason> failingPaths) {
+    if (logger.isDebugEnabled()) {
+      Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
       if (failingPaths != null) {
+        logger.debug("NOW LOG MERGE FAILURE PATHS:");
         Set<String> keySet = failingPaths.keySet();
         for (String string : keySet) {
-          logger.debug("path " + string);
-          logger.debug("reason " + failingPaths.get(string));
+          logger.debug("  Path: " + string);
+          logger.debug("  Reason: " + failingPaths.get(string));
         }
       }
     }
-
+  
+  }
+  
 	/**
 	 * Create lock failure message when pulling/fetching, if needed.
 	 * 
