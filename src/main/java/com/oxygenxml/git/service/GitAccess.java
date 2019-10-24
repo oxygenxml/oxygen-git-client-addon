@@ -515,7 +515,7 @@ public class GitAccess {
   public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
     if (git != null) {
       if (logger.isDebugEnabled()) {
-	logger.debug("GET UNSTAGED FILES");
+        logger.debug("GET UNSTAGED FILES");
         logger.debug("Prepare fot Git status, in paths " + paths);
       }
 
