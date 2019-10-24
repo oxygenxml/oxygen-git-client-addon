@@ -481,7 +481,9 @@ public class GitAccess {
 	  GitStatus gitStatus = null;
 	  if (git != null) {
 	    try {
+	      logger.debug("-- getStatus() --");
 	      Status status = git.status().call();
+	      logger.debug("-- status: " + status + " --");
 	      gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status));
 	    } catch (GitAPIException e) {
 	      if (logger.isDebugEnabled()) {
@@ -518,6 +520,8 @@ public class GitAccess {
         logger.debug("GET UNSTAGED FILES");
         logger.debug("Prepare fot Git status, in paths " + paths);
       }
+      
+      new Exception("GET UNSTAGED").printStackTrace(System.out);
 
       StatusCommand statusCmd = git.status();
       for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
