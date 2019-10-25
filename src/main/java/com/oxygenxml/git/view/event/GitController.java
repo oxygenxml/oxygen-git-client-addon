@@ -16,6 +16,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -52,30 +53,32 @@ public class GitController {
 	  if (logger.isDebugEnabled()) {
 	    logger.debug("Do action " + action + " on " + filesStatuses);
 	  }
-	  
-	  switch (action) {
-	    case STAGE:
-	      gitAccess.addAll(filesStatuses);
-	      break;
-	    case UNSTAGE:
-        gitAccess.resetAll(filesStatuses);
-        break;
-	    case DISCARD:
-	      discard(filesStatuses);
-	      break;
-	    case RESOLVE_USING_MINE:
-	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand.RESOLVE_USING_MINE)) {
-	        resolveUsingMine(filesStatuses);
-	      }
-	      break;
-	    case RESOLVE_USING_THEIRS:
-	      if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand.RESOLVE_USING_THEIRS)) {
-	        resolveUsingTheirs(filesStatuses);
-	      }
-	      break;
-	    default:
-	      break;
-	  }
+
+	  GitOperationScheduler.getInstance().schedule(() -> {
+	    switch (action) {
+	      case STAGE:
+	        gitAccess.addAll(filesStatuses);
+	        break;
+	      case UNSTAGE:
+	        gitAccess.resetAll(filesStatuses);
+	        break;
+	      case DISCARD:
+	        discard(filesStatuses);
+	        break;
+	      case RESOLVE_USING_MINE:
+	        if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand.RESOLVE_USING_MINE)) {
+	          resolveUsingMine(filesStatuses);
+	        }
+	        break;
+	      case RESOLVE_USING_THEIRS:
+	        if (shouldContinueResolvingConflictUsingMineOrTheirs(GitCommand.RESOLVE_USING_THEIRS)) {
+	          resolveUsingTheirs(filesStatuses);
+	        }
+	        break;
+	      default:
+	        break;
+	    }
+	  });
 	}
 
 	/**

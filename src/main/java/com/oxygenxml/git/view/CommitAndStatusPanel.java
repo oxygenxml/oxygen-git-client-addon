@@ -117,14 +117,19 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       
       @Override
       public void stateChanged(GitEvent changeEvent) {
-        toggleCommitButton(
-            changeEvent.getGitCommand() == GitCommand.STAGE
-                && changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED);
+        GitCommand cmd = changeEvent.getGitCommand();
+        GitCommandState cmdState = changeEvent.getGitComandState();
+        // If a "Restart merge" has ended, we cannot commit, therefore the state of the button
+        // should stay the way it was when the "Restart merge" began (disabled). This is just a
+        // speed improvement
+        if (!(cmd == GitCommand.MERGE_RESTART && cmdState == GitCommandState.SUCCESSFULLY_ENDED)) {
+          toggleCommitButton(cmd == GitCommand.STAGE && cmdState == GitCommandState.SUCCESSFULLY_ENDED);
+        }
       }
     });
   }
 
-	public void createGUI() {
+	private void createGUI() {
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -311,7 +316,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
 		commitButton = new JButton(translator.getTranslation(Tags.COMMIT_BUTTON_TEXT));
-		toggleCommitButton(false);
 		this.add(commitButton, gbc);
 	}
 

@@ -213,27 +213,22 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * @param changeEvent Event.
 	 */
   private void updateTableModel(GitEvent changeEvent) {
-    List<FileStatus> newStates = 
-        inIndex ? GitAccess.getInstance().getStagedFile(changeEvent.getAffectedFiles()) 
-            : GitAccess.getInstance().getUnstagedFiles(changeEvent.getAffectedFiles());
-    List<FileStatus> oldStates = changeEvent.getOldAffectedFiles();
-    
     switch (changeEvent.getGitCommand()) {
       case STAGE:
         if (inIndex) {
-          insertRows(newStates);
+          insertRows(GitAccess.getInstance().getStagedFile(changeEvent.getAffectedFiles()));
         } else {
-          deleteRows(oldStates);
+          deleteRows(changeEvent.getOldAffectedFiles());
         }
         break;
       case UNSTAGE:
         if (inIndex) {
-          deleteRows(oldStates);
+          deleteRows(changeEvent.getOldAffectedFiles());
         } else {
           // Things were taken out of the INDEX. 
           // The same resource might be present in the UnStaged and INDEX. Remove old states.
-          deleteRows(oldStates);
-          insertRows(newStates);
+          deleteRows(changeEvent.getOldAffectedFiles());
+          insertRows(GitAccess.getInstance().getUnstagedFiles(changeEvent.getAffectedFiles()));
         }
         break;
       case COMMIT:
@@ -243,7 +238,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
         }
         break;
       case DISCARD:
-        deleteRows(oldStates);
+        deleteRows(changeEvent.getOldAffectedFiles());
         break;
       case MERGE_RESTART:
         filesStatuses.clear();
