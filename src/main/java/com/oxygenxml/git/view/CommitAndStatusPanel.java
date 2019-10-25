@@ -119,12 +119,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       public void stateChanged(GitEvent changeEvent) {
         GitCommand cmd = changeEvent.getGitCommand();
         GitCommandState cmdState = changeEvent.getGitComandState();
-        // If a "Restart merge" has ended, we cannot commit, therefore the state of the button
-        // should stay the way it was when the "Restart merge" began (disabled). This is just a
-        // speed improvement
-        if (!(cmd == GitCommand.MERGE_RESTART && cmdState == GitCommandState.SUCCESSFULLY_ENDED)) {
-          toggleCommitButton(cmd == GitCommand.STAGE && cmdState == GitCommandState.SUCCESSFULLY_ENDED);
-        }
+        toggleCommitButton(cmd == GitCommand.STAGE && cmdState == GitCommandState.SUCCESSFULLY_ENDED);
       }
     });
   }
