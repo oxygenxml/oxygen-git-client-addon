@@ -27,31 +27,22 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(RowHistoryTableSelectionListener.class);
-
-	/*
-	 * The fields of commitDescription EditorPane.
-	 */
-	
 	/**
 	 * Fake commit URL to search for parents when using hyperlink.
 	 */
 	private static final String PARENT_COMMIT_URL = "http://gitplugin.com/parent/commit?id=";
-	
 	/**
 	 * Table for Commit History.
 	 */
 	private JTable historyTable;
-
 	/**
 	 * Panel for commit description (author, date, etc.).
 	 */
 	private JEditorPane commitDescriptionPane;
-
 	/**
 	 * The list of commits and their characteristics.
 	 */
 	private List<CommitCharacteristics> allCommits;
-
 	/**
 	 * Coalescing for selecting the row in HistoryTable.
 	 */
@@ -116,8 +107,8 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		  // Case for already committed changes.
 		  if (commitCharacteristics.getCommitter() != null) {
 		    commitDescription.append("<html><b>").append(Translator.getInstance().getTranslation(Tags.COMMIT)).append("</b>: ")
-		    .append(commitCharacteristics.getCommitId())
-		    .append(" [").append(commitCharacteristics.getCommitAbbreviatedId()).append("]");
+    		    .append(commitCharacteristics.getCommitId())
+    		    .append(" [").append(commitCharacteristics.getCommitAbbreviatedId()).append("]");
 
 		    // Add all parent commit IDs to the text
 		    if (commitCharacteristics.getParentCommitId() != null) {
@@ -126,15 +117,18 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
 		      for (int j = 0; j < parentSize - 1; j++) {
 		        commitDescription.append("<a href=\"").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(j)).append("\">")
-		        .append(commitCharacteristics.getParentCommitId().get(j)).append("</a> , ");
+		            .append(commitCharacteristics.getParentCommitId().get(j)).append("</a> , ");
 		      }
 		      commitDescription.append("<a href=\" ").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("\">")
-		      .append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("</a> ");
+		          .append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("</a> ");
 		    }
-		    commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR)).append("</b>: ").append(commitCharacteristics.getAuthor()).append("<br>") 
-		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.DATE)).append("</b>: ").append(commitCharacteristics.getDate()).append("<br>") 
-		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ").append(commitCharacteristics.getCommitter()).append("<br><br>")
-		    .append(commitCharacteristics.getCommitMessage()).append("</html>");
+		    
+		    String author = commitCharacteristics.getAuthor();
+		    author = author.replace(" <", " &lt;").replace(">", "&gt;");
+        commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR)).append("</b>: ").append(author).append("<br>") 
+    		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.DATE)).append("</b>: ").append(commitCharacteristics.getDate()).append("<br>") 
+    		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ").append(commitCharacteristics.getCommitter()).append("<br><br>")
+    		    .append(commitCharacteristics.getCommitMessage()).append("</html>");
 		  }
 		  commitDescriptionPane.setText(commitDescription.toString());
 		  commitDescriptionPane.setCaretPosition(0);
@@ -143,7 +137,6 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		  if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
 		    try {
 		      List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
-
 		      dataModel.setFilesStatus(changes);
 		    } catch (GitAPIException | RevisionSyntaxException | IOException e) {
 		      logger.error(e, e);
