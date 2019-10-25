@@ -108,7 +108,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
             reset();
 
             // checks what buttons to keep active and what buttons to deactivate
-            toggleCommitButton(false);
+            toggleCommitButtonAndUpdateMessageArea(false);
           }
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
@@ -119,7 +119,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       public void stateChanged(GitEvent changeEvent) {
         GitCommand cmd = changeEvent.getGitCommand();
         GitCommandState cmdState = changeEvent.getGitComandState();
-        toggleCommitButton(cmd == GitCommand.STAGE && cmdState == GitCommandState.SUCCESSFULLY_ENDED);
+        toggleCommitButtonAndUpdateMessageArea(
+            cmd == GitCommand.STAGE && cmdState == GitCommandState.SUCCESSFULLY_ENDED);
       }
     });
   }
@@ -319,7 +320,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
    * 
    * @param forceEnable <code>true</code> to make the button enable without any additional checks.
    */
-  void toggleCommitButton(boolean forceEnable) {
+  void toggleCommitButtonAndUpdateMessageArea(boolean forceEnable) {
     boolean enable = false;
     if (forceEnable) {
       enable = true;
