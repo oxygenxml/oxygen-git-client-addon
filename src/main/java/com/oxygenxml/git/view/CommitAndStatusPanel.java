@@ -25,6 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToolTip;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
@@ -61,7 +62,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
   /**
    * Text area for the commit message.
    */
-	private JTextArea commitMessage;
+	private JTextArea commitMessageArea;
 	/**
 	 * The button that commits the staged files.
 	 */
@@ -86,11 +87,22 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 * Translation support.
 	 */
 	private Translator translator = Translator.getInstance();
-
-	public JButton getCommitButton() {
-		return commitButton;
-	}
+	/**
+	 * Task for updating the state of the commit button and the message area.
+	 */
+	private SwingWorker<Void, Void> commitButtonAndMessageUpdateTask;
 	
+	/**
+	 * Timer for the task that updates the state of the commit button and message area.
+	 */
+	private Timer commitButtonAndMessageUpdateTaskTimer = new Timer(
+      300,
+      e -> {
+        if (commitButtonAndMessageUpdateTask != null) {
+          GitOperationScheduler.getInstance().schedule(commitButtonAndMessageUpdateTask);
+        } 
+      });
+
 	/**
 	 * Constructor.
 	 */
@@ -161,8 +173,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 					message = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
 				} else {
 					message = translator.getTranslation(Tags.COMMIT_SUCCESS);
-					gitAccess.commit(commitMessage.getText());
-					OptionsManager.getInstance().saveCommitMessage(commitMessage.getText());
+					gitAccess.commit(commitMessageArea.getText());
+					OptionsManager.getInstance().saveCommitMessage(commitMessageArea.getText());
 					
 					previousMessages.removeAllItems();
 					previousMessages.addItem(getCommitHistoryHint());
@@ -174,7 +186,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 
 					commitButton.setEnabled(false);
 				}
-				commitMessage.setText("");
+				commitMessageArea.setText("");
 				PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, message);
 				notifyObservers(pushPullEvent);
 			}
@@ -225,7 +237,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED
             && !previousMessages.getSelectedItem().equals(getCommitHistoryHint())) {
-            commitMessage.setText((String) previousMessages.getSelectedItem());
+            commitMessageArea.setText((String) previousMessages.getSelectedItem());
         }
       }
     });
@@ -253,16 +265,16 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 2;
-		commitMessage = new JTextArea();
-		commitMessage.setLineWrap(true);
+		commitMessageArea = new JTextArea();
+		commitMessageArea.setLineWrap(true);
 		// Around 3 lines of text.
-		int fontH = commitMessage.getFontMetrics(commitMessage.getFont()).getHeight();
-		commitMessage.setWrapStyleWord(true);
-		JScrollPane scrollPane = new JScrollPane(commitMessage);
+		int fontH = commitMessageArea.getFontMetrics(commitMessageArea.getFont()).getHeight();
+		commitMessageArea.setWrapStyleWord(true);
+		JScrollPane scrollPane = new JScrollPane(commitMessageArea);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setMinimumSize(new Dimension(10, 3 * fontH));
 
-		UndoSupportInstaller.installUndoManager(commitMessage);
+		UndoSupportInstaller.installUndoManager(commitMessageArea);
 		this.add(scrollPane, gbc);
 	}
 
@@ -336,12 +348,12 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
     } else {
       try {
         final RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
-        if (repositoryState == RepositoryState.MERGING
-            && translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE).equals(commitMessage.getText())) {
-          commitMessage.setText("");
+        if (repositoryState == RepositoryState.MERGING_RESOLVED
+            && translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE).equals(commitMessageArea.getText())) {
+          commitMessageArea.setText("");
         } else {
           // Possible time consuming operations.
-          SwingWorker<Void, Void> updateTask = new SwingWorker<Void, Void>() {
+          commitButtonAndMessageUpdateTask = new SwingWorker<Void, Void>() {
             boolean enable = false;
             String message = null;
             @Override
@@ -357,17 +369,18 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
               }
               return null;
             }
-            
+
             @Override
             protected void done() {
               if (message != null) {
-                commitMessage.setText(message);
+                commitMessageArea.setText(message);
               }
               commitButton.setEnabled(enable);
             }
           };
-          
-          GitOperationScheduler.getInstance().schedule(updateTask);
+
+          commitButtonAndMessageUpdateTaskTimer.restart();
+
         }
       } catch (NoRepositorySelected e) {
         // Remains disabled
@@ -425,7 +438,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 */
 	public void reset() {
 	  previousMessages.setSelectedItem(getCommitHistoryHint());
-		commitMessage.setText(null);
+		commitMessageArea.setText(null);
 	}
 
 	/**
@@ -458,8 +471,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		}
 	}
 	
-	public JTextArea getCommitMessage() {
-    return commitMessage;
+	/**
+	 * @return the commit message text area.
+	 */
+	public JTextArea getCommitMessageArea() {
+    return commitMessageArea;
   }
 
   /**
@@ -467,5 +483,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
    */
   public JLabel getStatusLabel() {
     return statusLabel;
+  }
+  
+  public JButton getCommitButton() {
+    return commitButton;
   }
 }
