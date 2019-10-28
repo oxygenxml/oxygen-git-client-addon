@@ -4,13 +4,13 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
-    <key value="Show_history">
-        <comment>Show history</comment>
-        <val lang="en_US">Show history</val>
-        <val lang="de_DE">Show history</val>
-        <val lang="fr_FR">Show history</val>
-        <val lang="ja_JP">Show history</val>
-        <val lang="nl_NL">Show history</val>
+    <key value="Show_current_branch_history">
+        <comment>Show current branch history</comment>
+        <val lang="en_US">Show current branch history</val>
+        <val lang="de_DE">Show current branch history</val>
+        <val lang="fr_FR">Show current branch history</val>
+        <val lang="ja_JP">Show current branch history</val>
+        <val lang="nl_NL">Show current branch history</val>
     </key>
     <key value="Git_history">
         <comment>Git History</comment>

@@ -381,7 +381,7 @@ public class ToolbarPanel extends JPanel {
 
 		historyButton = new ToolbarButton(historyAction, false);
 		historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
-		historyButton.setToolTipText(translator.getTranslation(Tags.SHOW_HISTORY));
+		historyButton.setToolTipText(translator.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
 		setDefaultToolbarButtonWidth(historyButton);
 
 		gitToolbar.add(historyButton);
