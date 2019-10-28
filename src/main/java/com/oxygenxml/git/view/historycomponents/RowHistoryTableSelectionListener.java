@@ -22,6 +22,9 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.util.XMLUtilAccess;
+
 public class RowHistoryTableSelectionListener implements ListSelectionListener {
   /**
    * Logger for logging.
@@ -106,6 +109,8 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		  StringBuilder commitDescription = new StringBuilder();
 		  // Case for already committed changes.
 		  if (commitCharacteristics.getCommitter() != null) {
+		    XMLUtilAccess xmlUtilAccess = PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess();
+		    
 		    commitDescription.append("<html><b>").append(Translator.getInstance().getTranslation(Tags.COMMIT)).append("</b>: ")
     		    .append(commitCharacteristics.getCommitId())
     		    .append(" [").append(commitCharacteristics.getCommitAbbreviatedId()).append("]");
@@ -123,12 +128,13 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 		          .append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("</a> ");
 		    }
 		    
-		    String author = commitCharacteristics.getAuthor();
-		    author = author.replace(" <", " &lt;").replace(">", "&gt;");
-        commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR)).append("</b>: ").append(author).append("<br>") 
-    		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.DATE)).append("</b>: ").append(commitCharacteristics.getDate()).append("<br>") 
-    		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ").append(commitCharacteristics.getCommitter()).append("<br><br>")
-    		    .append(commitCharacteristics.getCommitMessage()).append("</html>");
+        commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR))
+            .append("</b>: ").append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getAuthor())).append("<br>") 
+    		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.DATE)).append("</b>: ")
+    		    .append(commitCharacteristics.getDate()).append("<br>") 
+    		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ")
+    		    .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitter())).append("<br><br>")
+    		    .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitMessage())).append("</html>");
 		  }
 		  commitDescriptionPane.setText(commitDescription.toString());
 		  commitDescriptionPane.setCaretPosition(0);
