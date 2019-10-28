@@ -148,7 +148,16 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 			@Override
       public void actionPerformed(ActionEvent e) {
 				String message = "";
-				if (!gitAccess.getConflictingFiles().isEmpty()) {
+				RepositoryState repoState = null;
+				try {
+          repoState = gitAccess.getRepository().getRepositoryState();
+        } catch (NoRepositorySelected e1) {
+          logger.debug(e1, e1);
+        }
+				if (// Faster evaluation. Only seldom ask for the conflicting files, which actually calls git.status(),
+				    // operation that is slow
+             repoState == RepositoryState.MERGING 
+                 || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
 					message = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
 				} else {
 					message = translator.getTranslation(Tags.COMMIT_SUCCESS);
