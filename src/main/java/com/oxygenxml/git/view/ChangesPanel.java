@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -1163,6 +1164,7 @@ public class ChangesPanel extends JPanel {
 	  
 	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(stageController, null, forStagedResources, null));
+	  t.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 	  
     return t;
   }
