@@ -154,7 +154,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         } catch (NoRepositorySelected e1) {
           logger.debug(e1, e1);
         }
-				if (// Faster evaluation. Only seldom ask for the conflicting files, which actually calls git.status(),
+				if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files, which actually calls git.status(),
 				    // operation that is slow
              repoState == RepositoryState.MERGING 
                  || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
