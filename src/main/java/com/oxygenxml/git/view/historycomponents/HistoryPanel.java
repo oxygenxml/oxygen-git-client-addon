@@ -540,7 +540,10 @@ public class HistoryPanel extends JPanel {
               boolean hasFocus, int row, int column) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             String text = label.getText();
-            text = text.substring(0, text.indexOf(" <"));
+            int indexOfLT = text.indexOf(" <");
+            if (indexOfLT != -1) {
+              text = text.substring(0, indexOfLT);
+            }
             label.setText(text);
             return label;
           }
