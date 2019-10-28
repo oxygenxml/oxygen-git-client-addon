@@ -112,6 +112,7 @@ public class UIUtil {
     JTable table = UIUtil.createTable();
     table.setModel(fileTableModel);
     
+    table.getColumnModel().setColumnMargin(0);
     table.setTableHeader(null);
     table.setShowGrid(false);
     
