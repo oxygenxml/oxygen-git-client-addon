@@ -221,7 +221,7 @@ public class ChangesPanel extends JPanel {
                     logger.error(e, e);
                   }
                   ChangesPanel.this.repositoryChanged(files);
-                  getChangeSelectedButton().setEnabled(true);
+                  toggleSelectedButton();
                 }
               };
               
