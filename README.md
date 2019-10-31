@@ -20,7 +20,7 @@ Result: A **Git Staging** view will now be available in Oxygen XML Editor/Author
 
 If you can't follow the previous procedure, for example because there is no internet access when using Oxygen XML editor, you can manually install the add-on like this:
 1. Go on the [Releases page](https://github.com/oxygenxml/oxygen-git-plugin/releases/latest) and download `git.support-{version}-plugin.jar`
-2. Unzip it inside `{oXygenInstallDir}/plugins`. Make sure you don't create any any intermediate folders. After unzip, the file system should be like this: `{oXygenInstallDir}/plugins/git.support-1.5.2/plugin.xml`
+2. Unzip it inside `{oXygenInstallDir}/plugins`. Make sure you don't create any any intermediate folders. After unzip, the file system should be like this: `{oXygenInstallDir}/plugins/git.support-x.y.z/plugin.xml`
 
 ## Cloning a repository
 
