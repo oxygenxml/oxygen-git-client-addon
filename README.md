@@ -45,7 +45,11 @@ To open and work with a Git submodule, use the **Submodules** action from the to
 
 ## Showing the current branch history
 
-To show the history of the current branch, invoke the **Show current branch history** from the toolar (look for the clock icon).
+To show the history of the current branch, invoke the **Show current branch history** action from the toolar (look for the clock icon). This will open the **Git History** side-view.
+
+## Blame
+
+The contextual menu of each unstaged resource contains a **Show blame** action that opens the selected resource in Oxygen's main editing area and colors the editor lines with different colors based on the revision information. Selecting a line in the opened editor will highlight the corresponding entry from the history table in the **Git History** side-view.
 
 ## Unstaged resources area
 
@@ -68,7 +72,7 @@ If the file has a conflict (has been modified both by you and another), [Oxygen'
 
 After staging the files, on the bottom of the view you can provide a commit message and commit them to your local repository. For convenience, you can also select a previously provided message.
 
-## Push/Pull
+## Push / Pull (with merge or rebase)
 
 To push your local repository changes to the remote repository, use the **Push** button from the view's toolbar (up arrow). 
 
@@ -80,12 +84,20 @@ To push or pull, you need to access the remote, and for that you need to provide
 
 After editing a file, commiting it to the local repository and trying to push it to the remote repository, if a warning appears informing you about not being up-to-date with the repository, follow these steps:
 
-1. Pull the data from the repository using the **Pull** button.
-2. In the **Unstaged** area, select each conflicted file and open it the compare editor either by double-clicking or by using the contextual menu action. Choose what changes you want to keep/discard and save the document.
-3. After you close the compare editor, the file will be staged automatically and moved to the **Staged** area.
-4. When all the conflicts are resolved and no more files are left in the **Unstaged** area, the changes can be committed.
-5. Enter a message and commit. You will now have a new change to **Push**.
-6. Push the changes to the remote repository.
+1. Pull the data from the repository using one of the **Pull** actions.
+2. In the **Unstaged** area, select each conflicted file and resolve the conflicts. You can do this, for example, by opening the conflicted files in the compare editor, either by double-clicking on them or by using the contextual menu action, and then choose what changes you want to keep and discard, and save the document. You can also use the **Resolve using Mine**, **Resolve using Theirs** or **Mark as resolved** actions from the contextual menu of a resource. 
+3. If you choose to use the compare editor, after you close it, the file will be staged automatically and moved to the **Staged** area.
+
+At this point, the next actions depend on which **Pull** action was invoked:
+
+ - **Pull (merge)**:
+    1. When all the conflicts are resolved and no more files are left in the **Unstaged** area, the changes can be committed.
+    2. Enter a message and commit. You will now have new changes to push.
+    3. Push the changes to the remote repository.
+
+ - **Pull (rebase)**:
+    1. When all the conflicts are resolved, press the **Continue rebase** button.
+    2. You can abort the *Pull with rebase* action by pressing the **Abort rebase** button. This will revert the repository to the state from before trying to pull.
 
 Copyright and License
 ---------------------
