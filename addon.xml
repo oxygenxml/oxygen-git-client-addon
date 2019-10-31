@@ -32,7 +32,7 @@
                                 for the entire repository, or from the contextual menu for each
                                 unstaged resource.</li>
                             <li>Added a <b>Show blame</b> action in the contextual menu of unstaged resources.
-                                This action works in conjunction with the <b>Git History</> side-view,
+                                This action works in conjunction with the <b>Git History</b> side-view,
                                     where the revision highlighted in the main editor is selected for presenting more details.</li>
                             <li>Added a <b>Pull (rebase)</b> action in the toolbar.</li>
                             <li>Added more 2X icons for high resolution screens.</li>
