@@ -1,0 +1,18 @@
+<script>
+    <changeSet message="First commit.">
+        <change path="file1.txt" type="add">file 1 content</change>
+        <change path="file2.txt" type="add">file 2 content</change>
+    </changeSet>
+    
+    <changeSet message="Change file1.txt on Feature branch." branch="feature">
+        <change path="file1.txt" type="change">3</change>
+    </changeSet>
+    
+    <changeSet message="Delete file2.txt master branch." branch="master">
+        <change path="file2.txt" type="delete">1 changed on master branch.</change>
+    </changeSet>
+    
+    <changeSet message="Merge branch 'master'" branch="feature" mergeBranch="master">
+    </changeSet>
+    
+</script>

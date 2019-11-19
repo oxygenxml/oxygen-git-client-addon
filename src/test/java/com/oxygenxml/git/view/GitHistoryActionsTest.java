@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +13,7 @@ import javax.swing.Action;
 import javax.swing.JPopupMenu;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -24,21 +26,23 @@ import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 import com.oxygenxml.git.view.historycomponents.HistoryViewContextualMenuPresenter;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+
 /**
  * Tests for the code related with history.
  */
 public class GitHistoryActionsTest extends GitTestBase {
 
   /**
-   * Tests the commit revisions retrieval.
-   * 
+   * Tests the contextual actions that are presented for different types of changes.
+   *
    * @throws Exception
    */
   @Test
-  public void testHistory() throws Exception {
+  public void testHistoryContextualActions() throws Exception {
     URL script = getClass().getClassLoader().getResource("scripts/history_script_actions.txt");
 
-    File wcTree = new File("target/gen/GitHistoryTest_testHistory");
+    File wcTree = new File("target/gen/GitHistoryActionsTest_testHistoryContextualActions");
     RepoGenerationScript.generateRepository(script, wcTree);
 
     try {
@@ -122,5 +126,87 @@ public class GitHistoryActionsTest extends GitTestBase {
 
   private String dumpActions(List<Action> actions) {
     return actions.stream().map(action -> action.getValue(Action.NAME)).collect(Collectors.toList()).toString();
+  }
+
+  /**
+   * A commit with a removed file. The commit has 2 parents (it's a merge).
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testOpenPreviousVersion_MergedBranches() throws Exception {
+    URL script = getClass().getClassLoader().getResource("scripts/history_script_actions_branches_merged.txt");
+  
+    File wcTree = new File("target/gen/GitHistoryActionsTest_testHistoryActions_MergedBranches");
+    RepoGenerationScript.generateRepository(script, wcTree);
+  
+    try {
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
+  
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+  
+      String dump = dumpHistory(commitsCharacteristics);
+      System.out.println(dump);
+  
+      String expected = 
+          "[ Merge branch 'master' , 19 Nov 2019 , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2, 3] ]\n" + 
+          "[ Change file1.txt on Feature branch. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [4] ]\n" + 
+          "[ Delete file2.txt master branch. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+          "[ First commit. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n" + 
+          "";
+  
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+  
+      assertEquals(
+          expected, dump);
+  
+      HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
+  
+      final List<Action> actions = new ArrayList<Action>();
+      JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
+      Mockito.when(jPopupMenu.add((Action) Mockito.anyObject())).thenAnswer(new Answer<Void>() {
+        @Override
+        public Void answer(InvocationOnMock invocation) throws Throwable {
+          actions.add((Action) invocation.getArguments()[0]);
+          return null;
+        }
+      });
+      
+      //////////////////////////
+      //  Changes.
+      //////////////////////////
+      Iterator<CommitCharacteristics> iterator = commitsCharacteristics.iterator();
+      CommitCharacteristics t = iterator.next();
+      String dumpFS = dumpFS(RevCommitUtil.getChangedFiles(t.getCommitId()));
+      assertEquals(
+          "(changeType=REMOVED, fileLocation=file2.txt)\n" + 
+          "", dumpFS);
+  
+      // A deleted file.
+      actions.clear();
+      presenter.populateContextualActions(jPopupMenu, "file2.txt", t);
+      assertEquals("[Open_previous_version]", dumpActions(actions));
+      
+      final StringBuilder b = new StringBuilder();
+      Mockito.when(PluginWorkspaceProvider.getPluginWorkspace().open((URL)Mockito.anyObject())).thenAnswer(new Answer<Void>() {
+        @Override
+        public Void answer(InvocationOnMock invocation) throws Throwable {
+          b.append(invocation.getArguments()[0].toString());
+          return null;
+        }
+      });
+      actions.get(0).actionPerformed(null);
+      
+      assertTrue("Previous version URL was not detected", b.toString().length() > 0);
+      
+      try (InputStream openStream = new URL(b.toString()).openStream()) {
+        assertEquals("[file 2 content]", IOUtils.readLines(openStream).toString());
+      }
+      
+    } finally {
+      GitAccess.getInstance().closeRepo();
+  
+      FileUtils.deleteDirectory(wcTree);
+    }
   }
 }
