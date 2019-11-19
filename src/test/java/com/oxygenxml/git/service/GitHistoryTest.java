@@ -47,7 +47,7 @@ public class GitHistoryTest extends GitTestBase {
 
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
 
-      String dump = dump(commitsCharacteristics);
+      String dump = dumpHistory(commitsCharacteristics);
 
       String expected = "[ Uncommitted changes , {date} , * , * , null , null ]\n" + 
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -64,7 +64,7 @@ public class GitHistoryTest extends GitTestBase {
 
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("root.txt");
 
-      dump = dump(commitsCharacteristics);
+      dump = dumpHistory(commitsCharacteristics);
 
       expected = 
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -150,80 +150,6 @@ public class GitHistoryTest extends GitTestBase {
     }
   }
 
-  private String dumpFS(List<FileStatus> changes) {
-    StringBuilder b = new StringBuilder();
-    changes.stream().forEach(t -> b.append(t.toString()).append("\n"));
-    return b.toString();
-  }
-
-  /**
-   * Dumps a string version of the commits.
-   * 
-   * @param commitsCharacteristics Commits.
-   * 
-   * @return A string representation.
-   */
-  private String dump(List<CommitCharacteristics> commitsCharacteristics) {
-    StringBuilder b = new StringBuilder();
-
-    commitsCharacteristics.stream().forEach(t -> b.append(toString(t)).append("\n"));
-
-    return b.toString();
-  }
-  
-  /**
-   * Maps Git revision IDs into predictable values that can be asserted in a test.
-   */
-  private Map<String, String> idMapper = new HashMap<>();
-  /**
-   * Id generation counter.
-   */
-  private int counter = 1;
-  
-  /**
-   * Maps Git revision IDs into predictable values that can be asserted in a test.
-   * 
-   * @param id Git commit id.
-   * 
-   * @return A value that can be asserted in a test.
-   */
-  private String getAssertableID(String id) {
-    if (id == null || "*".equals(id)) {
-      return id;
-    }
-    String putIfAbsent = idMapper.putIfAbsent(id, String.valueOf(counter));
-    if (putIfAbsent == null) {
-      counter ++;
-    }
-    
-    return idMapper.get(id);
-  }
-  
-  /**
-   * Serialize the given commit.
-   * 
-   * @param c Commit data.
-   * 
-   * @return A string representation that can be asserted.
-   */
-  public String toString(CommitCharacteristics c) {
-    return "[ " + c.getCommitMessage() + " , " + dumpDate(c) + " , " + c.getAuthor() + " , " + getAssertableID(c.getCommitAbbreviatedId()) + " , " 
-        + c.getCommitter() + " , " + ( c.getParentCommitId() != null ? c.getParentCommitId().stream().map(id -> getAssertableID(id)).collect(Collectors.toList()) : null) + " ]";
-
-  }
-
-  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy");
-  /**
-   * Serializes the commit date into a "d MMM yyyy" format that can be asserted inside tests.
-   * 
-   * @param c Commit data.
-   * 
-   * @return A string representation.
-   */
-  private String dumpDate(CommitCharacteristics c) {
-    return c.getDate() != null ? DATE_FORMAT.format(c.getDate()) : DATE_FORMAT.format(new Date());
-  }
-
   /**
    * We have a repository with multiple branches. The history should present the history for the current branch only.
    * 
@@ -243,7 +169,7 @@ public class GitHistoryTest extends GitTestBase {
   
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
-      String dump = dump(commitsCharacteristics);
+      String dump = dumpHistory(commitsCharacteristics);
   
       String expected = 
           "[ Changed on master branch. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -273,7 +199,7 @@ public class GitHistoryTest extends GitTestBase {
       GitAccess.getInstance().setBranch("feature");
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
-      dump = dump(commitsCharacteristics);
+      dump = dumpHistory(commitsCharacteristics);
   
       expected = "[ Changed on feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [7] ]\n" + 
           "[ Feature branch commit. , {date} , Alex <alex_jitianu@sync.ro> , 7 , AlexJitianu , [2] ]\n" + 
@@ -314,7 +240,7 @@ public class GitHistoryTest extends GitTestBase {
       
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
-      String dump = dump(commitsCharacteristics);
+      String dump = dumpHistory(commitsCharacteristics);
   
       String expected = 
           "[ Another commit on master. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -336,7 +262,7 @@ public class GitHistoryTest extends GitTestBase {
       GitAccess.getInstance().setBranch("feature");
       commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
-      dump = dump(commitsCharacteristics);
+      dump = dumpHistory(commitsCharacteristics);
   
       expected = 
           "[ Anotehr commit of feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 10 , AlexJitianu , [4] ]\n" + 
@@ -400,7 +326,7 @@ public class GitHistoryTest extends GitTestBase {
       
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
 
-      String dump = dump(commitsCharacteristics);
+      String dump = dumpHistory(commitsCharacteristics);
 
       String expected = 
           "[ Change on the remote. , {date} , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 

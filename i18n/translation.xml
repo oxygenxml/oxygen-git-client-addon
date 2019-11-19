@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Open_previous_version">
+        <comment>Contextual action in the History view, to open the previous version of a file.</comment>
+        <val lang="en_US">Open previous version</val>
+        <val lang="de_DE">Open previous version</val>
+        <val lang="fr_FR">Open previous version</val>
+        <val lang="ja_JP">Open previous version</val>
+        <val lang="nl_NL">Open previous version</val>
+    </key>
     <key value="Show_current_branch_history">
         <comment>Show current branch history</comment>
         <val lang="en_US">Show current branch history</val>

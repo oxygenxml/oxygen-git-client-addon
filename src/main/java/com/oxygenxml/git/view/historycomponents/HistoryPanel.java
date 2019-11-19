@@ -107,9 +107,9 @@ public class HistoryPanel extends JPanel {
    */
   private String activeFilePath;
   /**
-   * Executes GIT commands (stage, unstage, discard, etc).
+   * Presents the contextual menu.
    */
-  private transient GitController stageController;
+  private HistoryViewContextualMenuPresenter contextualMenuPresenter;
   
   /**
    * Constructor.
@@ -117,8 +117,9 @@ public class HistoryPanel extends JPanel {
    * @param stageController Executes a set of Git commands.
    */
   public HistoryPanel(GitController stageController) {
-    this.stageController = stageController;
     setLayout(new BorderLayout());
+    
+    contextualMenuPresenter = new HistoryViewContextualMenuPresenter(stageController);
 
     historyTable = UIUtil.createTable();
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -233,8 +234,7 @@ public class HistoryPanel extends JPanel {
       CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(historyTable.getSelectedRow());
       
       JPopupMenu jPopupMenu = new JPopupMenu();
-      jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), file.getFileLocation(), false));
-      populateDiffActions(jPopupMenu, commitCharacteristics, file, false);
+      contextualMenuPresenter.populateContextualActions(jPopupMenu, file, commitCharacteristics, false);
       jPopupMenu.show(affectedFilesTable, point.x, point.y);
     }
   }
@@ -255,159 +255,16 @@ public class HistoryPanel extends JPanel {
         HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
         int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
         CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
-        JPopupMenu jPopupMenu = new JPopupMenu();
-        jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), activeFilePath, true));
         try {
-          List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
-          Optional<FileStatus> fileStatusOptional = changes.stream().filter(f -> activeFilePath.equals(f.getFileLocation())).findFirst();
-          if (fileStatusOptional.isPresent()) {
-            populateDiffActions(jPopupMenu, commitCharacteristics, fileStatusOptional.get(), true);
-          }
+          JPopupMenu jPopupMenu = new JPopupMenu();
+          contextualMenuPresenter.populateContextualActions(jPopupMenu, activeFilePath, commitCharacteristics);
+          
+          jPopupMenu.show(historyTable, point.x, point.y);
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
         }
-        jPopupMenu.show(historyTable, point.x, point.y);
       }
     }
-  }
-
-  /**
-   * Creates an action to open a file at a given revision.
-   * 
-   * @param revisionID Revision ID.
-   * @param filePath File path, relative to the working copy.
-   * @param addFileName <code>true</code> to append the name of the file to the name of the action.
-   * 
-   * @return The action that will open the file when invoked.
-   */
-  private AbstractAction createOpenFileAction(String revisionID, String filePath, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.OPEN);
-    if (addFileName) {
-      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
-    }
-    
-    return new AbstractAction(actionName) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          URL fileURL = null;
-          if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(revisionID)) {
-            fileURL = GitRevisionURLHandler.encodeURL(revisionID, filePath);
-          } else {
-            fileURL = FileHelper.getFileURL(filePath);
-          }
-          
-          PluginWorkspaceProvider.getPluginWorkspace().open(fileURL);
-        } catch (MalformedURLException | NoRepositorySelected e1) {
-          LOGGER.error(e1, e1);
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
-        } 
-      }
-    };
-  }
-
-  /**
-   * Contributes the DIFF actions between the current revision and the previous ones on the contextual menu.
-   * 
-   * @param jPopupMenu Contextual menu.
-   * @param commitCharacteristics Current commit data.
-   * @param fileStatus File path do diff.
-   * @param addFileName <code>true</code> to add the name of the file to the action's name.
-   */
-  private void populateDiffActions(
-      JPopupMenu jPopupMenu,  
-      CommitCharacteristics commitCharacteristics,
-      FileStatus fileStatus,
-      boolean addFileName) {
-    if (fileStatus.getChangeType() != GitChangeType.ADD) {
-      String filePath = fileStatus.getFileLocation();
-      if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
-        // A revision.
-        List<String> parents = commitCharacteristics.getParentCommitId();
-        if (parents != null && !parents.isEmpty()) {
-          try {
-            RevCommit[] parentsRevCommits = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(), commitCharacteristics.getCommitId());
-            boolean addParentID = parents.size() > 1;
-            for (RevCommit parentID : parentsRevCommits) {
-              // Just one parent.
-              jPopupMenu.add(createDiffAction(filePath, commitCharacteristics.getCommitId(), parentID, addParentID, addFileName));
-            }
-
-            String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
-            if (addFileName) {
-              String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-              actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION), fileName);
-            }
-
-            jPopupMenu.add(new AbstractAction(actionName) {
-              @Override
-              public void actionPerformed(ActionEvent e) {
-                try {
-                  DiffPresenter.showTwoWayDiffWithLocal(filePath, commitCharacteristics.getCommitId());
-                } catch (MalformedURLException | NoRepositorySelected e1) {
-                  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e1.getMessage());
-                  LOGGER.error(e1, e1);
-                }
-              }
-            });
-          } catch (IOException | NoRepositorySelected e2) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e2.getMessage());
-            LOGGER.error(e2, e2);
-          }
-        }
-      } else {
-        // Uncommitted changes. Compare between local and HEAD.
-        jPopupMenu.add(new AbstractAction(
-            Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            DiffPresenter.showDiff(fileStatus, stageController);
-          }
-        });
-      }
-    }
-  }
-
-  /**
-   * Creates an action that invokes Oxygen's DIFF.
-   * 
-   * @param filePath File to compare. Path relative to the working tree.
-   * @param commitID The current commit id. First version to compare.
-   * @param parentRevCommit The parent revision. Second version to comapre.
-   * @param addParentIDInActionName <code>true</code> to put the ID of the parent version in the action's name.
-   * @param addFileName <code>true</code> to add the file name to the action's name. 
-   * 
-   * @return The action that invokes the DIFF.
-   */
-  private AbstractAction createDiffAction(
-      String filePath,
-      String commitID, 
-      RevCommit parentRevCommit,
-      boolean addParentIDInActionName, 
-      boolean addFileName) {
-    
-    String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
-    if (addFileName) {
-      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_PREVIOUS_VERSION), fileName);
-    }
-    if (addParentIDInActionName) {
-      actionName += " " + parentRevCommit.abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
-    }
-    
-    return new AbstractAction(actionName) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          DiffPresenter.showTwoWayDiff(commitID, parentRevCommit.name(), filePath);
-        } catch (MalformedURLException e1) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e1.getMessage());
-          LOGGER.error(e1, e1);
-        }
-      }
-    };
-    
   }
 
   /**

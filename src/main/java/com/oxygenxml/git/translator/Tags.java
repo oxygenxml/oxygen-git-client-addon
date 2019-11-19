@@ -802,4 +802,9 @@ public class Tags {
    * Cancel. Taken from oXygen's "translation.xml".
    */
   public static final String CANCEL = "Cancel";
+  
+  /**
+   * The text displayed for the "Open previous version" contextual menu item.
+   */
+  public static final String OPEN_PREVIOUS_VERSION = "Open_previous_version";
 }

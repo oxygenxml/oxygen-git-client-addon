@@ -15,9 +15,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,6 +48,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
+import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.WindowMonitor;
@@ -264,6 +270,15 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * Listeners interested in editor events.
    */
   protected final List<WSEditorListener> editorListeners = new ArrayList<>();
+  /**
+   * Maps Git revision IDs into predictable values that can be asserted in a test.
+   */
+  private Map<String, String> idMapper = new HashMap<>();
+  /**
+   * Id generation counter.
+   */
+  private int counter = 1;
+  protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy");
   
   @Override
   protected void setUp() throws Exception {
@@ -398,6 +413,34 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   }
   
   /**
+   * Dumps files changes in a string representation.
+   * 
+   * @param changes Files changes.
+   * 
+   * @return An assertable string representation of the files.
+   */
+  protected String dumpFS(List<FileStatus> changes) {
+    StringBuilder b = new StringBuilder();
+    changes.stream().forEach(t -> b.append(t.toString()).append("\n"));
+    return b.toString();
+  }
+
+  /**
+   * Dumps a string version of the commits.
+   * 
+   * @param commitsCharacteristics Commits.
+   * 
+   * @return A string representation.
+   */
+  protected String dumpHistory(List<CommitCharacteristics> commitsCharacteristics) {
+    StringBuilder b = new StringBuilder();
+  
+    commitsCharacteristics.stream().forEach(t -> b.append(toString(t)).append("\n"));
+  
+    return b.toString();
+  }
+
+  /**
    * Loads the repository and pushes one file to the remote.
    * 
    * @throws Exception If it fails.
@@ -460,6 +503,38 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   }
   
   /**
+   * Maps Git revision IDs into predictable values that can be asserted in a test.
+   * 
+   * @param id Git commit id.
+   * 
+   * @return A value that can be asserted in a test.
+   */
+  protected String getAssertableID(String id) {
+    if (id == null || "*".equals(id)) {
+      return id;
+    }
+    String putIfAbsent = idMapper.putIfAbsent(id, String.valueOf(counter));
+    if (putIfAbsent == null) {
+      counter ++;
+    }
+    
+    return idMapper.get(id);
+  }
+
+  /**
+   * Serialize the given commit.
+   * 
+   * @param c Commit data.
+   * 
+   * @return A string representation that can be asserted.
+   */
+  public String toString(CommitCharacteristics c) {
+    return "[ " + c.getCommitMessage() + " , " + dumpDate(c) + " , " + c.getAuthor() + " , " + getAssertableID(c.getCommitAbbreviatedId()) + " , " 
+        + c.getCommitter() + " , " + ( c.getParentCommitId() != null ? c.getParentCommitId().stream().map(id -> getAssertableID(id)).collect(Collectors.toList()) : null) + " ]";
+  
+  }
+
+  /**
    * Searches for the first button with the specified text in the container.
    * 
    * @param parent  The parent container.
@@ -485,6 +560,17 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }
     
     return result;      
+  }
+
+  /**
+   * Serializes the commit date into a "d MMM yyyy" format that can be asserted inside tests.
+   * 
+   * @param c Commit data.
+   * 
+   * @return A string representation.
+   */
+  private String dumpDate(CommitCharacteristics c) {
+    return c.getDate() != null ? DATE_FORMAT.format(c.getDate()) : DATE_FORMAT.format(new Date());
   }
   
 }

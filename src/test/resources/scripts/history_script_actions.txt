@@ -1,0 +1,14 @@
+<script>
+    <changeSet message="First commit.">
+        <change path="file1.txt" type="add">file 1 content</change>
+    </changeSet>
+    
+    <changeSet message="Second commit.">
+        <change path="file2.txt" type="add">file 2 content</change>
+    </changeSet>
+    
+    <changeSet message="Changes.">
+        <change path="file1.txt" type="change">file 1 content changed</change>
+        <change path="file2.txt" type="delete"/>
+    </changeSet>
+</script>

@@ -84,7 +84,7 @@ public class RevCommitUtil {
    * @param commitID Revision commit ID.
    * @param path File path, relative to the working tree directory.
    * 
-   * @return The Object identifying the file at the given revision.
+   * @return The Object identifying the file at the given revision or <code>null</code> if the path is not found in the given commit.
    * 
    * @throws IOException Unable to identify the commit.
    */
@@ -95,7 +95,7 @@ public class RevCommitUtil {
       RevCommit commit = rw.parseCommit(head);
       
       try (TreeWalk treeWalk = TreeWalk.forPath(repository, path, commit.getTree())) {
-        return treeWalk.getObjectId(0);
+        return treeWalk != null ? treeWalk.getObjectId(0) : null;
       }
     }
   }
