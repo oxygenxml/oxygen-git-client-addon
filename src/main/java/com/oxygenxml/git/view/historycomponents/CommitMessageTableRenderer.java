@@ -39,11 +39,6 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	private static Logger logger = Logger.getLogger(CommitMessageTableRenderer.class);
 
 	/**
-	 * Git access.
-	 */
-	private GitAccess gitAccess;
-	
-	/**
 	 * Git repository.
 	 */
 	private Repository repository;
@@ -51,11 +46,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	/**
 	 * Construct the Table Renderer with accurate alignment.
 	 * 
-	 * @param gitAccess  The gitAccess instance
 	 * @param repository The current repository
 	 */
-	public CommitMessageTableRenderer(GitAccess gitAccess, Repository repository) {
-		this.gitAccess = gitAccess;
+	public CommitMessageTableRenderer(Repository repository) {
 		this.repository = repository;
 
 		setLayout(new GridBagLayout());
@@ -104,6 +97,8 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 			} else {
 				// add labels in historyTable for tags and branch names from corresponding maps
 				try {
+				  GitAccess gitAccess = GitAccess.getInstance();
+				  
 					String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
 					Map<String, List<String>> tagMap = gitAccess.getTagMap(repository);
 					List<String> tagList = tagMap.get(abbreviatedId);

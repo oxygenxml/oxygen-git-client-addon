@@ -384,6 +384,7 @@ public class GitAccess {
 	 * Notify that the loaded repository changed.
 	 */
 	private void fireRepositoryChanged() {
+	  logger.debug("FIRE REPO CHANGED");
 	  for (GitEventListener gitEventListener : listeners) {
       gitEventListener.repositoryChanged();
     }
@@ -393,6 +394,7 @@ public class GitAccess {
    * Notify the listeners about the fact that a repository is about to be open.
    */
   private void fireRepositoryIsAboutToOpen(File repo) {
+    logger.debug("FIRE REPO ABOUT TO OPEN");
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.repositoryIsAboutToOpen(repo);
     }
@@ -402,6 +404,7 @@ public class GitAccess {
    * Notify the listeners about the fact that the opening of a repository has failed.
    */
   private void fireRepositoryOpenFailed(File repo, Throwable ex) {
+    logger.debug("FIRE REPO OPENING FAILED");
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.repositoryOpeningFailed(repo, ex);
     }
@@ -412,6 +415,7 @@ public class GitAccess {
    * Notify the some files changed their state.
    */
   private void fireStateChanged(GitEvent changeEvent) {
+    logger.debug("FIRE STATE CHANGED: " + changeEvent);
     for (GitEventListener gitEventListener : listeners) {
       gitEventListener.stateChanged(changeEvent);
     }
@@ -481,7 +485,9 @@ public class GitAccess {
 	  GitStatus gitStatus = null;
 	  if (git != null) {
 	    try {
+	      logger.debug("-- Compute our GitStatus -> getStatus() --");
 	      Status status = git.status().call();
+	      logger.debug("-- Get JGit status -> git.status().call() --");
 	      gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status));
 	    } catch (GitAPIException e) {
 	      if (logger.isDebugEnabled()) {
@@ -515,18 +521,17 @@ public class GitAccess {
   public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
     if (git != null) {
       if (logger.isDebugEnabled()) {
-        logger.debug("Prepare fot Git status, in paths " + paths);
+        logger.debug("PUBLIC - GET UNSTAGED FILES");
+        logger.debug("Prepare fot JGit status, in paths " + paths);
       }
-
+      
       StatusCommand statusCmd = git.status();
       for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
-        String path = iterator.next();
-
-        statusCmd.addPath(path);
+        statusCmd.addPath(iterator.next());
       }
-
       try {
         Status status = statusCmd.call();
+        logger.debug("JGit Status computed: " + status);
         return getUnstagedFiles(status);
       } catch (GitAPIException e) {
         if (logger.isDebugEnabled()) {
@@ -547,6 +552,7 @@ public class GitAccess {
 	 * @return The unstaged files and their states.
 	 */
 	private List<FileStatus> getUnstagedFiles(Status status) {
+	  logger.debug("PRIVATE - GET UNSTAGE FOR GIVEN STATUS " + status);
 		List<FileStatus> unstagedFiles = new ArrayList<>();
 		if (git != null) {
 			try {
@@ -573,7 +579,7 @@ public class GitAccess {
 	 */
   private void addConflictingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles) {
     if (logger.isDebugEnabled()) {
-      logger.debug("conflicting " + status.getConflicting());
+      logger.debug("addConflictingFilesToUnstaged: " + status.getConflicting());
     }
     for (String fileName : status.getConflicting()) {
       unstagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
@@ -590,7 +596,7 @@ public class GitAccess {
    */
   private void addMissingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (logger.isDebugEnabled()) {
-      logger.debug("missing " + status.getMissing());
+      logger.debug("addMissingFilesToUnstaged: " + status.getMissing());
     }
     for (String string : status.getMissing()) {
     	if (!submodules.contains(string)) {
@@ -609,7 +615,7 @@ public class GitAccess {
    */
   private void addModifiedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (logger.isDebugEnabled()) {
-      logger.debug("modified " + status.getModified());
+      logger.debug("addModifiedFilesToUnstaged " + status.getModified());
     }
     for (String string : status.getModified()) {
       // A file that was modified compared to the one from INDEX.
@@ -629,7 +635,7 @@ public class GitAccess {
    */
   private void addUntrackedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
     if (logger.isDebugEnabled()) {
-      logger.debug("untracked " + status.getUntracked());
+      logger.debug("addUntrackedFilesToUnstaged " + status.getUntracked());
     }
     for (String string : status.getUntracked()) {
     	if (!submodules.contains(string)) {
@@ -649,7 +655,7 @@ public class GitAccess {
    */
   private void addSubmodulesToUnstaged(List<FileStatus> unstagedFiles, Set<String> submodules) throws GitAPIException {
     if (logger.isDebugEnabled()) {
-      logger.debug("submodules " + submodules);
+      logger.debug("addSubmodulesToUnstaged " + submodules);
     }
     for (String string : submodules) {
     	SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
@@ -1128,8 +1134,8 @@ public class GitAccess {
   private void treatMergeResult(PullResponse pullResponse, MergeResult mergeResult) throws CheckoutConflictException {
     if (mergeResult != null) {
       if (logger.isDebugEnabled()) {
-        logger.debug("Merge result " + mergeResult);
-        logger.debug("mergeResult.getMergeStatus() " + mergeResult.getMergeStatus());
+        logger.debug("Merge result: " + mergeResult);
+        logger.debug("Merge result status: " + mergeResult.getMergeStatus());
       }
 
       if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
@@ -1158,24 +1164,20 @@ public class GitAccess {
    * @param mergeResult The merge result.
    */
   private void logMergeFailure(MergeResult mergeResult) {
-    logFailingPaths(mergeResult.getFailingPaths());
-  }
-  
-  /**
-   * Log failing paths.
-   * 
-   * @param failingPaths Failing paths.
-   */
-  private void logFailingPaths(Map<String, MergeFailureReason> failingPaths) {
+    if (logger.isDebugEnabled()) {
+      Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
       if (failingPaths != null) {
+        logger.debug("NOW LOG MERGE FAILURE PATHS:");
         Set<String> keySet = failingPaths.keySet();
         for (String string : keySet) {
-          logger.debug("path " + string);
-          logger.debug("reason " + failingPaths.get(string));
+          logger.debug("  Path: " + string);
+          logger.debug("  Reason: " + failingPaths.get(string));
         }
       }
     }
-
+  
+  }
+  
 	/**
 	 * Create lock failure message when pulling/fetching, if needed.
 	 * 
@@ -1802,40 +1804,30 @@ public class GitAccess {
 	 * repository has conflicts
 	 */
 	public void restartMerge() {
-		try {
-		  fireStateChanged(
-          new GitEvent(
-              GitCommand.MERGE_RESTART,
-              GitCommandState.STARTED,
-              Collections.<String>emptyList()));
-		  RepositoryState repositoryState = getRepository().getRepositoryState();
-			if (repositoryState == RepositoryState.REBASING_MERGE) {
-		    git.rebase().setOperation(Operation.ABORT).call();
-			  UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
-		    String username = gitCredentials.getUsername();
-		    String password = gitCredentials.getPassword();
-			  pull(username, password, PullType.REBASE);
-			} else {
-			  AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
-			git.clean().call();
-			git.reset().setMode(ResetType.HARD).call();
-			git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
-			}
-			fireStateChanged(
-			    new GitEvent(
-			        GitCommand.MERGE_RESTART,
-			        GitCommandState.SUCCESSFULLY_ENDED,
-			        Collections.<String>emptyList()));
-    } catch (IOException | NoRepositorySelected | GitAPIException e) {
-      fireStateChanged(
-          new GitEvent(
-              GitCommand.MERGE_RESTART,
-              GitCommandState.FAILED,
-              Collections.<String>emptyList()));
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		}
+	  fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.STARTED));
+	  GitOperationScheduler.getInstance().schedule(() -> {
+	    try {
+	      RepositoryState repositoryState = getRepository().getRepositoryState();
+	      if (repositoryState == RepositoryState.REBASING_MERGE) {
+	        git.rebase().setOperation(Operation.ABORT).call();
+	        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
+	        String username = gitCredentials.getUsername();
+	        String password = gitCredentials.getPassword();
+	        pull(username, password, PullType.REBASE);
+	      } else {
+	        AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
+	        git.clean().call();
+	        git.reset().setMode(ResetType.HARD).call();
+	        git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
+	      }
+	      fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.SUCCESSFULLY_ENDED));
+	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
+	      fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.FAILED));
+	      if (logger.isDebugEnabled()) {
+	        logger.debug(e, e);
+	      }
+	    }
+	  });
 	}
 
 	/**
@@ -2083,9 +2075,9 @@ public class GitAccess {
    * Aborts and resets the current rebase
    */
   public void abortRebase() {
+    fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.STARTED));
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.STARTED));
         git.rebase().setOperation(Operation.ABORT).call();
         fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.SUCCESSFULLY_ENDED));
       } catch (GitAPIException e) {
@@ -2099,12 +2091,9 @@ public class GitAccess {
    * Continue rebase after a conflict resolution.
    */
   public void continueRebase() {
+    fireStateChanged(new GitEvent(GitCommand.CONTINUE_REBASE, GitCommandState.STARTED));
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        fireStateChanged(
-            new GitEvent(
-                GitCommand.CONTINUE_REBASE,
-                GitCommandState.STARTED));
         
         RebaseResult result = git.rebase().setOperation(Operation.CONTINUE).call();
         if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {

@@ -503,7 +503,7 @@ public class FlatViewTest extends FlatViewTestBase {
     CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
     flushAWT();
     sleep(1000);
-    assertEquals("Conclude_Merge_Message", commitPanel.getCommitMessage().getText());
+    assertEquals("Conclude_Merge_Message", commitPanel.getCommitMessageArea().getText());
     
     commitPanel.getCommitButton().doClick();
     flushAWT();

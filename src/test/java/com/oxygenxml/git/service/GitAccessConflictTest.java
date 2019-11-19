@@ -169,6 +169,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
+    Thread.sleep(700);
 		
 		String expected = "hellllo";
 		String actual = getFileContent(testFileSecondRepo);
@@ -221,6 +222,7 @@ public class GitAccessConflictTest {
 		assertEquals(expected, actual);
 		
 		gitAccess.restartMerge();
+		Thread.sleep(1000);
 		actual = gitAccess.getRepository().getRepositoryState();
 		expected = RepositoryState.MERGING;
 		assertEquals(expected, actual);
@@ -321,6 +323,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_MINE);
+    Thread.sleep(700);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -444,6 +447,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_MINE);
+    Thread.sleep(700);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -568,6 +572,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
+    Thread.sleep(700);
     
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
@@ -694,7 +699,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    
+    Thread.sleep(700);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -822,6 +827,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
+    Thread.sleep(1000);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -845,6 +851,7 @@ public class GitAccessConflictTest {
     
     // Restart merge
     gitAccess.restartMerge();
+    Thread.sleep(1000);
     
     repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);

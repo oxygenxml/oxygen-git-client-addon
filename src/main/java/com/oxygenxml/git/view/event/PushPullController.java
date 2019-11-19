@@ -95,8 +95,8 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * Pull.
 	 */
 	public Future<?> pull() {
-    return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(PullType.MERGE_FF));
-  }
+	 return	pull(PullType.MERGE_FF);
+	}
 	
 	/**
 	 * Pull and choose the merging strategy.
@@ -303,6 +303,7 @@ public class PushPullController implements Subject<PushPullEvent> {
      * 
      * @param userCredentials The credentials used to pull the new changes made by others.
      *          
+     * @return The display message.
      * @throws GitAPIException
      */
     @Override
@@ -321,43 +322,45 @@ public class PushPullController implements Subject<PushPullEvent> {
         logger.debug("Repo state: " + repositoryState);
       }
       
-      if (repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED) {
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
-      } else if (repositoryState == RepositoryState.REBASING_MERGE
-          || repositoryState == RepositoryState.REBASING_REBASING) {
-        showRebaseInProgressDialog();
-      } else {
-        PullResponse response = gitAccess.pull(
-            userCredentials.getUsername(),
-            userCredentials.getPassword(),
-            pullType);
-        switch (response.getStatus()) {
-          case OK:
-            message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
-            break;
-          case CONFLICTS:
-            showPullSuccessfulWithConflicts(response);
-            if (pullType == PullType.REBASE) {
-              PushPullEvent pushPullEvent = new PushPullEvent(
-                  ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
-              notifyObservers(pushPullEvent);
-            }
-            break;
-          case REPOSITORY_HAS_CONFLICTS:
-            ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-                .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
-            break;
-          case UP_TO_DATE:
-            message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
-            break;
-          case LOCK_FAILED:
-            message = translator.getTranslation(Tags.LOCK_FAILED);
-            break;
-          default:
-            // Nothing
-            break;
-        }
+      if(repositoryState != null) {
+    	  if (repositoryState == RepositoryState.MERGING_RESOLVED) {
+    		  ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+    		  .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
+    	  } else if (repositoryState == RepositoryState.REBASING_MERGE
+    			  || repositoryState == RepositoryState.REBASING_REBASING) {
+    		  showRebaseInProgressDialog();
+    	  } else {
+    		  PullResponse response = gitAccess.pull(
+    				  userCredentials.getUsername(),
+    				  userCredentials.getPassword(),
+    				  pullType);
+    		  switch (response.getStatus()) {
+    		  case OK:
+    			  message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
+    			  break;
+    		  case CONFLICTS:
+    			  showPullSuccessfulWithConflicts(response);
+    			  if (pullType == PullType.REBASE) {
+    				  PushPullEvent pushPullEvent = new PushPullEvent(
+    						  ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
+    				  notifyObservers(pushPullEvent);
+    			  }
+    			  break;
+    		  case REPOSITORY_HAS_CONFLICTS:
+    			  ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+    			  .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
+    			  break;
+    		  case UP_TO_DATE:
+    			  message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
+    			  break;
+    		  case LOCK_FAILED:
+    			  message = translator.getTranslation(Tags.LOCK_FAILED);
+    			  break;
+    		  default:
+    			  // Nothing
+    			  break;
+    		  }
+    	  }
       }
       return message;
     }

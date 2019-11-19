@@ -132,7 +132,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
         }
         if (credentialItem instanceof CredentialItem.StringType
             //$NON-NLS-1$
-            && credentialItem.getPromptText().equals("Password: ")) {
+            && credentialItem.getPromptText().startsWith("Password:")) {
           ((CredentialItem.StringType) credentialItem).setValue(password);
           userCredentialsRequested = true;
           continue;

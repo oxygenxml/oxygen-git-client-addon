@@ -64,8 +64,22 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  *
  */
 public class ToolbarPanel extends JPanel {
-  
   /**
+   * Pull button extra width, for beautifying reasons.
+   */
+	private static final int PULL_BUTTON_EXTRA_WIDTH = 4;
+
+	/**
+   * Toolbar button default extra width, for beautifying reasons.
+   */
+  private static final int TOOLBAR_BUTTON_DEFAULT_EXTRA_WIDTH = 8;
+
+  /**
+	 * Distance between text and decoration
+	 */
+  private static final int DECORATION_DISPLACEMENT = 13;
+
+/**
    * Pull action.
    */
   private final class PullAction extends AbstractAction {
@@ -88,7 +102,6 @@ public class ToolbarPanel extends JPanel {
             logger.debug("Pull action invoked");
           }
           pushPullController.pull(pullType);
-          pullsBehind = 0;
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
       } catch (NoRepositorySelected e1) {
@@ -368,7 +381,7 @@ public class ToolbarPanel extends JPanel {
 
 		historyButton = new ToolbarButton(historyAction, false);
 		historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
-		historyButton.setToolTipText(translator.getTranslation(Tags.GIT_COMMIT_HISTORY));
+		historyButton.setToolTipText(translator.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
 		setDefaultToolbarButtonWidth(historyButton);
 
 		gitToolbar.add(historyButton);
@@ -486,12 +499,11 @@ public class ToolbarPanel extends JPanel {
           upstreamBranch = translator.getTranslation(Tags.NO_UPSTREAM_BRANCH);
         }
 
-				String remoteAndBranchInfo = (remoteName == null ? "" : remoteName + "/") + upstreamBranch;
         remoteAndBranchTooltipMessage = "<html>"
 				    + (remoteName == null ? "" : translator.getTranslation(Tags.REMOTE) + "/")
 				    + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH).toLowerCase()
 				    + " <b>"
-				    + remoteAndBranchInfo
+				    + upstreamBranch
 				    + "</b> - ";
 				if (pullsBehind == 0) {
 				  remoteAndBranchTooltipMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
@@ -508,7 +520,7 @@ public class ToolbarPanel extends JPanel {
 				pushButton.setToolTipText(
             MessageFormat.format(
                 translator.getTranslation(Tags.PUSH_TO),
-                remoteAndBranchInfo));
+                upstreamBranch));
 				
 				// Pull tooltip
 				String pullFromTag = Tags.PULL_FROM;
@@ -524,7 +536,7 @@ public class ToolbarPanel extends JPanel {
         pullMenuButton.setToolTipText(
             MessageFormat.format(
                 translator.getTranslation(pullFromTag),
-                remoteAndBranchInfo));
+                upstreamBranch));
 			}
 			remoteAndBranchInfoLabel.setToolTipText(remoteAndBranchTooltipMessage);
 		}
@@ -544,7 +556,7 @@ public class ToolbarPanel extends JPanel {
 		// PULL
 		pullMenuButton = createPullButton();
     Dimension d = pullMenuButton.getPreferredSize();
-    d.width = 42;
+    d.width += PULL_BUTTON_EXTRA_WIDTH;
     pullMenuButton.setPreferredSize(d);
     pullMenuButton.setMinimumSize(d);
     pullMenuButton.setMaximumSize(d);
@@ -592,8 +604,8 @@ public class ToolbarPanel extends JPanel {
         int stringWidth = fontMetrics.stringWidth(noOfPullsBehindString);
         g.setColor(getForeground());
         g.drawString(noOfPullsBehindString,
-            // X TODO: use scaling factor for that magic number (13)
-            getWidth() - stringWidth - 13,
+            // X
+            getWidth() - stringWidth - DECORATION_DISPLACEMENT,
             // Y
             fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
       }
@@ -724,7 +736,7 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private void setDefaultToolbarButtonWidth(AbstractButton button) {
 		Dimension d = button.getPreferredSize();
-		d.width = 30;
+		d.width += TOOLBAR_BUTTON_DEFAULT_EXTRA_WIDTH;
 		button.setPreferredSize(d);
 		button.setMinimumSize(d);
 		button.setMaximumSize(d);

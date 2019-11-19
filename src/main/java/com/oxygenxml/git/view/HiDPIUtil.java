@@ -35,6 +35,8 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.git.utils.PlatformDetectionUtil;
+
 /**
  * Class that holds utility methods used when HiDPI is detected.
  * 
@@ -358,10 +360,7 @@ public class HiDPIUtil {
     Dimension newDim = initialDimension;
     float scalingFactor = getScalingFactor();
 
-    String osName = System.getProperty("os.name");
-    osName = osName.toUpperCase();
-    boolean isWin = osName.startsWith("WIN");
-    
+    boolean isWin = PlatformDetectionUtil.isWin();
     if (initialDimension.width < preferredSize.width) {
       if (isWin) {
         newDim.width *= scalingFactor;

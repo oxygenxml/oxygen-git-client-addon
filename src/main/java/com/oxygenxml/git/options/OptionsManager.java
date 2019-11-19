@@ -161,9 +161,9 @@ public class OptionsManager {
       Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
       jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       if (OxygenGitPlugin.getInstance() == null) {
-        jaxbMarshaller.marshal(options, getOptionsFileForTests());
+        jaxbMarshaller.marshal(getOptions(), getOptionsFileForTests());
       } else {
-        jaxbMarshaller.marshal(options, optionsWriter);
+        jaxbMarshaller.marshal(getOptions(), optionsWriter);
       }
     } catch (JAXBException e) {
       save = false;
@@ -185,8 +185,16 @@ public class OptionsManager {
    * Save the new view mode for the staged resources.
    */
   public void saveStagedResViewMode(ResourcesViewMode stagedResViewMode) {
-    loadOptions();
-    options.setStagedResViewMode(stagedResViewMode);
+    getOptions().setStagedResViewMode(stagedResViewMode);
+  }
+  
+  /**
+   * Init and get the options.
+   * @return The initialized options.
+   */
+  private Options getOptions() {
+	  loadOptions();
+	  return options;
   }
   
   /**
@@ -195,16 +203,14 @@ public class OptionsManager {
    * @param pullType The pull type.
    */
   public void saveDefaultPullType(PullType pullType) {
-    loadOptions();
-    options.setDefaultPullType(pullType);
+    getOptions().setDefaultPullType(pullType);
   }
   
   /**
    * Save the new view mode for the unstaged resources.
    */
   public void saveUnstagedResViewMode(ResourcesViewMode unstagedResViewMode) {
-    loadOptions();
-    options.setUnstagedResViewMode(unstagedResViewMode);
+    getOptions().setUnstagedResViewMode(unstagedResViewMode);
   }
 
   /**
@@ -213,9 +219,7 @@ public class OptionsManager {
    * @return a set with the repository options
    */
   public List<String> getRepositoryEntries() {
-    loadOptions();
-
-    return options.getRepositoryLocations().getLocations();
+    return getOptions().getRepositoryLocations().getLocations();
   }
 
   /**
@@ -225,9 +229,7 @@ public class OptionsManager {
    *          - options to be saved
    */
   public void addRepository(String repositoryOption) {
-    loadOptions();
-
-    LinkedList<String> locations = (LinkedList<String>) options.getRepositoryLocations().getLocations();
+    LinkedList<String> locations = (LinkedList<String>) getOptions().getRepositoryLocations().getLocations();
     locations.remove(repositoryOption);
     locations.addFirst(repositoryOption);
     if(locations.size() > 20) {
@@ -244,8 +246,7 @@ public class OptionsManager {
    *          - the path to the selected repository
    */
   public void saveSelectedRepository(String path) {
-    loadOptions();
-    options.setSelectedRepository(path);
+    getOptions().setSelectedRepository(path);
 
     saveOptions();
   }
@@ -256,14 +257,11 @@ public class OptionsManager {
    * @return the path to the selected repository
    */
   public String getSelectedRepository() {
-    loadOptions();
-
-    return options.getSelectedRepository();
+    return getOptions().getSelectedRepository();
   }
 
   public void removeRepositoryLocation(String path) {
-    loadOptions();
-    options.getRepositoryLocations().getLocations().remove(path);
+    getOptions().getRepositoryLocations().getLocations().remove(path);
 
     saveOptions();
   }
@@ -275,8 +273,6 @@ public class OptionsManager {
    *          - the credentials to be saved
    */
   public void saveGitCredentials(UserCredentials userCredentials) {
-    loadOptions();
-
     UserCredentials uc = new UserCredentials();
     String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
         .getUtilAccess().encrypt(userCredentials.getPassword());
@@ -284,7 +280,7 @@ public class OptionsManager {
     uc.setUsername(userCredentials.getUsername());
     uc.setHost(userCredentials.getHost());
 
-    List<UserCredentials> credentials = options.getUserCredentialsList().getCredentials();
+    List<UserCredentials> credentials = getOptions().getUserCredentialsList().getCredentials();
     for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
       UserCredentials alreadyHere = iterator.next();
       if (alreadyHere.getHost().equals(uc.getHost())) {
@@ -307,9 +303,8 @@ public class OptionsManager {
     String username = null;
     String decryptedPassword = null;
     if (host != null) {
-      loadOptions();
       String password = null;
-      List<UserCredentials> userCredentialsList = options.getUserCredentialsList().getCredentials();
+      List<UserCredentials> userCredentialsList = getOptions().getUserCredentialsList().getCredentials();
       for (UserCredentials credential : userCredentialsList) {
         if (host.equals(credential.getHost())) {
           username = credential.getUsername();
@@ -332,10 +327,7 @@ public class OptionsManager {
    * @return a list with the previously committed messages
    */
   public List<String> getPreviouslyCommitedMessages() {
-    loadOptions();
-
-    return options.getCommitMessages().getMessages();
-
+    return getOptions().getCommitMessages().getMessages();
   }
 
   /**
@@ -345,9 +337,7 @@ public class OptionsManager {
    *          - the last commitMessage
    */
   public void saveCommitMessage(String commitMessage) {
-    loadOptions();
-
-    List<String> messages = options.getCommitMessages().getMessages();
+    List<String> messages = getOptions().getCommitMessages().getMessages();
     if (messages.contains(commitMessage)) {
       messages.remove(commitMessage);
     }
@@ -355,7 +345,7 @@ public class OptionsManager {
     if (messages.size() > PREVIOUSLY_COMMITED_MESSAGES) {
       messages.remove(messages.size() - 1);
     }
-    options.getCommitMessages().setMessages(messages);
+    getOptions().getCommitMessages().setMessages(messages);
 
     saveOptions();
   }
@@ -367,9 +357,7 @@ public class OptionsManager {
    * @return a list with the last MAXIMUM_PROJECTS_TESTED paths
    */
   public List<String> getProjectsTestedForGit() {
-    loadOptions();
-
-    return options.getProjectsTestsForGit().getPaths();
+    return getOptions().getProjectsTestsForGit().getPaths();
   }
 
   /**
@@ -379,14 +367,12 @@ public class OptionsManager {
    *          - the project path to be saved
    */
   public void saveProjectTestedForGit(String projectPath) {
-    loadOptions();
-
-    List<String> projectsPath = options.getProjectsTestsForGit().getPaths();
+    List<String> projectsPath = getOptions().getProjectsTestsForGit().getPaths();
     projectsPath.add(projectPath);
     if (projectsPath.size() > MAXIMUM_PROJECTS_TESTED) {
       projectsPath.remove(0);
     }
-    options.getProjectsTestsForGit().setPaths(projectsPath);
+    getOptions().getProjectsTestsForGit().setPaths(projectsPath);
 
     saveOptions();
   }
@@ -399,9 +385,7 @@ public class OptionsManager {
    *          - the destination path entered by the user
    */
   public void saveDestinationPath(String destinationPath) {
-    loadOptions();
-
-    LinkedList<String> destinationPaths = (LinkedList<String>) options.getDestinationPaths().getPaths();
+    LinkedList<String> destinationPaths = (LinkedList<String>) getOptions().getDestinationPaths().getPaths();
     destinationPaths.remove(destinationPath);
     destinationPaths.add(0, destinationPath);
     if (destinationPaths.size() > 20) {
@@ -417,36 +401,28 @@ public class OptionsManager {
    * @return a list containing the destinations paths
    */
   public List<String> getDestinationPaths() {
-    loadOptions();
-
-    return options.getDestinationPaths().getPaths();
+    return getOptions().getDestinationPaths().getPaths();
   }
   
   /**
    * @return the staged resources view mode: tree or table.
    */
   public ResourcesViewMode getStagedResViewMode() {
-    loadOptions();
-    
-    return options.getStagedResViewMode();
+    return getOptions().getStagedResViewMode();
   }
   
   /**
    * @return The default pull type.
    */
   public PullType getDefaultPullType() {
-    loadOptions();
-    
-    return options.getDefaultPullType();
+    return getOptions().getDefaultPullType();
   }
   
   /**
    * @return the unstaged resources view mode: tree or table.
    */
   public ResourcesViewMode getUntagedResViewMode() {
-    loadOptions();
-    
-    return options.getUnstagedResViewMode();
+    return getOptions().getUnstagedResViewMode();
   }
   
    /**
@@ -454,18 +430,14 @@ public class OptionsManager {
    * @return The stored answer for the given prompt or <code>null</code> if this question was never asked.
    */
   public Boolean getSshPromptAnswer(String prompt) {
-    loadOptions();
-    
-    return options.getSshPromptAnswers().get(prompt);
+    return getOptions().getSshPromptAnswers().get(prompt);
   }
   
   /**
    * @return A cache for asking the user for connection message.
    */
   public void saveSshPrompt(String prompt, boolean answer) {
-    loadOptions();
-
-    options.getSshPromptAnswers().put(prompt, answer);
+    getOptions().getSshPromptAnswers().put(prompt, answer);
     
     saveOptions();
   }
@@ -477,11 +449,9 @@ public class OptionsManager {
    *          - the SSH pass phrase
    */
   public void saveSshPassphare(String passphrase) {
-    loadOptions();
-
     String encryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
         .getUtilAccess().encrypt(passphrase);
-    options.setPassphrase(encryptPassphrase);
+    getOptions().setPassphrase(encryptPassphrase);
   }
 
   /**
@@ -490,12 +460,10 @@ public class OptionsManager {
    * @return the SSH pass phrase
    */
   public String getSshPassphrase() {
-    loadOptions();
-
     String decryptPassphrase = null;
     if (OxygenGitPlugin.getInstance() != null) {
       decryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-          .getUtilAccess().decrypt(options.getPassphrase());
+          .getUtilAccess().decrypt(getOptions().getPassphrase());
     }
     if (decryptPassphrase == null) {
       decryptPassphrase = "";

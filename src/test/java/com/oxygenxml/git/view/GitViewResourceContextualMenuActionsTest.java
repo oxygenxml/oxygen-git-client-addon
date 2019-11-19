@@ -56,6 +56,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [ENABLED]\n" + 
@@ -102,6 +103,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -148,6 +150,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -193,6 +196,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [ENABLED]\n" + 
@@ -247,6 +251,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Unstage [DISABLED]\n" + 
         "Resolve_Conflict [ENABLED]\n" + 
         "  Open_In_Compare [ENABLED]\n" + 
@@ -302,6 +307,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Unstage [DISABLED]\n" + 
         "Resolve_Conflict [ENABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -357,6 +363,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Unstage [DISABLED]\n" + 
         "Resolve_Conflict [ENABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -402,6 +409,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
         "Open [DISABLED]\n" + 
+        "----\n" + 
         "Stage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [ENABLED]\n" + 
@@ -412,8 +420,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" + 
-        "Show_in_history [ENABLED]\n" + 
-        "Show_blame [ENABLED]",
+        "----\n" + 
+        "Show_in_history [DISABLED]\n" + 
+        "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -450,6 +459,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [DISABLED]\n" + 
+        "----\n" + 
         "Stage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -460,8 +470,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" + 
-        "Show_in_history [ENABLED]\n" + 
-        "Show_blame [ENABLED]",
+        "----\n" + 
+        "Show_in_history [DISABLED]\n" + 
+        "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -498,6 +509,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [DISABLED]\n" + 
+        "----\n" + 
         "Stage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -508,8 +520,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" +
-        "Show_in_history [ENABLED]\n" + 
-        "Show_blame [ENABLED]",
+        "----\n" + 
+        "Show_in_history [DISABLED]\n" + 
+        "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -545,6 +558,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
         "Open [DISABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [ENABLED]\n" + 
@@ -591,6 +605,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [DISABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -637,6 +652,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [DISABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -682,6 +698,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Stage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [ENABLED]\n" + 
@@ -691,9 +708,10 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]\n"
-        + "Show_in_history [ENABLED]\n" + 
-        "Show_blame [ENABLED]",
+        "Discard [ENABLED]\n" +
+        "----\n" + 
+        "Show_in_history [DISABLED]\n" + 
+        "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -730,6 +748,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Stage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -739,9 +758,10 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]\n"
-        + "Show_in_history [ENABLED]\n" + 
-        "Show_blame [ENABLED]",
+        "Discard [ENABLED]\n" +
+        "----\n" + 
+        "Show_in_history [DISABLED]\n" + 
+        "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -778,6 +798,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Stage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -787,9 +808,10 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]\n"
-        + "Show_in_history [ENABLED]\n" + 
-        "Show_blame [ENABLED]",
+        "Discard [ENABLED]\n" +
+        "----\n" + 
+        "Show_in_history [DISABLED]\n" + 
+        "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -825,6 +847,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Stage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [ENABLED]\n" + 
@@ -834,8 +857,9 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]\n"
-        + "Show_in_history [ENABLED]\n" + 
+        "Discard [ENABLED]\n" +
+        "----\n" + 
+        "Show_in_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -873,6 +897,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Stage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -882,9 +907,10 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Mark_Resolved [DISABLED]\n" + 
         "  ----\n" + 
         "  Restart_Merge [DISABLED]\n" + 
-        "Discard [ENABLED]\n"
-        + "Show_in_history [ENABLED]\n" + 
-        "Show_blame [ENABLED]",
+        "Discard [ENABLED]\n" +
+        "----\n" + 
+        "Show_in_history [DISABLED]\n" + 
+        "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
   
@@ -921,6 +947,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [ENABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 
@@ -966,6 +993,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
         "Open [DISABLED]\n" + 
+        "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 
         "  Open_In_Compare [ENABLED]\n" + 
@@ -1018,6 +1046,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     assertEquals("\n" + 
         "Open_In_Compare [DISABLED]\n" + 
         "Open [DISABLED]\n" + 
+        "----\n" + 
         "Unstage [DISABLED]\n" + 
         "Resolve_Conflict [ENABLED]\n" + 
         "  Open_In_Compare [DISABLED]\n" + 

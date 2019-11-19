@@ -4,6 +4,30 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Show_current_branch_history">
+        <comment>Show current branch history</comment>
+        <val lang="en_US">Show current branch history</val>
+        <val lang="de_DE">Zeige die Historie des aktuellen Branch</val>
+        <val lang="fr_FR">Show current branch history</val>
+        <val lang="ja_JP">Show current branch history</val>
+        <val lang="nl_NL">Show current branch history</val>
+    </key>
+    <key value="Git_history">
+        <comment>The title for the "Git History" panel/view.</comment>
+        <val lang="en_US">Git History</val>
+        <val lang="de_DE">Git Historie</val>
+        <val lang="fr_FR">Git History</val>
+        <val lang="ja_JP">Git History</val>
+        <val lang="nl_NL">Git History</val>
+    </key>
+    <key value="Git_staging">
+        <comment>The title for the "Git Staging" panel/view.</comment>
+        <val lang="en_US">Git Staging</val>
+        <val lang="de_DE">Git Staging</val>
+        <val lang="fr_FR">Git Staging</val>
+        <val lang="ja_JP">Git Staging</val>
+        <val lang="nl_NL">Git Staging</val>
+    </key>
     <key value="Comitter">
         <comment>History table column name.</comment>
         <val lang="en_US">Comitter</val>
@@ -15,7 +39,7 @@
     <key value="Date">
         <comment>History table column name.</comment>
         <val lang="en_US">Date</val>
-        <val lang="de_DE">Date</val>
+        <val lang="de_DE">Datum</val>
         <val lang="fr_FR">Date</val>
         <val lang="ja_JP">Date</val>
         <val lang="nl_NL">Date</val>
@@ -23,7 +47,7 @@
     <key value="Author">
         <comment>History table column name. The person that made that commit.</comment>
         <val lang="en_US">Author</val>
-        <val lang="de_DE">Author</val>
+        <val lang="de_DE">Autor</val>
         <val lang="fr_FR">Author</val>
         <val lang="ja_JP">Author</val>
         <val lang="nl_NL">Author</val>
@@ -31,7 +55,7 @@
     <key value="Parents">
         <comment>History table label.</comment>
         <val lang="en_US">Parents</val>
-        <val lang="de_DE">Parents</val>
+        <val lang="de_DE">Übergeordnet</val>
         <val lang="fr_FR">Parents</val>
         <val lang="ja_JP">Parents</val>
         <val lang="nl_NL">Parents</val>
@@ -39,7 +63,7 @@
     <key value="Pull_rebase_failed_because_uncommitted">
         <comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
         <val lang="en_US">Cannot pull with rebase because of the following uncommitted files:</val>
-        <val lang="de_DE">Cannot pull with rebase because of the following uncommitted files:</val>
+        <val lang="de_DE">Pull mit Rebase nicht möglich wegen der folgenden nicht-committeten Dateien:</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -47,7 +71,7 @@
     <key value="Pull_rebase_failed_because_conflicting_paths">
         <comment>Message shown when pull (rebase) failed because of conflicting paths.</comment>
         <val lang="en_US">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
-        <val lang="de_DE">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
+        <val lang="de_DE">Pull mit Rebase nicht möglich, da die lokalen Änderungen der folgenden Dateien im Konflikt stehen mit den Remote-Änderungen:</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -55,7 +79,7 @@
     <key value="Continue_rebase">
         <comment>Continue rebase</comment>
         <val lang="en_US">Continue rebase</val>
-        <val lang="de_DE">Continue rebase</val>
+        <val lang="de_DE">Rebase fortsetzen</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -63,7 +87,7 @@
     <key value="Abort_rebase">
         <comment>Abort rebase</comment>
         <val lang="en_US">Abort rebase</val>
-        <val lang="de_DE">Abort rebase</val>
+        <val lang="de_DE">Rebase abbrechen</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -71,15 +95,7 @@
     <key value="Restart_merge_confirmation">
         <comment>Confirmation message for "Restart merge"</comment>
         <val lang="en_US">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
-        <val lang="de_DE">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
-        <val lang="fr_FR"></val>
-        <val lang="ja_JP"></val>
-        <val lang="nl_NL"></val>
-    </key>
-    <key value="Mine">
-        <comment>Mine</comment>
-        <val lang="en_US">Mine</val>
-        <val lang="de_DE">Meins</val>
+        <val lang="de_DE">Sind Sie sicher, dass Sie den Merge-Prozess neu starten möchten?\nDie nicht-committeten Änderungen aller Dateien werden dabei verworfen.</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -103,7 +119,7 @@
     <key value="The_working_branch">
         <comment>The working branch</comment>
         <val lang="en_US">the working branch</val>
-        <val lang="de_DE">the working branch</val>
+        <val lang="de_DE">der lokale Branch</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -111,7 +127,7 @@
     <key value="The_upstream_branch">
         <comment>The upstream branch</comment>
         <val lang="en_US">the upstream branch</val>
-        <val lang="de_DE">the upstream branch</val>
+        <val lang="de_DE">der Remote-Branch</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -119,7 +135,7 @@
     <key value="Continue_resolving_rebase_conflict_using_mine_or_theirs">
         <comment>Message shown when invoking "Resolve using Mine" or "Resolve using Theirs" for a conflict generated when trying to rebase.</comment>
         <val lang="en_US">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
-        <val lang="de_DE">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
+        <val lang="de_DE">Sie lösen einen Rebase-Konflikt. In dieser Situation ist Git''s Definition von "Meins" und "Ihres" vertauscht.\nDer aktuelle lokale Branch wird zu "Ihres", während der Remote-Branch zu "Meins" wird.\n\nMöchten Sie "{0}" ({1}) zur Behebung des Konflikts auswählen?</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -127,7 +143,7 @@
     <key value="Cannot_continue_rebase_because_of_conflicts">
         <comment>Message shown when rebasing cannot continue because of conflicts.</comment>
         <val lang="en_US">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
-        <val lang="de_DE">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="de_DE">Rebase kann nicht fortgesetzt werden. Es gibt noch ungelöste Konflikte im Arbeitsverzeichnis die behoben werden müssen.</val>
         <val lang="fr_FR">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
         <val lang="ja_JP">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
         <val lang="nl_NL">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
@@ -135,7 +151,7 @@
     <key value="Interrupted_rebase">
         <comment>Interrupted rebase information.</comment>
         <val lang="en_US">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
-        <val lang="de_DE">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
+        <val lang="de_DE">Es sieht so aus, als ob gerade ein Rebase-Prozess läuft, der durch einen Konflikt unterbrochen wurde. Sie sollten zuerst die Konflikte beheben. Wenn diese bereits behoben sind, wählen Sie ob der Rebase fortgesetzt oder abgebrochen werden soll.</val>
         <val lang="fr_FR">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
         <val lang="ja_JP">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
         <val lang="nl_NL">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
@@ -143,7 +159,7 @@
     <key value="Rebase_in_progress">
         <comment>Rebase in progress.</comment>
         <val lang="en_US">Rebase in progress</val>
-        <val lang="de_DE">Rebase in progress</val>
+        <val lang="de_DE">Rebase läuft...</val>
         <val lang="fr_FR">Rebase in progress</val>
         <val lang="ja_JP">Rebase in progress</val>
         <val lang="nl_NL">Rebase in progress</val>
@@ -151,7 +167,7 @@
     <key value="Pull_rebase">
         <comment>Pull (rebase)</comment>
         <val lang="en_US">Pull (rebase)</val>
-        <val lang="de_DE">Pull (rebase)</val>
+        <val lang="de_DE">Pull (Rebase)</val>
         <val lang="fr_FR">Pull (rebase)</val>
         <val lang="ja_JP">Pull (rebase)</val>
         <val lang="nl_NL">Pull (rebase)</val>
@@ -159,7 +175,7 @@
     <key value="Pull_merge">
         <comment>Pull (merge)</comment>
         <val lang="en_US">Pull (merge)</val>
-        <val lang="de_DE">Pull (merge)</val>
+        <val lang="de_DE">Pull (Merge)</val>
         <val lang="fr_FR">Pull (merge)</val>
         <val lang="ja_JP">Pull (merge)</val>
         <val lang="nl_NL">Pull (merge)</val>
@@ -167,7 +183,7 @@
     <key value="Pull_rebase_from">
         <comment>Pull (rebase) from</comment>
         <val lang="en_US">Pull (rebase) from {0}</val>
-        <val lang="de_DE">Pull (rebase) from {0}</val>
+        <val lang="de_DE">Pull (Rebase) von {0}</val>
         <val lang="fr_FR">Pull (rebase) from {0}</val>
         <val lang="ja_JP">Pull (rebase) from {0}</val>
         <val lang="nl_NL">Pull (rebase) from {0}</val>
@@ -175,7 +191,7 @@
     <key value="Pull_merge_from">
         <comment>Pull (merge) from</comment>
         <val lang="en_US">Pull (merge) from {0}</val>
-        <val lang="de_DE">Pull (merge) from {0}</val>
+        <val lang="de_DE">Pull (Merge) von {0}</val>
         <val lang="fr_FR">Pull (merge) from {0}</val>
         <val lang="ja_JP">Pull (merge) from {0}</val>
         <val lang="nl_NL">Pull (merge) from {0}</val>
@@ -183,7 +199,7 @@
     <key value="Pull_failed">
         <comment>Pull failed</comment>
         <val lang="en_US">Pull failed</val>
-        <val lang="de_DE">Pull failed</val>
+        <val lang="de_DE">Pull fehlgeschlagen</val>
         <val lang="fr_FR">Pull failed</val>
         <val lang="ja_JP">Pull failed</val>
         <val lang="nl_NL">Pull failed</val>
@@ -191,7 +207,7 @@
         <key value="Push_failed">
         <comment>Push failed</comment>
         <val lang="en_US">Push failed</val>
-        <val lang="de_DE">Push failed</val>
+        <val lang="de_DE">Push fehlgeschlagen</val>
         <val lang="fr_FR">Push failed</val>
         <val lang="ja_JP">Push failed</val>
         <val lang="nl_NL">Push failed</val>
@@ -199,7 +215,7 @@
     <key value="No_changes">
         <comment>Message shown when invoking the diff on an unchanged file.</comment>
         <val lang="en_US">No changes.</val>
-        <val lang="de_DE">No changes.</val>
+        <val lang="de_DE">Keine Unterschiede.</val>
         <val lang="fr_FR"></val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
@@ -207,7 +223,7 @@
     <key value="Show_blame">
         <comment>Contextual action in the staging panel to present Git blame.</comment>
         <val lang="en_US">Show blame</val>
-        <val lang="de_DE">Show blame</val>
+        <val lang="de_DE">Blame anzeigen</val>
         <val lang="fr_FR">Show blame</val>
         <val lang="ja_JP">Show blame</val>
         <val lang="nl_NL">Show blame</val>
@@ -215,7 +231,7 @@
     <key value="Show_in_history">
         <comment>Contextual action in the staging panel.</comment>
         <val lang="en_US">Show in history</val>
-        <val lang="de_DE">Show in history</val>
+        <val lang="de_DE">In Historie anzeigen</val>
         <val lang="fr_FR">Show in history</val>
         <val lang="ja_JP">Show in history</val>
         <val lang="nl_NL">Show in history</val>
@@ -223,7 +239,7 @@
     <key value="Compare_file_with_working_tree_version">
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
         <val lang="en_US">Compare {0} with working copy version</val>
-        <val lang="de_DE">Compare {0} with working copy version</val>
+        <val lang="de_DE">Vergleiche {0} mit der lokalen Version</val>
         <val lang="fr_FR">Compare {0} with working copy version</val>
         <val lang="ja_JP">Compare {0} with working copy version</val>
         <val lang="nl_NL">Compare {0} with working copy version</val>
@@ -231,7 +247,7 @@
     <key value="Compare_file_with_previous_version">
         <comment>Action name to compare a file with its previous version.</comment>
         <val lang="en_US">Compare {0} with previous version</val>
-        <val lang="de_DE">Compare {0} with previous version</val>
+        <val lang="de_DE">Vergleiche {0} mit der Vorversion</val>
         <val lang="fr_FR">Compare {0} with previous version</val>
         <val lang="ja_JP">Compare {0} with previous version</val>
         <val lang="nl_NL">Compare {0} with previous version</val>
@@ -239,7 +255,7 @@
     <key value="Open_file">
         <comment>Open file action name.</comment>
         <val lang="en_US">Open {0}</val>
-        <val lang="de_DE">Open {0}</val>
+        <val lang="de_DE">Öffne {0}</val>
         <val lang="fr_FR">Open {0}</val>
         <val lang="ja_JP">Open {0}</val>
         <val lang="nl_NL">Open {0}</val>
@@ -247,7 +263,7 @@
     <key value="Compare_with_working_tree_version">
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
         <val lang="en_US">Compare with working copy version</val>
-        <val lang="de_DE">Compare with working copy version</val>
+        <val lang="de_DE">Vergleiche mit der lokalen Version</val>
         <val lang="fr_FR">Compare with working copy version</val>
         <val lang="ja_JP">Compare with working copy version</val>
         <val lang="nl_NL">Compare with working copy version</val>
@@ -255,7 +271,7 @@
     <key value="Compare_with_previous_version">
         <comment>Action name to compare a file with its previous version.</comment>
         <val lang="en_US">Compare with previous version</val>
-        <val lang="de_DE">Compare with previous version</val>
+        <val lang="de_DE">Vergleiche mit der Vorversion</val>
         <val lang="fr_FR">Compare with previous version</val>
         <val lang="ja_JP">Compare with previous version</val>
         <val lang="nl_NL">Compare with previous version</val>
@@ -263,7 +279,7 @@
     <key value="No_upstream_branch">
         <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
         <val lang="en_US">no upstream branch</val>
-        <val lang="de_DE">no upstream branch</val>
+        <val lang="de_DE">kein Remote-Branch</val>
         <val lang="fr_FR">no upstream branch</val>
         <val lang="ja_JP">no upstream branch</val>
         <val lang="nl_NL">no upstream branch</val>
@@ -271,7 +287,7 @@
     <key value="Refresh">
         <comment>Action in the history panel.</comment>
         <val lang="en_US">Refresh</val>
-        <val lang="de_DE">Refresh</val>
+        <val lang="de_DE">Aktualisieren</val>
         <val lang="fr_FR">Refresh</val>
         <val lang="ja_JP">Refresh</val>
         <val lang="nl_NL">Refresh</val>
@@ -279,7 +295,7 @@
     <key value="Showing_history_for">
         <comment>Showing history for:</comment>
         <val lang="en_US">Showing current branch history for:</val>
-        <val lang="de_DE">Showing current branch history for:</val>
+        <val lang="de_DE">Branch-Historie für:</val>
         <val lang="fr_FR">Showing current branch history for:</val>
         <val lang="ja_JP">Showing current branch history for:</val>
         <val lang="nl_NL">Showing current branch history for:</val>
@@ -335,7 +351,7 @@
     <key value="Cannot_lock_ref">
         <comment>Message shown when the client couldn't lock ref when trying to pull.</comment>
         <val lang="en_US">Cannot lock ref "{0}".</val>
-        <val lang="de_DE">Sperre für ref "{0}" nicht möglich.</val>
+        <val lang="de_DE">Sperre für Ref "{0}" nicht möglich.</val>
         <val lang="fr_FR">Cannot lock ref "{0}".</val>
         <val lang="ja_JP">Cannot lock ref "{0}".</val>
         <val lang="nl_NL">Cannot lock ref "{0}".</val>
@@ -542,7 +558,7 @@
     </key>
     <key value="Commit_Message_Label">
         <comment>The massage displayed above the previously committed messages combo box</comment>
-        <val lang="en_US">Message for the commit: </val>
+        <val lang="en_US">Commit message: </val>
         <val lang="de_DE">Commit-Nachricht: </val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -551,7 +567,7 @@
     <key value="Commit_ComboBox_Display_Message">
         <comment>The massage displayed on the combo box containing the previouslt commited messages</comment>
         <val lang="en_US">Choose a previously used comment</val>
-        <val lang="de_DE">Wählen Sie eine vorherige Commit-Nachricht</val>
+        <val lang="de_DE">Wähle eine vorherige Commit-Nachricht</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -591,7 +607,7 @@
     <key value="Branch_Behind">
         <comment>The massage displayed when you push but your repository is not up to date</comment>
         <val lang="en_US">Cannot push. Your current branch is behind. Pull first.</val>
-        <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück. Erstens pullen.</val>
+        <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück. Bitte erst pullen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
@@ -1166,7 +1182,7 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     <key value="Conclude_Merge_Message">
-        <comment>The text is displayed you fix all conflicts and there is nothing to commit</comment>
+        <comment>The text is displayed when you fix all conflicts and there is nothing to commit</comment>
         <val lang="en_US">All conflicts were fixed, but you are still merging. Commit to conclude the merge.</val>
         <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte committen Sie um den Merge abzuschließen.</val>
         <val lang="fr_FR">fr_FR_translation</val>

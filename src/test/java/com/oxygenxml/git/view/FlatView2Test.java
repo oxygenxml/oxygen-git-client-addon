@@ -20,6 +20,7 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
@@ -433,10 +434,10 @@ public class FlatView2Test extends FlatViewTestBase {
 
     JButton abortBtn = findFirstButton(
         interruptedRebaseDlg.getRootPane(),
-        "Abort rebase");
+        Translator.getInstance().getTranslation(Tags.ABORT_REBASE));
     abortBtn.doClick();
     flushAWT();
-    sleep(500);
+    sleep(1000);
     
     interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
     assertNull(interruptedRebaseDlg);
@@ -528,10 +529,10 @@ public class FlatView2Test extends FlatViewTestBase {
 
     JButton abortBtn = findFirstButton(
         interruptedRebaseDlg.getRootPane(),
-        "Cancel");
+        Translator.getInstance().getTranslation(Tags.CANCEL));
     abortBtn.doClick();
     flushAWT();
-    sleep(500);
+    sleep(1000);
     
     interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
     assertNull(interruptedRebaseDlg);
@@ -638,7 +639,7 @@ public class FlatView2Test extends FlatViewTestBase {
       
       JButton continueBtn = findFirstButton(
           rebaseInProgressDlg.getRootPane(),
-          "Continue rebase");
+          Translator.getInstance().getTranslation(Tags.CONTINUE_REBASE));
       continueBtn.doClick();
       flushAWT();
       sleep(300);
@@ -669,10 +670,10 @@ public class FlatView2Test extends FlatViewTestBase {
       // Now CONTINUE
       continueBtn = findFirstButton(
           rebaseInProgressDlg.getRootPane(),
-          "Continue rebase");
+          Translator.getInstance().getTranslation(Tags.CONTINUE_REBASE));
       continueBtn.doClick();
       flushAWT();
-      sleep(500);
+      sleep(1000);
 
       rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);
       assertNull(rebaseInProgressDlg);

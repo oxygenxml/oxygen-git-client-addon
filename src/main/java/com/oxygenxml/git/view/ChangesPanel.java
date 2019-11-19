@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -47,16 +48,16 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
+import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
 
@@ -220,7 +221,7 @@ public class ChangesPanel extends JPanel {
                     logger.error(e, e);
                   }
                   ChangesPanel.this.repositoryChanged(files);
-                  getChangeSelectedButton().setEnabled(true);
+                  toggleSelectedButton();
                 }
               };
               
@@ -1023,11 +1024,7 @@ public class ChangesPanel extends JPanel {
 		      if (selectedRows.length == 0) {
 		        // When resolving a conflict "using mine" and there are no more entries in the tables,
 		        // show the contextual menu for being able to restart the merging
-
-		        GitStatus status = GitAccess.getInstance().getStatus();
-		        if (status.getStagedFiles().isEmpty()
-		            && status.getUnstagedFiles().isEmpty()
-		            && isMergingResolved()) {
+		        if (filesTable.getRowCount() == 0 && isMergingResolved()) {
 		          showContextualMenuForFlatView(e.getX(), e.getY(), new int[0]);
 		        }
 		      } else {
@@ -1068,7 +1065,7 @@ public class ChangesPanel extends JPanel {
 		scrollPane = new JScrollPane(filesTable);
 		scrollPane.add(tree);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setPreferredSize(new Dimension(200, 200));
+    scrollPane.setPreferredSize(new Dimension(200, PlatformDetectionUtil.isMacOS() ? 160 : 220));
 		filesTable.setFillsViewportHeight(true);
 		this.add(scrollPane, gbc);
 		
@@ -1167,6 +1164,7 @@ public class ChangesPanel extends JPanel {
 	  
 	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(stageController, null, forStagedResources, null));
+	  t.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 	  
     return t;
   }

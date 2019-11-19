@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+
 /**
  * Table Model for Commit History Characteristics.
  * 
@@ -13,15 +16,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class HistoryCommitTableModel extends AbstractTableModel {
 
-	/**
-	 * Constants for column names.
-	 */
-	private static final String COMMIT_MESSAGE_NAME = "Commit Message";
-	private static final String DATE_NAME = "Date";
-	private static final String AUTHOR_NAME = "Author";
-	private static final String COMMIT_ID_NAME = "Commit Id";
-
-	/**
+	/*
 	 * Constants for the index representing the table column.
 	 */
 	public static final int COMMIT_MESSAGE = 0;
@@ -109,16 +104,16 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 		String columnName = null;
 		switch (index) {
 		case COMMIT_MESSAGE:
-			columnName = COMMIT_MESSAGE_NAME;
+			columnName = Translator.getInstance().getTranslation(Tags.COMMIT_MESSAGE_LABEL);
 			break;
 		case DATE:
-			columnName = DATE_NAME;
+			columnName = Translator.getInstance().getTranslation(Tags.DATE);
 			break;
 		case AUTHOR:
-			columnName = AUTHOR_NAME;
+			columnName = Translator.getInstance().getTranslation(Tags.AUTHOR);
 			break;
 		case COMMIT_ABBREVIATED_ID:
-			columnName = COMMIT_ID_NAME;
+			columnName = Translator.getInstance().getTranslation(Tags.COMMIT);
 			break;
 		default:
 			break;

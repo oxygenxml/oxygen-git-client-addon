@@ -48,7 +48,6 @@ public class GitHistoryTest extends GitTestBase {
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
 
       String dump = dump(commitsCharacteristics);
-      System.out.println(dump);
 
       String expected = "[ Uncommitted changes , {date} , * , * , null , null ]\n" + 
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -112,11 +111,11 @@ public class GitHistoryTest extends GitTestBase {
         }
       });
       
-      fileLists.keySet().stream().forEach(k -> {
-        System.out.println(k);
-        System.out.println(fileLists.get(k));
-        System.out.println();
-      });
+//      fileLists.keySet().stream().forEach(k -> {
+//        System.out.println(k);
+//        System.out.println(fileLists.get(k));
+//        System.out.println();
+//      });
       
       
       Map<String, String> expected = new LinkedHashMap<>();
@@ -240,8 +239,6 @@ public class GitHistoryTest extends GitTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
       
-      System.out.println(GitAccess.getInstance().getGitForTests().status().call().hasUncommittedChanges());
-      
       GitAccess.getInstance().setBranch("master");
   
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
@@ -312,8 +309,6 @@ public class GitHistoryTest extends GitTestBase {
     
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
-      
-      System.out.println(GitAccess.getInstance().getGitForTests().status().call().hasUncommittedChanges());
       
       GitAccess.getInstance().setBranch("master");
       
@@ -406,7 +401,6 @@ public class GitHistoryTest extends GitTestBase {
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
 
       String dump = dump(commitsCharacteristics);
-      System.out.println(dump);
 
       String expected = 
           "[ Change on the remote. , {date} , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 

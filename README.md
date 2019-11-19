@@ -1,6 +1,6 @@
 # Git Support Plugin
 
-This add-on contributes a built-in Git client directly in Oxygen XML Editor/Author/Developer.
+This add-on contributes a Git client directly in Oxygen XML Editor/Author/Developer, as a side-view.
 
 ## Installation
 
@@ -8,19 +8,19 @@ This add-on is compatible with Oxygen XML Editor/Author/Developer version 18.1 o
 
 To install the add-on, follow these instructions:
 
-1. Go to **Help->Install new add-ons** to open an add-on selection dialog box.
+1. Go to **Help > Install new add-ons...** to open an add-on selection dialog box.
 2. Enter or paste https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml in the **Show add-ons from** field.
 3. Select the **Git Support** add-on and click **Next**.
 4. Select the **I accept all terms of the end user license agreement** option and click **Finish**.
 5. Restart the application.
 
-Result: A **Git Staging** view will now be available in Oxygen XML Editor/Author/Developer. If it is not visible, go to **Window->Show View** and select **Get Staging**. This view acts as a basic Git client integrated directly into Oxygen and it provides support for committing changes to a Git repository, comparing and merging changes, and other Git commands.
+**Result:** A **Git Staging** view will now be available in Oxygen. If it is not visible, go to **Window > Show View** and select **Get Staging**. This view acts as a basic Git client integrated directly in Oxygen, and it provides support for committing changes to a Git repository, comparing and merging changes, resolving conflicts, and other Git commands.
 
 ## Offline Installation
 
-If you can't follow the previous procedure, for example because there is no internet access when using Oxygen XML editor, you can manually install the add-on like this:
-1. Go on the [Releases page](https://github.com/oxygenxml/oxygen-git-plugin/releases/latest) and download `git.support-{version}-plugin.jar`
-2. Unzip it inside `{oXygenInstallDir}/plugins`. Make sure you don't create any any intermediate folders. After unzip, the file system should be like this: `{oXygenInstallDir}/plugins/git.support-1.5.2/plugin.xml`
+If you can't follow the previous procedure, for example because there is no internet access when using Oxygen XML Editor, you can manually install the add-on like this:
+1. Go to the [Releases page](https://github.com/oxygenxml/oxygen-git-plugin/releases/latest) and download `git.support-{version}-plugin.jar`
+2. Unzip it inside `{oXygenInstallDir}/plugins`. Make sure you don't create any any intermediate folders. After unzipping the archive, the file system should look like this: `{oXygenInstallDir}/plugins/git.support-x.y.z`, and inside this folder there should be a `plugin.xml`file.
 
 ## Cloning a repository
 
@@ -33,7 +33,7 @@ After cloning a repository, it will automatically be set as the current working 
 
 ## Selecting a working copy
 
-Click the **Browse** button to select a working copy from your file system. The selected folder must be a Git repository.
+Click the **Browse** button to the right of the **Working copy** combo box to select a working copy from your file system. The selected folder must be a Git repository.
 
 ## Switching between local branches
 
@@ -43,44 +43,61 @@ To switch between local branches, use the **Change branch** action from the tool
 
 To open and work with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box.
 
+## Showing the current branch history
+
+To show the history of the current branch, invoke the **Show current branch history** action from the toolar (look for the clock icon). This will open the **Git History** side-view.
+
+## Blame
+
+The contextual menu of each unstaged resource contains a **Show blame** action that opens the selected resource in Oxygen's main editing area and colors the editor lines with different colors based on the revision information. Selecting a line in the opened editor will highlight the corresponding entry from the history table in the **Git History** side-view.
+
 ## Unstaged resources area
 
-In the unstaged resources area (the one on top), you will see all the modifications that have occurred since your last commit (files that have been modified, new files, and deleted files).
-- Various actions are available in the contextual menu (**Open**, **Open in compare editor**, **Stage**, **Discard**, etc.).
+In the *unstaged resources area* (the one at the top), you will see all the modifications that have occurred in your working copy (files that have been modified, new files, and deleted files), and which are not part of the next commit.
+- Various actions are available in the contextual menu (**Open**, **Open in compare editor**, **Stage**, **Discard**, **Show in history**, **Show blame**, etc.).
 - You can stage all the files by clicking the **Stage All** button or you can stage some of them by selecting and clicking the **Stage Selected** button.
 - You can switch between the flat (table) view and the tree view by clicking on the **Switch to tree/flat view** button positioned to the right of the staging buttons.
 
 ## Staged resources area
 
-In the staging area, you will see all the resources that are ready to be committed. Any files from this area can be unstaged and sent back to the unstaged resources area. The staging area has actions similar to the ones from the unstaged resources area.
+In the *staged resources area*, you will see all the resources that are ready to be committed. The files from this area can be unstaged and sent back to the *unstaged resources area*. The *staged resources area* has actions similar to the ones from the *unstaged resources area*, with the mention that there are no **Show in history** and **Show blame** actions.
 
 ## Comparing changes and conflict resolution
 
-At any time, if you want to see the differences between the last commit and your current modifications, you can double-click the file that appears either in the staged or unstaged area and the [Oxygen's Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html) window will appear and highlight the changes.
+At any time, if you want to see the differences between the last commit and your current modifications, you can double-click a file from either in the *unstaged resources area* or *staged resources area* and the [Oxygen's Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html) window will appear and highlight the changes.
 
 If the file has a conflict (has been modified both by you and another), [Oxygen's Three Way Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html#file-comparison__threeway_comparisons) will show a comparison between the local change, the remote change, and the original base revision.
 
 ## Committing
 
-After staging the files, on the bottom of the view you can input a commit message and commit them into your local repository. For convenience, you can also select a previously entered message.
+After staging the files, on the bottom of the view you can provide a commit message and commit them to your local repository. For convenience, you can also select a previously provided message.
 
-## Push/Pull
+## Push / Pull (with merge or rebase)
 
-To push your local repository changes to the remote repository, use the **Push** button from the view's toolbar. To bring the changes from the remote repository into your local repository, use the **Pull** button from the same toolbar.
+To push your local repository changes to the remote repository, use the **Push** button from the view's toolbar (up arrow). 
 
-To push or pull, you need to access the remote, and for that you need to provide some credentials. If no credentials are found, the add-on will ask for an account and password. If you have a two-factor authentication for GitHub, you must go to your **Account Settings->Personal access tokens->Generate new token** and back in the **Git Staging** view in Oxygen, you have to use the generated token as the password when you are asked to enter your credentials.
+To bring the changes from the remote repository into your local repository, use one of the **Pull** actions from the same toolbar (down arrow). You can choose between **Pull (merge)** and **Pull (rebase)**. The invoked action is promoted as the current action of the toolbar button.
 
+To push or pull, you need to access the remote, and for that you need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for a username and a password. If you have a two-factor authentication for GitHub, you must go to your **Account Settings > Personal access tokens > Generate new token** and back in the **Git Staging** view in Oxygen, you have to use the generated token as the password when you are asked to enter your credentials.
 
 ## File conflicts solving flow
 
 After editing a file, commiting it to the local repository and trying to push it to the remote repository, if a warning appears informing you about not being up-to-date with the repository, follow these steps:
 
-1. Pull the data from the repository using the **Pull** button.
-2. In the **Unstaged** area, select each conflicted file and open it the compare editor either by double-clicking or by using the contextual menu action. Choose what changes you want to keep/discard and save the document.
-3. After you close the compare editor, the file will be staged automatically and moved to the **Staged** area.
-4. When all the conflicts are resolved and no more files are left in the **Unstaged** area, the changes can be committed.
-5. Enter a message and commit. You will now have a new change to **Push**.
-6. Push the changes to the remote repository.
+1. Pull the data from the repository using one of the **Pull** actions.
+2. In the **Unstaged** area, select each conflicted file and resolve the conflicts. You can do this, for example, by opening the conflicted files in the compare editor, either by double-clicking on them or by using the contextual menu action, and then choose what changes you want to keep and discard, and save the document. You can also use the **Resolve using Mine**, **Resolve using Theirs** or **Mark as resolved** actions from the contextual menu of a resource. 
+3. If you choose to use the compare editor, after you close it, the file will be staged automatically and moved to the **Staged** area.
+
+At this point, the next actions depend on which **Pull** action was invoked:
+
+ - **Pull (merge)**:
+    1. When all the conflicts are resolved and no more files are left in the **Unstaged** area, the changes can be committed.
+    2. Enter a message and commit. You will now have new changes to push.
+    3. Push the changes to the remote repository.
+
+ - **Pull (rebase)**:
+    1. When all the conflicts are resolved, press the **Continue rebase** button.
+    2. You can abort the *Pull with rebase* action by pressing the **Abort rebase** button. This will revert the repository to the state from before trying to pull.
 
 Copyright and License
 ---------------------

@@ -77,13 +77,13 @@ public class RebaseInProgressDialog extends JDialog {
     mainPanel.add(messageArea, BorderLayout.NORTH);
     
     JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 7, 7));
-    Button continueRebaseButton = new Button("Continue rebase");
-    continueRebaseButton.addActionListener(createContinueActionListener());
+    Button continueRebaseButton = new Button(translator.getTranslation(Tags.CONTINUE_REBASE));
+    continueRebaseButton.addActionListener(createContinueRebaseActionListener());
     buttonsPanel.add(continueRebaseButton);
-    Button abortRebaseButton = new Button("Abort rebase");
+    Button abortRebaseButton = new Button(translator.getTranslation(Tags.ABORT_REBASE));
     abortRebaseButton.addActionListener(createAbortRebaseActionListener());
     buttonsPanel.add(abortRebaseButton);
-    Button cancelButton = new Button("Cancel");
+    Button cancelButton = new Button(translator.getTranslation(Tags.CANCEL));
     cancelButton.addActionListener(createCancelActionListener());
     buttonsPanel.add(cancelButton);
     mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
@@ -94,7 +94,7 @@ public class RebaseInProgressDialog extends JDialog {
   /**
    * @return "Continue rebase" action listener.
    */
-  private ActionListener createContinueActionListener() {
+  private ActionListener createContinueRebaseActionListener() {
     return e -> {
       setVisible(false);
       GitAccess.getInstance().continueRebase();

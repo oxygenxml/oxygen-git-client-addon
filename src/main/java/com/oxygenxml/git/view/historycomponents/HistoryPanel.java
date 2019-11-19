@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
@@ -10,7 +11,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -33,6 +33,7 @@ import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -119,7 +120,7 @@ public class HistoryPanel extends JPanel {
     this.stageController = stageController;
     setLayout(new BorderLayout());
 
-    historyTable = createTable();
+    historyTable = UIUtil.createTable();
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     historyTable.addMouseListener(new MouseAdapter() {
       @Override
@@ -469,30 +470,11 @@ public class HistoryPanel extends JPanel {
       }
     };
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
-    refreshAction.putValue(Action.SHORT_DESCRIPTION, "refresh");
+    refreshAction.putValue(Action.SHORT_DESCRIPTION, Translator.getInstance().getTranslation(Tags.REFRESH));
     ToolbarButton refreshButton = new ToolbarButton(refreshAction, false);
     toolbar.add(refreshButton);
     
     add(topPanel, BorderLayout.NORTH);
-  }
-
-  /**
-   * Tries to use Oxygen's API to create a table.
-   * 
-   * @return An Oxygen's API table or a generic one if we run into an old Oxygen.
-   */
-  private JTable createTable() {
-    JTable table = null;
-    try {
-      Class tableClass = Class.forName("ro.sync.exml.workspace.api.standalone.ui.Table");
-      Constructor tableConstructor = tableClass.getConstructor();
-      table = (JTable) tableConstructor.newInstance();
-    } catch (Exception e) {
-      // Running in an Oxygen version that lacks this API.
-      table = new JTable();
-    }
-    
-    return table;
   }
 
   /**
@@ -538,9 +520,6 @@ public class HistoryPanel extends JPanel {
         showingHistoryForRepoLabel.setToolTipText(directory.getAbsolutePath());
         showingHistoryForRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
 
-        historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess, gitAccess.getRepository()));
-        historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
-
         // Install selection listener.
         if (selectionListener != null) {
           historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
@@ -549,12 +528,30 @@ public class HistoryPanel extends JPanel {
         StagingResourcesTableModel dataModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
         dataModel.setFilesStatus(Collections.emptyList());
         commitDescriptionPane.setText("");
-        
-        
+
         List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
         historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
         updateHistoryTableWidths();
-
+        
+        historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess.getRepository()));
+        historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
+        TableColumn authorColumn = historyTable.getColumn(Translator.getInstance().getTranslation(Tags.AUTHOR));
+        authorColumn.setCellRenderer(
+            new DefaultTableCellRenderer() { // NOSONAR
+          @Override
+          public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+              boolean hasFocus, int row, int column) {
+            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            String text = label.getText();
+            int indexOfLT = text.indexOf(" <");
+            if (indexOfLT != -1) {
+              text = text.substring(0, indexOfLT);
+            }
+            label.setText(text);
+            return label;
+          }
+        });
+        
         selectionListener = new RowHistoryTableSelectionListener(
             historyTable, commitDescriptionPane, commitCharacteristicsVector, affectedFilesTable);
         historyTable.getSelectionModel().addListSelectionListener(selectionListener);

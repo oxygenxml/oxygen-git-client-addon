@@ -715,10 +715,20 @@ public class Tags {
    */
   public static final String PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS = "Pull_rebase_failed_because_conflicting_paths";
 
-/**
-   * Commit History.
+  /**
+   * Show current branch history.
    */
-  public static final String GIT_COMMIT_HISTORY = "Git_Commit_History";
+  public static final String SHOW_CURRENT_BRANCH_HISTORY = "Show_current_branch_history";
+  
+  /**
+   * Git History.
+   */
+  public static final String GIT_HISTORY = "Git_history";
+  
+  /**
+   * Git Staging.
+   */
+  public static final String GIT_STAGING = "Git_staging";
   
   /**
    * Label inside the history view.
@@ -788,4 +798,8 @@ public class Tags {
    * History table column name.
    */
   public static final String COMMITTER = "Comitter";
+  /**
+   * Cancel. Taken from oXygen's "translation.xml".
+   */
+  public static final String CANCEL = "Cancel";
 }

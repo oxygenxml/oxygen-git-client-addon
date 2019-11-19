@@ -42,6 +42,7 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.WindowMonitor;
@@ -310,8 +311,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         URL url = (URL) invocation.getArguments()[0];
         
         String path = url.getPath();
-        String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.contains("win") && path.startsWith("/")) {
+        if (PlatformDetectionUtil.isWin() && path.startsWith("/")) {
           path = path.substring(1, path.length());
         }
         

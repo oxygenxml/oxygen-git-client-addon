@@ -208,11 +208,13 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    // Populate contextual menu
 	    this.add(showDiffAction);
 	    this.add(openAction);
+	    addSeparator();
 	    this.add(stageUnstageAction);
 	    this.add(resolveConflict);
 	    this.add(discardAction);
 
 	    if (!forStagedRes) {
+	      addSeparator();
 	      AbstractAction historyAction = new AbstractAction(translator.getTranslation(Tags.SHOW_IN_HISTORY)) {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
@@ -221,8 +223,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	          }
 	        }
 	      };
-	      
-	      historyAction.setEnabled(hasHistory(allSelectedResources));
+	      historyAction.setEnabled(shouldEnableBlameAndHistory(allSelectedResources));
 	      this.add(historyAction);
 
 	      AbstractAction blameAction = new AbstractAction(translator.getTranslation(Tags.SHOW_BLAME)) {
@@ -239,9 +240,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	          }
 	        }
 	      };
-	      
-	      blameAction.setEnabled(hasHistory(allSelectedResources));
-	      
+	      blameAction.setEnabled(shouldEnableBlameAndHistory(allSelectedResources));
 	      this.add(blameAction);
 	    }
 
@@ -281,22 +280,22 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	}
 
 	/**
-	 * Checks if we have just one resource and if it's a resource that is commited in the repository.
+	 * Checks if we have just one resource and if it's a resource that is committed in the repository.
 	 * 
 	 * @param allSelectedResources A set of resources.
 	 * 
 	 * @return <code>true</code> if we have just one resource in the set and that resource is one with history.
 	 */
-  private boolean hasHistory(final List<FileStatus> allSelectedResources) {
-    boolean canDoBlame = false;
+  private boolean shouldEnableBlameAndHistory(final List<FileStatus> allSelectedResources) {
+    boolean hasHistory = false;
     if (allSelectedResources.size() == 1) {
       GitChangeType changeType = allSelectedResources.get(0).getChangeType(); 
-      canDoBlame = 
+      hasHistory = 
           changeType == GitChangeType.CHANGED || 
           changeType == GitChangeType.CONFLICT ||
           changeType == GitChangeType.MODIFIED;
     }
-    return canDoBlame;
+    return hasHistory;
   }
 	
 	 /**
