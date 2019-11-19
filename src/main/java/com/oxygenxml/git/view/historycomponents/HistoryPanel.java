@@ -54,6 +54,7 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.RevCommitUtilBase;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
@@ -318,50 +319,52 @@ public class HistoryPanel extends JPanel {
       CommitCharacteristics commitCharacteristics,
       FileStatus fileStatus,
       boolean addFileName) {
-    String filePath = fileStatus.getFileLocation();
-    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
-      // A revision.
-      List<String> parents = commitCharacteristics.getParentCommitId();
-      if (parents != null && !parents.isEmpty()) {
-        try {
-          RevCommit[] parentsRevCommits = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(), commitCharacteristics.getCommitId());
-          boolean addParentID = parents.size() > 1;
-          for (RevCommit parentID : parentsRevCommits) {
-            // Just one parent.
-            jPopupMenu.add(createDiffAction(filePath, commitCharacteristics.getCommitId(), parentID, addParentID, addFileName));
-          }
-          
-          String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
-          if (addFileName) {
-            String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-            actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION), fileName);
-          }
-          
-          jPopupMenu.add(new AbstractAction(actionName) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              try {
-                DiffPresenter.showTwoWayDiffWithLocal(filePath, commitCharacteristics.getCommitId());
-              } catch (MalformedURLException | NoRepositorySelected e1) {
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e1.getMessage());
-                LOGGER.error(e1, e1);
-              }
+    if (fileStatus.getChangeType() != GitChangeType.ADD) {
+      String filePath = fileStatus.getFileLocation();
+      if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
+        // A revision.
+        List<String> parents = commitCharacteristics.getParentCommitId();
+        if (parents != null && !parents.isEmpty()) {
+          try {
+            RevCommit[] parentsRevCommits = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(), commitCharacteristics.getCommitId());
+            boolean addParentID = parents.size() > 1;
+            for (RevCommit parentID : parentsRevCommits) {
+              // Just one parent.
+              jPopupMenu.add(createDiffAction(filePath, commitCharacteristics.getCommitId(), parentID, addParentID, addFileName));
             }
-          });
-        } catch (IOException | NoRepositorySelected e2) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e2.getMessage());
-          LOGGER.error(e2, e2);
+
+            String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
+            if (addFileName) {
+              String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
+              actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION), fileName);
+            }
+
+            jPopupMenu.add(new AbstractAction(actionName) {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                try {
+                  DiffPresenter.showTwoWayDiffWithLocal(filePath, commitCharacteristics.getCommitId());
+                } catch (MalformedURLException | NoRepositorySelected e1) {
+                  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e1.getMessage());
+                  LOGGER.error(e1, e1);
+                }
+              }
+            });
+          } catch (IOException | NoRepositorySelected e2) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to compare: " + e2.getMessage());
+            LOGGER.error(e2, e2);
+          }
         }
+      } else {
+        // Uncommitted changes. Compare between local and HEAD.
+        jPopupMenu.add(new AbstractAction(
+            Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            DiffPresenter.showDiff(fileStatus, stageController);
+          }
+        });
       }
-    } else {
-      // Uncommitted changes. Compare between local and HEAD.
-      jPopupMenu.add(new AbstractAction(
-          Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          DiffPresenter.showDiff(fileStatus, stageController);
-        }
-      });
     }
   }
 
