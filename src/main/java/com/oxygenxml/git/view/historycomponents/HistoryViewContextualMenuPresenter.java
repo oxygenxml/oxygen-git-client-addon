@@ -33,7 +33,7 @@ import com.oxygenxml.git.view.event.GitController;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
- * Presents contextual actions over a resource in the hisptyr view.
+ * Presents contextual actions over a resource in the history view.
  * 
  * @author alex_jitianu
  */
@@ -49,29 +49,31 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Executes GIT commands (stage, unstage, discard, etc).
    */
-  protected GitController stageController;
+  protected GitController gitCtrl;
   
   /**
    * Constructor.
    * 
-   * @param stageController Executes GIT commands (stage, unstage, discard, etc).
+   * @param gitCtrl Executes GIT commands (stage, unstage, discard, etc).
    */
-  public HistoryViewContextualMenuPresenter(GitController stageController) {
-    this.stageController = stageController;
+  public HistoryViewContextualMenuPresenter(GitController gitCtrl) {
+    this.gitCtrl = gitCtrl;
   }
   
   /**
    * Contributes the contextual actions for the given file, at the given revision/commit.
    * 
-   * @param jPopupMenu Contextual menu in which to put the actions.
-   * @param filePath File path.
+   * @param jPopupMenu            Contextual menu in which to put the actions.
+   * @param filePath              File path.
    * @param commitCharacteristics Revision/commit data.
    * 
    * @throws IOException If it fails.
    * @throws GitAPIException If it fails.
    */
-  public void populateContextualActions(JPopupMenu jPopupMenu, String filePath, CommitCharacteristics commitCharacteristics)
-      throws IOException, GitAPIException {
+  public void populateContextualActions(
+      JPopupMenu jPopupMenu,
+      String filePath,
+      CommitCharacteristics commitCharacteristics) throws IOException, GitAPIException {
     List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
     Optional<FileStatus> fileStatusOptional = changes.stream().filter(f -> filePath.equals(f.getFileLocation())).findFirst();
     if (fileStatusOptional.isPresent()) {
@@ -83,10 +85,10 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Contributes the DIFF actions between the current revision and the previous ones on the contextual menu.
    * 
-   * @param jPopupMenu Contextual menu.
-   * @param fileStatus File path do diff.
+   * @param jPopupMenu            Contextual menu.
+   * @param fileStatus            File path do diff.
    * @param commitCharacteristics Current commit data.
-   * @param addFileName <code>true</code> to add the name of the file to the action's name.
+   * @param addFileName           <code>true</code> to add the name of the file to the action's name.
    */
   public void populateContextualActions(
       JPopupMenu jPopupMenu,  
@@ -101,11 +103,10 @@ public class HistoryViewContextualMenuPresenter {
         createDiffActionsForCommit(jPopupMenu, commitCharacteristics, addFileName, filePath);
       } else {
         // Uncommitted changes. Compare between local and HEAD.
-        jPopupMenu.add(new AbstractAction(
-            Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
+        jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
           @Override
           public void actionPerformed(ActionEvent e) {
-            DiffPresenter.showDiff(fileStatus, stageController);
+            DiffPresenter.showDiff(fileStatus, gitCtrl);
           }
         });
       }
@@ -115,10 +116,10 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Creates the DIFF actions for an actual commit from history.
    * 
-   * @param jPopupMenu Menu where to add the actions.
+   * @param jPopupMenu            Menu where to add the actions.
    * @param commitCharacteristics Commit data.
-   * @param addFileName <code>true</code> to append the name of the file to the actions' name.
-   * @param filePath File to DIFF.
+   * @param addFileName           <code>true</code> to append the name of the file to the actions' name.
+   * @param filePath              File to DIFF.
    */
   private void createDiffActionsForCommit(
       JPopupMenu jPopupMenu, 
@@ -129,19 +130,20 @@ public class HistoryViewContextualMenuPresenter {
     List<String> parents = commitCharacteristics.getParentCommitId();
     if (parents != null && !parents.isEmpty()) {
       try {
+        // ========= Compare with previous version ===========
         RevCommit[] parentsRevCommits = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(), commitCharacteristics.getCommitId());
         boolean addParentID = parents.size() > 1;
         for (RevCommit parentID : parentsRevCommits) {
-          // Just one parent.
-          jPopupMenu.add(createDiffAction(filePath, commitCharacteristics.getCommitId(), parentID, addParentID, addFileName));
+          jPopupMenu.add(createCompareWithPrevVersionAction(
+              filePath, commitCharacteristics.getCommitId(), parentID, addParentID, addFileName));
         }
  
+        // ========== Compare with working tree version ==========
         String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
         if (addFileName) {
           String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
           actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION), fileName);
         }
- 
         jPopupMenu.add(new AbstractAction(actionName) {
           @Override
           public void actionPerformed(ActionEvent e) {
@@ -153,6 +155,7 @@ public class HistoryViewContextualMenuPresenter {
             }
           }
         });
+        
       } catch (IOException | NoRepositorySelected e2) {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e2.getMessage());
         LOGGER.error(e2, e2);
@@ -161,23 +164,24 @@ public class HistoryViewContextualMenuPresenter {
   }
 
   /**
-   * Creates an action that invokes Oxygen's DIFF.
+   * Creates an action that invokes Oxygen's DIFF. It compares the current version with the previous.
    * 
-   * @param filePath File to compare. Path relative to the working tree.
-   * @param commitID The current commit id. First version to compare.
-   * @param parentRevCommit The parent revision. Second version to comapre.
+   * @param filePath                File to compare. Path relative to the working tree.
+   * @param commitID                The current commit id. First version to compare.
+   * @param parentRevCommit         The parent revision. Second version to compare.
    * @param addParentIDInActionName <code>true</code> to put the ID of the parent version in the action's name.
-   * @param addFileName <code>true</code> to add the file name to the action's name. 
+   * @param addFileName             <code>true</code> to add the file name to the action's name. 
    * 
    * @return The action that invokes the DIFF.
    */
-  private AbstractAction createDiffAction(
+  private AbstractAction createCompareWithPrevVersionAction(
       String filePath,
       String commitID, 
       RevCommit parentRevCommit,
       boolean addParentIDInActionName, 
       boolean addFileName) {
     
+    // Compute action name
     String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
@@ -187,6 +191,7 @@ public class HistoryViewContextualMenuPresenter {
       actionName += " " + parentRevCommit.abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
     }
     
+    // Create action
     return new AbstractAction(actionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
