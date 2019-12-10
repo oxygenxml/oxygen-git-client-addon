@@ -1,4 +1,4 @@
-<!-- This is used to install the plugin as an add-on: https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons -->
+<!-- This is used to install the plugin as an add-on: https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons -->
 <xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
@@ -6,7 +6,7 @@
         <xt:location
             href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/${project.version}/${project.build.finalName}-plugin.jar"/>
         <xt:version>${project.version}</xt:version>
-        <xt:oxy_version>18.1+</xt:oxy_version>
+        <xt:oxy_version>19.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
         <xt:name>Git Support</xt:name>
