@@ -1,6 +1,6 @@
 # Git Support Plugin
 
-This add-on contributes a Git client directly in Oxygen XML Editor/Author/Developer, as a side-view.
+This add-on contributes a Git client directly in Oxygen XML Editor/Author/Developer, as a side-view, available Oxygen's Editor and DITA UI perspectives.
 
 ## Installation
 
