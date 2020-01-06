@@ -276,8 +276,13 @@ public class PushPullController implements Subject<PushPullEvent> {
       } else if (Status.UP_TO_DATE == response.getStatus()) {
         message = translator.getTranslation(Tags.PUSH_UP_TO_DATE);
       } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage(response.getMessage());
+        String warnMess = "The operation was rejected.";
+        if (response.getMessage() != null) {
+          warnMess += " Details: " + response.getMessage();
+        } else {
+          warnMess += " No details available.";
+        }
+        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showWarningMessage(warnMess);
       }
       return message;
     }

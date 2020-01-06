@@ -22,6 +22,10 @@
     <extension type="URLHandler" class="com.oxygenxml.git.protocol.CustomProtocolURLHandlerExtension"/>
     
     <!--The sample view which will present messages from the sample plugin.-->
-    <view id="GitStagingView" initialSide="WEST" initialRow="0"/>
+    <view id="GitStagingView" initialSide="WEST" initialRow="0" initialState="docked">
+    	<perspective id="xslt_debugger" initialState="hidden"/>
+    	<perspective id="xquery_debugger" initialState="hidden"/>
+    	<perspective id="database" initialState="hidden"/>
+    </view>
     <view id="GitHistoryView" initialSide="SOUTH" initialRow="0" initialState="hidden"/>
 </plugin>

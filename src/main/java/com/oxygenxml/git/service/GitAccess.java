@@ -976,6 +976,7 @@ public class GitAccess {
 	    PushResult result = results.next();
 	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
 	      response.setStatus(info.getStatus());
+	      response.setMessage(info.getMessage());
 	      return response; // NOSONAR
 	    }
 	  }

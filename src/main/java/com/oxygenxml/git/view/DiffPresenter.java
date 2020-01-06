@@ -57,17 +57,18 @@ public class DiffPresenter {
 	 * Perform different actions depending on the file change type. If the file is
 	 * a conflict file then a 3-way diff is presented. If the file is a modified
 	 * one then a 2-way diff is presented. And if a file is added then the file is
-	 * opened
-	 * @param stageCtrl 
-	 * @param fileStatus 
+	 * opened or removed only one side of the diff panel is populated.
+	 * 
+	 * @param fileStatus Changes. 
+	 * @param gitCtrl    Git controller.
 	 * 
 	 */
-	public static void showDiff(FileStatus fileStatus, GitController stageCtrl) {
+	public static void showDiff(FileStatus fileStatus, GitController gitCtrl) {
 	  try {
 	    GitChangeType changeType = fileStatus.getChangeType();
 	    switch (changeType) {
 	      case CONFLICT:
-	        showConflictDiff(fileStatus, stageCtrl);
+	        showConflictDiff(fileStatus, gitCtrl);
 	        break;
 	      case CHANGED:
 	        showDiffIndexWithHead(fileStatus.getFileLocation());

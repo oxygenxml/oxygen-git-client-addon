@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,14 +58,15 @@ public class GitHistoryActionsTest extends GitTestBase {
           "[ First commit. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
           "";
 
-      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+      String regex = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
+      expected = expected.replaceAll(regex, "DATE");
+      dump = expected.replaceAll(regex, "DATE");
 
-      assertEquals(
-          expected, dump);
+      assertEquals(expected, dump);
 
       HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
 
-      final List<Action> actions = new ArrayList<Action>();
+      final List<Action> actions = new ArrayList<>();
       JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
       Mockito.when(jPopupMenu.add((Action) Mockito.anyObject())).thenAnswer(new Answer<Void>() {
         @Override
@@ -155,14 +155,15 @@ public class GitHistoryActionsTest extends GitTestBase {
           "[ First commit. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n" + 
           "";
   
-      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+      String regex = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
+      expected = expected.replaceAll(regex, "DATE");
+      dump = expected.replaceAll(regex, "DATE");
   
-      assertEquals(
-          expected, dump);
+      assertEquals(expected, dump);
   
       HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
   
-      final List<Action> actions = new ArrayList<Action>();
+      final List<Action> actions = new ArrayList<>();
       JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
       Mockito.when(jPopupMenu.add((Action) Mockito.anyObject())).thenAnswer(new Answer<Void>() {
         @Override
