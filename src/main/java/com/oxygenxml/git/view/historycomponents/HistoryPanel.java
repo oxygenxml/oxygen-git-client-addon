@@ -80,7 +80,7 @@ public class HistoryPanel extends JPanel {
   /**
    * Table view that presents the commits.
    */
-  private JTable historyTable;
+  JTable historyTable;
   /**
    * Panel presenting a detailed description of the commit (author, date, etc).
    */
@@ -100,7 +100,7 @@ public class HistoryPanel extends JPanel {
   /**
    * The changed files from a commit.
    */
-  private JTable affectedFilesTable;
+  JTable affectedFilesTable;
   /**
    * The file path of the resource for which we are currently presenting the history. If <code>null</code>, we 
    * present the history for the entire repository.
@@ -410,7 +410,11 @@ public class HistoryPanel extends JPanel {
         });
         
         selectionListener = new RowHistoryTableSelectionListener(
-            historyTable, commitDescriptionPane, commitCharacteristicsVector, affectedFilesTable);
+            getUpdateDelay(),
+            historyTable, 
+            commitDescriptionPane, 
+            commitCharacteristicsVector, 
+            affectedFilesTable);
         historyTable.getSelectionModel().addListSelectionListener(selectionListener);
 
         // Install hyperlink listener.
@@ -434,6 +438,18 @@ public class HistoryPanel extends JPanel {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to present history because of: " + e.getMessage());
       }
     }
+  }
+
+  /**
+   * Coalescing for selecting the row in HistoryTable.
+   */
+  static final int TIMER_DELAY = 500;
+  
+  /**
+   * @return Milliseconds. Controls how fast the satellite views are updated after a new revision is selected.
+   */
+  protected int getUpdateDelay() {
+    return TIMER_DELAY;
   }
 
   /**

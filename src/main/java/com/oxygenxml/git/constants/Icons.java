@@ -3,6 +3,7 @@ package com.oxygenxml.git.constants;
 import java.net.URL;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -47,8 +48,13 @@ public class Icons {
   public static Icon getIcon(String imgKey) {
     Icon toReturn = null;
     URL resource = Icons.class.getResource(imgKey);
-    if (resource != null && PluginWorkspaceProvider.getPluginWorkspace() != null && PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities() != null) {
-      toReturn = (Icon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
+    if (resource != null) {
+      if (PluginWorkspaceProvider.getPluginWorkspace() != null && PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities() != null) {
+        toReturn = (Icon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
+      } else {
+        // Probably in a unit test context.
+        toReturn = new ImageIcon(resource);
+      }
     }
     return toReturn;
   }

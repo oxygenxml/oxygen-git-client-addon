@@ -47,17 +47,13 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	 */
 	private List<CommitCharacteristics> allCommits;
 	/**
-	 * Coalescing for selecting the row in HistoryTable.
-	 */
-	private static final int TIMER_DELAY = 500;
-	/**
 	 * Coalescing listener for updating commit related data.
 	 */
 	private ActionListener descriptionUpdateListener = new TableTimerListener();
 	/**
 	 * Coalescing support for updating commit related data.
 	 */
-	private Timer descriptionUpdateTimer = new Timer(TIMER_DELAY, descriptionUpdateListener);
+	private Timer descriptionUpdateTimer;
 	/**
 	 * Table that presents the resources changed inside a commit.
 	 */
@@ -66,17 +62,20 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	/**
 	 * Construct the SelectionListener for HistoryTable.
 	 * 
+	 * @param updateDelay                 Milliseconds. Controls how fast the satellite views are updated after a new revision is selected.
 	 * @param historyTable                The historyTable
 	 * @param commitDescriptionPane       The commitDescriptionPane
 	 * @param commits                     The list of commits and their characteristics.
 	 * @param changesTable                The table that presents the files changed in a commit.
 	 */
 	public RowHistoryTableSelectionListener(
+	    int updateDelay,
 	    JTable historyTable, 
 	    JEditorPane commitDescriptionPane,
 			List<CommitCharacteristics> commits, 
 			JTable changesTable) {
 		this.changesTable = changesTable;
+		descriptionUpdateTimer = new Timer(updateDelay, descriptionUpdateListener);
     this.descriptionUpdateTimer.setRepeats(false);
 		this.historyTable = historyTable;
 		this.commitDescriptionPane = commitDescriptionPane;
