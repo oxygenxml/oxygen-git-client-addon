@@ -108,7 +108,7 @@ public class HistoryPanelTest extends GitTestBase {
       //-----------
       // Select an entry in the revision table.
       //-----------
-      selectAndAssertRevision(historyTable, 1, "[ Root file. , 6 Jan 2020 , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]");
+      selectAndAssertRevision(historyTable, 1, "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]");
       
       //-----------
       // Assert the affected files
@@ -118,7 +118,7 @@ public class HistoryPanelTest extends GitTestBase {
       //-----------
       // Select an entry in the revision table.
       //-----------
-      selectAndAssertRevision(historyTable, 2, "[ Changes. , 6 Jan 2020 , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]");
+      selectAndAssertRevision(historyTable, 2, "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]");
       
       //-----------
       // Assert the affected files
@@ -134,7 +134,7 @@ public class HistoryPanelTest extends GitTestBase {
       //-----------
       // Select an entry in the revision table.
       //-----------
-      selectAndAssertRevision(historyTable, 3, "[ First commit. , 6 Jan 2020 , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]");
+      selectAndAssertRevision(historyTable, 3, "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]");
       
       //-----------
       // Assert the affected files
