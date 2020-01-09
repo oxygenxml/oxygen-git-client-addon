@@ -101,7 +101,7 @@ public class GitMenuActionsProvider {
    * Create the "Git Diff" action.
    */
   private void createGitDiffAction() {
-    gitDiffAction = new AbstractAction(translator.getTranslation(Tags.GIT)) {
+    gitDiffAction = new AbstractAction(translator.getTranslation(Tags.GIT_DIFF)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
