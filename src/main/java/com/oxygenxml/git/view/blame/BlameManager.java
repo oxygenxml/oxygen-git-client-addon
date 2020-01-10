@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import com.google.common.io.Files;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -90,12 +91,20 @@ public class BlameManager {
       HistoryController historyController) throws IOException, GitAPIException {
     
     try {
-      URL url = new File(GitAccess.getInstance().getWorkingCopy(), filePath).toURI().toURL();
+      File file = new File(GitAccess.getInstance().getWorkingCopy(), filePath);
+      URL url = file.toURI().toURL();
       // Check if another blame is already active and dispose it.
       dispose(url);
 
-      // Imposing the text page will open even a DITA Map inside the main editing area.
-      boolean open = PluginWorkspaceProvider.getPluginWorkspace().open(url, EditorPageConstants.PAGE_TEXT, null);
+      String ext = Files.getFileExtension(file.getName());
+      boolean isProjectExt = "xpr".equals(ext);
+      
+      boolean open = PluginWorkspaceProvider.getPluginWorkspace().open(
+          url,
+          // Imposing the text page will open even a DITA Map inside the main editing area.
+          EditorPageConstants.PAGE_TEXT,
+          // EXM-44423: open project as XML.
+          isProjectExt ? "text/xml" : null);
       if (open) {
         WSEditor editor = PluginWorkspaceProvider.getPluginWorkspace().getEditorAccess(url, PluginWorkspace.MAIN_EDITING_AREA);
         if (editor != null) {
