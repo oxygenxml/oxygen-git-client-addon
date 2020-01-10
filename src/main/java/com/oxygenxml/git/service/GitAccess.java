@@ -278,7 +278,7 @@ public class GitAccess {
 	    try {
 	      openRepository(path);
 	    } catch (IOException e) {
-	      logger.debug(e, e);
+	      logger.error(e, e);
 	    }
 	  });
 	}
@@ -470,9 +470,7 @@ public class GitAccess {
 		try {
 			git = Git.init().setBare(false).setDirectory(new File(path)).call();
 		} catch (IllegalStateException | GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 		
 		fireRepositoryChanged();
@@ -490,9 +488,7 @@ public class GitAccess {
 	      logger.debug("-- Get JGit status -> git.status().call() --");
 	      gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status));
 	    } catch (GitAPIException e) {
-	      if (logger.isDebugEnabled()) {
-	        logger.debug(e, e);
-	      }
+	      logger.error(e, e);
 	    }
 	  }
     return gitStatus != null ? gitStatus 
@@ -534,9 +530,7 @@ public class GitAccess {
         logger.debug("JGit Status computed: " + status);
         return getUnstagedFiles(status);
       } catch (GitAPIException e) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e, e);
-        }
+        logger.error(e, e);
       }
     }
     
@@ -563,9 +557,7 @@ public class GitAccess {
         addMissingFilesToUnstaged(status, unstagedFiles, submodules);
 				addConflictingFilesToUnstaged(status, unstagedFiles);
 			} catch (NoWorkTreeException | GitAPIException e1) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e1, e1);
-				}
+			  logger.error(e1, e1);
 			}
 		}
 		return unstagedFiles;
@@ -686,9 +678,7 @@ public class GitAccess {
 			  }
 			}
 		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 		return null;
 	}
@@ -704,9 +694,7 @@ public class GitAccess {
 				return git.submoduleStatus().call().keySet();
 			}
 		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 		return new HashSet<>();
 	}
@@ -750,7 +738,7 @@ public class GitAccess {
 		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
 		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.FAILED, filePaths));
-		  logger.debug(e, e);
+		  logger.error(e, e);
 		}
 	}
 
@@ -790,9 +778,7 @@ public class GitAccess {
 		try {
 			branches = git.branchList().call();
 		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 		return branches;
 	}
@@ -807,9 +793,7 @@ public class GitAccess {
     try {
       branches = git.branchList().setListMode(ListMode.REMOTE).call();
     } catch (GitAPIException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
+      logger.error(e, e);
     }
     return branches;
   }
@@ -889,9 +873,7 @@ public class GitAccess {
           shouldStopTryingLogin = true;
         }
       } catch (GitAPIException e) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e, e);
-        }
+        logger.error(e, e);
       }
     } while (!shouldStopTryingLogin);
     
@@ -907,9 +889,7 @@ public class GitAccess {
 		try {
 			git.branchCreate().setName(branchName).call();
 		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 
 	}
@@ -923,9 +903,7 @@ public class GitAccess {
 		try {
 			git.branchDelete().setBranchNames(branchName).call();
 		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 	}
 
@@ -963,7 +941,7 @@ public class GitAccess {
         return response;
       }
     } catch (RepoNotInitializedException e) {
-      logger.debug(e, e);
+      logger.error(e, e);
     }
 	  
 	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
@@ -1117,9 +1095,7 @@ public class GitAccess {
     try {
       head = repository.resolve("HEAD^{tree}");
     } catch (RevisionSyntaxException | IOException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
+      logger.error(e, e);
     }
     return head;
   }
@@ -1208,7 +1184,7 @@ public class GitAccess {
             fetchResultStringBuilder.append(translator.getTranslation(Tags.FILE_EXISTS) + "\n");
           }
         } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
+          logger.error(e, e);
         }
         fetchResultStringBuilder.append(translator.getTranslation(Tags.LOCK_FAILED_EXPLANATION));
       }
@@ -1246,9 +1222,7 @@ public class GitAccess {
       // Refresh the Project view
 			ProjectViewManager.refreshFolders(new File[] { FileHelper.getCommonDir(pulledFilesParentDirs) });
     } catch (IOException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
+      logger.error(e, e);
     }
   }
 
@@ -1296,9 +1270,7 @@ public class GitAccess {
 	    fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 	  } catch (GitAPIException e) {
 	    fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.FAILED, filePaths));
-	    if (logger.isDebugEnabled()) {
-	      logger.debug(e, e);
-	    }
+	    logger.error(e, e);
 		}
 	}
 
@@ -1340,9 +1312,7 @@ public class GitAccess {
 			fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
 		  fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.FAILED, filePaths));
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 	}
 	
@@ -1375,9 +1345,7 @@ public class GitAccess {
         Status status = statusCmd.call();
         return getStagedFiles(status);
 			} catch (GitAPIException e) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e, e);
-        }
+			  logger.error(e, e);
       }
     }
     
@@ -1434,9 +1402,7 @@ public class GitAccess {
 			try {
 				return git.status().call().getConflicting();
 			} catch (GitAPIException e) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(e, e);
-				}
+			  logger.error(e, e);
 			}
 		}
 		return Collections.emptySet();
@@ -1457,9 +1423,7 @@ public class GitAccess {
 			fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
 		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.FAILED, filePaths));
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 	}
 
@@ -1482,9 +1446,7 @@ public class GitAccess {
 			fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
 		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.FAILED, filePaths));
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 	}
 
@@ -1528,9 +1490,7 @@ public class GitAccess {
 		try {
 			return repo.resolve("HEAD^{commit}");
 		} catch (IOException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 		return null;
 	}
@@ -1547,9 +1507,7 @@ public class GitAccess {
 			remoteCommit = repo.resolve("origin/" + branchInfo.getBranchName() + "^{commit}");
 			return remoteCommit;
 		} catch (IOException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 		return remoteCommit;
 	}
@@ -1580,9 +1538,7 @@ public class GitAccess {
 				}
 			}
 		} catch (IOException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 		walk.close();
 		return baseCommit;
@@ -1652,9 +1608,7 @@ public class GitAccess {
 		try {
 			git.reset().call();
 		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 	}
 
@@ -1673,9 +1627,7 @@ public class GitAccess {
 			fireStateChanged(new GitEvent(GitCommand.DISCARD, GitCommandState.SUCCESSFULLY_ENDED, paths));
 		} catch (GitAPIException e) {
 		  fireStateChanged(new GitEvent(GitCommand.DISCARD, GitCommandState.FAILED, paths));
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 	}
 
@@ -1701,9 +1653,7 @@ public class GitAccess {
 	      }
 	    }
 	  } catch (IOException | NoRepositorySelected e) {
-	    if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
+	    logger.error(e, e);
 	  }
 	  
 	  return numberOfCommits;
@@ -1727,9 +1677,7 @@ public class GitAccess {
 	      }
 	    }
 	  } catch (IOException | NoRepositorySelected e) {
-	    if (logger.isDebugEnabled()) {
-	      logger.debug(e, e);
-	    }
+	    logger.error(e, e);
 	  }
 
 		return numberOfCommits;
@@ -1776,9 +1724,7 @@ public class GitAccess {
 			  throw new RepositoryUnavailableException(e);
 			}
 		} catch (GitAPIException | RevisionSyntaxException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
+		  logger.error(e, e);
     } 
 		if (logger.isDebugEnabled()) {
 			logger.debug(END_FETCH_DEBUG_MESSAGE);
@@ -1794,9 +1740,7 @@ public class GitAccess {
 		try {
 			git.checkout().setStage(Stage.THEIRS).addPath(filePath).call();
 		} catch (Exception e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.error(e, e);
 		}
 	}
 
@@ -1824,9 +1768,7 @@ public class GitAccess {
 	      fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.SUCCESSFULLY_ENDED));
 	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
 	      fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.FAILED));
-	      if (logger.isDebugEnabled()) {
-	        logger.debug(e, e);
-	      }
+	      logger.error(e, e);
 	    }
 	  });
 	}
@@ -1860,7 +1802,7 @@ public class GitAccess {
 			  logger.debug(e, e);
 			  return new BranchInfo(branchName, false);
 			} catch (IOException | GitAPIException e) {
-			  logger.debug(e, e);
+			  logger.error(e, e);
 			}
 		}
 		return new BranchInfo("", false);
@@ -2013,7 +1955,7 @@ public class GitAccess {
 				revWalk.close();
 			}
 		} catch (GitAPIException | IOException e) {
-		  logger.debug(e, e);
+		  logger.error(e, e);
 		}
 		return toReturn;
 	}
@@ -2067,7 +2009,7 @@ public class GitAccess {
       rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
     } catch (NoRepositorySelected e) {
       // Never happens.
-      logger.debug(e, e);
+      logger.error(e, e);
     }
     return rootFolder;
   }
@@ -2083,7 +2025,7 @@ public class GitAccess {
         fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.SUCCESSFULLY_ENDED));
       } catch (GitAPIException e) {
         fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.FAILED));
-        logger.debug(e, e);
+        logger.error(e, e);
       }
     });
   }
@@ -2111,7 +2053,6 @@ public class GitAccess {
                 GitCommand.CONTINUE_REBASE,
                 GitCommandState.FAILED));
         
-        // TODO: properly treat the exceptions in EXM-44416
         logger.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
@@ -2121,7 +2062,7 @@ public class GitAccess {
                 GitCommand.CONTINUE_REBASE,
                 GitCommandState.FAILED));
         
-        logger.debug(e, e);
+        logger.error(e, e);
       }
     });
   }
@@ -2133,7 +2074,7 @@ public class GitAccess {
     try {
       git.rebase().setOperation(Operation.SKIP).call();
     } catch (GitAPIException e) {
-      logger.debug(e, e);
+      logger.error(e, e);
     }
   }
   
@@ -2206,7 +2147,7 @@ public class GitAccess {
 			}
 
 		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
-			logger.debug(e, e);
+			logger.error(e, e);
 		}
 		
 		return commitVector;
