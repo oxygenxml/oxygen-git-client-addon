@@ -215,10 +215,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
       }
     });
     
-    if (shouldRecreateStagingPanel) {
-      // Start the thread that populates the view.
-      gitRefreshSupport.call();
-    }
+    gitRefreshSupport.call();
     
     viewInfo.setIcon(Icons.getIcon(Icons.GIT_ICON));
     viewInfo.setTitle(Translator.getInstance().getTranslation(Tags.GIT_STAGING));
