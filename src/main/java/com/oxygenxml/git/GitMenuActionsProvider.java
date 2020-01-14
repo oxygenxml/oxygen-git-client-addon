@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -19,6 +20,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.event.GitController;
 
@@ -37,7 +39,7 @@ public class GitMenuActionsProvider {
   /**
    * Plug-in workspace access.
    */
-  private StandalonePluginWorkspace pluginWorkspaceAccess;
+  private StandalonePluginWorkspace pluginWS;
   /**
    * Translator.
    */
@@ -68,7 +70,7 @@ public class GitMenuActionsProvider {
    *          The staging panel.
    */
   public GitMenuActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, GitController stageCtrl) {
-    this.pluginWorkspaceAccess = pluginWorkspaceAccess;
+    this.pluginWS = pluginWorkspaceAccess;
     this.stageCtrl = stageCtrl;
   }
 
@@ -79,95 +81,122 @@ public class GitMenuActionsProvider {
     List<AbstractAction> actions = new ArrayList<>();
     
     // Create the Git actions, if not already created
-    if (commitAction == null) {
-      createCommitAction();
-    }
     if (gitDiffAction == null) {
-      createGitDiffAction();
+      gitDiffAction = new AbstractAction(translator.getTranslation(Tags.GIT_DIFF)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          GitOperationScheduler.getInstance().schedule(GitMenuActionsProvider.this::doGitDiff);
+        }
+      };
     }
+    if (commitAction == null) {
+      commitAction = new AbstractAction(translator.getTranslation(Tags.COMMIT)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          GitOperationScheduler.getInstance().schedule(GitMenuActionsProvider.this::doPrepareCommit);
+        } 
+      };
+    }
+  
     
     // Enable/disable
     commitAction.setEnabled(true);
     gitDiffAction.setEnabled(shouldEnableGitDiffAction());
     
     // Add the Git actions to the list
-    actions.add(commitAction);
     actions.add(gitDiffAction);
+    actions.add(commitAction);
 
     return actions;
   }
 
   /**
-   * Create the "Git Diff" action.
+   * Do Git Diff.
    */
-  private void createGitDiffAction() {
-    gitDiffAction = new AbstractAction(translator.getTranslation(Tags.GIT_DIFF)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
-        // The diff action is enabled only for one file
-        String repository = getRepositoryForFiles(selectedFiles);
-        if (repository != null) {
-          try {
-            String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-            if (!repository.equals(previousRepository)) {
-              GitAccess.getInstance().setRepositorySynchronously(repository);
-            }
-            
-            List<FileStatus> gitFiles = new ArrayList<>();
-            GitStatus status = GitAccess.getInstance().getStatus();
-            gitFiles.addAll(status.getUnstagedFiles());
-            gitFiles.addAll(status.getStagedFiles());
-            
-            String selectedFilePath = FileHelper.rewriteSeparator(selectedFiles[0].getAbsolutePath());
-            if (!gitFiles.isEmpty()) {
-              for (FileStatus fileStatus : gitFiles) {
-                if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-                DiffPresenter.showDiff(fileStatus, stageCtrl);
-                  break;
-                }
-              }
-            } else {
-              pluginWorkspaceAccess.showInformationMessage(translator.getTranslation(Tags.NO_CHANGES));
-            }
-          } catch (Exception e1) {
-            if (logger.isDebugEnabled()) {
-              logger.debug(e1, e1);
+  private void doGitDiff() {
+    File selFile = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS)[0];
+    String repository = getRepositoryForFile(selFile);
+    if (repository != null) {
+      try {
+        String previousRepository = OptionsManager.getInstance().getSelectedRepository();
+        if (!repository.equals(previousRepository)) {
+          GitAccess.getInstance().setRepositorySynchronously(repository);
+        }
+        
+        List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
+        boolean wasDiffShown = false;
+        if (!gitFiles.isEmpty()) {
+          String selectedFilePath = FileHelper.rewriteSeparator(selFile.getAbsolutePath());
+          for (FileStatus fileStatus : gitFiles) {
+            if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
+              SwingUtilities.invokeLater(() -> DiffPresenter.showDiff(fileStatus, stageCtrl));
+              wasDiffShown = true;
+              break;
             }
           }
         }
+        if (!wasDiffShown) {
+          SwingUtilities.invokeLater(
+              () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NO_CHANGES)));
+        }
+      } catch (Exception e1) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e1, e1);
+        }
       }
-    };
+    }
   }
 
   /**
-   * Create the "Commit" action.
+   * Prepare commit.
    */
-  private void createCommitAction() {
-    commitAction = new AbstractAction(translator.getTranslation(Tags.COMMIT)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        pluginWorkspaceAccess.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true);
+  private void doPrepareCommit() {
+    File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS);
+    String repository = getRepositoryForFile(selectedFiles[0]);
+    if (repository != null) {
+      try {
+        String previousRepository = OptionsManager.getInstance().getSelectedRepository();
+        if (!repository.equals(previousRepository)) {
+          GitAccess.getInstance().setRepositorySynchronously(repository);
+        }
         
-        // Use the repository from the project view
-        File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
-        String repository = getRepositoryForFiles(selectedFiles);
-        if (repository != null) {
-          try {
-            String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-            if (!repository.equals(previousRepository)) {
-              GitAccess.getInstance().setRepositorySynchronously(repository);
-            }
-            
-            stageFiles(repository);
-          } catch (IOException e1) {
-            if (logger.isDebugEnabled()) {
-              logger.debug(e1, e1);
+        List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
+        boolean canCommit = false;
+        for (File selFile : selectedFiles) {
+          String selectedFilePath = FileHelper.rewriteSeparator(selFile.getAbsolutePath());
+          for (FileStatus fileStatus : gitFiles) {
+            if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
+              canCommit = true;
+              break;
             }
           }
         }
+        
+        if (canCommit) {
+          SwingUtilities.invokeLater(
+              () -> pluginWS.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true));
+          stageFiles(repository);
+        } else {
+          SwingUtilities.invokeLater(
+              () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NOTHING_TO_COMMIT)));
+        }
+      } catch (IOException e1) {
+        if (logger.isDebugEnabled()) {
+          logger.debug(e1, e1);
+        }
       }
-    };
+    }
+  }
+  
+  /**
+   * @return The staged and the unstaged files.
+   */
+  private List<FileStatus> getStagedAndUnstagedFiles() {
+    List<FileStatus> gitFiles = new ArrayList<>();
+    GitStatus status = GitAccess.getInstance().getStatus();
+    gitFiles.addAll(status.getUnstagedFiles());
+    gitFiles.addAll(status.getStagedFiles());
+    return gitFiles;
   }
   
   /**
@@ -181,7 +210,7 @@ public class GitMenuActionsProvider {
     repository = FileHelper.rewriteSeparator(repository);
     
     List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
-    Set<String> allSelectedFiles = ProjectViewManager.getSelectedFilesDeep(pluginWorkspaceAccess);
+    Set<String> allSelectedFiles = ProjectViewManager.getSelectedFilesDeep(pluginWS);
     List<FileStatus> stagedFiles = new ArrayList<>();
     for (FileStatus unstagedFileStatus : unstagedFiles) {
       if (allSelectedFiles.contains(repository + "/" + unstagedFileStatus.getFileLocation())
@@ -199,7 +228,7 @@ public class GitMenuActionsProvider {
    */
   private boolean shouldEnableGitDiffAction() {
     boolean shouldEnable = true;
-    File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
+    File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS);
     if (selectedFiles != null) {
       if (selectedFiles.length > 1 || selectedFiles.length == 1 && selectedFiles[0].isDirectory()) {
         // disable the diff action if there are 2 or more files selected or if
@@ -211,17 +240,16 @@ public class GitMenuActionsProvider {
   }
 
   /**
-   * Get the repository corresponding to the given files.
+   * Get the repository corresponding to the given file.
+   * We search for only one file because in oXygen all files from the Project view
+   * are in the same project/repository.
    * 
-   * @param files The files.
+   * @param file The file.
    * 
    * @return the repository, or <code>null</code> if couldn't be detected.
    */
-  private String getRepositoryForFiles(File[] files) {
+  private String getRepositoryForFile(File file) {
     String repository = null;
-    // Search for first file. In oXygen all files from the Project view
-    // are in the same project/repository.
-    File file = new File(files[0].getAbsolutePath());
     while (repository == null && file.getParent() != null) {
       if (FileHelper.isGitRepository(file.getPath())) {
         repository = file.getAbsolutePath();

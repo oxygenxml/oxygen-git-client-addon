@@ -18,6 +18,10 @@ public class Tags {
    */
   public static final String NO_CHANGES = "No_changes";
   /**
+   * There are no changes to commit. 
+   */
+  public static final String NOTHING_TO_COMMIT = "Nothing_to_commit";
+  /**
    * Message shown when trying to clone from an invalid remote.
    * 
    * en: Submodule_load_fail

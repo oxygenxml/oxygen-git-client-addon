@@ -90,7 +90,7 @@ public class ProjectViewManager {
 	 * 
 	 * @param pluginWorkspaceAccess  Plug-in workspace access.
 	 * 
-	 * @return the selected files.
+	 * @return the selected files or an empty array. Never null.
 	 */
 	public static File[] getSelectedFilesAndDirsShallow(StandalonePluginWorkspace pluginWorkspaceAccess) {
 	  File[] toReturn = null;
@@ -116,7 +116,7 @@ public class ProjectViewManager {
       }
     } 
 		
-		return toReturn;
+		return toReturn == null ? new File[0] : toReturn;
 	}
 	
 	/**
