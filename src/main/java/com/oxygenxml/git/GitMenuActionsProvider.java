@@ -1,5 +1,6 @@
 package com.oxygenxml.git;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
@@ -25,6 +27,7 @@ import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ViewInfo;
 
 /**
  * Provides Git-specific actions.
@@ -60,6 +63,11 @@ public class GitMenuActionsProvider {
   private AbstractAction gitDiffAction;
 
   /**
+   * Project view.
+   */
+  private ViewInfo prjViewInfo; 
+  
+  /**
    * Constructor.
    * 
    * @param translator
@@ -72,6 +80,13 @@ public class GitMenuActionsProvider {
   public GitMenuActionsProvider(StandalonePluginWorkspace pluginWorkspaceAccess, GitController stageCtrl) {
     this.pluginWS = pluginWorkspaceAccess;
     this.stageCtrl = stageCtrl;
+
+    pluginWorkspaceAccess.addViewComponentCustomizer(
+        viewInfo -> {
+          if ("Project".equals(viewInfo.getViewID())) {
+            prjViewInfo = viewInfo;
+          }
+        });
   }
 
   /**
@@ -114,36 +129,40 @@ public class GitMenuActionsProvider {
    * Do Git Diff.
    */
   private void doGitDiff() {
-    File selFile = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS)[0];
-    String repository = getRepositoryForFile(selFile);
-    if (repository != null) {
-      try {
-        String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-        if (!repository.equals(previousRepository)) {
-          GitAccess.getInstance().setRepositorySynchronously(repository);
-        }
-        
-        List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
-        boolean wasDiffShown = false;
-        if (!gitFiles.isEmpty()) {
-          String selectedFilePath = FileHelper.rewriteSeparator(selFile.getAbsolutePath());
-          for (FileStatus fileStatus : gitFiles) {
-            if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-              SwingUtilities.invokeLater(() -> DiffPresenter.showDiff(fileStatus, stageCtrl));
-              wasDiffShown = true;
-              break;
+    try {
+      setBusyCursor(true);
+      
+      File selFile = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS)[0];
+      String repository = getRepositoryForFile(selFile);
+      if (repository != null) {
+        try {
+          String previousRepository = OptionsManager.getInstance().getSelectedRepository();
+          if (!repository.equals(previousRepository)) {
+            GitAccess.getInstance().setRepositorySynchronously(repository);
+          }
+
+          List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
+          boolean wasDiffShown = false;
+          if (!gitFiles.isEmpty()) {
+            String selectedFilePath = FileHelper.rewriteSeparator(selFile.getAbsolutePath());
+            for (FileStatus fileStatus : gitFiles) {
+              if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
+                SwingUtilities.invokeLater(() -> DiffPresenter.showDiff(fileStatus, stageCtrl));
+                wasDiffShown = true;
+                break;
+              }
             }
           }
-        }
-        if (!wasDiffShown) {
-          SwingUtilities.invokeLater(
-              () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NO_CHANGES)));
-        }
-      } catch (Exception e1) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e1, e1);
+          if (!wasDiffShown) {
+            SwingUtilities.invokeLater(
+                () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NO_CHANGES)));
+          }
+        } catch (Exception e1) {
+          logger.error(e1, e1);
         }
       }
+    } finally {
+      setBusyCursor(false);
     }
   }
 
@@ -151,40 +170,66 @@ public class GitMenuActionsProvider {
    * Prepare commit.
    */
   private void doPrepareCommit() {
-    File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS);
-    String repository = getRepositoryForFile(selectedFiles[0]);
-    if (repository != null) {
-      try {
-        String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-        if (!repository.equals(previousRepository)) {
-          GitAccess.getInstance().setRepositorySynchronously(repository);
-        }
-        
-        List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
-        boolean canCommit = false;
-        for (File selFile : selectedFiles) {
-          String selectedFilePath = FileHelper.rewriteSeparator(selFile.getAbsolutePath());
-          for (FileStatus fileStatus : gitFiles) {
-            if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
-              canCommit = true;
-              break;
+    try {
+      setBusyCursor(true);
+      
+      File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS);
+      String repository = getRepositoryForFile(selectedFiles[0]);
+      if (repository != null) {
+        try {
+          String previousRepository = OptionsManager.getInstance().getSelectedRepository();
+          if (!repository.equals(previousRepository)) {
+            GitAccess.getInstance().setRepositorySynchronously(repository);
+          }
+
+          List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
+          boolean canCommit = false;
+          for (File selFile : selectedFiles) {
+            String selectedFilePath = FileHelper.rewriteSeparator(selFile.getAbsolutePath());
+            for (FileStatus fileStatus : gitFiles) {
+              if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
+                canCommit = true;
+                break;
+              }
             }
           }
-        }
-        
-        if (canCommit) {
-          SwingUtilities.invokeLater(
-              () -> pluginWS.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true));
-          stageFiles(repository);
-        } else {
-          SwingUtilities.invokeLater(
-              () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NOTHING_TO_COMMIT)));
-        }
-      } catch (IOException e1) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(e1, e1);
+
+          if (canCommit) {
+            SwingUtilities.invokeLater(
+                () -> pluginWS.showView(OxygenGitPluginExtension.GIT_STAGING_VIEW, true));
+            stageFiles(repository);
+          } else {
+            SwingUtilities.invokeLater(
+                () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NOTHING_TO_COMMIT)));
+          }
+        } catch (IOException e1) {
+          if (logger.isDebugEnabled()) {
+            logger.debug(e1, e1);
+          }
         }
       }
+    } finally {
+      setBusyCursor(false);
+    }
+  }
+  
+  /**
+   * Set busy cursor or default.
+   * 
+   * @param isSetBusy <code>true</code> to set busy cursor.
+   */
+  private void setBusyCursor(boolean isSetBusy) {
+    if (isSetBusy) {
+      SwingUtilities.invokeLater(() -> {
+        Cursor busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+        prjViewInfo.getComponent().setCursor(busyCursor);
+        ((JFrame) pluginWS.getParentFrame()).setCursor(busyCursor);
+      });
+    } else {
+      SwingUtilities.invokeLater(() -> {
+        prjViewInfo.getComponent().setCursor(Cursor.getDefaultCursor());
+        ((JFrame) pluginWS.getParentFrame()).setCursor(Cursor.getDefaultCursor());
+      });
     }
   }
   
