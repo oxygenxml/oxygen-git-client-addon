@@ -130,10 +130,8 @@ public class ProjectViewManager {
 	  Set<String> files = new HashSet<>();
 
 	  File[] selectedFiles = getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
-	  if (selectedFiles != null) {
-	    for (int i = 0; i < selectedFiles.length; i++) {
-	      files.addAll(FileHelper.getAllFilesFromPath(selectedFiles[i].getAbsolutePath()));
-	    }
+	  for (int i = 0; i < selectedFiles.length; i++) {
+	    files.addAll(FileHelper.getAllFilesFromPath(selectedFiles[i].getAbsolutePath()));
 	  }
 
 	  return files;

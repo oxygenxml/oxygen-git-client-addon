@@ -5,7 +5,7 @@ public class RevCommitUtilBase {
   /**
    * Avoid instantiation.
    */
-  public RevCommitUtilBase() {
+  private RevCommitUtilBase() {
     // Nada
   }
 
