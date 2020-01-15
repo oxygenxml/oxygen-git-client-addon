@@ -29,6 +29,7 @@ import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
+import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
@@ -121,17 +122,28 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        for (FileStatus file : allSelectedResources) {
 	          try {
 	            URL fileURL = null;
-	            if (file.getChangeType() == GitChangeType.ADD
+	            String fileLocation = file.getFileLocation();
+              if (file.getChangeType() == GitChangeType.ADD
 	                || file.getChangeType() == GitChangeType.CHANGED) {
 	              // A file from the INDEX. We need a special URL to access it.
 	              fileURL = GitRevisionURLHandler.encodeURL(
 	                  VersionIdentifier.INDEX_OR_LAST_COMMIT,
-	                  file.getFileLocation());
+	                  fileLocation);
 	            } else {
 	              // We must open a local copy.
-	              fileURL = FileHelper.getFileURL(file.getFileLocation());  
+	              fileURL = FileHelper.getFileURL(fileLocation);  
 	            }
-	            PluginWorkspaceProvider.getPluginWorkspace().open(fileURL);
+              
+              boolean isProjectExt = false;
+              int index = fileLocation.lastIndexOf('.');
+              if (index != -1) {
+                String ext = fileLocation.substring(index + 1);
+                isProjectExt = "xpr".equals(ext);
+              }
+	            PluginWorkspaceProvider.getPluginWorkspace().open(
+	                fileURL,
+	                isProjectExt ? EditorPageConstants.PAGE_TEXT : null,
+	                isProjectExt ? "text/xml" : null);
 	          } catch (Exception ex) {
 	            logger.error(ex, ex);
 	          }
