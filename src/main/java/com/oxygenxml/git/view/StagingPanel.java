@@ -31,6 +31,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.GitCommand;
@@ -117,6 +118,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * Manages Push/Pull actions.
 	 */
   private PushPullController pushPullController;
+  
+  /**
+   * Plugin workspace access.
+   */
+  private StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
 
   /**
    * Constructor.
@@ -135,51 +141,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		createGUI(historyController);
 	}
 
-  /**
-   * @return the working copy selection panel.
-   */
-	public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
-		return workingCopySelectionPanel;
-	}
-
-	/**
-	 * @return the unstaged resources panel.
-	 */
-	public ChangesPanel getUnstagedChangesPanel() {
-		return unstagedChangesPanel;
-	}
-
-	/**
-	 * @return The staged resources panel.
-	 */
-	public ChangesPanel getStagedChangesPanel() {
-		return stagedChangesPanel;
-	}
-
-	/**
-	 * @return The commit panel.
-	 */
-	public CommitAndStatusPanel getCommitPanel() {
-		return commitPanel;
-	}
-
-	/**
-	 * @return  The tool bar panel used for the push and pull
-	 */
-	public ToolbarPanel getToolbarPanel() {
-		return toolbarPanel;
-	}
-	
-	void setToolbarPanelFromTests(ToolbarPanel toolbarPanel) {
-    this.toolbarPanel = toolbarPanel;
-  }
-
 	/**
 	 * Create the GUI.
 	 * 
 	 * @param historyController History related interaction.
 	 */
-	public void createGUI(HistoryController historyController) {
+	private void createGUI(HistoryController historyController) {
 		this.setLayout(new GridBagLayout());
 
 		pushPullController = createPushPullController();
@@ -218,73 +185,35 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		addRefreshF5();
 		
-		// Listens on the save event in the Oxygen editor and updates the unstaging
-		// area
-		((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-				.addEditorChangeListener(new WSEditorChangeListener() {
-					@Override
-					public void editorOpened(final URL editorLocation) {
-						addEditorSaveHook(editorLocation);
-					}
-
-					/**
-					 * Adds a hook to refresh the models if the editor is part of the Git working copy.
-					 * 
-					 * @param gitAccess Git access.
-					 * @param editorLocation Editor to check.
-					 */
-          private void addEditorSaveHook(final URL editorLocation) {
-            WSEditor editorAccess = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-								.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
-            if (editorAccess != null) {
-              editorAccess.addEditorListener(new WSEditorListener() {
-                @Override
-                public void editorSaved(int operationType) {
-                  File locateFile = null;
-                  if ("file".equals(editorLocation.getProtocol())) {
-                    locateFile = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorLocation);
-                    if (locateFile != null) {
-                      String fileInWorkPath = locateFile.toString();
-                      fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
-
-                      try {
-                        String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-                        selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
-
-                        if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-                          if (logger.isDebugEnabled()) {
-                            logger.debug("Notify " + fileInWorkPath);
-                            logger.debug("WC " + selectedRepositoryPath);
-                          }
-
-                          Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
-                          GitEvent changeEvent = new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, affectedFiles);
-                          unstagedChangesPanel.stateChanged(changeEvent);
-                        }
-                      } catch (NoRepositorySelected e) {
-                        logger.debug(e, e);
-                      }
-                    }
-                  }
-                }
-              });
-            }
-          }
-				}, PluginWorkspace.MAIN_EDITING_AREA);
+		// Listens on the save event in the Oxygen editor and updates the unstaged resources area
+		pluginWS.addEditorChangeListener(
+		    new WSEditorChangeListener() {
+		      @Override
+		      public void editorOpened(final URL editorLocation) {
+		        addEditorSaveHook(editorLocation);
+		      }
+		    },
+		    PluginWorkspace.MAIN_EDITING_AREA);
 
 		// Detect focus transitions between the view and the outside.
-		installFocusListener(this, new FocusAdapter() {
+		installFocusListener(this, createFocusListener());
+	}
+
+	/**
+	 * @return The focus listener.
+	 */
+  private FocusAdapter createFocusListener() {
+    return new FocusAdapter() {
 			boolean inTheView = false;
 
 			@Override
 			public void focusGained(final FocusEvent e) {
 				focusGained = true;
-				// The focus is somewhere in he view.
+				// The focus is somewhere in the view.
 				if (!inTheView) {
 				  // EXM-40880: Invoke later so that the focus event gets processed.
 				  SwingUtilities.invokeLater(() -> refreshSupport.call());
 				}
-
 				inTheView = true;
 			}
 
@@ -307,8 +236,60 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 					inTheView = true;
 				}
 			}
-		});
-	}
+		};
+  }
+	
+  /**
+   * Adds a hook to refresh the models if the editor is part of the Git working copy.
+   * 
+   * @param gitAccess Git access.
+   * @param editorLocation Editor to check.
+   */
+  private void addEditorSaveHook(final URL editorLocation) {
+    WSEditor editorAccess = pluginWS.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
+    if (editorAccess != null) {
+      editorAccess.addEditorListener(new WSEditorListener() {
+        @Override
+        public void editorSaved(int operationType) {
+          GitOperationScheduler.getInstance().schedule(() -> treatEditorSavedEvent(editorLocation));
+        }
+      });
+    }
+  }
+	
+  /**
+   * Treat editor saved event.
+   * 
+   * @param editorLocation Editor URL.
+   */
+  private void treatEditorSavedEvent(final URL editorLocation) {
+    File locateFile = null;
+    if ("file".equals(editorLocation.getProtocol())) {
+      locateFile = pluginWS.getUtilAccess().locateFile(editorLocation);
+      if (locateFile != null) {
+        String fileInWorkPath = locateFile.toString();
+        fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
+
+        try {
+          String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+          selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+
+          if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+            if (logger.isDebugEnabled()) {
+              logger.debug("Notify " + fileInWorkPath);
+              logger.debug("WC " + selectedRepositoryPath);
+            }
+
+            Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
+            GitEvent changeEvent = new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, affectedFiles);
+            unstagedChangesPanel.stateChanged(changeEvent);
+          }
+        } catch (NoRepositorySelected e) {
+          logger.debug(e, e);
+        }
+      }
+    }
+  }
 
 	/**
 	 * Add rebase panel.
@@ -424,6 +405,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.add(workingCopySelectionPanel, gbc);
 	}
 
+	/**
+	 * State changed. React.
+	 */
 	@Override
   public void stateChanged(PushPullEvent pushPullEvent) {
 	  SwingUtilities.invokeLater(
@@ -511,6 +495,39 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
    */
   public void updateRebasePanelVisibilityBasedOnRepoState() {
     rebasePanel.updateVisibilityBasedOnRepoState();
+  }
+  
+
+  /**
+   * @return the unstaged resources panel.
+   */
+  public ChangesPanel getUnstagedChangesPanel() {
+    return unstagedChangesPanel;
+  }
+
+  /**
+   * @return The staged resources panel.
+   */
+  public ChangesPanel getStagedChangesPanel() {
+    return stagedChangesPanel;
+  }
+
+  /**
+   * @return The commit panel.
+   */
+  public CommitAndStatusPanel getCommitPanel() {
+    return commitPanel;
+  }
+
+  /**
+   * @return  The tool bar panel used for the push and pull
+   */
+  public ToolbarPanel getToolbarPanel() {
+    return toolbarPanel;
+  }
+  
+  void setToolbarPanelFromTests(ToolbarPanel toolbarPanel) {
+    this.toolbarPanel = toolbarPanel;
   }
   
   /**
