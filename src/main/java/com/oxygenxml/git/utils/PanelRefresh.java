@@ -24,11 +24,13 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
+import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.ChangesPanel;
 import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.dialog.PassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -267,8 +269,16 @@ public class PanelRefresh implements GitRefreshSupport {
       GitAccess.getInstance().fetch();
     } catch (RepositoryUnavailableException e) {
       status = RepositoryStatus.UNAVAILABLE;
+    } catch (SSHPassphraseRequiredException e) {
+      status = RepositoryStatus.UNAVAILABLE;
+      
+      String message = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
+      String passphrase = new PassphraseDialog(message).getPassphrase();
+      if(passphrase != null){
+        call();
+      }
     } catch (Exception e) {
-      // Ignore other causes why the fetch might fail.
+      logger.error(e);
     }
 
     final RepositoryStatus fStatus = status;
