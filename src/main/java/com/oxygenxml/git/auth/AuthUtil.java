@@ -1,6 +1,8 @@
 package com.oxygenxml.git.auth;
 
 import org.apache.log4j.Logger;
+import org.apache.sshd.common.SshConstants;
+import org.apache.sshd.common.SshException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 
@@ -58,6 +60,11 @@ public class AuthUtil {
       logger.debug(ex, ex);
     }
     
+    Throwable cause = ex;
+    while (cause.getCause() != null) {
+      cause = cause.getCause();
+    }
+    
     boolean tryAgainOutside = false;
     String lowercaseMsg = ex.getMessage().toLowerCase();
     if (lowercaseMsg.contains("not authorized") || lowercaseMsg.contains("authentication not supported")) {
@@ -96,7 +103,9 @@ public class AuthUtil {
         || lowercaseMsg.contains("no value for key remote.origin.url found in configuration")) {
       // No remote linked with the local.
       tryAgainOutside  = new AddRemoteDialog().linkRemote();
-    } else if (lowercaseMsg.contains("auth fail")) {
+    } else if (lowercaseMsg.contains("auth fail")
+        || (cause instanceof SshException)
+            && ((SshException) cause).getDisconnectCode() == SshConstants.SSH2_DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE) {
       // This message is thrown for SSH.
       String passPhraseMessage = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       String passphrase = new PassphraseDialog(passPhraseMessage).getPassphrase();

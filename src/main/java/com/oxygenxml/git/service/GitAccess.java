@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+import org.apache.sshd.common.SshConstants;
+import org.apache.sshd.common.SshException;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutCommand.Stage;
@@ -1690,9 +1692,8 @@ public class GitAccess {
 	 */
 	public void fetch()
 			throws SSHPassphraseRequiredException, PrivateRepositoryException, RepositoryUnavailableException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Begin fetch");
-		}
+	  logger.debug("Begin fetch");
+	  
 		AuthenticationInterceptor.install();
 		
 		UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
@@ -1709,16 +1710,19 @@ public class GitAccess {
 						.setCredentialsProvider(credentialsProvider).call();
 			}
 		} catch (TransportException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		  logger.debug(e, e);
+			
+			Throwable cause = e;
+	    while (cause.getCause() != null) {
+	      cause = cause.getCause();
+	    }
 
 			if (e.getMessage().contains("Authentication is required but no CredentialsProvider has been registered")
 					|| e.getMessage().contains("not authorized")) {
 				throw new PrivateRepositoryException(e);
-			} else if (e.getMessage().contains("Auth fail")
-			    // A SSH pass phase was requested.
-			    && credentialsProvider.isPassphaseRequested()) {
+			} else if (e.getMessage().contains("Auth fail") && credentialsProvider.isPassphaseRequested()
+			    || (cause instanceof SshException)
+              && ((SshException) cause).getDisconnectCode() == SshConstants.SSH2_DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE) {
 			  throw new SSHPassphraseRequiredException(e);
 			} else {
 			  throw new RepositoryUnavailableException(e);
@@ -1726,9 +1730,7 @@ public class GitAccess {
 		} catch (GitAPIException | RevisionSyntaxException e) {
 		  logger.error(e, e);
     } 
-		if (logger.isDebugEnabled()) {
-			logger.debug(END_FETCH_DEBUG_MESSAGE);
-		}
+		logger.debug(END_FETCH_DEBUG_MESSAGE);
 	}
 
 	/**
