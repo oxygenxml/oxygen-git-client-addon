@@ -943,7 +943,7 @@ public class GitAccess {
         return response;
       }
     } catch (RepoNotInitializedException e) {
-      logger.error(e, e);
+      logger.debug(e, e);
     }
 	  
 	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
