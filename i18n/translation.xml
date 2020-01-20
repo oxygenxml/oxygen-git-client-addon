@@ -4,6 +4,15 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Commit_to_merge">
+        <comment>The text is displayed you fix all conflicts and you need to commit.
+            It appears as the commit message.</comment>
+        <val lang="en_US">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
+        <val lang="de_DE">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
+        <val lang="fr_FR">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
+        <val lang="ja_JP">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
+        <val lang="nl_NL">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
+    </key>
     <key value="Nothing_to_commit">
         <comment>Information message when there is nothing to commit.</comment>
         <val lang="en_US">There are no changes to commit.</val>
@@ -1198,8 +1207,8 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     <key value="Conclude_Merge_Message">
-        <comment>The text is displayed when you fix all conflicts and there is nothing to commit</comment>
-        <val lang="en_US">All conflicts were fixed, but you are still merging. Commit to conclude the merge.</val>
+        <comment>The text is displayed when you fix all conflicts and you try to pull without committing the merge.</comment>
+        <val lang="en_US">All conflicts were resolved, but you are still merging. Commit to conclude the merge.</val>
         <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte committen Sie um den Merge abzuschließen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>

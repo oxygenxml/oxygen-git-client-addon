@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
+import com.ibm.icu.text.MessageFormat;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -347,9 +348,14 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       enable = true;
     } else {
       try {
-        final RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
+        Repository repo = gitAccess.getRepository();
+        final RepositoryState repositoryState = repo.getRepositoryState();
+        final String mergeMessage = MessageFormat.format(
+            translator.getTranslation(Tags.COMMIT_TO_MERGE),
+            gitAccess.getBranchInfo().getBranchName(),
+            repo.getConfig().getString("remote", "origin", "url"));
         if (repositoryState == RepositoryState.MERGING_RESOLVED
-            && translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE).equals(commitMessageArea.getText())) {
+            && mergeMessage.equals(commitMessageArea.getText())) {
           commitMessageArea.setText("");
         } else {
           // Possible time consuming operations.
@@ -363,7 +369,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
                   && status.getStagedFiles().isEmpty()
                   && status.getUnstagedFiles().isEmpty()) {
                 enable = true;
-                message = translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE);
+                message = mergeMessage;
               } else if (!status.getStagedFiles().isEmpty()) {
                 enable = true;
               }

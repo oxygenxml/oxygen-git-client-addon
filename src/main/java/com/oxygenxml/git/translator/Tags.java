@@ -568,9 +568,15 @@ public class Tags {
 	public static final String DETACHED_HEAD_MESSAGE = "Detached_Head_Message";
 
 	/**
-	 * The text is displayed you fix all conflicts and there is nothing to commit
+	 * The text is displayed you fix all conflicts and you try to pull without commiting the merge.
 	 */
 	public static final String CONCLUDE_MERGE_MESSAGE = "Conclude_Merge_Message";
+	
+	 /**
+   * The text is displayed you fix all conflicts and you need to commit.
+   * It appears as the commit message.
+   */
+  public static final String COMMIT_TO_MERGE = "Commit_to_merge";
 
 	/**
 	 * The text is displayed when you pull but it fails because there are uncommitted changes.

@@ -441,7 +441,7 @@ public class TreeViewTest extends FlatViewTestBase {
     CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
     flushAWT();
     sleep(1000);
-    assertEquals("Conclude_Merge_Message", commitPanel.getCommitMessageArea().getText());
+    assertEquals("Commit_to_merge", commitPanel.getCommitMessageArea().getText());
     
     commitPanel.getCommitButton().doClick();
     flushAWT();
