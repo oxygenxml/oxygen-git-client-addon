@@ -328,7 +328,7 @@ public class Tags {
 	/**
 	 * The the message displayed when branch selection fails
 	 */
-	public static final String CHANGE_BRANCH_ERROR_MESSAGE = "Change_Branch_Error_Message";
+	public static final String COMMIT_CHANGES_BEFORE_CHANGING_BRANCH = "Change_Branch_Error_Message";
 
 	/**
 	 * The text displayed in the title for the dialog that appears when you pull

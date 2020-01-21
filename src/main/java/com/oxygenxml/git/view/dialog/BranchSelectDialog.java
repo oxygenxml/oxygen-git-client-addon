@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.dialog;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,6 +11,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
@@ -22,6 +24,7 @@ import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -82,6 +85,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.pack();
 		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		this.setModal(true);
 		this.setVisible(true);
 	}
 
@@ -166,22 +170,36 @@ public class BranchSelectDialog extends OKCancelDialog {
 	 */
 	@Override
 	protected void doOK() {
-		String selectedBranch = (String) branchesCombo.getSelectedItem();
-		try {
-			GitAccess.getInstance().setBranch(selectedBranch);
-		} catch (CheckoutConflictException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-			informationLabel.setText(translator.getTranslation(Tags.CHANGE_BRANCH_ERROR_MESSAGE));
-			return;
-		} catch (GitAPIException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
-		}
-		gitRefreshSupport.call();
-		dispose();
+	  GitOperationScheduler.getInstance().schedule(() -> {
+	    boolean refreshResources = true;
+	    try {
+	      SwingUtilities.invokeLater(() -> {
+	          BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	          getOkButton().setEnabled(false);
+	          getCancelButton().setEnabled(false);
+	          branchesCombo.setEnabled(false);
+	      });
+	      GitAccess.getInstance().setBranch((String) branchesCombo.getSelectedItem());
+	    } catch (CheckoutConflictException e) {
+	      if (logger.isDebugEnabled()) {
+	        logger.debug(e, e);
+	      }
+	      SwingUtilities.invokeLater(
+	          () -> informationLabel.setText(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH)));
+	      refreshResources = false;
+	    } catch (GitAPIException e) {
+	      logger.error(e, e);
+	    } finally {
+	      SwingUtilities.invokeLater(() -> BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getDefaultCursor()));
+	    }
+
+	    if (refreshResources) {
+	      gitRefreshSupport.call();
+	    }
+	    
+	    SwingUtilities.invokeLater(BranchSelectDialog.super::dispose);
+	    
+	  });
 	}
 
 }
