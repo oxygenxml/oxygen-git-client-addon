@@ -1,10 +1,12 @@
 package com.oxygenxml.git.view.dialog;
 
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,7 @@ import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -49,11 +52,6 @@ public class BranchSelectDialog extends OKCancelDialog {
 	private JComboBox<String> branchesCombo;
 
 	/**
-	 * An information label is displayed when some errors occur.
-	 */
-	private JLabel informationLabel;
-
-	/**
 	 * Git refresh support.
 	 */
 	private GitRefreshSupport gitRefreshSupport;
@@ -62,6 +60,11 @@ public class BranchSelectDialog extends OKCancelDialog {
 	 * The translator for i18n.
 	 */
 	private static Translator translator = Translator.getInstance();
+	
+	/**
+	 * Plugin workspace access.
+	 */
+	private static StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
 
 	/**
 	 * Constructor.
@@ -70,43 +73,24 @@ public class BranchSelectDialog extends OKCancelDialog {
 	 * @param title        The dialog's title.
 	 */
 	public BranchSelectDialog(GitRefreshSupport refresh) {
-		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		    translator.getTranslation(Tags.BRANCH_SELECTION_DIALOG_TITLE), true);
+		super(
+		    (JFrame) pluginWS.getParentFrame(),
+		    translator.getTranslation(Tags.BRANCH_SELECTION_DIALOG_TITLE),
+		    true);
 		this.gitRefreshSupport = refresh;
 
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
-		addLabel(gbc);
+		addSelectBranchLabel(gbc);
 		addBranchSelectCombo(gbc);
-		addInformationLabel(gbc);
 
 		this.setMinimumSize(new Dimension(320, 140));
 		this.setResizable(true);
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.pack();
-		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		this.setLocationRelativeTo((Component) pluginWS.getParentFrame());
 		this.setModal(true);
 		this.setVisible(true);
-	}
-
-	/**
-	 * Adds the information label to the dialog
-	 * 
-	 * @param gbc
-	 *          - the constraints used for this component
-	 */
-	private void addInformationLabel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridwidth = 2;
-		informationLabel = new JLabel();
-		getContentPane().add(informationLabel, gbc);
 	}
 
 	/**
@@ -152,7 +136,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 	 * @param gbc
 	 *          - the constraints used for this component
 	 */
-	private void addLabel(GridBagConstraints gbc) {
+	private void addSelectBranchLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -170,36 +154,43 @@ public class BranchSelectDialog extends OKCancelDialog {
 	 */
 	@Override
 	protected void doOK() {
+	  BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    getOkButton().setEnabled(false);
+    getCancelButton().setEnabled(false);
+    branchesCombo.setEnabled(false);
+    
 	  GitOperationScheduler.getInstance().schedule(() -> {
-	    boolean refreshResources = true;
 	    try {
-	      SwingUtilities.invokeLater(() -> {
-	          BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	          getOkButton().setEnabled(false);
-	          getCancelButton().setEnabled(false);
-	          branchesCombo.setEnabled(false);
-	      });
 	      GitAccess.getInstance().setBranch((String) branchesCombo.getSelectedItem());
-	    } catch (CheckoutConflictException e) {
-	      if (logger.isDebugEnabled()) {
-	        logger.debug(e, e);
-	      }
-	      SwingUtilities.invokeLater(
-	          () -> informationLabel.setText(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH)));
-	      refreshResources = false;
-	    } catch (GitAPIException e) {
-	      logger.error(e, e);
-	    } finally {
-	      SwingUtilities.invokeLater(() -> BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getDefaultCursor()));
-	    }
-
-	    if (refreshResources) {
 	      gitRefreshSupport.call();
+	    } catch (CheckoutConflictException e) {
+	      logger.debug(e, e);
+	      showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
+	    } catch (GitAPIException e) {
+	      logger.debug(e, e);
+	      showErrorMessage(e.getMessage());
+	    } finally {
+	      SwingUtilities.invokeLater(() -> {
+	        BranchSelectDialog.this.dispose();
+	        BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getDefaultCursor());
+	      });
 	    }
-	    
-	    SwingUtilities.invokeLater(BranchSelectDialog.super::dispose);
-	    
 	  });
 	}
+
+	/**
+	 * Show error message.
+	 * 
+	 * @param message The error message.
+	 */
+  private void showErrorMessage(String message) {
+    try {
+      SwingUtilities.invokeAndWait(() -> pluginWS.showErrorMessage(message));
+    } catch (InvocationTargetException e1) {
+      logger.debug(e1, e1);
+    } catch (InterruptedException e1) {
+      logger.debug(e1, e1);
+    }
+  }
 
 }
