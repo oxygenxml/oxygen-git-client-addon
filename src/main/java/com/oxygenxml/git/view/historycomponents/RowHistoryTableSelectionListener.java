@@ -133,7 +133,8 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
     		    .append(commitCharacteristics.getDate()).append("<br>") 
     		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ")
     		    .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitter())).append("<br><br>")
-    		    .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitMessage())).append("</html>");
+    		    .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitMessage()).replace("\n", "<br>"))
+    		    .append("</html>");
 		  }
 		  commitDescriptionPane.setText(commitDescription.toString());
 		  commitDescriptionPane.setCaretPosition(0);

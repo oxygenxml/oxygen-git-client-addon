@@ -89,7 +89,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 		String toRender = "";
 		if (value instanceof CommitCharacteristics) {
 			CommitCharacteristics commitCharacteristics = (CommitCharacteristics) value;
-			toRender = commitCharacteristics.getCommitMessage();
+			toRender = commitCharacteristics.getCommitMessage().replaceAll("\\n+", " ").trim();
 
 			// bold the text for uncommitted changes
 			if (toRender.equals(GitAccess.UNCOMMITTED_CHANGES)) {
