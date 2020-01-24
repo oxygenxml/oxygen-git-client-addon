@@ -155,6 +155,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 	@Override
 	protected void doOK() {
 	  BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	  // Disable the widgets to avoid another input from the user.
     getOkButton().setEnabled(false);
     getCancelButton().setEnabled(false);
     branchesCombo.setEnabled(false);
@@ -170,10 +171,8 @@ public class BranchSelectDialog extends OKCancelDialog {
 	      logger.debug(e, e);
 	      showErrorMessage(e.getMessage());
 	    } finally {
-	      SwingUtilities.invokeLater(() -> {
-	        BranchSelectDialog.this.dispose();
-	        BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getDefaultCursor());
-	      });
+	      // Finish the initial doOK action and let the dialog close.
+	      SwingUtilities.invokeLater(BranchSelectDialog.super::doOK);
 	    }
 	  });
 	}
