@@ -473,6 +473,11 @@ public class Tags {
 	 * view
 	 */
 	public static final String COMMIT= "Commit";
+	
+	/**
+	 * Committing.
+	 */
+	public static final String COMMITTING= "Committing";
 
 	/**
 	 * The text displayed when you push but don't have rights for that repository

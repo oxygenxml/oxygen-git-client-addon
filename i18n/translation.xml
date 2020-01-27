@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Committing">
+        <comment>Committing</comment>
+        <val lang="en_US">Committing</val>
+        <val lang="de_DE">Committing</val>
+        <val lang="fr_FR">Committing</val>
+        <val lang="ja_JP">Committing</val>
+        <val lang="nl_NL">Committing</val>
+    </key>
     <key value="Commit_to_merge">
         <comment>The text is displayed you fix all conflicts and you need to commit.
             It appears as the commit message.</comment>

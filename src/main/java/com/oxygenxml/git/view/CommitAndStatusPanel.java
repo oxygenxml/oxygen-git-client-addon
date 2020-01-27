@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -24,6 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolTip;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
@@ -56,6 +58,10 @@ import com.oxygenxml.git.view.event.Subject;
  * Panel to insert the commit message and commit the staged files. 
  */
 public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEvent> {
+  /**
+   * Options manager.
+   */
+  private static final OptionsManager optionsManager = OptionsManager.getInstance();
   /**
    * Logger for logging.
    */
@@ -138,6 +144,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
     });
   }
 
+	/**
+	 * Create GUI.
+	 */
 	private void createGUI() {
 		this.setLayout(new GridBagLayout());
 
@@ -154,46 +163,82 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_MIN_HEIGHT));
 	}
 
+	/**
+	 * Add action listener for the commit button.
+	 */
 	private void addCommitButtonListener() {
-		commitButton.addActionListener(
-		    new ActionListener() { // NOSONAR
+	  commitButton.addActionListener(new ActionListener() {
+	    
+	    String statusMsg;
+	    
+	    private Timer cursorTimer = new Timer(
+          1000,
+          e -> SwingUtilities.invokeLater(() -> {
+            setStatusMessage(translator.getTranslation(Tags.COMMITTING) + "...");
+            CommitAndStatusPanel.this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+          }));
+	    
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+	      GitOperationScheduler.getInstance().schedule(() -> {
+	        try {
+	          cursorTimer.stop();
+	          cursorTimer.start();
+	         
+	          statusMsg = "";
+	          RepositoryState repoState = getRepoState();
+	          if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
+	              // which actually calls git.status(), operation that is slow
+	              repoState == RepositoryState.MERGING 
+	              || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
+	            statusMsg = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
+	          } else {
+	            SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
+	            gitAccess.commit(commitMessageArea.getText());
+	            statusMsg = translator.getTranslation(Tags.COMMIT_SUCCESS);
+	            optionsManager.saveCommitMessage(commitMessageArea.getText());
 
-			@Override
-      public void actionPerformed(ActionEvent e) {
-				String message = "";
-				RepositoryState repoState = null;
-				try {
-          repoState = gitAccess.getRepository().getRepositoryState();
-        } catch (NoRepositorySelected e1) {
-          logger.debug(e1, e1);
-        }
-				if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files, which actually calls git.status(),
-				    // operation that is slow
-             repoState == RepositoryState.MERGING 
-                 || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
-					message = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
-				} else {
-					message = translator.getTranslation(Tags.COMMIT_SUCCESS);
-					gitAccess.commit(commitMessageArea.getText());
-					OptionsManager.getInstance().saveCommitMessage(commitMessageArea.getText());
-					
-					previousMessages.removeAllItems();
-					previousMessages.addItem(getCommitHistoryHint());
-					for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
-						previousMessages.addItem(previouslyCommitMessage);
-					}
-					
-					previousMessages.setSelectedItem(getCommitHistoryHint());
+	            previousMessages.removeAllItems();
+	            previousMessages.addItem(getCommitHistoryHint());
+	            for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
+	              previousMessages.addItem(previouslyCommitMessage);
+	            }
+	            SwingUtilities.invokeLater(() -> previousMessages.setSelectedItem(getCommitHistoryHint()));
+	          }
+	        } finally {
+	          cursorTimer.stop();
+	          
+	          PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
+	          notifyObservers(pushPullEvent);
 
-					commitButton.setEnabled(false);
-				}
-				commitMessageArea.setText("");
-				PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, message);
-				notifyObservers(pushPullEvent);
-			}
-		});
+	          SwingUtilities.invokeLater(() -> {
+	            commitMessageArea.setText("");
+	            setStatusMessage(statusMsg);
+	            CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor());
+	          });
+	        }
+
+	      });
+	    }
+	  });
 	}
+	
+	/**
+	 * @return repo state.
+	 */
+  private RepositoryState getRepoState() {
+    RepositoryState repoState = null;
+    try {
+      repoState = gitAccess.getRepository().getRepositoryState();
+    } catch (NoRepositorySelected e1) {
+      logger.debug(e1, e1);
+    }
+    return repoState;
+  }
 
+  /**
+   * Add "Commit" label. 
+   */
 	private void addLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				0, UIConstants.COMPONENT_RIGHT_PADDING);
@@ -207,6 +252,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		this.add(new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)), gbc);
 	}
 
+	/**
+	 * Add previous commit messages combo. 
+	 */
 	private void addPreviouslyMessagesComboBox(GridBagConstraints gbc) {
 	  gbc.insets = new Insets(
 	      UIConstants.COMPONENT_TOP_PADDING, 
@@ -226,7 +274,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 
 		// Add the hint first.
 		previousMessages.addItem(getCommitHistoryHint());
-		for (String previouslyCommitMessage : OptionsManager.getInstance().getPreviouslyCommitedMessages()) {
+		for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
 			previousMessages.addItem(previouslyCommitMessage);
 		}
 		
@@ -256,6 +304,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
     return "<" + translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE) + ">";
   }
 
+  /**
+   * Add commit message text area.
+   */
 	private void addCommitMessageTextArea(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
@@ -279,6 +330,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		this.add(scrollPane, gbc);
 	}
 
+	/**
+	 * Add status label.
+	 */
 	private void addStatusLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
@@ -323,6 +377,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	  }
 	}
 
+	/**
+	 * Add commit button.
+	 */
 	private void addCommitButton(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
@@ -450,7 +507,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	/**
 	 * Renderer for the combo box presenting the previous commit messages. 
 	 */
-	@SuppressWarnings("squid:MaximumInheritanceDepth")
 	private static final class PreviousMessagesToolTipRenderer extends DefaultListCellRenderer {
 
 	  /**
@@ -485,12 +541,15 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
   }
 
   /**
-   * @return the statusLabel
+   * @return the status label
    */
   public JLabel getStatusLabel() {
     return statusLabel;
   }
   
+  /**
+   * @return the commit button.
+   */
   public JButton getCommitButton() {
     return commitButton;
   }

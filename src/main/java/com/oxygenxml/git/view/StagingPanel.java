@@ -439,7 +439,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           
           toolbarPanel.updateStatus();
         } else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
-          commitPanel.setStatusMessage(pushPullEvent.getMessage());
           toolbarPanel.updateStatus();
         } else if (pushPullEvent.getActionStatus() == ActionStatus.PULL_REBASE_CONFLICT_GENERATED) {
           rebasePanel.setVisible(true);
