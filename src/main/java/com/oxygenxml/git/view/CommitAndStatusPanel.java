@@ -9,21 +9,25 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolTip;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -58,6 +62,83 @@ import com.oxygenxml.git.view.event.Subject;
  * Panel to insert the commit message and commit the staged files. 
  */
 public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEvent> {
+  
+  /**
+   * Commit action.
+   */
+  private final class CommitAction extends AbstractAction {
+    /**
+     * Status message.
+     */
+    private String statusMsg;
+    
+    /**
+     * Timer for updating cursor and status.
+     */
+    private Timer cursorTimer = new Timer(
+        1000,
+        e -> SwingUtilities.invokeLater(() -> {
+          setStatusMessage(translator.getTranslation(Tags.COMMITTING) + "...");
+          CommitAndStatusPanel.this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        }));
+    
+    /**
+     * Constructor.
+     */
+    public CommitAction() {
+      super(translator.getTranslation(Tags.COMMIT_BUTTON_TEXT));
+    }
+
+    /**
+     * Action performed.
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      GitOperationScheduler.getInstance().schedule(() -> {
+        try {
+          cursorTimer.stop();
+          cursorTimer.start();
+         
+          statusMsg = "";
+          RepositoryState repoState = getRepoState();
+          if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
+              // which actually calls git.status(), operation that is slow
+              repoState == RepositoryState.MERGING 
+              || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
+            statusMsg = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
+          } else {
+            SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
+            gitAccess.commit(commitMessageArea.getText());
+            statusMsg = translator.getTranslation(Tags.COMMIT_SUCCESS);
+            optionsManager.saveCommitMessage(commitMessageArea.getText());
+
+            previousMessages.removeAllItems();
+            previousMessages.addItem(getCommitHistoryHint());
+            for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
+              previousMessages.addItem(previouslyCommitMessage);
+            }
+            SwingUtilities.invokeLater(() -> previousMessages.setSelectedItem(getCommitHistoryHint()));
+          }
+        } finally {
+          cursorTimer.stop();
+          
+          PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
+          notifyObservers(pushPullEvent);
+
+          SwingUtilities.invokeLater(() -> {
+            commitMessageArea.setText("");
+            setStatusMessage(statusMsg);
+            CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor());
+          });
+        }
+      });
+    }
+  }
+  
+  /**
+   * Commit shortcut key.
+   */
+  private static final String COMMIT_SHORTCUT = "commitShortcut";
   /**
    * Options manager.
    */
@@ -98,6 +179,10 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 * Task for updating the state of the commit button and the message area.
 	 */
 	private SwingWorker<Void, Void> commitButtonAndMessageUpdateTask;
+	/**
+	 * Commit action.
+	 */
+	private CommitAction commitAction = new CommitAction();
 	
 	/**
 	 * Timer for the task that updates the state of the commit button and message area.
@@ -158,69 +243,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		addStatusLabel(gbc);
 		addCommitButton(gbc);
 
-		addCommitButtonListener();
 		this.setPreferredSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_MIN_HEIGHT));
-	}
-
-	/**
-	 * Add action listener for the commit button.
-	 */
-	private void addCommitButtonListener() {
-	  commitButton.addActionListener(new ActionListener() {
-	    
-	    String statusMsg;
-	    
-	    private Timer cursorTimer = new Timer(
-          1000,
-          e -> SwingUtilities.invokeLater(() -> {
-            setStatusMessage(translator.getTranslation(Tags.COMMITTING) + "...");
-            CommitAndStatusPanel.this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-          }));
-	    
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-	      GitOperationScheduler.getInstance().schedule(() -> {
-	        try {
-	          cursorTimer.stop();
-	          cursorTimer.start();
-	         
-	          statusMsg = "";
-	          RepositoryState repoState = getRepoState();
-	          if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
-	              // which actually calls git.status(), operation that is slow
-	              repoState == RepositoryState.MERGING 
-	              || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
-	            statusMsg = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
-	          } else {
-	            SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
-	            gitAccess.commit(commitMessageArea.getText());
-	            statusMsg = translator.getTranslation(Tags.COMMIT_SUCCESS);
-	            optionsManager.saveCommitMessage(commitMessageArea.getText());
-
-	            previousMessages.removeAllItems();
-	            previousMessages.addItem(getCommitHistoryHint());
-	            for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
-	              previousMessages.addItem(previouslyCommitMessage);
-	            }
-	            SwingUtilities.invokeLater(() -> previousMessages.setSelectedItem(getCommitHistoryHint()));
-	          }
-	        } finally {
-	          cursorTimer.stop();
-	          
-	          PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
-	          notifyObservers(pushPullEvent);
-
-	          SwingUtilities.invokeLater(() -> {
-	            commitMessageArea.setText("");
-	            setStatusMessage(statusMsg);
-	            CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor());
-	          });
-	        }
-
-	      });
-	    }
-	  });
 	}
 	
 	/**
@@ -327,6 +351,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		scrollPane.setMinimumSize(new Dimension(10, 3 * fontH));
 
 		UndoSupportInstaller.installUndoManager(commitMessageArea);
+		
+		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK);
+		commitMessageArea.getInputMap(JComponent.WHEN_FOCUSED).put(keyStroke, COMMIT_SHORTCUT);
+		commitMessageArea.getActionMap().put(COMMIT_SHORTCUT, commitAction);
+		
 		this.add(scrollPane, gbc);
 	}
 
@@ -390,7 +419,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		commitButton = new JButton(translator.getTranslation(Tags.COMMIT_BUTTON_TEXT));
+		commitButton = new JButton(commitAction);
 		this.add(commitButton, gbc);
 	}
 
