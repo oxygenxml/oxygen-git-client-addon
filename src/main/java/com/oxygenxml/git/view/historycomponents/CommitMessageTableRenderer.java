@@ -94,7 +94,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 			// bold the text for uncommitted changes
 			if (toRender.equals(GitAccess.UNCOMMITTED_CHANGES)) {
 				toRender = "<html><body><b>" + GitAccess.UNCOMMITTED_CHANGES + "</b></body></html>";
-			} else {
+			} else if (repository != null) {
 				// add labels in historyTable for tags and branch names from corresponding maps
 				try {
 				  GitAccess gitAccess = GitAccess.getInstance();

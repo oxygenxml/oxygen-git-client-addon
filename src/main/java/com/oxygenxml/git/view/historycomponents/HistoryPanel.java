@@ -376,27 +376,30 @@ public class HistoryPanel extends JPanel {
         dataModel.setFilesStatus(Collections.emptyList());
         commitDescriptionPane.setText("");
 
-        List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
-        historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
-        updateHistoryTableWidths();
+        final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
         
-        historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(gitAccess.getRepository()));
-        historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
-        TableColumn authorColumn = historyTable.getColumn(Translator.getInstance().getTranslation(Tags.AUTHOR));
-        authorColumn.setCellRenderer(
-            new DefaultTableCellRenderer() { // NOSONAR
-          @Override
-          public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-              boolean hasFocus, int row, int column) {
-            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            String text = label.getText();
-            int indexOfLT = text.indexOf(" <");
-            if (indexOfLT != -1) {
-              text = text.substring(0, indexOfLT);
+        SwingUtilities.invokeLater(() -> {
+          historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
+          updateHistoryTableWidths();
+          
+          historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(getRepository()));
+          historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
+          TableColumn authorColumn = historyTable.getColumn(Translator.getInstance().getTranslation(Tags.AUTHOR));
+          authorColumn.setCellRenderer(
+              new DefaultTableCellRenderer() { // NOSONAR
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
+              JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+              String text = label.getText();
+              int indexOfLT = text.indexOf(" <");
+              if (indexOfLT != -1) {
+                text = text.substring(0, indexOfLT);
+              }
+              label.setText(text);
+              return label;
             }
-            label.setText(text);
-            return label;
-          }
+          });
         });
         
         selectionListener = new RowHistoryTableSelectionListener(
@@ -424,10 +427,24 @@ public class HistoryPanel extends JPanel {
         }
 
       } catch (NoRepositorySelected | SSHPassphraseRequiredException | PrivateRepositoryException | RepositoryUnavailableException | IOException e) {
+        // TODO: a sarit un illegal argument exception si nu s-a vazut niciunde, pt ca eram pe un runnable
         LOGGER.debug(e, e);
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to present history because of: " + e.getMessage());
       }
     }
+  }
+
+  /**
+   * @return The repository or <code>null</code>.
+   */
+  private Repository getRepository() {
+    Repository repository = null;
+    try {
+      repository = GitAccess.getInstance().getRepository();
+    } catch (NoRepositorySelected e) {
+      LOGGER.error(e, e);
+    }
+    return repository;
   }
 
   /**
