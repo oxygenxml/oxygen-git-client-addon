@@ -187,10 +187,10 @@ public class GitMenuActionsProvider {
       File selFile = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS)[0];
       String repository = getRepositoryForFile(selFile);
       if (repository != null) {
-        Path repo = Paths.get(repository);
-        Path file = Paths.get(selFile.getAbsolutePath());
-        String relativeFilePath = repo.relativize(file).toString();
-        try {
+        updateCurrentRepository(repository);
+        
+        try { //NOSONAR: keep the try here
+          String relativeFilePath = getFilePathRelativeToRepo(selFile, repository);
           BlameManager.getInstance().doBlame(
               FileHelper.rewriteSeparator(relativeFilePath),
               historyController);
@@ -198,6 +198,8 @@ public class GitMenuActionsProvider {
           logger.error(e1, e1);
         }
       }
+    } catch (IOException e) {
+      logger.error(e, e);
     } finally {
       setBusyCursor(false);
     }
@@ -213,11 +215,13 @@ public class GitMenuActionsProvider {
       File selFile = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS)[0];
       String repository = getRepositoryForFile(selFile);
       if (repository != null) {
-        Path repo = Paths.get(repository);
-        Path file = Paths.get(selFile.getAbsolutePath());
-        String relativeFilePath = repo.relativize(file).toString();
+        updateCurrentRepository(repository);
+        
+        String relativeFilePath = getFilePathRelativeToRepo(selFile, repository);
         historyController.showResourceHistory(FileHelper.rewriteSeparator(relativeFilePath));
       }
+    } catch (IOException e) {
+      logger.error(e, e);
     } finally {
       setBusyCursor(false);
     }
@@ -234,10 +238,7 @@ public class GitMenuActionsProvider {
       String repository = getRepositoryForFile(selFile);
       if (repository != null) {
         try {
-          String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-          if (!repository.equals(previousRepository)) {
-            GitAccess.getInstance().setRepositorySynchronously(repository);
-          }
+          updateCurrentRepository(repository);
 
           List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
           boolean wasDiffShown = false;
@@ -275,10 +276,7 @@ public class GitMenuActionsProvider {
       String repository = getRepositoryForFile(selectedFiles[0]);
       if (repository != null) {
         try {
-          String previousRepository = OptionsManager.getInstance().getSelectedRepository();
-          if (!repository.equals(previousRepository)) {
-            GitAccess.getInstance().setRepositorySynchronously(repository);
-          }
+          updateCurrentRepository(repository);
 
           List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
           boolean canCommit = false;
@@ -301,14 +299,40 @@ public class GitMenuActionsProvider {
                 () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NOTHING_TO_COMMIT)));
           }
         } catch (IOException e1) {
-          if (logger.isDebugEnabled()) {
-            logger.debug(e1, e1);
-          }
+          logger.error(e1, e1);
         }
       }
     } finally {
       setBusyCursor(false);
     }
+  }
+  
+  /**
+   * Update current repository. Set the given one as the current.
+   * 
+   * @param repository The repository to set as current.
+   * 
+   * @throws IOException
+   */
+  private void updateCurrentRepository(String repository) throws IOException {
+    String previousRepository = OptionsManager.getInstance().getSelectedRepository();
+    if (!repository.equals(previousRepository)) {
+      GitAccess.getInstance().setRepositorySynchronously(repository);
+    }
+  }
+  
+  /**
+   * Get file path relative to repository.
+   * 
+   * @param selFile    Selected file.
+   * @param repository Repository location.
+   * 
+   * @return the relative path. Never <code>null</code>.
+   */
+  private String getFilePathRelativeToRepo(File selFile, String repository) {
+    Path repo = Paths.get(repository);
+    Path file = Paths.get(selFile.getAbsolutePath());
+    return repo.relativize(file).toString();
   }
   
   /**
