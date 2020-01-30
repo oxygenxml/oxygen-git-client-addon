@@ -166,7 +166,9 @@ public class GitMenuActionsProvider {
     
     // Enable/disable
     commitAction.setEnabled(true);
-    gitDiffAction.setEnabled(shouldEnableGitDiffAction());
+    gitDiffAction.setEnabled(isSingleFileSelected());
+    showBlameAction.setEnabled(isSingleFileSelected());
+    showHistoryAction.setEnabled(isSingleResourceSelected());
     
     // Add the Git actions to the list
     actions.add(gitDiffAction);
@@ -350,18 +352,7 @@ public class GitMenuActionsProvider {
         if (gitHistoryViewInfo != null) {
           gitHistoryViewInfo.getComponent().setCursor(busyCursor);
         }
-        
-        WSEditor currentEditorAccess = pluginWS.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
-        WSEditorPage currentPage = currentEditorAccess.getCurrentPage();
-        JComponent pageComp = null;
-        if (currentPage instanceof WSAuthorEditorPage) {
-          pageComp = (JComponent) ((WSAuthorEditorPage) currentPage).getAuthorComponent();
-        } else if (currentPage instanceof WSTextEditorPage) {
-          pageComp = (JComponent) ((WSTextEditorPage) currentPage).getTextComponent();
-        }
-        if (pageComp != null) {
-          pageComp.setCursor(busyCursor);
-        }
+        setEditorPageCursor(busyCursor);
       });
     } else {
       SwingUtilities.invokeLater(() -> {
@@ -372,19 +363,29 @@ public class GitMenuActionsProvider {
         if (gitHistoryViewInfo != null) {
           gitHistoryViewInfo.getComponent().setCursor(defaultCursor);
         }
-        
-        WSEditor currentEditorAccess = pluginWS.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
-        WSEditorPage currentPage = currentEditorAccess.getCurrentPage();
-        JComponent pageComp = null;
-        if (currentPage instanceof WSAuthorEditorPage) {
-          pageComp = (JComponent) ((WSAuthorEditorPage) currentPage).getAuthorComponent();
-        } else if (currentPage instanceof WSTextEditorPage) {
-          pageComp = (JComponent) ((WSTextEditorPage) currentPage).getTextComponent();
-        }
-        if (pageComp != null) {
-          pageComp.setCursor(defaultCursor);
-        }
+        setEditorPageCursor(defaultCursor);
       });
+    }
+  }
+
+  /**
+   * Set editor page cursor.
+   * 
+   * @param cursor The cursor to set.
+   */
+  private void setEditorPageCursor(Cursor cursor) {
+    WSEditor currentEditorAccess = pluginWS.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+    if (currentEditorAccess != null) {
+      WSEditorPage currentPage = currentEditorAccess.getCurrentPage();
+      JComponent pageComp = null;
+      if (currentPage instanceof WSAuthorEditorPage) {
+        pageComp = (JComponent) ((WSAuthorEditorPage) currentPage).getAuthorComponent();
+      } else if (currentPage instanceof WSTextEditorPage) {
+        pageComp = (JComponent) ((WSTextEditorPage) currentPage).getTextComponent();
+      }
+      if (pageComp != null) {
+        pageComp.setCursor(cursor);
+      }
     }
   }
   
@@ -422,21 +423,31 @@ public class GitMenuActionsProvider {
   }
   
   /**
-   * Check if the Git diff action is enabled.
-   * 
-   * @return <code>true</code> if the action is enabled.
+   * @return <code>true</code> if a single file (not folder) is selected.
    */
-  private boolean shouldEnableGitDiffAction() {
-    boolean shouldEnable = true;
+  private boolean isSingleFileSelected() {
+    boolean isSingleFile = true;
     File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS);
     if (selectedFiles != null) {
       if (selectedFiles.length > 1 || selectedFiles.length == 1 && selectedFiles[0].isDirectory()) {
-        // disable the diff action if there are 2 or more files selected or if
-        // the files selected is a directory
-        shouldEnable = false;
+        isSingleFile = false;
       }
     }
-    return shouldEnable;
+    return isSingleFile;
+  }
+  
+  /**
+   * @return <code>true</code> if a single resource (file or folder) is selected.
+   */
+  private boolean isSingleResourceSelected() {
+    boolean isSingleRes = false;
+    File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS);
+    if (selectedFiles != null) {
+      if (selectedFiles.length == 1) {
+        isSingleRes = true;
+      }
+    }
+    return isSingleRes;
   }
 
   /**
