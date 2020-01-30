@@ -788,9 +788,9 @@ public class Tags {
   /**
    * Contextual action in the staging panel.
    * 
-   * en: Show in History
+   * en: Show history
    */
-  public static final String SHOW_IN_HISTORY = "Show_in_history";
+  public static final String SHOW_HISTORY = "Show_history";
   /**
    * Contextual action in the staging panel.
    * 

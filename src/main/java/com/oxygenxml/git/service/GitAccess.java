@@ -2095,7 +2095,7 @@ public class GitAccess {
 			Repository repository = this.getRepository();
 			if (filePath == null && git.status().call().hasUncommittedChanges()) {
 				commitVector.add(UNCOMMITED_CHANGES);
-}
+			}
 
 			// a RevWalk allows to walk over commits based on some filtering that is defined
 			try (RevWalk revWalk = new RevWalk(repository)) {
@@ -2103,11 +2103,9 @@ public class GitAccess {
 			  String fullBranch = repository.getFullBranch();
 			  Ref branchHead = repository.exactRef(fullBranch);
 			  if (branchHead != null) {
-			    revWalk.markStart(
-			        revWalk.
-			        parseCommit(
-			            branchHead.
-			            getObjectId()));
+	        ObjectId objectId = branchHead.getObjectId();
+	        RevCommit revCommit = revWalk.parseCommit(objectId);
+	        revWalk.markStart(revCommit);
 
 			    // If we have a remote, put it as well.
 			    String fullRemoteBranchName = getUpstreamBranchName(repository.getBranch());
@@ -2118,13 +2116,12 @@ public class GitAccess {
 			      }
 			    }
 
-			    if (filePath != null) { 
+			    if (filePath != null) {
 			      revWalk.setTreeFilter(
 			          AndTreeFilter.create(
-			                  PathFilterGroup.createFromStrings(filePath),
-			                  TreeFilter.ANY_DIFF)
-			  );
-			      
+			              PathFilterGroup.createFromStrings(filePath),
+			              TreeFilter.ANY_DIFF)
+			          );
 			    }
 
 			    for (RevCommit commit : revWalk) {

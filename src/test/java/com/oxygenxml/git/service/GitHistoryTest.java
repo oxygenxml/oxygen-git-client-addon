@@ -3,14 +3,11 @@ package com.oxygenxml.git.service;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -350,4 +347,35 @@ public class GitHistoryTest extends GitTestBase {
     }
   
   }
+
+  /**
+     * Tests the history can be shown for a resource that is not modified.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testHistory_ResourceUntouched() throws Exception {
+      URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
+      
+      File wcTree = new File("target/gen/testHistory_ResourceUntouched");
+      RepoGenerationScript.generateRepository(script, wcTree);
+      
+      try {
+        GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
+  
+        List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("root.txt");
+        String dump = dumpHistory(commitsCharacteristics);
+  
+        String expected = "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+        "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n";
+        expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+        assertEquals(
+            "root.txt was created and changed in the last two commit",
+            expected, dump);
+      } finally {
+        GitAccess.getInstance().closeRepo();
+        FileUtils.deleteDirectory(wcTree);
+      }
+    }
+    
 }

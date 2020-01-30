@@ -227,7 +227,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    if (!forStagedRes) {
 	      addSeparator();
-	      AbstractAction historyAction = new AbstractAction(translator.getTranslation(Tags.SHOW_IN_HISTORY)) {
+	      AbstractAction historyAction = new AbstractAction(translator.getTranslation(Tags.SHOW_HISTORY)) {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
 	          if (!allSelectedResources.isEmpty()) {

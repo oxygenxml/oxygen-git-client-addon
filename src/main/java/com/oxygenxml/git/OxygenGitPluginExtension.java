@@ -127,7 +127,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			
 			ProjectViewManager.addPopUpMenuCustomizer(
 			    pluginWorkspaceAccess,
-			    new GitMenuActionsProvider(pluginWorkspaceAccess, gitCtrl));
+			    new GitMenuActionsProvider(
+			        pluginWorkspaceAccess,
+			        gitCtrl,
+			        OxygenGitPluginExtension.this));
 
 			pluginWorkspaceAccess.addViewComponentCustomizer(
 			    viewInfo -> {
