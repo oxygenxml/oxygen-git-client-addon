@@ -54,13 +54,13 @@ The contextual menu of each unstaged resource contains a **Show blame** action t
 ## Unstaged resources area
 
 In the *unstaged resources area* (the one at the top), you will see all the modifications that have occurred in your working copy (files that have been modified, new files, and deleted files), and which are not part of the next commit.
-- Various actions are available in the contextual menu (**Open**, **Open in compare editor**, **Stage**, **Discard**, **Show in history**, **Show blame**, etc.).
+- Various actions are available in the contextual menu (**Open**, **Open in compare editor**, **Stage**, **Discard**, **Show history**, **Show blame**, etc.).
 - You can stage all the files by clicking the **Stage All** button or you can stage some of them by selecting and clicking the **Stage Selected** button.
 - You can switch between the flat (table) view and the tree view by clicking on the **Switch to tree/flat view** button positioned to the right of the staging buttons.
 
 ## Staged resources area
 
-In the *staged resources area*, you will see all the resources that are ready to be committed. The files from this area can be unstaged and sent back to the *unstaged resources area*. The *staged resources area* has actions similar to the ones from the *unstaged resources area*, with the mention that there are no **Show in history** and **Show blame** actions.
+In the *staged resources area*, you will see all the resources that are ready to be committed. The files from this area can be unstaged and sent back to the *unstaged resources area*. The *staged resources area* has actions similar to the ones from the *unstaged resources area*, with the mention that there are no **Show history** and **Show blame** actions.
 
 ## Comparing changes and conflict resolution
 
