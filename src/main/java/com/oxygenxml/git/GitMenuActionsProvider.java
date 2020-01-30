@@ -220,7 +220,11 @@ public class GitMenuActionsProvider {
         updateCurrentRepository(repository);
         
         String relativeFilePath = getFilePathRelativeToRepo(selFile, repository);
-        historyController.showResourceHistory(FileHelper.rewriteSeparator(relativeFilePath));
+        if (relativeFilePath.isEmpty()) {
+          historyController.showRepositoryHistory();
+        } else {
+          historyController.showResourceHistory(FileHelper.rewriteSeparator(relativeFilePath));
+        }
       }
     } catch (IOException e) {
       logger.error(e, e);
