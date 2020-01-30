@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,21 @@ import com.oxygenxml.git.service.NoRepositorySelected;
  *
  */
 public class FileHelper {
+  
+  /**
+   * Archive extensions.
+   */
+  private static final List<String> ARCHIVE_EXTENSIONS = Arrays.asList("zip", "jar", "ear", "war",
+      "odb", "odf", "odg", "odm", "odp", "ods", "odt", "otg", "oth", "otp", "ots", "ott",
+      "sxw", "sdw", "stw", "sxm", "sxi", "sti", "sxd", "std", "sxc", "stc","docx", "xlsx", "pptx",
+      //word
+      "dotx",  "docm", "dotm",
+      //excel
+      "xlsm", "xlsb", "xltx", "xltm", "xlam",
+      //power point
+      "pptm", "potx", "potm", "thmx", "ppsx", "ppsm", "ppam",
+      "epub", "idml", "kmz");
+  
   /**
    * Hidden constructor.
    */
@@ -305,5 +321,12 @@ public class FileHelper {
 		} catch (MalformedURLException e) {
 			return false;
 		}
+	}
+	
+	/**
+	 * @return <code>true</code> if the given text is an archive extension.
+	 */
+	public static boolean isArchiveExtension(String ext) {
+	  return ARCHIVE_EXTENSIONS.contains(ext);
 	}
 }

@@ -4,6 +4,8 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import com.google.common.io.Files;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
@@ -166,9 +169,9 @@ public class GitMenuActionsProvider {
     
     // Enable/disable
     commitAction.setEnabled(true);
-    gitDiffAction.setEnabled(isSingleFileSelected());
-    showBlameAction.setEnabled(isSingleFileSelected());
-    showHistoryAction.setEnabled(isSingleResourceSelected());
+    gitDiffAction.setEnabled(isSingleNonBinaryFileSelected());
+    showBlameAction.setEnabled(isSingleNonBinaryFileSelected());
+    showHistoryAction.setEnabled(isSingleFileOrFolderSelected());
     
     // Add the Git actions to the list
     actions.add(gitDiffAction);
@@ -429,21 +432,32 @@ public class GitMenuActionsProvider {
   /**
    * @return <code>true</code> if a single file (not folder) is selected.
    */
-  private boolean isSingleFileSelected() {
-    boolean isSingleFile = true;
+  private boolean isSingleNonBinaryFileSelected() {
+    boolean isNonBinaryFile = true;
     File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS);
     if (selectedFiles != null) {
       if (selectedFiles.length > 1 || selectedFiles.length == 1 && selectedFiles[0].isDirectory()) {
-        isSingleFile = false;
+        isNonBinaryFile = false;
+      } else if (selectedFiles.length == 1) {
+        URL selFileURL = null;
+        try {
+          selFileURL = selectedFiles[0].toURI().toURL();
+        } catch (MalformedURLException e) {
+          logger.warn(e, e);
+        }
+        String ext = Files.getFileExtension(selectedFiles[0].getName());
+        isNonBinaryFile = selFileURL != null 
+            && !pluginWS.getUtilAccess().isUnhandledBinaryResourceURL(selFileURL)
+            && !FileHelper.isArchiveExtension(ext);
       }
     }
-    return isSingleFile;
+    return isNonBinaryFile;
   }
   
   /**
    * @return <code>true</code> if a single resource (file or folder) is selected.
    */
-  private boolean isSingleResourceSelected() {
+  private boolean isSingleFileOrFolderSelected() {
     boolean isSingleRes = false;
     File[] selectedFiles = ProjectViewManager.getSelectedFilesAndDirsShallow(pluginWS);
     if (selectedFiles != null) {
