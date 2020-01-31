@@ -64,9 +64,9 @@ In the *staged resources area*, you will see all the resources that are ready to
 
 ## Comparing changes and conflict resolution
 
-At any time, if you want to see the differences between the last commit and your current modifications, you can double-click a file from either in the *unstaged resources area* or *staged resources area* and the [Oxygen's Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html) window will appear and highlight the changes.
+At any time, if you want to see the differences between the last commit and your current modifications, you can double-click a file from either in the *unstaged resources area* or *staged resources area* and the [Oxygen's Diff](https://www.oxygenxml.com/xml_editor/xml_diff_and_merge.html) window will appear and highlight the changes.
 
-If the file has a conflict (has been modified both by you and another), [Oxygen's Three Way Diff](https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html#file-comparison__threeway_comparisons) will show a comparison between the local change, the remote change, and the original base revision.
+If the file has a conflict (has been modified both by you and another), [Oxygen's Three Way Diff](https://www.oxygenxml.com/xml_editor/xml_diff_and_merge.html) will show a comparison between the local change, the remote change, and the original base revision.
 
 ## Committing
 
