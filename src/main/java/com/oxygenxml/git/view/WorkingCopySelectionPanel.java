@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -78,7 +79,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * The translator for the messages that are displayed in this panel
 	 */
 	private Translator translator = Translator.getInstance();
-
+	
+	/**
+	 * Clear history.
+	 */
+	private static final String CLEAR_HISTORY_ENTRY = "CLEAR_HISTORY";
+	
   /**
    * Constructor.
    */
@@ -156,12 +162,12 @@ public class WorkingCopySelectionPanel extends JPanel {
 		addWorkingCopySelector(gbc);
 		addBrowseButton(gbc);
 
-		addFileChooserOn(browseButton);
+		addFileChooserListner();
 		
 		GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void repositoryChanged() {
-          // The event was not triggered by the combo.
+        // The event was not triggered by the combo.
         try {
           File wc = GitAccess.getInstance().getWorkingCopy();
           String absolutePath = wc.getAbsolutePath();
@@ -184,7 +190,11 @@ public class WorkingCopySelectionPanel extends JPanel {
                 DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
                 defaultComboBoxModel.removeElement(absolutePath);
                 defaultComboBoxModel.insertElementAt(absolutePath, 0);
-                
+                if (defaultComboBoxModel.getSize() == 2 && 
+                    defaultComboBoxModel.getIndexOf(CLEAR_HISTORY_ENTRY) == -1) {
+                  defaultComboBoxModel.addElement(CLEAR_HISTORY_ENTRY);
+                }
+
                 // Select it.
                 workingCopyCombo.setSelectedItem(absolutePath);
               }
@@ -201,9 +211,9 @@ public class WorkingCopySelectionPanel extends JPanel {
             }
           }
         } catch (NoRepositorySelected e) {
-            logger.debug(e, e);
-          }
+          logger.debug(e, e);
         }
+      }
     });
 
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.WORKINGCOPY_PANEL_HEIGHT));
@@ -230,11 +240,24 @@ public class WorkingCopySelectionPanel extends JPanel {
 	        try {
 	          // get and save the selected Option so that at restart the same
 	          // repository will be selected
-	          String path = (String) workingCopyCombo.getSelectedItem();
+	          String selectedEntry = (String) workingCopyCombo.getSelectedItem();
 	          if (logger.isDebugEnabled()) {
-	            logger.debug("Working copy " + path);
+	            logger.debug("Selected working copy: " + selectedEntry);
 	          }
-	          gitAccess.setRepositoryAsync(path);
+	          if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
+	            int result = JOptionPane.showConfirmDialog( 
+	                (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), 
+	                "Are you sure you want to clear the history?",
+	                "Clear history",
+	                JOptionPane.YES_NO_OPTION);
+	            if (result == JOptionPane.YES_OPTION) {
+	              clearHistory();
+	            } else {
+	              workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
+	            }
+	          } else {
+	            gitAccess.setRepositoryAsync(selectedEntry);
+	          }
 	        } finally {
 	          inhibitRepoUpdate = false;
 	        }
@@ -242,15 +265,35 @@ public class WorkingCopySelectionPanel extends JPanel {
 	    }
 	  });
 	}
+	
+  /**
+   * Clear history.
+   */
+  private void clearHistory() {
+    DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
+    List<String> allEntries = new ArrayList<>();
+    for (int i = 0; i < model.getSize(); i++) {
+      allEntries.add(model.getElementAt(i));
+    }
+    
+    model.removeAllElements();
+    
+    // The previously selected entry should remain
+    String prevSelEntry = allEntries.get(0);
+    model.addElement(prevSelEntry);
+    workingCopyCombo.setSelectedItem(prevSelEntry);
+    
+    // Remove the repositories from the options
+    List<String> reposToRemove = new ArrayList<>(allEntries);
+    reposToRemove.remove(prevSelEntry);
+    OptionsManager.getInstance().removeRepositoryLocations(reposToRemove);
+  }
 
 	/**
-	 * Adds a file chooser on a button
-	 * 
-	 * @param button
-	 *          - the button to add a file chooser on
+	 * Adds a file chooser to the browse button.
 	 */
-	private void addFileChooserOn(JButton button) {
-		button.addActionListener(
+	private void addFileChooserListner() {
+		browseButton.addActionListener(
 		    new ActionListener() { // NOSONAR
 
 			@Override
@@ -259,15 +302,20 @@ public class WorkingCopySelectionPanel extends JPanel {
 				if (directory != null) {
 					String directoryPath = directory.getAbsolutePath();
 					if (FileHelper.isGitRepository(directoryPath) && directoryPath != null) {
-						// adds the directory path to the combo box if it doesn't already
-						// exists
+						// adds the directory path to the combo box if it doesn't already exist
 					  OptionsManager.getInstance().addRepository(directoryPath);
 					  
 					  // Insert it first.
 						DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
 						defaultComboBoxModel.removeElement(directoryPath);
             defaultComboBoxModel.insertElementAt(directoryPath, 0);
-            
+            if (defaultComboBoxModel.getSize() == 2
+                && defaultComboBoxModel.getIndexOf(CLEAR_HISTORY_ENTRY) == -1) {
+              // When there is another entry in the model except for the selected one,
+              // also add the "Clear history..." entry
+              defaultComboBoxModel.addElement(CLEAR_HISTORY_ENTRY);
+            }
+              
 						// sets the directory path as the selected repository
 						workingCopyCombo.setSelectedItem(directoryPath);
 					} else {
@@ -337,6 +385,9 @@ public class WorkingCopySelectionPanel extends JPanel {
     for (String repositoryEntry : repositoryEntries) {
 			workingCopyCombo.addItem(repositoryEntry);
 		}
+    if (repositoryEntries.size() > 1) {
+      workingCopyCombo.addItem(CLEAR_HISTORY_ENTRY);
+    }
     
     String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
     if (!repositoryPath.equals("")) {
@@ -389,11 +440,16 @@ public class WorkingCopySelectionPanel extends JPanel {
 			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 			if (value != null) {
-				comp.setToolTipText((String) value);
-				String path = (String) value;
-				path = path.replace("\\", "/");
-				String rootFolder = path.substring(path.lastIndexOf('/') + 1);
-				comp.setText(rootFolder);
+			  if (((String) value).equals(CLEAR_HISTORY_ENTRY)) {
+			    comp.setText("Clear history...");
+			    comp.setFont(comp.getFont().deriveFont(Font.ITALIC));
+			  } else {
+			    comp.setToolTipText((String) value);
+			    String path = (String) value;
+			    path = path.replace("\\", "/");
+			    String rootFolder = path.substring(path.lastIndexOf('/') + 1);
+			    comp.setText(rootFolder);
+			  }
 			}
 			return comp;
 		}
