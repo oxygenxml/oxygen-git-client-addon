@@ -8,10 +8,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import org.apache.log4j.Logger;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.annotations.api.API;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class SourceFilesIteratorTest extends JFCTestCase {
   
@@ -110,6 +113,55 @@ public class SourceFilesIteratorTest extends JFCTestCase {
     }
     
     assertEquals("Only public API should be used, but the following inadequte classes were also imported ",
+        "",
+        sb.toString());
+  }
+  
+  /**
+   * <p><b>Description:</b> use the confirmation, information, warning and error messages
+   * from {@link StandalonePluginWorkspace} instead of {@link JOptionPane}.</p>
+   * <p><b>Bug ID:</b> EXM-44205</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  public void testDontUseJOptionPane() throws Exception {
+    Set<String> classesToReport = new HashSet<>();
+    
+    // Get all the "java.swing.JOptionPane" imports
+    BufferedReader br = null;
+    while (srcFilesIterator.hasNext()) {
+      File file = srcFilesIterator.next();
+      try {
+        br = new BufferedReader(new FileReader(file));
+        String line = "";
+        while ((line = br.readLine()) != null && !shouldStopSearchingForImports(line)) {
+          if (line.startsWith("import javax.swing.JOptionPane")) {
+            String classQName = line.substring(
+                line.indexOf("import ") + "import ".length(),
+                line.indexOf(';'));
+            classesToReport.add(classQName + DELIMITER + file);
+          }
+        }
+      } catch (FileNotFoundException e) {
+        logger.error(e, e);
+      } finally {
+        try {
+          br.close();
+        } catch (IOException e) {
+          logger.error(e, e);
+        }
+      }
+    }
+    
+    StringBuilder sb = new StringBuilder();
+    for (String classToReport : classesToReport) {
+      sb.append(classToReport + "\n");
+    }
+    
+    assertEquals("Use the confirmation, information, warning and error messages from "
+        + "StandalonePluginWorkspace instead of JOptionPane. JOptionPane usages have been found in: ",
         "",
         sb.toString());
   }
