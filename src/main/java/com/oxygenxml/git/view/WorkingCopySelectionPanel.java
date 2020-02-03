@@ -78,7 +78,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private Translator translator = Translator.getInstance();
+	private static Translator translator = Translator.getInstance();
 	
 	/**
 	 * Clear history.
@@ -247,8 +247,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	          if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
 	            int result = JOptionPane.showConfirmDialog( 
 	                (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), 
-	                "Are you sure you want to clear the history?",
-	                "Clear history",
+	                translator.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+	                translator.getTranslation(Tags.CLEAR_HISTORY),
 	                JOptionPane.YES_NO_OPTION);
 	            if (result == JOptionPane.YES_OPTION) {
 	              clearHistory();
@@ -441,7 +441,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 			if (value != null) {
 			  if (((String) value).equals(CLEAR_HISTORY_ENTRY)) {
-			    comp.setText("Clear history...");
+			    comp.setText(translator.getTranslation(Tags.CLEAR_HISTORY) + "...");
 			    comp.setFont(comp.getFont().deriveFont(Font.ITALIC));
 			  } else {
 			    comp.setToolTipText((String) value);

@@ -4,6 +4,22 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Clear_history">
+        <comment>"Clear history" label.</comment>
+        <val lang="en_US">Clear history</val>
+        <val lang="de_DE">Clear history</val>
+        <val lang="fr_FR">Clear history</val>
+        <val lang="ja_JP">Clear history</val>
+        <val lang="nl_NL">Clear history</val>
+    </key>
+    <key value="Clear_history_confirmation">
+        <comment>"Clear history" confirmation message.</comment>
+        <val lang="en_US">Are you sure you want to clear the history?</val>
+        <val lang="de_DE">Are you sure you want to clear the history?</val>
+        <val lang="fr_FR">Are you sure you want to clear the history?</val>
+        <val lang="ja_JP">Are you sure you want to clear the history?</val>
+        <val lang="nl_NL">Are you sure you want to clear the history?</val>
+    </key>
     <key value="Committing">
         <comment>Committing</comment>
         <val lang="en_US">Committing</val>
