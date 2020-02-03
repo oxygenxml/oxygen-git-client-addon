@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
@@ -8,7 +7,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
@@ -31,6 +29,7 @@ import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Contextual menu shown for staged/unstaged resources from the Git view 
@@ -191,13 +190,16 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESTART_MERGE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        int result = JOptionPane.showConfirmDialog(
-	            (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-	            translator.getTranslation(Tags.RESTART_MERGE_CONFIRMATION),
+	        String[] options = new String[] { 
+	            "   " + translator.getTranslation(Tags.YES) + "   ",
+	            "   " + translator.getTranslation(Tags.NO) + "   "};
+	        int[] optionIds = new int[] { 0, 1 };
+	        int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
 	            translator.getTranslation(Tags.RESTART_MERGE),
-	            JOptionPane.YES_NO_OPTION,
-	            JOptionPane.WARNING_MESSAGE);
-	        if (result == JOptionPane.YES_OPTION) {
+	            translator.getTranslation(Tags.RESTART_MERGE_CONFIRMATION),
+	            options,
+	            optionIds);
+	        if (result == optionIds[0]) {
 	          gitAccess.restartMerge();
 	        }
 	      }

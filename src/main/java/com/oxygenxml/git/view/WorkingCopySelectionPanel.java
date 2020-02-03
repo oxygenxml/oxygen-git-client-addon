@@ -21,7 +21,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -128,9 +127,8 @@ public class WorkingCopySelectionPanel extends JPanel {
 	          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
 	                .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND)));
 	        } else if (ex instanceof IOException) {
-	          JOptionPane.showMessageDialog(
-	              (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-	              "Could not load the repository. " + ex.getMessage());
+	          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
+                .showErrorMessage("Could not load the repository. " + ex.getMessage()));
 	        }
 	        workingCopyCombo.setEnabled(true);
 	      }
@@ -245,12 +243,16 @@ public class WorkingCopySelectionPanel extends JPanel {
 	            logger.debug("Selected working copy: " + selectedEntry);
 	          }
 	          if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
-	            int result = JOptionPane.showConfirmDialog( 
-	                (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(), 
-	                translator.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+	            String[] options = new String[] { 
+	                "   " + translator.getTranslation(Tags.YES) + "   ",
+	                "   " + translator.getTranslation(Tags.NO) + "   "};
+	            int[] optionIds = new int[] { 0, 1 };
+	            int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
 	                translator.getTranslation(Tags.CLEAR_HISTORY),
-	                JOptionPane.YES_NO_OPTION);
-	            if (result == JOptionPane.YES_OPTION) {
+	                translator.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+	                options,
+	                optionIds);
+	            if (result == optionIds[0]) {
 	              clearHistory();
 	            } else {
 	              workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
