@@ -1,4 +1,4 @@
-package com.oxygenxml.git.util;
+package com.oxygenxml.git.utils;
 
 import java.util.Enumeration;
 import java.util.regex.Matcher;
@@ -54,8 +54,8 @@ public class Log4jUtil {
         @Override
         public int decide(LoggingEvent event) {
           int toReturn = NEUTRAL;
-          if(FS.class.getName().equals(event.getLoggerName()) 
-              && event.getLevel() == Level.ERROR) {
+          if(FS.class.getName().equals(event.getLoggerName()) && 
+              event.getLevel() == Level.ERROR) {
             Pattern pattern = Pattern.compile("^java.security.AccessControlException:\\s+access denied\\s+\\(\"java\\.io\\.FilePermission\".*\\.probe");
             
             Matcher matcher = pattern.matcher(event.getRenderedMessage());
