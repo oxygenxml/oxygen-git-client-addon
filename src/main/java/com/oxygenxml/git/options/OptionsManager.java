@@ -3,6 +3,7 @@ package com.oxygenxml.git.options;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -260,8 +261,24 @@ public class OptionsManager {
     return getOptions().getSelectedRepository();
   }
 
+  /**
+   * Remove repository location.
+   * 
+   * @param path The location/path of the repository.
+   */
   public void removeRepositoryLocation(String path) {
     getOptions().getRepositoryLocations().getLocations().remove(path);
+
+    saveOptions();
+  }
+  
+  /**
+   * Remove repository locations.
+   * 
+   * @param paths The locations/paths of the repositories to remove.
+   */
+  public void removeRepositoryLocations(Collection<String> paths) {
+    getOptions().getRepositoryLocations().getLocations().removeAll(paths);
 
     saveOptions();
   }

@@ -25,6 +25,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.util.Log4jUtil;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.event.GitCommand;
@@ -192,6 +193,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
       }
       @Override
       public void repositoryChanged() {
+        if (historyView != null && historyView.isShowing()) {
+          GitOperationScheduler.getInstance().schedule(OxygenGitPluginExtension.this::showRepositoryHistory);
+        }
         SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
       }
       @Override

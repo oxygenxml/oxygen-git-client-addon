@@ -1,4 +1,4 @@
-<!-- This is used to install the plugin as an add-on: https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons -->
+<!-- This is used to install the plugin as an add-on: https://www.oxygenxml.com/doc/versions/19.1/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons -->
 <xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
@@ -6,7 +6,7 @@
         <xt:location
             href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/${project.version}/${project.build.finalName}-plugin.jar"/>
         <xt:version>${project.version}</xt:version>
-        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:oxy_version>19.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
         <xt:name>Git Support</xt:name>
@@ -185,14 +185,11 @@
                         <div>
                             <p>At any time, if you want to see the differences between the last
                                 commit and your current modifications you can double click the file
-                                that appears either in the staging or unstaging area and the <a
-                                    href="https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html"
-                                    >Oxygen's Diff</a> window will appear and highlight the
+                                that appears either in the staging or unstaging area and Oxygen's Diff
+                                window will appear and highlight the
                                 changes.</p>
                             <p>If the file is in conflict (has been modified both by you and
-                                another), <a
-                                    href="https://www.oxygenxml.com/doc/versions/19.0/ug-editor/topics/file-comparison-x-tools.html#file-comparison__threeway_comparisons"
-                                    >Oxygen's Three Way Diff</a> will show a comparison between the
+                                another), Oxygen's Three Way Diff will show a comparison between the
                                 local change, the remote change, and the original base revision.</p>
                         </div>
 

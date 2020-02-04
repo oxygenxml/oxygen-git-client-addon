@@ -518,18 +518,18 @@ public class HistoryPanel extends JPanel {
    * @param id Id of the repository to select.
    */
   private void selectCommit(ObjectId id) {
-    HistoryCommitTableModel model =  (HistoryCommitTableModel) historyTable.getModel();
-    List<CommitCharacteristics> commits = model.getAllCommits();
-    for (int i = 0; i < commits.size(); i++) {
-      CommitCharacteristics commitCharacteristics = commits.get(i);
-      if (id.getName().equals(commitCharacteristics.getCommitId())) {
-        final int sel = i;
-        SwingUtilities.invokeLater(() -> {
+    SwingUtilities.invokeLater(() -> {
+      HistoryCommitTableModel model =  (HistoryCommitTableModel) historyTable.getModel();
+      List<CommitCharacteristics> commits = model.getAllCommits();
+      for (int i = 0; i < commits.size(); i++) {
+        CommitCharacteristics commitCharacteristics = commits.get(i);
+        if (id.getName().equals(commitCharacteristics.getCommitId())) {
+          final int sel = i;
           historyTable.scrollRectToVisible(historyTable.getCellRect(sel, 0, true));
           historyTable.getSelectionModel().setSelectionInterval(sel, sel);
-        });
-        break;
+          break;
+        }
       }
-    }
+    });
   }
 }

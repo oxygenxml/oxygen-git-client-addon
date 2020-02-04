@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,12 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
@@ -31,6 +34,7 @@ import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -155,6 +159,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 	@Override
 	protected void doOK() {
 	  BranchSelectDialog.this.getLayeredPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	  
 	  // Disable the widgets to avoid another input from the user.
     getOkButton().setEnabled(false);
     getCancelButton().setEnabled(false);
@@ -164,10 +169,13 @@ public class BranchSelectDialog extends OKCancelDialog {
 	    try {
 	      GitAccess.getInstance().setBranch((String) branchesCombo.getSelectedItem());
 	      gitRefreshSupport.call();
+	      refreshProjectView();
 	    } catch (CheckoutConflictException e) {
 	      logger.debug(e, e);
 	      showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-	    } catch (GitAPIException e) {
+	    } catch (GitAPIException 
+	        // Shouldn't happen
+	        | NoRepositorySelected e) {
 	      logger.debug(e, e);
 	      showErrorMessage(e.getMessage());
 	    } finally {
@@ -176,6 +184,21 @@ public class BranchSelectDialog extends OKCancelDialog {
 	    }
 	  });
 	}
+
+	/**
+	 * Refresh project view.
+	 */
+  private void refreshProjectView() throws NoRepositorySelected {
+    ProjectController projectManager = pluginWS.getProjectManager();
+    String projectDirPath = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
+    Repository repository = GitAccess.getInstance().getRepository();
+    String repoPath = repository.getDirectory().getParent();
+    if (repoPath.startsWith(projectDirPath)) {
+      projectManager.refreshFolders(new File[] { new File(repoPath) });
+    } else if (projectDirPath.startsWith(repoPath)) {
+      projectManager.refreshFolders(new File[] { new File(projectDirPath) });
+    }
+  }
 
 	/**
 	 * Show error message.

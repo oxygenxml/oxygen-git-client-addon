@@ -819,6 +819,15 @@ public class Tags {
   public static final String CANCEL = "Cancel";
   
   /**
+   * Clear history.
+   */
+  public static final String CLEAR_HISTORY = "Clear_history";
+  /**
+   * Clear history confirmation (something like: "Are you sure...?")
+   */
+  public static final String CLEAR_HISTORY_CONFIRMATION = "Clear_history_confirmation";
+  
+  /**
    * The text displayed for the "Open previous version" contextual menu item.
    */
   public static final String OPEN_PREVIOUS_VERSION = "Open_previous_version";

@@ -1,11 +1,8 @@
 package com.oxygenxml.git.view.event;
 
-import java.awt.Component;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -19,6 +16,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * 
@@ -122,16 +120,19 @@ public class GitController {
 	      : translator.getTranslation(Tags.THEIRS);
 	  String branch = isResolveUsingMine ? translator.getTranslation(Tags.THE_UPSTREAM_BRANCH)
         : translator.getTranslation(Tags.THE_WORKING_BRANCH);
-    int result = JOptionPane.showConfirmDialog(
-        (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+    String[] options = new String[] { 
+        "   " + translator.getTranslation(Tags.YES) + "   ",
+        "   " + translator.getTranslation(Tags.NO) + "   "};
+    int[] optionIds = new int[] { 0, 1 };
+    int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+        actionName,
         MessageFormat.format(
             translator.getTranslation(Tags.CONTINUE_RESOLVING_REBASE_CONFLICT_USING_MINE_OR_THEIRS),
             side,
             branch),
-        actionName,
-        JOptionPane.YES_NO_OPTION,
-        JOptionPane.WARNING_MESSAGE);
-    return result == JOptionPane.YES_OPTION;
+        options,
+        optionIds);
+    return result == optionIds[0];
 	}
 
 	/**
