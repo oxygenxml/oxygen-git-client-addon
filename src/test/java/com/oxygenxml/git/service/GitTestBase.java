@@ -48,6 +48,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
+import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 
 import junit.extensions.jfcunit.JFCTestCase;
@@ -333,6 +334,13 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         return new File(url.getPath());
       }
     });
+    
+    Mockito.when(utilAccessMock.uncorrectURL(Mockito.anyString())).then(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        return invocation.getArguments()[0].toString().replace("%20", " ");
+      }
+    });
    
     ImageUtilities imgUtils = Mockito.mock(ImageUtilities.class);
     Mockito.when(mock.getImageUtilities()).thenReturn(imgUtils);
@@ -571,6 +579,22 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    */
   private String dumpDate(CommitCharacteristics c) {
     return c.getDate() != null ? DATE_FORMAT.format(c.getDate()) : DATE_FORMAT.format(new Date());
+  }
+  
+  /**
+   * Generates a new repository with the given scripts and loads the repository into GitAccess.
+   * 
+   * @param script repository generation script.
+   * @param wcTree Directory for the working copy.
+   * 
+   * @throws Exception Problems generating the repository.
+   */
+  protected void generateRepositoryAndLoad(URL script, File wcTree) throws Exception {
+    RepoGenerationScript.generateRepository(script, wcTree);
+    
+    GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
+    
+    loadedRepos.add(GitAccess.getInstance().getRepository());
   }
   
 }

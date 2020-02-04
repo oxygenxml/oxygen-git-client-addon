@@ -6,7 +6,7 @@
         <xt:location
             href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/${project.version}/${project.build.finalName}-plugin.jar"/>
         <xt:version>${project.version}</xt:version>
-        <xt:oxy_version>19.1+</xt:oxy_version>
+        <xt:oxy_version>20.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
         <xt:name>Git Support</xt:name>

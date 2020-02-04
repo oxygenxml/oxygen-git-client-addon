@@ -21,6 +21,9 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.utils.FileHelper;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.util.UtilAccess;
+
 /**
  * Handler for the "git" protocol. Can be used to for the three way diff on the
  * remote commit, last local commit and the base. It is also used for the 2 way
@@ -82,6 +85,13 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 * @return the URL host
 		 */
 		private void decode(URL url) throws IOException {
+		  // Decode the URL first.
+		  if (PluginWorkspaceProvider.getPluginWorkspace() != null && 
+		      PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess() != null) {
+		    UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+		    url = new URL(utilAccess.uncorrectURL(url.toExternalForm()));
+		  }
+		  
 			path = url.getPath();
 			if (path.startsWith("/")) {
 				path = path.substring(1);

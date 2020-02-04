@@ -2,7 +2,6 @@ package com.oxygenxml.git.protocol;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -127,5 +126,30 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
       FileUtils.deleteDirectory(wcTree);
     }
   }
+  
+  /**
+   * EXM-44977 Tests the commit revisions retrieval.
+   * 
+   * @throws Exception Problems.
+   */
+  @Test
+  public void testDecodeURL() throws Exception {
+      
+    URL script = getClass().getClassLoader().getResource("scripts/git_protocol_test.txt");
+    
+    File wcTree = new File("target/gen/GitRevisionURLHandlerTest_testDecodeURL");
+    generateRepositoryAndLoad(script, wcTree);
+    
+    String indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/folder with spaces/f.txt";
+    assertEquals("content", read(new URL(indexVersionURL)));
+    
+    
+    String encodedURL = indexVersionURL.replaceAll(" ", "%20");
+    assertEquals("git://IndexOrLastCommit/folder%20with%20spaces/f.txt", encodedURL);
+    
+    // This used to fail with java.io.IOException: Unable to obtain commit ID for: git://IndexOrLastCommit/folder%20with%20spaces/f.txt
+    assertEquals("content", read(new URL(encodedURL)));
+  }
+
 
 }

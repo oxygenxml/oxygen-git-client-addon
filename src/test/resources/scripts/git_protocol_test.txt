@@ -1,0 +1,6 @@
+<script>
+    <changeSet message="First commit.">
+        <change path="folder with spaces/f.txt" type="add">content</change>
+    </changeSet>
+
+</script>
