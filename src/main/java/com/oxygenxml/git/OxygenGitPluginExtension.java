@@ -23,6 +23,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.util.Log4jUtil;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
@@ -161,7 +162,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			// Call the refresh command when the Oxygen window is activated
       parentFrame.addWindowListener(panelRefreshWindowListener);
 			
-			installLog4JLogger();
+			Log4jUtil.setupLog4JLogger();
 			
 		} catch (Throwable t) { // NOSONAR
 			// Catch Throwable - Runtime exceptions shouldn't affect Oxygen.
@@ -241,23 +242,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     viewInfo.setTitle(Translator.getInstance().getTranslation(Tags.GIT_HISTORY));
   }
 
-	/**
-	 * Redirect logging to the Log4J instance.
-	 */
-  private void installLog4JLogger() {
-    com.jcraft.jsch.JSch.setLogger(new com.jcraft.jsch.Logger() {
-      @Override
-      public void log(int level, String message) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(message);
-        }
-      }
-      @Override
-      public boolean isEnabled(int level) {
-        return logger.isDebugEnabled();
-      }
-    });
-  }
+
 
 	/**
 	 * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationClosing()
