@@ -6,15 +6,13 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import com.oxygenxml.git.ProjectViewManager;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -25,18 +23,22 @@ import com.oxygenxml.git.view.event.GitController;
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 
 /**
  * Test cases for refreshing the Project view.
  * 
  * @author sorin_carbunaru
  */
-@RunWith(PowerMockRunner.class)
 public class RefreshProjectTest extends TestCase {
+  
+  private File refreshedFolder;
   
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    
+    refreshedFolder = null;
     
     StandalonePluginWorkspace pluginWorkspace = Mockito.mock(StandalonePluginWorkspace.class);
     Mockito.when(pluginWorkspace.showConfirmDialog(
@@ -51,6 +53,17 @@ public class RefreshProjectTest extends TestCase {
     PowerMockito.when(optMngMock.getSelectedRepository()).thenReturn(
         new File(localTestRepoPath).getAbsolutePath());
     
+    ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
+    Mockito.when(pluginWorkspace.getProjectManager()).thenReturn(projectCtrlMock);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        File[] filesToRefresh = (File[]) invocation.getArguments()[0];
+        refreshedFolder = filesToRefresh[0];
+        return null;
+      }
+    }).when(projectCtrlMock).refreshFolders(Mockito.any());
+    
   }
   /**
    * Local repo path.
@@ -63,7 +76,6 @@ public class RefreshProjectTest extends TestCase {
    * @throws Exception
    */
   
-  @PrepareForTest({ ProjectViewManager.class})
   @Test
   public void testRefreshProjectOnDiscard_1() throws Exception {
     File repoDir = new File(localTestRepoPath);
@@ -74,12 +86,6 @@ public class RefreshProjectTest extends TestCase {
     file.deleteOnExit();
 
     try {
-      PowerMockito.mockStatic(ProjectViewManager.class);
-
-      ArgumentCaptor<File[]> captor = ArgumentCaptor.forClass(File[].class);
-      PowerMockito.doNothing().when(
-          ProjectViewManager.class, "refreshFolders", (Object[])captor.capture());
-
       DiscardAction discardAction = new DiscardAction(
           Arrays.asList(new FileStatus(GitChangeType.ADD, "test.txt")),
           new GitController() {
@@ -89,13 +95,10 @@ public class RefreshProjectTest extends TestCase {
             }
           });
       discardAction.actionPerformed(null);
-
-      File[] value = captor.getValue();
-      assertNotNull(value);
-      assertEquals(1, value.length);
+      
       assertEquals(
           repoDir.getCanonicalFile().getAbsolutePath(),
-          value[0].getAbsolutePath());
+          refreshedFolder.getAbsolutePath());
     } finally {
       FileUtils.deleteDirectory(repoDir);
     }
@@ -107,7 +110,6 @@ public class RefreshProjectTest extends TestCase {
    * @throws Exception
    */
   
-  @PrepareForTest({ ProjectViewManager.class})
   @Test
   public void testRefreshProjectOnDiscard_2() throws Exception {
     File repoDir = new File(localTestRepoPath);
@@ -123,12 +125,6 @@ public class RefreshProjectTest extends TestCase {
     file2.deleteOnExit();
 
     try {
-      PowerMockito.mockStatic(ProjectViewManager.class);
-
-      ArgumentCaptor<File[]> captor = ArgumentCaptor.forClass(File[].class);
-      PowerMockito.doNothing().when(
-          ProjectViewManager.class, "refreshFolders", (Object[])captor.capture());
-
       DiscardAction discardAction = new DiscardAction(
           Arrays.asList(new FileStatus(GitChangeType.UNTRACKED, "test.txt"),
               new FileStatus(GitChangeType.UNTRACKED, "subFolder/test2.txt")),
@@ -140,12 +136,9 @@ public class RefreshProjectTest extends TestCase {
           });
       discardAction.actionPerformed(null);
 
-      File[] value = captor.getValue();
-      assertNotNull(value);
-      assertEquals(1, value.length);
       assertEquals(
           repoDir.getCanonicalFile().getAbsolutePath(),
-          value[0].getAbsolutePath());
+          refreshedFolder.getAbsolutePath());
     } finally {
       FileUtils.deleteDirectory(repoDir);
     }
@@ -157,7 +150,7 @@ public class RefreshProjectTest extends TestCase {
    * @throws Exception
    */
   
-  @PrepareForTest({ ProjectViewManager.class, GitAccess.class})
+  @PrepareForTest({ GitAccess.class})
   @Test
   public void testRefreshProjectOnDiscard_3() throws Exception {
     File repoDir = new File(localTestRepoPath);
@@ -167,11 +160,6 @@ public class RefreshProjectTest extends TestCase {
     subModule.mkdir();
 
     try {
-      PowerMockito.mockStatic(ProjectViewManager.class);
-      ArgumentCaptor<File[]> captor = ArgumentCaptor.forClass(File[].class);
-      PowerMockito.doNothing().when(
-          ProjectViewManager.class, "refreshFolders", (Object[])captor.capture());
-      
       GitAccess gitAccessMock = PowerMockito.mock(GitAccess.class);
       Whitebox.setInternalState(GitAccess.class, "instance", gitAccessMock);
       PowerMockito.doNothing().when(gitAccessMock).discardSubmodule();
@@ -186,12 +174,9 @@ public class RefreshProjectTest extends TestCase {
           });
       discardAction.actionPerformed(null);
 
-      File[] value = captor.getValue();
-      assertNotNull(value);
-      assertEquals(1, value.length);
       assertEquals(
           subModule.getCanonicalFile().getAbsolutePath(),
-          value[0].getAbsolutePath());
+          refreshedFolder.getAbsolutePath());
     } finally {
       FileUtils.deleteDirectory(repoDir);
     }
