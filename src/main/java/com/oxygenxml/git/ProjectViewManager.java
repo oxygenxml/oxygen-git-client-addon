@@ -1,7 +1,6 @@
 package com.oxygenxml.git;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashSet;
@@ -11,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.utils.FileHelper;
 
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
@@ -137,29 +135,4 @@ public class ProjectViewManager {
 	  return files;
 	}
 	
-	/**
-	 * Refresh the given folders from the Project view.
-	 * 
-	 * @param projectFolders The project folders.
-	 */
-	public static void refreshFolders(File[] projectFolders) {
-	  try {
-	    // The "ProjectController#refreshFolders()" API was introduced in 19.1,
-	    // but the plug-in should be compatible with older versions.
-	    StandalonePluginWorkspace workspaceAccess = 
-	        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-      Method getProjectManagerMethod = StandalonePluginWorkspace.class.getMethod(GET_PROJECT_MANAGER_METHOD_NAME);
-      Object projectManager = getProjectManagerMethod.invoke(workspaceAccess);
-      Class<?> projectControllerClass = Class.forName(
-          "ro.sync.exml.workspace.api.standalone.project.ProjectController");
-      Method refreshFoldersMethod = projectControllerClass.getMethod("refreshFolders", File[].class);
-      refreshFoldersMethod.invoke(projectManager, (Object) projectFolders);
-    } catch (NoSuchMethodException | SecurityException | IllegalAccessException 
-        | IllegalArgumentException | InvocationTargetException | ClassNotFoundException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
-    }
-	}
-
 }

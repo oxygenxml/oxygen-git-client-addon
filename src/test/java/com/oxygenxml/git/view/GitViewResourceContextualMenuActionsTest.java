@@ -421,7 +421,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" + 
         "----\n" + 
-        "Show_in_history [DISABLED]\n" + 
+        "Show_history [DISABLED]\n" + 
         "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -471,7 +471,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" + 
         "----\n" + 
-        "Show_in_history [DISABLED]\n" + 
+        "Show_history [DISABLED]\n" + 
         "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -521,7 +521,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" +
         "----\n" + 
-        "Show_in_history [DISABLED]\n" + 
+        "Show_history [DISABLED]\n" + 
         "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -710,7 +710,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" +
         "----\n" + 
-        "Show_in_history [DISABLED]\n" + 
+        "Show_history [DISABLED]\n" + 
         "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -760,7 +760,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" +
         "----\n" + 
-        "Show_in_history [DISABLED]\n" + 
+        "Show_history [DISABLED]\n" + 
         "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -810,7 +810,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" +
         "----\n" + 
-        "Show_in_history [DISABLED]\n" + 
+        "Show_history [DISABLED]\n" + 
         "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -859,7 +859,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" +
         "----\n" + 
-        "Show_in_history [ENABLED]\n" + 
+        "Show_history [ENABLED]\n" + 
         "Show_blame [ENABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }
@@ -909,7 +909,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
         "  Restart_Merge [DISABLED]\n" + 
         "Discard [ENABLED]\n" +
         "----\n" + 
-        "Show_in_history [DISABLED]\n" + 
+        "Show_history [DISABLED]\n" + 
         "Show_blame [DISABLED]",
         PopupMenuSerializer.serializePopupStructure(menu, true, true));
   }

@@ -180,7 +180,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 	      showErrorMessage(e.getMessage());
 	    } finally {
 	      // Finish the initial doOK action and let the dialog close.
-	      SwingUtilities.invokeLater(BranchSelectDialog.super::doOK);
+	      SwingUtilities.invokeLater(() -> BranchSelectDialog.super.doOK());
 	    }
 	  });
 	}

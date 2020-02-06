@@ -45,6 +45,7 @@ import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 
 public class GitAccessConflictTest {
   
@@ -112,6 +113,16 @@ public class GitAccessConflictTest {
         return null;
       }
     }).when(pluginWorkspaceMock).showWarningMessage(Mockito.anyString());
+    
+    ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
+    Mockito.when(pluginWorkspaceMock.getProjectManager()).thenReturn(projectCtrlMock);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(projectCtrlMock).refreshFolders(Mockito.any());
+    
     shownWarningMess[0] = "";
   }
   
