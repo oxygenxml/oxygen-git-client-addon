@@ -381,6 +381,21 @@ public class GitAccess {
       logger.debug(e, e);
     }
   }
+  
+  /**
+   * The active branch changed.
+   * 
+   * @param oldBranch Previous branch.
+   * @param newBranch New branch.
+   */
+  private void fireBranchChanged(String oldBranch, String newBranch) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Fire branch changed, old " + oldBranch + " new " + newBranch);
+    }
+    for (GitEventListener gitEventListener : listeners) {
+      gitEventListener.branchChanged(oldBranch, newBranch);
+    }
+  }
 
 	/**
 	 * Notify that the loaded repository changed.
@@ -889,24 +904,15 @@ public class GitAccess {
 	 */
 	public void createBranch(String branchName) {
 		try {
+		  BranchInfo branchInfo = getBranchInfo();
+		  
 			git.branchCreate().setName(branchName).call();
+			
+			fireBranchChanged(branchInfo.getBranchName(), branchName);
 		} catch (GitAPIException e) {
 		  logger.error(e, e);
 		}
 
-	}
-
-	/**
-	 * Delete a branch from the repository
-	 * 
-	 * @param branchName - Name for the branch to delete
-	 */
-	public void deleteBranch(String branchName) {
-		try {
-			git.branchDelete().setBranchNames(branchName).call();
-		} catch (GitAPIException e) {
-		  logger.error(e, e);
-		}
 	}
 
 	/**
@@ -1818,7 +1824,10 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public void setBranch(String selectedBranch) throws GitAPIException {
+	  BranchInfo branchInfo = getBranchInfo();
 		git.checkout().setName(selectedBranch).call();
+		
+		fireBranchChanged(branchInfo.getBranchName(), selectedBranch);
 
 	}
 

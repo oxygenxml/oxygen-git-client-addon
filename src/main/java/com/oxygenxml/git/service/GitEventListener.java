@@ -44,4 +44,12 @@ public interface GitEventListener {
    * @param changeEvent Details about the change.
    */
   void stateChanged(GitEvent changeEvent);
+  
+  /**
+   * The active branch changed.
+   * 
+   * @param oldBranch Previous branch qualified name.
+   * @param newBranch New branch qualified name.
+   */
+  void branchChanged(String oldBranch, String newBranch);
 }

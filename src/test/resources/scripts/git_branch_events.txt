@@ -1,0 +1,10 @@
+<script>
+    <changeSet message="First commit.">
+        <change path="f.txt" type="add">content</change>
+    </changeSet>
+    
+    <changeSet message="New branch" branch="feature">
+        <change path="f.txt" type="change">3</change>
+    </changeSet>
+
+</script>
