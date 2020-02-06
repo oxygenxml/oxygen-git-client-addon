@@ -192,7 +192,7 @@ public class HistoryPanel extends JPanel {
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
         if (isShowing()) {
-          showHistory(activeFilePath, true);
+          GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
         }
       }
     });
