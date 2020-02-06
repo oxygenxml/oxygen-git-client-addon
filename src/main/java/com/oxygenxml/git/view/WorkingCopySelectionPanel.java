@@ -112,6 +112,9 @@ public class WorkingCopySelectionPanel extends JPanel {
       }
 	    @Override
 	    public void repositoryOpeningFailed(File repo, Throwable ex) {
+	      logger.error("ERROR");
+	      logger.error(ex, ex);
+	      
 	      if (workingCopyCombo != null) {
 	        if (ex instanceof RepositoryNotFoundException) {
 	          // We are here if the selected Repository doesn't exists anymore

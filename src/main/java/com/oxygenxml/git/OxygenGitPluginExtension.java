@@ -191,16 +191,17 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
       public void repositoryIsAboutToOpen(File repo) {
         SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
       }
+      
       @Override
       public void repositoryChanged() {
-        if (historyView != null && historyView.isShowing()) {
-          GitOperationScheduler.getInstance().schedule(OxygenGitPluginExtension.this::showRepositoryHistory);
-        }
         SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
       }
+      
       @Override
       public void repositoryOpeningFailed(File repo, Throwable ex) {
         SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+        
+        
         pluginWorkspaceAccess.showErrorMessage("Repository opening failed due to: " + ex.getMessage());
       }
      
