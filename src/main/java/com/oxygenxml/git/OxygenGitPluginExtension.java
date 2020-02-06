@@ -24,7 +24,6 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
-import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
@@ -200,9 +199,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
       @Override
       public void repositoryOpeningFailed(File repo, Throwable ex) {
         SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-        
-        
-        pluginWorkspaceAccess.showErrorMessage("Repository opening failed due to: " + ex.getMessage());
       }
      
       private Timer cursorTimer = new Timer(

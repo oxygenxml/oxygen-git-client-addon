@@ -36,6 +36,7 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
 import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
@@ -204,6 +205,8 @@ public class GitMenuActionsProvider {
         }
       }
     } catch (IOException e) {
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Repository opening failed due to: " + e.getMessage());
+      
       logger.error(e, e);
     } finally {
       setBusyCursor(false);
@@ -230,6 +233,8 @@ public class GitMenuActionsProvider {
         }
       }
     } catch (IOException e) {
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Repository opening failed due to: " + e.getMessage());
+      
       logger.error(e, e);
     } finally {
       setBusyCursor(false);
@@ -266,6 +271,8 @@ public class GitMenuActionsProvider {
                 () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NO_CHANGES)));
           }
         } catch (Exception e1) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Repository opening failed due to: " + e1.getMessage());
+          
           logger.error(e1, e1);
         }
       }
@@ -308,6 +315,8 @@ public class GitMenuActionsProvider {
                 () -> pluginWS.showInformationMessage(translator.getTranslation(Tags.NOTHING_TO_COMMIT)));
           }
         } catch (IOException e1) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Repository opening failed due to: " + e1.getMessage());
+          
           logger.error(e1, e1);
         }
       }

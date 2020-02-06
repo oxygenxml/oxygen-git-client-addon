@@ -89,57 +89,7 @@ public class WorkingCopySelectionPanel extends JPanel {
    */
 	public WorkingCopySelectionPanel() {
 	  createGUI();
-	  gitAccess.addGitListener(new GitEventAdapter() {
-	    @Override
-	    public void repositoryIsAboutToOpen(File repo) {
-	      setWCSelectorsEnabled(false);
-	    }
-	    @Override
-	    public void repositoryChanged() {
-	      if (!SwingUtilities.isEventDispatchThread()) {
-	        SwingUtilities.invokeLater(() -> setWCSelectorsEnabled(true));
-	      } else {
-	        setWCSelectorsEnabled(true);
-	      }
-	    }
-	    private void setWCSelectorsEnabled(boolean isEnabled) {
-        if (workingCopyCombo != null) {
-          workingCopyCombo.setEnabled(isEnabled);
-        }
-        if (browseButton != null) {
-          browseButton.setEnabled(isEnabled);
-        }
-      }
-	    @Override
-	    public void repositoryOpeningFailed(File repo, Throwable ex) {
-	      logger.error("ERROR");
-	      logger.error(ex, ex);
-	      
-	      if (workingCopyCombo != null) {
-	        if (ex instanceof RepositoryNotFoundException) {
-	          // We are here if the selected Repository doesn't exists anymore
-	          OptionsManager.getInstance().removeRepositoryLocation(repo.getAbsolutePath());
-	          if (workingCopyCombo.getItemCount() > 0) {
-	            workingCopyCombo.setSelectedItem(0);
-	          } else {
-	            workingCopyCombo.setSelectedItem(null);
-	            gitAccess.closeRepo();
-	          }
-	          workingCopyCombo.removeItem(repo.getAbsoluteFile());
-
-	          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
-	                .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND)));
-	        } else if (ex instanceof IOException) {
-	          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
-                .showErrorMessage("Could not load the repository. " + ex.getMessage()));
-	        }
-	        workingCopyCombo.setEnabled(true);
-	      }
-	      if (browseButton != null) {
-          browseButton.setEnabled(true);
-        }
-	    }
-	  });
+	  gitAccess.addGitListener(new GitEventUpdater());
 	}
 
 	public JComboBox<String> getWorkingCopyCombo() {
@@ -165,58 +115,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 		addFileChooserListner();
 		
-		GitAccess.getInstance().addGitListener(new GitEventAdapter() {
-      @Override
-      public void repositoryChanged() {
-        // The event was not triggered by the combo.
-        try {
-          File wc = GitAccess.getInstance().getWorkingCopy();
-          String absolutePath = wc.getAbsolutePath();
-          
-          OptionsManager.getInstance().addRepository(absolutePath);
-          OptionsManager.getInstance().saveSelectedRepository(absolutePath);
-          
-          if (!inhibitRepoUpdate) {
-            inhibitRepoUpdate = true;
-            try {
-              if (FileHelper.isGitSubmodule(absolutePath)) {
-                // An ugly hack to select the path in the combo without keeping it
-                // in the model. We want to avoid adding it in the model because 
-                // this path is not exactly an working copy (no .git in it)
-                workingCopyCombo.setEditable(true);
-                workingCopyCombo.setSelectedItem(absolutePath);
-                workingCopyCombo.setEditable(false);
-              } else {
-                // Add it on the first position. 
-                DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
-                defaultComboBoxModel.removeElement(absolutePath);
-                defaultComboBoxModel.insertElementAt(absolutePath, 0);
-                if (defaultComboBoxModel.getSize() == 2 && 
-                    defaultComboBoxModel.getIndexOf(CLEAR_HISTORY_ENTRY) == -1) {
-                  defaultComboBoxModel.addElement(CLEAR_HISTORY_ENTRY);
-                }
-
-                // Select it.
-                workingCopyCombo.setSelectedItem(absolutePath);
-              }
-            } finally {
-              inhibitRepoUpdate = false;
-            }
-          }
-          
-          if (GitAccess.getInstance().getBranchInfo().isDetached()) {
-            RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
-            if (repositoryState != RepositoryState.REBASING_MERGE) {
-              PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                  translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
-            }
-          }
-        } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
-        }
-      }
-    });
-
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.WORKINGCOPY_PANEL_HEIGHT));
 	}
 	
@@ -458,5 +356,120 @@ public class WorkingCopySelectionPanel extends JPanel {
 			}
 			return comp;
 		}
+	}
+	
+	/**
+	 * Listens on Git events and updates the GUI accordingly.
+	 */
+	private class GitEventUpdater extends GitEventAdapter {
+
+    @Override
+    public void repositoryIsAboutToOpen(File repo) {
+      setWCSelectorsEnabled(false);
+    }
+    @Override
+    public void repositoryChanged() {
+      if (!SwingUtilities.isEventDispatchThread()) {
+        SwingUtilities.invokeLater(() -> setWCSelectorsEnabled(true));
+      } else {
+        setWCSelectorsEnabled(true);
+      }
+      
+      updateComboboxModelAfterRepositoryChanged();
+    }
+    
+    private void setWCSelectorsEnabled(boolean isEnabled) {
+      if (workingCopyCombo != null) {
+        workingCopyCombo.setEnabled(isEnabled);
+      }
+      if (browseButton != null) {
+        browseButton.setEnabled(isEnabled);
+      }
+    }
+    @Override
+    public void repositoryOpeningFailed(File repo, Throwable ex) {
+      if (workingCopyCombo != null) {
+        if (ex instanceof RepositoryNotFoundException) {
+          // We are here if the selected Repository doesn't exists anymore
+          OptionsManager.getInstance().removeRepositoryLocation(repo.getAbsolutePath());
+
+
+          if (workingCopyCombo.getItemCount() > 0) {
+            // Fallback to the previously loaded WC. We assume its the topmost in the list. Not to elegant...
+            workingCopyCombo.setSelectedIndex(0);
+          } else {
+            workingCopyCombo.setSelectedItem(null);
+            gitAccess.closeRepo();
+          }
+
+
+          // The repo file is the .git directory. The combo model contains WC paths.
+          workingCopyCombo.removeItem(repo.getParentFile().getAbsolutePath());
+
+
+          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
+              .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND)));
+        } else if (ex instanceof IOException) {
+          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
+              .showErrorMessage("Could not load the repository. " + ex.getMessage()));
+        }
+        workingCopyCombo.setEnabled(true);
+      }
+      if (browseButton != null) {
+        browseButton.setEnabled(true);
+      }
+    }
+    
+    /**
+     * Updates the combo box model with the currently loaded repository.
+     */
+    public void updateComboboxModelAfterRepositoryChanged() {
+      // The event was not triggered by the combo.
+      try {
+        File wc = GitAccess.getInstance().getWorkingCopy();
+        String absolutePath = wc.getAbsolutePath();
+        
+        OptionsManager.getInstance().addRepository(absolutePath);
+        OptionsManager.getInstance().saveSelectedRepository(absolutePath);
+        
+        if (!inhibitRepoUpdate) {
+          inhibitRepoUpdate = true;
+          try {
+            if (FileHelper.isGitSubmodule(absolutePath)) {
+              // An ugly hack to select the path in the combo without keeping it
+              // in the model. We want to avoid adding it in the model because 
+              // this path is not exactly an working copy (no .git in it)
+              workingCopyCombo.setEditable(true);
+              workingCopyCombo.setSelectedItem(absolutePath);
+              workingCopyCombo.setEditable(false);
+            } else {
+              // Add it on the first position. 
+              DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
+              defaultComboBoxModel.removeElement(absolutePath);
+              defaultComboBoxModel.insertElementAt(absolutePath, 0);
+              if (defaultComboBoxModel.getSize() == 2 && 
+                  defaultComboBoxModel.getIndexOf(CLEAR_HISTORY_ENTRY) == -1) {
+                defaultComboBoxModel.addElement(CLEAR_HISTORY_ENTRY);
+              }
+
+              // Select it.
+              workingCopyCombo.setSelectedItem(absolutePath);
+            }
+          } finally {
+            inhibitRepoUpdate = false;
+          }
+        }
+        
+        if (GitAccess.getInstance().getBranchInfo().isDetached()) {
+          RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
+          if (repositoryState != RepositoryState.REBASING_MERGE) {
+            PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+                translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+          }
+        }
+      } catch (NoRepositorySelected e) {
+        logger.debug(e, e);
+      }
+    }
 	}
 }

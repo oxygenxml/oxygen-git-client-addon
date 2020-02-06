@@ -279,7 +279,8 @@ public class GitAccess {
 	    try {
 	      openRepository(path);
 	    } catch (IOException e) {
-	      logger.error(e, e);
+	      //  openRepository() already notified the listeners.
+	      logger.debug(e, e);
 	    }
 	  });
 	}
@@ -325,7 +326,7 @@ public class GitAccess {
         
         repositoryOpened();
       } catch (IOException e) {
-        fireRepositoryOpenFailed(repo, e.getCause());
+        fireRepositoryOpenFailed(repo, e);
         
         throw e;
       }
