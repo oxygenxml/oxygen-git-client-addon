@@ -53,6 +53,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
@@ -180,6 +181,14 @@ public class HistoryPanel extends JPanel {
     });
     
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+      @Override
+      public void repositoryChanged() {
+        if (isShowing()) {
+          GitOperationScheduler.getInstance().schedule(HistoryPanel.this::showRepositoryHistory);
+        }
+        
+      }
+      
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
         if (isShowing()) {
