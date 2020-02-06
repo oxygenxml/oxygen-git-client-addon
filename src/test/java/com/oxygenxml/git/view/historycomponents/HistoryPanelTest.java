@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.JTable;
 
@@ -14,6 +15,7 @@ import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.event.GitController;
@@ -233,6 +235,10 @@ public class HistoryPanelTest extends GitTestBase {
     // Change branch.
     //=======================
     GitAccess.getInstance().setBranch("master");
+    
+    // History panel uses the scheduler to perform the change.
+    ScheduledFuture schedule = GitOperationScheduler.getInstance().schedule(() -> {});
+    schedule.get();
 
     model = (HistoryCommitTableModel) historyTable.getModel();
 
