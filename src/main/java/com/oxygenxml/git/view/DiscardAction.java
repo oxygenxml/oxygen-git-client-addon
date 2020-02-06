@@ -13,7 +13,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import com.oxygenxml.git.ProjectViewManager;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -77,7 +76,8 @@ public class DiscardAction extends AbstractAction {
         "   " + translator.getTranslation(Tags.YES) + "   ",
         "   " + translator.getTranslation(Tags.NO) + "   "};
     int[] optonsId = new int[] { 0, 1 };
-    int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+    StandalonePluginWorkspace wsAccess = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    int response = wsAccess.showConfirmDialog(
         translator.getTranslation(Tags.DISCARD),
         translator.getTranslation(Tags.DISCARD_CONFIRMATION_MESSAGE), options, optonsId);
     if (response == 0) {
@@ -110,7 +110,7 @@ public class DiscardAction extends AbstractAction {
       stageController.doGitCommand(fileStatuses, GitCommand.DISCARD);
       
       // Refresh the Project view
-      ProjectViewManager.refreshFolders(foldersToRefresh.toArray(new File[0]));
+      wsAccess.getProjectManager().refreshFolders(foldersToRefresh.toArray(new File[0]));
     }
   }
 

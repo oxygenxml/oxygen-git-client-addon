@@ -60,6 +60,7 @@ import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
@@ -285,8 +286,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   protected void setUp() throws Exception {
     super.setUp();
     
-    StandalonePluginWorkspace mock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(mock);
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -294,7 +295,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         editorChangeListeners.add(listener);
         return null;
       }
-    }).when(mock).addEditorChangeListener(
+    }).when(pluginWSMock).addEditorChangeListener(
         (WSEditorChangeListener) Mockito.any(), 
         Mockito.anyInt());
     
@@ -305,11 +306,11 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         editorChangeListeners.remove(listener);
         return null;
       }
-    }).when(mock).removeEditorChangeListener(
+    }).when(pluginWSMock).removeEditorChangeListener(
         (WSEditorChangeListener) Mockito.any(), 
         Mockito.anyInt());
     
-    Mockito.when(mock.getEditorAccess((URL) Mockito.any(), Mockito.anyInt())).then(new Answer<WSEditor>() {
+    Mockito.when(pluginWSMock.getEditorAccess((URL) Mockito.any(), Mockito.anyInt())).then(new Answer<WSEditor>() {
       @Override
       public WSEditor answer(InvocationOnMock invocation) throws Throwable {
         WSEditor wsEditorMock = createWSEditorMock();
@@ -320,7 +321,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     });
     
     UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
-    Mockito.when(mock.getUtilAccess()).thenReturn(utilAccessMock);
+    Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
     Mockito.when(utilAccessMock.locateFile((URL) Mockito.any())).then(new Answer<File>() {
       @Override
       public File answer(InvocationOnMock invocation) throws Throwable {
@@ -343,7 +344,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     });
    
     ImageUtilities imgUtils = Mockito.mock(ImageUtilities.class);
-    Mockito.when(mock.getImageUtilities()).thenReturn(imgUtils);
+    Mockito.when(pluginWSMock.getImageUtilities()).thenReturn(imgUtils);
     Mockito.when(imgUtils.loadIcon((URL) Mockito.any())).thenAnswer(new Answer<ImageIcon>() {
       @Override
       public ImageIcon answer(InvocationOnMock invocation) throws Throwable {
@@ -351,6 +352,15 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         return new ImageIcon(url);
       }
     });
+    
+    ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
+    Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(projectCtrlMock).refreshFolders(Mockito.any());
     
     installGitProtocol();
   }

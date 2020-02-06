@@ -92,7 +92,6 @@ import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
 
-import com.oxygenxml.git.ProjectViewManager;
 import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
@@ -1228,7 +1227,8 @@ public class GitAccess {
         }
       }
       // Refresh the Project view
-			ProjectViewManager.refreshFolders(new File[] { FileHelper.getCommonDir(pulledFilesParentDirs) });
+      StandalonePluginWorkspace wsAccess = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      wsAccess.getProjectManager().refreshFolders(new File[] { FileHelper.getCommonDir(pulledFilesParentDirs) });
     } catch (IOException e) {
       logger.error(e, e);
     }

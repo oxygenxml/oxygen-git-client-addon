@@ -70,6 +70,10 @@ public class HistoryPanel extends JPanel {
    */
   private static final Logger LOGGER = Logger.getLogger(HistoryPanel.class);
   /**
+   * Git API access.
+   */
+  private static final GitAccess gitAccess = GitAccess.getInstance();
+  /**
    * Table view that presents the commits.
    */
   JTable historyTable;
@@ -363,11 +367,10 @@ public class HistoryPanel extends JPanel {
     // Check if we don't already present the history for this path!!!!
     if (force || !Equaler.verifyEquals(filePath, activeFilePath)) {
       this.activeFilePath = filePath;
-      GitAccess gitAccess = GitAccess.getInstance();
 
       try {
         // Make sure we know about the remote as well, to present data about the upstream branch.
-        tryFetch(gitAccess);
+        tryFetch();
 
         File directory = gitAccess.getWorkingCopy();
         if (filePath != null) {
@@ -457,7 +460,7 @@ public class HistoryPanel extends JPanel {
    * 
    * @param gitAccess Git access.
    */
-  private void tryFetch(GitAccess gitAccess) {
+  private void tryFetch() {
     try {
       gitAccess.fetch();
     } catch (SSHPassphraseRequiredException | PrivateRepositoryException | RepositoryUnavailableException e) {
@@ -473,7 +476,7 @@ public class HistoryPanel extends JPanel {
   private Repository getRepository() {
     Repository repository = null;
     try {
-      repository = GitAccess.getInstance().getRepository();
+      repository = gitAccess.getRepository();
     } catch (NoRepositorySelected e) {
       LOGGER.error(e, e);
     }
