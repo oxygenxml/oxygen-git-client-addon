@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class GitAccessRestoreLastCommitTest {
 	private GitAccess gitAccess;
 
 	@Before
-	public void init() {
+	public void init() throws IllegalStateException, GitAPIException {
 		OptionsManager.getInstance().saveSelectedRepository(LOCAL_TEST_REPOSITPRY);
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);

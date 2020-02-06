@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -27,7 +28,7 @@ public class GitAccessCommitTest {
 	private GitAccess gitAccess;
 
 	@Before
-	public void init() {
+	public void init() throws IllegalStateException, GitAPIException {
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 	}

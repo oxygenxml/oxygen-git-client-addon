@@ -70,8 +70,10 @@ public class RepoGenerationScript {
    * 
    * @param script Operations to be performed on the repository.
    * @param wcTree Working tree location.
+   * @throws GitAPIException 
+   * @throws IllegalStateException 
    */
-  public static void generateRepository(RepoGenerationScript script, File wcTree) {
+  public static void generateRepository(RepoGenerationScript script, File wcTree) throws IllegalStateException, GitAPIException {
     initGit(wcTree);
     
     script.changeSet.forEach(ch -> applyChanges(wcTree, ch));
@@ -93,8 +95,11 @@ public class RepoGenerationScript {
    * Create a new repository.
    * 
    * @param wcTree Working tree directory.
+   * 
+   * @throws GitAPIException 
+   * @throws IllegalStateException 
    */
-  private static void initGit(File wcTree) {
+  private static void initGit(File wcTree) throws IllegalStateException, GitAPIException {
     wcTree.mkdirs();
     GitAccess.getInstance().createNewRepository(wcTree.getAbsolutePath());
     

@@ -37,7 +37,7 @@ public class GitAccessPushTest {
 	private GitAccess gitAccess;
 
 	@Before
-	public void init() throws RepositoryNotFoundException, IOException, NoRepositorySelected {
+	public void init() throws RepositoryNotFoundException, IOException, NoRepositorySelected, IllegalStateException, GitAPIException {
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(REMOTE_TEST_REPOSITPRY);
 		remoteRepo = gitAccess.getRepository();

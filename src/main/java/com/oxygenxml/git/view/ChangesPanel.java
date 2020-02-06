@@ -12,6 +12,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -192,8 +193,21 @@ public class ChangesPanel extends JPanel {
 		    : OptionsManager.getInstance().getUntagedResViewMode();
 		
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+      
+      @Override
+      public void repositoryIsAboutToOpen(File repo) {
+        // TODO Disable widgets to avoid unwanted actions.
+      }
+      
+      @Override
+      public void repositoryOpeningFailed(File repo, Throwable ex) {
+        // TODO Enable widgets.
+      }
+      
       @Override
       public void repositoryChanged() {
+        // TODO Enable widgets.
+        
         if (filesTable != null) {
           // The event might come too early.
           GitAccess gitAccess = GitAccess.getInstance();

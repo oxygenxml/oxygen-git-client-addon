@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class GitAccessUnstageFilesTest {
 	private GitAccess gitAccess;
 
 	@Before
-	public void init() {
+	public void init() throws IllegalStateException, GitAPIException {
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");

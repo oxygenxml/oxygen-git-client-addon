@@ -30,6 +30,7 @@ import javax.swing.JDialog;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
@@ -81,7 +82,14 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * The loaded reposiltories.
    */
-  private List<Repository> loadedRepos = new ArrayList<>();
+  private List<Repository> loadedRepos = new ArrayList<Repository> () {
+    public boolean add(Repository e) {
+      if (e == null) {
+        logger.error("NULL REPOSIOTRY", new Exception());
+      }
+      return super.add(e);
+    };
+  };
   
   /**
    * The loaded reposiltories.
@@ -236,8 +244,10 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * @param repositoryPath Location where to create the repository.
    * @return
    * @throws NoRepositorySelected
+   * @throws GitAPIException 
+   * @throws IllegalStateException 
    */
-  protected Repository createRepository(String repositoryPath) throws NoRepositorySelected {
+  protected Repository createRepository(String repositoryPath) throws NoRepositorySelected, IllegalStateException, GitAPIException {
     try {
       File dirToDelete = new File(repositoryPath, ".git");
       FileUtils.deleteDirectory(dirToDelete);
@@ -604,7 +614,10 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
     
-    loadedRepos.add(GitAccess.getInstance().getRepository());
+    Repository repository = GitAccess.getInstance().getRepository();
+    if (repository != null) {
+      loadedRepos.add(repository);
+    }
   }
   
 }

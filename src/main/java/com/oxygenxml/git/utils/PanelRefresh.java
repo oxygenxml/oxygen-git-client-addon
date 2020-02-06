@@ -16,6 +16,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.xml.sax.SAXException;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -163,8 +164,13 @@ public class PanelRefresh implements GitRefreshSupport {
 	              options,
 	              optonsId);
 	          if (response == 0) {
-	            repoChanged = true;
-	            gitAccess.createNewRepository(projectView);
+	            try {
+                gitAccess.createNewRepository(projectView);
+                repoChanged = true;
+              } catch (IllegalStateException | GitAPIException e) {
+                logger.debug(e,  e);
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Failed to create a new repository.", e);
+              }
 	          }
 
 	          // Don't ask the user again.
