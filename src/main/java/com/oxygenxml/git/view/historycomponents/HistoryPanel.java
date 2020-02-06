@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +44,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
@@ -174,6 +176,15 @@ public class HistoryPanel extends JPanel {
         centerSplitPane.setDividerLocation(0, (int)(h * 0.6));
         
         removeComponentListener(this);
+      }
+    });
+    
+    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+      @Override
+      public void branchChanged(String oldBranch, String newBranch) {
+        if (isShowing()) {
+          showHistory(activeFilePath, true);
+        }
       }
     });
 
@@ -365,8 +376,10 @@ public class HistoryPanel extends JPanel {
         if (filePath != null) {
           directory = new File(directory, filePath);
         }
+
         showingHistoryForRepoLabel.setText(
-            Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR) + " " + directory.getName());
+        MessageFormat.format(Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR), directory.getName()));
+        
         showingHistoryForRepoLabel.setToolTipText(directory.getAbsolutePath());
         showingHistoryForRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
 

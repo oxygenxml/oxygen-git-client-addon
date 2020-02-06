@@ -343,11 +343,11 @@
     </key>
     <key value="Showing_history_for">
         <comment>Showing history for:</comment>
-        <val lang="en_US">Showing current branch history for:</val>
-        <val lang="de_DE">Branch-Historie für:</val>
-        <val lang="fr_FR">Showing current branch history for:</val>
-        <val lang="ja_JP">Showing current branch history for:</val>
-        <val lang="nl_NL">Showing current branch history for:</val>
+        <val lang="en_US">Branch history for {0}</val>
+        <val lang="de_DE">Branch-Historie für {0}</val>
+        <val lang="fr_FR">Branch history for {0}</val>
+        <val lang="ja_JP">Branch history for {0}</val>
+        <val lang="nl_NL">Branch history for {0}</val>
     </key>
     <key value="Push_to">
         <comment>Push to</comment>
