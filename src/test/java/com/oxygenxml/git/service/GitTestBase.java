@@ -258,7 +258,19 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     GitAccess gitAccess = GitAccess.getInstance();
     // Create the remote repository.
     gitAccess.createNewRepository(repositoryPath);
+    
+    logger.error(gitAccess.getGitForTests().hashCode());
+    logger.error(gitAccess.getGitForTests().getRepository());
+    
     Repository remoteRepo = gitAccess.getRepository();
+    
+    
+    if (remoteRepo == null) {
+      logger.error("UPS! Null repository " + repositoryPath);
+      logger.error(gitAccess.getGitForTests().hashCode());
+      logger.error(gitAccess.getGitForTests().getRepository());
+    }
+    
     
     loadedRepos.add(remoteRepo);
     
