@@ -2,6 +2,8 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.ComboBoxModel;
@@ -11,6 +13,8 @@ import javax.swing.JFrame;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -39,6 +43,10 @@ public class WorkingCopySelector2Test extends JFCTestCase {
    * A directory where there is no git repository.
    */
   private File badWcTree = new File("target/gen/WorkingCopySelector2Test_bad");
+  /**
+   * Repositories that were removed from options.
+   */
+  private List<String> removedRepositories = new LinkedList<>(); 
   
   @Override
   protected void setUp() throws Exception {
@@ -65,6 +73,16 @@ public class WorkingCopySelector2Test extends JFCTestCase {
     PowerMockito.when(optMngMock.getSelectedRepository()).thenReturn(wcTree.getAbsolutePath());
 
     GitAccess.getInstance().createNewRepository(wcTree.getAbsolutePath());
+    
+    PowerMockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        removedRepositories.add((String) invocation.getArguments()[0]);
+        
+        return null;
+      }
+    }).when(optMngMock).removeRepositoryLocation(Mockito.anyString());
+    
   }
 
   /**
@@ -117,6 +135,9 @@ public class WorkingCopySelector2Test extends JFCTestCase {
               sb.toString());
       
       assertEquals(wcTree.getAbsolutePath(), workingCopyCombo.getSelectedItem().toString());
+      
+      
+      assertEquals("[" + badWcTree.getAbsolutePath() + "]", removedRepositories.toString());
       
     } finally {
       frame.setVisible(false);

@@ -391,7 +391,10 @@ public class WorkingCopySelectionPanel extends JPanel {
       if (workingCopyCombo != null) {
         if (ex instanceof RepositoryNotFoundException) {
           // We are here if the selected Repository doesn't exists anymore
-          OptionsManager.getInstance().removeRepositoryLocation(repo.getAbsolutePath());
+          // The repo file is the .git directory. The combo model contains WC paths.
+          String wcDir = repo.getParentFile().getAbsolutePath();
+          
+          OptionsManager.getInstance().removeRepositoryLocation(wcDir);
 
 
           if (workingCopyCombo.getItemCount() > 0) {
@@ -403,8 +406,7 @@ public class WorkingCopySelectionPanel extends JPanel {
           }
 
 
-          // The repo file is the .git directory. The combo model contains WC paths.
-          workingCopyCombo.removeItem(repo.getParentFile().getAbsolutePath());
+          workingCopyCombo.removeItem(wcDir);
 
 
           SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
