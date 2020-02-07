@@ -372,6 +372,17 @@ public class Tags {
 	 * en: Do you want your current project ("{0}") to be a git project?
 	 */
 	public static final String CHECK_PROJECTXPR_IS_GIT = "Check_ProjcetXPR_Is_Git";
+	
+	/**
+	 * Confirmation message for changing the current working copy to the project folder,
+	 * which is also a Git repository.
+	 */
+	public static final String CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE = "Change_to_project_repo_confirm_message";
+	
+	/**
+	 * "Change working copy"
+	 */
+	public static final String CHANGE_WORKING_COPY = "Change_working_copy";
 
 	/**
 	 * The tooltip for the select submodule button

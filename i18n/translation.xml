@@ -4,6 +4,28 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Change_working_copy">
+        <comment>"Change working copy" label.</comment>
+        <val lang="en_US">Change working copy</val>
+        <val lang="de_DE">Change working copy</val>
+        <val lang="fr_FR">Change working copy</val>
+        <val lang="ja_JP">Change working copy</val>
+        <val lang="nl_NL">Change working copy</val>
+    </key>
+    <key value="Change_to_project_repo_confirm_message">
+        <comment>Confirmation message for changing the current working copy to the project folder, 
+            which is also a Git repository.</comment>
+        <val lang="en_US">We detected that the current project ({0}) is a Git repository. 
+            Do you want to set it as the current working copy in the ''{1}'' view?</val>
+        <val lang="de_DE">We detected that the current project ({0}) is a Git repository. 
+            Do you want to set it as the current working copy in the ''{1}'' view?</val>
+        <val lang="fr_FR">We detected that the current project ({0}) is a Git repository. 
+            Do you want to set it as the current working copy in the ''{1}'' view?</val>
+        <val lang="ja_JP">We detected that the current project ({0}) is a Git repository. 
+            Do you want to set it as the current working copy in the ''{1}'' view?</val>
+        <val lang="nl_NL">We detected that the current project ({0}) is a Git repository. 
+            Do you want to set it as the current working copy in the ''{1}'' view?</val>
+    </key>
     <key value="Clear_history">
         <comment>"Clear history" label.</comment>
         <val lang="en_US">Clear history</val>
@@ -944,8 +966,8 @@
     </key>
     <key value="Check_ProjcetXPR_Is_Git">
         <comment>The text displayed in the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
-        <val lang="en_US">Do you want your current project ("{0}") to be a Git project?</val>
-        <val lang="de_DE">Soll das aktuelle Projekt ("{0}") als Git-Projekt aufgesetzt werden?</val>
+        <val lang="en_US">Do you want your current project ({0}) to be a Git project?</val>
+        <val lang="de_DE">Soll das aktuelle Projekt ({0}) als Git-Projekt aufgesetzt werden?</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
