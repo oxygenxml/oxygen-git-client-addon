@@ -156,7 +156,7 @@ public class PanelRefresh implements GitRefreshSupport {
           try {
             File currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
             if (!detectedRepo.equals(currentRepo)) {
-              repoChanged = switchToRepoIfUserAgrees(detectedRepo, projectName);
+              repoChanged = switchToProjectRepoIfUserAgrees(projectDir);
             }
           } catch (NoRepositorySelected e) {
             logger.warn(e, e);
@@ -170,12 +170,11 @@ public class PanelRefresh implements GitRefreshSupport {
   /**
    * Switch to the given repository if the user agrees.
    * 
-   * @param repo        The repository directory.
-   * @param projectName The name of the project that is also a Git repository.
+   * @param projectDir  The project directory.
    * 
    * @return <code>true</code> if repository changed.
    */
-  private boolean switchToRepoIfUserAgrees(File repo, String projectName) {
+  private boolean switchToProjectRepoIfUserAgrees(String projectDir) {
     boolean repoChanged = false;
     StandalonePluginWorkspace pluginWS =
         (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
@@ -183,7 +182,7 @@ public class PanelRefresh implements GitRefreshSupport {
         translator.getTranslation(Tags.CHANGE_WORKING_COPY),
         MessageFormat.format(
             translator.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE),
-            projectName,
+            projectDir,
             translator.getTranslation(Tags.GIT_STAGING)),
         new String[] {
             "   " + translator.getTranslation(Tags.YES) + "   ",
@@ -191,7 +190,7 @@ public class PanelRefresh implements GitRefreshSupport {
         },
         new int[] { 0, 1 });
     if (response == 0) {
-      GitAccess.getInstance().setRepositoryAsync(repo.getAbsolutePath());
+      GitAccess.getInstance().setRepositoryAsync(projectDir);
       repoChanged = true;
     }
     

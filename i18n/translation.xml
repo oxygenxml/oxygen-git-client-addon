@@ -15,15 +15,15 @@
     <key value="Change_to_project_repo_confirm_message">
         <comment>Confirmation message for changing the current working copy to the project folder, 
             which is also a Git repository.</comment>
-        <val lang="en_US">We detected that the current project ({0}) is a Git repository. 
+        <val lang="en_US">We detected that the current project directory ({0}) is a local Git repository. 
             Do you want to set it as the current working copy in the ''{1}'' view?</val>
-        <val lang="de_DE">We detected that the current project ({0}) is a Git repository. 
+        <val lang="de_DE">We detected that the current project directory ({0}) is a local Git repository. 
             Do you want to set it as the current working copy in the ''{1}'' view?</val>
-        <val lang="fr_FR">We detected that the current project ({0}) is a Git repository. 
+        <val lang="fr_FR">We detected that the current project directory ({0}) is a local Git repository. 
             Do you want to set it as the current working copy in the ''{1}'' view?</val>
-        <val lang="ja_JP">We detected that the current project ({0}) is a Git repository. 
+        <val lang="ja_JP">We detected that the current project directory ({0}) is a local Git repository. 
             Do you want to set it as the current working copy in the ''{1}'' view?</val>
-        <val lang="nl_NL">We detected that the current project ({0}) is a Git repository. 
+        <val lang="nl_NL">We detected that the current project directory ({0}) is a local Git repository. 
             Do you want to set it as the current working copy in the ''{1}'' view?</val>
     </key>
     <key value="Clear_history">
