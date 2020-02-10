@@ -108,7 +108,9 @@ public class RepoGenerationScript {
 
   public static void setUserCredentials() {
     try {
-      StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
+      StoredConfig config = GitAccess.getInstance().
+          getRepository().
+          getConfig();
       
       config.setString("user", null, "name", "AlexJitianu");
       config.setString("user", null, "email", "alex_jitianu@sync.ro");
