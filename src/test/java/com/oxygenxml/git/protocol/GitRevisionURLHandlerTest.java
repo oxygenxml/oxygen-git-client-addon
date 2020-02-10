@@ -33,11 +33,11 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
     /**
      * The local repository. 
      */
-    String localTestRepository = "target/test-resources/local";
+    String localTestRepository = "target/test-resources/GitRevisionURLHandlerTest_testGetVersionContent/local";
     /**
      * The remote repository.
      */
-    String remoteTestRepository = "target/test-resources/remote";
+    String remoteTestRepository = "target/test-resources/GitRevisionURLHandlerTest_testGetVersionContent/remote";
     
     GitAccess gitAccess = GitAccess.getInstance();
     
