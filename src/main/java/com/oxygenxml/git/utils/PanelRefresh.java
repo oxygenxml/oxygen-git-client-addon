@@ -182,8 +182,7 @@ public class PanelRefresh implements GitRefreshSupport {
         translator.getTranslation(Tags.CHANGE_WORKING_COPY),
         MessageFormat.format(
             translator.getTranslation(Tags.CHANGE_TO_PROJECT_REPO_CONFIRM_MESSAGE),
-            projectDir,
-            translator.getTranslation(Tags.GIT_STAGING)),
+            projectDir),
         new String[] {
             "   " + translator.getTranslation(Tags.YES) + "   ",
             "   " + translator.getTranslation(Tags.NO) + "   "
