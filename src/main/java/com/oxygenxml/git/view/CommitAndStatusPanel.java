@@ -58,6 +58,8 @@ import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.Subject;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+
 /**
  * Panel to insert the commit message and commit the staged files. 
  */
@@ -67,11 +69,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
    * Commit action.
    */
   private final class CommitAction extends AbstractAction {
-    /**
-     * Status message.
-     */
-    private String statusMsg;
-    
     /**
      * Timer for updating cursor and status.
      */
@@ -99,37 +96,37 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
           cursorTimer.stop();
           cursorTimer.start();
          
-          statusMsg = "";
           RepositoryState repoState = getRepoState();
           if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
               // which actually calls git.status(), operation that is slow
               repoState == RepositoryState.MERGING 
               || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
-            statusMsg = translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS);
+            cursorTimer.stop();
+            SwingUtilities.invokeLater(() -> setStatusMessage(""));
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
           } else {
             SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
             gitAccess.commit(commitMessageArea.getText());
-            statusMsg = translator.getTranslation(Tags.COMMIT_SUCCESS);
             optionsManager.saveCommitMessage(commitMessageArea.getText());
 
             previousMessages.removeAllItems();
-            previousMessages.addItem(getCommitHistoryHint());
+            previousMessages.addItem(getCommitMessageHistoryHint());
             for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
               previousMessages.addItem(previouslyCommitMessage);
             }
-            SwingUtilities.invokeLater(() -> previousMessages.setSelectedItem(getCommitHistoryHint()));
+            
+            PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
+            notifyObservers(pushPullEvent);
+            
+            SwingUtilities.invokeLater(() -> {
+              commitMessageArea.setText("");
+              setStatusMessage(translator.getTranslation(Tags.COMMIT_SUCCESS));
+              previousMessages.setSelectedItem(getCommitMessageHistoryHint());
+            });
           }
         } finally {
           cursorTimer.stop();
-          
-          PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
-          notifyObservers(pushPullEvent);
-
-          SwingUtilities.invokeLater(() -> {
-            commitMessageArea.setText("");
-            setStatusMessage(statusMsg);
-            CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor());
-          });
+          SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
         }
       });
     }
@@ -297,19 +294,19 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		previousMessages.setRenderer(renderer);
 
 		// Add the hint first.
-		previousMessages.addItem(getCommitHistoryHint());
+		previousMessages.addItem(getCommitMessageHistoryHint());
 		for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
 			previousMessages.addItem(previouslyCommitMessage);
 		}
 		
-		previousMessages.setSelectedItem(getCommitHistoryHint());
+		previousMessages.setSelectedItem(getCommitMessageHistoryHint());
 		
 		previousMessages.addItemListener(
 		    new ItemListener() { // NOSONAR
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED
-            && !previousMessages.getSelectedItem().equals(getCommitHistoryHint())) {
+            && !previousMessages.getSelectedItem().equals(getCommitMessageHistoryHint())) {
             commitMessageArea.setText((String) previousMessages.getSelectedItem());
         }
       }
@@ -324,7 +321,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	/**
 	 * @return The message that instructs the user to select a previously used message.
 	 */
-  private String getCommitHistoryHint() {
+  private String getCommitMessageHistoryHint() {
     return "<" + translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE) + ">";
   }
 
@@ -529,7 +526,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 * Resets the panel. Clears any selection done by the user or inserted text.
 	 */
 	public void reset() {
-	  previousMessages.setSelectedItem(getCommitHistoryHint());
+	  previousMessages.setSelectedItem(getCommitMessageHistoryHint());
 		commitMessageArea.setText(null);
 	}
 
