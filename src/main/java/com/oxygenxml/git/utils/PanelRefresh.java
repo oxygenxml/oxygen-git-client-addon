@@ -148,12 +148,19 @@ public class PanelRefresh implements GitRefreshSupport {
           // Fast check to see if this is actually not a Git repository.
           && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
         lastSelectedProject = projectDir;
-        File repo = checkForGitRepositoriesUpAndDownFrom(projectDir);
+        File detectedRepo = checkForGitRepositoriesUpAndDownFrom(projectDir);
         String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
-        if (repo == null) {
+        if (detectedRepo == null) {
           repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
-        } else if (projectDir.equals(repo.getAbsolutePath())) {
-          repoChanged = switchToRepoIfUserAgrees(repo, projectName);
+        } else if (projectDir.equals(detectedRepo.getAbsolutePath())) {
+          try {
+            File currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
+            if (!detectedRepo.equals(currentRepo)) {
+              repoChanged = switchToRepoIfUserAgrees(detectedRepo, projectName);
+            }
+          } catch (NoRepositorySelected e) {
+            logger.warn(e, e);
+          }
         }
       }
     }
