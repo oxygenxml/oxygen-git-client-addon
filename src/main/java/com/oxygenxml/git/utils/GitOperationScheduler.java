@@ -62,7 +62,7 @@ public class GitOperationScheduler {
     try {
       refreshExecutor.awaitTermination(2000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
-      logger.warn(e);
+      logger.warn("Unable to stop task thread: " + e.getMessage(), e);
       // Restore interrupted state...
       Thread.currentThread().interrupt();
 

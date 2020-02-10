@@ -48,6 +48,7 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
@@ -419,6 +420,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
+    
+    GitOperationScheduler.getInstance().shutdown();
     
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
