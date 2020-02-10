@@ -28,7 +28,7 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 * on the staged/unstaged resources seen in the flat view.
 */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TreeViewTest extends FlatViewTestBase {
+public class ATreeViewTest extends FlatViewTestBase {
   
   @Override
   protected void setUp() throws Exception {

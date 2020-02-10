@@ -221,9 +221,6 @@
 			        <artifactId>maven-surefire-plugin</artifactId>
 			        <configuration>
 			        	<runOrder>alphabetical</runOrder>
-			        	<includes>
-			        	<include>**/TreeViewTest.java</include>
-			        	</includes>
 			        </configuration>
 			      </plugin>
 				
