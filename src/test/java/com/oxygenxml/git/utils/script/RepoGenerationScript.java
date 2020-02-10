@@ -85,7 +85,7 @@ public class RepoGenerationScript {
    * @param script Operations to be performed on the repository.
    * @param wcTree Working tree location.
    */
-  public static void generateRepository(URL script, File wcTree) throws Exception {
+  public static synchronized void generateRepository(URL script, File wcTree) throws Exception {
     try (Reader r = new InputStreamReader(script.openStream(), "UTF-8")) {
     generateRepository(loadScript(IOUtils.toString(r)), wcTree);
     }
