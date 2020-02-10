@@ -478,6 +478,9 @@ public class GitAccess {
 	 * @param path - A string that specifies the git Repository folder
 	 */
 	public void createNewRepository(String path) throws IllegalStateException, GitAPIException {
+	  
+	  System.err.println("Create new repository in " + hashCode() + " thread " + Thread.currentThread().getName());
+	  
     if (git != null) {
       // Stop intercepting authentication requests.
       AuthenticationInterceptor.unbind(getHostName());
@@ -485,6 +488,8 @@ public class GitAccess {
     }
 
 		git = Git.init().setBare(false).setDirectory(new File(path)).call();
+		
+		System.err.println("Created instance " + git.hashCode() +  " in "+ hashCode() + " thread " + Thread.currentThread().getName());
 		
 		fireRepositoryChanged();
 	}
