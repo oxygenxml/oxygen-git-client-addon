@@ -13,6 +13,7 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -174,22 +175,22 @@ public class WorkingCopySelectionPanel extends JPanel {
    */
   private void clearHistory() {
     DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
-    List<String> allEntries = new ArrayList<>();
+    LinkedList<String> entries = new LinkedList<>();
     for (int i = 0; i < model.getSize(); i++) {
-      allEntries.add(model.getElementAt(i));
+      entries.add(model.getElementAt(i));
     }
     
-    model.removeAllElements();
+    model.removeAllElements(); 
     
     // The previously selected entry should remain
-    String prevSelEntry = allEntries.get(0);
-    model.addElement(prevSelEntry);
-    workingCopyCombo.setSelectedItem(prevSelEntry);
+    if (!entries.isEmpty()) {
+      String prevSelEntry = entries.removeFirst();
+      model.addElement(prevSelEntry);
+      workingCopyCombo.setSelectedItem(prevSelEntry);
+    }
     
     // Remove the repositories from the options
-    List<String> reposToRemove = new ArrayList<>(allEntries);
-    reposToRemove.remove(prevSelEntry);
-    OptionsManager.getInstance().removeRepositoryLocations(reposToRemove);
+    OptionsManager.getInstance().removeRepositoryLocations(entries);
   }
 
 	/**
@@ -391,7 +392,10 @@ public class WorkingCopySelectionPanel extends JPanel {
       if (workingCopyCombo != null) {
         if (ex instanceof RepositoryNotFoundException) {
           // We are here if the selected Repository doesn't exists anymore
-          OptionsManager.getInstance().removeRepositoryLocation(repo.getAbsolutePath());
+          // The repo file is the .git directory. The combo model contains WC paths.
+          String wcDir = repo.getParentFile().getAbsolutePath();
+          
+          OptionsManager.getInstance().removeRepositoryLocation(wcDir);
 
 
           if (workingCopyCombo.getItemCount() > 0) {
@@ -403,8 +407,7 @@ public class WorkingCopySelectionPanel extends JPanel {
           }
 
 
-          // The repo file is the .git directory. The combo model contains WC paths.
-          workingCopyCombo.removeItem(repo.getParentFile().getAbsolutePath());
+          workingCopyCombo.removeItem(wcDir);
 
 
           SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
@@ -447,8 +450,11 @@ public class WorkingCopySelectionPanel extends JPanel {
               DefaultComboBoxModel<String> defaultComboBoxModel = (DefaultComboBoxModel<String>) workingCopyCombo.getModel();
               defaultComboBoxModel.removeElement(absolutePath);
               defaultComboBoxModel.insertElementAt(absolutePath, 0);
-              if (defaultComboBoxModel.getSize() == 2 && 
+              if (// It makes sense to clear the history when you have at least 2 entries in the model. 
+                  defaultComboBoxModel.getSize() == 2 &&
+                  // No entry to clear history yet...
                   defaultComboBoxModel.getIndexOf(CLEAR_HISTORY_ENTRY) == -1) {
+                // It makes sense to clear the history when you have at least 2 entries in the model. 
                 defaultComboBoxModel.addElement(CLEAR_HISTORY_ENTRY);
               }
 
