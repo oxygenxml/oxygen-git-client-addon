@@ -10,8 +10,6 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import org.eclipse.jgit.lib.Repository;
-import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
 
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -27,8 +25,7 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 * Test cases related to the actions performed
 * on the staged/unstaged resources seen in the flat view.
 */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ATreeViewTest extends FlatViewTestBase {
+public class TreeViewTest extends FlatViewTestBase {
   
   @Override
   protected void setUp() throws Exception {

@@ -83,14 +83,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * The loaded reposiltories.
    */
-  private List<Repository> loadedRepos = new ArrayList<Repository> () {
-    public boolean add(Repository e) {
-      if (e == null) {
-        logger.error("NULL REPOSIOTRY", new Exception());
-      }
-      return super.add(e);
-    };
-  };
+  private List<Repository> loadedRepos = new ArrayList<Repository> ();
   
   /**
    * The loaded reposiltories.
@@ -260,22 +253,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     // Create the remote repository.
     gitAccess.createNewRepository(repositoryPath);
     
-    if (gitAccess.getGitForTests() != null) {
-    logger.error(gitAccess.getGitForTests().hashCode());
-    logger.error(gitAccess.getGitForTests().getRepository());
-    } else {
-      logger.error("NULL repository access");
-    }
-    
     Repository remoteRepo = gitAccess.getRepository();
-    
-    
-    if (remoteRepo == null) {
-      logger.error("UPS! Null repository " + repositoryPath);
-      logger.error(gitAccess.getGitForTests().hashCode());
-      logger.error(gitAccess.getGitForTests().getRepository());
-    }
-    
     
     loadedRepos.add(remoteRepo);
     
