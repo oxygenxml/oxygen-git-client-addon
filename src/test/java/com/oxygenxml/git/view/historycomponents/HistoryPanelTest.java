@@ -211,9 +211,10 @@ public class HistoryPanelTest extends GitTestBase {
     String dump = dumpHistory(commitsCharacteristics);
 
     String expected =  
-        "[ New branch , 6 Feb 2020 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
-            "[ First commit. , 6 Feb 2020 , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n" + 
+        "[ New branch , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+            "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n" + 
             "";
+    expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
 
     expected = replaceDate(expected);
 
@@ -244,8 +245,8 @@ public class HistoryPanelTest extends GitTestBase {
 
     dump = dumpHistory(model.getAllCommits());
 
-    assertEquals(
-        "[ First commit. , 6 Feb 2020 , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n" + 
-            "", dump);
+    expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n";
+    expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+    assertEquals(expected, dump);
   }
 }
