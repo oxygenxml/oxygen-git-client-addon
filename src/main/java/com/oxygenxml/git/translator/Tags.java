@@ -405,6 +405,11 @@ public class Tags {
 	 * file
 	 */
 	public static final String SUBMODULE_ICON_TOOLTIP = "Submodule_Icon_Tooltip";
+	
+	/**
+   * The tooltip for a renamed file.
+   */
+  public static final String RENAMED_ICON_TOOLTIP = "Renamed_Icon_Tooltip";
 
 	/**
 	 * The text displayed on the label for the username

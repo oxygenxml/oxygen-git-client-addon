@@ -59,5 +59,9 @@ public enum GitChangeType {
   /**
    * The state is unknown.
    */
-  UNKNOWN
+  UNKNOWN,
+  /**
+   * A renamed resource.
+   */
+  RENAME
 }

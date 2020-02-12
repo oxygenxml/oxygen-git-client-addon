@@ -23,6 +23,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.RevCommitUtilBase;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -98,9 +99,8 @@ public class HistoryViewContextualMenuPresenter {
     jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
     
     if (fileStatus.getChangeType() != GitChangeType.ADD && fileStatus.getChangeType() != GitChangeType.REMOVED) {
-      String filePath = fileStatus.getFileLocation();
       if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
-        createDiffActionsForCommit(jPopupMenu, commitCharacteristics, addFileName, filePath);
+        createCompareActionsForCommit(jPopupMenu, commitCharacteristics, addFileName, fileStatus);
       } else {
         // Uncommitted changes. Compare between local and HEAD.
         jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
@@ -121,12 +121,44 @@ public class HistoryViewContextualMenuPresenter {
    * @param addFileName           <code>true</code> to append the name of the file to the actions' name.
    * @param filePath              File to DIFF.
    */
-  private void createDiffActionsForCommit(
+  private void createCompareActionsForCommit(
       JPopupMenu jPopupMenu, 
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
-      String filePath) {
+      FileStatus fileStatus) {
+    String filePath = fileStatus.getFileLocation();
     // A revision.
+    
+    if (fileStatus instanceof FileStatusOverDiffEntry
+        && fileStatus.getChangeType() == GitChangeType.RENAME) {
+      jPopupMenu.add(new AbstractAction(getCompareWithPreviousVersionActionName(filePath, addFileName)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          try {
+            DiffPresenter.showTwoWayDiff(((FileStatusOverDiffEntry) fileStatus));
+          } catch (MalformedURLException e1) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
+            LOGGER.error(e1, e1);
+          }
+        }
+      });
+    } else {
+      addCompareWithParentsAction(jPopupMenu, commitCharacteristics, addFileName, filePath);
+    }
+    
+    addCompareWithWorkingTreeAction(jPopupMenu, commitCharacteristics, addFileName, filePath);
+  }
+
+  /**
+   * Iterate over the parent revisions and add one Compare action for each.
+   * 
+   * @param jPopupMenu Contextual menu.
+   * @param commitCharacteristics Revision information.
+   * @param addFileName <code>true</code> to add the name of the file to the action name.
+   * @param filePath File location relative to the WC root.
+   */
+  private void addCompareWithParentsAction(JPopupMenu jPopupMenu, CommitCharacteristics commitCharacteristics, boolean addFileName,
+      String filePath) {
     List<String> parents = commitCharacteristics.getParentCommitId();
     if (parents != null && !parents.isEmpty()) {
       try {
@@ -135,32 +167,50 @@ public class HistoryViewContextualMenuPresenter {
         boolean addParentID = parents.size() > 1;
         for (RevCommit parentID : parentsRevCommits) {
           jPopupMenu.add(createCompareWithPrevVersionAction(
-              filePath, commitCharacteristics.getCommitId(), parentID, addParentID, addFileName));
+              filePath, 
+              commitCharacteristics.getCommitId(),
+              filePath,
+              parentID, 
+              addParentID, 
+              addFileName));
         }
- 
-        // ========== Compare with working tree version ==========
-        String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
-        if (addFileName) {
-          String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-          actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION), fileName);
-        }
-        jPopupMenu.add(new AbstractAction(actionName) {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            try {
-              DiffPresenter.showTwoWayDiffWithLocal(filePath, commitCharacteristics.getCommitId());
-            } catch (MalformedURLException | NoRepositorySelected e1) {
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
-              LOGGER.error(e1, e1);
-            }
-          }
-        });
-        
       } catch (IOException | NoRepositorySelected e2) {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e2.getMessage());
         LOGGER.error(e2, e2);
       }
     }
+  }
+
+  /**
+   * Compare the current revision with the working tree version.
+   * 
+   * @param jPopupMenu Contextual menu.
+   * @param commitCharacteristics Revision information.
+   * @param addFileName <code>true</code> to also add the name of the file to the action name.
+   * @param filePath Path of the resource to compare. Relative to the WC root.
+   */
+  private void addCompareWithWorkingTreeAction(
+      JPopupMenu jPopupMenu, 
+      CommitCharacteristics commitCharacteristics, 
+      boolean addFileName,
+      String filePath) {
+    // ========== Compare with working tree version ==========
+    String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
+    if (addFileName) {
+      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
+      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION), fileName);
+    }
+    jPopupMenu.add(new AbstractAction(actionName) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          DiffPresenter.showTwoWayDiffWithLocal(filePath, commitCharacteristics.getCommitId());
+        } catch (MalformedURLException | NoRepositorySelected e1) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
+          LOGGER.error(e1, e1);
+        }
+      }
+    });
   }
 
   /**
@@ -176,17 +226,14 @@ public class HistoryViewContextualMenuPresenter {
    */
   private AbstractAction createCompareWithPrevVersionAction(
       String filePath,
-      String commitID, 
+      String commitID,
+      String parentFilePath,
       RevCommit parentRevCommit,
       boolean addParentIDInActionName, 
       boolean addFileName) {
     
     // Compute action name
-    String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
-    if (addFileName) {
-      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_PREVIOUS_VERSION), fileName);
-    }
+    String actionName = getCompareWithPreviousVersionActionName(filePath, addFileName);
     if (addParentIDInActionName) {
       actionName += " " + parentRevCommit.abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
     }
@@ -196,13 +243,30 @@ public class HistoryViewContextualMenuPresenter {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
-          DiffPresenter.showTwoWayDiff(commitID, parentRevCommit.name(), filePath);
+          DiffPresenter.showTwoWayDiff(commitID, filePath, parentRevCommit.name(), parentFilePath);
         } catch (MalformedURLException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
           LOGGER.error(e1, e1);
         }
       }
     };
+  }
+
+  /**
+   * Builds the name for the compare with previous version action.
+   * 
+   * @param filePath Local 
+   * @param addFileName <code>true</code> to add the name of the file to the action's name.
+   * 
+   * @return The name of the comapre action.
+   */
+  private String getCompareWithPreviousVersionActionName(String filePath, boolean addFileName) {
+    String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
+    if (addFileName) {
+      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
+      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_PREVIOUS_VERSION), fileName);
+    }
+    return actionName;
   }
   
 

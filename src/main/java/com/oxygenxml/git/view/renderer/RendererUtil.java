@@ -44,6 +44,10 @@ public class RendererUtil {
       renderingInfo = new RenderingInfo(
           Icons.getIcon(Icons.GIT_DELETE_ICON),
           translator.getTranslation(Tags.DELETE_ICON_TOOLTIP));
+    } else if (GitChangeType.RENAME == changeType) {
+      renderingInfo = new RenderingInfo(
+          Icons.getIcon(Icons.GIT_RENAME_ICON),
+          translator.getTranslation(Tags.RENAMED_ICON_TOOLTIP));
     } else if (GitChangeType.CONFLICT == changeType) {
       renderingInfo = new RenderingInfo(
           Icons.getIcon(Icons.GIT_CONFLICT_ICON),

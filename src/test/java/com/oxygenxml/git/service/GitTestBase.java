@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -64,6 +65,7 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.util.UtilAccess;
+import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 /**
  * A collection of handy methods. 
@@ -287,12 +289,27 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   private int counter = 1;
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy");
   
+  /**
+   * Files that were requested for comparison.
+   */
+  protected final List<URL> urls2compare = new LinkedList<URL>();
+  
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        urls2compare.add((URL) invocation.getArguments()[0]);
+        urls2compare.add((URL) invocation.getArguments()[1]);
+        return null;
+      }
+    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(Mockito.any(), Mockito.any());
+    
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -325,6 +342,16 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
 
     });
     
+    XMLUtilAccess xmlUtilAccess = Mockito.mock(XMLUtilAccess.class);
+    Mockito.when(pluginWSMock.getXMLUtilAccess()).thenReturn(xmlUtilAccess);
+
+    Mockito.when(xmlUtilAccess.escapeTextValue(Mockito.anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        return (String) invocation.getArguments()[0];
+      }
+    });
+    
     UtilAccess utilAccessMock = Mockito.mock(UtilAccess.class);
     Mockito.when(pluginWSMock.getUtilAccess()).thenReturn(utilAccessMock);
     Mockito.when(utilAccessMock.locateFile((URL) Mockito.any())).then(new Answer<File>() {
@@ -338,6 +365,17 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         }
         
         return new File(url.getPath());
+      }
+    });
+    
+//    PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName()
+    Mockito.when(utilAccessMock.getFileName(Mockito.anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        String file = (String) invocation.getArguments()[0];
+        file = file.replace('\\', '/');
+        int index = file.lastIndexOf("/");
+        return index != -1 ? file.substring(index + 1) : file;
       }
     });
     
@@ -458,9 +496,21 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * @return A string representation.
    */
   protected String dumpHistory(List<CommitCharacteristics> commitsCharacteristics) {
+    return dumpHistory(commitsCharacteristics, false);
+  }
+  
+  /**
+   * Dumps a string version of the commits.
+   * 
+   * @param commitsCharacteristics Commits.
+   * @param replaceDateWithMarker <code>true</code> is not interested in date. Put just a marker {date}.
+   * 
+   * @return A string representation.
+   */
+  protected String dumpHistory(List<CommitCharacteristics> commitsCharacteristics, boolean replaceDateWithMarker) {
     StringBuilder b = new StringBuilder();
   
-    commitsCharacteristics.stream().forEach(t -> b.append(toString(t)).append("\n"));
+    commitsCharacteristics.stream().forEach(t -> b.append(dump(t, replaceDateWithMarker)).append("\n"));
   
     return b.toString();
   }
@@ -554,7 +604,20 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * @return A string representation that can be asserted.
    */
   public String toString(CommitCharacteristics c) {
-    return "[ " + c.getCommitMessage() + " , " + dumpDate(c) + " , " + c.getAuthor() + " , " + getAssertableID(c.getCommitAbbreviatedId()) + " , " 
+    return dump(c, false);
+  }
+  
+  /**
+   * Serialize the given commit.
+   * 
+   * @param c Commit data.
+   * @param replaceDateWithMarker <code>true</code> is not interested in date. Put just a marker {date}.
+   * 
+   * @return A string representation that can be asserted.
+   */
+  public String dump(CommitCharacteristics c, boolean replaceDateWithMarker) {
+    String date = replaceDateWithMarker ? "{date}" : dumpDate(c);
+    return "[ " + c.getCommitMessage() + " , " + date + " , " + c.getAuthor() + " , " + getAssertableID(c.getCommitAbbreviatedId()) + " , " 
         + c.getCommitter() + " , " + ( c.getParentCommitId() != null ? c.getParentCommitId().stream().map(id -> getAssertableID(id)).collect(Collectors.toList()) : null) + " ]";
   
   }

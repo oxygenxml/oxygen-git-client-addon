@@ -23,6 +23,7 @@ import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -273,16 +274,21 @@ public class DiffPresenter {
 	 * Shows a two way diff between the two revisions of a file.
 	 * 
 	 * @param leftCommitID The first revision to compare.
+	 * @param leftPath The path of the file. Relative to the working tree.
 	 * @param rightCommitID The second revision to comapre.
-	 * @param filePath The path of the file. Relative to the working tree.
+	 * @param rightPath The path of the file. Relative to the working tree.
 	 * 
 	 * @throws MalformedURLException Unable to build the URL.
 	 */
-	public static void showTwoWayDiff(String leftCommitID, String rightCommitID, String filePath) throws MalformedURLException {
-	  URL left = GitRevisionURLHandler.encodeURL(leftCommitID, filePath);
-	  URL right = GitRevisionURLHandler.encodeURL(rightCommitID, filePath);
+	public static void showTwoWayDiff(
+	    String leftCommitID,
+	    String leftPath,
+	    String rightCommitID, 
+	    String rightPath) throws MalformedURLException {
+	  URL left = GitRevisionURLHandler.encodeURL(leftCommitID, leftPath);
+	  URL right = GitRevisionURLHandler.encodeURL(rightCommitID, rightPath);
 	  
-	  showDiffFrame(left, right, null, filePath);
+	  showDiffFrame(left, right, null, leftPath);
 	}
 
 	/**
@@ -356,5 +362,19 @@ public class DiffPresenter {
     URL right = GitRevisionURLHandler.encodeURL(commitId, filePath);
     
     showDiffFrame(left, right, null, filePath);
+  }
+
+  /**
+   * Show a two way compare over 2 revisions. 
+   * 
+   * @param fileStatus File data.
+   * 
+   * @throws MalformedURLException Unable to build the URLs required to compare. 
+   */
+  public static void showTwoWayDiff(FileStatusOverDiffEntry fileStatus) throws MalformedURLException {
+    URL left = GitRevisionURLHandler.encodeURL(fileStatus.getNewRevId(), fileStatus.getDiffEntry().getNewPath());
+    URL right = GitRevisionURLHandler.encodeURL(fileStatus.getOldRevId(), fileStatus.getDiffEntry().getOldPath());
+    
+    showDiffFrame(left, right, null, fileStatus.getDiffEntry().getNewPath());    
   }
 }

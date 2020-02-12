@@ -11,6 +11,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -130,7 +131,15 @@ public class RevCommitUtil {
             .setOldTree(oldTreeIter)
             .call();
         
-        collect = diffs.stream().map(FileStatusOverDiffEntry::new).collect(Collectors.toList());
+        // Identify potential renames.
+        RenameDetector rd = new RenameDetector(git.getRepository());
+        rd.addAll(diffs);
+        diffs = rd.compute();
+        
+        collect = diffs
+            .stream()
+            .map(t -> new FileStatusOverDiffEntry(t, newCommit.getId().name(), oldCommit.getId().name()))
+            .collect(Collectors.toList());
       }
     }
 
@@ -154,7 +163,7 @@ public class RevCommitUtil {
       diffFmt.setRepository(repository);
 
       for(DiffEntry diff: diffFmt.scan(null, commit.getTree())) {
-        collect.add(new FileStatusOverDiffEntry(diff));
+        collect.add(new FileStatusOverDiffEntry(diff, commit.getId().name(), null));
       }
     }
 

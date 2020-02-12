@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Renamed_Icon_Tooltip">
+        <comment>The tooltip for the renamed icon that appears on the left side of a file.</comment>
+        <val lang="en_US">File renamed</val>
+        <val lang="de_DE">File renamed</val>
+        <val lang="fr_FR">File renamed</val>
+        <val lang="ja_JP">File renamed</val>
+        <val lang="nl_NL">File renamed</val>
+    </key>
     <key value="Change_working_copy">
         <comment>"Change working copy" label.</comment>
         <val lang="en_US">Change working copy</val>
