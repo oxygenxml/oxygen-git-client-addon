@@ -449,6 +449,15 @@ public class GitAccess {
   }
 	
   /**
+   * Add a listener that gets notified about file or repository changes.
+   * 
+   * @param listener The listener to add.
+   */
+  public void removeGitListener(GitEventListener listener) {
+    listeners.remove(listener);
+  }
+	
+  /**
 	 * Get repository.
 	 * 
 	 * @return the Git repository.

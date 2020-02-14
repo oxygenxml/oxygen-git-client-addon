@@ -223,6 +223,11 @@
 			        <groupId>org.apache.maven.plugins</groupId>
 			        <artifactId>maven-surefire-plugin</artifactId>
 			        <configuration>
+			        	<includes>
+			        	<include>**/TreeViewTest.java</include>
+			        	<include>**/FlatViewTest.java</include>
+			        	
+			        	</includes>
 			        	<runOrder>alphabetical</runOrder>
 			        	<forkMode>always</forkMode>
 			        </configuration>
