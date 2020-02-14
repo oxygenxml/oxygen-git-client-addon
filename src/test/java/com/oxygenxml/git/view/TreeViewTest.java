@@ -146,69 +146,6 @@ public class TreeViewTest extends FlatViewTestBase {
   }
   
   /**
-   * Discard changes. THose files must not appear in either stage/un-stage area.
-   * 
-   * @throws Exception If it fails.
-   */
-  @Test
-  public void testDiscard() throws Exception {
-    /**
-     * Local repository location.
-     */
-    String localTestRepository = "target/test-resources/testDiscard_NewFile_local";
-    
-    /**
-     * Remote repository location.
-     */
-    String remoteTestRepository = "target/test-resources/testDiscard_NewFile_remote";
-    
-    File file = createNewFile(localTestRepository, "test.txt", "remote");
-    
-    // Create repositories
-    Repository remoteRepo = createRepository(remoteTestRepository);
-    Repository localRepo = createRepository(localTestRepository);
-    // Bind the local repository to the remote one.
-    bindLocalToRemote(localRepo , remoteRepo);
-    
-    // Add it to the index.
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    assertTreeModels("", "ADD, test.txt");
-    
-    gitAccess.commit("First version.");
-    
-    assertTreeModels("", "");
-    
-    // Change the file.
-    setFileContent(file, "index content");
-    
-    assertTreeModels("MODIFIED, test.txt", "");
-    
-    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    
-    assertTreeModels("", "CHANGED, test.txt");
-    
-    // Change the file.
-    setFileContent(file, "modified content");
-    
-    // The file is present in  both areas.
-    assertTreeModels(
-        "MODIFIED, test.txt", 
-        "CHANGED, test.txt");
-    
-    // Discard.
-    DiscardAction discardAction = new DiscardAction(
-        Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt")),
-        stagingPanel.getStageController());
-    
-    discardAction.actionPerformed(null);
-    
-    waitForScheduler();
-    assertTreeModels(
-        "", 
-        "");    
-  }
-
-  /**
    * Stage and UnStage a newly created file.
    *  
    * @throws Exception If it fails.
