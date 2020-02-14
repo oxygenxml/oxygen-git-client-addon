@@ -157,11 +157,7 @@ public class TreeViewTest extends FlatViewTestBase {
      */
     String remoteTestRepository = "target/test-resources/testDiscard_NewFile_remote";
     
-    
-    new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    setFileContent(file, "remote");
+    File file = createNewFile(localTestRepository, "test.txt", "remote");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -224,11 +220,6 @@ public class TreeViewTest extends FlatViewTestBase {
      */
     String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote";
     
-    new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    setFileContent(file, "remote");
-    
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo = createRepository(localTestRepository);
@@ -236,7 +227,12 @@ public class TreeViewTest extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // Add it to the index.
+    
+    File file = createNewFile(localTestRepository, "test.txt", "remote");
+    
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    waitForScheduler();
+    
     assertTreeModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");
