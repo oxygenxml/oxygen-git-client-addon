@@ -2019,8 +2019,7 @@ public class GitAccess {
     try {
       rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
     } catch (NoRepositorySelected e) {
-      // Never happens.
-      logger.error(e, e);
+      logger.debug(e, e);
     }
     return rootFolder;
   }

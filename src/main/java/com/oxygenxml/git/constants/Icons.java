@@ -16,7 +16,7 @@ public class Icons {
     // Nothing.
   }
 
-  public static final String GIT_RENAME_ICON = "/images/GitRename10.png";
+  public static final String GIT_RENAME_ICON = "/images/GitRenameFile12.png";
 	public static final String GIT_ADD_ICON = "/images/GitAdd10.png";
 	public static final String GIT_DELETE_ICON = "/images/GitRemoved10.png";
 	public static final String GIT_MODIFIED_ICON = "/images/GitModified10.png";
