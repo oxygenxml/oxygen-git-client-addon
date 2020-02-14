@@ -173,7 +173,7 @@ public class FlatViewTest extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // Add it to the index.
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     assertTableModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");
@@ -235,7 +235,7 @@ public class FlatViewTest extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // Add it to the index.
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     assertTableModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");
@@ -247,7 +247,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     assertTableModels("MODIFIED, test.txt", "");
     
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     
     assertTableModels("", "CHANGED, test.txt");
     
@@ -302,7 +302,7 @@ public class FlatViewTest extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // Add it to the index.
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     assertTableModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");
@@ -316,7 +316,7 @@ public class FlatViewTest extends FlatViewTestBase {
     //------------
     // Add to INDEX (Stage)
     //------------
-    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     
     assertTableModels("", "CHANGED, test.txt");
     
@@ -486,7 +486,7 @@ public class FlatViewTest extends FlatViewTestBase {
     File file = new File(localTestRepository + "/test.txt");
     file.createNewFile();
     setFileContent(file, "content");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First version.");
     PushResponse push = gitAccess.push("", "");
     assertEquals("status: OK message null", push.toString());
@@ -494,7 +494,7 @@ public class FlatViewTest extends FlatViewTestBase {
     gitAccess.setRepositorySynchronously(localTestRepository2);
     // Commit a new version of the file.
     setFileContent(file2, "modified from 2nd local repo");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     gitAccess.push("", "");
     
@@ -503,7 +503,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Change the file. Create a conflict.
     setFileContent(file, "modified from 1st repo");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     
     // Get the remote. The conflict appears.
@@ -570,7 +570,7 @@ public class FlatViewTest extends FlatViewTestBase {
     File file = new File(localTestRepository + "/test.txt");
     file.createNewFile();
     setFileContent(file, "content");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First version.");
     PushResponse push = gitAccess.push("", "");
     assertEquals("status: OK message null", push.toString());
@@ -578,7 +578,7 @@ public class FlatViewTest extends FlatViewTestBase {
     gitAccess.setRepositorySynchronously(localTestRepository2);
     // Commit a new version of the file.
     setFileContent(file2, "modified from 2nd local repo");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     gitAccess.push("", "");
     
@@ -587,7 +587,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Change the file. Create a conflict.
     setFileContent(file, "modified from 1st repo");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     
     // Get the remote. The conflict appears.

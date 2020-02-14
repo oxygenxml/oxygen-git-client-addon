@@ -15,15 +15,12 @@ import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.GitEvent;
 
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
@@ -174,7 +171,7 @@ public class TreeViewTest extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // Add it to the index.
-    add();
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     assertTreeModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");
@@ -211,53 +208,6 @@ public class TreeViewTest extends FlatViewTestBase {
         "");    
   }
 
-  private void add() {
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
-  }
-  
-  private void add(FileStatus fs) {
-    gitAccess.add(fs);
-
-    int i = 0;
-    while(i< 10 && !uiready(fs)) {
-      i++;
-      Thread.yield();
-      sleep(100);
-    }
-  }
-
-  private boolean uiready(FileStatus fs) {
-    boolean uiready = true;
-    ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
-    
-    logger.info("Check model");
-    for (FileStatus fileStatus : unstagedChangesPanel.getFilesStatuses()) {
-      logger.info("Untracked  model " + fs);
-      if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
-        logger.warn("Still in the model" + fs);
-        
-        uiready = false;
-        break;
-      }
-    }
-    
-    if (uiready) {
-      uiready = false;
-      ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
-      for (FileStatus fileStatus : stagedChangesPanel.getFilesStatuses()) {
-        logger.info("INDEX model" + fs);
-        if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
-          logger.warn("In the model" + fs);
-
-          uiready = true;
-          break;
-        }
-      }
-    }
-    
-    return uiready;
-  }
-
   /**
    * Stage and UnStage a newly created file.
    *  
@@ -285,7 +235,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     File file = createNewFile(localTestRepository, "test.txt", "remote");
     
-    add();
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     waitForScheduler();
     
     assertTreeModels("", "ADD, test.txt");
@@ -473,7 +423,7 @@ public class TreeViewTest extends FlatViewTestBase {
     File file = new File(localTestRepository + "/test.txt");
     file.createNewFile();
     setFileContent(file, "content");
-    add();
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First version.");
     PushResponse push = gitAccess.push("", "");
     assertEquals("status: OK message null", push.toString());
@@ -481,7 +431,7 @@ public class TreeViewTest extends FlatViewTestBase {
     gitAccess.setRepositorySynchronously(localTestRepository2);
     // Commit a new version of the file.
     setFileContent(file2, "modified from 2nd local repo");
-    add();
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     gitAccess.push("", "");
     
@@ -490,7 +440,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Change the file. Create a conflict.
     setFileContent(file, "modified from 1st repo");
-    add();
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     
     // Get the remote. The conflict appears.
@@ -556,7 +506,7 @@ public class TreeViewTest extends FlatViewTestBase {
     File file = new File(localTestRepository + "/test.txt");
     file.createNewFile();
     setFileContent(file, "content");
-    add();
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First version.");
     PushResponse push = gitAccess.push("", "");
     assertEquals("status: OK message null", push.toString());
@@ -564,7 +514,7 @@ public class TreeViewTest extends FlatViewTestBase {
     gitAccess.setRepositorySynchronously(localTestRepository2);
     // Commit a new version of the file.
     setFileContent(file2, "modified from 2nd local repo");
-    add();
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     gitAccess.push("", "");
     
@@ -573,7 +523,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Change the file. Create a conflict.
     setFileContent(file, "modified from 1st repo");
-    add();
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     
     // Get the remote. The conflict appears.

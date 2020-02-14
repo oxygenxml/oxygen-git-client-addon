@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Ignore;
 
@@ -26,6 +27,10 @@ import com.oxygenxml.git.view.event.PushPullController;
 */
 @Ignore
 public class FlatViewTestBase extends GitTestBase { // NOSONAR
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(TreeViewTest.class);
   /**
    * Access to the Git API.
    */
@@ -223,5 +228,68 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     flushAWT();
     waitForScheduler();
   }
+  
+  /**
+   * Adds a file in the git index.
+   * 
+   * @param fs File to add to the index.
+   */
+  protected void add(FileStatus fs) {
+    gitAccess.add(fs);
 
+    waitForSwitchUntracked2Index(fs);
+  }
+
+  /**
+   * Waits for the UI to react after a state change from Untracked to Index.
+   * 
+   * @param fs Modified file.
+   */
+  protected void waitForSwitchUntracked2Index(FileStatus fs) {
+    int i = 0;
+    while(i< 10 && !uiReadyAfterSwitchUntracked2Index(fs)) {
+      i++;
+      Thread.yield();
+      sleep(100);
+    }
+  }
+
+  /**
+   * Waits for the UI to react after a switch from Untracked to Index.
+   * 
+   * @param fs Modified file.
+   * 
+   * @return <code>true</code> if the UI reflects the state change.
+   */
+  protected boolean uiReadyAfterSwitchUntracked2Index(FileStatus fs) {
+    boolean uiready = true;
+    ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
+    
+    for (FileStatus fileStatus : unstagedChangesPanel.getFilesStatuses()) {
+      if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
+        logger.warn("Still in the untracked area: " + fs);
+        
+        uiready = false;
+        break;
+      }
+    }
+    
+    if (uiready) {
+      uiready = false;
+      ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
+      for (FileStatus fileStatus : stagedChangesPanel.getFilesStatuses()) {
+        if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
+
+          uiready = true;
+          break;
+        }
+      }
+      
+      if (!uiready) {
+        logger.warn("Not found in the index area: " + fs);
+      }
+    }
+    
+    return uiready;
+  }
 }
