@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,10 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 * on the staged/unstaged resources seen in the flat view.
 */
 public class TreeViewTest extends FlatViewTestBase {
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(TreeViewTest.class);
   
   @Before
   public void setUp() throws Exception {
@@ -211,22 +216,33 @@ public class TreeViewTest extends FlatViewTestBase {
   }
   
   private void add(FileStatus fs) {
-    
-    GitEventListener listener = new GitEventAdapter() {
-      @Override
-      public void stateChanged(GitEvent changeEvent) {
-        System.out.println("State change " + changeEvent);
-      }
-    };
-    gitAccess.addGitListener(listener);
-    
-    System.out.println("Add " + fs);
-    
     gitAccess.add(fs);
+
+    int i = 0;
+    while(i< 10 && waitForUI(fs)) {
+      i++;
+      Thread.yield();
+      sleep(100);
+    }
+  }
+
+  private boolean waitForUI(FileStatus fs) {
+    boolean stillThere = false;
+    ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
+    JTree filesTable = unstagedChangesPanel.getTreeView();
+    StagingResourcesTreeModel uModel = (StagingResourcesTreeModel) filesTable.getModel();
     
-    System.out.println("Added " + fs);
     
-    gitAccess.removeGitListener(listener);
+    for (FileStatus fileStatus : uModel.getFilesStatuses()) {
+      if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
+        logger.warn("Still in the model" + fs);
+        
+        stillThere = true;
+        break;
+      }
+    }
+    
+    return stillThere;
   }
 
   /**
