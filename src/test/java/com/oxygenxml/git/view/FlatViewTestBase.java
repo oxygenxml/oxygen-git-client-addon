@@ -235,9 +235,12 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * @param fs File to add to the index.
    */
   protected void add(FileStatus fs) {
+    logger.debug("Add " + fs);
     gitAccess.add(fs);
 
     waitForSwitchUntracked2Index(fs);
+    
+    logger.debug("UI sdhould be updated ");
   }
 
   /**
