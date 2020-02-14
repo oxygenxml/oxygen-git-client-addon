@@ -225,7 +225,6 @@
 			        <configuration>
 			        	<includes>
 			        	<include>**/TreeViewTest.java</include>
-			        	<include>**/FlatViewTest.java</include>
 			        	
 			        	</includes>
 			        	<runOrder>alphabetical</runOrder>

@@ -232,8 +232,9 @@ public class TreeViewTest extends FlatViewTestBase {
     JTree filesTable = unstagedChangesPanel.getTreeView();
     StagingResourcesTreeModel uModel = (StagingResourcesTreeModel) filesTable.getModel();
     
-    
+    logger.info("Check model");
     for (FileStatus fileStatus : uModel.getFilesStatuses()) {
+      logger.info("In hte model " + fs);
       if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
         logger.warn("Still in the model" + fs);
         
