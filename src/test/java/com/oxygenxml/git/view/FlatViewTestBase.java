@@ -140,6 +140,8 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected void assertTreeModels(String unstagedExpected, String indexExpected) {
     flushAWT();
+    waitForScheduler();
+    sleep(100);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTree filesTable = unstagedChangesPanel.getTreeView();
