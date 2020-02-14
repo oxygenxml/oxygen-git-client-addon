@@ -249,6 +249,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     int i = 0;
     while(i< 10 && !uiReadyAfterSwitchUntracked2Index(fs)) {
       i++;
+      flushAWT();
       Thread.yield();
       sleep(300);
     }
@@ -261,7 +262,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * 
    * @return <code>true</code> if the UI reflects the state change.
    */
-  protected boolean uiReadyAfterSwitchUntracked2Index(FileStatus fs) {
+  private boolean uiReadyAfterSwitchUntracked2Index(FileStatus fs) {
     boolean uiready = true;
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     
