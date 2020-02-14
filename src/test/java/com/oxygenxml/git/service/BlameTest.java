@@ -11,6 +11,7 @@ import javax.swing.text.Highlighter.Highlight;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -32,6 +33,7 @@ public class BlameTest extends GitTestBase{
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testBlame() throws Exception {
     URL script = getClass().getClassLoader().getResource("scripts/blame_script.txt");
     
@@ -122,7 +124,7 @@ public class BlameTest extends GitTestBase{
       for (Highlight highlight : highlights) {
         textArea.setCaretPosition(highlight.getStartOffset());
         // Wait for the thread that presents the revision.
-        Thread.sleep(400);
+        sleep(400);
         flushAWT();
       }
       

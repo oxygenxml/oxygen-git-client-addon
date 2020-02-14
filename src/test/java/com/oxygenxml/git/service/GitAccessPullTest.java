@@ -1,13 +1,10 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -32,7 +29,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 
-public class GitAccessPullTest {
+public class GitAccessPullTest extends GitTestBase{
   
 	protected final static String FIRST_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPullTest/local";
 	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessPullTest/local2";
@@ -43,7 +40,9 @@ public class GitAccessPullTest {
 	protected GitAccess gitAccess;
 
 	@Before
-	public void init() throws Exception {
+	public void setUp() throws Exception {
+	  super.setUp();
+	  
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITPRY);
 		localRepo1 = gitAccess.getRepository();
@@ -193,10 +192,8 @@ public class GitAccessPullTest {
 	}
 	
 	@After
-	public void freeResources() {
-	  // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
-	  // When an object is collected by the GC, it releases a file lock.
-    WindowCache.getInstance().cleanup();
+	public void tearDown() throws Exception {
+	  super.tearDown();
 
 		gitAccess.closeRepo();
 		localRepo1.close();

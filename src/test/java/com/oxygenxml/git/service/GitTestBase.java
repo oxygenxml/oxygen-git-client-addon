@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
@@ -32,14 +34,20 @@ import javax.swing.JDialog;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.internal.storage.file.WindowCache;
+import org.eclipse.jgit.junit.MockSystemReader;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.storage.file.FileBasedConfig;
+import org.eclipse.jgit.storage.file.WindowCacheConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.SystemReader;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -50,6 +58,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
+import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
@@ -57,6 +66,7 @@ import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.WindowMonitor;
 import junit.extensions.jfcunit.finder.ComponentFinder;
+import ro.sync.basic.io.FileSystemUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
@@ -147,6 +157,9 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     config.setString("core", null, "autocrlf", "false");
     config.save();
     
+    refreshSupport.call();
+    waitForScheduler();
+    
     remoteRepos.add(remoteRepo);
   }
 
@@ -186,6 +199,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         wsEditorChangeListener.editorClosed(file.toURI().toURL());
       }
     }
+    
+    waitForScheduler();
   }
 
   /**
@@ -293,10 +308,21 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * Files that were requested for comparison.
    */
   protected final List<URL> urls2compare = new LinkedList<URL>();
+  private File tmp;
+  /**
+   * Refresh support.
+   */
+  protected PanelRefresh refreshSupport;
   
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     super.setUp();
+    
+    
+    // Create the unstaged resources panel
+    refreshSupport = new PanelRefresh();
+    
+    gitInit();
     
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
@@ -408,6 +434,60 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     installGitProtocol();
   }
   
+  /**
+   * 
+   */
+  private void gitInit() throws Exception {
+    tmp = new File("target/home");
+    
+    MockSystemReader mockSystemReader = new MockSystemReader() {
+      @Override
+      public long getCurrentTime() {
+        // TODO Temporary fix to make the existing tests pass. Existing tests rely on the current date. It would be best
+        // to update them to use a fix date.
+        return System.currentTimeMillis();
+      }
+    };
+    SystemReader.setInstance(mockSystemReader);
+    
+    mockSystemReader.setProperty(Constants.GIT_COMMITTER_NAME_KEY, "AlexJitianu");
+    mockSystemReader.setProperty(Constants.GIT_COMMITTER_EMAIL_KEY, "alex_jitianu@sync.ro");
+
+    // Measure timer resolution before the test to avoid time critical tests
+    // are affected by time needed for measurement.
+    // The MockSystemReader must be configured first since we need to use
+    // the same one here
+
+    FileBasedConfig jgitConfig = new FileBasedConfig(
+        new File(tmp, "jgitconfig"), FS.DETECTED);
+    FileBasedConfig systemConfig = new FileBasedConfig(jgitConfig,
+        new File(tmp, "systemgitconfig"), FS.DETECTED);
+    FileBasedConfig userConfig = new FileBasedConfig(systemConfig,
+        new File(tmp, "usergitconfig"), FS.DETECTED);
+    
+    // We have to set autoDetach to false for tests, because tests expect to be able
+    // to clean up by recursively removing the repository, and background GC might be
+    // in the middle of writing or deleting files, which would disrupt this.
+    userConfig.setBoolean(ConfigConstants.CONFIG_GC_SECTION,
+        null, ConfigConstants.CONFIG_KEY_AUTODETACH, false);
+    userConfig.setString(ConfigConstants.CONFIG_USER_SECTION, null, ConfigConstants.CONFIG_KEY_NAME, "AlexJitianu");
+    
+    
+    userConfig.save();
+    mockSystemReader.setJGitConfig(jgitConfig);
+    mockSystemReader.setSystemGitConfig(systemConfig);
+    mockSystemReader.setUserGitConfig(userConfig);
+    
+    final WindowCacheConfig c = new WindowCacheConfig();
+    c.setPackedGitLimit(128 * WindowCacheConfig.KB);
+    c.setPackedGitWindowSize(8 * WindowCacheConfig.KB);
+    // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
+    // When an object is collected by the GC, it releases a file lock.
+    c.setPackedGitMMAP(false);
+    c.setDeltaBaseCacheLimit(8 * WindowCacheConfig.KB);
+    c.install();
+  }
+
   private WSEditor createWSEditorMock() {
     WSEditor wsEditorMock = Mockito.mock(WSEditor.class);
     
@@ -433,18 +513,11 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     return wsEditorMock;
   }
   
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     super.tearDown();
     
     GitOperationScheduler.getInstance().shutdown();
-    
-    // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
-    // When an object is collected by the GC, it releases a file lock.
-    WindowCache.getInstance().cleanup();
-    
-    // Wait for JGit threads to finish up work.
-    flushAWT();
     
     // Only one repository is open at a given time.
     GitAccess.getInstance().closeRepo();
@@ -463,6 +536,14 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }
     
     GitAccess.getInstance().cleanUp();
+    
+    // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
+    // When an object is collected by the GC, it releases a file lock.
+    System.gc();
+    
+    SystemReader.setInstance(null);
+    
+    FileSystemUtil.deleteRecursivelly(tmp);
   }
   
   /**
@@ -544,8 +625,9 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     for (int i = 0; i < 5; i++) {
 
-      // Wait for WindowMonitor to get the correct opened windows
       flushAWT();
+      
+      
       // Get the opened windows
       Window[] windows = WindowMonitor.getWindows();
       if (windows != null && windows.length > 0) {
@@ -576,6 +658,18 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }
     return dialogToReturn;
   }
+
+//  protected void flushAWT() {
+//    // Wait for WindowMonitor to get the correct opened windows
+//    Semaphore s = new Semaphore(0);
+//    SwingUtilities.invokeLater(() -> {s.release();});
+//    try {
+//      s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
+//    } catch (InterruptedException e1) {
+//      logger.error(e1, e1);
+//    }
+//    sleep(400);
+//  }
   
   /**
    * Maps Git revision IDs into predictable values that can be asserted in a test.
@@ -679,5 +773,26 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
       loadedRepos.add(repository);
     }
   }
+
   
+  protected void waitForScheduler() {
+    Semaphore s = new Semaphore(0);
+    GitOperationScheduler.getInstance().schedule(() -> {s.release();});
+    
+    try {
+      s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      
+      logger.error(e, e);
+    }
+  }
+  
+  
+  
+  protected void sleep(int time) {
+    try {
+      Thread.sleep(time);
+    } catch (InterruptedException e) {}
+  }
 }

@@ -122,8 +122,7 @@ public class GitHistoryTest extends GitTestBase {
       expected.put(
           "3", "(changeType=ADD, fileLocation=f2/file1.txt)\n" + 
           "(changeType=CHANGED, fileLocation=f2/file2.txt)\n" + 
-          "(changeType=REMOVED, fileLocation=f2/file3.txt)\n" + 
-          "(changeType=ADD, fileLocation=f2/file3_renamed.txt)\n" + 
+          "(changeType=RENAME, fileLocation=f2/file3_renamed.txt)\n" + 
           "(changeType=REMOVED, fileLocation=f2/file4.txt)\n");
       expected.put(
           "4", "(changeType=ADD, fileLocation=f1/file1.txt)\n" + 

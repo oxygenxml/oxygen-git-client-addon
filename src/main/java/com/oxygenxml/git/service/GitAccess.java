@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Logger;
 import org.apache.sshd.common.SshConstants;
@@ -1752,10 +1753,12 @@ public class GitAccess {
 	/**
 	 * Restore to the initial state of the repository. Only applicable if the
 	 * repository has conflicts
+	 * 
+	 * @return The restart merge task.
 	 */
-	public void restartMerge() {
+	public ScheduledFuture restartMerge() {
 	  fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.STARTED));
-	  GitOperationScheduler.getInstance().schedule(() -> {
+	  return GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
 	      RepositoryState repositoryState = getRepository().getRepositoryState();
 	      if (repositoryState == RepositoryState.REBASING_MERGE) {

@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -130,8 +129,8 @@ public class GitAccessConflictTest {
   public void freeResources() {
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
-    WindowCache.getInstance().cleanup();
-
+    System.gc();
+    
     gitAccess.closeRepo();
     localRepo1.close();
     localRepo2.close();

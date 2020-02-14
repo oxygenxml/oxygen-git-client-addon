@@ -1,15 +1,23 @@
 package com.oxygenxml.git.view;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.Component;
 import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -40,6 +48,7 @@ public class FlatView2Test extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
+  @Test
   public void testAPullCannotLockRef() throws Exception {
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     try {
@@ -105,6 +114,7 @@ public class FlatView2Test extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
+  @Test
   public void testShowHideRebasePanelWhenChangingRepo() throws Exception {
     String localTestRepository_1 = "target/test-resources/testShowRebasePanel_thenAbort-local-1";
     String localTestRepository_2 = "target/test-resources/testShowRebasePanel_thenAbort-local-2";
@@ -160,8 +170,7 @@ public class FlatView2Test extends FlatViewTestBase {
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
+    waitForScheduler();
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
 
@@ -184,6 +193,7 @@ public class FlatView2Test extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
+  @Test
   public void testShowRebasePanel_thenAbort() throws Exception {
     String localTestRepository_1 = "target/test-resources/testShowRebasePanel_thenAbort-local-1";
     String localTestRepository_2 = "target/test-resources/testShowRebasePanel_thenAbort-local-2";
@@ -239,8 +249,8 @@ public class FlatView2Test extends FlatViewTestBase {
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
+    waitForScheduler();
+    
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
 
@@ -272,6 +282,7 @@ public class FlatView2Test extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
+  @Test
   public void testShowRebasePanel_thenContinue() throws Exception {
     String localTestRepository_1 = "target/test-resources/testShowRebasePanel_thenContinue-local-1";
     String localTestRepository_2 = "target/test-resources/testShowRebasePanel_thenContinue-local-2";
@@ -327,8 +338,8 @@ public class FlatView2Test extends FlatViewTestBase {
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
+    waitForScheduler();
+    
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
@@ -341,6 +352,7 @@ public class FlatView2Test extends FlatViewTestBase {
     sc.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_MINE);
+    waitForScheduler();
     flushAWT();
 
     JButton continueBtn = findFirstButton(
@@ -350,8 +362,8 @@ public class FlatView2Test extends FlatViewTestBase {
     assertNotNull(continueBtn);
     
     continueBtn.doClick();
+    waitForScheduler();
     flushAWT();
-    sleep(500);
     
     assertFalse(rebasePanel.isShowing());
   }
@@ -364,6 +376,7 @@ public class FlatView2Test extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
+  @Test
   public void testShowInterruptedRebaseDlg_thenAbort() throws Exception {
     String localTestRepository_1 = "target/test-resources/testShowInterruptedRebaseDlg_thenAbort-local-1";
     String localTestRepository_2 = "target/test-resources/testShowInterruptedRebaseDlg_thenAbort-local-2";
@@ -394,8 +407,7 @@ public class FlatView2Test extends FlatViewTestBase {
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
+    waitForScheduler();
     
     assertFalse(secondRepoFile.exists());
     gitAccess.pull("", "", PullType.REBASE);
@@ -419,15 +431,22 @@ public class FlatView2Test extends FlatViewTestBase {
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
+    waitForScheduler();
+    
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
-    
-    PushPullController ppc = new PushPullController();
+
+    Semaphore s = new Semaphore(0);
+    PushPullController ppc = new PushPullController() {
+      @Override
+      protected void showRebaseInProgressDialog() {
+        s.release();
+        super.showRebaseInProgressDialog();
+      }
+    };
     ppc.pull(PullType.REBASE);
+    s.acquire();
     flushAWT();
-    sleep(300);
     
     JDialog interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
     assertNotNull(interruptedRebaseDlg);
@@ -436,8 +455,9 @@ public class FlatView2Test extends FlatViewTestBase {
         interruptedRebaseDlg.getRootPane(),
         Translator.getInstance().getTranslation(Tags.ABORT_REBASE));
     abortBtn.doClick();
+    
+    waitForScheduler();
     flushAWT();
-    sleep(1000);
     
     interruptedRebaseDlg = findDialog(Tags.REBASE_IN_PROGRESS);
     assertNull(interruptedRebaseDlg);
@@ -459,6 +479,7 @@ public class FlatView2Test extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
+  @Test
   public void testShowInterruptedRebaseDlg_thenCancel() throws Exception {
     String localTestRepository_1 = "target/test-resources/testShowInterruptedRebaseDlg_thenCancel-local-1";
     String localTestRepository_2 = "target/test-resources/testShowInterruptedRebaseDlg_thenCancel-local-2";
@@ -489,8 +510,7 @@ public class FlatView2Test extends FlatViewTestBase {
     File secondRepoFile = new File(localTestRepository_2 + "/test.txt");
     
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
+    waitForScheduler();
     
     assertFalse(secondRepoFile.exists());
     gitAccess.pull("", "", PullType.REBASE);
@@ -514,8 +534,7 @@ public class FlatView2Test extends FlatViewTestBase {
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
-    flushAWT();
-    sleep(400);
+    waitForScheduler();
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
@@ -545,7 +564,7 @@ public class FlatView2Test extends FlatViewTestBase {
         // Staged
         "");
   }
-  
+
   /**
    * <p><b>Description:</b> Show interrupted rebase dialog and press continue.</p>
    * <p><b>Bug ID:</b> EXM-42025</p>
@@ -554,6 +573,7 @@ public class FlatView2Test extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
+  @Test
   public void testShowInterruptedRebaseDlg_thenContinue() throws Exception {
     try {
       String localTestRepository_1 = "target/test-resources/testShowInterruptedRebaseDlg_thenContinue-local-1";
@@ -641,8 +661,9 @@ public class FlatView2Test extends FlatViewTestBase {
           rebaseInProgressDlg.getRootPane(),
           Translator.getInstance().getTranslation(Tags.CONTINUE_REBASE));
       continueBtn.doClick();
-      flushAWT();
-      sleep(300);
+
+
+      waitForScheduler();
       
       assertEquals("Cannot_continue_rebase_because_of_conflicts", warnMessage[0]);
 

@@ -1,7 +1,5 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -27,7 +25,7 @@ import org.junit.Test;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
-public class GitAccessPushTest {
+public class GitAccessPushTest extends GitTestBase {
 	private final static String FIRST_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/local";
 	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/remote";
 	private final static String SECOND_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/local2";
@@ -37,7 +35,9 @@ public class GitAccessPushTest {
 	private GitAccess gitAccess;
 
 	@Before
-	public void init() throws RepositoryNotFoundException, IOException, NoRepositorySelected, IllegalStateException, GitAPIException {
+	public void setUp() throws Exception {
+	  super.setUp();
+	  
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(REMOTE_TEST_REPOSITPRY);
 		remoteRepo = gitAccess.getRepository();
@@ -57,7 +57,7 @@ public class GitAccessPushTest {
 
 	}
 
-	@Test(expected = MissingObjectException.class)
+	@Test
 	public void testRemoteRepositoryHasNoCommitst()
 			throws URISyntaxException, IOException, InvalidRemoteException, TransportException, GitAPIException, NoRepositorySelected {
 		gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
@@ -72,7 +72,13 @@ public class GitAccessPushTest {
 		gitAccess.commit("file test added");
 
 		// throws missingObjectException
-		remoteRepo.resolve(gitAccess.getLastLocalCommit().getName() + "^{commit}");
+		try {
+		  remoteRepo.resolve(gitAccess.getLastLocalCommit().getName() + "^{commit}");
+		  
+		  fail("A MissingObjectException is failed.");
+		} catch (MissingObjectException ex) {
+		  // Expected exception.
+		}
 	}
 
 	@Test
@@ -159,7 +165,9 @@ public class GitAccessPushTest {
 
 
 	@After
-	public void freeResources() {
+	public void tearDown() throws Exception {
+	  super.tearDown();
+	  
 		gitAccess.closeRepo();
 		firstLocalRepo.close();
 		remoteRepo.close();

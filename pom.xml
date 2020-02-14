@@ -27,13 +27,7 @@
 	<dependencies>
 	<!-- Used from tests -->
 	
-	<dependency>
-		<artifactId>abc</artifactId>
-		<groupId>xyz</groupId>
-	    <version>1.0.0</version>
-		<scope>system</scope>
-		<systemPath>${project.basedir}/test_lib/org.eclipse.jgit-5.6.0.201912101111-r.jar</systemPath>
-	</dependency>
+	
 	 
 	  <dependency>
         <groupId>net.sf.jfcunit</groupId>
@@ -64,6 +58,15 @@
 		    <artifactId>org.eclipse.jgit.ssh.apache</artifactId>
 		    <version>5.6.0.201912101111-r</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.eclipse.jgit</groupId>
+		    <artifactId>org.eclipse.jgit.junit</artifactId>
+		    <version>5.6.0.201912101111-r</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-core</artifactId>

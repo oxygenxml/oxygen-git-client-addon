@@ -4,12 +4,15 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.JButton;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import org.eclipse.jgit.lib.Repository;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -27,8 +30,8 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 */
 public class TreeViewTest extends FlatViewTestBase {
   
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     super.setUp();
     
     stagingPanel.getUnstagedChangesPanel().setResourcesViewMode(ResourcesViewMode.TREE_VIEW);
@@ -62,6 +65,8 @@ public class TreeViewTest extends FlatViewTestBase {
     
     assertTrue(ssButton.isEnabled());
     ssButton.doClick();
+    
+    waitForScheduler();
   }
   
   private static void expandAll(JTree tree) {
@@ -84,6 +89,8 @@ public class TreeViewTest extends FlatViewTestBase {
     JButton ssButton = changesPanel.getChangeAllButton();
     assertTrue(ssButton.isEnabled());
     ssButton.doClick();
+    
+    waitForScheduler();
   }
   
   /**
@@ -91,6 +98,7 @@ public class TreeViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageUnstage_NewFile() throws Exception {
     /**
      * Local repository location.
@@ -137,6 +145,7 @@ public class TreeViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testDiscard() throws Exception {
     /**
      * Local repository location.
@@ -189,7 +198,10 @@ public class TreeViewTest extends FlatViewTestBase {
     DiscardAction discardAction = new DiscardAction(
         Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt")),
         stagingPanel.getStageController());
+    
     discardAction.actionPerformed(null);
+    
+    waitForScheduler();
     assertTreeModels(
         "", 
         "");    
@@ -200,6 +212,7 @@ public class TreeViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageUnstage_ModifiedFile() throws Exception {
     /**
      * Local repository location.
@@ -266,6 +279,7 @@ public class TreeViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageUnstage_NewMultipleFiles() throws Exception {
     /**
      * Local repository location.
@@ -325,6 +339,7 @@ public class TreeViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageUnstage_NewFile_2() throws Exception {
     /**
      * Local repository location.
@@ -375,6 +390,7 @@ public class TreeViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testConflict_resolveUsingMine() throws Exception {
     /**
      * Local repository location.
@@ -435,25 +451,29 @@ public class TreeViewTest extends FlatViewTestBase {
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_MINE);
     
+    waitForScheduler();
+    
+    waitForScheluerBetter();
+    
     assertTreeModels("", "");
-
+    
     // Check the commit.
     CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
-    flushAWT();
-    sleep(1000);
     assertEquals("Commit_to_merge", commitPanel.getCommitMessageArea().getText());
     
     commitPanel.getCommitButton().doClick();
-    flushAWT();
-    
+    waitForScheduler();
+
+    // TODO What should it assert here?
     assertEquals("", "");
   }
-  
+
   /**
    * Resolve a conflict using "their" copy, restart merge, and resolve again.
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testConflict_resolveUsingTheirsAndRestartMerge() throws Exception {
     /**
      * Local repository location.
@@ -514,11 +534,13 @@ public class TreeViewTest extends FlatViewTestBase {
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    flushAWT();
+    waitForScheduler();
+    
     assertTreeModels("", "CHANGED, test.txt");
     
     // Restart merge
-    gitAccess.restartMerge();
+    ScheduledFuture restartMerge = gitAccess.restartMerge();
+    restartMerge.get();
     flushAWT();
     assertTreeModels("CONFLICT, test.txt", "");
     
@@ -526,7 +548,8 @@ public class TreeViewTest extends FlatViewTestBase {
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    flushAWT();
+    waitForScheduler();
+    
     assertTreeModels("", "CHANGED, test.txt");
     
     // Commit
@@ -542,6 +565,7 @@ public class TreeViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testSaveRemoteURL() throws Exception {
 
     /**
@@ -585,6 +609,7 @@ public class TreeViewTest extends FlatViewTestBase {
    *
    * @throws Exception
    */
+  @Test
   public void testStageUnstage_Folder() throws Exception {
     String localTestRepository = "target/test-resources/testStageUnstage_Folder_local";
     String remoteTestRepository = "target/test-resources/testStageUnstage_Folder_remote";

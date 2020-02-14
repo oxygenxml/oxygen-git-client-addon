@@ -209,7 +209,7 @@ public class GitAccessCommitFileContentTest {
 	public void freeResources() throws Exception {
 	  // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
-    WindowCache.getInstance().cleanup();
+	  System.gc();
 
 		gitAccess.closeRepo();
 		localRepo1.close();

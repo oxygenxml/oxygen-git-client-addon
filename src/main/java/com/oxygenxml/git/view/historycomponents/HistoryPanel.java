@@ -93,7 +93,7 @@ public class HistoryPanel extends JPanel {
   /**
    * Commit selection listener that updates all the views with details.
    */
-  private RowHistoryTableSelectionListener selectionListener;
+  private RowHistoryTableSelectionListener revisionDataUpdater;
   /**
    * The changed files from a commit.
    */
@@ -393,8 +393,8 @@ public class HistoryPanel extends JPanel {
         showingHistoryForRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
 
         // Install selection listener.
-        if (selectionListener != null) {
-          historyTable.getSelectionModel().removeListSelectionListener(selectionListener);
+        if (revisionDataUpdater != null) {
+          historyTable.getSelectionModel().removeListSelectionListener(revisionDataUpdater);
         }
         
         StagingResourcesTableModel dataModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
@@ -413,13 +413,13 @@ public class HistoryPanel extends JPanel {
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
         });
         
-        selectionListener = new RowHistoryTableSelectionListener(
+        revisionDataUpdater = new RowHistoryTableSelectionListener(
             getUpdateDelay(),
             historyTable, 
             commitDescriptionPane, 
             commitCharacteristicsVector, 
             affectedFilesTable);
-        historyTable.getSelectionModel().addListSelectionListener(selectionListener);
+        historyTable.getSelectionModel().addListSelectionListener(revisionDataUpdater);
 
         // Install hyperlink listener.
         if (hyperlinkListener != null) {

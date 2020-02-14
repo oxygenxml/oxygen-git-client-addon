@@ -1,28 +1,21 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.SubmoduleAddCommand;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.submodule.SubmoduleStatus;
-import org.eclipse.jgit.submodule.SubmoduleStatusType;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.DiffPresenter;
-import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.io.FileSystemUtil;
 
@@ -42,6 +35,7 @@ public class GitCloneTest extends GitTestBase {
    *
    * @throws Exception
    */
+  @Test
   public void testClone1() throws Exception {
     String localRepoLoc = "target/test-resources/GitCloneTest2/testClone1-local";
     String remoteRepoLoc = "target/test-resources/GitCloneTest2/testClone1-remote";

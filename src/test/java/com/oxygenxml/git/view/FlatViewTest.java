@@ -4,11 +4,15 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.JButton;
 import javax.swing.JTable;
 
 import org.eclipse.jgit.lib.Repository;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -27,8 +31,8 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 */
 public class FlatViewTest extends FlatViewTestBase {
   
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     super.setUp();
     
     stagingPanel.getUnstagedChangesPanel().setResourcesViewMode(ResourcesViewMode.FLAT_VIEW);
@@ -64,6 +68,8 @@ public class FlatViewTest extends FlatViewTestBase {
       usButton.doClick();
     }
     
+    waitForScheduler();
+    
     flushAWT();
   }
   
@@ -86,6 +92,8 @@ public class FlatViewTest extends FlatViewTestBase {
       assertTrue(usButton.isEnabled());
       usButton.doClick();
     }
+    
+    waitForScheduler();
   }
   
   protected final void switchToView(ResourcesViewMode viewMode) {
@@ -98,6 +106,7 @@ public class FlatViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageUnstage_NewFile() throws Exception {
     /**
      * Local repository location.
@@ -146,6 +155,7 @@ public class FlatViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageFileWithModifiedLetterCase() throws Exception {
     String localTestRepository = "target/test-resources/testStageUnstage_NewFile_localX";
     String remoteTestRepository = "target/test-resources/testStageUnstage_NewFile_remoteX";
@@ -173,8 +183,8 @@ public class FlatViewTest extends FlatViewTestBase {
     //---------------------------
     originalFile.renameTo(new File(localTestRepository + "/Test.txt"));
     refreshSupport.call();
-    flushAWT();
-    sleep(1000);
+    
+    waitForScheduler();
 
     //---------------
     // Stage.
@@ -200,6 +210,7 @@ public class FlatViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testDiscard() throws Exception {
     /**
      * Local repository location.
@@ -252,7 +263,11 @@ public class FlatViewTest extends FlatViewTestBase {
     DiscardAction discardAction = new DiscardAction(
         Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt")),
         stagingPanel.getStageController());
+    
     discardAction.actionPerformed(null);
+    
+    waitForScheduler();
+    
     assertTableModels(
         "", 
         "");    
@@ -263,6 +278,7 @@ public class FlatViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageUnstage_ModifiedFile() throws Exception {
     /**
      * Local repository location.
@@ -329,6 +345,7 @@ public class FlatViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageUnstage_NewMultipleFiles() throws Exception {
     /**
      * Local repository location.
@@ -386,6 +403,7 @@ public class FlatViewTest extends FlatViewTestBase {
    *  
    * @throws Exception If it fails.
    */
+  @Test
   public void testStageUnstage_NewFile_2() throws Exception {
     /**
      * Local repository location.
@@ -436,6 +454,7 @@ public class FlatViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testConflict_resolveUsingMine() throws Exception {
     /**
      * Local repository location.
@@ -497,17 +516,20 @@ public class FlatViewTest extends FlatViewTestBase {
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_MINE);
     
+    waitForScheduler();
+    
+    waitForScheluerBetter();
+    
     assertTableModels("", "");
 
     // Check the commit.
     CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
-    flushAWT();
-    sleep(1000);
     assertEquals("Commit_to_merge", commitPanel.getCommitMessageArea().getText());
     
     commitPanel.getCommitButton().doClick();
     flushAWT();
     
+    // TODO Alex What should it assert here?
     assertEquals("", "");
   }
   
@@ -516,6 +538,7 @@ public class FlatViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testConflict_resolveUsingTheirsAndRestartMerge() throws Exception {
     /**
      * Local repository location.
@@ -576,10 +599,14 @@ public class FlatViewTest extends FlatViewTestBase {
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
+    waitForScheduler();
+    
     assertTableModels("", "CHANGED, test.txt");
     
     // Restart merge
-    gitAccess.restartMerge();
+    ScheduledFuture restartMerge = gitAccess.restartMerge();
+    restartMerge.get();
+    
     flushAWT();
     assertTableModels("CONFLICT, test.txt", "");
     
@@ -587,9 +614,12 @@ public class FlatViewTest extends FlatViewTestBase {
     stagingPanel.getStageController().doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
+    waitForScheduler();
+    
     assertTableModels("", "CHANGED, test.txt");
     
     // Commit
+    // TODO Alex What should it assert here?
     gitAccess.commit("commit");
     assertTableModels("", "");
   }
@@ -601,6 +631,7 @@ public class FlatViewTest extends FlatViewTestBase {
    * 
    * @throws Exception If it fails.
    */
+  @Test
   public void testSaveRemoteURL() throws Exception {
 
     /**
@@ -644,10 +675,11 @@ public class FlatViewTest extends FlatViewTestBase {
    *
    * @throws Exception
    */
+  @Test
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
     // ================= No submodules ====================
-    stagingPanel.getPushPullController().pull();
-    sleep(500);
+    Future<?> pull2 = stagingPanel.getPushPullController().pull();
+    pull2.get();
     
     assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
     
@@ -658,8 +690,10 @@ public class FlatViewTest extends FlatViewTestBase {
         return true;
       }
     });
-    stagingPanel.getPushPullController().pull();
-    sleep(500);
+    Future<?> pull = stagingPanel.getPushPullController().pull();
+    pull.get();
+    flushAWT();
+    
     
     assertTrue(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
   }
@@ -672,6 +706,7 @@ public class FlatViewTest extends FlatViewTestBase {
    *
    * @throws Exception If it fails.
    */
+  @Test
   public void testSwitchViewModes() throws Exception {
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     try {

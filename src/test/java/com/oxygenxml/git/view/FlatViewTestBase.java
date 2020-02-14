@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
+import org.junit.Before;
 import org.junit.Ignore;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -16,9 +17,8 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.PushPullController;
 
 /**
 * Base for the test classes related to the actions performed
@@ -38,18 +38,13 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * Staging/Unstaging panel.
    */
   protected StagingPanel stagingPanel;
-  /**
-   * Refresh support.
-   */
-  protected PanelRefresh refreshSupport;
+
   
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
     super.setUp();
 
-    
-    // Create the unstaged resources panel
-    refreshSupport = new PanelRefresh();
+
     stagingPanel = new StagingPanel(
         refreshSupport,
         new GitController(),
@@ -73,9 +68,9 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     mainFrame.setSize(new Dimension(400, 600));
     mainFrame.setVisible(true);
   }
-  
-  @Override
-  protected void tearDown() throws Exception {
+
+  @Before
+  public void tearDown() throws Exception {
     super.tearDown();
     
     if (mainFrame != null) {
@@ -102,7 +97,6 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
     flushAWT();
-    sleep(300);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTable filesTable = unstagedChangesPanel.getFilesTable();
@@ -146,7 +140,6 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected void assertTreeModels(String unstagedExpected, String indexExpected) {
     flushAWT();
-    sleep(300);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTree filesTable = unstagedChangesPanel.getTreeView();
@@ -183,12 +176,14 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
   }
   
   /**
-   * Updates the information presented in the view with the current state of the working copy.   
+   * Updates the information presented in the view with the current state of the working copy.
+   *    
+   * @throws InterruptedException 
    */
-  protected final void refreshViews() {
+  protected final void refreshViews() throws InterruptedException {
     refreshSupport.call();
-    sleep(500);
-    flushAWT();
+    
+    waitForScheduler();
   }
   
   
@@ -219,4 +214,13 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     setFileContent(file, content);
     return file;
   }
+  
+  protected void waitForScheluerBetter() {
+    // TODO Alex This sequence is needed because of com.oxygenxml.git.view.CommitAndStatusPanel.commitButtonAndMessageUpdateTaskTimer
+    // We can stop using this timer and switch to the scheduler.
+    sleep(300);
+    flushAWT();
+    waitForScheduler();
+  }
+
 }
