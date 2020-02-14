@@ -250,7 +250,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     while(i< 10 && !uiReadyAfterSwitchUntracked2Index(fs)) {
       i++;
       Thread.yield();
-      sleep(100);
+      sleep(300);
     }
   }
 
