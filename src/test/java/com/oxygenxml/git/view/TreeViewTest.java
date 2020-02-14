@@ -219,31 +219,43 @@ public class TreeViewTest extends FlatViewTestBase {
     gitAccess.add(fs);
 
     int i = 0;
-    while(i< 10 && waitForUI(fs)) {
+    while(i< 10 && !uiready(fs)) {
       i++;
       Thread.yield();
       sleep(100);
     }
   }
 
-  private boolean waitForUI(FileStatus fs) {
-    boolean stillThere = false;
+  private boolean uiready(FileStatus fs) {
+    boolean uiready = true;
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
-    JTree filesTable = unstagedChangesPanel.getTreeView();
-    StagingResourcesTreeModel uModel = (StagingResourcesTreeModel) filesTable.getModel();
     
     logger.info("Check model");
-    for (FileStatus fileStatus : uModel.getFilesStatuses()) {
-      logger.info("In hte model " + fs);
+    for (FileStatus fileStatus : unstagedChangesPanel.getFilesStatuses()) {
+      logger.info("Untracked  model " + fs);
       if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
         logger.warn("Still in the model" + fs);
         
-        stillThere = true;
+        uiready = false;
         break;
       }
     }
     
-    return stillThere;
+    if (uiready) {
+      uiready = false;
+      ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
+      for (FileStatus fileStatus : stagedChangesPanel.getFilesStatuses()) {
+        logger.info("INDEX model" + fs);
+        if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
+          logger.warn("In the model" + fs);
+
+          uiready = true;
+          break;
+        }
+      }
+    }
+    
+    return uiready;
   }
 
   /**
