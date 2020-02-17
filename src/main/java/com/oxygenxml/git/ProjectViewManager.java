@@ -1,15 +1,17 @@
 package com.oxygenxml.git;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.view.dialog.UIUtil;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
@@ -25,11 +27,6 @@ public class ProjectViewManager {
   private static final Logger logger = Logger.getLogger(ProjectViewManager.class.getName());
   
   /**
-   * The "getProjectManager()" method name.
-   */
-  private static final String GET_PROJECT_MANAGER_METHOD_NAME = "getProjectManager";
-
-  /**
    * Hiden constructor.
    */
   private ProjectViewManager() {
@@ -38,43 +35,18 @@ public class ProjectViewManager {
 
 	/**
 	 * Add a pop-up menu customizer to the Project view's contextual menu. Add git specific actions.
-	 * <br/><br/>
-	 * oXygen 19.1+. For older versions, do nothing.
 	 * 
-	 * @param pluginWorkspaceAccess
-	 *          The StandalonePluginWorkspace.
-	 * @param menuItem
-	 *          The item to be added
+	 * @param menuItem The item to be added
 	 */
-	public static void addPopUpMenuCustomizer(
-	    StandalonePluginWorkspace pluginWorkspaceAccess,
-	    GitMenuActionsProvider gitActionsProvider) {
-		// try to get method from 19.1 version
+	public static void addPopUpMenuCustomizer(ProjectMenuGitActionsProvider gitActionsProvider) {
+	  StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
 		try {
-			// get the getProjectManager method
-			Method getProjectManager = pluginWorkspaceAccess.getClass().getMethod(GET_PROJECT_MANAGER_METHOD_NAME);
-
-			// get the projectManager class
-			Class<?> projectManagerClass = getProjectManager.getReturnType();
-
-			// get the projectPopupMenuCustomizer interface
-			Class<?> projectPopupMenuCustomizerClass = 
-			    Class.forName("ro.sync.exml.workspace.api.standalone.project.ProjectPopupMenuCustomizer");
-			
-			// create a ProxyInstance of projectPopupMenuCustomizer
-			Object proxyProjectPopupMenuCustomizerImpl = Proxy.newProxyInstance(
-					projectPopupMenuCustomizerClass.getClassLoader(), new Class[] { projectPopupMenuCustomizerClass },
-					new ProjectPopupMenuCustomizerInvocationHandler(pluginWorkspaceAccess, gitActionsProvider));
-
-			// get the project manager object
-			Object projectManager = getProjectManager.invoke(pluginWorkspaceAccess);
-
-			// get the addPopUpMenuCustomizer method
-			Method addPopUpMenuCustomizerMethod = projectManagerClass.getMethod("addPopUpMenuCustomizer",
-					projectPopupMenuCustomizerClass);
-			// invoke addPopUpMenuCustomizer method
-			addPopUpMenuCustomizerMethod.invoke(projectManager, proxyProjectPopupMenuCustomizerImpl);
-
+		  pluginWS.getProjectManager().addPopUpMenuCustomizer(popUp -> {
+        // Proceed only if the selected files pertain to a Git repository
+        if (areSelectedFilesFromGitRepo()) {
+          UIUtil.addGitActions((JPopupMenu) popUp, gitActionsProvider.getActionsForProjectViewSelection());
+        }
+      });
 		} catch (Exception e) {
 		  if (logger.isDebugEnabled()) {
 		    logger.debug(e, e);
@@ -83,40 +55,26 @@ public class ProjectViewManager {
 	}
 
 	/**
-	 * Get the selected files and directories from the Project view. This method does not
-	 * return the files from inside the selected directories.
-	 * 
-	 * @param pluginWorkspaceAccess  Plug-in workspace access.
-	 * 
-	 * @return the selected files or an empty array. Never null.
-	 */
-	public static File[] getSelectedFilesAndDirsShallow(StandalonePluginWorkspace pluginWorkspaceAccess) {
-	  File[] toReturn = null;
-		try {
-			// get the getProjectManager method
-			Method getProjectManager = pluginWorkspaceAccess.getClass().getMethod(GET_PROJECT_MANAGER_METHOD_NAME);
-
-			// get the projectManager class
-			Class<?> projectManagerClass = getProjectManager.getReturnType();
-
-			// get the projectManager
-			Object projectManager = getProjectManager.invoke(pluginWorkspaceAccess);
-
-			// get the getSelectedFiles method
-			Method getSelectedFiles = projectManagerClass.getMethod("getSelectedFiles");
-
-			// get the selected files
-			toReturn = (File[]) getSelectedFiles.invoke(projectManager);
-			
-		} catch (Exception e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
+   * Check if the selected files from the Project view pertain to a Git repository.
+   * 
+   * @return <code>true</code> if the selected files pertain to a Git repository,
+   *  <code>false</code> otherwise.
+   */
+  private static boolean areSelectedFilesFromGitRepo() {
+    boolean isGit = false;
+    StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    File[] selectedFiles = pluginWS.getProjectManager().getSelectedFiles();
+    for (int i = 0; i < selectedFiles.length; i++) {
+      isGit = FileHelper.isFromGitRepo(new File(selectedFiles[i].getAbsolutePath()));
+      if (!isGit) {
+        // If one of the selected project files does not pertain to a Git repository,
+        // it means that the project is not a Git one
+        break;
       }
-    } 
-		
-		return toReturn == null ? new File[0] : toReturn;
-	}
-	
+    }
+    return isGit;
+  }
+
 	/**
 	 * Get all the selected files + the files from inside the selected directories in the Project view.
 	 * 
@@ -124,10 +82,11 @@ public class ProjectViewManager {
 	 * 
 	 * @return the selected files and all the files from inside the selected directories in the Project view.
 	 */
-	public static Set<String> getSelectedFilesDeep(StandalonePluginWorkspace pluginWorkspaceAccess){
+	public static Set<String> getSelectedFilesDeep(){
 	  Set<String> files = new HashSet<>();
 
-	  File[] selectedFiles = getSelectedFilesAndDirsShallow(pluginWorkspaceAccess);
+	  StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+	  File[] selectedFiles = pluginWS.getProjectManager().getSelectedFiles();
 	  for (int i = 0; i < selectedFiles.length; i++) {
 	    files.addAll(FileHelper.getAllFilesFromPath(selectedFiles[i].getAbsolutePath()));
 	  }

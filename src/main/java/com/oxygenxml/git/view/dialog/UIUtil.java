@@ -1,19 +1,38 @@
 package com.oxygenxml.git.view.dialog;
 
+import java.awt.Cursor;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
+import javax.swing.AbstractAction;
 import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.renderer.StagingResourcesTableCellRenderer;
+
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
+import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ViewInfo;
 
 /**
  * Utility class for UI-related issues. 
@@ -33,6 +52,37 @@ public class UIUtil {
    */
   private UIUtil() {
     // Nothing
+  }
+  
+  /**
+   * Set busy cursor or default.
+   * 
+   * @param isSetBusy <code>true</code> to set busy cursor.
+   * @param views     A list of views on which to show a busy or default cursor.
+   */
+  public static void setBusyCursor(boolean isSetBusy, List<ViewInfo> views) {
+    StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    if (isSetBusy) {
+      SwingUtilities.invokeLater(() -> {
+        Cursor busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+        
+        ((JFrame) pluginWS.getParentFrame()).setCursor(busyCursor);
+        for (ViewInfo viewInfo : views) {
+          viewInfo.getComponent().setCursor(busyCursor);
+        }
+        setEditorPageCursor(busyCursor);
+      });
+    } else {
+      SwingUtilities.invokeLater(() -> {
+        Cursor defaultCursor = Cursor.getDefaultCursor();
+        
+        ((JFrame) pluginWS.getParentFrame()).setCursor(defaultCursor);
+        for (ViewInfo viewInfo : views) {
+          viewInfo.getComponent().setCursor(defaultCursor);
+        }
+        setEditorPageCursor(defaultCursor);
+      });
+    }
   }
   
   /**
@@ -129,6 +179,45 @@ public class UIUtil {
     
     
     return table;
+  }
+  
+  /**
+   * Add actions at the bottom of the pop-up.
+   * 
+   * @param popUp   The pop-up.
+   * @param actions The actions.
+   */
+  public static void addGitActions(JPopupMenu popUp, List<AbstractAction> actions) {
+    popUp.addSeparator();
+    JMenu gitMenu = new JMenu(Translator.getInstance().getTranslation(Tags.GIT));
+    Icon icon = Icons.getIcon(Icons.GIT_ICON);
+    gitMenu.setIcon(icon);
+    for (AbstractAction action : actions) {
+        gitMenu.add(action);
+    }
+    popUp.add(gitMenu);
+  }
+  
+  /**
+   * Set editor page cursor.
+   * 
+   * @param cursor   The cursor to set.
+   */
+  public static void setEditorPageCursor(Cursor cursor) {
+    StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    WSEditor currentEditorAccess = pluginWS.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+    if (currentEditorAccess != null) {
+      WSEditorPage currentPage = currentEditorAccess.getCurrentPage();
+      JComponent pageComp = null;
+      if (currentPage instanceof WSAuthorEditorPage) {
+        pageComp = (JComponent) ((WSAuthorEditorPage) currentPage).getAuthorComponent();
+      } else if (currentPage instanceof WSTextEditorPage) {
+        pageComp = (JComponent) ((WSTextEditorPage) currentPage).getTextComponent();
+      }
+      if (pageComp != null) {
+        pageComp.setCursor(cursor);
+      }
+    }
   }
 
 }

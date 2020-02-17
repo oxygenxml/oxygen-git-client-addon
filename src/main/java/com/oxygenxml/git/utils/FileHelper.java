@@ -255,6 +255,25 @@ public class FileHelper {
 		}
 		return false;
 	}
+	
+	/**
+	 * Check if the given file is part of a Git repository.
+	 * 
+	 * @param file The file to check.
+	 * 
+	 * @return <code>true</code> if the given file is part of a Git repository.
+	 */
+  public static boolean isFromGitRepo(File file) {
+    boolean isGit = false;
+    File temp = file;
+    while (temp.getParent() != null && !isGit) {
+      if (FileHelper.isGitRepository(temp.getPath())) {
+        isGit = true;
+      }
+      temp = temp.getParentFile();
+    }
+    return isGit;
+  }
 
 	/**
 	 * Checks is the given path represents a submodule. A submodule contains a file named .git that 

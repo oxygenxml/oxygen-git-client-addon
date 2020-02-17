@@ -1,5 +1,6 @@
 package com.oxygenxml.git.utils;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -18,11 +19,28 @@ public class GitOperationScheduler {
   /**
    * Refresh executor.
    */
-  private ScheduledExecutorService refreshExecutor = new ScheduledThreadPoolExecutor(1);
+  private ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(1) {
+    @Override
+    protected void afterExecute(Runnable r, Throwable t) {
+      if (t != null) {
+        logger.error(t, t);
+      }
+
+      if (r instanceof Future) {
+        try {
+          ((Future<?>) r).get();
+        } catch (Exception e) {
+          logger.error(e, e);
+        }
+      }
+    }
+  };
+  
   /**
    * Singleton instance.
    */
   private static GitOperationScheduler instance;
+  
   /**
    * Singleton private constructor.
    */
@@ -45,22 +63,22 @@ public class GitOperationScheduler {
    * @param r Code to be executed on thread.
    * @return
    */
-  public ScheduledFuture schedule(Runnable r) {
-    if (refreshExecutor.isShutdown()) {
+  public ScheduledFuture<?> schedule(Runnable r) {
+    if (executor.isShutdown()) {
       // A shutdown operation was canceled.
-      refreshExecutor = new ScheduledThreadPoolExecutor(1);
+      executor = new ScheduledThreadPoolExecutor(1);
     }
     
-    return refreshExecutor.schedule(r, 500, TimeUnit.MILLISECONDS);
+    return executor.schedule(r, 500, TimeUnit.MILLISECONDS);
   }
 
   /**
    * Attempts to shutdown any running tasks.
    */
   public void shutdown() {
-    refreshExecutor.shutdown();
+    executor.shutdown();
     try {
-      refreshExecutor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+      executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       logger.warn("Unable to stop task thread: " + e.getMessage(), e);
       // Restore interrupted state...

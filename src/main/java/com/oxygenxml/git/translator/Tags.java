@@ -847,4 +847,9 @@ public class Tags {
    * The text displayed for the "Open previous version" contextual menu item.
    */
   public static final String OPEN_PREVIOUS_VERSION = "Open_previous_version";
+  
+  /**
+   * Nothing to show for new files.
+   */
+  public static final String NOTHING_TO_SHOW_FOR_NEW_FILES = "Nothing_to_show_for_new_files";
 }
