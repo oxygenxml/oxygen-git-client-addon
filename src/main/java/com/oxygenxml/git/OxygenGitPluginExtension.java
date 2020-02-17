@@ -7,8 +7,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URL;
+import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -27,15 +31,19 @@ import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.historycomponents.HistoryPanel;
 
+import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
+import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
 
 /**
  * Plugin extension - workspace access extension.
@@ -126,12 +134,34 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 			GitController gitCtrl = new GitController();
 			
-			ProjectViewManager.addPopUpMenuCustomizer(
-			    pluginWorkspaceAccess,
-			    new GitMenuActionsProvider(
-			        pluginWorkspaceAccess,
-			        gitCtrl,
-			        OxygenGitPluginExtension.this));
+			// Add Git actions to the contextual menu of the Project view
+			ProjectMenuGitActionsProvider projectMenuGitActionsProvider = new ProjectMenuGitActionsProvider(
+          pluginWorkspaceAccess,
+          gitCtrl,
+          OxygenGitPluginExtension.this);
+      ProjectViewManager.addPopUpMenuCustomizer(projectMenuGitActionsProvider);
+      
+      // Add Git actions to the contexual menu of the current editor page
+      EditorPageMenuGitActionsProvider editorPageActionsProvider = 
+          new EditorPageMenuGitActionsProvider(OxygenGitPluginExtension.this);
+      pluginWorkspaceAccess.addMenusAndToolbarsContributorCustomizer(new MenusAndToolbarsContributorCustomizer() {
+        @Override
+        public void customizeAuthorPopUpMenu(JPopupMenu popUp, AuthorAccess authorAccess) {
+          URL editorURL = authorAccess.getEditorAccess().getEditorLocation();
+          List<AbstractAction> actions = editorPageActionsProvider.getActionsForCurrentEditorPage(editorURL);
+          if (!actions.isEmpty()) {
+            UIUtil.addGitActions(popUp, actions);
+          }
+        }
+        @Override
+        public void customizeTextPopUpMenu(JPopupMenu popUp, WSTextEditorPage textPage) {
+          URL editorURL = textPage.getParentEditor().getEditorLocation();
+          List<AbstractAction> actions = editorPageActionsProvider.getActionsForCurrentEditorPage(editorURL);
+          if (!actions.isEmpty()) {
+            UIUtil.addGitActions(popUp, actions);
+          }
+        }
+      });
 
 			pluginWorkspaceAccess.addViewComponentCustomizer(
 			    viewInfo -> {
@@ -143,9 +173,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           	}
           });
 
-			final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
 			
 			// Present the view to the user if it is the first run of the plugin
+			final JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
 			parentFrame.addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentShown(ComponentEvent e) {

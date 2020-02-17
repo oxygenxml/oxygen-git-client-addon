@@ -435,11 +435,19 @@ public class HistoryPanel extends JPanel {
           Ref branchHead = repository.exactRef(fullBranch);
           ObjectId objectId = branchHead.getObjectId();
           selectCommit(objectId);
+        } else {
+          PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+              Translator.getInstance().getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES));
         }
 
       } catch (NoRepositorySelected | IOException e) {
         LOGGER.debug(e, e);
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to present history because of: " + e.getMessage());
+      }
+    } else {
+      if (historyTable.getModel().getRowCount() == 0) {
+        PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+            Translator.getInstance().getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES));
       }
     }
   }

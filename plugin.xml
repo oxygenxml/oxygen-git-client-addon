@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- The plugin.dtd file is located in the OXYGEN_INSATALL_DIR/plugins directory -->
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
-<plugin id="com.oxygenxml.git" name="Git Support Plugin"
-    description="provides support for working with Git: commit, diff, push, pull"
+<plugin id="com.oxygenxml.git" name="Git Client"
+    description="Provides support for working with Git from oXygen."
     version="${project.version}" vendor="Syncro Soft" class="com.oxygenxml.git.OxygenGitPlugin"
     classLoaderType="preferReferencedResources">
  

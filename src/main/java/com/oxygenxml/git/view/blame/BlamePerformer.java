@@ -25,10 +25,13 @@ import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.editor.EditorPageConstants;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
@@ -94,7 +97,7 @@ public class BlamePerformer {
    * 
    * @throws GitAPIException Git related issues.
    */
-  public  void doit(
+  public void doit(
       Repository repository, 
       String filePath, 
       final WSEditor editor, 
@@ -107,9 +110,6 @@ public class BlamePerformer {
     if (currentPage instanceof WSTextEditorPage) {
       doBlame(repository, filePath, historyController, (WSTextEditorPage) currentPage);
     }
-    
-    // Present the history for the given resource.
-    historyController.showResourceHistory(filePath);
   }
 
   /**
@@ -130,35 +130,42 @@ public class BlamePerformer {
     BlameCommand blamer = new BlameCommand(repository);
     
     // This is how you do it on a specific commit. If left out, it's performed on the WC instance.
-//    ObjectId commitID = repository.resolve("HEAD~~"); NOSONAR
-//    blamer.setStartCommit(commitID); NOSONAR
+    //    ObjectId commitID = repository.resolve("HEAD~~"); NOSONAR
+    //    blamer.setStartCommit(commitID); NOSONAR
+    
     blamer.setFilePath(filePath);
     BlameResult blame = blamer.call();
     textpage = currentPage;
     JTextArea textArea = (JTextArea) textpage.getTextComponent();
     Highlighter highlighter = textArea.getHighlighter();
-    
+
     // Add highlights for each interval.
-    int lines = blame.getResultContents().size();
-    for (int i = 0; i < lines; i++) {
-      RevCommit commit = blame.getSourceCommit(i);
-      
-      lineIndicesToRevCommits.put(i, commit);
+    if (blame != null) {
+      int lines = blame.getResultContents().size();
+      for (int i = 0; i < lines; i++) {
+        RevCommit commit = blame.getSourceCommit(i);
+        lineIndicesToRevCommits.put(i, commit);
+        if (commit != null) {
+          try {
+            int offsetOfLineStart = textpage.getOffsetOfLineStart(i + 1);
+            int offsetOfLineEnd = textpage.getOffsetOfLineEnd(i + 1);
 
-      if (commit != null) {
-        try {
-          int offsetOfLineStart = textpage.getOffsetOfLineStart(i + 1);
-          int offsetOfLineEnd = textpage.getOffsetOfLineEnd(i + 1);
-
-          Object addHighlight = highlighter.addHighlight(offsetOfLineStart, offsetOfLineEnd, getPainter(commit, textpage));
-          highlightsToRevCommits.put(addHighlight, commit);
-        } catch (BadLocationException e) {
-          LOGGER.error(e, e);
+            Object addHighlight = highlighter.addHighlight(offsetOfLineStart, offsetOfLineEnd, getPainter(commit, textpage));
+            highlightsToRevCommits.put(addHighlight, commit);
+          } catch (BadLocationException e) {
+            LOGGER.error(e, e);
+          }
         }
       }
+
+      installSyncListeners(filePath, historyController, textArea);
+      
+      // Present the history for the given resource.
+      historyController.showResourceHistory(filePath);
+    } else {
+      PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+          Translator.getInstance().getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES));
     }
-    
-    installSyncListeners(filePath, historyController, textArea);
   }
 
   /**

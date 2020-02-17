@@ -162,7 +162,6 @@ public class HistoryViewContextualMenuPresenter {
     List<String> parents = commitCharacteristics.getParentCommitId();
     if (parents != null && !parents.isEmpty()) {
       try {
-        // ========= Compare with previous version ===========
         RevCommit[] parentsRevCommits = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(), commitCharacteristics.getCommitId());
         boolean addParentID = parents.size() > 1;
         for (RevCommit parentID : parentsRevCommits) {
