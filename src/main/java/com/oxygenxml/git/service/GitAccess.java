@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -59,13 +58,11 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
-import org.eclipse.jgit.lib.BranchConfig;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.RefUpdate;
@@ -87,10 +84,7 @@ import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
-import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
 
 import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
@@ -1897,8 +1891,7 @@ public class GitAccess {
 	 * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
 	 */
 	public String getUpstreamBranchName(String localBranchShortName) {
-    BranchConfig branchConfig = new BranchConfig(git.getRepository().getConfig(), localBranchShortName);
-    return branchConfig.getRemoteTrackingBranch();
+	  return RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName);
   }
 	
 	 /**
@@ -2106,87 +2099,20 @@ public class GitAccess {
 	 * @return a Vector with commits characteristics of the current repository.
 	 */
 	public List<CommitCharacteristics> getCommitsCharacteristics(String filePath) {
-		List<CommitCharacteristics> commitVector = new ArrayList<>();
+		List<CommitCharacteristics> revisions = new ArrayList<>();
 
 		try {
 			Repository repository = this.getRepository();
 			if (filePath == null && git.status().call().hasUncommittedChanges()) {
-				commitVector.add(UNCOMMITED_CHANGES);
+				revisions.add(UNCOMMITED_CHANGES);
 			}
 
-			// a RevWalk allows to walk over commits based on some filtering that is defined
-			try (RevWalk revWalk = new RevWalk(repository)) {
-			  // EXM-44307 Show current branch commits only.
-			  String fullBranch = repository.getFullBranch();
-			  Ref branchHead = repository.exactRef(fullBranch);
-			  if (branchHead != null) {
-	        ObjectId objectId = branchHead.getObjectId();
-	        RevCommit revCommit = revWalk.parseCommit(objectId);
-	        revWalk.markStart(revCommit);
-
-			    // If we have a remote, put it as well.
-			    String fullRemoteBranchName = getUpstreamBranchName(repository.getBranch());
-			    if (fullRemoteBranchName != null) {
-			      Ref fullRemoteBranchHead = repository.exactRef(fullRemoteBranchName);
-			      if (fullRemoteBranchHead != null) {
-			        revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
-			      }
-			    }
-
-			    if (filePath != null) {
-			      revWalk.setTreeFilter(
-			          AndTreeFilter.create(
-			              PathFilterGroup.createFromStrings(filePath),
-			              TreeFilter.ANY_DIFF)
-			          );
-			    }
-
-			    for (RevCommit commit : revWalk) {
-			      String commitMessage = commit.getFullMessage();
-			      PersonIdent authorIdent = commit.getAuthorIdent();
-			      String author = authorIdent.getName() + " <" + authorIdent.getEmailAddress() + ">";
-			      Date authorDate = authorIdent.getWhen();
-			      String abbreviatedId = commit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name();
-			      String id = commit.getId().getName();
-
-			      PersonIdent committerIdent = commit.getCommitterIdent();
-			      String committer = committerIdent.getName();
-			      List<String> parentsIds = getParentsId(commit);
-
-			      // add commit element in vector
-			      commitVector.add(new CommitCharacteristics(commitMessage, authorDate, author, abbreviatedId, id,
-			          committer, parentsIds));
-			    }
-			  } else {
-			    // Probably a new repository without any history. 
-			  }
-			}
-
+			RevCommitUtil.collectCurrentBranchRevisions(filePath, revisions, repository);
 		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
 			logger.error(e, e);
 		}
 		
-		return commitVector;
-	}
-
-
-	/**
-	 * Get a list with all the parent IDs of the current commit.
-	 * 
-	 * @param commit The current commit.
-	 * @return The list with parents commit IDs.
-	 */
-	private List<String> getParentsId(RevCommit commit) {
-		List<String> parentsIds = null;
-
-		// add list of parent commits.
-		if (commit.getParentCount() > 0) {
-			parentsIds = new ArrayList<>();
-			for (RevCommit parentCommit : commit.getParents()) {
-				parentsIds.add(parentCommit.getId().abbreviate(RevCommitUtilBase.ABBREVIATED_COMMIT_LENGTH).name());
-			}
-		}
-		return parentsIds;
+		return revisions;
 	}
 
 	/**

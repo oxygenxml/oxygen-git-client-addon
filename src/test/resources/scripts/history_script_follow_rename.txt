@@ -1,0 +1,14 @@
+<script>
+    <changeSet message="First commit.">
+        <change path="file.txt" type="add">file content</change>
+    </changeSet>
+    
+    <changeSet message="Rename.">
+    	<change path="file.txt" type="delete"/>
+    	<change path="file_renamed.txt" type="add">file content</change>
+    </changeSet>
+    
+    <changeSet message="Third commit.">
+        <change path="file_renamed.txt" type="change">after rename</change>
+    </changeSet>
+</script>

@@ -376,5 +376,37 @@ public class GitHistoryTest extends GitTestBase {
         FileUtils.deleteDirectory(wcTree);
       }
     }
+
+    /**
+     * <p><b>Description:</b> Identify and follow renames.</p>
+     * <p><b>Bug ID:</b> EXM-45037</p>
+     *
+     * @author alex_jitianu
+     *
+     * @throws Exception If it fails.
+     */
+    @Test
+    public void testRenamedResource() throws Exception {
+      URL script = getClass().getClassLoader().getResource("scripts/history_script_follow_rename.txt");
+      File wcTree = new File("target/gen/GitHistoryTest_testHistory");
+      
+      generateRepositoryAndLoad(script, wcTree);
+
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("file_renamed.txt");
+
+      String dump = dumpHistory(commitsCharacteristics);
+
+      String expected = 
+          "[ Third commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+          "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
+          "";
+
+      expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
+
+      assertEquals(
+          expected, dump);
+
+    }
     
 }
