@@ -9,11 +9,11 @@
         <xt:oxy_version>20.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
-        <xt:name>Git Support</xt:name>
+        <xt:name>Git Client</xt:name>
         <xt:description>
             <html xmlns="http://www.w3.org/1999/xhtml">
                 <head>
-                    <title>Git support plugin</title>
+                    <title>Git Client</title>
                     <style type="text/css"> ol {margin-top:0px;} p
                         {margin-top:0px;margin-bottom:5px;} </style>
                 </head>
