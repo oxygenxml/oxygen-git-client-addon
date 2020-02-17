@@ -387,19 +387,21 @@ public class GitHistoryTest extends GitTestBase {
      */
     @Test
     public void testRenamedResource() throws Exception {
-      URL script = getClass().getClassLoader().getResource("scripts/history_script_follow_rename.txt");
+      URL script = getClass().getClassLoader().getResource("scripts/history_script_follow_rename_copy.txt");
       File wcTree = new File("target/gen/GitHistoryTest_testHistory");
       
       generateRepositoryAndLoad(script, wcTree);
 
-      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("file_renamed.txt");
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("file_renamed_again.txt");
 
       String dump = dumpHistory(commitsCharacteristics);
 
       String expected = 
-          "[ Third commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
-          "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
-          "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
+          "[ The file was changed , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ The file was renamed and moved , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+          "[ The file was renamed , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+          "[ The file was moved , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n" + 
+          "[ The file was added , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n" + 
           "";
 
       expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));

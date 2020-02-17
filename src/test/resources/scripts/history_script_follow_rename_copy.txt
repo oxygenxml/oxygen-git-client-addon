@@ -1,0 +1,25 @@
+<script>
+    <changeSet message="The file was added">
+        <change path="file.txt" type="add">file content</change>
+    </changeSet>
+    
+    <changeSet message="The file was moved">
+    	<change path="file.txt" type="delete"/>
+    	<change path="child/file.txt" type="add">file content</change>
+    </changeSet>
+    
+    
+    <changeSet message="The file was renamed">
+    	<change path="child/file.txt" type="delete"/>
+    	<change path="child/file_renamed.txt" type="add">file content</change>
+    </changeSet>
+    
+    <changeSet message="The file was renamed and moved">
+    	<change path="child/file_renamed.txt" type="delete"/>
+    	<change path="file_renamed_again.txt" type="add">file content</change>
+    </changeSet>
+    
+    <changeSet message="The file was changed">
+        <change path="file_renamed_again.txt" type="change">new content</change>
+    </changeSet>
+</script>
