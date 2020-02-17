@@ -1,5 +1,6 @@
 package com.oxygenxml.git.utils;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -29,6 +30,8 @@ public class GitOperationScheduler {
       if (r instanceof Future) {
         try {
           ((Future<?>) r).get();
+        } catch (CancellationException e) {
+          logger.debug(e, e);
         } catch (Exception e) {
           logger.error(e, e);
         }
