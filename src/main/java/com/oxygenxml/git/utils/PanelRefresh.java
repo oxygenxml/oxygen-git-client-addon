@@ -152,11 +152,11 @@ public class PanelRefresh implements GitRefreshSupport {
         String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
         if (detectedRepo == null) {
           repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
-        } else if (projectDir.equals(detectedRepo.getAbsolutePath())) {
+        } else {
           try {
             File currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
             if (!detectedRepo.equals(currentRepo)) {
-              repoChanged = switchToProjectRepoIfUserAgrees(projectDir);
+              repoChanged = switchToProjectRepoIfUserAgrees(detectedRepo.getAbsolutePath());
             }
           } catch (NoRepositorySelected e) {
             logger.warn(e, e);
