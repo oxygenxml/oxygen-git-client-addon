@@ -852,4 +852,9 @@ public class Tags {
    * Nothing to show for new files.
    */
   public static final String NOTHING_TO_SHOW_FOR_NEW_FILES = "Nothing_to_show_for_new_files";
+  
+  /**
+   * This operation requires saving {0}.
+   */
+  public static final String THIS_OPERATION_REQUIRES_SAVING = "This_operation_requires_saving";
 }
