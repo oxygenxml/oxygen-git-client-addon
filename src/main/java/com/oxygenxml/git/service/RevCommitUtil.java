@@ -493,38 +493,45 @@ public class RevCommitUtil {
    * 
    * @param git Git interaction.
    * @param filePath The known path .
-   * @param revision The list of revisions across which to follow the resource renames.
+   * @param revisions The list of revisions across which to follow the resource renames.
    *  
    * @return The path of the resource as present in the last revision from the list.
    * 
    * @throws IOException
    * @throws GitAPIException
    */
-  private static String findPath(Git git, String filePath, List<RevCommit> revision)
+  private static String findPath(Git git, String filePath, List<RevCommit> revisions)
       throws IOException, GitAPIException {
     if (logger.isDebugEnabled()) {
       logger.debug("====SORTED===");
-      revision.stream().forEach(r -> logger.debug(r.getFullMessage()));
+      revisions.stream().forEach(r -> logger.debug(r.getFullMessage()));
     }
     
+    // Fast case. Perhaps the path is the same.
+    boolean same = !revisions.isEmpty() 
+        && getFiles(git.getRepository(), revisions.get(revisions.size() - 1)).stream().anyMatch(fs -> filePath.equals(fs.getFileLocation()));
+    
     String path = filePath;
-    RevCommit previous = null;
-    for (RevCommit revCommit : revision) {
-      if (previous != null) {
-        
-        List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
-        for (DiffEntry diffEntry : diff) {
-          if (isRename(diffEntry) 
-              && path.equals(diffEntry.getOldPath())) {
+    if (!same) {
+      RevCommit previous = null;
+      for (RevCommit revCommit : revisions) {
+        if (previous != null) {
+
+          List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
+          for (DiffEntry diffEntry : diff) {
+            if (isRename(diffEntry) 
+                && path.equals(diffEntry.getOldPath())) {
               // Match.
               path = diffEntry.getNewPath();
               break;
             }
           }
+        }
+
+        previous = revCommit;
       }
-      
-      previous = revCommit;
     }
+    
     return path;
   }
   
