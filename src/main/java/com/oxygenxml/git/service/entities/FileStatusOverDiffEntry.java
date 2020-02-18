@@ -3,6 +3,8 @@ package com.oxygenxml.git.service.entities;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
+import com.oxygenxml.git.service.RevCommitUtil;
+
 /**
  * A wrapper over a diff entry representing a changed suffered by a resource. 
  */
@@ -76,7 +78,7 @@ public class FileStatusOverDiffEntry extends FileStatus {
       toreturn = GitChangeType.REMOVED;
     } else if (ChangeType.MODIFY == diffChange) {
       toreturn = GitChangeType.CHANGED;
-    } else if (ChangeType.RENAME == diffChange) {
+    } else if (RevCommitUtil.isRename(entry)) {
       toreturn = GitChangeType.RENAME;
     }
     
