@@ -103,7 +103,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
     flushAWT();
-    sleep(300);
+    sleep(500);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTable filesTable = unstagedChangesPanel.getFilesTable();

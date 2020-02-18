@@ -139,7 +139,7 @@ public class PanelRefresh implements GitRefreshSupport {
    */
   private boolean loadRepositoryFromOxygenProject() {
     boolean repoChanged = false;
-    if (stagingPanel.hasFocus()) {
+    if (stagingPanel != null && stagingPanel.hasFocus()) {
       StandalonePluginWorkspace pluginWS =
           (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
