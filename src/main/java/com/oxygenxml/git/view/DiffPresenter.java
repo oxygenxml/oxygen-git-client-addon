@@ -14,6 +14,7 @@ import java.util.Optional;
 import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
@@ -22,6 +23,7 @@ import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -358,7 +360,19 @@ public class DiffPresenter {
 	 * @throws MalformedURLException
 	 */
   public static void showTwoWayDiffWithLocal(String filePath, String commitId) throws NoRepositorySelected, MalformedURLException {
-    URL left = FileHelper.getFileURL(filePath);
+    String localFilePath = filePath;
+    
+    try {
+      localFilePath = RevCommitUtil.getNewPathInHead(
+          GitAccess.getInstance().getGit(), 
+          filePath, 
+          commitId);
+    } catch (IOException | GitAPIException e) {
+      logger.error(e, e);
+    }
+    
+    
+    URL left = FileHelper.getFileURL(localFilePath);
     URL right = GitRevisionURLHandler.encodeURL(commitId, filePath);
     
     showDiffFrame(left, right, null, filePath);

@@ -321,7 +321,7 @@ public class GitAccessConflictTest {
     pc.pull(PullType.REBASE).get();
     assertTrue(wasRebaseInterrupted[0]);
     
-    Status status = gitAccess.getGitForTests().status().call();
+    Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
@@ -445,7 +445,7 @@ public class GitAccessConflictTest {
     pc.pull(PullType.REBASE).get();
     assertTrue(wasRebaseInterrupted[0]);
     
-    Status status = gitAccess.getGitForTests().status().call();
+    Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
@@ -570,7 +570,7 @@ public class GitAccessConflictTest {
     pc.pull(PullType.REBASE).get();
     assertTrue(wasRebaseInterrupted[0]);
     
-    Status status = gitAccess.getGitForTests().status().call();
+    Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
@@ -697,7 +697,7 @@ public class GitAccessConflictTest {
     pc.pull(PullType.REBASE).get();
     assertTrue(wasRebaseInterrupted[0]);
     
-    Status status = gitAccess.getGitForTests().status().call();
+    Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {
@@ -825,7 +825,7 @@ public class GitAccessConflictTest {
     pc.pull(PullType.REBASE).get();
     assertTrue(wasRebaseInterrupted[0]);
     
-    Status status = gitAccess.getGitForTests().status().call();
+    Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
     GitController stageCtrl = new GitController() {

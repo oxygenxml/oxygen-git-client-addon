@@ -438,4 +438,152 @@ public class RevCommitUtil {
     }
     return parentsIds;
   }
+  
+  
+  /**
+   * Finds the original path for a new resource.
+   * 
+   * @param git Git access.
+   * @param since Start of the interval.
+   * @param until End of the interval.
+   * @param filePath The new path of a resource.
+   * @return
+   * @throws GitAPIException
+   * @throws IOException
+   */
+  public static String getOriginalPath(
+      Git git, 
+      RevCommit since, 
+      RevCommit until,
+      String filePath) throws GitAPIException, IOException {
+    Iterable<RevCommit> revs = git.log().addRange(since, until).call();
+    
+    List<RevCommit> revisions = sort(revs, since, true);
+    
+    return findPath(git, filePath, revisions);
+  }
+  
+  /**
+   * Finds out the new location of a resource.
+   * 
+   * @param git Git interaction.
+   * @param since The old revision.
+   * @param until The new revision.
+   * @param oldFilePath The original file path.
+   *  
+   * @return The new path of the resource.
+   * 
+   * @throws GitAPIException
+   * @throws IOException
+   */
+  public static String getNewPath(
+      Git git, 
+      RevCommit since, 
+      RevCommit until,
+      String oldFilePath) throws GitAPIException, IOException {
+    Iterable<RevCommit> revs = git.log().addRange(since, until).call();
+    
+    List<RevCommit> sorted = sort(revs, since, false);
+    
+    return findPath(git, oldFilePath, sorted);
+  }
+
+  /**
+   * Finds the new location of a resource that might have been moved / renamed across revisions.
+   * 
+   * @param git Git interaction.
+   * @param filePath The known path .
+   * @param revision The list of revisions across which to follow the resource renames.
+   *  
+   * @return The path of the resource as present in the last revision from the list.
+   * 
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  private static String findPath(Git git, String filePath, List<RevCommit> revision)
+      throws IOException, GitAPIException {
+    if (logger.isDebugEnabled()) {
+      logger.debug("====SORTED===");
+      revision.stream().forEach(r -> logger.debug(r.getFullMessage()));
+    }
+    
+    String path = filePath;
+    RevCommit previous = null;
+    for (RevCommit revCommit : revision) {
+      if (previous != null) {
+        
+        List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
+        for (DiffEntry diffEntry : diff) {
+          if (isRename(diffEntry) 
+              && path.equals(diffEntry.getOldPath())) {
+              // Match.
+              path = diffEntry.getNewPath();
+              break;
+            }
+          }
+      }
+      
+      previous = revCommit;
+    }
+    return path;
+  }
+  
+  /**
+   * Utility method  to put the revisions in a proper order.
+   * 
+   * @param new2old A list of already sorted revisions, from new to old.
+   * @param oldestRev A revision older than all the others. It will be added in the resulting list.
+   * @param ascending <code>true</code> to sort from older to newest.
+   * 
+   * @return The list of revisions sorted as requested.
+   */
+  static <E> List<E> sort(Iterable<E> new2old, E oldestRev, boolean ascending) {
+    LinkedList<E> sorted = new LinkedList<>();
+    if (!ascending) {
+      for (E revCommit : new2old) {
+        sorted.add(revCommit);
+      }
+
+      sorted.add(oldestRev);
+    } else {
+      for (E revCommit : new2old) {
+        sorted.addFirst(revCommit);
+      }
+      
+      sorted.addFirst(oldestRev);
+    }
+    
+    return sorted;
+  }
+
+  /**
+   * Checks if a resource was moved or renamed compared with the HEAD revision and returns the path
+   * of the resource in the HEAD revision.
+   * 
+   * @param git Git interaction.
+   * @param filePath The known file path.
+   * @param commitId The revision ID of the file path.
+   *  
+   * @return The new path of the resource.
+   * 
+   * @throws GitAPIException
+   * @throws IOException
+   */
+  public static String getNewPathInHead(
+      Git git, 
+      String filePath, 
+      String commitId) throws IOException, GitAPIException {
+    
+    Repository repository = git.getRepository();
+    
+    RevCommit older = repository.parseCommit(repository.resolve(commitId));
+    RevCommit newer = repository.parseCommit(repository.resolve("HEAD"));
+    
+    return RevCommitUtil.getOriginalPath(
+        git, 
+        older, 
+        newer,
+        filePath);
+  }
+
 }

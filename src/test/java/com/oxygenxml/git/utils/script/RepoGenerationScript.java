@@ -174,7 +174,7 @@ public class RepoGenerationScript {
       try {
         setUserCredentials();
         
-        GitAccess.getInstance().getGitForTests().commit().setAuthor("Alex", "alex_jitianu@sync.ro").setMessage(ch.message).call();
+        GitAccess.getInstance().getGit().commit().setAuthor("Alex", "alex_jitianu@sync.ro").setMessage(ch.message).call();
       } catch (GitAPIException e) {
         logger.error(e, e);
       }
@@ -231,7 +231,7 @@ public class RepoGenerationScript {
       }
 
       List<Ref> collect = GitAccess.getInstance().getLocalBranchList().stream().filter(r -> mergeBranchShortName.equals(Repository.shortenRefName(r.getName()))).collect(Collectors.toList());
-      MergeResult call = GitAccess.getInstance().getGitForTests().merge().setMessage(commitMessage).include(collect.get(0)).call();
+      MergeResult call = GitAccess.getInstance().getGit().merge().setMessage(commitMessage).include(collect.get(0)).call();
 
       if (logger.isDebugEnabled()) {
         logger.debug("Merge result: " + call);

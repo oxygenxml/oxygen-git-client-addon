@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.historycomponents;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.MenuElement;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
 
@@ -76,24 +78,13 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
       //---------------
       // Invoke the Diff action to see if the built URLs are O.K.
       //---------------
-      HistoryViewContextualMenuPresenter menuPresenter = 
-          new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
-      JPopupMenu jPopupMenu = new JPopupMenu();
       
       StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) historyPanel.affectedFilesTable.getModel();
       FileStatus fileStatus = affectedFilesModel.getFilesStatuses().get(0);
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
-      menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
       
-      MenuElement[] subElements = jPopupMenu.getSubElements();
-      
-      List<Action> actions = Arrays.asList(subElements).stream()
-          .map(t -> ((JMenuItem) t).getAction())
-          .filter(t -> ((String) t.getValue(Action.NAME)).startsWith("Compare_file_with_previous_"))
-          .collect(Collectors.toList());
-
-      assertFalse("Unable to find the 'Compare with previous version' action.", actions.isEmpty());
+      List<Action> actions = getCompareWithPreviousAction(fileStatus, cc);
       
       Action action = actions.get(0);
       
@@ -164,22 +155,13 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
       //---------------
       // Invoke the Diff action to see if the built URLs are O.K.
       //---------------
-      HistoryViewContextualMenuPresenter menuPresenter = 
-          new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
-      JPopupMenu jPopupMenu = new JPopupMenu();
       
       StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) historyPanel.affectedFilesTable.getModel();
       FileStatus fileStatus = affectedFilesModel.getFilesStatuses().get(0);
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
-      menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
       
-      MenuElement[] subElements = jPopupMenu.getSubElements();
-      
-      List<Action> actions = Arrays.asList(subElements).stream()
-          .map(t -> ((JMenuItem) t).getAction())
-          .filter(t -> ((String) t.getValue(Action.NAME)).startsWith("Compare_file_with_previous_"))
-          .collect(Collectors.toList());
+      List<Action> actions = getCompareWithPreviousAction(fileStatus, cc);
   
       assertFalse("Unable to find the 'Compare with previous version' action.", actions.isEmpty());
       

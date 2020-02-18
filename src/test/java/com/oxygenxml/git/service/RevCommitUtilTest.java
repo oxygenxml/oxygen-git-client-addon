@@ -2,6 +2,8 @@ package com.oxygenxml.git.service;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jgit.api.Git;
@@ -29,7 +31,7 @@ public class RevCommitUtilTest extends GitTestBase {
     
     generateRepositoryAndLoad(script, wcTree);
     
-    Git git = GitAccess.getInstance().getGitForTests();
+    Git git = GitAccess.getInstance().getGit();
     Repository repository = git.getRepository();
     
     // a RevWalk allows to walk over commits based on some filtering that is defined
@@ -59,5 +61,21 @@ public class RevCommitUtilTest extends GitTestBase {
       assertEquals("file.txt", diffEntry.getOldPath());
       assertEquals("file_renamed.txt", diffEntry.getNewPath());
     }
+  }
+  
+  /**
+   * Tests the utility method that merges a revision into a list of existing sorted revisions and sorts them all.
+   */
+  @Test
+  public void testSortRevisions() {
+    List<String> new2old = new ArrayList<String>();
+    new2old.add("A");
+    new2old.add("B");
+    
+    List<String> sort = RevCommitUtil.sort(new2old, "C", false);
+    assertEquals("[A, B, C]", sort.toString());
+    
+    sort = RevCommitUtil.sort(new2old, "C", true);
+    assertEquals("[C, B, A]", sort.toString());
   }
 }

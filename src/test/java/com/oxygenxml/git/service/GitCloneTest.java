@@ -64,7 +64,7 @@ public class GitCloneTest extends GitTestBase {
 
       // Create a second branch ("slave")
       RefSpec spec = new RefSpec("refs/heads/master:refs/heads/slave");
-      gitAccess.getGitForTests().push().setRefSpecs(spec).call();
+      gitAccess.getGit().push().setRefSpecs(spec).call();
       
       // Commit another file on "master"
       localTestFile = new File(localDir, "test2.txt");

@@ -9,20 +9,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.Action;
+
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
+import com.oxygenxml.git.view.historycomponents.HistoryPanelTestBase;
 
 /**
  * Tests for the code related with history.
  */
-public class GitHistoryTest extends GitTestBase {
+public class GitHistoryTest extends HistoryPanelTestBase {
 
   /**
    * Tests the commit revisions retrieval.
@@ -403,11 +408,77 @@ public class GitHistoryTest extends GitTestBase {
           "[ The file was moved , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n" + 
           "[ The file was added , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , null ]\n" + 
           "";
+      
+      
+      //--------------------------
+      // Tests the detection of rename paths.
+      //---------------------------
+      
+      Repository repository = GitAccess.getInstance().getRepository();
+      
+      String startId = commitsCharacteristics.get(2).getCommitId();
+      ObjectId start = repository.resolve(startId);
+      RevCommit older = repository.parseCommit(start);
+      
+      String headId = commitsCharacteristics.get(0).getCommitId();
+      ObjectId end = repository.resolve(headId);
+      RevCommit newer = repository.parseCommit(end);
+      
+      assertEquals("The file was renamed", older.getFullMessage());
+      assertEquals("The file was changed", newer.getFullMessage());
+
+      String matchingPath = RevCommitUtil.getOriginalPath(
+          GitAccess.getInstance().getGit(), 
+          older, 
+          newer,
+          "child/file_renamed.txt");
+      
+      assertEquals("file_renamed_again.txt", matchingPath);
+      
+      System.out.println("===========================");
+      System.out.println("===========================");
+      
+      matchingPath = RevCommitUtil.getNewPath(
+          GitAccess.getInstance().getGit(), 
+          older, 
+          newer,
+          "file_renamed_again.txt");
+      
+      assertEquals("child/file_renamed.txt", matchingPath);
+      
+      System.out.println("===========================");
+      System.out.println("===========================");
+      
+      
+      //--------------------------
+      //---------------------------
+      
 
       expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
 
       assertEquals(
           expected, dump);
+      
+
+      CommitCharacteristics cc = commitsCharacteristics.get(2);
+      
+      List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(cc.getCommitId());
+      assertEquals("[(changeType=RENAME, fileLocation=child/file_renamed.txt)]", changedFiles.toString());
+      
+      Action action = getCompareWithWCAction(changedFiles.get(0), cc);
+      assertEquals("Compare_file_with_working_tree_version", action.getValue(Action.NAME).toString());
+      
+      action.actionPerformed(null);
+      
+      assertEquals("Unexpected number of URLs intercepted in the comparison support:" + urls2compare.toString(), 2, urls2compare.size());
+      
+      URL left = urls2compare.get(0);
+      URL right = urls2compare.get(1);
+      
+      // This is the current name and location of the renamed/moved file.
+      File wcTreeCopy = new File(wcTree, "file_renamed_again.txt");
+      assertEquals(wcTreeCopy.toURI().toURL().toString(), left.toString());
+      assertEquals("git://" + cc.getCommitId() + "/child/file_renamed.txt", right.toString());
 
     }
     

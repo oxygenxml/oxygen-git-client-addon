@@ -1999,11 +1999,9 @@ public class GitAccess {
 	}
 	
 	/**
-	 * !!! FOR TESTS !!!
-	 * 
 	 * Get the {@link Git} object through which to interact with the repository.
 	 */
-	public Git getGitForTests() {
+	public Git getGit() {
 	  return git;
 	}
 
