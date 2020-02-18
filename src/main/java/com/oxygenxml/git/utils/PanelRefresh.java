@@ -156,7 +156,14 @@ public class PanelRefresh implements GitRefreshSupport {
           try {
             File currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
             if (!detectedRepo.equals(currentRepo)) {
-              repoChanged = switchToProjectRepoIfUserAgrees(detectedRepo.getAbsolutePath());
+              String repoPath;
+              try {
+                repoPath = detectedRepo.getCanonicalPath();
+              } catch (IOException e) {
+                logger.debug(e, e);
+                repoPath = detectedRepo.getAbsolutePath();
+              }
+              repoChanged = switchToProjectRepoIfUserAgrees(repoPath);
             }
           } catch (NoRepositorySelected e) {
             logger.warn(e, e);
