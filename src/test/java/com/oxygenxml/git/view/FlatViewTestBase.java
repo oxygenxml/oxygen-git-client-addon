@@ -74,6 +74,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     mainFrame.setVisible(true);
   }
 
+  @Override
   @Before
   public void tearDown() throws Exception {
     super.tearDown();
@@ -102,6 +103,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
     flushAWT();
+    sleep(300);
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTable filesTable = unstagedChangesPanel.getFilesTable();
