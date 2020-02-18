@@ -102,9 +102,6 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * @param indexExpected Expected for the staged model.
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
-    flushAWT();
-    sleep(500);
-    
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
     JTable filesTable = unstagedChangesPanel.getFilesTable();
     StagingResourcesTableModel uModel = (StagingResourcesTableModel) filesTable.getModel();
