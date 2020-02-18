@@ -249,7 +249,14 @@ public class RevCommitUtil {
     return Optional.ofNullable(toReturn);
   }
 
-  private static boolean isRename(DiffEntry ent) {
+  /**
+   * Checks the change type to see if it represents a rename.
+   * 
+   * @param ent Diff entry.
+   * 
+   * @return <code>true</code> if this change represents a rename.
+   */
+  public static boolean isRename(DiffEntry ent) {
     return ent.getChangeType() == ChangeType.RENAME
         || ent.getChangeType() == ChangeType.COPY;
   }
