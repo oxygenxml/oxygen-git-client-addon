@@ -357,20 +357,14 @@ public class DiffPresenter {
 	 * @param commitId Revision ID.
 	 * 
 	 * @throws NoRepositorySelected
-	 * @throws MalformedURLException
+	 * @throws GitAPIException 
+	 * @throws IOException 
 	 */
-  public static void showTwoWayDiffWithLocal(String filePath, String commitId) throws NoRepositorySelected, MalformedURLException {
-    String localFilePath = filePath;
-    
-    try {
-      localFilePath = RevCommitUtil.getNewPathInWorkingCopy(
-          GitAccess.getInstance().getGit(), 
-          filePath, 
-          commitId);
-    } catch (IOException | GitAPIException e) {
-      logger.error(e, e);
-    }
-    
+  public static void showTwoWayDiffWithLocal(String filePath, String commitId) throws NoRepositorySelected, IOException, GitAPIException {
+    String localFilePath = RevCommitUtil.getNewPathInWorkingCopy(
+        GitAccess.getInstance().getGit(), 
+        filePath, 
+        commitId);
     
     URL left = FileHelper.getFileURL(localFilePath);
     URL right = GitRevisionURLHandler.encodeURL(commitId, filePath);

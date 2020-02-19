@@ -383,6 +383,55 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     }
 
     /**
+     * <p><b>Description:</b> The file was renamed in the working copy but not yet committed.</p>
+     * <p><b>Bug ID:</b> EXM-44300</p>
+     *
+     * @author alex_jitianu
+     *
+     * @throws Exception If it fails.
+     */
+    @Test
+    public void testRenamedResource_LocalCopyRenamed() throws Exception {
+      URL script = getClass().getClassLoader().getResource("scripts/history_script_follow_rename_copy.txt");
+      File wcTree = new File("target/gen/testRenamedResource_LocalCopyRenamed");
+      
+      generateRepositoryAndLoad(script, wcTree);
+
+      List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("file_renamed_again.txt");
+      //--------------------------
+      // Tests the detection of rename paths.
+      //---------------------------
+      
+      Repository repository = GitAccess.getInstance().getRepository();
+      
+      File local = new File(repository.getWorkTree(), "file_renamed_again.txt");
+      File dest = new File(repository.getWorkTree(), "new_name.txt");
+      
+      org.eclipse.jgit.util.FileUtils.rename(local, dest);
+      
+      assertTrue("Copy failed.", dest.exists());
+      
+      
+      String startId = commitsCharacteristics.get(2).getCommitId();
+      ObjectId start = repository.resolve(startId);
+      RevCommit older = repository.parseCommit(start);
+      
+      String headId = commitsCharacteristics.get(0).getCommitId();
+      ObjectId end = repository.resolve(headId);
+      RevCommit newer = repository.parseCommit(end);
+      
+      
+      assertEquals("The file was renamed", older.getFullMessage());
+      assertEquals("The file was changed", newer.getFullMessage());
+
+      
+      String newPathInWorkingCopy = RevCommitUtil.getNewPathInWorkingCopy(GitAccess.getInstance().getGit(), "file_renamed_again.txt", headId);
+      
+      assertEquals("new_name.txt", newPathInWorkingCopy);
+
+    }
+
+    /**
      * <p><b>Description:</b> Identify and follow renames.</p>
      * <p><b>Bug ID:</b> EXM-45037</p>
      *
@@ -396,11 +445,11 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       File wcTree = new File("target/gen/GitHistoryTest_testHistory");
       
       generateRepositoryAndLoad(script, wcTree);
-
+    
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics("file_renamed_again.txt");
-
+    
       String dump = dumpHistory(commitsCharacteristics);
-
+    
       String expected = 
           "[ The file was changed , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
           "[ The file was renamed and moved , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
@@ -426,7 +475,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       assertEquals("The file was renamed", older.getFullMessage());
       assertEquals("The file was changed", newer.getFullMessage());
-
+    
       String matchingPath = RevCommitUtil.getOriginalPath(
           GitAccess.getInstance().getGit(), 
           older, 
@@ -453,13 +502,13 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       //--------------------------
       //---------------------------
       
-
+    
       expected = expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
-
+    
       assertEquals(
           expected, dump);
       
-
+    
       CommitCharacteristics cc = commitsCharacteristics.get(2);
       
       List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(cc.getCommitId());
@@ -479,7 +528,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       File wcTreeCopy = new File(wcTree, "file_renamed_again.txt");
       assertEquals(wcTreeCopy.toURI().toURL().toString(), left.toString());
       assertEquals("git://" + cc.getCommitId() + "/child/file_renamed.txt", right.toString());
-
+    
     }
     
 }

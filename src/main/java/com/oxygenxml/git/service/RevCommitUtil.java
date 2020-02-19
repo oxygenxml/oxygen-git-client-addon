@@ -28,6 +28,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
@@ -599,8 +600,8 @@ public class RevCommitUtil {
    *  
    * @return The new path of the resource.
    * 
-   * @throws GitAPIException
-   * @throws IOException
+   * @throws GitAPIException The resource was probably moved / renamed but its localization failed.
+   * @throws IOException The local copy version was not found.
    */
   public static String getNewPathInWorkingCopy(
       Git git, 
@@ -622,9 +623,69 @@ public class RevCommitUtil {
           older, 
           newer,
           filePath);
+      
+      
+      targetFile = new File(repository.getWorkTree(), originalPath);
+      if (!targetFile.exists()) {
+        // Still not present inside the WC. Probably a rename that wasn't committed yet.
+        // One more try.
+        originalPath = findWCRename(git, newer, originalPath);
+
+        // One last try to see if we identified the new location.
+        targetFile = new File(repository.getWorkTree(), originalPath);
+        if (!targetFile.exists()) {
+          throw new IOException("File " + originalPath + " was probably removed from working copy.");
+        }
+      }
     }
     
     return originalPath;
+  }
+
+  /**
+   * Detects a rename between the head revision and the working copy.
+   * 
+   * @param git Git access.
+   * @param head Head revision.
+   * @param path The path from the HEAD revision that might have been renamed.
+   * 
+   * @return The new path if a rename was detected or the old path.
+   * 
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  private static String findWCRename(Git git, RevCommit head, String path)
+      throws IOException, GitAPIException {
+    String toReturn = path;
+    Repository repository = git.getRepository();
+    try (ObjectReader reader = repository.newObjectReader()) {
+      // Head files.
+      CanonicalTreeParser headTreeIter = new CanonicalTreeParser();
+      headTreeIter.reset(reader, head.getTree().getId());
+
+      // Working copy files.
+      FileTreeIterator it = new FileTreeIterator(repository);
+
+      // Compute diff.
+      List<DiffEntry> diffs= git.diff()
+          .setNewTree(it)
+          .setOldTree(headTreeIter)
+          .call();
+
+      // Search for renames.
+      RenameDetector rd = new RenameDetector(repository);
+      rd.addAll(diffs);
+      List<DiffEntry> collect = rd.compute();
+      
+      for (DiffEntry diffEntry : collect) {
+        if (isRename(diffEntry) && diffEntry.getOldPath().equals(path)) {
+          toReturn = diffEntry.getNewPath();
+          break;
+        }
+       }
+
+      return toReturn;
+    }
   }
 
 }

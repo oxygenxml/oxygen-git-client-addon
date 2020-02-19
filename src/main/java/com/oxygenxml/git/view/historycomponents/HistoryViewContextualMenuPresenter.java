@@ -204,7 +204,7 @@ public class HistoryViewContextualMenuPresenter {
       public void actionPerformed(ActionEvent e) {
         try {
           DiffPresenter.showTwoWayDiffWithLocal(filePath, commitCharacteristics.getCommitId());
-        } catch (MalformedURLException | NoRepositorySelected e1) {
+        } catch (NoRepositorySelected | IOException | GitAPIException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
           LOGGER.error(e1, e1);
         }
