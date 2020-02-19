@@ -61,7 +61,10 @@ public class ProjectAndEditorPageMenuActionsUtil {
         
         URL fileURL = file.toURI().toURL();
         WSEditor editor = pluginWS.getEditorAccess(fileURL, PluginWorkspace.MAIN_EDITING_AREA);
-        if (editor.isModified()) {
+        if (editor == null || !editor.isModified()) {
+          doBlame(file, historyCtrl, repository);
+        } else if (editor.isModified()) {
+          // Ask for save
           int response = pluginWS.showConfirmDialog(
               translator.getTranslation(Tags.SHOW_BLAME),
               MessageFormat.format(
@@ -75,15 +78,7 @@ public class ProjectAndEditorPageMenuActionsUtil {
               new int[] { 0, 1 });
           if (response == 0) {
             editor.save();
-            
-            try { //NOSONAR: keep the try here
-              String relativeFilePath = RepoUtil.getFilePathRelativeToRepo(file, repository);
-              BlameManager.getInstance().doBlame(
-                  FileHelper.rewriteSeparator(relativeFilePath),
-                  historyCtrl);
-            } catch (IOException | GitAPIException e1) {
-              logger.error(e1, e1);
-            }
+            doBlame(file, historyCtrl, repository);
           }
         }
       }
@@ -92,6 +87,24 @@ public class ProjectAndEditorPageMenuActionsUtil {
       logger.error(e, e);
     } finally {
       UIUtil.setBusyCursor(false, viewsToUpdateCursorFor);
+    }
+  }
+
+  /**
+   * Do blame.
+   * 
+   * @param file         The file.
+   * @param historyCtrl  History-related stuff controller.
+   * @param repository   Repository.
+   */
+  private static void doBlame(File file, HistoryController historyCtrl, String repository) {
+    try { //NOSONAR: keep the try here
+      String relativeFilePath = RepoUtil.getFilePathRelativeToRepo(file, repository);
+      BlameManager.getInstance().doBlame(
+          FileHelper.rewriteSeparator(relativeFilePath),
+          historyCtrl);
+    } catch (IOException | GitAPIException e1) {
+      logger.error(e1, e1);
     }
   }
   
