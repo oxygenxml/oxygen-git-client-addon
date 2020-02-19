@@ -153,17 +153,11 @@ public class PanelRefresh implements GitRefreshSupport {
         if (detectedRepo == null) {
           repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
         } else {
+          // A Git repository was detected.
           try {
             File currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
-            if (!detectedRepo.equals(currentRepo)) {
-              String repoPath;
-              try {
-                repoPath = detectedRepo.getCanonicalPath();
-              } catch (IOException e) {
-                logger.debug(e, e);
-                repoPath = detectedRepo.getAbsolutePath();
-              }
-              repoChanged = switchToProjectRepoIfUserAgrees(repoPath);
+            if (!same(currentRepo, detectedRepo)) {
+              repoChanged = switchToProjectRepoIfUserAgrees(getCanonicalPath(detectedRepo));
             }
           } catch (NoRepositorySelected e) {
             logger.warn(e, e);
@@ -172,6 +166,45 @@ public class PanelRefresh implements GitRefreshSupport {
       }
     }
     return repoChanged;
+  }
+
+  /**
+   * @param file A file. 
+   * 
+   * @return The canonical version of the file.
+   */
+  private String getCanonicalPath(File file) {
+    String repoPath;
+    try {
+      repoPath = file.getCanonicalPath();
+    } catch (IOException e) {
+      logger.debug(e, e);
+      repoPath = file.getAbsolutePath();
+    }
+    return repoPath;
+  }
+
+  /**
+   * Checks if the two files are equal.
+   * 
+   * @param first The first file.
+   * @param second The second file.
+   * 
+   * @return <code>true</code> if the files have the same paths.
+   */
+  private boolean same(File first, File second) {
+    boolean same = false;
+    
+    try {
+      first = first.getCanonicalFile();
+      second = second.getCanonicalFile();
+          
+      same = first.equals(second); 
+    } catch (IOException e) {
+      logger.error(e, e);
+    }
+    
+    return same;
   }
 
   /**
