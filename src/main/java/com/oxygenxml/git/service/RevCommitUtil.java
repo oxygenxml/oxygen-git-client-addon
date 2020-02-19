@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -502,28 +503,52 @@ public class RevCommitUtil {
    */
   private static String findPath(Git git, String filePath, List<RevCommit> revisions)
       throws IOException, GitAPIException {
+    String path = filePath;
     if (logger.isDebugEnabled()) {
       logger.debug("====SORTED===");
       revisions.stream().forEach(r -> logger.debug(r.getFullMessage()));
     }
-    
-    // Fast case. Perhaps the path is the same.
-    boolean same = !revisions.isEmpty() 
-        && getFiles(git.getRepository(), revisions.get(revisions.size() - 1)).stream().anyMatch(fs -> filePath.equals(fs.getFileLocation()));
-    
-    String path = filePath;
-    if (!same) {
+
+    if (!revisions.isEmpty()) {
+      RevCommit lastRev = revisions.get(revisions.size() - 1);
+
+      List<FileStatus> targetRevFiles = getFiles(git.getRepository(), lastRev);
+      
+      Set<String> lastRevFiles = targetRevFiles.stream().map(FileStatus::getFileLocation).collect(Collectors.toSet());
+      
       RevCommit previous = null;
       for (RevCommit revCommit : revisions) {
         if (previous != null) {
 
-          List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
-          for (DiffEntry diffEntry : diff) {
-            if (isRename(diffEntry) 
-                && path.equals(diffEntry.getOldPath())) {
-              // Match.
-              path = diffEntry.getNewPath();
-              break;
+          // Fast stop.
+          if (lastRevFiles.contains(path)) {
+            // The current discovered path is the same as in the target revision.
+            if (logger.isDebugEnabled()) {
+              logger.info("Same path as in target. Stop. " + revCommit.getFullMessage());
+            }
+            break;
+          }
+          
+          // Check if the current discovered path is also present in the new revision to consume.
+          // TThis way we will avoid a time consuming diff with rename detection.
+          List<FileStatus> currentRevisionFiles = getFiles(git.getRepository(), revCommit);
+          final String fpath = path;
+          boolean same = currentRevisionFiles.stream().anyMatch(t -> fpath.equals(t.getFileLocation()));
+          
+          if (!same) {
+            // Do a diff with rename detection.
+            if (logger.isDebugEnabled()) {
+              logger.info("Search for a rename at revision " + revCommit.getFullMessage());
+            }
+            
+            List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
+            for (DiffEntry diffEntry : diff) {
+              if (isRename(diffEntry) 
+                  && path.equals(diffEntry.getOldPath())) {
+                // Match.
+                path = diffEntry.getNewPath();
+                break;
+              }
             }
           }
         }
@@ -531,7 +556,7 @@ public class RevCommitUtil {
         previous = revCommit;
       }
     }
-    
+
     return path;
   }
   
