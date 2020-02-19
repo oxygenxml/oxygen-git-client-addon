@@ -363,7 +363,7 @@ public class DiffPresenter {
     String localFilePath = filePath;
     
     try {
-      localFilePath = RevCommitUtil.getNewPathInHead(
+      localFilePath = RevCommitUtil.getNewPathInWorkingCopy(
           GitAccess.getInstance().getGit(), 
           filePath, 
           commitId);

@@ -1,5 +1,6 @@
 package com.oxygenxml.git.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -601,21 +602,29 @@ public class RevCommitUtil {
    * @throws GitAPIException
    * @throws IOException
    */
-  public static String getNewPathInHead(
+  public static String getNewPathInWorkingCopy(
       Git git, 
       String filePath, 
       String commitId) throws IOException, GitAPIException {
     
+    String originalPath = filePath;
+    
     Repository repository = git.getRepository();
     
-    RevCommit older = repository.parseCommit(repository.resolve(commitId));
-    RevCommit newer = repository.parseCommit(repository.resolve("HEAD"));
+    File targetFile = new File(repository.getWorkTree(), originalPath);
+    if (!targetFile.exists()) {
+      // The file is not present in the working copy. Perhaps it was renamed.
+      RevCommit older = repository.parseCommit(repository.resolve(commitId));
+      RevCommit newer = repository.parseCommit(repository.resolve("HEAD"));
+
+      originalPath = RevCommitUtil.getOriginalPath(
+          git, 
+          older, 
+          newer,
+          filePath);
+    }
     
-    return RevCommitUtil.getOriginalPath(
-        git, 
-        older, 
-        newer,
-        filePath);
+    return originalPath;
   }
 
 }
