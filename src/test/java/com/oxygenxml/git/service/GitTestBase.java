@@ -95,7 +95,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * The loaded reposiltories.
    */
-  private List<Repository> loadedRepos = new ArrayList<Repository> ();
+  private List<Repository> loadedRepos = new ArrayList<> ();
   
   /**
    * The loaded reposiltories.
@@ -307,13 +307,14 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * Files that were requested for comparison.
    */
-  protected final List<URL> urls2compare = new LinkedList<URL>();
+  protected final List<URL> urls2compare = new LinkedList<>();
   private File tmp;
   /**
    * Refresh support.
    */
   protected PanelRefresh refreshSupport;
   
+  @Override
   @Before
   public void setUp() throws Exception {
     super.setUp();
@@ -513,6 +514,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     return wsEditorMock;
   }
   
+  @Override
   @After
   public void tearDown() throws Exception {
     super.tearDown();

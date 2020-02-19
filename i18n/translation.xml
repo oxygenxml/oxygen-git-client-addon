@@ -4,13 +4,21 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="This_operation_requires_saving">
+        <comment>Require saving</comment>
+        <val lang="en_US">This operation requires saving ''{0}''. Do you want to save it now?</val>
+        <val lang="de_DE">This operation requires saving ''{0}''. Do you want to save it now?</val>
+        <val lang="fr_FR">This operation requires saving ''{0}''. Do you want to save it now?</val>
+        <val lang="ja_JP">This operation requires saving ''{0}''. Do you want to save it now?</val>
+        <val lang="nl_NL">This operation requires saving ''{0}''. Do you want to save it now?</val>
+    </key>
     <key value="Nothing_to_show_for_new_files">
         <comment>Message for when no history or blame can be shown (for new files).</comment>
-        <val lang="en_US">Nothing to show for new files</val>
-        <val lang="de_DE">Nothing to show for new files</val>
-        <val lang="fr_FR">Nothing to show for new files</val>
-        <val lang="ja_JP">Nothing to show for new files</val>
-        <val lang="nl_NL">Nothing to show for new files</val>
+        <val lang="en_US">Nothing to show for new files.</val>
+        <val lang="de_DE">Nothing to show for new files.</val>
+        <val lang="fr_FR">Nothing to show for new files.</val>
+        <val lang="ja_JP">Nothing to show for new files.</val>
+        <val lang="nl_NL">Nothing to show for new files.</val>
     </key>
     <key value="Renamed_Icon_Tooltip">
         <comment>The tooltip for the renamed icon that appears on the left side of a file.</comment>
@@ -677,8 +685,8 @@
     </key>
     <key value="Commit_With_Conflicts">
         <comment>The massage displayed when you commit with conflicts conflicts</comment>
-        <val lang="en_US">Cannot commit while having conflicts</val>
-        <val lang="de_DE">Commit nicht möglich während ungelöste Konflikte bestehen</val>
+        <val lang="en_US">Cannot commit while having conflicts.</val>
+        <val lang="de_DE">Commit nicht möglich während ungelöste Konflikte bestehen.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>

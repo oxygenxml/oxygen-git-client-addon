@@ -433,8 +433,12 @@ public class HistoryPanel extends JPanel {
           Repository repository = gitAccess.getRepository();
           String fullBranch = repository.getFullBranch();
           Ref branchHead = repository.exactRef(fullBranch);
-          ObjectId objectId = branchHead.getObjectId();
-          selectCommit(objectId);
+          if (branchHead != null) {
+            ObjectId objectId = branchHead.getObjectId();
+            if (objectId != null) {
+              selectCommit(objectId);
+            }
+          }
         } else {
           PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
               Translator.getInstance().getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES));

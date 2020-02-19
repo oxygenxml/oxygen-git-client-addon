@@ -103,7 +103,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
               || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
             cursorTimer.stop();
             SwingUtilities.invokeLater(() -> setStatusMessage(""));
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
+            PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+                translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
           } else {
             SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
             gitAccess.commit(commitMessageArea.getText());

@@ -20,8 +20,10 @@ import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.blame.BlamePerformer;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.text.xml.WSXMLTextEditorPage;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Scenarios for testing the blame support. 
@@ -111,6 +113,150 @@ public class BlameTest extends GitTestBase{
       // Execute blame.
       new BlamePerformer().doit(
           GitAccess.getInstance().getRepository(), "file1.txt", wsEditor, historyController);
+      
+      Highlight[] highlights = textArea.getHighlighter().getHighlights();
+      assertEquals(5, highlights.length);
+      
+      String expected = dumpOffsetMap(line2offsets);
+      String actual = dumpHighlights(highlights);
+      
+      assertEquals(expected, actual);
+      
+      // Activate each highlight and collect the requests done to the historyview.
+      for (Highlight highlight : highlights) {
+        textArea.setCaretPosition(highlight.getStartOffset());
+        // Wait for the thread that presents the revision.
+        sleep(400);
+        flushAWT();
+      }
+      
+      // Asserts the revisions activated in the history view.
+      assertEquals(
+          "First commit.\n" + 
+          "Change 2\n" + 
+          "Change 3\n" + 
+          "Change 4\n" + 
+          "Change 5\n" + 
+          "", dumpCommits(commits));
+
+    } finally {
+      GitAccess.getInstance().closeRepo();
+      
+      FileUtils.deleteDirectory(wcTree);
+    }
+  }
+  
+  /**
+   * <p><b>Description:</b> ask save editor before blame if editor modified.</p>
+   * <p><b>Bug ID:</b> EXM-45008</p>
+   * 
+   * @author sorin_carbunaru
+   * 
+   * @throws Exception 
+   */
+  @Test
+  public void testBlame_askUserSaveEditor() throws Exception {
+    URL script = getClass().getClassLoader().getResource("scripts/blame_script.txt");
+    
+    File wcTree = new File("target/gen/BlameTest_testBlame");
+    RepoGenerationScript.generateRepository(script, wcTree);
+    
+    try {
+      StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+      PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+      
+      boolean confirmDialogShown[] = new boolean[1];
+      Mockito.doAnswer(new Answer<Integer>() {
+        @Override
+        public Integer answer(InvocationOnMock invocation) throws Throwable {
+          confirmDialogShown[0] = true;
+          return 0;
+        }
+      }).when(pluginWSMock).showConfirmDialog(
+          Mockito.anyString(),
+          Mockito.anyString(),
+          Mockito.any(),
+          Mockito.any());
+      Mockito.when(pluginWSMock.showConfirmDialog(
+          Mockito.anyString(),
+          Mockito.anyString(),
+          Mockito.any(),
+          Mockito.any()))
+      .thenReturn(0);
+      
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
+      
+      String content = 
+          "Line 1\n" + 
+          "Line 2\n" + 
+          "Line 3\n" + 
+          "Line 4\n" + 
+          "Line 5";
+      HashMap<Integer, int[]> line2offsets = computeLineMappings(content);
+      
+      // Use Mockito to mock the Oxygen API.
+      WSEditor wsEditor = Mockito.mock(WSEditor.class);
+      WSXMLTextEditorPage page = Mockito.mock(WSXMLTextEditorPage.class);
+      
+      JTextArea textArea = new JTextArea();
+      
+      Mockito.when(page.getTextComponent()).thenReturn(textArea);
+      Mockito.when(wsEditor.getCurrentPage()).thenReturn(page);
+      Mockito.when(wsEditor.isModified()).thenReturn(true);
+      
+      // Methods for mapping lines to offsets and back.
+      
+      Mockito.when(page.getOffsetOfLineStart(Mockito.anyInt())).thenAnswer(new Answer<Integer>() {
+        @Override
+        public Integer answer(InvocationOnMock invocation) throws Throwable {
+          Object key = invocation.getArguments()[0];
+          return line2offsets.get(key)[0];
+        }
+      });
+      
+      Mockito.when(page.getOffsetOfLineEnd(Mockito.anyInt())).thenAnswer(new Answer<Integer>() {
+        @Override
+        public Integer answer(InvocationOnMock invocation) throws Throwable {
+          return line2offsets.get(invocation.getArguments()[0])[1];
+        }
+      });
+      
+      Mockito.when(page.getLineOfOffset(Mockito.anyInt())).thenAnswer(new Answer<Integer>() {
+        @Override
+        public Integer answer(InvocationOnMock invocation) throws Throwable {
+          int offset = (int) invocation.getArguments()[0];
+          for (Integer line : line2offsets.keySet()) {
+            int[] is = line2offsets.get(line);
+            if (is[0] <= offset && offset < is[1]) {
+              return line;
+            }
+          }
+          
+          return -1;
+        }
+      });
+      
+      // Intercept history view requests.
+      final List<RevCommit> commits = new ArrayList<>(); 
+      HistoryController historyController = Mockito.mock(HistoryController.class);
+      Mockito.doAnswer(new Answer<Void>() {
+        @Override
+        public Void answer(InvocationOnMock invocation) throws Throwable {
+          RevCommit rev = (RevCommit) invocation.getArguments()[1];
+          commits.add(rev);
+          
+          return null;
+        }
+      }).when(historyController).showCommit(Mockito.anyString(), Mockito.anyObject());
+      
+      textArea.setText(content);
+      flushAWT();
+      
+      // Execute blame.
+      new BlamePerformer().doit(
+          GitAccess.getInstance().getRepository(), "file1.txt", wsEditor, historyController);
+      
+      assertTrue(confirmDialogShown[0]);
       
       Highlight[] highlights = textArea.getHighlighter().getHighlights();
       assertEquals(5, highlights.length);

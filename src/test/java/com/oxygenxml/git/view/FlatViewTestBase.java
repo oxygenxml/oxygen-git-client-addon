@@ -74,6 +74,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     mainFrame.setVisible(true);
   }
 
+  @Override
   @Before
   public void tearDown() throws Exception {
     super.tearDown();
