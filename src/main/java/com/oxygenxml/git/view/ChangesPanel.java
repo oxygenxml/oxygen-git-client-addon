@@ -78,7 +78,7 @@ public class ChangesPanel extends JPanel {
   /**
    * Provides the selected resources, sometimes filtered.
    */
-  interface SelectedResourcesProvider {
+  public interface SelectedResourcesProvider {
     /**
      * For the tree mode, get only the selected leaves.
      * For the table/flat view, get all selected resources,
