@@ -212,6 +212,7 @@ public class BranchSelectDialog extends OKCancelDialog {
       logger.debug(e1, e1);
     } catch (InterruptedException e1) {
       logger.debug(e1, e1);
+      Thread.currentThread().interrupt();
     }
   }
 
