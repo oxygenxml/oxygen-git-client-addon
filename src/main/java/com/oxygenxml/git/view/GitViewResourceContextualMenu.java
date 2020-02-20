@@ -1,33 +1,24 @@
 package com.oxygenxml.git.view;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.protocol.GitRevisionURLHandler;
-import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
-import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -39,11 +30,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * 
  */
 public class GitViewResourceContextualMenu extends JPopupMenu {
-  /**
-   * Logger for logging.
-   */
-  private static Logger logger = Logger.getLogger(GitViewResourceContextualMenu.class);
-
 	/**
 	 * The translator used for the contextual menu names
 	 */
@@ -52,7 +38,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	/**
 	 * Controller used for staging and unstaging
 	 */
-	private GitController stageController;
+	private GitController gitCtrl;
 
 	/**
 	 * The git API, containg the commands
@@ -73,7 +59,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
    * Constructor.
    * 
    * @param selResProvider        Provides the resources that will be processed by the menu's actions. 
-   * @param stageController       Staging controller.
+   * @param gitController       Staging controller.
    * @param historyController     History interface.
    * @param isStage               <code>true</code> if we create the menu for the staged resources,
    *                                  <code>false</code> for the unstaged resources.
@@ -81,11 +67,11 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
    */
   public GitViewResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
-      GitController stageController,
+      GitController gitController,
       HistoryController historyController,
       boolean isStage,
       RepositoryState repoState) {
-    this.stageController = stageController;
+    this.gitCtrl = gitController;
     this.historyController = historyController;
     this.repoState = repoState;
     populateMenu(selResProvider, isStage);
@@ -100,6 +86,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	private void populateMenu(
 	    final SelectedResourcesProvider selResProvider, 
 	    final boolean forStagedRes) {
+	  StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
 	  if (!selResProvider.getAllSelectedResources().isEmpty() || isRepoMergingOrRebasing()) {
 	    final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
 	    final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
@@ -109,46 +96,12 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.OPEN_IN_COMPARE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        DiffPresenter.showDiff(selectedLeaves.get(0), stageController);
+	        DiffPresenter.showDiff(selectedLeaves.get(0), gitCtrl);
 	      }
 	    };
 
 	    // "Open" action
-	    AbstractAction openAction = new AbstractAction(
-	        translator.getTranslation(Tags.OPEN)) {
-	      @Override
-	      public void actionPerformed(ActionEvent e) {
-	        for (FileStatus file : allSelectedResources) {
-	          try {
-	            URL fileURL = null;
-	            String fileLocation = file.getFileLocation();
-              if (file.getChangeType() == GitChangeType.ADD
-	                || file.getChangeType() == GitChangeType.CHANGED) {
-	              // A file from the INDEX. We need a special URL to access it.
-	              fileURL = GitRevisionURLHandler.encodeURL(
-	                  VersionIdentifier.INDEX_OR_LAST_COMMIT,
-	                  fileLocation);
-	            } else {
-	              // We must open a local copy.
-	              fileURL = FileHelper.getFileURL(fileLocation);  
-	            }
-              
-              boolean isProjectExt = false;
-              int index = fileLocation.lastIndexOf('.');
-              if (index != -1) {
-                String ext = fileLocation.substring(index + 1);
-                isProjectExt = "xpr".equals(ext);
-              }
-	            PluginWorkspaceProvider.getPluginWorkspace().open(
-	                fileURL,
-	                isProjectExt ? EditorPageConstants.PAGE_TEXT : null,
-	                isProjectExt ? "text/xml" : null);
-	          } catch (Exception ex) {
-	            logger.error(ex, ex);
-	          }
-	        }
-	      }
-	    };
+	    AbstractAction openAction = new OpenAction(selResProvider);
 
 	    // "Stage"/"Unstage" actions
 	    AbstractAction stageUnstageAction = new StageUnstageResourceAction(
@@ -156,14 +109,14 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        // If this contextual menu is built for a staged resource,
 	        // then the action should be unstage.
 	        !forStagedRes, 
-	        stageController);
+	        gitCtrl);
 
 	    // Resolve using "mine"
 	    AbstractAction resolveUsingMineAction = new AbstractAction(
 	        translator.getTranslation(Tags.RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_MINE);
+	        gitCtrl.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_MINE);
 	      }
 	    };
 
@@ -172,7 +125,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_THEIRS);
+	        gitCtrl.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_THEIRS);
 	      }
 	    };
 
@@ -181,7 +134,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.MARK_RESOLVED)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        stageController.doGitCommand(allSelectedResources, GitCommand.STAGE);
+	        gitCtrl.doGitCommand(allSelectedResources, GitCommand.STAGE);
 	      }
 	    };
 
@@ -194,7 +147,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	            "   " + translator.getTranslation(Tags.YES) + "   ",
 	            "   " + translator.getTranslation(Tags.NO) + "   "};
 	        int[] optionIds = new int[] { 0, 1 };
-	        int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+          int result = pluginWS.showConfirmDialog(
 	            translator.getTranslation(Tags.RESTART_MERGE),
 	            translator.getTranslation(Tags.RESTART_MERGE_CONFIRMATION),
 	            options,
@@ -206,7 +159,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    };
 	    
 	    // "Discard" action 
-      AbstractAction discardAction = new DiscardAction(allSelectedResources, stageController);
+      AbstractAction discardAction = new DiscardAction(selResProvider, gitCtrl);
 
 	    // Resolve Conflict
 	    JMenu resolveConflict = new JMenu();
@@ -229,6 +182,8 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    if (!forStagedRes) {
 	      addSeparator();
+	      
+	      // Show history
 	      AbstractAction historyAction = new AbstractAction(translator.getTranslation(Tags.SHOW_HISTORY)) {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
@@ -240,20 +195,8 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	      historyAction.setEnabled(shouldEnableBlameAndHistory(allSelectedResources));
 	      this.add(historyAction);
 
-	      AbstractAction blameAction = new AbstractAction(translator.getTranslation(Tags.SHOW_BLAME)) {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	          if (!allSelectedResources.isEmpty()) {
-	            try {
-	              BlameManager.getInstance().doBlame(
-	                  allSelectedResources.get(0).getFileLocation(), 
-	                  historyController);
-	            } catch (IOException | GitAPIException e1) {
-	              logger.error(e1, e1);
-	            }
-	          }
-	        }
-	      };
+	      // Show blame
+	      AbstractAction blameAction = new ShowBlameForUnstagedResourceAction(historyController, selResProvider);
 	      blameAction.setEnabled(shouldEnableBlameAndHistory(allSelectedResources));
 	      this.add(blameAction);
 	    }

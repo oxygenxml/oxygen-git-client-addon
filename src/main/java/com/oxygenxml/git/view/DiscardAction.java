@@ -20,6 +20,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 
@@ -44,9 +45,9 @@ public class DiscardAction extends AbstractAction {
   private static final Translator translator = Translator.getInstance();
 
   /**
-   * File statuses.
+   * Selected resources provider.
    */
-  private List<FileStatus> fileStatuses;
+  private SelectedResourcesProvider selResProvider;
 
   /**
    * Staging controller.
@@ -56,12 +57,12 @@ public class DiscardAction extends AbstractAction {
   /**
    * Constructor.
    * 
-   * @param fileStatuses      File statuses.
+   * @param selResProvider    Selected resources provider..
    * @param stageController   Staging controller.
    */
-  public DiscardAction(List<FileStatus> fileStatuses, GitController stageController) {
+  public DiscardAction(SelectedResourcesProvider selResProvider, GitController stageController) {
     super(translator.getTranslation(Tags.DISCARD));
-    this.fileStatuses = fileStatuses;
+    this.selResProvider = selResProvider;
     this.stageController = stageController;
   }
   
@@ -85,7 +86,8 @@ public class DiscardAction extends AbstractAction {
       Set<File> deletedFilesParentDirs = new HashSet<>();
       String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
       
-      for (FileStatus file : fileStatuses) {
+      List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
+      for (FileStatus file : allSelectedResources) {
         if (file.getChangeType() == GitChangeType.ADD
             || file.getChangeType() == GitChangeType.UNTRACKED) {
           try {
@@ -107,7 +109,7 @@ public class DiscardAction extends AbstractAction {
       }
       
       // Execute Git command
-      stageController.doGitCommand(fileStatuses, GitCommand.DISCARD);
+      stageController.doGitCommand(allSelectedResources, GitCommand.DISCARD);
       
       // Refresh the Project view
       wsAccess.getProjectManager().refreshFolders(foldersToRefresh.toArray(new File[0]));
