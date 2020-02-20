@@ -476,7 +476,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       assertEquals("The file was renamed", older.getFullMessage());
       assertEquals("The file was changed", newer.getFullMessage());
     
-      String matchingPath = RevCommitUtil.getOriginalPath(
+      String matchingPath = RevCommitUtil.getNewPath(
           GitAccess.getInstance().getGit(), 
           older, 
           newer,
@@ -487,7 +487,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       System.out.println("===========================");
       System.out.println("===========================");
       
-      matchingPath = RevCommitUtil.getNewPath(
+      matchingPath = RevCommitUtil.getOldPath(
           GitAccess.getInstance().getGit(), 
           older, 
           newer,

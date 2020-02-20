@@ -1,0 +1,18 @@
+<script>
+    <changeSet message="First">
+        <change path="file.txt" type="add">original file content</change>
+    </changeSet>
+    
+    <changeSet message="Second">
+        <change path="file.txt" type="change">changed file content</change>
+    </changeSet>
+    
+    <changeSet message="Third (Rename)">
+    	<change path="file.txt" type="delete"/>
+    	<change path="file_renamed.txt" type="add">changed file content</change>
+    </changeSet>
+    
+    <changeSet message="Fourth">
+        <change path="file_renamed.txt" type="change">changed again file content</change>
+    </changeSet>
+</script>

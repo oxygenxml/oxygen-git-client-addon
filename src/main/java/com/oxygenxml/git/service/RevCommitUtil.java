@@ -444,7 +444,8 @@ public class RevCommitUtil {
   
   
   /**
-   * Finds the original path for a new resource.
+   * Checks if a resource was moved or renamed between two revisions. We know the path in the old revision and 
+   * we want to find out the path in the new revision.
    * 
    * @param git Git access.
    * @param since Start of the interval.
@@ -454,7 +455,7 @@ public class RevCommitUtil {
    * @throws GitAPIException
    * @throws IOException
    */
-  public static String getOriginalPath(
+  public static String getNewPath(
       Git git, 
       RevCommit since, 
       RevCommit until,
@@ -467,28 +468,54 @@ public class RevCommitUtil {
   }
   
   /**
-   * Finds out the new location of a resource.
+   * Checks if a resource was moved or renamed between two revisions. We know the path in the NEW revision and 
+   * we want to find out the path in the OLD revision.
    * 
    * @param git Git interaction.
    * @param since The old revision.
    * @param until The new revision.
-   * @param oldFilePath The original file path.
+   * @param newFilePath The original file path.
    *  
    * @return The new path of the resource.
    * 
    * @throws GitAPIException
    * @throws IOException
    */
-  public static String getNewPath(
+  public static String getOldPath(
       Git git, 
       RevCommit since, 
       RevCommit until,
-      String oldFilePath) throws GitAPIException, IOException {
+      String newFilePath) throws GitAPIException, IOException {
     Iterable<RevCommit> revs = git.log().addRange(since, until).call();
     
     List<RevCommit> sorted = sort(revs, since, false);
     
-    return findPath(git, oldFilePath, sorted);
+    return findPath(git, newFilePath, sorted);
+  }
+  
+  
+  /**
+   * Checks if a resource was moved or renamed between HEAD and an older revision. We know the path in the HEAD revision and 
+   * we want to find out the path in the OLD revision.
+   * 
+   * @param git Git interaction.
+   * @param oldRevisionId The ID of the old revision in which the file might have had another 
+   *  
+   * @return The new path of the resource.
+   * 
+   * @throws GitAPIException
+   * @throws IOException
+   */
+  public static String getOldPathStartingFromHead(
+      Git git, 
+      String oldRevisionId, 
+      String newFilePath) throws GitAPIException, IOException {
+    
+    Repository repository = git.getRepository();
+    RevCommit olderRevCommit = repository.parseCommit(repository.resolve(oldRevisionId));
+    RevCommit headRevCommit = repository.parseCommit(repository.resolve("HEAD"));
+    
+    return getOldPath(git, olderRevCommit, headRevCommit, newFilePath);
   }
 
   /**
@@ -591,8 +618,8 @@ public class RevCommitUtil {
   }
 
   /**
-   * Checks if a resource was moved or renamed compared with the HEAD revision and returns the path
-   * of the resource in the HEAD revision.
+   * Checks if a resource was moved or renamed between the HEAD revision and an older revision. We know the path in 
+   * the old revision and we want to find out the path in the HEAD revision.
    * 
    * @param git Git interaction.
    * @param filePath The known file path.
@@ -618,7 +645,7 @@ public class RevCommitUtil {
       RevCommit older = repository.parseCommit(repository.resolve(commitId));
       RevCommit newer = repository.parseCommit(repository.resolve("HEAD"));
 
-      originalPath = RevCommitUtil.getOriginalPath(
+      originalPath = RevCommitUtil.getNewPath(
           git, 
           older, 
           newer,

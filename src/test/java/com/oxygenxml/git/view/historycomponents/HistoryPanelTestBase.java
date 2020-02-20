@@ -113,6 +113,34 @@ public class HistoryPanelTestBase extends GitTestBase {
     return actions;
   }
   
+  /**
+   * Gets all the actions from the contextual menu for the given file.
+   * 
+   * @param fileStatus  File.
+   * @param cc Revision information.
+   * 
+   * @return All the actions that will be put in the contextual menu for the received resource.
+   * 
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  protected List<Action> getAllActions(
+      FileStatus fileStatus, 
+      CommitCharacteristics cc) throws IOException, GitAPIException {
+    HistoryViewContextualMenuPresenter menuPresenter = 
+        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
+    JPopupMenu jPopupMenu = new JPopupMenu();
+    menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
+    
+    MenuElement[] subElements = jPopupMenu.getSubElements();
+    
+    List<Action> actions = Arrays.asList(subElements).stream()
+        .map(t -> ((JMenuItem) t).getAction())
+        .collect(Collectors.toList());
+
+    return actions;
+  }
+  
   protected Action getCompareWithWCAction(
       FileStatus fileStatus, 
       CommitCharacteristics cc) throws IOException, GitAPIException {

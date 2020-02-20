@@ -1,26 +1,19 @@
 package com.oxygenxml.git.view.historycomponents;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.Action;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.MenuElement;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
-import com.oxygenxml.git.view.event.GitController;
 
 /**
  * UI level tests for history.
@@ -183,4 +176,54 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
     }
   
   }
+  
+  /**
+   * Contextual actions were not presented For revisions preceding a rename.
+   * EXM-44300
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testActionsOnRenamedFile() throws Exception {
+    generateRepositoryAndLoad(
+        getClass().getClassLoader().getResource("scripts/EXM-44300/script.txt"), 
+        new File("target/gen/HistoryPanelTest/testActionsOnRenamedFile"));
+
+    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+
+    String dump = dumpHistory(commitsCharacteristics, true);
+
+    String expected =  
+        "[ Fourth , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+        "[ Third (Rename) , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+        "[ Second , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+        "[ First , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n" + 
+        "";
+
+    assertEquals(expected, dump);
+
+    historyPanel.showRepositoryHistory();
+
+    JTable historyTable = historyPanel.historyTable;
+
+    HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+
+    dump = dumpHistory(model.getAllCommits(), true);
+
+    assertEquals(expected, dump);
+
+    //---------------
+    // Assert the available actions.
+    //---------------
+    CommitCharacteristics cc = commitsCharacteristics.get(2);
+    assertEquals("Second", cc.getCommitMessage());
+
+    List<Action> actions = getAllActions(new FileStatus(GitChangeType.MODIFIED, "file_renamed.txt"), cc);
+    
+    List<Object> collect = actions.stream().map(t -> t.getValue(Action.NAME)).collect(Collectors.toList());
+    
+    assertEquals("[Open_file, Compare_file_with_previous_version, Compare_file_with_working_tree_version]", collect.toString());
+
+  }
+  
 }

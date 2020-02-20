@@ -77,8 +77,24 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics commitCharacteristics) throws IOException, GitAPIException {
     List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
     Optional<FileStatus> fileStatusOptional = changes.stream().filter(f -> filePath.equals(f.getFileLocation())).findFirst();
+    if (!fileStatusOptional.isPresent()) {
+      // Perhaps the file was renamed at some point.
+      String oldFilePath = RevCommitUtil.getOldPathStartingFromHead(
+          GitAccess.getInstance().getGit(), 
+          commitCharacteristics.getCommitId(), 
+          filePath);
+      
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("new " + filePath + " old " + oldFilePath);
+      }
+      
+      fileStatusOptional = changes.stream().filter(f -> oldFilePath.equals(f.getFileLocation())).findFirst();
+    }
+    
     if (fileStatusOptional.isPresent()) {
       populateContextualActions(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
+    } else {
+      LOGGER.warn("File path " + filePath + " is not present at revision " + commitCharacteristics.toString());
     }
   }
 
