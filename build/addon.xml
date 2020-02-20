@@ -1,19 +1,19 @@
-<!-- This is used to install the plugin as an add-on: https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons -->
+<!-- This is used to install the plugin as an add-on: https://www.oxygenxml.com/doc/versions/19.1/ug-editor/topics/packing-and-deploying-addons.html#packing-and-deploying-addons -->
 <xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension" id="com.oxygenxml.git">
         <xt:location
-            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.0.0/git.support-2.0.0-plugin.jar"/>
-        <xt:version>2.0.0</xt:version>
-        <xt:oxy_version>18.1+</xt:oxy_version>
+            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.1.0/git.support-2.1.0-plugin.jar"/>
+        <xt:version>2.1.0</xt:version>
+        <xt:oxy_version>20.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
-        <xt:name>Git Support</xt:name>
+        <xt:name>Git Client</xt:name>
         <xt:description>
             <html xmlns="http://www.w3.org/1999/xhtml">
                 <head>
-                    <title>Git support plugin</title>
+                    <title>Git Client</title>
                     <style type="text/css"> ol {margin-top:0px;} p
                         {margin-top:0px;margin-bottom:5px;} </style>
                 </head>
@@ -24,6 +24,19 @@
                             perform common Git commands, such as push, pull, change branch, commit,
                             and more. It also includes a built-in tool for comparing and merging
                             changes.</p>
+                    </div>
+                    <div>
+                        <h3>What's new in version 2.1.0</h3>
+                        <ol>
+                            <li>Updated the JGit library to version 5.6.</li>
+                            <li>Added a "Clear history" action in the working copies combo box.</li>
+                            <li>Added the "Show history" and "Show blame" actions to the contextual menus
+                                of the resources from the Project view and of the Text and Author editor pages.</li>
+                            <li>Implemented renaming detection in the Git History view. Renamed resources are presented 
+                                using a suggestive icon (containing the "R" letter). All the actions from the Git History view
+                                take into account the entire history of a resource, including renames and path changes.</li>
+                            <li>Numerous bug fixes and small improvements.</li>
+                        </ol>
                     </div>
                     <div>
                         <h3>What's new in version 2.0.0</h3>
