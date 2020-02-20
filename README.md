@@ -4,7 +4,7 @@ This add-on contributes a Git client directly in Oxygen XML Editor/Author/Develo
 
 ## Installation
 
-This add-on is compatible with Oxygen XML Editor/Author/Developer version 18.1 or higher. 
+This add-on is compatible with Oxygen XML Editor/Author/Developer version 20.1 or higher. 
 
 To install the add-on, follow these instructions:
 
