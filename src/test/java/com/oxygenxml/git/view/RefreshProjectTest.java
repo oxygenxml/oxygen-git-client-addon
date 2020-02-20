@@ -17,6 +17,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 
@@ -87,7 +88,17 @@ public class RefreshProjectTest extends TestCase {
 
     try {
       DiscardAction discardAction = new DiscardAction(
-          Arrays.asList(new FileStatus(GitChangeType.ADD, "test.txt")),
+          new SelectedResourcesProvider() {
+            @Override
+            public List<FileStatus> getOnlySelectedLeaves() {
+              return null;
+            }
+            
+            @Override
+            public List<FileStatus> getAllSelectedResources() {
+              return Arrays.asList(new FileStatus(GitChangeType.ADD, "test.txt"));
+            }
+          },
           new GitController() {
             @Override
             public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
@@ -126,8 +137,18 @@ public class RefreshProjectTest extends TestCase {
 
     try {
       DiscardAction discardAction = new DiscardAction(
-          Arrays.asList(new FileStatus(GitChangeType.UNTRACKED, "test.txt"),
-              new FileStatus(GitChangeType.UNTRACKED, "subFolder/test2.txt")),
+          new SelectedResourcesProvider() {
+            @Override
+            public List<FileStatus> getOnlySelectedLeaves() {
+              return null;
+            }
+            
+            @Override
+            public List<FileStatus> getAllSelectedResources() {
+              return Arrays.asList(new FileStatus(GitChangeType.UNTRACKED, "test.txt"),
+                  new FileStatus(GitChangeType.UNTRACKED, "subFolder/test2.txt"));
+            }
+          },
           new GitController() {
             @Override
             public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
@@ -165,7 +186,17 @@ public class RefreshProjectTest extends TestCase {
       PowerMockito.doNothing().when(gitAccessMock).discardSubmodule();
       
       DiscardAction discardAction = new DiscardAction(
-          Arrays.asList(new FileStatus(GitChangeType.SUBMODULE, "subModule")),
+          new SelectedResourcesProvider() {
+            @Override
+            public List<FileStatus> getOnlySelectedLeaves() {
+              return null;
+            }
+            
+            @Override
+            public List<FileStatus> getAllSelectedResources() {
+              return Arrays.asList(new FileStatus(GitChangeType.SUBMODULE, "subModule"));
+            }
+          },
           new GitController() {
             @Override
             public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {

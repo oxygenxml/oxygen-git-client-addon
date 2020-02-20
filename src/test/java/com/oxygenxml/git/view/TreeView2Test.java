@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JTree;
@@ -16,6 +17,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 
 /**
 * Test cases related to the actions performed
@@ -27,6 +29,7 @@ public class TreeView2Test extends FlatViewTestBase {
    */
   private static final Logger logger = Logger.getLogger(TreeView2Test.class);
   
+  @Override
   @Before
   public void setUp() throws Exception {
     super.setUp();
@@ -142,7 +145,16 @@ public class TreeView2Test extends FlatViewTestBase {
     
     // Discard.
     DiscardAction discardAction = new DiscardAction(
-        Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt")),
+        new SelectedResourcesProvider() {
+          @Override
+          public List<FileStatus> getOnlySelectedLeaves() {
+            return null;
+          }
+          @Override
+          public List<FileStatus> getAllSelectedResources() {
+            return Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+          }
+        },
         stagingPanel.getStageController());
     
     discardAction.actionPerformed(null);

@@ -2,6 +2,7 @@ package com.oxygenxml.git.view;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 
 /**
 * Test cases related to the actions performed
@@ -17,6 +19,7 @@ import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 */
 public class FlatView3Test extends FlatViewTestBase {
   
+  @Override
   @Before
   public void setUp() throws Exception {
     super.setUp();
@@ -80,7 +83,16 @@ public class FlatView3Test extends FlatViewTestBase {
     
     // Discard.
     DiscardAction discardAction = new DiscardAction(
-        Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt")),
+        new SelectedResourcesProvider() {
+          @Override
+          public List<FileStatus> getOnlySelectedLeaves() {
+            return null;
+          }
+          @Override
+          public List<FileStatus> getAllSelectedResources() {
+            return Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+          }
+        },
         stagingPanel.getStageController());
     
     discardAction.actionPerformed(null);
