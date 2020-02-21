@@ -7,7 +7,7 @@
     <key value="This_operation_requires_saving">
         <comment>Require saving</comment>
         <val lang="en_US">This operation requires saving ''{0}''. Do you want to save it now?</val>
-        <val lang="de_DE">This operation requires saving ''{0}''. Do you want to save it now?</val>
+        <val lang="de_DE">Dieser Vorgang erfordert das Speichern von ''{0}''. Soll nun gespeichert werden?</val>
         <val lang="fr_FR">This operation requires saving ''{0}''. Do you want to save it now?</val>
         <val lang="ja_JP">This operation requires saving ''{0}''. Do you want to save it now?</val>
         <val lang="nl_NL">This operation requires saving ''{0}''. Do you want to save it now?</val>
@@ -15,7 +15,7 @@
     <key value="Nothing_to_show_for_new_files">
         <comment>Message for when no history or blame can be shown (for new files).</comment>
         <val lang="en_US">Nothing to show for new files.</val>
-        <val lang="de_DE">Nothing to show for new files.</val>
+        <val lang="de_DE">Hier gibt es nichts anzuzeigen für neue Dateien.</val>
         <val lang="fr_FR">Nothing to show for new files.</val>
         <val lang="ja_JP">Nothing to show for new files.</val>
         <val lang="nl_NL">Nothing to show for new files.</val>
@@ -23,7 +23,7 @@
     <key value="Renamed_Icon_Tooltip">
         <comment>The tooltip for the renamed icon that appears on the left side of a file.</comment>
         <val lang="en_US">File renamed</val>
-        <val lang="de_DE">File renamed</val>
+        <val lang="de_DE">Datei umbenannt</val>
         <val lang="fr_FR">File renamed</val>
         <val lang="ja_JP">File renamed</val>
         <val lang="nl_NL">File renamed</val>
@@ -31,7 +31,7 @@
     <key value="Change_working_copy">
         <comment>"Change working copy" label.</comment>
         <val lang="en_US">Change working copy</val>
-        <val lang="de_DE">Change working copy</val>
+        <val lang="de_DE">Wechsle Arbeitsverzeichnis</val>
         <val lang="fr_FR">Change working copy</val>
         <val lang="ja_JP">Change working copy</val>
         <val lang="nl_NL">Change working copy</val>
@@ -41,8 +41,8 @@
             which is also a Git repository.</comment>
         <val lang="en_US">The "{0}" directory was detected as being a local Git repository.
             Do you want to set it as the current working copy?</val>
-        <val lang="de_DE">The "{0}" directory was detected as being a local Git repository.
-            Do you want to set it as the current working copy?</val>
+        <val lang="de_DE">Das Verzeichnis "{0}" wurde als lokales Git-Repository erkannt.
+            Soll es als aktuelles Arbeitsverzeichnis verwendet werden?</val>
         <val lang="fr_FR">The "{0}" directory was detected as being a local Git repository.
             Do you want to set it as the current working copy?</val>
         <val lang="ja_JP">The "{0}" directory was detected as being a local Git repository.
@@ -53,7 +53,7 @@
     <key value="Clear_history">
         <comment>"Clear history" label.</comment>
         <val lang="en_US">Clear history</val>
-        <val lang="de_DE">Clear history</val>
+        <val lang="de_DE">Historie löschen</val>
         <val lang="fr_FR">Clear history</val>
         <val lang="ja_JP">Clear history</val>
         <val lang="nl_NL">Clear history</val>
@@ -61,7 +61,7 @@
     <key value="Clear_history_confirmation">
         <comment>"Clear history" confirmation message.</comment>
         <val lang="en_US">Are you sure you want to clear the history?</val>
-        <val lang="de_DE">Are you sure you want to clear the history?</val>
+        <val lang="de_DE">Sind Sie sicher, dass die Historie gelöscht werden soll?</val>
         <val lang="fr_FR">Are you sure you want to clear the history?</val>
         <val lang="ja_JP">Are you sure you want to clear the history?</val>
         <val lang="nl_NL">Are you sure you want to clear the history?</val>
@@ -69,7 +69,7 @@
     <key value="Committing">
         <comment>Committing</comment>
         <val lang="en_US">Committing</val>
-        <val lang="de_DE">Committing</val>
+        <val lang="de_DE">Wird committet</val>
         <val lang="fr_FR">Committing</val>
         <val lang="ja_JP">Committing</val>
         <val lang="nl_NL">Committing</val>
@@ -78,7 +78,7 @@
         <comment>The text is displayed you fix all conflicts and you need to commit.
             It appears as the commit message.</comment>
         <val lang="en_US">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
-        <val lang="de_DE">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
+        <val lang="de_DE">Alle Konflikte wurden gelöst. Bitte committen Sie um den Branch ''{0}'' von {1} zu mergen.</val>
         <val lang="fr_FR">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
         <val lang="ja_JP">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
         <val lang="nl_NL">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
@@ -86,7 +86,7 @@
     <key value="Nothing_to_commit">
         <comment>Information message when there is nothing to commit.</comment>
         <val lang="en_US">There are no changes to commit.</val>
-        <val lang="de_DE">There are no changes to commit.</val>
+        <val lang="de_DE">Es gibt keine Änderungen zu Committen.</val>
         <val lang="fr_FR">There are no changes to commit.</val>
         <val lang="ja_JP">There are no changes to commit.</val>
         <val lang="nl_NL">There are no changes to commit.</val>
@@ -94,7 +94,7 @@
     <key value="Open_previous_version">
         <comment>Contextual action in the History view, to open the previous version of a file.</comment>
         <val lang="en_US">Open previous version</val>
-        <val lang="de_DE">Open previous version</val>
+        <val lang="de_DE">Öffne vorherige Version</val>
         <val lang="fr_FR">Open previous version</val>
         <val lang="ja_JP">Open previous version</val>
         <val lang="nl_NL">Open previous version</val>
@@ -125,11 +125,11 @@
     </key>
     <key value="Comitter">
         <comment>History table column name.</comment>
-        <val lang="en_US">Comitter</val>
-        <val lang="de_DE">Comitter</val>
-        <val lang="fr_FR">Comitter</val>
-        <val lang="ja_JP">Comitter</val>
-        <val lang="nl_NL">Comitter</val>
+        <val lang="en_US">Committer</val>
+        <val lang="de_DE">Committer</val>
+        <val lang="fr_FR">Committer</val>
+        <val lang="ja_JP">Committer</val>
+        <val lang="nl_NL">Committer</val>
     </key>
     <key value="Date">
         <comment>History table column name.</comment>
