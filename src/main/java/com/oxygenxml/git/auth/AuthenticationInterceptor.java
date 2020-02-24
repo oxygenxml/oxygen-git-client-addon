@@ -224,15 +224,7 @@ public class AuthenticationInterceptor {
 				  installedAuthenticator.setBoundHosts(oldInstalledAuth.getBoundHosts());
 				}
 				
-				try {
-				  // EXM-43925
-          Class<?> webdavAsyncAuth = Class.forName("ro.sync.net.protocol.http.HttpAsyncAuthenticator");
-          Method setUseDefaultAuth = webdavAsyncAuth.getMethod("setUseDefaultAuthenticator", boolean.class);
-          setUseDefaultAuth.invoke(null, true);
-        } catch (ClassNotFoundException | NoSuchMethodException 
-            | SecurityException | InvocationTargetException e) {
-          // Ignore
-        }
+				setUseDefaultAuthenticator(true);
 				
 				Authenticator.setDefault(installedAuthenticator);
 			}
@@ -241,6 +233,25 @@ public class AuthenticationInterceptor {
 		  logger.error(e, e);
 		}
 	}
+
+	/**
+	 * Set to <code>true</code> to use the default Authenticator instead of the asynchronous one.
+	 * 
+	 * @param useDefaultAuth <code>true</code> to use the default Authenticator instead of the asynchronous one.
+	 * 
+	 * @throws IllegalAccessException
+	 */
+  private static void setUseDefaultAuthenticator(boolean useDefaultAuth) throws IllegalAccessException {
+    try {
+      // EXM-43925
+      Class<?> webdavAsyncAuth = Class.forName("ro.sync.net.protocol.http.HttpAsyncAuthenticator");
+      Method setUseDefaultAuth = webdavAsyncAuth.getMethod("setUseDefaultAuthenticator", boolean.class);
+      setUseDefaultAuth.invoke(null, useDefaultAuth);
+    } catch (ClassNotFoundException | NoSuchMethodException 
+        | SecurityException | InvocationTargetException e) {
+      // Ignore
+    }
+  }
 
 	/**
 	 * Binds the host to MyAuthenticator
@@ -265,10 +276,8 @@ public class AuthenticationInterceptor {
 			if (installedAuthenticator != null) {
 				installedAuthenticator.unbind(hostName);
 			}
-		} catch (Throwable e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+		} catch (Throwable e) { // NOSONAR
+		  logger.warn(e, e);
 		}
 	}
 

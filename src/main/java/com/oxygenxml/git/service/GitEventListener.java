@@ -12,8 +12,7 @@ import com.oxygenxml.git.view.event.GitEvent;
  * 
  * TODO We need a number of notifications:
  * 
- * 2. push/pull
- * 4. branchChanged
+ * - push/pull
  */
 public interface GitEventListener {
   /**

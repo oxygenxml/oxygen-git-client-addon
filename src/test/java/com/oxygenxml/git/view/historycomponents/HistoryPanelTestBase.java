@@ -27,7 +27,7 @@ import com.oxygenxml.git.view.event.GitController;
  * @author alex_jitianu
  */
 @Ignore
-public class HistoryPanelTestBase extends GitTestBase {
+public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
 
   protected HistoryPanel historyPanel;
 

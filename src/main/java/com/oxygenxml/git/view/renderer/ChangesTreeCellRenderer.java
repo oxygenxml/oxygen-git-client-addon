@@ -2,7 +2,7 @@ package com.oxygenxml.git.view.renderer;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -31,14 +31,14 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Tells if a contextual menu is active over the component.
    */
-  private Supplier<Boolean> contextMenuShowing;
+  private BooleanSupplier contextMenuShowing;
   
   /**
    * Constructor.
    * 
    * @param contextualMenuShowing Tells if a contextual menu is active over the component.
    */
-  public ChangesTreeCellRenderer(Supplier<Boolean> contextualMenuShowing) {
+  public ChangesTreeCellRenderer(BooleanSupplier contextualMenuShowing) {
     this.contextMenuShowing = contextualMenuShowing;
   }
   
@@ -81,7 +81,7 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 		  if (sel) {
 		    if (tree.hasFocus()) {
 		      setBackgroundSelectionColor(defaultSelectionColor);
-		    } else if (!contextMenuShowing.get()) {
+		    } else if (!contextMenuShowing.getAsBoolean()) {
 		      // Do nor render the tree as inactive if we have a contextual menu over it.
 		      setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
 		    }

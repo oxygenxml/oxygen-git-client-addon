@@ -67,7 +67,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
-public class CloneRepositoryDialog extends OKCancelDialog {
+public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:MaximumInheritanceDepth
 
 	/**
 	 * Logger for logging.
@@ -183,7 +183,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	        }
 	        cause = cause.getCause();
 	      }
-				return;
 			}
 		}
 
@@ -245,9 +244,6 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	      checkConnectionTask.cancel();
 	    }
 	    checkConnectionTask = new TimerTask() {
-	      /**
-	       * @see java.util.TimerTask.run()
-	       */
 	      @Override
 	      public void run() {
 	        if (CloneRepositoryDialog.this.isShowing()
@@ -260,25 +256,10 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	              setProgressVisible(true);
 	            });
 
-	            String text = sourceUrlTextField.getText();
-	            boolean wasTextProvided = text != null && !text.isEmpty();
-	            if (wasTextProvided) {
-	              try {
-	                URIish sourceURL = new URIish(text);
-	                Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
-	                    sourceURL,
-	                    // Maybe there was a problem with getting the remote branches
-	                    CloneRepositoryDialog.this::showInfoMessage);
-	                if (!branches.isEmpty()) {
-	                  remoteBranches.addAll(branches);
-	                  Collections.sort(remoteBranches, refComparator);
-	                }
-	              } catch (URISyntaxException e) {
-	                showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
-                  if (logger.isDebugEnabled()) {
-                    logger.debug(e, e);
-                  }
-                }
+	            String sourceUrlAsText = sourceUrlTextField.getText();
+	            boolean wasUrlProvided = sourceUrlAsText != null && !sourceUrlAsText.isEmpty();
+	            if (wasUrlProvided) {
+	              addBranches(remoteBranches, sourceUrlAsText);
 	            }
 
 	            SwingUtilities.invokeLater(() -> {
@@ -290,7 +271,7 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	                }
 	              }
 	              branchesComboBox.setEnabled(shouldEnableBranchesCombo);
-	              if (wasTextProvided) {
+	              if (wasUrlProvided) {
 	                // If we have branches, then we didn't have any problems.
 	                // Hide the information label. Otherwise, show it.
 	                informationLabel.setVisible(!shouldEnableBranchesCombo);
@@ -311,6 +292,31 @@ public class CloneRepositoryDialog extends OKCancelDialog {
 	          }
 	        }
 	      }
+
+	      /**
+	       * Add the remote branches for the given URL to the given list.
+	       * 
+	       * @param remoteBranches  The list to be populated.
+	       * @param sourceUrlAsText The remote URL as text.
+	       */
+        private void addBranches(final List<Ref> remoteBranches, String sourceUrlAsText) {
+          try {
+            URIish sourceURL = new URIish(sourceUrlAsText);
+            Collection<Ref> branches = GitAccess.getInstance().listRemoteBranchesForURL(
+                sourceURL,
+                // Maybe there was a problem with getting the remote branches
+                CloneRepositoryDialog.this::showInfoMessage);
+            if (!branches.isEmpty()) {
+              remoteBranches.addAll(branches);
+              Collections.sort(remoteBranches, refComparator);
+            }
+          } catch (URISyntaxException e) {
+            showInfoMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+            if (logger.isDebugEnabled()) {
+              logger.debug(e, e);
+            }
+          }
+        }
 
 	      /**
 	       * Show/hide the progress circle for branch retrieval.
@@ -466,7 +472,8 @@ public class CloneRepositoryDialog extends OKCancelDialog {
     gbc.gridwidth = 2;
     panel.add(branchesComboBox, gbc);
     branchesComboBox.setEnabled(false);
-    branchesComboBox.setRenderer(new DefaultListCellRenderer() {
+    branchesComboBox.setRenderer(
+        new DefaultListCellRenderer() { // NOSONAR squid:MaximumInheritanceDepth
       @Override
       public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
           boolean cellHasFocus) {

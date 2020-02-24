@@ -159,7 +159,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 				return border;
 			return SAFE_NO_FOCUS_BORDER;
 		} else if (border != null) {
-			if (noFocusBorder == null || noFocusBorder == DEFAULT_NO_FOCUS_BORDER) {
+			if (noFocusBorder == null || noFocusBorder == DEFAULT_NO_FOCUS_BORDER) { // NOSONAR squid:S1066
 				return border;
 			}
 		}
