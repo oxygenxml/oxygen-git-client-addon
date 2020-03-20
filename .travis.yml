@@ -3,8 +3,7 @@ sudo: required
 addons: 
  sonarcloud:
     organization: "oxygenxml-github"
-    token:
-      secure: "${SONAR_CLOUD_TOKEN}"
+    token: "${SONAR_CLOUD_TOKEN}"
 dist: trusty
 jdk:
  - oraclejdk8
