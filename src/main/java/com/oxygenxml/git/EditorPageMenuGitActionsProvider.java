@@ -5,6 +5,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -69,6 +70,10 @@ public class EditorPageMenuGitActionsProvider {
   public List<AbstractAction> getActionsForCurrentEditorPage(URL editorURL) {
     List<AbstractAction> actions = new ArrayList<>();
 
+    if (!"file".equalsIgnoreCase(editorURL.getProtocol())) {
+      return Collections.emptyList();
+    }
+    
     try {
       File file = new File(editorURL.toURI());
       boolean isFromGitRepo = FileHelper.isFromGitRepo(file);
