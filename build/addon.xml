@@ -30,6 +30,7 @@
                         <ol>
                             <li>Fixed a bug where the Text/Author page contextual menu was not shown
                             	when the opened document was remote (e.g. from a WebDAV server).</li>
+                        </ol>
                     </div>
                     <div>
                         <h3>What's new in version 2.1.0</h3>
