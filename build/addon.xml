@@ -4,8 +4,8 @@
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension" id="com.oxygenxml.git">
         <xt:location
-            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.1.0/git.support-2.1.0-plugin.jar"/>
-        <xt:version>2.1.0</xt:version>
+            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.1.1/git.support-2.1.1-plugin.jar"/>
+        <xt:version>2.1.1</xt:version>
         <xt:oxy_version>20.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
@@ -24,6 +24,12 @@
                             perform common Git commands, such as push, pull, change branch, commit,
                             and more. It also includes a built-in tool for comparing and merging
                             changes.</p>
+                    </div>
+                    <div>
+                        <h3>What's new in version 2.1.1</h3>
+                        <ol>
+                            <li>Fixed a bug where the Text/Author page contextual menu was not shown
+                            	when the opened document was remote (e.g. from a WebDAV server).</li>
                     </div>
                     <div>
                         <h3>What's new in version 2.1.0</h3>
