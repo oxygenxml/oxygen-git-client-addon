@@ -206,71 +206,71 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTrue(listedFiles.contains("Test.txt"));
   }
   
-//  /**
-//   * Stage and UnStage a newly created file.
-//   *  
-//   * @throws Exception If it fails.
-//   */
-//  @Test
-//  public void testStageUnstage_ModifiedFile() throws Exception {
-//    /**
-//     * Local repository location.
-//     */
-//    String localTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_local";
-//    
-//    /**
-//     * Remote repository location.
-//     */
-//    String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote";
-//    
-//    new File(localTestRepository).mkdirs();
-//    File file = new File(localTestRepository + "/test.txt");
-//    file.createNewFile();
-//    setFileContent(file, "remote");
-//    
-//    // Create repositories
-//    Repository remoteRepo = createRepository(remoteTestRepository);
-//    Repository localRepo = createRepository(localTestRepository);
-//    // Bind the local repository to the remote one.
-//    bindLocalToRemote(localRepo , remoteRepo);
-//    
-//    // Add it to the index.
-//    add(new FileStatus(GitChangeType.ADD, "test.txt"));
-//    assertTableModels("", "ADD, test.txt");
-//    
-//    gitAccess.commit("First version.");
-//    
-//    assertTableModels("", "");
-//    
-//    // Change the file.
-//    setFileContent(file, "index content");
-//    
-//    assertTableModels("MODIFIED, test.txt", "");
-//    //------------
-//    // Add to INDEX (Stage)
-//    //------------
-//    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-//    
-//    assertTableModels("", "CHANGED, test.txt");
-//    
-//    //-----------------
-//    // Change the file again. It will appear in the index as well.
-//    //------------------
-//    setFileContent(file, "modified content");
-//    
-//    assertTableModels(
-//        "MODIFIED, test.txt", 
-//        "CHANGED, test.txt");
-//    
-//    //------------------
-//    // Unstage the file from the INDEX.
-//    //------------------
-//    change(false, 0);
-//    
-//    assertTableModels(
-//        "MODIFIED, test.txt", 
-//        "");
-//  }
+  /**
+   * Stage and UnStage a newly created file.
+   *  
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testStageUnstage_ModifiedFile() throws Exception {
+    /**
+     * Local repository location.
+     */
+    String localTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_local";
+    
+    /**
+     * Remote repository location.
+     */
+    String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote";
+    
+    new File(localTestRepository).mkdirs();
+    File file = new File(localTestRepository + "/test.txt");
+    file.createNewFile();
+    setFileContent(file, "remote");
+    
+    // Create repositories
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo = createRepository(localTestRepository);
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo , remoteRepo);
+    
+    // Add it to the index.
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    assertTableModels("", "ADD, test.txt");
+    
+    gitAccess.commit("First version.");
+    
+    assertTableModels("", "");
+    
+    // Change the file.
+    setFileContent(file, "index content");
+    
+    assertTableModels("MODIFIED, test.txt", "");
+    //------------
+    // Add to INDEX (Stage)
+    //------------
+    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    
+    assertTableModels("", "CHANGED, test.txt");
+    
+    //-----------------
+    // Change the file again. It will appear in the index as well.
+    //------------------
+    setFileContent(file, "modified content");
+    
+    assertTableModels(
+        "MODIFIED, test.txt", 
+        "CHANGED, test.txt");
+    
+    //------------------
+    // Unstage the file from the INDEX.
+    //------------------
+    change(false, 0);
+    
+    assertTableModels(
+        "MODIFIED, test.txt", 
+        "");
+  }
 
 
   /**
