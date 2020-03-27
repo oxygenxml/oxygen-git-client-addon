@@ -26,6 +26,12 @@
                             changes.</p>
                     </div>
                     <div>
+                        <h3>What's new in version 2.1.1</h3>
+                        <ol>
+                            <li>Fixed a bug where the Text/Author page contextual menu was not shown
+                            	when the opened document was remote (e.g. from a WebDAV server).</li>
+                    </div>
+                    <div>
                         <h3>What's new in version 2.1.0</h3>
                         <ol>
                             <li>Updated the JGit library to version 5.6.</li>
