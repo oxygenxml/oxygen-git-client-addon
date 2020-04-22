@@ -16,6 +16,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListCellRenderer;
@@ -35,13 +36,7 @@ import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.AbortedByHookException;
-import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.NoMessageException;
-import org.eclipse.jgit.api.errors.UnmergedPathsException;
-import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
@@ -77,13 +72,20 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
    */
   private final class CommitAction extends AbstractAction {
     /**
+     * <code>true</code> if the commit is in progress. <code>false</code> if it has ended.
+     */
+    private AtomicBoolean commitinProgress = new AtomicBoolean(false);
+    /**
      * Timer for updating cursor and status.
      */
     private Timer cursorTimer = new Timer(
         1000,
         e -> SwingUtilities.invokeLater(() -> {
-          setStatusMessage(translator.getTranslation(Tags.COMMITTING) + "...");
-          CommitAndStatusPanel.this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+          if (commitinProgress.compareAndSet(true, true)) {
+            // Commit process still running. Present a hint.
+            setStatusMessage(translator.getTranslation(Tags.COMMITTING) + "...");
+            CommitAndStatusPanel.this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+          }
         }));
     
     /**
@@ -99,54 +101,82 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
     @Override
     public void actionPerformed(ActionEvent e) {
       GitOperationScheduler.getInstance().schedule(() -> {
-        try {
-          cursorTimer.stop();
-          cursorTimer.start();
-         
-          RepositoryState repoState = getRepoState();
-          if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
-              // which actually calls git.status(), operation that is slow
-              repoState == RepositoryState.MERGING 
-              || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
-            cursorTimer.stop();
-            SwingUtilities.invokeLater(() -> setStatusMessage(""));
-            PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
-          } else {
-            SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
-            boolean done = executeCommit(commitMessageArea.getText());
-            
-            if (done) {
-              handleCommitSuccessful();
-            }
-          }
-        } finally {
-          cursorTimer.stop();
-          SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
+        RepositoryState repoState = getRepoState();
+        if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
+            // which actually calls git.status(), operation that is slow
+            repoState == RepositoryState.MERGING 
+            || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
+          SwingUtilities.invokeLater(() -> setStatusMessage(""));
+          PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+              translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
+        } else {
+          executeCommit();
         }
       });
     }
 
     /**
-     * A commit ended successfully. Update the view accordingly.
+     * Commit the staged files.
      */
-    private void handleCommitSuccessful() {
-      optionsManager.saveCommitMessage(commitMessageArea.getText());
+    private void executeCommit() {
+      boolean commitSuccessful = false;
+      try {
+        // Prepare the flag for the timer. Unconditionally because the timer is not yet running.
+        stopTimer();
+        commitinProgress.set(true);
+        cursorTimer.start();
 
-      previousMessages.removeAllItems();
-      previousMessages.addItem(getCommitMessageHistoryHint());
-      for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
-        previousMessages.addItem(previouslyCommitMessage);
+        SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
+        
+        gitAccess.commit(commitMessageArea.getText());
+        
+        commitSuccessful = true;
+      } catch (GitAPIException e1) {
+        logger.debug(e1, e1);
+        
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+            "Commit failed.  " + e1.getMessage());
+      } finally {
+        stopTimer();
+        handleCommitEnded(commitSuccessful);
+        SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
       }
-      
-      PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
-      notifyObservers(pushPullEvent);
-      
-      SwingUtilities.invokeLater(() -> {
-        commitMessageArea.setText("");
-        setStatusMessage(translator.getTranslation(Tags.COMMIT_SUCCESS));
-        previousMessages.setSelectedItem(getCommitMessageHistoryHint());
-      });
+    }
+
+    /**
+     * Stops the timer that presents the commit in progress label.
+     */
+    private void stopTimer() {
+      commitinProgress.getAndSet(false);
+      cursorTimer.stop();
+    }
+    
+    /**
+     * A commit ended. Update the view.
+     * 
+     * @param commitSuccessful <code>true</code> if the commit was successful. <code>false</code> if it failed.
+     */
+    private void handleCommitEnded(boolean commitSuccessful) {
+      if (commitSuccessful) {
+        optionsManager.saveCommitMessage(commitMessageArea.getText());
+
+        previousMessages.removeAllItems();
+        previousMessages.addItem(getCommitMessageHistoryHint());
+        for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
+          previousMessages.addItem(previouslyCommitMessage);
+        }
+
+        PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
+        notifyObservers(pushPullEvent);
+
+        SwingUtilities.invokeLater(() -> {
+          commitMessageArea.setText("");
+          setStatusMessage(translator.getTranslation(Tags.COMMIT_SUCCESS));
+          previousMessages.setSelectedItem(getCommitMessageHistoryHint());
+        });
+      } else {
+        SwingUtilities.invokeLater(() -> setStatusMessage(""));
+      }
     }
   }
   
@@ -242,42 +272,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
             cmd == GitCommand.STAGE && cmdState == GitCommandState.SUCCESSFULLY_ENDED);
       }
     });
-  }
-
-	/**
-	 * Executes a commit command and handles the exceptions.
-	 * 
-	 * @param message Commit message.
-	 */
-	public boolean executeCommit(String message) {
-	  boolean success = false;
-	  try {
-      gitAccess.commit(message);
-      success = true;
-    } catch (NoHeadException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (NoMessageException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (UnmergedPathsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (ConcurrentRefUpdateException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (WrongRepositoryStateException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (AbortedByHookException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (GitAPIException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-	  
-	  return success;
   }
 
   /**
