@@ -34,7 +34,7 @@ public class GitAccessCommitTest {
 	}
 
 	@Test
-	public void testSingleFileCommit() throws NoRepositorySelected {
+	public void testSingleFileCommit() throws Exception {
 		File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
 		try {
 			file.createNewFile();
@@ -79,7 +79,7 @@ public class GitAccessCommitTest {
 	}
 
 	@Test
-	public void testMultipleFileCommit() throws NoRepositorySelected {
+	public void testMultipleFileCommit() throws Exception {
 		int n = 3;
 		List<FileStatus> files = new ArrayList<>();
 		for (int i = 0; i < n; i++) {

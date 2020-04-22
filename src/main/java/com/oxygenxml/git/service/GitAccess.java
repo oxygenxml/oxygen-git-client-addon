@@ -44,11 +44,15 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.SubmoduleAddCommand;
 import org.eclipse.jgit.api.SubmoduleStatusCommand;
+import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
+import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.dircache.DirCache;
@@ -743,10 +747,27 @@ public class GitAccess {
 	/**
 	 * Commits a single file locally
 	 * 
-	 * @param file    - File to be commited
+	 * @param file    - File to be committed
 	 * @param message - Message for the commit
+	 * 
+	 * All JGit exceptions have a common ancestor, but sub classes offer different API for getting extra information
+	 * about the cause of the exception.
+	 * 
+	 * @throws AbortedByHookException The commit failed because it a hook rejected it.
+	 * @throws ConcurrentRefUpdateException Exception thrown when a command wants to update a ref but failed because
+	 * another process is accessing (or even also updating) the ref.
+     * @throws NoHeadException Exception thrown when a command expected the {@code HEAD} reference to exist
+     * but couldn't find such a reference
+     * @throws NoMessageException A commit was called without explicitly specifying a commit message
+     * @throws UnmergedPathsException Thrown when branch deletion fails due to unmerged data
+     * @throws WrongRepositoryStateException Exception thrown when the state of the repository doesn't allow the execution
+     * of a certain command. E.g. when a CommitCommand should be executed on a repository with unresolved conflicts this exception will be thrown.
+     * @throws GitAPIException Other unexpected exceptions.
 	 */
-	public void commit(String message) {
+	public void commit(String message) throws GitAPIException, NoHeadException, //NOSONAR See doc above.
+  NoMessageException, UnmergedPathsException, //NOSONAR See doc above.
+  ConcurrentRefUpdateException, WrongRepositoryStateException, //NOSONAR See doc above.
+  AbortedByHookException { //NOSONAR See doc above.
 	  List<FileStatus> files = getStagedFiles();
 	  Collection<String> filePaths = getFilePaths(files);
 		try {
@@ -756,6 +777,9 @@ public class GitAccess {
 		} catch (GitAPIException e) {
 		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.FAILED, filePaths));
 		  logger.error(e, e);
+		  
+		  // Re throw the exception so that the user sees a proper error message, depending on its type.
+		  throw e;
 		}
 	}
 

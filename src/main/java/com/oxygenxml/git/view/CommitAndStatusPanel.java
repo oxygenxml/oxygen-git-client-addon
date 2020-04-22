@@ -35,6 +35,13 @@ import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.AbortedByHookException;
+import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NoMessageException;
+import org.eclipse.jgit.api.errors.UnmergedPathsException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
@@ -107,28 +114,38 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
                 translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
           } else {
             SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
-            gitAccess.commit(commitMessageArea.getText());
-            optionsManager.saveCommitMessage(commitMessageArea.getText());
-
-            previousMessages.removeAllItems();
-            previousMessages.addItem(getCommitMessageHistoryHint());
-            for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
-              previousMessages.addItem(previouslyCommitMessage);
+            boolean done = executeCommit(commitMessageArea.getText());
+            
+            if (done) {
+              handleCommitSuccessful();
             }
-            
-            PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
-            notifyObservers(pushPullEvent);
-            
-            SwingUtilities.invokeLater(() -> {
-              commitMessageArea.setText("");
-              setStatusMessage(translator.getTranslation(Tags.COMMIT_SUCCESS));
-              previousMessages.setSelectedItem(getCommitMessageHistoryHint());
-            });
           }
         } finally {
           cursorTimer.stop();
           SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
         }
+      });
+    }
+
+    /**
+     * A commit ended successfully. Update the view accordingly.
+     */
+    private void handleCommitSuccessful() {
+      optionsManager.saveCommitMessage(commitMessageArea.getText());
+
+      previousMessages.removeAllItems();
+      previousMessages.addItem(getCommitMessageHistoryHint());
+      for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
+        previousMessages.addItem(previouslyCommitMessage);
+      }
+      
+      PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
+      notifyObservers(pushPullEvent);
+      
+      SwingUtilities.invokeLater(() -> {
+        commitMessageArea.setText("");
+        setStatusMessage(translator.getTranslation(Tags.COMMIT_SUCCESS));
+        previousMessages.setSelectedItem(getCommitMessageHistoryHint());
       });
     }
   }
@@ -228,6 +245,42 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
   }
 
 	/**
+	 * Executes a commit command and handles the exceptions.
+	 * 
+	 * @param message Commit message.
+	 */
+	public boolean executeCommit(String message) {
+	  boolean success = false;
+	  try {
+      gitAccess.commit(message);
+      success = true;
+    } catch (NoHeadException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (NoMessageException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (UnmergedPathsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ConcurrentRefUpdateException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (WrongRepositoryStateException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (AbortedByHookException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (GitAPIException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+	  
+	  return success;
+  }
+
+  /**
 	 * Create GUI.
 	 */
 	private void createGUI() {

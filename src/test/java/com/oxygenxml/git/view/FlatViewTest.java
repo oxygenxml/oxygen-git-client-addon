@@ -10,6 +10,7 @@ import java.util.concurrent.ScheduledFuture;
 import javax.swing.JButton;
 import javax.swing.JTable;
 
+import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
@@ -633,6 +634,36 @@ public class FlatViewTest extends FlatViewTestBase {
     } finally {
       PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspace);
     }
+  }
+  
+  /**
+   * <p><b>Description:</b> When a commit fails, files do not disappear from the view.</p>
+   * <p><b>Bug ID:</b> EXM-45438</p>
+   *
+   * @author alex_jitianu
+   *
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testFailedCommit() throws Exception {
+    String localTestRepository = "target/test-resources/testFailedCommit";
+    
+    // Create repositories
+    createRepository(localTestRepository);
+    
+    createNewFile(localTestRepository, "test.txt", "content");
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    
+    
+    // Don't give a message to force an exception.
+    try {
+      gitAccess.commit(null);
+      fail("Exception expected.");
+    } catch (NoMessageException e) {
+      // Expected.
+    }
+    
+    assertTableModels("", "ADD, test.txt");
   }
 
 }
