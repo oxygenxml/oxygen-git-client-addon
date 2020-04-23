@@ -155,8 +155,11 @@ public class PanelRefresh implements GitRefreshSupport {
         } else {
           // A Git repository was detected.
           try {
-            File currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
-            if (!same(currentRepo, detectedRepo)) {
+            File currentRepo = null;
+            if (gitAccess.isRepoInitialized()) {
+              currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
+            }
+            if (currentRepo == null || !same(currentRepo, detectedRepo)) {
               repoChanged = switchToProjectRepoIfUserAgrees(getCanonicalPath(detectedRepo));
             }
           } catch (NoRepositorySelected e) {

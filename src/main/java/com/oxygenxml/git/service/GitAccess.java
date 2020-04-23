@@ -2212,4 +2212,11 @@ public class GitAccess {
 		return branchMap;
 	}
 
+	/**
+	 * @return <code>true</code> if a repository was initialized.
+	 */
+	public boolean isRepoInitialized() {
+	  return git != null;
+	}
+	
 }
