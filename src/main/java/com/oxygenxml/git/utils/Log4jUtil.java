@@ -39,25 +39,24 @@ public class Log4jUtil {
       }
     });
     
-    if (isLog4jVersion2_OrLater()) {
+    if (isLog4jV2OrLater()) {
       addFiltersOnAppenders();
     } else {
-      addFiltersOnAppenders_Log4j1_2();
+      addFiltersOnAppendersForLog4j1Dot2();
     }
   }
   
   /**
    * @return <code>true</code> if logger 2 or later is present in classpath.
    */
-  private static boolean isLog4jVersion2_OrLater() {
+  private static boolean isLog4jV2OrLater() {
     boolean isVersion2OrLater = false;
     try {
       Class.forName("org.apache.logging.log4j.core.LoggerContext");
       isVersion2OrLater = true;
-    } catch(Throwable t) {
+    } catch(Throwable t) { // NOSONAR
       logger.debug(t, t);
     }
-    
     return isVersion2OrLater;
   }
   
@@ -65,12 +64,12 @@ public class Log4jUtil {
    * EXM-44131 Filter an exception that we know it appears quite often and has no repercussions.
    */
   private static void addFiltersOnAppenders() {
-    // We want to be compatible with versions of Oxygen prior to 2.13.0
-    // Because of that we use reflection for invoking what's in the commented lines below.
-    
-//    LoggerContext logContext = LoggerContext.getContext(false);
-//    LoggerConfig rootLoggerConfig = logContext.getConfiguration().getRootLogger();
-//    rootLoggerConfig.addFilter(new FilterAdapter(createSecurityExceptionFilter));
+    // We want to be compatible with versions of log4j prior to 2.13.0
+    // Because of that we use reflection for invoking what's in the commented lines below:
+    //
+    //    LoggerContext logContext = LoggerContext.getContext(false); NOSONAR
+    //    LoggerConfig rootLoggerConfig = logContext.getConfiguration().getRootLogger(); NOSONAR
+    //    rootLoggerConfig.addFilter(new FilterAdapter(createSecurityExceptionFilter)); NOSONAR
     
     try {
       Class<?> loggerContextClass = Class.forName("org.apache.logging.log4j.core.LoggerContext");
@@ -90,7 +89,7 @@ public class Log4jUtil {
       Object filterAdapterObject = filterAdapterClass.getConstructor(Filter.class).newInstance(filter);
 
       addFilterMethod.invoke(rootLoggerConfig, filterAdapterObject);
-    } catch(Throwable e) {
+    } catch(Throwable e) { // NOSONAR
       logger.error(e, e);
     }
   }
@@ -98,11 +97,10 @@ public class Log4jUtil {
   /**
    * EXM-44131 Filter an exception that we know it appears quite often and has no repercussions.
    */
-  private static void addFiltersOnAppenders_Log4j1_2() {
+  private static void addFiltersOnAppendersForLog4j1Dot2() {
     Enumeration allAppenders = Logger.getRootLogger().getAllAppenders();
     while (allAppenders.hasMoreElements()) {
       Appender appender = (Appender) allAppenders.nextElement();
-      
       appender.addFilter(createSecurityExceptionFilter());
     }
   }
@@ -115,19 +113,16 @@ public class Log4jUtil {
       @Override
       public int decide(LoggingEvent event) {
         int toReturn = NEUTRAL;
-        if(FS.class.getName().equals(event.getLoggerName()) && 
-            event.getLevel() == Level.ERROR) {
+        if(FS.class.getName().equals(event.getLoggerName()) && event.getLevel() == Level.ERROR) {
           Pattern pattern = Pattern.compile("^java.security.AccessControlException:\\s+access denied\\s+\\(\"java\\.io\\.FilePermission\".*\\.probe");
-          
           Matcher matcher = pattern.matcher(event.getRenderedMessage());
-          
           if (matcher.find()) {
             toReturn = DENY;
           }
         }
-        
         return toReturn;
       }
     };
   }
+  
 }
