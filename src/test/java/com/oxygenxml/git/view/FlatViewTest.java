@@ -122,8 +122,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Create a new test file.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
+    createNewFile(localTestRepository, "test.txt", "");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -168,9 +167,7 @@ public class FlatViewTest extends FlatViewTestBase {
     String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote";
     
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    setFileContent(file, "remote");
+    File file = createNewFile(localTestRepository, "test.txt", "remote");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -237,10 +234,9 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Create a new test file.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    File file2 = new File(localTestRepository + "/test2.txt");
-    file2.createNewFile();
+    createNewFile(localTestRepository, "test.txt", "");
+    
+    createNewFile(localTestRepository, "test2.txt", "");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -295,8 +291,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Create a new test file.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
+    File file = createNewFile(localTestRepository, "test.txt", "");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -360,9 +355,8 @@ public class FlatViewTest extends FlatViewTestBase {
 
     // Create a new file and push it.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    setFileContent(file, "content");
+    File file = createNewFile(localTestRepository, "test.txt", "content");
+    
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First version.");
     PushResponse push = gitAccess.push("", "");
@@ -444,9 +438,8 @@ public class FlatViewTest extends FlatViewTestBase {
 
     // Create a new file and push it.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    setFileContent(file, "content");
+    File file = createNewFile(localTestRepository, "test.txt", "content");
+    
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First version.");
     PushResponse push = gitAccess.push("", "");
