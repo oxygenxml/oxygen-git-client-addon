@@ -219,6 +219,11 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     File file = new File(parentDir + "/" + fileName);
     file.createNewFile();
     setFileContent(file, content);
+    
+    // Wait for the new file to appear in the UNSTAGED resources area.
+    refreshSupport.call();
+    waitForScheduler();
+    
     return file;
   }
   
@@ -236,65 +241,6 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * @param fs File to add to the index.
    */
   protected void add(FileStatus fs) {
-    logger.debug("Add " + fs);
     gitAccess.add(fs);
-
-    waitForSwitchUntracked2Index(fs);
-    
-    logger.debug("UI sdhould be updated ");
   }
-
-  /**
-   * Waits for the UI to react after a state change from Untracked to Index.
-   * 
-   * @param fs Modified file.
-   */
-  protected void waitForSwitchUntracked2Index(FileStatus fs) {
-    int i = 0;
-    while(i< 10 && !uiReadyAfterSwitchUntracked2Index(fs)) {
-      i++;
-      flushAWT();
-      Thread.yield();
-      sleep(300);
-    }
   }
-
-  /**
-   * Waits for the UI to react after a switch from Untracked to Index.
-   * 
-   * @param fs Modified file.
-   * 
-   * @return <code>true</code> if the UI reflects the state change.
-   */
-  private boolean uiReadyAfterSwitchUntracked2Index(FileStatus fs) {
-    boolean uiready = true;
-    ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
-    
-    for (FileStatus fileStatus : unstagedChangesPanel.getFilesStatuses()) {
-      if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
-        logger.warn("Still in the untracked area: " + fs);
-        
-        uiready = false;
-        break;
-      }
-    }
-    
-    if (uiready) {
-      uiready = false;
-      ChangesPanel stagedChangesPanel = stagingPanel.getStagedChangesPanel();
-      for (FileStatus fileStatus : stagedChangesPanel.getFilesStatuses()) {
-        if (fs.getFileLocation().equals(fileStatus.getFileLocation())) {
-
-          uiready = true;
-          break;
-        }
-      }
-      
-      if (!uiready) {
-        logger.warn("Not found in the index area: " + fs);
-      }
-    }
-    
-    return uiready;
-  }
-}

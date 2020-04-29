@@ -96,7 +96,7 @@ public class FlatView4Test extends FlatViewTestBase {
     bindLocalToRemote(localRepo , remoteRepo);
     
     // Add it to the index.
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     assertTableModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");

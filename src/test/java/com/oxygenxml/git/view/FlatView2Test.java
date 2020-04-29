@@ -88,7 +88,7 @@ public class FlatView2Test extends FlatViewTestBase {
 
       // Commit a new version of the file.
       setFileContent(file, "modified");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, fileName));
+      gitAccess.add(new FileStatus(GitChangeType.MODIFIED, fileName));
       gitAccess.commit("modified");
       gitAccess.push("", "");
       assertEquals("status: OK message null", push.toString());
@@ -136,7 +136,7 @@ public class FlatView2Test extends FlatViewTestBase {
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
     gitAccess.push("", "");
     
@@ -154,14 +154,14 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
     gitAccess.push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
@@ -215,7 +215,7 @@ public class FlatView2Test extends FlatViewTestBase {
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
     gitAccess.push("", "");
     
@@ -233,14 +233,14 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
     gitAccess.push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
@@ -304,7 +304,7 @@ public class FlatView2Test extends FlatViewTestBase {
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
     gitAccess.push("", "");
     
@@ -322,14 +322,14 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
     gitAccess.push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
@@ -398,7 +398,7 @@ public class FlatView2Test extends FlatViewTestBase {
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
     gitAccess.push("", "");
     
@@ -415,14 +415,14 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
     gitAccess.push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
@@ -501,7 +501,7 @@ public class FlatView2Test extends FlatViewTestBase {
     firstRepoFile.createNewFile();
     setFileContent(firstRepoFile, "First version");
     
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
     gitAccess.push("", "");
     
@@ -518,14 +518,14 @@ public class FlatView2Test extends FlatViewTestBase {
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
     gitAccess.push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
     setFileContent(firstRepoFile, "Third version");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
@@ -596,7 +596,7 @@ public class FlatView2Test extends FlatViewTestBase {
       firstRepoFile.createNewFile();
       setFileContent(firstRepoFile, "First version");
 
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+      gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
       gitAccess.commit("First commit.");
       gitAccess.push("", "");
 
@@ -614,14 +614,14 @@ public class FlatView2Test extends FlatViewTestBase {
 
       // Modify file and commit and push
       setFileContent(secondRepoFile, "Second versions");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+      gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
       gitAccess.commit("Second commit.");
       gitAccess.push("", "");
 
       //--------------  REPO 1
       gitAccess.setRepositorySynchronously(localTestRepository_1);
       setFileContent(firstRepoFile, "Third version");
-      gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+      gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
       gitAccess.commit("Third commit.");
 
       // Now pull to generate conflict

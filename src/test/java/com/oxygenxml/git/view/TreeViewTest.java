@@ -118,8 +118,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Create a new test file.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
+    createNewFile(localTestRepository, "test.txt", "");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -173,7 +172,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     File file = createNewFile(localTestRepository, "test.txt", "remote");
     
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     waitForScheduler();
     
     assertTreeModels("", "ADD, test.txt");
@@ -233,10 +232,9 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Create a new test file.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    File file2 = new File(localTestRepository + "/test2.txt");
-    file2.createNewFile();
+    createNewFile(localTestRepository, "test.txt", "");
+    
+    createNewFile(localTestRepository, "test2.txt", "");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -293,8 +291,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Create a new test file.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
+    File file = createNewFile(localTestRepository, "test.txt", "");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -359,9 +356,9 @@ public class TreeViewTest extends FlatViewTestBase {
     // Create a new file and push it.
     new File(localTestRepository).mkdirs();
     File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    setFileContent(file, "content");
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    createNewFile(localTestRepository, "test.txt", "content");
+    
+    add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First version.");
     PushResponse push = gitAccess.push("", "");
     assertEquals("status: OK message null", push.toString());
@@ -369,7 +366,7 @@ public class TreeViewTest extends FlatViewTestBase {
     gitAccess.setRepositorySynchronously(localTestRepository2);
     // Commit a new version of the file.
     setFileContent(file2, "modified from 2nd local repo");
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     gitAccess.push("", "");
     
@@ -378,7 +375,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Change the file. Create a conflict.
     setFileContent(file, "modified from 1st repo");
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     
     // Get the remote. The conflict appears.
@@ -441,10 +438,9 @@ public class TreeViewTest extends FlatViewTestBase {
 
     // Create a new file and push it.
     new File(localTestRepository).mkdirs();
-    File file = new File(localTestRepository + "/test.txt");
-    file.createNewFile();
-    setFileContent(file, "content");
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    File file = createNewFile(localTestRepository, "test.txt", "content");
+    
+    add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First version.");
     PushResponse push = gitAccess.push("", "");
     assertEquals("status: OK message null", push.toString());
@@ -452,7 +448,7 @@ public class TreeViewTest extends FlatViewTestBase {
     gitAccess.setRepositorySynchronously(localTestRepository2);
     // Commit a new version of the file.
     setFileContent(file2, "modified from 2nd local repo");
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     gitAccess.push("", "");
     
@@ -461,7 +457,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     // Change the file. Create a conflict.
     setFileContent(file, "modified from 1st repo");
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
     
     // Get the remote. The conflict appears.
@@ -554,10 +550,8 @@ public class TreeViewTest extends FlatViewTestBase {
     String remoteTestRepository = "target/test-resources/testStageUnstage_Folder_remote";
     
     // Create a new test file.
-    new File(localTestRepository).mkdirs();
     new File(localTestRepository + "/folder").mkdirs();
-    File file = new File(localTestRepository + "/folder/test.txt");
-    file.createNewFile();
+    createNewFile(localTestRepository, "/folder/test.txt", "");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -597,7 +591,7 @@ public class TreeViewTest extends FlatViewTestBase {
     createRepository(localTestRepository);
     
     createNewFile(localTestRepository, "test.txt", "content");
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     
     
     // Don't give a message to force an exception.
