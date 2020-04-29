@@ -30,7 +30,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(TreeViewTest.class);
+  private static final Logger logger = Logger.getLogger(FlatViewTestBase.class);
   /**
    * Access to the Git API.
    */

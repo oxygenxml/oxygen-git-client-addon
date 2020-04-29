@@ -272,7 +272,13 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 *          - the files to be deleted from the model
 	 */
 	private void deleteRows(List<FileStatus> fileToBeUpdated) {
-		filesStatuses.removeAll(fileToBeUpdated);
+		boolean removeAll = filesStatuses.removeAll(fileToBeUpdated);
+		if (!removeAll) {
+		  logger.warn("Files were not removed in " + (inIndex ? " stagging area" : "unstaged area"));
+		  logger.warn("In model: " + filesStatuses);
+		  logger.warn("To remove: " + fileToBeUpdated);
+		}
+		
 	}
 
 	/**
