@@ -637,4 +637,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
   public JButton getCommitButton() {
     return commitButton;
   }
+  
+  /**
+   * @return The "Auto push when committing" toggle button.
+   */
+  public JideToggleButton getAutoPushWhenCommittingToggle() {
+    return autoPushWhenCommittingToggle;
+  }
 }

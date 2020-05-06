@@ -267,14 +267,11 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }
     
     GitAccess gitAccess = GitAccess.getInstance();
-    // Create the remote repository.
     gitAccess.createNewRepository(repositoryPath);
+    Repository repo = gitAccess.getRepository();
+    loadedRepos.add(repo);
     
-    Repository remoteRepo = gitAccess.getRepository();
-    
-    loadedRepos.add(remoteRepo);
-    
-    return remoteRepo;
+    return repo;
   }
   
   /**
@@ -789,8 +786,6 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
       logger.error(e, e);
     }
   }
-  
-  
   
   protected void sleep(int time) {
     try {
