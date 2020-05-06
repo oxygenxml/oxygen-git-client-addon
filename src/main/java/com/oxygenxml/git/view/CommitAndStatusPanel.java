@@ -1,9 +1,7 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,22 +11,19 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JToolTip;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -40,6 +35,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
+import com.jidesoft.swing.JideToggleButton;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -57,16 +53,23 @@ import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.event.Observer;
+import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
 /**
  * Panel to insert the commit message and commit the staged files. 
  */
 public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEvent> {
   
+  /**
+   * Max number of characters for the previous messages. 
+   */
+  private static final int PREV_MESS_MAX_WIDTH = 100;
+
   /**
    * Commit action.
    */
@@ -114,6 +117,19 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         }
       });
     }
+    
+    /**
+     * @return repository state.
+     */
+    private RepositoryState getRepoState() {
+      RepositoryState repoState = null;
+      try {
+        repoState = gitAccess.getRepository().getRepositoryState();
+      } catch (NoRepositorySelected e1) {
+        logger.debug(e1, e1);
+      }
+      return repoState;
+    }
 
     /**
      * Commit the staged files.
@@ -140,6 +156,10 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         stopTimer();
         handleCommitEnded(commitSuccessful);
         SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
+        
+        if (commitSuccessful && autoPushWhenCommittingToggle.isSelected()) {
+          pushPullController.push();
+        }
       }
     }
 
@@ -160,19 +180,19 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       if (commitSuccessful) {
         optionsManager.saveCommitMessage(commitMessageArea.getText());
 
-        previousMessages.removeAllItems();
-        previousMessages.addItem(getCommitMessageHistoryHint());
-        for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
-          previousMessages.addItem(previouslyCommitMessage);
-        }
+        previousMessages.insert(new AbstractAction(commitMessageArea.getText()) {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            commitMessageArea.setText(commitMessageArea.getText());
+          }
+        }, 0);
 
         PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
-        notifyObservers(pushPullEvent);
+        observer.stateChanged(pushPullEvent);
 
         SwingUtilities.invokeLater(() -> {
           commitMessageArea.setText("");
           setStatusMessage(translator.getTranslation(Tags.COMMIT_SUCCESS));
-          previousMessages.setSelectedItem(getCommitMessageHistoryHint());
         });
       } else {
         SwingUtilities.invokeLater(() -> setStatusMessage(""));
@@ -207,7 +227,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	/**
 	 * Previous messages history.
 	 */
-	private JComboBox<String> previousMessages;
+	private SplitMenuButton previousMessages;
+	/**
+	 * Automatically push when committing.
+	 */
+	private JideToggleButton autoPushWhenCommittingToggle;
 	/**
 	 * Messages of interest.
 	 */
@@ -239,12 +263,21 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
           GitOperationScheduler.getInstance().schedule(commitButtonAndMessageUpdateTask);
         } 
       });
+	
+	/**
+	 * Push / pull controller.
+	 */
+  private PushPullController pushPullController;
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param pushPullController Push / pull controller.
 	 */
-	public CommitAndStatusPanel() {
-	  createGUI();
+	public CommitAndStatusPanel(PushPullController pushPullController) {
+	  this.pushPullController = pushPullController;
+	  
+    createGUI();
 	  
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
@@ -283,7 +316,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		addLabel(gbc);
-		addPreviouslyMessagesComboBox(gbc);
+		addCommitToolbar(gbc);
 		addCommitMessageTextArea(gbc);
 		addStatusLabel(gbc);
 		addCommitButton(gbc);
@@ -293,85 +326,96 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	}
 	
 	/**
-	 * @return repo state.
-	 */
-  private RepositoryState getRepoState() {
-    RepositoryState repoState = null;
-    try {
-      repoState = gitAccess.getRepository().getRepositoryState();
-    } catch (NoRepositorySelected e1) {
-      logger.debug(e1, e1);
-    }
-    return repoState;
-  }
-
-  /**
    * Add "Commit" label. 
    */
-	private void addLabel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				0, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.gridwidth = 2;
-		this.add(new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)), gbc);
-	}
+  private void addLabel(GridBagConstraints gbc) {
+    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
+        0, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+    gbc.gridwidth = 1;
+    this.add(new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)), gbc);
+  }
+
+	/**
+	 * Add commit toolbar.
+	 * 
+	 * @param gbc Constraints.
+	 */
+  private void addCommitToolbar(GridBagConstraints gbc) {
+    JToolBar commitToolbar = new JToolBar();
+		commitToolbar.setOpaque(false);
+		commitToolbar.setFloatable(false);
+		
+		addPreviouslyMessagesComboBox(commitToolbar);
+		addAutoPushOnCommitToggle(commitToolbar);
+		
+		gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING, 
+        UIConstants.COMPONENT_LEFT_PADDING,
+        3, 
+        UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.EAST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.gridwidth = 1;
+    this.add(commitToolbar, gbc);
+  }
+	
+	/**
+	 * Add the toggle that controls whether or not to automatically push on commit.
+	 * 
+	 * @param toolbar The toolbar to which to add.
+	 */
+  private void addAutoPushOnCommitToggle(JToolBar toolbar) {
+    autoPushWhenCommittingToggle = new JideToggleButton(Icons.getIcon(Icons.AUTO_PUSH_ON_COMMIT));
+    autoPushWhenCommittingToggle.setFocusPainted(false);
+    autoPushWhenCommittingToggle.setToolTipText(translator.getTranslation(Tags.PUSH_WHEN_COMMITTING));
+    autoPushWhenCommittingToggle.setSelected(OptionsManager.getInstance().isAutoPushWhenCommitting());
+    autoPushWhenCommittingToggle.addItemListener(
+        ev -> OptionsManager.getInstance().setAutoPushWhenCommitting(
+            ev.getStateChange()==ItemEvent.SELECTED));
+    toolbar.add(autoPushWhenCommittingToggle);
+  }
 
 	/**
 	 * Add previous commit messages combo. 
+	 * 
+	 * @param toolbar The toolbar to which to add.
 	 */
-	private void addPreviouslyMessagesComboBox(GridBagConstraints gbc) {
-	  gbc.insets = new Insets(
-	      UIConstants.COMPONENT_TOP_PADDING, 
-	      UIConstants.COMPONENT_LEFT_PADDING,
-	      3, 
-	      UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridwidth = 2;
-		previousMessages = new JComboBox<>();
-		PreviousMessagesToolTipRenderer renderer = new PreviousMessagesToolTipRenderer();
-		previousMessages.setRenderer(renderer);
-
-		// Add the hint first.
-		previousMessages.addItem(getCommitMessageHistoryHint());
-		for (String previouslyCommitMessage : optionsManager.getPreviouslyCommitedMessages()) {
-			previousMessages.addItem(previouslyCommitMessage);
+	private void addPreviouslyMessagesComboBox(JToolBar toolbar) {
+		previousMessages = new SplitMenuButton(
+		    null,
+		    Icons.getIcon(Icons.PREV_COMMIT_MESSAGES),
+		    false,
+		    false,
+		    true,
+		    false);
+		previousMessages.setToolTipText(translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE));
+		translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE);
+		
+		for (String commitMessage : optionsManager.getPreviouslyCommitedMessages()) {
+		  String shortCommitMessage = commitMessage.length() <= PREV_MESS_MAX_WIDTH ? commitMessage 
+		      : commitMessage.substring(0, PREV_MESS_MAX_WIDTH) + "...";
+			AbstractAction action = new AbstractAction(shortCommitMessage) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          commitMessageArea.setText(commitMessage);
+        }
+      };
+      JMenuItem menuItem = previousMessages.add(action);
+      menuItem.setToolTipText(commitMessage.length() > PREV_MESS_MAX_WIDTH ? commitMessage : null);
 		}
 		
-		previousMessages.setSelectedItem(getCommitMessageHistoryHint());
-		
-		previousMessages.addItemListener(
-		    new ItemListener() { // NOSONAR
-      @Override
-      public void itemStateChanged(ItemEvent e) {
-        if (e.getStateChange() == ItemEvent.SELECTED
-            && !previousMessages.getSelectedItem().equals(getCommitMessageHistoryHint())) {
-            commitMessageArea.setText((String) previousMessages.getSelectedItem());
-        }
-      }
-    });
-
-		int height = (int) previousMessages.getPreferredSize().getHeight();
-		previousMessages.setMinimumSize(new Dimension(10, height));
-
-		this.add(previousMessages, gbc);
+		toolbar.add(previousMessages);
 	}
-
-	/**
-	 * @return The message that instructs the user to select a previously used message.
-	 */
-  private String getCommitMessageHistoryHint() {
-    return "<" + translator.getTranslation(Tags.COMMIT_COMBOBOX_DISPLAY_MESSAGE) + ">";
-  }
 
   /**
    * Add commit message text area.
@@ -528,10 +572,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 
   }
 
-	private void notifyObservers(PushPullEvent pushPullEvent) {
-		observer.stateChanged(pushPullEvent);
-	}
-
 	@Override
   public void addObserver(Observer<PushPullEvent> observer) {
 		if (observer == null)
@@ -574,39 +614,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 * Resets the panel. Clears any selection done by the user or inserted text.
 	 */
 	public void reset() {
-	  previousMessages.setSelectedItem(getCommitMessageHistoryHint());
 		commitMessageArea.setText(null);
 	}
 
-	/**
-	 * Renderer for the combo box presenting the previous commit messages. 
-	 */
-	private static final class PreviousMessagesToolTipRenderer extends DefaultListCellRenderer {
-
-	  /**
-	   * Maximum tooltip width.
-	   */
-		private static final int MAX_TOOLTIP_WIDTH = 700;
-
-		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
-			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			if (value != null) {
-			  JToolTip createToolTip = comp.createToolTip();
-			  Font font = createToolTip.getFont();
-			  FontMetrics fontMetrics = getFontMetrics(font);
-			  int length = fontMetrics.stringWidth((String) value);
-			  if (length < MAX_TOOLTIP_WIDTH) {
-			    comp.setToolTipText("<html><p width=\"" + length + "\">" + value + "</p></html>");
-			  } else {
-			    comp.setToolTipText("<html><p width=\"" + MAX_TOOLTIP_WIDTH + "\">" + value + "</p></html>");
-			  }
-			}
-			return comp;
-		}
-	}
-	
 	/**
 	 * @return the commit message text area.
 	 */

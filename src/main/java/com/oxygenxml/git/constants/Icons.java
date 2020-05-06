@@ -37,7 +37,8 @@ public class Icons {
 	public static final String LOADING_ICON = "/images/Loading16.gif";
 	public static final String GIT_HISTORY = "/images/History16.png";
 	public static final String REFRESH_ICON = "/images/Refresh16.png";
-	
+	public static final String AUTO_PUSH_ON_COMMIT = "/images/AutoPush16.png";
+	public static final String PREV_COMMIT_MESSAGES = "/images/PreviousCommits16.png";
 
   /**
    * Get icon.

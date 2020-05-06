@@ -598,6 +598,11 @@ public class Tags {
    * It appears as the commit message.
    */
   public static final String COMMIT_TO_MERGE = "Commit_to_merge";
+  
+  /**
+   * Text for the toggle used to automatically push when committing.
+   */
+  public static final String PUSH_WHEN_COMMITTING = "Push_when_committing";
 
 	/**
 	 * The text is displayed when you pull but it fails because there are uncommitted changes.

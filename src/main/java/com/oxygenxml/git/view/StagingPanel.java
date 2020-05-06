@@ -155,7 +155,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		unstagedChangesPanel = new ChangesPanel(stageController, historyController, false);
 		stagedChangesPanel = new ChangesPanel(stageController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel();
-		commitPanel = new CommitAndStatusPanel();
+		commitPanel = new CommitAndStatusPanel(pushPullController);
 		toolbarPanel = new ToolbarPanel(pushPullController, refreshSupport, historyController);
 		rebasePanel = new RebasePanel();
 		

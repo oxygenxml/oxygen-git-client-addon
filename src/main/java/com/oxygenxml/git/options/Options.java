@@ -90,6 +90,20 @@ public class Options {
 	@XmlElement(name = "unstagedResViewMode")
   private ResourcesViewMode unstagedResViewMode = ResourcesViewMode.FLAT_VIEW;
   
+	/**
+	 * <code>true</code> to automatically push to remote when committing.
+	 */
+	@XmlElement(name = "isAutoPushWhenCommitting")
+	private boolean isAutoPushWhenCommitting = false;
+	
+	public boolean isAutoPushWhenCommitting() {
+    return isAutoPushWhenCommitting;
+  }
+	
+	public void setAutoPushWhenCommitting(boolean isAutoPushWhenCommitting) {
+    this.isAutoPushWhenCommitting = isAutoPushWhenCommitting;
+  }
+	
   public PullType getDefaultPullType() {
     return defaultPullType;
   }

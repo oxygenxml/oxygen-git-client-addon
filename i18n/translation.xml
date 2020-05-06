@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Push_when_committing">
+        <comment>Text for the toggle used to automatically push when committing.</comment>
+        <val lang="en_US">Automatically push changes to remote when committing</val>
+        <val lang="de_DE">Automatically push changes to remote when committing</val>
+        <val lang="fr_FR">Automatically push changes to remote when committing</val>
+        <val lang="ja_JP">Automatically push changes to remote when committing</val>
+        <val lang="nl_NL">Automatically push changes to remote when committing</val>
+    </key>
     <key value="This_operation_requires_saving">
         <comment>Require saving</comment>
         <val lang="en_US">This operation requires saving ''{0}''. Do you want to save it now?</val>

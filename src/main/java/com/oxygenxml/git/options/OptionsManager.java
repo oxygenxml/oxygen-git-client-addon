@@ -488,4 +488,12 @@ public class OptionsManager {
 
     return decryptPassphrase;
   }
+  
+  public boolean isAutoPushWhenCommitting() {
+    return getOptions().isAutoPushWhenCommitting();
+  }
+  
+  public void setAutoPushWhenCommitting(boolean isAutoPushWhenCommitting) {
+    getOptions().setAutoPushWhenCommitting(isAutoPushWhenCommitting);
+  }
 }
