@@ -272,7 +272,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 *          - the files to be deleted from the model
 	 */
 	private void deleteRows(List<FileStatus> fileToBeUpdated) {
-		boolean removeAll = filesStatuses.removeAll(fileToBeUpdated);
+		filesStatuses.removeAll(fileToBeUpdated);
 	}
 
 	/**
