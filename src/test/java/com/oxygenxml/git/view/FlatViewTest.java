@@ -697,8 +697,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
     SwingUtilities.invokeLater(() -> stagingPanel.getCommitPanel().getCommitButton().doClick());
-    flushAWT();
-    sleep(700);
+    waitForScheluerBetter();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     
     // Change the file again.
@@ -710,8 +709,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTrue(autoPushBtn.isSelected());
     
     SwingUtilities.invokeLater(() -> stagingPanel.getCommitPanel().getCommitButton().doClick());
-    flushAWT();
-    sleep(700);
+    waitForScheluerBetter();
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
   }
 
