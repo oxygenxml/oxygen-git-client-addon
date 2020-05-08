@@ -702,4 +702,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
   public JideToggleButton getAutoPushWhenCommittingToggle() {
     return autoPushWhenCommittingToggle;
   }
+  
+  /**
+   * @return The "Amend last commit" toggle button.
+   */
+  public JideToggleButton getAmendLastCommitToggle() {
+    return amendLastCommitToggle;
+  }
 }

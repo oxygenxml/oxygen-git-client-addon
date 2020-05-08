@@ -37,8 +37,11 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.MockSystemReader;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileBasedConfig;
 import org.eclipse.jgit.storage.file.WindowCacheConfig;
 import org.eclipse.jgit.transport.RefSpec;
@@ -791,5 +794,19 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     try {
       Thread.sleep(time);
     } catch (InterruptedException e) {}
+  }
+  
+  protected RevCommit getLastCommit() throws Exception {
+    RevCommit youngestCommit = null;
+    List<Ref> branches = GitAccess.getInstance().getLocalBranchList();
+    RevWalk walk = new RevWalk(GitAccess.getInstance().getRepository());
+    for(Ref branch : branches) {
+      RevCommit commit = walk.parseCommit(branch.getObjectId());
+      if(youngestCommit == null || commit.getAuthorIdent().getWhen().compareTo(
+          youngestCommit.getAuthorIdent().getWhen()) > 0)
+        youngestCommit = commit;
+    }
+    walk.close();
+    return youngestCommit;
   }
 }
