@@ -862,4 +862,14 @@ public class Tags {
    * This operation requires saving {0}.
    */
   public static final String THIS_OPERATION_REQUIRES_SAVING = "This_operation_requires_saving";
+  
+  /**
+   * 
+   */
+  public static final String AMEND_PUSHED_COMMIT_WARNING = "Amend_pushed_commit_warning";
+  
+  /**
+   * Amend last commit.
+   */
+  public static final String AMEND_LAST_COMMIT = "Amend_last_commit";
 }

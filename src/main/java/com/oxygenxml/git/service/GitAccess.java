@@ -743,6 +743,33 @@ public class GitAccess {
 		
 		fireRepositoryChanged();
 	}
+	
+	 /**
+   * Commits a single file locally
+   * 
+   * @param file    - File to be committed
+   * @param message - Message for the commit
+   * 
+   * All JGit exceptions have a common ancestor, but sub classes offer different API for getting extra information
+   * about the cause of the exception.
+   * 
+   * @throws AbortedByHookException The commit failed because it a hook rejected it.
+   * @throws ConcurrentRefUpdateException Exception thrown when a command wants to update a ref but failed because
+   * another process is accessing (or even also updating) the ref.
+   * @throws NoHeadException Exception thrown when a command expected the {@code HEAD} reference to exist
+   * but couldn't find such a reference
+   * @throws NoMessageException A commit was called without explicitly specifying a commit message
+   * @throws UnmergedPathsException Thrown when branch deletion fails due to unmerged data
+   * @throws WrongRepositoryStateException Exception thrown when the state of the repository doesn't allow the execution
+   * of a certain command. E.g. when a CommitCommand should be executed on a repository with unresolved conflicts this exception will be thrown.
+   * @throws GitAPIException Other unexpected exceptions.
+   */
+  public void commit(String message) throws GitAPIException, NoHeadException, //NOSONAR See doc above.
+      NoMessageException, UnmergedPathsException, //NOSONAR See doc above.
+      ConcurrentRefUpdateException, WrongRepositoryStateException, //NOSONAR See doc above.
+      AbortedByHookException { //NOSONAR See doc above.
+    commit(message, false);
+  }
 
 	/**
 	 * Commits a single file locally
@@ -756,23 +783,23 @@ public class GitAccess {
 	 * @throws AbortedByHookException The commit failed because it a hook rejected it.
 	 * @throws ConcurrentRefUpdateException Exception thrown when a command wants to update a ref but failed because
 	 * another process is accessing (or even also updating) the ref.
-     * @throws NoHeadException Exception thrown when a command expected the {@code HEAD} reference to exist
-     * but couldn't find such a reference
-     * @throws NoMessageException A commit was called without explicitly specifying a commit message
-     * @throws UnmergedPathsException Thrown when branch deletion fails due to unmerged data
-     * @throws WrongRepositoryStateException Exception thrown when the state of the repository doesn't allow the execution
-     * of a certain command. E.g. when a CommitCommand should be executed on a repository with unresolved conflicts this exception will be thrown.
-     * @throws GitAPIException Other unexpected exceptions.
+	 * @throws NoHeadException Exception thrown when a command expected the {@code HEAD} reference to exist
+	 * but couldn't find such a reference
+	 * @throws NoMessageException A commit was called without explicitly specifying a commit message
+	 * @throws UnmergedPathsException Thrown when branch deletion fails due to unmerged data
+	 * @throws WrongRepositoryStateException Exception thrown when the state of the repository doesn't allow the execution
+	 * of a certain command. E.g. when a CommitCommand should be executed on a repository with unresolved conflicts this exception will be thrown.
+	 * @throws GitAPIException Other unexpected exceptions.
 	 */
-	public void commit(String message) throws GitAPIException, NoHeadException, //NOSONAR See doc above.
-  NoMessageException, UnmergedPathsException, //NOSONAR See doc above.
-  ConcurrentRefUpdateException, WrongRepositoryStateException, //NOSONAR See doc above.
-  AbortedByHookException { //NOSONAR See doc above.
+	public void commit(String message, boolean isAmendLastCommit) throws GitAPIException, NoHeadException, //NOSONAR See doc above.
+      NoMessageException, UnmergedPathsException, //NOSONAR See doc above.
+      ConcurrentRefUpdateException, WrongRepositoryStateException, //NOSONAR See doc above.
+      AbortedByHookException { //NOSONAR See doc above.
 	  List<FileStatus> files = getStagedFiles();
 	  Collection<String> filePaths = getFilePaths(files);
 		try {
 		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.STARTED, filePaths));
-		  git.commit().setMessage(message).call();
+		  git.commit().setMessage(message).setAmend(isAmendLastCommit).call();
 		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
 		} catch (GitAPIException e) {
 		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.FAILED, filePaths));
@@ -897,9 +924,9 @@ public class GitAccess {
         }
         shouldStopTryingLogin = true;
       } catch (TransportException ex) {
-        if (logger.isDebugEnabled()) {
-          logger.debug(ex, ex);
-        }
+        
+        logger.debug(ex, ex);
+        
         boolean retryLogin = AuthUtil.handleAuthException(
             ex,
             host,
@@ -1783,7 +1810,7 @@ public class GitAccess {
 	 * 
 	 * @return The restart merge task.
 	 */
-	public ScheduledFuture restartMerge() {
+	public ScheduledFuture<?> restartMerge() {
 	  fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.STARTED));
 	  return GitOperationScheduler.getInstance().schedule(() -> {
 	    try {

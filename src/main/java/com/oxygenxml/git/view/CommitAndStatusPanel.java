@@ -11,8 +11,10 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -43,6 +45,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
@@ -144,7 +147,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 
         SwingUtilities.invokeLater(() -> commitButton.setEnabled(false));
         
-        gitAccess.commit(commitMessageArea.getText());
+        gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
         
         commitSuccessful = true;
       } catch (GitAPIException e1) {
@@ -160,6 +163,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         if (commitSuccessful && autoPushWhenCommittingToggle.isSelected()) {
           pushPullController.push();
         }
+        
+        amendLastCommitToggle.setSelected(false);
       }
     }
 
@@ -229,6 +234,10 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 */
 	private SplitMenuButton previousMessages;
 	/**
+   * Amend last commit.
+   */
+  private JideToggleButton amendLastCommitToggle;
+	/**
 	 * Automatically push when committing.
 	 */
 	private JideToggleButton autoPushWhenCommittingToggle;
@@ -260,7 +269,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       300,
       e -> {
         if (commitButtonAndMessageUpdateTask != null) {
-          GitOperationScheduler.getInstance().schedule(commitButtonAndMessageUpdateTask);
+          GitOperationScheduler.getInstance().executeNow(commitButtonAndMessageUpdateTask);
         } 
       });
 	
@@ -352,6 +361,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		commitToolbar.setFloatable(false);
 		
 		addPreviouslyMessagesComboBox(commitToolbar);
+		addAmendLastCommitToggle(commitToolbar);
 		addAutoPushOnCommitToggle(commitToolbar);
 		
 		gbc.insets = new Insets(
@@ -367,6 +377,51 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
     gbc.weighty = 0;
     gbc.gridwidth = 1;
     this.add(commitToolbar, gbc);
+  }
+  
+  /**
+   * Add the toggle that allows amending the last commit.
+   * 
+   * @param toolbar The toolbar to which to add.
+   */
+  private void addAmendLastCommitToggle(JToolBar toolbar) {
+    amendLastCommitToggle = new JideToggleButton(Icons.getIcon(Icons.AMEND));
+    amendLastCommitToggle.setFocusPainted(false);
+    amendLastCommitToggle.setToolTipText(translator.getTranslation(Tags.AMEND_LAST_COMMIT));
+    amendLastCommitToggle.addItemListener(new ItemListener() {
+      String previousText = "";
+      public void itemStateChanged(ItemEvent ev) {
+        if (ev.getStateChange() == ItemEvent.SELECTED) {
+          previousText = commitMessageArea.getText();
+          List<String> messages = optionsManager.getPreviouslyCommitedMessages();
+          String text = messages != null && !messages.isEmpty() ? messages.get(0) : "";
+          commitMessageArea.setText(text);
+          toggleCommitButtonAndUpdateMessageArea(false);
+          try {
+            if (gitAccess.getPushesAhead() == 0) {
+              int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+                  translator.getTranslation(Tags.AMEND_LAST_COMMIT),
+                  translator.getTranslation(Tags.AMEND_PUSHED_COMMIT_WARNING),
+                  new String[] {
+                      "   " + translator.getTranslation(Tags.YES) + "   ",
+                      "   " + translator.getTranslation(Tags.NO) + "   " },
+                  new int[] {1, 0});
+              if (result == 0) {
+                commitMessageArea.setText(previousText);
+                amendLastCommitToggle.setSelected(false);
+                toggleCommitButtonAndUpdateMessageArea(false);
+              }
+            }
+          } catch (RepoNotInitializedException e) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
+          }
+        } else {
+          commitMessageArea.setText(previousText);
+          toggleCommitButtonAndUpdateMessageArea(false);
+        }
+      }
+    });
+    toolbar.add(amendLastCommitToggle);
   }
 	
 	/**
@@ -518,9 +573,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
    * @param forceEnable <code>true</code> to make the button enable without any additional checks.
    */
   void toggleCommitButtonAndUpdateMessageArea(boolean forceEnable) {
-    boolean enable = false;
     if (forceEnable) {
-      enable = true;
+      commitButton.setEnabled(true);
     } else {
       try {
         Repository repo = gitAccess.getRepository();
@@ -532,6 +586,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         if (repositoryState == RepositoryState.MERGING_RESOLVED
             && mergeMessage.equals(commitMessageArea.getText())) {
           commitMessageArea.setText("");
+          commitButton.setEnabled(false);
         } else {
           // Possible time consuming operations.
           commitButtonAndMessageUpdateTask = new SwingWorker<Void, Void>() {
@@ -545,7 +600,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
                   && status.getUnstagedFiles().isEmpty()) {
                 enable = true;
                 message = mergeMessage;
-              } else if (!status.getStagedFiles().isEmpty()) {
+              } else if (!status.getStagedFiles().isEmpty() || amendLastCommitToggle.isSelected()) {
                 enable = true;
               }
               return null;
@@ -559,17 +614,12 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
               commitButton.setEnabled(enable);
             }
           };
-
           commitButtonAndMessageUpdateTaskTimer.restart();
-
         }
       } catch (NoRepositorySelected e) {
         // Remains disabled
       }
     }
-
-    commitButton.setEnabled(enable);
-
   }
 
 	@Override

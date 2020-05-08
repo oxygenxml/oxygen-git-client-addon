@@ -4,6 +4,37 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Amend_pushed_commit_warning">
+        <comment>Warning text for when trying to amend a commit that was already pushed.</comment>
+        <val lang="en_US">The commit being amended has already been pushed to a remote branch. 
+        It is highly recommended not to amend public commits that other people may have based their work on. 
+        Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
+        Are you sure you want to continue?</val>
+        <val lang="de_DE">The commit being amended has already been pushed to a remote branch. 
+        It is highly recommended not to amend public commits that other people may have based their work on. 
+        Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
+        Are you sure you want to continue?</val>
+        <val lang="fr_FR">The commit being amended has already been pushed to a remote branch. 
+        It is highly recommended not to amend public commits that other people may have based their work on. 
+        Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
+        Are you sure you want to continue?</val>
+        <val lang="ja_JP">The commit being amended has already been pushed to a remote branch. 
+        It is highly recommended not to amend public commits that other people may have based their work on. 
+        Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
+        Are you sure you want to continue?</val>
+        <val lang="nl_NL">The commit being amended has already been pushed to a remote branch. 
+        It is highly recommended not to amend public commits that other people may have based their work on. 
+        Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
+        Are you sure you want to continue?</val>
+    </key>
+	<key value="Amend_last_commit">
+        <comment>Text for the toggle used to amend the last commit.</comment>
+        <val lang="en_US">Amend last commit</val>
+        <val lang="de_DE">Amend last commit</val>
+        <val lang="fr_FR">Amend last commit</val>
+        <val lang="ja_JP">Amend last commit</val>
+        <val lang="nl_NL">Amend last commit</val>
+    </key>
     <key value="Push_when_committing">
         <comment>Text for the toggle used to automatically push when committing.</comment>
         <val lang="en_US">Automatically push changes to remote when committing</val>
