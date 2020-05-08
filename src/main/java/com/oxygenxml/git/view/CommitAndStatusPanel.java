@@ -14,6 +14,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -185,13 +186,20 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       if (commitSuccessful) {
         optionsManager.saveCommitMessage(commitMessageArea.getText());
 
-        previousMessages.insert(new AbstractAction(commitMessageArea.getText()) {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            commitMessageArea.setText(commitMessageArea.getText());
-          }
-        }, 0);
-
+        previousMessages.setMenuActions(Collections.emptyList());
+        for (String message : optionsManager.getPreviouslyCommitedMessages()) {
+          String shortCommitMessage = message.length() <= PREV_MESS_MAX_WIDTH ? message 
+              : message.substring(0, PREV_MESS_MAX_WIDTH) + "...";
+          AbstractAction action = new AbstractAction(shortCommitMessage) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              commitMessageArea.setText(message);
+            }
+          };
+          JMenuItem menuItem = previousMessages.add(action);
+          menuItem.setToolTipText(message.length() > PREV_MESS_MAX_WIDTH ? message : null);
+        }
+        
         PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
         observer.stateChanged(pushPullEvent);
 
