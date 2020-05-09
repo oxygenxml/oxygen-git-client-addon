@@ -61,7 +61,7 @@ public class GitOperationScheduler {
   }
   
   /**
-   * Schedules a runnable.
+   * Schedules a runnable for immediate execution.
    * 
    * @param r Code to be executed on thread.
    * 
@@ -74,26 +74,28 @@ public class GitOperationScheduler {
       executor = new ScheduledThreadPoolExecutor(1);
     }
     
-    return executor.schedule(r, 500, TimeUnit.MILLISECONDS);
+    return executor.schedule(r, 0, TimeUnit.MILLISECONDS);
   }
   
   /**
-   * Execute a runnable now.
+   * Schedules a runnable for execution.
    * 
-   * @param r The runnable.
+   * @param delayMillis Milliseconds after which to execute the runnable.
    * 
-   * @return a ScheduledFuture representing pending completion of the task
+   * @param r Code to be executed on thread.
+   * 
+   * @return a ScheduledFuture representing pending completion of the task 
    * and whose get() method will return null upon completion.
    */
-  public ScheduledFuture<?> executeNow(Runnable r) {
+  public ScheduledFuture<?> schedule(Runnable r, int delayMillis) {
     if (executor.isShutdown()) {
       // A shutdown operation was canceled.
       executor = new ScheduledThreadPoolExecutor(1);
     }
     
-    return executor.schedule(r, 0, TimeUnit.MILLISECONDS);
+    return executor.schedule(r, delayMillis, TimeUnit.MILLISECONDS);
   }
-
+  
   /**
    * Attempts to shutdown any running tasks.
    */

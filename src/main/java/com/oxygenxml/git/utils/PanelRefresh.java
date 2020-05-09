@@ -43,7 +43,10 @@ import ro.sync.util.editorvars.EditorVariables;
  * @author alex_jitianu
  */
 public class PanelRefresh implements GitRefreshSupport {
-  
+  /**
+   * Refresh events are executed after this delay. Milliseconds.
+   */
+  public static final int EXECUTION_DELAY = 500;
   /**
    * Logger for logging.
    */
@@ -126,7 +129,7 @@ public class PanelRefresh implements GitRefreshSupport {
       refreshFuture.cancel(true);
     }
 
-    refreshFuture = refreshExecutor.schedule(refreshRunnable);
+    refreshFuture = refreshExecutor.schedule(refreshRunnable, EXECUTION_DELAY);
   }
 
   /**

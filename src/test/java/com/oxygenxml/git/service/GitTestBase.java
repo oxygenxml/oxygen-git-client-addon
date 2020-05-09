@@ -778,9 +778,11 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
 
   
   protected void waitForScheduler() {
+    flushAWT();
     Semaphore s = new Semaphore(0);
-    GitOperationScheduler.getInstance().schedule(() -> {s.release();});
     
+    // Panel refresh uses a delay. We want to wait until its task gets executed.
+    GitOperationScheduler.getInstance().schedule(() -> {s.release();}, PanelRefresh.EXECUTION_DELAY);
     try {
       s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
