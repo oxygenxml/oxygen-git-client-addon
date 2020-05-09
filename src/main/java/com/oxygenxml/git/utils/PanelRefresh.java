@@ -129,7 +129,14 @@ public class PanelRefresh implements GitRefreshSupport {
       refreshFuture.cancel(true);
     }
 
-    refreshFuture = refreshExecutor.schedule(refreshRunnable, EXECUTION_DELAY);
+    refreshFuture = refreshExecutor.schedule(refreshRunnable, getScheduleDelay());
+  }
+
+  /**
+   * @return The coalescing event delay, in milliseconds.
+   */
+  protected int getScheduleDelay() {
+    return EXECUTION_DELAY;
   }
 
   /**

@@ -321,7 +321,13 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     
     // Create the unstaged resources panel
-    refreshSupport = new PanelRefresh();
+    refreshSupport = new PanelRefresh() {
+      @Override
+      protected int getScheduleDelay() {
+        // Execute refresh events immediately from tests.
+        return 1;
+      }
+    };
     
     gitInit();
     
@@ -781,8 +787,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     flushAWT();
     Semaphore s = new Semaphore(0);
     
-    // Panel refresh uses a delay. We want to wait until its task gets executed.
-    GitOperationScheduler.getInstance().schedule(() -> {s.release();}, PanelRefresh.EXECUTION_DELAY);
+    GitOperationScheduler.getInstance().schedule(() -> {s.release();}, 10);
     try {
       s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
