@@ -321,7 +321,13 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     
     // Create the unstaged resources panel
-    refreshSupport = new PanelRefresh();
+    refreshSupport = new PanelRefresh() {
+      @Override
+      protected int getScheduleDelay() {
+        // Execute refresh events immediately from tests.
+        return 1;
+      }
+    };
     
     gitInit();
     
@@ -778,9 +784,10 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
 
   
   protected void waitForScheduler() {
+    flushAWT();
     Semaphore s = new Semaphore(0);
-    GitOperationScheduler.getInstance().schedule(() -> {s.release();});
     
+    GitOperationScheduler.getInstance().schedule(() -> {s.release();}, 10);
     try {
       s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {

@@ -277,7 +277,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       300,
       e -> {
         if (commitButtonAndMessageUpdateTask != null) {
-          GitOperationScheduler.getInstance().executeNow(commitButtonAndMessageUpdateTask);
+          GitOperationScheduler.getInstance().schedule(commitButtonAndMessageUpdateTask);
         } 
       });
 	
