@@ -107,7 +107,7 @@ public class HistoryViewContextualMenuPresenter {
    * @param commitCharacteristics Current commit data.
    * @param addFileName           <code>true</code> to add the name of the file to the action's name.
    */
-  public void populateContextualActions(
+  void populateContextualActions(
       JPopupMenu jPopupMenu,  
       FileStatus fileStatus,
       CommitCharacteristics commitCharacteristics,
