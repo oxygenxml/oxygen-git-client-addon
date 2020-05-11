@@ -401,10 +401,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       public void itemStateChanged(ItemEvent ev) {
         if (ev.getStateChange() == ItemEvent.SELECTED) {
           previousText = commitMessageArea.getText();
-          List<String> messages = optionsManager.getPreviouslyCommitedMessages();
-          String text = messages != null && !messages.isEmpty() ? messages.get(0) : "";
-          commitMessageArea.setText(text);
-          toggleCommitButtonAndUpdateMessageArea(false);
           try {
             if (gitAccess.getPushesAhead() == 0) {
               int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
@@ -414,11 +410,13 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
                       "   " + translator.getTranslation(Tags.YES) + "   ",
                       "   " + translator.getTranslation(Tags.NO) + "   " },
                   new int[] {1, 0});
-              if (result == 0) {
-                commitMessageArea.setText(previousText);
+              if (result == 1) {
+                prepareAmend();
+              } else {
                 amendLastCommitToggle.setSelected(false);
-                toggleCommitButtonAndUpdateMessageArea(false);
               }
+            } else {
+              prepareAmend();
             }
           } catch (RepoNotInitializedException e) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
@@ -428,6 +426,17 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
           toggleCommitButtonAndUpdateMessageArea(false);
         }
       }
+      
+      /**
+       * Prepare amend.
+       */
+      private void prepareAmend() {
+        List<String> messages = optionsManager.getPreviouslyCommitedMessages();
+        String text = messages != null && !messages.isEmpty() ? messages.get(0) : "";
+        commitMessageArea.setText(text);
+        toggleCommitButtonAndUpdateMessageArea(false);
+      }
+      
     });
     toolbar.add(amendLastCommitToggle);
   }
