@@ -19,6 +19,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -104,11 +105,11 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 					List<String> tagList = tagMap.get(abbreviatedId);
 					addTagOrBranchLabel(tagList, constr);
 
-					Map<String, List<String>> localBranchMap = gitAccess.getBranchMap(repository, GitAccess.LOCAL);
+					Map<String, List<String>> localBranchMap = gitAccess.getBranchMap(repository, ConfigConstants.CONFIG_KEY_LOCAL);
 					List<String> localBranchList = localBranchMap.get(abbreviatedId);
 					addTagOrBranchLabel(localBranchList, constr);
 
-					Map<String, List<String>> remoteBranchMap = gitAccess.getBranchMap(repository, GitAccess.REMOTE);
+					Map<String, List<String>> remoteBranchMap = gitAccess.getBranchMap(repository, ConfigConstants.CONFIG_KEY_REMOTE);
 					List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
 					addTagOrBranchLabel(remoteBranchList, constr);
 

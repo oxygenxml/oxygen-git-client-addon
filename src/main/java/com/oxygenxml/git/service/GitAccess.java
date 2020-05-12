@@ -64,6 +64,7 @@ import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -128,14 +129,6 @@ public class GitAccess {
 	 * A synthetic object representing the uncommitted changes.
 	 */
   public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(UNCOMMITTED_CHANGES, null, "*", "*", "*", null, null);
-	/**
-   * "remote"
-   */
-	public static final String REMOTE = "remote";
-  /**
-	 * "local"
-	 */
-	public static final String LOCAL = "local";
 	/**
    * "End fetch" debug message.
    */
@@ -980,7 +973,8 @@ public class GitAccess {
 	  AuthenticationInterceptor.install();
 	  PushResponse response = new PushResponse();
 
-	  RepositoryState repositoryState = git.getRepository().getRepositoryState();
+	  Repository repo = git.getRepository();
+    RepositoryState repositoryState = repo.getRepositoryState();
 	  if (repositoryState == RepositoryState.MERGING) {
 	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 	    response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
@@ -1012,8 +1006,28 @@ public class GitAccess {
 	  while (results.hasNext()) {
 	    PushResult result = results.next();
 	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
+	      try {
+	        String localBranchName = getBranchInfo().getBranchName();
+          if (getRemote(localBranchName) == null) {
+            repo.getConfig().setString(
+                ConfigConstants.CONFIG_BRANCH_SECTION,
+                getBranchInfo().getBranchName(),
+                ConfigConstants.CONFIG_KEY_REMOTE,
+                "origin");
+            repo.getConfig().setString(
+                ConfigConstants.CONFIG_BRANCH_SECTION,
+                getBranchInfo().getBranchName(),
+                ConfigConstants.CONFIG_KEY_MERGE,
+                info.getRemoteName());
+            repo.getConfig().save();
+          }
+        } catch (NoRepositorySelected | IOException ex) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        } 
+	      
 	      response.setStatus(info.getStatus());
 	      response.setMessage(info.getMessage());
+	      
 	      return response; // NOSONAR
 	    }
 	  }
@@ -1520,12 +1534,12 @@ public class GitAccess {
 		if (git != null) {
 			Config storedConfig = git.getRepository().getConfig();
 			// TODO How we should react when there are multiple remote repositories?
-			String url = storedConfig.getString(REMOTE, "origin", "url");
+			String url = storedConfig.getString(ConfigConstants.CONFIG_KEY_REMOTE, "origin", "url");
 			if (url == null) {
 			  Set<String> remoteNames = git.getRepository().getRemoteNames();
 			  Iterator<String> iterator = remoteNames.iterator();
 			  if (iterator.hasNext()) {
-			    url = storedConfig.getString(REMOTE, iterator.next(), "url");
+			    url = storedConfig.getString(ConfigConstants.CONFIG_KEY_REMOTE, iterator.next(), "url");
 			  }
 			}
 			try {
@@ -1763,7 +1777,7 @@ public class GitAccess {
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
-			if (sections.contains(REMOTE)) {
+			if (sections.contains(ConfigConstants.CONFIG_KEY_REMOTE)) {
         git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).setCheckFetchedObjects(true)
 						.setCredentialsProvider(credentialsProvider).call();
 			}
@@ -1929,7 +1943,7 @@ public class GitAccess {
 	 */
 	public String getRemote(String branchName) throws NoRepositorySelected {
 	  Repository repository = GitAccess.getInstance().getRepository();
-	  return repository.getConfig().getString("branch", branchName, REMOTE);
+	  return repository.getConfig().getString("branch", branchName, ConfigConstants.CONFIG_KEY_REMOTE);
 	}
 
 	/**
@@ -2218,10 +2232,10 @@ public class GitAccess {
 		
 		List<Ref> localBranchList = null;
 		String prefix = "";
-		if (branchType.equals(LOCAL)) {
+		if (branchType.equals(ConfigConstants.CONFIG_KEY_LOCAL)) {
 			localBranchList = getLocalBranchList();
 			prefix = "heads/";
-		} else if (branchType.equals(REMOTE)) {
+		} else if (branchType.equals(ConfigConstants.CONFIG_KEY_REMOTE)) {
 			localBranchList = getRemoteBrachListForCurrentRepo();
 			prefix = "remotes/";
 		}

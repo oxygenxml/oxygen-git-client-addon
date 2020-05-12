@@ -25,6 +25,7 @@ import javax.swing.SwingConstants;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.util.StringUtils;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -53,6 +54,7 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
+import ro.sync.basic.util.StringUtil;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -461,15 +463,16 @@ public class ToolbarPanel extends JPanel {
     }
     pushButton.repaint();
     
+    Repository repo = null;
+    try {
+      repo = GitAccess.getInstance().getRepository();
+    } catch (NoRepositorySelected e) {
+      logger.debug(e, e);
+    }
+    
 		BranchInfo branchInfo = GitAccess.getInstance().getBranchInfo();
 		String branchInfoText = "";
 		if (branchInfo.isDetached()) {
-		  Repository repo = null;
-		  try {
-		    repo = GitAccess.getInstance().getRepository();
-		  } catch (NoRepositorySelected e) {
-		    logger.debug(e, e);
-		  }
       branchInfoText += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
 		  String tooltipText = "<html>"
 		      + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
@@ -485,44 +488,55 @@ public class ToolbarPanel extends JPanel {
 		} else {
 			String currentBranch = branchInfo.getBranchName();
 			branchInfoText = "<html><b>" + currentBranch + "</b></html>";
-			String remoteAndBranchTooltipMessage = null;
-			if (!"".equals(currentBranch)) {
-			  String remoteName = null;
-			  String upstreamBranch = null;
-        try {
-          remoteName = GitAccess.getInstance().getRemote(currentBranch);
-          upstreamBranch = GitAccess.getInstance().getUpstreamBranchShortName(currentBranch);
-        } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
-        }
+			String branchTooltip = null;
+			if (!currentBranch.isEmpty()) {
+			  String upstreamBranch = GitAccess.getInstance().getUpstreamBranchShortName(currentBranch);
         if (upstreamBranch == null) {
-          upstreamBranch = translator.getTranslation(Tags.NO_UPSTREAM_BRANCH);
+          upstreamBranch = translator.getTranslation(Tags.NO_REMOTE_BRANCH);
         }
 
-        remoteAndBranchTooltipMessage = "<html>"
-				    + (remoteName == null ? "" : translator.getTranslation(Tags.REMOTE) + "/")
-				    + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH).toLowerCase()
-				    + " <b>"
-				    + upstreamBranch
-				    + "</b> - ";
-				if (pullsBehind == 0) {
-				  remoteAndBranchTooltipMessage += translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
-				} else if (pullsBehind == 1) {
-				  remoteAndBranchTooltipMessage += pullsBehind + " "
-				      + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT);
+        branchTooltip = "<html>"
+				    + translator.getTranslation(Tags.LOCAL_BRANCH) + " <b>" + currentBranch + "</b>.<br>"
+				    + translator.getTranslation(Tags.REMOTE_BRANCH) + " <b>" + upstreamBranch + "</b>.<br>";
+        
+        String commitsBehindMessage = "";
+        String commitsAheadMessage = "";
+        if (!translator.getTranslation(Tags.NO_REMOTE_BRANCH).equals(upstreamBranch)) {
+          if (pullsBehind == 0) {
+            commitsBehindMessage = translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+          } else if (pullsBehind == 1) {
+            commitsBehindMessage = translator.getTranslation(Tags.ONE_COMMIT_BEHIND);
+          } else {
+            commitsBehindMessage = MessageFormat.format(translator.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
+          }
+          branchTooltip += commitsBehindMessage + "<br>";
+          
+          if (pushesAhead == 0) {
+            commitsAheadMessage = translator.getTranslation(Tags.NOTHING_TO_PUSH);
+          } else if (pushesAhead == 1) {
+            commitsAheadMessage = translator.getTranslation(Tags.ONE_COMMIT_AHEAD);
+          } else {
+            commitsAheadMessage = MessageFormat.format(translator.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
+          }
+          branchTooltip += commitsAheadMessage;
+        }
+        
+				branchTooltip += "</html>";
+				
+				// Push button tooltip
+				String pushButtonTooltip = "";
+				if (translator.getTranslation(Tags.NO_REMOTE_BRANCH).equals(upstreamBranch)) {
+				  pushButtonTooltip = "<html>" + MessageFormat.format(
+				      translator.getTranslation(Tags.PUSH_TO_CREATE_REMOTE_BRANCH),
+				      "<b>" + branchInfo.getBranchName() + "</b>") + "</html>";
 				} else {
-				  remoteAndBranchTooltipMessage += pullsBehind + " "
-							+ translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS);
+				  pushButtonTooltip = MessageFormat.format(translator.getTranslation(Tags.PUSH_TO), upstreamBranch) + ".\n";
+				  pushButtonTooltip += commitsAheadMessage;
 				}
-				remoteAndBranchTooltipMessage += "</html>";
+				pushButton.setToolTipText(pushButtonTooltip);
 				
-				// Push tooltip
-				pushButton.setToolTipText(
-            MessageFormat.format(
-                translator.getTranslation(Tags.PUSH_TO),
-                upstreamBranch));
-				
-				// Pull tooltip
+				// Pull button tooltip
+				String pullButtonTooltip = "";
 				String pullFromTag = Tags.PULL_FROM;
 				Object value = pullMenuButton.getAction().getValue(PullAction.PULL_TYPE_ACTION_PROP);
 				if (value instanceof PullType) {
@@ -533,12 +547,16 @@ public class ToolbarPanel extends JPanel {
 				    pullFromTag = Tags.PULL_MERGE_FROM;
 				  }
 				}
-        pullMenuButton.setToolTipText(
-            MessageFormat.format(
-                translator.getTranslation(pullFromTag),
-                upstreamBranch));
+				if (translator.getTranslation(Tags.NO_REMOTE_BRANCH).equals(upstreamBranch)) {
+				  pullButtonTooltip = translator.getTranslation(Tags.CANNOT_PULL) + "\n" 
+				      + StringUtils.capitalize(translator.getTranslation(Tags.NO_REMOTE_BRANCH)) + ".";
+				} else {
+				  pullButtonTooltip = MessageFormat.format(translator.getTranslation(pullFromTag), upstreamBranch) + ".\n";
+				  pullButtonTooltip += commitsBehindMessage;
+				}
+        pullMenuButton.setToolTipText(pullButtonTooltip);
 			}
-			remoteAndBranchInfoLabel.setToolTipText(remoteAndBranchTooltipMessage);
+			remoteAndBranchInfoLabel.setToolTipText(branchTooltip);
 		}
 		
 		remoteAndBranchInfoLabel.setText(branchInfoText);

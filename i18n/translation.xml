@@ -4,6 +4,78 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Push_to_create_remote_branch">
+        <comment>"Push to create remote branch {0}."</comment>
+        <val lang="en_US">Push to create remote branch {0}.</val>
+        <val lang="de_DE">Push to create remote branch {0}.</val>
+        <val lang="fr_FR">Push to create remote branch {0}.</val>
+        <val lang="ja_JP">Push to create remote branch {0}.</val>
+        <val lang="nl_NL">Push to create remote branch {0}.</val>
+    </key>
+    <key value="Cannot_pull">
+        <comment>"Cannot pull"</comment>
+        <val lang="en_US">Cannot pull.</val>
+        <val lang="de_DE">Cannot pull.</val>
+        <val lang="fr_FR">Cannot pull.</val>
+        <val lang="ja_JP">Cannot pull.</val>
+        <val lang="nl_NL">Cannot pull.</val>
+    </key>
+    <key value="One_commit_ahead">
+        <comment>The text displayed on the right side of the toolbar buttons if the repository is one commit ahead.</comment>
+        <val lang="en_US">1 commit ahead.</val>
+        <val lang="de_DE">1 commit ahead.</val>
+        <val lang="fr_FR">1 commit ahead.</val>
+        <val lang="ja_JP">1 commit ahead.</val>
+        <val lang="nl_NL">1 commit ahead.</val>
+    </key>
+    <key value="Commits_ahead">
+        <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits ahead.</comment>
+        <val lang="en_US">{0} commits ahead.</val>
+        <val lang="de_DE">{0} commits ahead.</val>
+        <val lang="fr_FR">{0} commits ahead.</val>
+        <val lang="ja_JP">{0} commits ahead.</val>
+        <val lang="nl_NL">{0} commits ahead.</val>
+    </key>
+    <key value="Nothing_to_push">
+        <comment>"Nothing to push"</comment>
+        <val lang="en_US">Nothing to push.</val>
+        <val lang="de_DE">Nothing to push.</val>
+        <val lang="fr_FR">Nothing to push.</val>
+        <val lang="ja_JP">Nothing to push.</val>
+        <val lang="nl_NL">Nothing to push.</val>
+    </key>
+    <key value="One_commit_behind">
+        <comment>The text displayed on the right side of the toolbar buttons if the repository is one commit behind</comment>
+        <val lang="en_US">1 commit behind.</val>
+        <val lang="de_DE">1 Commit zurück.</val>
+        <val lang="fr_FR">1 commit behind.</val>
+        <val lang="ja_JP">1 commit behind.</val>
+        <val lang="nl_NL">1 commit behind.</val>
+    </key>
+    <key value="Commits_behind">
+        <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits behind </comment>
+        <val lang="en_US">{0} commits behind.</val>
+        <val lang="de_DE">{0} Commits zurück.</val>
+        <val lang="fr_FR">{0} commits behind.</val>
+        <val lang="ja_JP">{0} commits behind.</val>
+        <val lang="nl_NL">{0} commits behind.</val>
+    </key>
+    <key value="Local_branch">
+        <comment>"Local branch" label.</comment>
+        <val lang="en_US">Local branch:</val>
+        <val lang="de_DE">Local branch:</val>
+        <val lang="fr_FR">Local branch:</val>
+        <val lang="ja_JP">Local branch:</val>
+        <val lang="nl_NL">Local branch:</val>
+    </key>
+    <key value="Remote_branch">
+        <comment>"Remote branch" label.</comment>
+        <val lang="en_US">Remote branch:</val>
+        <val lang="de_DE">Remote branch:</val>
+        <val lang="fr_FR">Remote branch:</val>
+        <val lang="ja_JP">Remote branch:</val>
+        <val lang="nl_NL">Remote branch:</val>
+    </key>
     <key value="Amend_pushed_commit_warning">
         <comment>Warning text for when trying to amend a commit that was already pushed.</comment>
         <val lang="en_US">The commit being amended has already been pushed to a remote branch. 
@@ -410,13 +482,13 @@
         <val lang="ja_JP">Compare with previous version</val>
         <val lang="nl_NL">Compare with previous version</val>
     </key>
-    <key value="No_upstream_branch">
+    <key value="No_remote_branch">
         <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
-        <val lang="en_US">no upstream branch</val>
+        <val lang="en_US">no remote branch</val>
         <val lang="de_DE">kein Remote-Branch</val>
-        <val lang="fr_FR">no upstream branch</val>
-        <val lang="ja_JP">no upstream branch</val>
-        <val lang="nl_NL">no upstream branch</val>
+        <val lang="fr_FR">no remote branch</val>
+        <val lang="ja_JP">no remote branch</val>
+        <val lang="nl_NL">no remote branch</val>
     </key>
     <key value="Refresh">
         <comment>Action in the history panel.</comment>
@@ -1123,34 +1195,10 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Toolbar_Panel_Information_Status_Branch">
-        <comment>The text displayed on the right side of the toolbar buttons for the branch text</comment>
-        <val lang="en_US">Branch:</val>
-        <val lang="de_DE">Branch:</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="Toolbar_Panel_Information_Status_Single_Commit">
-        <comment>The text displayed on the right side of the toolbar buttons if the repository is one commit behind</comment>
-        <val lang="en_US">commit behind</val>
-        <val lang="de_DE">Commit zurück</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="Toolbar_Panel_Information_Status_Multiple_Commits">
-        <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits behind </comment>
-        <val lang="en_US">commits behind</val>
-        <val lang="de_DE">Commits zurück</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
     <key value="Toolbar_Panel_Information_Status_Up_To_Date">
         <comment>The text displayed on the right side of the toolbar buttons if the repository is up to date </comment>
-        <val lang="en_US">Up to date</val>
-        <val lang="de_DE">Aktuell</val>
+        <val lang="en_US">Up to date.</val>
+        <val lang="de_DE">Aktuell.</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
