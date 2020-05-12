@@ -759,4 +759,16 @@ public class ToolbarPanel extends JPanel {
 		button.setMinimumSize(d);
 		button.setMaximumSize(d);
 	}
+	
+	public ToolbarButton getPushButton() {
+    return pushButton;
+  }
+	
+	public SplitMenuButton getPullMenuButton() {
+    return pullMenuButton;
+  }
+	
+	public JLabel getRemoteAndBranchInfoLabel() {
+    return remoteAndBranchInfoLabel;
+  }
 }
