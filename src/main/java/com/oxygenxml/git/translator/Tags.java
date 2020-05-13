@@ -444,22 +444,26 @@ public class Tags {
 	public static final String LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE = "Login_Dilaog_Credentials_Invalid_Message";
 
 	/**
-	 * The text displayed on the right side of the toolbar buttons for the branch
-	 * text
+	 * Local branch
 	 */
-	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_BRANCH = "Toolbar_Panel_Information_Status_Branch";
+	public static final String LOCAL_BRANCH = "Local_branch";
+	
+	 /**
+   * Remote branch
+   */
+  public static final String REMOTE_BRANCH = "Remote_branch";
 
 	/**
 	 * The text displayed on the right side of the toolbar buttons if the
 	 * repository is one commit behind
 	 */
-	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_SINGLE_COMMIT = "Toolbar_Panel_Information_Status_Single_Commit";
+	public static final String ONE_COMMIT_BEHIND = "One_commit_behind";
 
 	/**
 	 * The text displayed on the right side of the toolbar buttons if the
 	 * repository is 2 or more commits behind
 	 */
-	public static final String TOOLBAR_PANEL_INFORMATION_STATUS_MULTIPLE_COMMITS = "Toolbar_Panel_Information_Status_Multiple_Commits";
+	public static final String COMMITS_BEHIND = "Commits_behind";
 
 	/**
 	 * The text displayed on the right side of the toolbar buttons if the
@@ -778,7 +782,7 @@ public class Tags {
   /**
    * Message presented on a tooltip when the local branch is not connected to any upstream branch.
    */
-  public static final String NO_UPSTREAM_BRANCH = "No_upstream_branch";
+  public static final String NO_REMOTE_BRANCH = "No_remote_branch";
   /**
    * Action name to compare a file with its previous version.
    */
@@ -864,7 +868,7 @@ public class Tags {
   public static final String THIS_OPERATION_REQUIRES_SAVING = "This_operation_requires_saving";
   
   /**
-   * 
+   * Warning shown when trying to amend pushed commit.
    */
   public static final String AMEND_PUSHED_COMMIT_WARNING = "Amend_pushed_commit_warning";
   
@@ -872,4 +876,29 @@ public class Tags {
    * Amend last commit.
    */
   public static final String AMEND_LAST_COMMIT = "Amend_last_commit";
+  
+  /**
+   * Nothing to push.
+   */
+  public static final String NOTHING_TO_PUSH = "Nothing_to_push";
+  
+  /**
+   * 1 commit ahead.
+   */
+  public static final String ONE_COMMIT_AHEAD = "One_commit_ahead";
+  
+  /**
+   * X commits ahead.
+   */
+  public static final String COMMITS_AHEAD = "Commits_ahead";
+  
+  /**
+   * Cannot pull.
+   */
+  public static final String CANNOT_PULL = "Cannot_pull";
+  
+  /**
+   * Push to create remote branch {0}.
+   */
+  public static final String PUSH_TO_CREATE_REMOTE_BRANCH = "Push_to_create_remote_branch";
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -353,6 +354,118 @@ public class FlatView7Test extends FlatViewTestBase {
     // Not enabled because we have don't have staged files.
     assertFalse(commitPanel.getCommitButton().isEnabled());
     assertFalse(amendBtn.isSelected());
+  }
+  
+  /**
+   * <p><b>Description:</b> .</p>
+   * <p><b>Bug ID:</b> </p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void test() throws Exception {
+    // Create repositories
+    String localTestRepository = "target/test-resources/test_EXM_45599_local";
+    String localTestRepository_2 = "target/test-resources/test_EXM_45599_local_2";
+    String remoteTestRepository = "target/test-resources/test_EXM_45599_remote";
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo = createRepository(localTestRepository);
+    Repository localRepo_2 = createRepository(localTestRepository_2);
+    bindLocalToRemote(localRepo , remoteRepo);
+    bindLocalToRemote(localRepo_2 , remoteRepo);
+    
+    pushOneFileToRemote(localTestRepository, "init.txt", "hello");
+    flushAWT();
+   
+    // Create local branch
+    Git git = GitAccess.getInstance().getGit();
+    git.branchCreate().setName("new_branch").call();
+    GitAccess.getInstance().setBranch("new_branch");
+    
+    ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+    toolbarPanel.updateStatus();
+    
+    assertEquals(
+        "Cannot_pull\nNo_remote_branch.",
+        toolbarPanel.getPullMenuButton().getToolTipText());
+    assertEquals(
+        "<html>Push_to_create_remote_branch</html>",
+        toolbarPanel.getPushButton().getToolTipText());
+    assertEquals(
+        "<html>Local_branch <b>new_branch</b>.<br>Remote_branch <b>No_remote_branch</b>.<br></html>",
+        toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
+    
+    // Push to create the remote branch
+    stagingPanel.getPushPullController().push();
+    waitForScheluerBetter();
+    
+    toolbarPanel.updateStatus();
+    
+    // Tooltip texts changed
+    assertEquals(
+        "Pull_merge_from.\nToolbar_Panel_Information_Status_Up_To_Date",
+        toolbarPanel.getPullMenuButton().getToolTipText());
+    assertEquals(
+        "Push_to.\nNothing_to_push",
+        toolbarPanel.getPushButton().getToolTipText());
+    assertEquals(
+        "<html>Local_branch <b>new_branch</b>.<br>Remote_branch <b>origin/new_branch</b>.<br>"
+        + "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
+        toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
+    
+    gitAccess.setBranch("master");
+    flushAWT();
+    
+    // Commit a new file locally
+    commitOneFile(localTestRepository, "anotherFile.txt", "");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "anotherFile_2.txt", "");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    flushAWT();
+    toolbarPanel.updateStatus();
+    flushAWT();
+    
+    // Tooltip texts changed again
+    assertEquals(
+        "Pull_merge_from.\nOne_commit_behind",
+        toolbarPanel.getPullMenuButton().getToolTipText());
+    assertEquals(
+        "Push_to.\nOne_commit_ahead",
+        toolbarPanel.getPushButton().getToolTipText());
+    assertEquals(
+        "<html>Local_branch <b>master</b>.<br>Remote_branch <b>origin/master</b>.<br>"
+        + "One_commit_behind<br>One_commit_ahead</html>",
+        toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "anotherFile.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "anotherFile_2.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.updateStatus();
+    flushAWT();
+    
+    // Tooltip texts changed again
+    assertEquals(
+        "Pull_merge_from.\nCommits_behind",
+        toolbarPanel.getPullMenuButton().getToolTipText());
+    assertEquals(
+        "Push_to.\nCommits_ahead",
+        toolbarPanel.getPushButton().getToolTipText());
+    assertEquals(
+        "<html>Local_branch <b>master</b>.<br>Remote_branch <b>origin/master</b>.<br>"
+        + "Commits_behind<br>Commits_ahead</html>",
+        toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
   }
   
   /**

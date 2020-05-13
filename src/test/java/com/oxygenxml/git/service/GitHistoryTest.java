@@ -13,6 +13,7 @@ import javax.swing.Action;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -184,7 +185,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       assertEquals(
           expected, dump);
       
-      Map<String, List<String>> branchMap = GitAccess.getInstance().getBranchMap(GitAccess.getInstance().getRepository(), GitAccess.LOCAL);
+      Map<String, List<String>> branchMap = GitAccess.getInstance().getBranchMap(GitAccess.getInstance().getRepository(), ConfigConstants.CONFIG_KEY_LOCAL);
       
       //---------------
       // Assert the branch names.
