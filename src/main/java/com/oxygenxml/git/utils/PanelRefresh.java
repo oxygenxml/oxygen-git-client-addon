@@ -153,13 +153,14 @@ public class PanelRefresh implements GitRefreshSupport {
       StandalonePluginWorkspace pluginWS =
           (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
+      String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
       if (projectDir != null 
           && !projectDir.equals(lastSelectedProject)
           // Fast check to see if this is actually not a Git repository.
           && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
         lastSelectedProject = projectDir;
-        File detectedRepo = checkForGitRepositoriesUpAndDownFrom(projectDir);
-        String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
+        File projectFile = new File(projectDir, projectName);
+        File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
         if (detectedRepo == null) {
           repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
         } else {
@@ -285,66 +286,7 @@ public class PanelRefresh implements GitRefreshSupport {
     return repoChanged;
   }
 
-	/**
-	 * Checks the project directory for Git repositories.
-	 * 
-	 * @param projectDir Project directory.
-	 * 
-	 * @return the repository or <code>null</code>.
-	 * 
-	 * @throws FileNotFoundException The project file doesn't exist.
-	 * @throws IOException A Git repository was detected but not loaded.
-	 */
-	private File checkForGitRepositoriesUpAndDownFrom(String projectDir) {
-	  File repoDir = null;
-		String projectName = EditorVariables.expandEditorVariables("${pn}", null);
-		String projectXprName = projectName + ".xpr";
-		try {
-		  // Parse the XML file to detected the referred resources.
-		  SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-		  saxParserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING , true);
-		  SAXParser saxParser = saxParserFactory.newSAXParser();
-			XPRHandler handler = new XPRHandler();
-			
-			File xmlFile = new File(projectDir, projectXprName);
-			saxParser.parse(xmlFile, handler);
-			List<String> pathsFromProjectView = handler.getPaths();
-			for (String path : pathsFromProjectView) {
-				File file = null;
-				if (FileHelper.isURL(path)) {
-					file = new File(path);
-				} else if (!".".equals(path)) {
-					file = new File(projectDir, path);
-				}
-				if (file != null) {
-					String pathToCheck = file.getAbsolutePath();
-					if (FileHelper.isGitRepository(pathToCheck)) {
-					  repoDir = file;
-					  break;
-					}
-				}
-			}
 
-			if (repoDir == null) {
-			  // The oxygen project might be inside a Git repository.
-			  // Look into the ancestors for a Git repository.
-			  File file = new File(projectDir);
-			  while (file != null) {
-			    if (FileHelper.isGitRepository(file.getAbsolutePath())) {
-			      repoDir = file;
-			      break;
-			    }
-			    file = file.getParentFile();
-			  }
-			}
-		} catch (ParserConfigurationException | SAXException | IOException e1) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e1, e1);
-			}
-		}
-		
-		return repoDir;
-	}
 
 	/**
 	 * Update the counters presented on the Pull/Push toolbar action.

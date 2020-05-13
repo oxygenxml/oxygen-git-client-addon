@@ -1,6 +1,7 @@
 package com.oxygenxml.git.utils;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -243,18 +244,21 @@ public class FileHelper {
 	 * @return <code>true</code> if the path corresponds to a Git repository.
 	 */
 	public static boolean isGitRepository(String path) {
-		File rootFolder = new File(path);
-		File[] listOfFiles = rootFolder.listFiles();
-
-		if (listOfFiles != null) {
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (listOfFiles[i].isDirectory() && ".git".equals(listOfFiles[i].getName())) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return isGitRepository(new File(path));
 	}
+
+	 /**
+   * Check if the given path corresponds to a Git repository.
+   * 
+   * @param folder The folder to check.
+   * 
+   * @return <code>true</code> if the path corresponds to a Git repository.
+   */
+  public static boolean isGitRepository(File folder) {
+    File[] listOfFiles = folder.listFiles((FileFilter) pathname -> pathname.isDirectory() && ".git".equals(pathname.getName()));
+
+		return listOfFiles != null && listOfFiles.length > 0;
+  }
 	
 	/**
 	 * Check if the given file is part of a Git repository.
