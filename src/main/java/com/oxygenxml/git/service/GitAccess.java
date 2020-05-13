@@ -159,7 +159,7 @@ public class GitAccess {
 	/**
 	 * Receive notifications when things change.
 	 */
-	private Set<GitEventListener> listeners = new LinkedHashSet<>();
+	private HashSet<GitEventListener> listeners = new LinkedHashSet<>();
 
 	 /**
    * Singleton instance.
@@ -442,8 +442,12 @@ public class GitAccess {
    * 
    * @param listener The listener to add.
    */
+  @SuppressWarnings("unchecked")
 	public void addGitListener(GitEventListener listener) {
-	  listeners.add(listener);
+	  HashSet<GitEventListener> clone = (HashSet<GitEventListener>) listeners.clone();
+	  clone.add(listener);
+	  
+	  listeners = clone;
   }
 	
   /**
@@ -451,8 +455,12 @@ public class GitAccess {
    * 
    * @param listener The listener to add.
    */
+  @SuppressWarnings("unchecked")
   public void removeGitListener(GitEventListener listener) {
-    listeners.remove(listener);
+    HashSet<GitEventListener> clone = (HashSet<GitEventListener>) listeners.clone();
+    clone.remove(listener);
+    
+    listeners = clone;
   }
 	
   /**
