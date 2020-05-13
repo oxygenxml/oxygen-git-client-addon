@@ -4,6 +4,27 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Reset_credentials_confirm_mesage">
+        <comment>Confirmation message shown when invoking "Reset credentials".</comment>
+        <val lang="en_US">All credentials, for both HTTPS and SSH authentications,
+        will be reset.\n\nAre you sure you want to continue?</val>
+        <val lang="de_DE">All credentials, for both HTTPS and SSH authentications,
+        will be reset.\n\nAre you sure you want to continue?</val>
+        <val lang="fr_FR">All credentials, for both HTTPS and SSH authentications,
+        will be reset.\n\nAre you sure you want to continue?</val>
+        <val lang="ja_JP">All credentials, for both HTTPS and SSH authentications,
+        will be reset.\n\nAre you sure you want to continue?</val>
+        <val lang="nl_NL">All credentials, for both HTTPS and SSH authentications,
+        will be reset.\n\nAre you sure you want to continue?</val>
+    </key>
+    <key value="Reset_all_credentials">
+        <comment>"Reset all credentials"</comment>
+        <val lang="en_US">Reset all credentials</val>
+        <val lang="de_DE">Reset all credentials</val>
+        <val lang="fr_FR">Reset all credentials</val>
+        <val lang="ja_JP">Reset all credentials</val>
+        <val lang="nl_NL">Reset all credentials</val>
+    </key>
     <key value="Push_to_create_remote_branch">
         <comment>"Push to create remote branch {0}."</comment>
         <val lang="en_US">Push to create remote branch {0}.</val>

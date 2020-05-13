@@ -54,7 +54,7 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
-import ro.sync.basic.util.StringUtil;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -144,6 +144,11 @@ public class ToolbarPanel extends JPanel {
 	 * Button with menu for pull (with merge or rebase).
 	 */
 	private SplitMenuButton pullMenuButton;
+	
+	/**
+	 * Settings button.
+	 */
+	private SplitMenuButton settingsMenuButton;
 
 	/**
 	 * Button for selecting the submodules
@@ -295,7 +300,6 @@ public class ToolbarPanel extends JPanel {
     submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
     branchSelectButton.setEnabled(enabled);
     historyButton.setEnabled(enabled);
-    
   }
   
   public ToolbarButton getSubmoduleSelectButton() {
@@ -333,8 +337,8 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton();
 		addSubmoduleSelectButton();
-		submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
 		addHistoryButton(historyController);
+		addSettingsButton();
 		this.add(gitToolbar, gbc);
 
 		gbc.insets = new Insets(0, 0, 0, 0);
@@ -350,12 +354,47 @@ public class ToolbarPanel extends JPanel {
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
 
+	/**
+	 * Add the settings button.
+	 */
+	private void addSettingsButton() {
+	  settingsMenuButton = new SplitMenuButton(
+	      null,
+	      Icons.getIcon(Icons.SETTINGS),
+	      false,
+	      false,
+	      true,
+	      false);
+    
+    // Reset all credentials
+    settingsMenuButton.addActionToMenu(
+        new AbstractAction(translator.getTranslation(Tags.RESET_ALL_CREDENTIALS)) {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+                translator.getTranslation(Tags.RESET_ALL_CREDENTIALS),
+                translator.getTranslation(Tags.RESET_CREDENTIALS_CONFIRM_MESAGE),
+                new String[] {
+                    "   " + translator.getTranslation(Tags.YES) + "   ",
+                    "   " + translator.getTranslation(Tags.NO) + "   " },
+                new int[] {1, 0});
+            if (result == 1) {
+              OptionsManager optManager = OptionsManager.getInstance();
+              optManager.saveSshPassphare(null);
+              optManager.saveGitCredentials(null);
+              optManager.saveOptions();
+            }
+          }
+        }, false);
 
-	private void addCloneRepositoryButton() {
+    gitToolbar.add(settingsMenuButton);
+  }
+
+	/**
+	 * Add the "Clone repository" button.
+	 */
+  private void addCloneRepositoryButton() {
 		Action cloneRepositoryAction = new AbstractAction() {
-		  /**
-		   * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-		   */
 			@Override
       public void actionPerformed(ActionEvent e) {
 				new CloneRepositoryDialog();
@@ -416,6 +455,8 @@ public class ToolbarPanel extends JPanel {
 		setDefaultToolbarButtonWidth(submoduleSelectButton);
 
 		gitToolbar.add(submoduleSelectButton);
+		
+		submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
 	}
 
 	/**

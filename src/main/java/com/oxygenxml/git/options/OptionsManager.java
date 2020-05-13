@@ -3,6 +3,7 @@ package com.oxygenxml.git.options;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -290,24 +291,33 @@ public class OptionsManager {
    *          - the credentials to be saved
    */
   public void saveGitCredentials(UserCredentials userCredentials) {
-    UserCredentials uc = new UserCredentials();
-    String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-        .getUtilAccess().encrypt(userCredentials.getPassword());
-    uc.setPassword(encryptedPassword);
-    uc.setUsername(userCredentials.getUsername());
-    uc.setHost(userCredentials.getHost());
+    if (userCredentials == null) {
+      // Reset
+      getOptions().getUserCredentialsList().setCredentials(null);
+    } else {
+      String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+          .getUtilAccess().encrypt(userCredentials.getPassword());
+      
+      UserCredentials uc = new UserCredentials();
+      uc.setPassword(encryptedPassword);
+      uc.setUsername(userCredentials.getUsername());
+      uc.setHost(userCredentials.getHost());
 
-    List<UserCredentials> credentials = getOptions().getUserCredentialsList().getCredentials();
-    for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
-      UserCredentials alreadyHere = iterator.next();
-      if (alreadyHere.getHost().equals(uc.getHost())) {
-        // Replace.
-        iterator.remove();
-        break;
+      List<UserCredentials> credentials = getOptions().getUserCredentialsList().getCredentials();
+      if (credentials != null) {
+        for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
+          UserCredentials alreadyHere = iterator.next();
+          if (alreadyHere.getHost().equals(uc.getHost())) {
+            // Replace.
+            iterator.remove();
+            break;
+          }
+        }
+        credentials.add(uc);
+      } else {
+        getOptions().getUserCredentialsList().setCredentials(Arrays.asList(uc));
       }
     }
-
-    credentials.add(uc);
     saveOptions();
   }
 
@@ -322,11 +332,13 @@ public class OptionsManager {
     if (host != null) {
       String password = null;
       List<UserCredentials> userCredentialsList = getOptions().getUserCredentialsList().getCredentials();
-      for (UserCredentials credential : userCredentialsList) {
-        if (host.equals(credential.getHost())) {
-          username = credential.getUsername();
-          password = credential.getPassword();
-          break;
+      if (userCredentialsList != null) { 
+        for (UserCredentials credential : userCredentialsList) {
+          if (host.equals(credential.getHost())) {
+            username = credential.getUsername();
+            password = credential.getPassword();
+            break;
+          }
         }
       }
       if (OxygenGitPlugin.getInstance() != null) {
@@ -466,8 +478,9 @@ public class OptionsManager {
    *          - the SSH pass phrase
    */
   public void saveSshPassphare(String passphrase) {
-    String encryptPassphrase = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-        .getUtilAccess().encrypt(passphrase);
+    String encryptPassphrase = passphrase == null ? null
+        : ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+              .getUtilAccess().encrypt(passphrase);
     getOptions().setPassphrase(encryptPassphrase);
   }
 

@@ -40,6 +40,7 @@ public class Icons {
 	public static final String AUTO_PUSH_ON_COMMIT = "/images/AutoPush16.png";
 	public static final String PREV_COMMIT_MESSAGES = "/images/PreviousCommits16.png";
   public static final String AMEND = "/images/Amend16.png";
+  public static final String SETTINGS = "/images/SettingsToolbar16.png";
 
   /**
    * Get icon.

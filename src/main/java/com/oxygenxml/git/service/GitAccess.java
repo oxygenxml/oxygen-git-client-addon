@@ -1777,11 +1777,12 @@ public class GitAccess {
 		AuthenticationInterceptor.install();
 		
 		UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
-		String username = gitCredentials.getUsername();
-		String password = gitCredentials.getPassword();
 		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(username, password,
-				sshPassphrase, getHostName());
+		SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(
+		    gitCredentials.getUsername(),
+		    gitCredentials.getPassword(),
+				sshPassphrase,
+				getHostName());
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();

@@ -20,10 +20,12 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.xml.sax.SAXException;
 
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -31,6 +33,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.ChangesPanel;
 import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -113,9 +116,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	        updateCounters();
 	      }
 	    } catch (NoRepositorySelected e) {
-	      if (logger.isDebugEnabled()) {
-	        logger.debug(e, e);
-	      }
+	      logger.debug(e, e);
 	    }
 	  }
 
@@ -364,8 +365,17 @@ public class PanelRefresh implements GitRefreshSupport {
       if(passphrase != null){
         call();
       }
+    } catch (PrivateRepositoryException e) {
+      status = RepositoryStatus.UNAVAILABLE;
+      
+      UserCredentials userCredentials = new LoginDialog(
+          GitAccess.getInstance().getHostName(), 
+          translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE)).getUserCredentials();
+      if (userCredentials != null) {
+        call();
+      }
     } catch (Exception e) {
-      logger.error(e);
+      logger.error(e, e);
     }
 
     final RepositoryStatus fStatus = status;

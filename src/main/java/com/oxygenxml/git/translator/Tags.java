@@ -901,4 +901,14 @@ public class Tags {
    * Push to create remote branch {0}.
    */
   public static final String PUSH_TO_CREATE_REMOTE_BRANCH = "Push_to_create_remote_branch";
+  
+  /**
+   * Reset all credentials.
+   */
+  public static final String RESET_ALL_CREDENTIALS = "Reset_all_credentials";
+  
+  /**
+   * Confirmation message shown when invoking "Reset credentials".
+   */
+  public static final String RESET_CREDENTIALS_CONFIRM_MESAGE = "Reset_credentials_confirm_mesage";
 }
