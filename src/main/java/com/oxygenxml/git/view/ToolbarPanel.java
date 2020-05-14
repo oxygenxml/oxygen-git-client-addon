@@ -630,7 +630,7 @@ public class ToolbarPanel extends JPanel {
 	 * @return the "Pull" button.
 	 */
 	private SplitMenuButton createPullButton() {
-	  SplitMenuButton pullSplitMenuButton = new SplitMenuButton(
+	  SplitMenuButton pullSplitMenuButton = new SplitMenuButton( // NOSONAR (java:S110)
 	      null,
 	      Icons.getIcon(Icons.GIT_PULL_ICON),
 	      false,
@@ -723,7 +723,7 @@ public class ToolbarPanel extends JPanel {
 	 * @return the "Push" button.
 	 */
   private ToolbarButton createPushButton() {
-    return new ToolbarButton(createPushAction(), false) {
+    return new ToolbarButton(createPushAction(), false) { // NOSONAR (java:S110)
 			@Override
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
