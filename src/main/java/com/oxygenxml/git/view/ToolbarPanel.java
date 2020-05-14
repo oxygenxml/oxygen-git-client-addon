@@ -300,6 +300,7 @@ public class ToolbarPanel extends JPanel {
     submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
     branchSelectButton.setEnabled(enabled);
     historyButton.setEnabled(enabled);
+    settingsMenuButton.setEnabled(enabled);
   }
   
   public ToolbarButton getSubmoduleSelectButton() {
