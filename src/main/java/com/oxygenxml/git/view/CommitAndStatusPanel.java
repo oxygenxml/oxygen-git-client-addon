@@ -294,6 +294,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	public CommitAndStatusPanel(PushPullController pushPullController) {
 	  this.pushPullController = pushPullController;
 	  
+	  // By default a swing timer is on repeat.
+	  commitButtonAndMessageUpdateTaskTimer.setRepeats(false);
+	  
     createGUI();
 	  
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
