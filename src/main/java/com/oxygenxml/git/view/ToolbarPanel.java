@@ -383,6 +383,8 @@ public class ToolbarPanel extends JPanel {
               optManager.saveSshPassphare(null);
               optManager.saveGitCredentials(null);
               optManager.saveOptions();
+              
+              refreshSupport.call();
             }
           }
         }, false);

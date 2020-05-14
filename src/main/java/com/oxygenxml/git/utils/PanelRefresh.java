@@ -299,10 +299,16 @@ public class PanelRefresh implements GitRefreshSupport {
     } catch (SSHPassphraseRequiredException e) {
       status = RepositoryStatus.UNAVAILABLE;
       
-      String message = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
-      String passphrase = new PassphraseDialog(message).getPassphrase();
-      if(passphrase != null){
-        call();
+      String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+      if (sshPassphrase != null && !sshPassphrase.isEmpty()) {
+        // If the passphrase is null or empty, it is already treated by
+        // com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider.get(URIish, CredentialItem...)
+        
+        String message = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
+        String passphrase = new PassphraseDialog(message).getPassphrase();
+        if(passphrase != null) {
+          call();
+        }
       }
     } catch (PrivateRepositoryException e) {
       status = RepositoryStatus.UNAVAILABLE;

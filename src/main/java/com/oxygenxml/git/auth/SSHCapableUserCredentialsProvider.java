@@ -5,6 +5,7 @@ import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
 
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -65,7 +66,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	      
 	      if (passphrase == null || "".equals(passphrase)) {
 	        logger.debug("Ask for new passphrase...");
-	        passphrase = new PassphraseDialog(item.getPromptText()).getPassphrase();
+	        passphrase = new PassphraseDialog(translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE) + ".").getPassphrase();
 	        logger.debug("New passphrase added.");
 	      }
 
