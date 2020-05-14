@@ -358,15 +358,15 @@ public class FlatView7Test extends FlatViewTestBase {
   }
   
   /**
-   * <p><b>Description:</b> .</p>
-   * <p><b>Bug ID:</b> </p>
+   * <p><b>Description:</b> Test the tooltips of the pull/push buttons and branch label.</p>
+   * <p><b>Bug ID:</b> EXM-45599</p>
    *
    * @author sorin_carbunaru
    *
    * @throws Exception
    */
   @Test
-  public void test() throws Exception {
+  public void testToolbarComponentsTooltips() throws Exception {
     // Create repositories
     String localTestRepository = "target/test-resources/test_EXM_45599_local";
     String localTestRepository_2 = "target/test-resources/test_EXM_45599_local_2";
