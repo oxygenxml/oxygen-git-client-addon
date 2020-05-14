@@ -167,6 +167,10 @@ public class LoginDialog extends OKCancelDialog {
 		super.doOK();
 	}
 
+	/**
+	 * @return The user credentials retreived from the user. <code>null</code> if the user canceled
+	 * the dialog.
+	 */
 	public UserCredentials getUserCredentials() {
 		return userCredentials;
 	}

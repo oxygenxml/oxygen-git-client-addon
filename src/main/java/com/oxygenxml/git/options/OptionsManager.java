@@ -324,7 +324,7 @@ public class OptionsManager {
   /**
    * Loads the user credentials for git push and pull
    * 
-   * @return the credentials
+   * @return the credentials. Never <code>null</code>.
    */
   public UserCredentials getGitCredentials(String host) {
     String username = null;

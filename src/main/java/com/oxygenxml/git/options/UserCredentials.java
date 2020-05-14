@@ -49,6 +49,9 @@ public class UserCredentials {
 		this.password = password;
 	}
 
+	/**
+	 * @return The user name or <code>null</code> if not available.
+	 */
 	public String getUsername() {
 		return username != null && username.length() > 0 ? username : null;
 	}
@@ -57,6 +60,9 @@ public class UserCredentials {
 		this.username = username;
 	}
 
+	 /**
+   * @return The password or an empty string if one is not available.
+   */
 	public String getPassword() {
 	  // Later on, org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider will throw a NPE 
 	  // if we pass a NULL.
@@ -67,6 +73,9 @@ public class UserCredentials {
 		this.password = password;
 	}
 
+	/**
+	 * @return The host. Can be <code>null</code>.
+	 */
 	public String getHost() {
 		return host;
 	}
