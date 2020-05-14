@@ -5,6 +5,7 @@ import java.util.Arrays;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,7 +68,8 @@ public class WorkingCopySelectorTest extends JFCTestCase {
       WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel();
       frame.getContentPane().add(wcPanel);
       frame.pack();
-      frame.setVisible(true);
+      SwingUtilities.invokeAndWait(() -> frame.setVisible(true));
+      sleep(150);
       
       JComboBox<String> workingCopyCombo = wcPanel.getWorkingCopyCombo();
       ComboBoxModel<String> model = workingCopyCombo.getModel();
@@ -82,7 +84,8 @@ public class WorkingCopySelectorTest extends JFCTestCase {
           "CLEAR_HISTORY\n",
           sb.toString());
       
-      workingCopyCombo.setSelectedItem("CLEAR_HISTORY");
+      SwingUtilities.invokeAndWait(() -> workingCopyCombo.setSelectedItem("CLEAR_HISTORY"));
+      sleep(150);
       
       sb = new StringBuilder();
       for (int i = 0 ; i < model.getSize(); i++) {

@@ -120,7 +120,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
       workingCopyCombo.setSelectedItem(badWcTree.getAbsolutePath());
       
       // Wait for the selection task to be completed by posting another task and waiting for its end.
-      ScheduledFuture schedule = GitOperationScheduler.getInstance().schedule(() -> {});
+      ScheduledFuture<?> schedule = GitOperationScheduler.getInstance().schedule(() -> {});
       schedule.get();
       
       sb = new StringBuilder();
