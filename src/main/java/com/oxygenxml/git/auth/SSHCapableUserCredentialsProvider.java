@@ -64,20 +64,25 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	      // A not so great method to check that the pass phrase is requested.
 	      passphaseRequested = true;
 	      
-	      if (passphrase == null || "".equals(passphrase)) {
+	      if (!validPassphrase(passphrase)) {
+	        // We don't have a phrase from options. Ask the user.
 	        logger.debug("Ask for new passphrase...");
 	        passphrase = new PassphraseDialog(translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE) + ".").getPassphrase();
-	        logger.debug("New passphrase added.");
 	      }
-
-	      if (item instanceof CredentialItem.StringType) {
-	        ((CredentialItem.StringType) item).setValue(passphrase);
-	      } else if (item instanceof CredentialItem.Password) {
-	        ((CredentialItem.Password) item).setValue(passphrase.toCharArray());
+	      
+	      if (validPassphrase(passphrase)) {
+	        if (item instanceof CredentialItem.StringType) {
+	          ((CredentialItem.StringType) item).setValue(passphrase);
+	        } else if (item instanceof CredentialItem.Password) {
+	          ((CredentialItem.Password) item).setValue(passphrase.toCharArray());
+	        }
+	        // true tells the engine that we supplied the value.
+	        // The engine will look inside the given item for the response.
+	        return true;
+	      } else {
+	        // The user canceled the dialog.
+	        return false;
 	      }
-	      // true tells the engine that we supplied the value.
-	      // The engine will look inside the given item for the response.
-	      return true;
 	    }
 
 	    if (item instanceof CredentialItem.YesNoType) {
@@ -97,6 +102,15 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 		
 		return super.get(uri, items);
 	}
+
+	/**
+	 * @param passphrase Pass phrase.
+	 * 
+	 * @return <code>true</code> if the phrase is not null and not empty.
+	 */
+  private static final boolean validPassphrase(String passphrase) {
+    return passphrase != null && passphrase.length() > 0;
+  }
 	
 	/**
    * Presents the message to the user and returns the user's answer.
@@ -139,7 +153,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
   }
 	
 	/**
-	 * @return <code>true</code> if the pass phase was requested (for SSH).
+	 * @return <code>true</code> if the pass phase was requested (for SSH) and provided by the user.
 	 */
 	public boolean isPassphaseRequested() {
     return passphaseRequested;

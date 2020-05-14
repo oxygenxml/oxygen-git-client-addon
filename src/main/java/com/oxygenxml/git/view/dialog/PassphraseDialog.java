@@ -18,15 +18,25 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
+/**
+ * Obtains a new pass phrase from the user.
+ * 
+ * @author alex_jitianu
+ */
 public class PassphraseDialog extends OKCancelDialog {
-
+  /**
+   * The pass phrase given by the user. <code>null</code> if the user canceled the interaction.
+   */
 	private String passphrase;
+	/**
+	 * Password field.
+	 */
 	private JPasswordField tfPassphrase;
 
 	public PassphraseDialog(String message) {
 		super((JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
 				"SSH Passphrase", true);
-
+		
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -84,6 +94,9 @@ public class PassphraseDialog extends OKCancelDialog {
 		this.dispose();
 	}
 
+	/**
+	 * @return The pass phrase obtained from the user or <code>null</code> if the user canceled the dialog.
+	 */
 	public String getPassphrase() {
 		return passphrase;
 	}
