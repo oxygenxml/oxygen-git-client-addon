@@ -529,6 +529,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
     this.toolbarPanel = toolbarPanel;
   }
   
+  public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
+    return workingCopySelectionPanel;
+  }
+  
   /**
    * !!!!!!! FOR TESTS !!!!!!
    * 

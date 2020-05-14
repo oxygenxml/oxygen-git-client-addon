@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
+import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
@@ -164,6 +165,10 @@ public class PanelRefresh implements GitRefreshSupport {
               currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
             }
             if (currentRepo == null || !same(currentRepo, detectedRepo)) {
+              JComboBox<String> wcComboBox = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
+              if (wcComboBox.isPopupVisible()) {
+                wcComboBox.setPopupVisible(false);
+              }
               repoChanged = switchToProjectRepoIfUserAgrees(getCanonicalPath(detectedRepo));
             }
           } catch (NoRepositorySelected e) {
