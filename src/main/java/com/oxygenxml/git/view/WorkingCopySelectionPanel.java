@@ -145,20 +145,23 @@ public class WorkingCopySelectionPanel extends JPanel {
 	            logger.debug("Selected working copy: " + selectedEntry);
 	          }
 	          if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
-	            String[] options = new String[] { 
-	                "   " + translator.getTranslation(Tags.YES) + "   ",
-	                "   " + translator.getTranslation(Tags.NO) + "   "};
-	            int[] optionIds = new int[] { 0, 1 };
-	            int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-	                translator.getTranslation(Tags.CLEAR_HISTORY),
-	                translator.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
-	                options,
-	                optionIds);
-	            if (result == optionIds[0]) {
-	              clearHistory();
-	            } else {
-	              workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
-	            }
+	            SwingUtilities.invokeLater(() -> 
+	            {
+	              String[] options = new String[] { 
+	                  "   " + translator.getTranslation(Tags.YES) + "   ",
+	                  "   " + translator.getTranslation(Tags.NO) + "   "};
+	              int[] optionIds = new int[] { 0, 1 };
+	              int result = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+	                  translator.getTranslation(Tags.CLEAR_HISTORY),
+	                  translator.getTranslation(Tags.CLEAR_HISTORY_CONFIRMATION),
+	                  options,
+	                  optionIds);
+	              if (result == optionIds[0]) {
+	                clearHistory();
+	              } else {
+	                workingCopyCombo.setSelectedItem(workingCopyCombo.getModel().getElementAt(0));
+	              }
+	            });
 	          } else {
 	            gitAccess.setRepositoryAsync(selectedEntry);
 	          }
