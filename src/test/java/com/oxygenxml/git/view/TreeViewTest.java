@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
@@ -31,10 +30,6 @@ import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 * on the staged/unstaged resources seen in the flat view.
 */
 public class TreeViewTest extends FlatViewTestBase {
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(TreeViewTest.class);
   
   @Before
   public void setUp() throws Exception {
@@ -474,7 +469,7 @@ public class TreeViewTest extends FlatViewTestBase {
     assertTreeModels("", "CHANGED, test.txt");
     
     // Restart merge
-    ScheduledFuture restartMerge = gitAccess.restartMerge();
+    ScheduledFuture<?> restartMerge = gitAccess.restartMerge();
     restartMerge.get();
     flushAWT();
     assertTreeModels("CONFLICT, test.txt", "");

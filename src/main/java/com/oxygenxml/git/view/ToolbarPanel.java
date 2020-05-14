@@ -530,7 +530,7 @@ public class ToolbarPanel extends JPanel {
 			String currentBranch = branchInfo.getBranchName();
 			branchInfoText = "<html><b>" + currentBranch + "</b></html>";
 			String branchTooltip = null;
-			if (!currentBranch.isEmpty()) {
+			if (currentBranch != null && !currentBranch.isEmpty()) {
 			  String upstreamBranch = GitAccess.getInstance().getUpstreamBranchShortName(currentBranch);
         if (upstreamBranch == null) {
           upstreamBranch = translator.getTranslation(Tags.NO_REMOTE_BRANCH);
