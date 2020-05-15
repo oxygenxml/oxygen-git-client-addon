@@ -70,6 +70,10 @@ If the file has a conflict (has been modified both by you and another), [Oxygen'
 
 After staging the files, on the bottom of the view you can provide a commit message and commit them to your local repository. For convenience, you can also select a previously provided message.
 
+In the toolbar above the _Commit message_ text area, there are a few toggle buttons that affect you commit if they are enabled:
+- **Amend last commit:** is a convenient way to modify the most recent commit. It lets you combine staged changes with the previous commit instead of creating an entirely new commit. It can also be used to simply edit the previous commit message without changing its snapshot.
+- **Automatically push changes to remote when committing:** if this is enabled, when a commit is performed, the committed changes are also pushed to the remote repository.
+
 ## Push / Pull (with merge or rebase)
 
 To push your local repository changes to the remote repository, use the **Push** button from the view's toolbar (up arrow). 
