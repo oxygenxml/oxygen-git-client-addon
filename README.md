@@ -1,4 +1,4 @@
-# Git Support Plugin
+# Oxygen Git Client add-on
 
 This add-on contributes a Git client directly in Oxygen XML Editor/Author/Developer, as a side-view, available in the Editor and DITA perspectives.
 
@@ -28,6 +28,14 @@ Click the **Clone new repository** button (it has a '+' sign as the icon) and pr
 - **Destination path**: The local path were the repository will be cloned.
 
 After cloning a repository, it will automatically be set as the current working copy.
+
+## Authentication
+
+This Git client supports both HTTPS and SSH connections to GitHub, GitLab, Bitbucket, etc.
+
+In order to access the remote repository, you will need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for them. If you have the _two-factor authentication_ enabled for GitHub, you must go to your GitHub account, **Settings > Developer settings > Personal access tokens > Generate new token**, and back in the **Git Staging** view in Oxygen, use the generated token value as the authentication password when being asked for your credentials.
+
+If, for example, you have been using a GitHub account for a while, but at a certain point in time you want to switch to another GitHub account, you will need to reset your credentials, so that you will be asked for new ones. For now, we only store one set of credentials for each Git platform/server.
 
 ## Selecting a working copy
 
@@ -82,8 +90,6 @@ To bring the changes from the remote repository into your local repository, use 
 
 **Note:** When pushing a local branch for which no corresponding remote branch exists, a remote branch with the same name as the local one will automatically be created.
 
-To push or pull, you need to access the remote, and for that you need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for a username and a password. If you have a two-factor authentication for GitHub, you must go to your **Account Settings > Personal access tokens > Generate new token** and back in the **Git Staging** view in Oxygen, you have to use the generated token as the password when you are asked to enter your credentials.
-
 ## File conflicts solving flow
 
 After editing a file, commiting it to the local repository and trying to push it to the remote repository, if a warning appears informing you about not being up-to-date with the repository, follow these steps:
@@ -102,9 +108,6 @@ At this point, the next actions depend on which **Pull** action was invoked:
  - **Pull (rebase)**:
     1. When all the conflicts are resolved, press the **Continue rebase** button.
     2. You can abort the *Pull with rebase* action by pressing the **Abort rebase** button. This will revert the repository to the state from before trying to pull.
-    
-## Reset credentials
-If, for example, you have been using a GitHub acount for a while, but at a certain point in time you want to switch to another GitHub account, you will need to reset your credentials, so that you will be asked for new ones. We only store one set of credentials for each Git platform/server.
 
 In order to do so, go to the toolbar at the top of the _Git Staging_ side-view, click on the settings icon (a cogwheel) and invoke the **Reset all credentials** action from the displayed menu.
 
