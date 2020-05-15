@@ -97,7 +97,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	  boolean repoChanged = loadRepositoryFromOxygenProject();
 	  if (!repoChanged || isAfterRestart) {
 	    try {
-	      if (gitAccess.getRepository() != null) {
+	      if (gitAccess.getRepository() != null && stagingPanel != null) {
 	        stagingPanel.updateRebasePanelVisibilityBasedOnRepoState();
 	        GitStatus status = GitAccess.getInstance().getStatus();
 	        updateFiles(
