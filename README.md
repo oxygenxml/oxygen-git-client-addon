@@ -16,9 +16,7 @@ To install the add-on, follow these instructions:
 
 **Result:** A **Git Staging** view will now be available in Oxygen. If it is not visible, go to **Window > Show View** and select **Get Staging**. This view acts as a basic Git client integrated directly in Oxygen, and it provides support for committing changes to a Git repository, comparing and merging changes, resolving conflicts, and other Git commands.
 
-## Offline Installation
-
-If you can't follow the previous procedure, for example because there is no internet access when using Oxygen XML Editor, you can manually install the add-on like this:
+If you can't follow the previous procedure, you can also install the add-on like this:
 1. Go to the [Releases page](https://github.com/oxygenxml/oxygen-git-plugin/releases/latest) and download `git.support-{version}-plugin.jar`
 2. Unzip it inside `{oXygenInstallDir}/plugins`. Make sure you don't create any any intermediate folders. After unzipping the archive, the file system should look like this: `{oXygenInstallDir}/plugins/git.support-x.y.z`, and inside this folder there should be a `plugin.xml`file.
 
@@ -98,6 +96,11 @@ At this point, the next actions depend on which **Pull** action was invoked:
  - **Pull (rebase)**:
     1. When all the conflicts are resolved, press the **Continue rebase** button.
     2. You can abort the *Pull with rebase* action by pressing the **Abort rebase** button. This will revert the repository to the state from before trying to pull.
+    
+## Reset credentials
+If, for example, you have been using a GitHub acount for a while, but at a certain point in time you want to switch to another account, you will need to reset your credentials, so that you will be asked for new ones.
+
+In order to do so, go to the toolbar at the top of the _Git Staging_ side-view, click on the settings icon (a cogwheel) and invoke the **Reset all credentials** action from the displayed menu.
 
 Copyright and License
 ---------------------
