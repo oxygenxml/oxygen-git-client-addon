@@ -163,6 +163,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     refreshSupport.call();
     waitForScheduler();
+    sleep(200);
     
     remoteRepos.add(remoteRepo);
   }

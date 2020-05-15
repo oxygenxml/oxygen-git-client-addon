@@ -373,9 +373,10 @@ public class FlatView5Test extends FlatViewTestBase {
     String remoteTestRepository = "target/test-resources/test_EXM_45599_remote";
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo = createRepository(localTestRepository);
-    Repository localRepo_2 = createRepository(localTestRepository_2);
     bindLocalToRemote(localRepo , remoteRepo);
+    Repository localRepo_2 = createRepository(localTestRepository_2);
     bindLocalToRemote(localRepo_2 , remoteRepo);
+    sleep(500);
     
     pushOneFileToRemote(localTestRepository, "init.txt", "hello");
     flushAWT();
