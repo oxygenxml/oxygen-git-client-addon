@@ -103,6 +103,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * @param indexExpected Expected for the staged model.
    */
   protected void assertTableModels(String unstagedExpected, String indexExpected) {
+    sleep(200);
     flushAWT();
     
     ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();

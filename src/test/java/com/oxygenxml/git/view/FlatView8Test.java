@@ -82,7 +82,7 @@ public class FlatView8Test extends FlatViewTestBase {
       usButton.doClick();
     }
     
-    waitForScheduler();
+    waitForScheluerBetter();
   }
   
   protected final void switchToView(ResourcesViewMode viewMode) {
@@ -97,14 +97,7 @@ public class FlatView8Test extends FlatViewTestBase {
    */
   @Test
   public void testStageUnstage_NewFile() throws Exception {
-    /**
-     * Local repository location.
-     */
     String localTestRepository = "target/test-resources/testStageUnstage_NewFile_local";
-    
-    /**
-     * Remote repository location.
-     */
     String remoteTestRepository = "target/test-resources/testStageUnstage_NewFile_remote";
     
     // Create a new test file.
@@ -143,14 +136,7 @@ public class FlatView8Test extends FlatViewTestBase {
    */
   @Test
   public void testStageUnstage_ModifiedFile() throws Exception {
-    /**
-     * Local repository location.
-     */
     String localTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_local";
-    
-    /**
-     * Remote repository location.
-     */
     String remoteTestRepository = "target/test-resources/testStageUnstage_ModifiedFile_remote";
     
     new File(localTestRepository).mkdirs();
@@ -164,28 +150,26 @@ public class FlatView8Test extends FlatViewTestBase {
     
     // Add it to the index.
     add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
+    flushAWT();
     assertTableModels("", "ADD, test.txt");
     
     gitAccess.commit("First version.");
-    
     assertTableModels("", "");
     
     // Change the file.
     setFileContent(file, "index content");
-    
     assertTableModels("MODIFIED, test.txt", "");
+    
     //------------
     // Add to INDEX (Stage)
     //------------
     add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
-    
     assertTableModels("", "CHANGED, test.txt");
     
     //-----------------
     // Change the file again. It will appear in the index as well.
     //------------------
     setFileContent(file, "modified content");
-    
     assertTableModels(
         "MODIFIED, test.txt", 
         "CHANGED, test.txt");
@@ -194,7 +178,6 @@ public class FlatView8Test extends FlatViewTestBase {
     // Unstage the file from the INDEX.
     //------------------
     change(false, 0);
-    
     assertTableModels(
         "MODIFIED, test.txt", 
         "");
@@ -208,21 +191,12 @@ public class FlatView8Test extends FlatViewTestBase {
    */
   @Test
   public void testStageUnstage_NewMultipleFiles() throws Exception {
-    /**
-     * Local repository location.
-     */
     String localTestRepository = "target/test-resources/testStageUnstage_NewMultipleFiles_local";
-    
-    /**
-     * Remote repository location.
-     */
     String remoteTestRepository = "target/test-resources/testStageUnstage_NewMultipleFiles_remote";
-    
     
     // Create a new test file.
     new File(localTestRepository).mkdirs();
     createNewFile(localTestRepository, "test.txt", "");
-    
     createNewFile(localTestRepository, "test2.txt", "");
     
     // Create repositories
@@ -238,7 +212,6 @@ public class FlatView8Test extends FlatViewTestBase {
         "");
     
     changeAll(true);
-    
     // The newly created file is present in the model.
     assertTableModels(
         "", 
@@ -249,7 +222,6 @@ public class FlatView8Test extends FlatViewTestBase {
     // Back to unStaged
     //---------------
     changeAll(false);
-    
     // The newly created file is present in the model.
     assertTableModels(
         "UNTRACKED, test.txt\n" + 
@@ -265,16 +237,8 @@ public class FlatView8Test extends FlatViewTestBase {
    */
   @Test
   public void testStageUnstage_NewFile_2() throws Exception {
-    /**
-     * Local repository location.
-     */
     String localTestRepository = "target/test-resources/testStageUnstage_NewFile_2_local";
-    
-    /**
-     * Remote repository location.
-     */
     String remoteTestRepository = "target/test-resources/testStageUnstage_NewFile_2_remote";
-    
     
     // Create a new test file.
     new File(localTestRepository).mkdirs();
@@ -290,7 +254,6 @@ public class FlatView8Test extends FlatViewTestBase {
     assertTableModels("UNTRACKED, test.txt","");
 
     change(true, 0);
-    
     // The file has moved to the INDEX.
     assertTableModels("", "ADD, test.txt");
   
@@ -304,7 +267,6 @@ public class FlatView8Test extends FlatViewTestBase {
     // Back to unstaged
     //---------------
     change(false, 0);
-    
     assertTableModels("UNTRACKED, test.txt","");
   }
 

@@ -54,16 +54,8 @@ public class FlatViewTest extends FlatViewTestBase {
    */
   @Test
   public void testConflict_resolveUsingMine() throws Exception {
-    /**
-     * Local repository location.
-     */
     String localTestRepository = "target/test-resources/testConflict_resolveUsingMine_local";
-    
-    /**
-     * Remote repository location.
-     */
     String remoteTestRepository = "target/test-resources/testConflict_resolveUsingMine_remote";
-    
     
     String localTestRepository2 = localTestRepository + "2";
     File file2 = new File(localTestRepository2 + "/test.txt");
@@ -71,13 +63,9 @@ public class FlatViewTest extends FlatViewTestBase {
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo1 = createRepository(localTestRepository);
-    
     Repository localRepo2 = createRepository(localTestRepository2);
-    // Bind the local repository to the remote one.
-    bindLocalToRemote(localRepo2 , remoteRepo);
-    
-    // Bind the local repository to the remote one.
     bindLocalToRemote(localRepo1 , remoteRepo);
+    bindLocalToRemote(localRepo2 , remoteRepo);
 
     // Create a new file and push it.
     new File(localTestRepository).mkdirs();
@@ -137,16 +125,8 @@ public class FlatViewTest extends FlatViewTestBase {
    */
   @Test
   public void testConflict_resolveUsingTheirsAndRestartMerge() throws Exception {
-    /**
-     * Local repository location.
-     */
     String localTestRepository = "target/test-resources/testConflict_resolveUsingTheirs_local";
-    
-    /**
-     * Remote repository location.
-     */
     String remoteTestRepository = "target/test-resources/testConflict_resolveUsingTheirs_remote";
-    
     
     String localTestRepository2 = localTestRepository + "2";
     File file2 = new File(localTestRepository2 + "/test.txt");
@@ -154,13 +134,9 @@ public class FlatViewTest extends FlatViewTestBase {
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo1 = createRepository(localTestRepository);
-    
     Repository localRepo2 = createRepository(localTestRepository2);
-    // Bind the local repository to the remote one.
-    bindLocalToRemote(localRepo2 , remoteRepo);
-    
-    // Bind the local repository to the remote one.
     bindLocalToRemote(localRepo1 , remoteRepo);
+    bindLocalToRemote(localRepo2 , remoteRepo);
 
     // Create a new file and push it.
     new File(localTestRepository).mkdirs();
@@ -229,13 +205,7 @@ public class FlatViewTest extends FlatViewTestBase {
    */
   @Test
   public void testSaveRemoteURL() throws Exception {
-
-    /**
-     * Local repository location.
-     */
     String localTestRepository = "target/test-resources/testSave_local";
-
-    // Create repositories
     createRepository(localTestRepository);
     
     assertTableModels("", "");
@@ -246,8 +216,6 @@ public class FlatViewTest extends FlatViewTestBase {
       WSEditorChangeListener wsEditorChangeListener = iterator.next();
       wsEditorChangeListener.editorOpened(remoteResource);
     }
-
-
 
     for (Iterator<WSEditorListener> iterator = editorListeners.iterator(); iterator.hasNext();) {
       WSEditorListener wsEditorChangeListener = iterator.next();
