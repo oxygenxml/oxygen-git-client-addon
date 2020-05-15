@@ -373,13 +373,16 @@ public class WorkingCopySelectionPanel extends JPanel {
     }
     @Override
     public void repositoryChanged() {
-      if (!SwingUtilities.isEventDispatchThread()) {
-        SwingUtilities.invokeLater(() -> setWCSelectorsEnabled(true));
-      } else {
+      Runnable r = () -> {
         setWCSelectorsEnabled(true);
-      }
+        updateComboboxModelAfterRepositoryChanged();
+      };
       
-      updateComboboxModelAfterRepositoryChanged();
+      if (!SwingUtilities.isEventDispatchThread()) {
+        SwingUtilities.invokeLater(r);
+      } else {
+        r.run();
+      }
     }
     
     private void setWCSelectorsEnabled(boolean isEnabled) {
