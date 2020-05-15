@@ -790,7 +790,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     flushAWT();
     Semaphore s = new Semaphore(0);
     
-    GitOperationScheduler.getInstance().schedule(() -> {s.release();}, 10);
+    GitOperationScheduler.getInstance().schedule(() -> {s.release();}, 50);
     try {
       s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
