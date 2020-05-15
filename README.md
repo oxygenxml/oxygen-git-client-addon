@@ -35,7 +35,7 @@ This Git client supports both HTTPS and SSH connections to GitHub, GitLab, Bitbu
 
 In order to access the remote repository, you will need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for them. If you have the _two-factor authentication_ enabled for GitHub, you must go to your GitHub account, **Settings > Developer settings > Personal access tokens > Generate new token**, and back in the **Git Staging** view in Oxygen, use the generated token value as the authentication password when being asked for your credentials.
 
-If, for example, you have been using a GitHub account for a while, but at a certain point in time you want to switch to another GitHub account, you will need to reset your credentials, so that you will be asked for new ones. For now, we only store one set of credentials for each Git platform/server.
+If, for example, you have been using a GitHub account for a while, but at a certain point in time you want to switch to another GitHub account, you will need to reset your credentials, so that you will be asked for new ones, because, for now, we only store one set of credentials for each Git platform/server. In order to do so, go to the toolbar at the top of the _Git Staging_ side-view, click on the settings icon (a cogwheel) and invoke the **Reset all credentials** action from the displayed menu.
 
 ## Selecting a working copy
 
@@ -108,8 +108,6 @@ At this point, the next actions depend on which **Pull** action was invoked:
  - **Pull (rebase)**:
     1. When all the conflicts are resolved, press the **Continue rebase** button.
     2. You can abort the *Pull with rebase* action by pressing the **Abort rebase** button. This will revert the repository to the state from before trying to pull.
-
-In order to do so, go to the toolbar at the top of the _Git Staging_ side-view, click on the settings icon (a cogwheel) and invoke the **Reset all credentials** action from the displayed menu.
 
 Copyright and License
 ---------------------
