@@ -82,6 +82,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     if (mainFrame != null) {
       // Can be null if the setUp() failed.
       mainFrame.setVisible(false);
+      mainFrame.dispose();
     }
   }
   

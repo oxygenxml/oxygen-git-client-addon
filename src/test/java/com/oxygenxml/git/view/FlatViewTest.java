@@ -678,8 +678,8 @@ public class FlatViewTest extends FlatViewTestBase {
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo = createRepository(localTestRepository);
-    
     bindLocalToRemote(localRepo , remoteRepo);
+    sleep(500);
     
     pushOneFileToRemote(localTestRepository, "test_second_local.txt", "hellllo");
     flushAWT();
@@ -690,6 +690,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     // Stage
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    flushAWT();
     
     // No auto push
     JideToggleButton autoPushBtn = stagingPanel.getCommitPanel().getAutoPushWhenCommittingToggle();
@@ -703,6 +704,7 @@ public class FlatViewTest extends FlatViewTestBase {
     // Change the file again.
     setFileContent(file, "modified again");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    flushAWT();
     
     SwingUtilities.invokeLater(() -> autoPushBtn.setSelected(true));
     flushAWT();

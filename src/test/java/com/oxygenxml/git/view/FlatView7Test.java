@@ -116,7 +116,7 @@ public class FlatView7Test extends FlatViewTestBase {
     SwingUtilities.invokeLater(() -> commitPanel.getCommitButton().doClick());
     waitForScheluerBetter();
     flushAWT();
-    sleep(300);
+    sleep(500);
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     assertFalse(amendBtn.isSelected());
     assertEquals("", commitPanel.getCommitMessageArea().getText());
