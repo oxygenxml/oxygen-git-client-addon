@@ -39,6 +39,7 @@ import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -526,6 +527,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     super.tearDown();
     
     GitOperationScheduler.getInstance().shutdown();
+    
+    RepositoryCache.clear();
     
     // Only one repository is open at a given time.
     GitAccess.getInstance().closeRepo();
