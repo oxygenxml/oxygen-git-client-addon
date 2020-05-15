@@ -98,7 +98,7 @@ At this point, the next actions depend on which **Pull** action was invoked:
     2. You can abort the *Pull with rebase* action by pressing the **Abort rebase** button. This will revert the repository to the state from before trying to pull.
     
 ## Reset credentials
-If, for example, you have been using a GitHub acount for a while, but at a certain point in time you want to switch to another account, you will need to reset your credentials, so that you will be asked for new ones.
+If, for example, you have been using a GitHub acount for a while, but at a certain point in time you want to switch to another GitHub account, you will need to reset your credentials, so that you will be asked for new ones. We only store one set of credentials for each Git platform/server.
 
 In order to do so, go to the toolbar at the top of the _Git Staging_ side-view, click on the settings icon (a cogwheel) and invoke the **Reset all credentials** action from the displayed menu.
 
