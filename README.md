@@ -80,6 +80,8 @@ To push your local repository changes to the remote repository, use the **Push**
 
 To bring the changes from the remote repository into your local repository, use one of the **Pull** actions from the same toolbar (down arrow). You can choose between **Pull (merge)** and **Pull (rebase)**. The invoked action is promoted as the current action of the toolbar button.
 
+**Note:** When pushing a local branch for which no corresponding remote branch exists, a remote branch with the same name as the local one will automatically be created.
+
 To push or pull, you need to access the remote, and for that you need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for a username and a password. If you have a two-factor authentication for GitHub, you must go to your **Account Settings > Personal access tokens > Generate new token** and back in the **Git Staging** view in Oxygen, you have to use the generated token as the password when you are asked to enter your credentials.
 
 ## File conflicts solving flow
