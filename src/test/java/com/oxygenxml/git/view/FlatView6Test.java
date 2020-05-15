@@ -17,7 +17,7 @@ import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 * Test cases related to the actions performed
 * on the staged/unstaged resources seen in the flat view.
 */
-public class FlatView8Test extends FlatViewTestBase {
+public class FlatView6Test extends FlatViewTestBase {
   
   @Override
   @Before
