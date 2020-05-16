@@ -93,10 +93,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    */
   protected void pull() throws Exception {
     // Execute pull command and wait for it to finish.
-//    stagingPanel.getPushPullController().pull().get();
-    
-    gitAccess.pull("", "");
-    
+    stagingPanel.getPushPullController().pull().get();
   }
   
   /**
