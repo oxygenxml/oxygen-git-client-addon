@@ -380,5 +380,12 @@ public class PanelRefresh implements GitRefreshSupport {
     }
     refreshExecutor.shutdown();
   }
+  
+  /**
+   * @return The last scheduled task for refresing the Git status.
+   */
+  public ScheduledFuture<?> getScheduledTaskForTests() {
+    return refreshFuture;
+  }
 
 }

@@ -23,8 +23,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
@@ -786,13 +789,23 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }
   }
 
-  
+  /**
+   * Wait for refresh task and any other tasks that the added on the scheduler.
+   */
   protected void waitForScheduler() {
     flushAWT();
-    Semaphore s = new Semaphore(0);
+    ScheduledFuture<?> task = refreshSupport.getScheduledTaskForTests();
+    if (task != null && !task.isDone()) {
+      try {
+        task.get(4000, TimeUnit.MILLISECONDS);
+      } catch (ExecutionException | TimeoutException | InterruptedException e) {
+        logger.error("The current refresh task didn't finish.");
+      }
+    }
     
-    GitOperationScheduler.getInstance().schedule(() -> {s.release();}, 50);
     try {
+    Semaphore s = new Semaphore(0);
+    GitOperationScheduler.getInstance().schedule(() -> {s.release();}, 50);
       s.tryAcquire(1, 4000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
