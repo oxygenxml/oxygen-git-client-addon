@@ -282,18 +282,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	public boolean applicationClosing() {
 		OptionsManager.getInstance().saveOptions();
 		
-		if (stagingPanel != null) {
-		  // Only if the view was actually created.
-		  try {
-		    stagingPanel.shutdown();
-		  } catch (IllegalStateException e) {
-		    pluginWorkspaceAccess.showView(GIT_STAGING_VIEW, true);
-		    pluginWorkspaceAccess.showWarningMessage(e.getMessage());
-
-		    // Cancel the closing.
-		    return false;
-		  }
-		}
 		// EXM-42867: wait for the refresh to execute
 		gitRefreshSupport.shutdown();
 		

@@ -481,15 +481,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   }
 
   /**
-   * Attempts to shutdown any running refresh tasks.
-   * 
-   * @throws IllegalStateException When delicate operations are in progress so the shutdown can't continue.
-   */
-  public void shutdown() throws IllegalStateException {
-    pushPullController.shutdown();
-  }
-  
-  /**
    * Update rebase panel visibility based on repo state.
    */
   public void updateRebasePanelVisibilityBasedOnRepoState() {

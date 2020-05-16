@@ -3,9 +3,6 @@ package com.oxygenxml.git.view.event;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -25,6 +22,7 @@ import com.oxygenxml.git.service.RebaseConflictsException;
 import com.oxygenxml.git.service.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.dialog.PullStatusAndFilesDialog;
 import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 
@@ -59,11 +57,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 */
 	private Translator translator = Translator.getInstance();
 	
-	 /**
-   * Refresh executor.
-   */
-  private ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(1);
-
 	/**
 	 * Execute an push or pull action, depending on the given command.
 	 * 
@@ -72,16 +65,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * @return The result of the operation execution.
 	 */
 	private Future<?> execute(String message, ExecuteCommandRunnable command) {
-	  if (executor.isShutdown()) {
-	    // A close event was canceled. Create a new executor.
-	    executor = new ScheduledThreadPoolExecutor(1);
-	  }
-	  
 		// Notify push about to start.
 		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
 		notifyObservers(pushPullEvent);
 		
-		return executor.submit(command);
+		return GitOperationScheduler.getInstance().schedule(command);
 	}
 	
 	/**
@@ -374,25 +362,5 @@ public class PushPullController implements Subject<PushPullEvent> {
     protected String composeAndReturnFailureMessage(String message) {
       return translator.getTranslation(Tags.PULL_FAILED) + ": " + message;
     }
-  }
-
-  /**
-   * Attempts to shutdown any running refresh tasks.
-   * 
-   * @throws IllegalStateException When delicate operations are in progress so the shutdown can't continue.
-   */
-  public void shutdown() throws IllegalStateException {
-    executor.shutdown();
-    try {
-      boolean done = executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
-      
-      if (!done) {
-        throw new IllegalStateException("Git operation in progress. Please try again later.");
-      }
-    } catch (InterruptedException e) {
-      logger.warn(e);
-      // Restore interrupted state...
-      Thread.currentThread().interrupt();
-    }    
   }
 }
