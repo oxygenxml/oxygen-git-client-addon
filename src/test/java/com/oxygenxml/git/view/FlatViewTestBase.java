@@ -92,6 +92,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
    * @throws Exception If it fails.
    */
   protected void pull() throws Exception {
+    Thread.sleep(500);
     // Execute pull command and wait for it to finish.
     stagingPanel.getPushPullController().pull().get();
   }
