@@ -19,10 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
@@ -102,12 +104,12 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   /**
    * The loaded reposiltories.
    */
-  private List<Repository> loadedRepos = new ArrayList<> ();
+  private Set<Repository> loadedRepos = new HashSet<> ();
   
   /**
    * The loaded reposiltories.
    */
-  private List<Repository> remoteRepos = new ArrayList<>();
+  private Set<Repository> remoteRepos = new HashSet<>();
 
   /**
    * Installs the GIT protocol that we use to identify certain file versions.
@@ -443,6 +445,31 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }).when(projectCtrlMock).refreshFolders(Mockito.any());
     
     installGitProtocol();
+    
+    GitAccess gitAccess = GitAccess.getInstance();
+    gitAccess.addGitListener(new GitEventAdapter() {
+      private Repository oldRepository;
+
+      @Override
+      public void repositoryIsAboutToOpen(File repo) {
+        try {
+          oldRepository = gitAccess.getRepository();
+        } catch (NoRepositorySelected e) {}
+      }
+      
+      @Override
+      public void repositoryChanged() {
+        if (oldRepository != null) {
+          loadedRepos.remove(oldRepository);
+        }
+        oldRepository = null;
+      }
+      
+      @Override
+      public void repositoryOpeningFailed(File repo, Throwable ex) {
+        oldRepository = null;
+      }
+    });
   }
   
   /**
@@ -534,22 +561,25 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     RepositoryCache.clear();
     
     // Only one repository is open at a given time.
-    GitAccess.getInstance().closeRepo();
+    try {
+      Repository currentRepo = GitAccess.getInstance().getRepository();
+      // This is the active repository. GitAccess.cleanUp will close it.
+      loadedRepos.remove(currentRepo);
+      
+      GitAccess.getInstance().cleanUp();
+      deleteRepository(currentRepo);
+    } catch(NoRepositorySelected ex) {}
     
     for (Repository repository : loadedRepos) {
       // Remove the file system resources.
       try {
         repository.close();
-        String absolutePath = repository.getWorkTree().getAbsolutePath();
-        File dirToDelete = new File(absolutePath);
-        FileUtils.deleteDirectory(dirToDelete);
+        deleteRepository(repository);
       } catch (IOException e) {
         System.err.println("Unable to delete: " + repository.getWorkTree().getAbsolutePath());
         e.printStackTrace();
       }
     }
-    
-    GitAccess.getInstance().cleanUp();
     
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
@@ -558,6 +588,21 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     SystemReader.setInstance(null);
     
     FileSystemUtil.deleteRecursivelly(tmp);
+    
+    FileSystemUtil.deleteRecursivelly(new File("target/test-resources"));
+  }
+
+  /**
+   * Remove the entire working directory of this repository.
+   * 
+   * @param repository Git Repository.
+   * 
+   * @throws IOException If it fails.
+   */
+  private void deleteRepository(Repository repository) throws IOException {
+    String absolutePath = repository.getWorkTree().getAbsolutePath();
+    File dirToDelete = new File(absolutePath);
+    FileUtils.deleteDirectory(dirToDelete);
   }
   
   /**
