@@ -157,6 +157,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
             "Commit failed.  " + e1.getMessage());
       } finally {
+        amendLastCommitToggle.setSelected(false);
+        
         stopTimer();
         handleCommitEnded(commitSuccessful);
         SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
@@ -164,8 +166,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         if (commitSuccessful && autoPushWhenCommittingToggle.isSelected()) {
           pushPullController.push();
         }
-        
-        amendLastCommitToggle.setSelected(false);
       }
     }
 
