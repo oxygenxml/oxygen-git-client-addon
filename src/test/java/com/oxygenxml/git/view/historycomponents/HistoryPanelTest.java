@@ -154,6 +154,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
         expected, dump);
 
     historyPanel.showRepositoryHistory();
+    flushAWT();
 
     JTable historyTable = historyPanel.historyTable;
 
