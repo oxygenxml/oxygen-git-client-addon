@@ -151,24 +151,23 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     StoredConfig config = localRepository.getConfig();
     RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
-    URIish uri = new URIish(remoteRepo.getDirectory().toURI().toURL());
-    remoteConfig.addURI(uri);
-    RefSpec spec = new RefSpec("+refs/heads/*:refs/remotes/origin/*");
-    remoteConfig.addFetchRefSpec(spec);
+    remoteConfig.addURI(new URIish(remoteRepo.getDirectory().toURI().toURL()));
+    remoteConfig.addFetchRefSpec(new RefSpec("+refs/heads/*:refs/remotes/origin/*"));
     
     String branchName = "master";
     String remoteName = "origin";
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
 
-    
     remoteConfig.update(config);
+    
     config.setString("core", null, "autocrlf", "false");
     config.save();
     
     refreshSupport.call();
     waitForScheduler();
-    sleep(200);
+    sleep(400);
+    flushAWT();
     
     remoteRepos.add(remoteRepo);
   }
@@ -709,11 +708,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         break;
       } else {
         logger.warn("Cannot find the dialog using the search string '" + title + "' - throttling..");
-        try {
-          Thread.sleep(200);
-        } catch (InterruptedException e) {
-          // Does not happen.
-        }
+        sleep(200);
       }
     }
     return dialogToReturn;
@@ -789,6 +784,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     // Gets all the buttons.
     ComponentFinder cf = new ComponentFinder(JButton.class);
+    @SuppressWarnings("unchecked")
     List<Component> allButtons = cf.findAll(parent);
     
     // Selects the one with the given text.
@@ -861,7 +857,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   
   protected void sleep(int time) {
     try {
-      Thread.sleep(time);
+      Thread.sleep(time); // NOSONAR
     } catch (InterruptedException e) {}
   }
   
