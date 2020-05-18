@@ -309,9 +309,9 @@ public class GitAccess {
   private void openRepository(String path) throws IOException {
     final File repo = new File(path + "/.git");
     if (!isCurrentRepo(repo) ) {
-      closeRepo();
-
       fireRepositoryIsAboutToOpen(repo);
+      
+      closeRepo();
 
       try {
         git = Git.open(repo);
@@ -486,16 +486,20 @@ public class GitAccess {
 	 * 
 	 * @param path - A string that specifies the git Repository folder
 	 */
-	public void createNewRepository(String path) throws IllegalStateException, GitAPIException {
-    if (git != null) {
-      // Stop intercepting authentication requests.
-      AuthenticationInterceptor.unbind(getHostName());
-      git.close();
-    }
+	public void createNewRepository(String path) throws GitAPIException {
+	  fireRepositoryIsAboutToOpen(new File(path));
+	  
+    closeRepo();
     
-		git = Git.init().setBare(false).setDirectory(new File(path)).call();
+    try {
+      git = Git.init().setBare(false).setDirectory(new File(path)).call();
 		
-		fireRepositoryChanged();
+      fireRepositoryChanged();
+    } catch (GitAPIException e) {
+      fireRepositoryOpenFailed(new File(path), e);
+      
+      throw e;
+    }
 	}
 	
 	/**
@@ -834,6 +838,7 @@ public class GitAccess {
 		if (git != null) {
 		  AuthenticationInterceptor.unbind(getHostName());
 			git.close();
+			git = null;
 		}
 	}
 
@@ -1773,6 +1778,9 @@ public class GitAccess {
 	public void fetch()
 			throws SSHPassphraseRequiredException, PrivateRepositoryException, RepositoryUnavailableException {
 	  logger.debug("Begin fetch");
+    if (git == null) {
+      throw new RepositoryUnavailableException(new NoRepositorySelected("Repository is empty"));
+    }
 	  
 		AuthenticationInterceptor.install();
 		
@@ -2048,11 +2056,12 @@ public class GitAccess {
 		return toReturn;
 	}
 	
-	/**
-	 * Clean up.
-	 */
-	public void cleanUp() {
-	  listeners.clear();
+	 /**
+   * Clean up.
+   */
+  public void cleanUp() {
+    listeners.clear();
+    closeRepo();
   }
 	
 	/**
