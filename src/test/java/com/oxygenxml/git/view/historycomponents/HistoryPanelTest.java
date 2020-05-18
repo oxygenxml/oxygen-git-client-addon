@@ -170,8 +170,9 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     GitAccess.getInstance().setBranch("master");
     
     // History panel uses the scheduler to perform the change.
-    ScheduledFuture schedule = GitOperationScheduler.getInstance().schedule(() -> {});
+    ScheduledFuture<?> schedule = GitOperationScheduler.getInstance().schedule(() -> {});
     schedule.get();
+    waitForScheduler();
 
     model = (HistoryCommitTableModel) historyTable.getModel();
 
