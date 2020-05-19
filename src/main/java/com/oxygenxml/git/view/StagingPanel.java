@@ -140,6 +140,17 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		
 		createGUI(historyController);
 	}
+  
+  /**
+   * Create toolbar. <br><br>
+   * 
+   * Not created from 99% of the test cases.
+   * 
+   * @param historyController History controller.
+   */
+  protected ToolbarPanel createToolbar(HistoryController historyController) {
+    return new ToolbarPanel(pushPullController, refreshSupport, historyController);
+  }
 
 	/**
 	 * Create the GUI.
@@ -156,7 +167,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		stagedChangesPanel = new ChangesPanel(stageController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel();
 		commitPanel = new CommitAndStatusPanel(pushPullController);
-		toolbarPanel = new ToolbarPanel(pushPullController, refreshSupport, historyController);
+		toolbarPanel = createToolbar(historyController);
 		rebasePanel = new RebasePanel();
 		
 		// adds the unstaged and the staged panels to a split pane
@@ -171,7 +182,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 		// adds the panels to the staging panel using gird bag constraints
 		GridBagConstraints gbc = new GridBagConstraints();
-		addToolbatPanel(gbc);
+		if (toolbarPanel != null) {
+		  addToolbatPanel(gbc);
+		}
 		addWorkingCopySelectionPanel(gbc);
 		addRebasePanel(gbc);
 		addSplitPanel(gbc, splitPane);
@@ -420,7 +433,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           workingCopySelectionPanel.getBrowseButton().setEnabled(false);
           workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
           
-          toolbarPanel.updateButtonState(false);
+          if (toolbarPanel != null) {
+            toolbarPanel.updateButtonState(false);
+          }
 
           commitPanel.getCommitButton().setEnabled(false);
         } else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
@@ -435,11 +450,14 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
           unstagedChangesPanel.update(status.getUnstagedFiles());
           stagedChangesPanel.update(status.getStagedFiles());
           
-          toolbarPanel.updateButtonState(true);
-          
-          toolbarPanel.updateStatus();
+          if (toolbarPanel != null) {
+            toolbarPanel.updateButtonState(true);
+            toolbarPanel.updateStatus();
+          }
         } else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
-          toolbarPanel.updateStatus();
+          if (toolbarPanel != null) {
+            toolbarPanel.updateStatus();
+          }
         } else if (pushPullEvent.getActionStatus() == ActionStatus.PULL_REBASE_CONFLICT_GENERATED) {
           rebasePanel.setVisible(true);
         }

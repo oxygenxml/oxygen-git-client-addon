@@ -20,6 +20,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 /**
 * Base for the test classes related to the actions performed
@@ -62,6 +63,14 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
             // Nothing to do.
           }
         };
+      }
+      
+      @Override
+      protected ToolbarPanel createToolbar(HistoryController historyController) {
+        // We don't need the toolbar from 99% of the test cases.
+        // It actually interfered with the tests before we decided 
+        // not to create it anymore
+        return null;
       }
     };
     // TODO: Maybe move this init on the StagingPanel constructor. 

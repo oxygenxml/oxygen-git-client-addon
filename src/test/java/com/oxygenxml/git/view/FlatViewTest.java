@@ -242,6 +242,8 @@ public class FlatViewTest extends FlatViewTestBase {
   @Test
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
     // ================= No submodules ====================
+    stagingPanel.setToolbarPanelFromTests(
+        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null));
     Future<?> pull2 = stagingPanel.getPushPullController().pull();
     pull2.get();
     

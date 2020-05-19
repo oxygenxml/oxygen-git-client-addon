@@ -32,6 +32,10 @@ public class FlatView7Test extends FlatViewTestBase {
    */
   @Test
   public void testToolbarComponentsTooltips() throws Exception {
+    // Set toolbar panel
+    stagingPanel.setToolbarPanelFromTests(
+        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null));
+    
     // Create repositories
     String localTestRepository = "target/test-resources/test_EXM_45599_local";
     String localTestRepository_2 = "target/test-resources/test_EXM_45599_local_2";

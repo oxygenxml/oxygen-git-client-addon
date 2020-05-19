@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -33,6 +35,13 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class FlatView5Test extends FlatViewTestBase {
   
+  
+  /**
+   * Logger for logging.
+   */
+  @SuppressWarnings("unused")
+  private static final Logger logger = LogManager.getLogger(FlatView5Test.class.getName());
+
   @Override
   @Before
   public void setUp() throws Exception {
@@ -223,8 +232,8 @@ public class FlatView5Test extends FlatViewTestBase {
   @Test
   public void testAmendCommitThatWasPushed_changeFileContent() throws Exception {
     // Create repositories
-    String localTestRepository = "target/test-resources/testAmendCommitThatNotPushed_1_local";
-    String remoteTestRepository = "target/test-resources/testAmendCommitThatNotPushed_1_remote";
+    String localTestRepository = "target/test-resources/testAmendCommitThatWasPushed_1_local";
+    String remoteTestRepository = "target/test-resources/testAmendCommitThatWasPushed_1_remote";
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo = createRepository(localTestRepository);
     bindLocalToRemote(localRepo , remoteRepo);
@@ -298,8 +307,8 @@ public class FlatView5Test extends FlatViewTestBase {
   @Test
   public void testAmendCommitThatWasPushed_editCommitMesage() throws Exception {
     // Create repositories
-    String localTestRepository = "target/test-resources/testAmendCommitThatNotPushed_2_local";
-    String remoteTestRepository = "target/test-resources/testAmendCommitThatNotPushed_2_remote";
+    String localTestRepository = "target/test-resources/testAmendCommitThatWasPushed_2_local";
+    String remoteTestRepository = "target/test-resources/testAmendCommitThatWasPushed_2_remote";
     Repository remoteRepo = createRepository(remoteTestRepository);
     Repository localRepo = createRepository(localTestRepository);
     bindLocalToRemote(localRepo , remoteRepo);
