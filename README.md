@@ -2,15 +2,15 @@
 
 This add-on contributes a Git client directly in Oxygen XML Editor/Author/Developer, as a side-view, available in the Editor and DITA perspectives.
 
-## Installation
-
 This add-on is compatible with Oxygen XML Editor/Author/Developer version 20.1 or higher. 
+
+## Installation
 
 To install the add-on, follow these instructions:
 
 1. Go to **Help > Install new add-ons...** to open an add-on selection dialog box.
 2. Enter or paste https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml in the **Show add-ons from** field.
-3. Select the **Git Support** add-on and click **Next**.
+3. Select the **Git Client** add-on and click **Next**.
 4. Select the **I accept all terms of the end user license agreement** option and click **Finish**.
 5. Restart the application.
 
@@ -24,14 +24,14 @@ If you can't follow the previous procedure, you can also install the add-on like
 
 Click the **Clone new repository** button (it has a '+' sign as the icon) and provide the following:
 - **Repository URL**: The URL of the remote repository to be cloned.
-- **Checkout branch**: A specific branch of the repository to be cloned. The default branch will be cloned if another one is not specified.
+- **Checkout branch**: A specific branch of the repository that is being cloned. The default branch will be cloned if another one is not specified.
 - **Destination path**: The local path were the repository will be cloned.
 
 After cloning a repository, it will automatically be set as the current working copy.
 
 ## Authentication
 
-This Git client supports both HTTPS and SSH connections to GitHub, GitLab, Bitbucket, etc.
+This Git client supports both **HTTPS** and **SSH** connections to **GitHub, GitLab, Bitbucket**, etc.
 
 In order to access the remote repository, you will need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for them. If you have the _two-factor authentication_ enabled for GitHub, you must go to your GitHub account, **Settings > Developer settings > Personal access tokens > Generate new token**, and back in the **Git Staging** view in Oxygen, use the generated token value as the authentication password when being asked for your credentials.
 
@@ -51,11 +51,19 @@ To open and work with a Git submodule, use the **Submodules** action from the to
 
 ## Showing the current branch history
 
-To show the history of the current branch, invoke the **Show current branch history** action from the toolar (look for the clock icon). This will open the **Git History** side-view.
+To show the history of the current branch, invoke the **Show current branch history** action from the toolar (look for the clock icon). This will open the **Git History** view at the bottom of Oxygen.
+
+The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. For each resource, the following actions are available in the contextual menu:
+- **Open**: available for added and modifed resources, this action opens the selected resource.
+- **Open previous version**: available for deleted resources, this action opens the version of the selected resource from before its deletion.
+- **Compare with previous version**: available for modified resources, this action compares the selected version of the selected resource with the previous one using the **Oxygen Diff Files** tool.
+- **Compare with working copy version**: available for modified resources, this action compares the selected version of the selected resource with the current one using the **Oxygen Diff Files** tool.
 
 ## Blame
 
 The contextual menu of each unstaged resource contains a **Show blame** action that opens the selected resource in Oxygen's main editing area and colors the editor lines with different colors based on the revision information. Selecting a line in the opened editor will highlight the corresponding entry from the history table in the **Git History** side-view.
+
+This action is also available in the contextual menu of the current editor and of the Git resources from the **Project** side-view.
 
 ## Unstaged resources area
 
