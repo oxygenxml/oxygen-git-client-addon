@@ -116,6 +116,10 @@ At this point, the next actions depend on which **Pull** action was invoked:
  - **Pull (rebase)**:
     1. When all the conflicts are resolved, press the **Continue rebase** button.
     2. You can abort the *Pull with rebase* action by pressing the **Abort rebase** button. This will revert the repository to the state from before trying to pull.
+    
+## The Project view and the current editor
+
+For resources from Git repositories, this add-on also contributes a number of actions in the contextual menus of the **Project** side-view and the current editor (Text and Author pages), actions such as: **Show history**, **Show blame**, **Git Diff** (only in the Project view) and **Commit** (only in the Project view).
 
 Copyright and License
 ---------------------
