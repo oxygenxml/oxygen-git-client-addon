@@ -40,6 +40,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.util.StringUtils;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
@@ -374,6 +375,7 @@ public class HistoryPanel extends JPanel {
    */
   private void showHistory(String filePath, boolean force) {
     // Check if we don't already present the history for this path!!!!
+    Translator translator = Translator.getInstance();
     if (force || !Equaler.verifyEquals(filePath, activeFilePath)) {
       this.activeFilePath = filePath;
 
@@ -387,7 +389,7 @@ public class HistoryPanel extends JPanel {
         }
 
         showingHistoryForRepoLabel.setText(
-        MessageFormat.format(Translator.getInstance().getTranslation(Tags.SHOWING_HISTORY_FOR), directory.getName()));
+        MessageFormat.format(translator.getTranslation(Tags.SHOWING_HISTORY_FOR), directory.getName()));
         
         showingHistoryForRepoLabel.setToolTipText(directory.getAbsolutePath());
         showingHistoryForRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
@@ -409,7 +411,7 @@ public class HistoryPanel extends JPanel {
           
           historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(getRepository()));
           historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
-          TableColumn authorColumn = historyTable.getColumn(Translator.getInstance().getTranslation(Tags.AUTHOR));
+          TableColumn authorColumn = historyTable.getColumn(translator.getTranslation(Tags.AUTHOR));
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
         });
         
@@ -441,7 +443,8 @@ public class HistoryPanel extends JPanel {
           }
         } else {
           PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-              Translator.getInstance().getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES));
+              translator.getTranslation(Tags.GIT_HISTORY) + ": "
+                  + StringUtils.toLowerCase(translator.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
         }
 
       } catch (NoRepositorySelected | IOException e) {
@@ -451,7 +454,8 @@ public class HistoryPanel extends JPanel {
     } else {
       if (historyTable.getModel().getRowCount() == 0) {
         PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-            Translator.getInstance().getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES));
+            translator.getTranslation(Tags.GIT_HISTORY) + ": "
+                + StringUtils.toLowerCase(translator.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
       }
     }
   }
