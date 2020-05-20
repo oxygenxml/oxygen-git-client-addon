@@ -7,19 +7,19 @@
     <key value="Check_ProjcetXPR_Is_Git">
         <comment>The text displayed in the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
         <val lang="en_US">Do you want your current project ({0}) to be a Git project?\n\nYour project 
-        will become a local Git repository and you'll be asked to specify 
+        will become a local Git repository and you''ll be asked to specify 
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
         <val lang="de_DE">Do you want your current project ({0}) to be a Git project?\n\nYour project
-        will become a local Git repository and you'll be asked to specify 
+        will become a local Git repository and you''ll be asked to specify 
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
         <val lang="fr_FR">Do you want your current project ({0}) to be a Git project?\n\nYour project 
-        will become a local Git repository and you'll be asked to specify 
+        will become a local Git repository and you''ll be asked to specify 
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
         <val lang="ja_JP">Do you want your current project ({0}) to be a Git project?\n\nYour project 
-        will become a local Git repository and you'll be asked to specify 
+        will become a local Git repository and you''ll be asked to specify 
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
         <val lang="nl_NL">Do you want your current project ({0}) to be a Git project?\n\nYour project 
-        will become a local Git repository and you'll be asked to specify 
+        will become a local Git repository and you''ll be asked to specify 
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
     </key>
     <key value="Reset_credentials_confirm_mesage">
