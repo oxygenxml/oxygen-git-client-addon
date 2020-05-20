@@ -230,8 +230,12 @@ public class BlamePerformer {
         activeRevCommit = nextRevCommit;
         textArea.repaint();
 
-        SwingUtilities.invokeLater(() -> historyController.showCommit(filePath, activeRevCommit));
-        
+        SwingUtilities.invokeLater(() -> 
+        {
+          if (historyController.isHistoryShowing()) {
+            historyController.showCommit(filePath, activeRevCommit);
+          }
+        });
       }
     } catch (BadLocationException e1) {
       if (LOGGER.isDebugEnabled()) {

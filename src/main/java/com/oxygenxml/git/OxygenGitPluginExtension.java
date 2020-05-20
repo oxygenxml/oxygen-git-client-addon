@@ -309,4 +309,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     historyView.showCommit(filePath, activeRevCommit);
   }
 
+  @Override
+  public boolean isHistoryShowing() {
+    return pluginWorkspaceAccess.isViewShowing(com.oxygenxml.git.OxygenGitPluginExtension.GIT_HISTORY_VIEW);
+  }
+
 }

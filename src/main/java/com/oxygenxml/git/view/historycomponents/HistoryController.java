@@ -26,4 +26,9 @@ public interface HistoryController {
    * @param activeRevCommit The commit to select in the view.
    */
   void showCommit(String filePath, RevCommit activeRevCommit);
+  
+  /**
+   * @return <code>true</code> if the history view is showing.
+   */
+  boolean isHistoryShowing();
 }
