@@ -116,6 +116,8 @@ public class BlameTest extends GitTestBase{
         }
       }).when(historyController).showCommit(Mockito.anyString(), Mockito.anyObject());
       
+      Mockito.when(historyController.isHistoryShowing()).thenReturn(Boolean.TRUE);
+      
       textArea.setText(content);
       flushAWT();
       
@@ -264,6 +266,8 @@ public class BlameTest extends GitTestBase{
           return null;
         }
       }).when(historyController).showCommit(Mockito.anyString(), Mockito.anyObject());
+      
+      Mockito.when(historyController.isHistoryShowing()).thenReturn(Boolean.TRUE);
       
       textArea.setText(content);
       flushAWT();
@@ -420,6 +424,8 @@ public class BlameTest extends GitTestBase{
           return null;
         }
       }).when(historyController).showCommit(Mockito.anyString(), Mockito.anyObject());
+      
+      Mockito.when(historyController.isHistoryShowing()).thenReturn(Boolean.TRUE);
       
       textArea.setText(content);
       flushAWT();
