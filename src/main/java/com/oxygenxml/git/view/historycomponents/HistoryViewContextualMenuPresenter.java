@@ -126,7 +126,7 @@ public class HistoryViewContextualMenuPresenter {
           for (Entry<String, FileStatus> entry : toOpen.entrySet()) {
             try {
               // If the file was actually removed, we can't open this revision.
-              Optional<URL> fileURL = getFileURL(entry.getKey(), toOpen.get(entry.getValue()));
+              Optional<URL> fileURL = getFileURL(entry.getKey(), entry.getValue());
               
               if (fileURL.isPresent()) {
                 PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
