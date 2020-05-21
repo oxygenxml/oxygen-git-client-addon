@@ -32,8 +32,3 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
- notifications:
-  email:
-    - sorin_carbunaru@oxygenxml.com
-    - alex_jitianu@oxygenxml.com
-    
