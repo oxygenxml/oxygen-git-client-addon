@@ -6,7 +6,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.swing.AbstractAction;
@@ -99,40 +102,55 @@ public class HistoryViewContextualMenuPresenter {
   private void populateActions4MultipleSelection(JPopupMenu jPopupMenu, String filePath,
       CommitCharacteristics... commitCharacteristics) throws IOException, GitAPIException {
     // Add open actions.
-      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-      String actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
-      
-    Action open = new AbstractAction(actionName) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        for (int i = 0; i < commitCharacteristics.length; i++) {
-          try {
-            Optional<FileStatus> fileStatus = getFileStatus(filePath, commitCharacteristics[i]);
-            if (fileStatus.isPresent() && fileStatus.get().getChangeType() !=  GitChangeType.REMOVED) {
-              // If the file was actually removed, we can't open this revision.
-              Optional<URL> fileURL = getFileURL(commitCharacteristics[i].getCommitId(), fileStatus.get());
+    String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
+    String actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
 
+    Map<String, FileStatus> toOpen = new LinkedHashMap<>();
+    for (int i = 0; i < commitCharacteristics.length; i++) {
+      try {
+        Optional<FileStatus> fileStatus = getFileStatus(filePath, commitCharacteristics[i]);
+
+        if (fileStatus.isPresent() && fileStatus.get().getChangeType() !=  GitChangeType.REMOVED) {
+          toOpen.put(commitCharacteristics[i].getCommitId(), fileStatus.get());
+        }
+      } catch (IOException | GitAPIException e1) {
+        LOGGER.error(e1, e1);
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+      } 
+    }
+    
+    if (!toOpen.isEmpty()) {
+      Action open = new AbstractAction(actionName) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          for (Entry<String, FileStatus> entry : toOpen.entrySet()) {
+            try {
+              // If the file was actually removed, we can't open this revision.
+              Optional<URL> fileURL = getFileURL(entry.getKey(), toOpen.get(entry.getValue()));
+              
               if (fileURL.isPresent()) {
                 PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
               }
-            }
-          } catch (NoRepositorySelected | IOException | GitAPIException e1) {
-            LOGGER.error(e1, e1);
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
-          } 
+            
+            } catch (NoRepositorySelected | IOException e1) {
+              LOGGER.error(e1, e1);
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+            } 
+            
           
+          }
         }
-      }
-    };
-    
-    jPopupMenu.add(open);
+      };
+      
+      jPopupMenu.add(open);
+    }
 
     // Add Compare action.
     if (commitCharacteristics.length == 2) {
       // Check if 
       CommitCharacteristics c1 = commitCharacteristics[0];
       CommitCharacteristics c2 = commitCharacteristics[1];
-      
+
       addCompareWithEachOtherAction(jPopupMenu, filePath, c1, c2);
     }
   }
