@@ -124,7 +124,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 		constr.gridx ++;
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx = 1;
-		add(new JLabel(toRender), constr);
+		JLabel comp = new JLabel(toRender);
+		comp.setForeground(getForeground());
+    add(comp, constr);
 		return this;
 	}
 
@@ -135,14 +137,12 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	 * @param constr           The constraints for tag / branch label when wrapping
 	 */
 	private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr) {
+	  Color foregroundColor = getForeground();
 		if (nameForLabelList != null) {
 			for (String name : nameForLabelList) {
 				JLabel component = new JLabel(name);
-				if (PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme()) {
-					component.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-				} else {
-					component.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-				}
+				component.setForeground(foregroundColor);
+				component.setBorder(BorderFactory.createLineBorder(foregroundColor));
 				constr.gridx ++;
 				add(component, constr);
 			}

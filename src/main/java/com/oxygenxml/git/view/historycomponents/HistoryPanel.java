@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -145,6 +146,7 @@ public class HistoryPanel extends JPanel {
     JScrollPane commitDescriptionScrollPane = new JScrollPane(commitDescriptionPane);
     
     affectedFilesTable = createAffectedFilesTable();
+    affectedFilesTable.setFillsViewportHeight(true);
     JScrollPane affectedFilesTableScrollPane = new JScrollPane(affectedFilesTable);
 
     Dimension minimumSize = new Dimension(500, 150);
