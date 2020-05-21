@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
@@ -74,7 +75,142 @@ public class HistoryViewContextualMenuPresenter {
   public void populateContextualActions(
       JPopupMenu jPopupMenu,
       String filePath,
-      CommitCharacteristics commitCharacteristics) throws IOException, GitAPIException {
+      CommitCharacteristics... commitCharacteristics) throws IOException, GitAPIException {
+    
+    if (commitCharacteristics != null && commitCharacteristics.length > 0) {
+      if (commitCharacteristics.length == 1) {
+        populateActions4SingleSelection(jPopupMenu, filePath, commitCharacteristics[0]);
+      } else {
+        populateActions4MultipleSelection(jPopupMenu, filePath, commitCharacteristics);
+      }
+    }
+  }
+
+  /**
+   * We have multiple revisions selected for a given path.
+   * 
+   * @param jPopupMenu Menu to populate.
+   * @param filePath Selected path.
+   * @param commitCharacteristics Revisions.
+   * 
+   * @throws IOException If it fails.
+   * @throws GitAPIException If it fails.
+   */
+  private void populateActions4MultipleSelection(JPopupMenu jPopupMenu, String filePath,
+      CommitCharacteristics... commitCharacteristics) throws IOException, GitAPIException {
+    // Add open actions.
+      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
+      String actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
+      
+    Action open = new AbstractAction(actionName) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        for (int i = 0; i < commitCharacteristics.length; i++) {
+          try {
+            Optional<FileStatus> fileStatus = getFileStatus(filePath, commitCharacteristics[i]);
+            if (fileStatus.isPresent() && fileStatus.get().getChangeType() !=  GitChangeType.REMOVED) {
+              // If the file was actually removed, we can't open this revision.
+              Optional<URL> fileURL = getFileURL(commitCharacteristics[i].getCommitId(), fileStatus.get());
+
+              if (fileURL.isPresent()) {
+                PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
+              }
+            }
+          } catch (NoRepositorySelected | IOException | GitAPIException e1) {
+            LOGGER.error(e1, e1);
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+          } 
+          
+        }
+      }
+    };
+    
+    jPopupMenu.add(open);
+
+    // Add Compare action.
+    if (commitCharacteristics.length == 2) {
+      // Check if 
+      CommitCharacteristics c1 = commitCharacteristics[0];
+      CommitCharacteristics c2 = commitCharacteristics[1];
+      
+      addCompareWithEachOtherAction(jPopupMenu, filePath, c1, c2);
+    }
+  }
+
+  /**
+   * Adds the action that compares two revisions of the same file.
+   * 
+   * @param jPopupMenu Popup menu.
+   * @param filePath File path.
+   * @param c1 First revision.
+   * @param c2 Second revision.
+   * 
+   * @throws IOException If it fails.
+   * @throws GitAPIException If it fails.
+   */
+  private void addCompareWithEachOtherAction(JPopupMenu jPopupMenu, String filePath, CommitCharacteristics c1, CommitCharacteristics c2)
+      throws IOException, GitAPIException {
+    Optional<FileStatus> fileStatus1 = getFileStatus(filePath, c1);
+    Optional<FileStatus> fileStatus2 = getFileStatus(filePath, c2);
+    if (fileStatus1.isPresent() 
+        && fileStatus2.isPresent() 
+        && fileStatus1.get().getChangeType() != GitChangeType.REMOVED
+        && fileStatus2.get().getChangeType() != GitChangeType.REMOVED) {
+      // Create action
+      Action compareWithEachOther = 
+          new AbstractAction(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_EACH_OTHER)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          try {
+            DiffPresenter.showTwoWayDiff(
+                c1.getCommitId(),
+                filePath, 
+                c2.getCommitId(),
+                filePath);
+          } catch (MalformedURLException e1) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
+            LOGGER.error(e1, e1);
+          }
+        }
+      };
+
+      jPopupMenu.add(compareWithEachOther);
+    }
+  }
+
+  /**
+   * Contributes the contextual actions for the given file, at the given revision/commit.
+   * 
+   * @param jPopupMenu            Contextual menu in which to put the actions.
+   * @param filePath              File path.
+   * @param commitCharacteristics Revision/commit data.
+   * 
+   * @throws IOException If it fails.
+   * @throws GitAPIException If it fails.
+   */
+  private void populateActions4SingleSelection(JPopupMenu jPopupMenu, String filePath, CommitCharacteristics commitCharacteristics)
+      throws IOException, GitAPIException {
+    Optional<FileStatus> fileStatusOptional = getFileStatus(filePath, commitCharacteristics);
+    if (fileStatusOptional.isPresent()) {
+      populateContextualActions(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
+    } else {
+      LOGGER.warn("File path " + filePath + " is not present at revision " + commitCharacteristics.toString());
+    }
+  }
+
+  /**
+   * Searches for the file path in the given commit.
+   * 
+   * @param filePath File path to search.
+   * @param commitCharacteristics A commit info.
+   * 
+   * @return An optional file info if the file path is found inside the commit.
+   * 
+   * @throws IOException Problems trying to iterate over the repository.
+   * @throws GitAPIException Problems trying to iterate over the repository.
+   */
+  private Optional<FileStatus> getFileStatus(String filePath, CommitCharacteristics commitCharacteristics)
+      throws IOException, GitAPIException {
     List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
     Optional<FileStatus> fileStatusOptional = changes.stream().filter(f -> filePath.equals(f.getFileLocation())).findFirst();
     if (!fileStatusOptional.isPresent()) {
@@ -90,12 +226,7 @@ public class HistoryViewContextualMenuPresenter {
       
       fileStatusOptional = changes.stream().filter(f -> oldFilePath.equals(f.getFileLocation())).findFirst();
     }
-    
-    if (fileStatusOptional.isPresent()) {
-      populateContextualActions(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
-    } else {
-      LOGGER.warn("File path " + filePath + " is not present at revision " + commitCharacteristics.toString());
-    }
+    return fileStatusOptional;
   }
 
 
@@ -295,6 +426,34 @@ public class HistoryViewContextualMenuPresenter {
    * @return The action that will open the file when invoked.
    */
   private AbstractAction createOpenFileAction(String revisionID, FileStatus fileStatus, boolean addFileName) {
+    String actionName = getOpenFileActionName(fileStatus, addFileName);
+    
+    return new AbstractAction(actionName) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          Optional<URL> fileURL = getFileURL(revisionID, fileStatus);
+          
+          if (fileURL.isPresent()) {
+            PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
+          }
+        } catch (NoRepositorySelected | IOException e1) {
+          LOGGER.error(e1, e1);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+        } 
+      }
+    };
+  }
+
+  /**
+   * Builds the name for the action that opens a file.
+   * 
+   * @param fileStatus File info.
+   * @param addFileName <code>true</code> to put the file name in the action name too.
+   * 
+   * @return The name of the open file action.
+   */
+  private String getOpenFileActionName(FileStatus fileStatus, boolean addFileName) {
     String actionName = Translator.getInstance().getTranslation(Tags.OPEN);
     if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
       // A removed file. We can only present the previous version.
@@ -303,43 +462,48 @@ public class HistoryViewContextualMenuPresenter {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
       actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
     }
-    
-    return new AbstractAction(actionName) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    return actionName;
+  }
+  
+  /**
+   * Builds an URL that identifies a file at a specific revision.
+   * 
+   * @param revisionID Revision ID.
+   * @param fileStatus FIle info.
+   * 
+   * @return The URL, if one was built.
+   * 
+   * @throws NoRepositorySelected No repository is loaded.
+   * @throws IOException Problems identifying the revision.
+   */
+  private Optional<URL> getFileURL(String revisionID, FileStatus fileStatus)
+      throws NoRepositorySelected, IOException {
+    URL fileURL = null;
+    if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
+      Repository repository = GitAccess.getInstance().getRepository();
+      RevCommit[] parentsRevCommits = RevCommitUtil.getParents(repository, revisionID);
+      
+      // If it's a merge, we look for the one parent with the actual file in it.
+      Optional<RevCommit> findFirst = Arrays.asList(parentsRevCommits).stream().filter(p -> {
         try {
-          URL fileURL = null;
-          if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
-            Repository repository = GitAccess.getInstance().getRepository();
-            RevCommit[] parentsRevCommits = RevCommitUtil.getParents(repository, revisionID);
-            
-            // If it's a merge, we look for the one parent with the actual file in it.
-            Optional<RevCommit> findFirst = Arrays.asList(parentsRevCommits).stream().filter(p -> {
-              try {
-                return RevCommitUtil.getObjectID(repository, p.getId().getName(), fileStatus.getFileLocation()) != null;
-              } catch (IOException e1) {
-                // Unable to find a parent with the given path.
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open file because of " + e1.getMessage());
-              }
-              
-              return false;
-            }).findFirst();
-            
-            if (findFirst.isPresent()) {
-              fileURL = GitRevisionURLHandler.encodeURL(findFirst.get().getId().getName(), fileStatus.getFileLocation());  
-            }
-          } else if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(revisionID)) {
-            fileURL = GitRevisionURLHandler.encodeURL(revisionID, fileStatus.getFileLocation());
-          } else {
-            fileURL = FileHelper.getFileURL(fileStatus.getFileLocation());
-          }
-          
-          PluginWorkspaceProvider.getPluginWorkspace().open(fileURL);
-        } catch (NoRepositorySelected | IOException e1) {
-          LOGGER.error(e1, e1);
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
-        } 
+          return RevCommitUtil.getObjectID(repository, p.getId().getName(), fileStatus.getFileLocation()) != null;
+        } catch (IOException e1) {
+          // Unable to find a parent with the given path.
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open file because of " + e1.getMessage());
+        }
+        
+        return false;
+      }).findFirst();
+      
+      if (findFirst.isPresent()) {
+        fileURL = GitRevisionURLHandler.encodeURL(findFirst.get().getId().getName(), fileStatus.getFileLocation());  
       }
-    };
+    } else if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(revisionID)) {
+      fileURL = GitRevisionURLHandler.encodeURL(revisionID, fileStatus.getFileLocation());
+    } else {
+      fileURL = FileHelper.getFileURL(fileStatus.getFileLocation());
+    }
+    
+    return Optional.ofNullable(fileURL);
   }
 }

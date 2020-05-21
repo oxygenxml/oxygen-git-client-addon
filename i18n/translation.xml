@@ -35,6 +35,14 @@
         <val lang="nl_NL">All credentials, for both HTTPS and SSH authentications,
         will be reset.\n\nAre you sure you want to continue?</val>
     </key>
+    <key value="Compare_with_each_other">
+        <comment>Action in the history view to compare two revisions of the same file.</comment>
+        <val lang="en_US">Compare with each other</val>
+        <val lang="de_DE">Compare with each other</val>
+        <val lang="fr_FR">Compare with each other</val>
+        <val lang="ja_JP">Compare with each other</val>
+        <val lang="nl_NL">Compare with each other</val>
+    </key>
     <key value="Reset_all_credentials">
         <comment>"Reset all credentials"</comment>
         <val lang="en_US">Reset all credentials</val>

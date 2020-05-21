@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -241,7 +241,7 @@ public class HistoryPanel extends JPanel {
   protected void showResourcesContextualMenu(JTable affectedFilesTable, Point point) {
     int rowAtPoint = affectedFilesTable.rowAtPoint(point);
     if (rowAtPoint != -1) {
-      affectedFilesTable.getSelectionModel().setSelectionInterval(rowAtPoint, rowAtPoint);
+      updateTableSelection(affectedFilesTable, rowAtPoint);
       
       StagingResourcesTableModel model = (StagingResourcesTableModel) affectedFilesTable.getModel();
       int convertedSelectedRow = affectedFilesTable.convertRowIndexToModel(rowAtPoint);
@@ -267,20 +267,40 @@ public class HistoryPanel extends JPanel {
       // If we present the history for a specific file.
       int rowAtPoint = historyTable.rowAtPoint(point);
       if (rowAtPoint != -1) {
-        historyTable.getSelectionModel().setSelectionInterval(rowAtPoint, rowAtPoint);
-
-        HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
-        int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
-        CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
+        updateTableSelection(historyTable, rowAtPoint);
+        
+        int[] selectedRows = historyTable.getSelectedRows();
+        CommitCharacteristics[] cc = new CommitCharacteristics[selectedRows.length];
+        for (int i = 0; i < selectedRows.length; i++) {
+          HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
+          int convertedSelectedRow = historyTable.convertRowIndexToModel(selectedRows[i]);
+          CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
+          cc[i] = commitCharacteristics;
+        }
+        
         try {
           JPopupMenu jPopupMenu = new JPopupMenu();
-          contextualMenuPresenter.populateContextualActions(jPopupMenu, activeFilePath, commitCharacteristics);
+          contextualMenuPresenter.populateContextualActions(jPopupMenu, activeFilePath, cc);
           
           jPopupMenu.show(historyTable, point.x, point.y);
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
         }
       }
+    }
+  }
+
+  /**
+   * Checks if a row is selected and selects it if it isn't.
+   * 
+   * @param table Table.
+   * @param rowIndex Row index to check. 
+   */
+  private void updateTableSelection(JTable table, int rowIndex) {
+    int[] selectedRows = table.getSelectedRows();
+    boolean alreadySelected = Arrays.stream(selectedRows).anyMatch(r -> r == rowIndex);
+    if (!alreadySelected) {
+      table.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
     }
   }
 
@@ -378,6 +398,9 @@ public class HistoryPanel extends JPanel {
   private void showHistory(String filePath, boolean force) {
     // Check if we don't already present the history for this path!!!!
     Translator translator = Translator.getInstance();
+    
+    updateSelectionMode(filePath);
+    
     if (force || !Equaler.verifyEquals(filePath, activeFilePath)) {
       this.activeFilePath = filePath;
 
@@ -459,6 +482,19 @@ public class HistoryPanel extends JPanel {
             translator.getTranslation(Tags.GIT_HISTORY) + ": "
                 + StringUtils.toLowerCase(translator.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
       }
+    }
+  }
+
+  /**
+   * Updates the selection model in the table to either single and multiple.
+   * 
+   * @param filePath An optional file to show the history for.
+   */
+  private void updateSelectionMode(String filePath) {
+    if (filePath != null && filePath.length() > 0) {
+      historyTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    } else {
+      historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
   }
 

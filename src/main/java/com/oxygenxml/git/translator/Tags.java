@@ -13,6 +13,11 @@ public class Tags {
   private Tags() {
     // Nothing.
   }
+  
+  /**
+   * Action in the history view to compare two revisions of the same file.
+   */
+  public static final String COMPARE_WITH_EACH_OTHER = "Compare_with_each_other";
   /**
    * Message shown when invoking the diff on an unchanged file.
    */
