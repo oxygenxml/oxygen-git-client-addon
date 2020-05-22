@@ -21,10 +21,10 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
 
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import sun.swing.DefaultLookup;
 
 /**
@@ -45,12 +45,19 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	private Repository repository;
 
 	/**
+	 * Commits ahead (to push) and behind (to pull).
+	 */
+  private CommitsAheadAndBehind commitsAheadAndBehind;
+
+	/**
 	 * Construct the Table Renderer with accurate alignment.
 	 * 
-	 * @param repository The current repository
+	 * @param repository            The current repository
+	 * @param commitsAheadAndBehind Commits ahead (to push) and behind (to pull).
 	 */
-	public CommitMessageTableRenderer(Repository repository) {
+	public CommitMessageTableRenderer(Repository repository, CommitsAheadAndBehind commitsAheadAndBehind) {
 		this.repository = repository;
+    this.commitsAheadAndBehind = commitsAheadAndBehind;
 
 		setLayout(new GridBagLayout());
 	}
@@ -91,7 +98,23 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 		if (value instanceof CommitCharacteristics) {
 			CommitCharacteristics commitCharacteristics = (CommitCharacteristics) value;
 			toRender = commitCharacteristics.getCommitMessage().replaceAll("\\n+", " ").trim();
-
+			
+			// Show outgoing and incoming commits using arrows
+			String arrow = "";
+			if (isAheadCommit(commitCharacteristics.getCommitId())) {
+			  // Up arrow
+			  arrow = "\u2191";
+      } else if (isBehindCommit(commitCharacteristics.getCommitId())) {
+        // Down arrow
+        arrow = "\u2193";
+      }
+			if (!arrow.isEmpty()) {
+			  JLabel component = new JLabel(arrow);
+			  component.setForeground(getForeground());
+			  constr.gridx ++;
+			  add(component, constr);
+			}
+			
 			// bold the text for uncommitted changes
 			if (toRender.equals(GitAccess.UNCOMMITTED_CHANGES)) {
 				toRender = "<html><body><b>" + GitAccess.UNCOMMITTED_CHANGES + "</b></body></html>";
@@ -140,14 +163,56 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	  Color foregroundColor = getForeground();
 		if (nameForLabelList != null) {
 			for (String name : nameForLabelList) {
-				JLabel component = new JLabel(name);
-				component.setForeground(foregroundColor);
-				component.setBorder(BorderFactory.createLineBorder(foregroundColor));
+				JLabel label = new JLabel(name);
+				label.setForeground(foregroundColor);
+				label.setBorder(BorderFactory.createLineBorder(foregroundColor));
 				constr.gridx ++;
-				add(component, constr);
+				add(label, constr);
 			}
 		}
 	}
+	
+	/**
+	 * Check if this is a commit to push.
+	 * 
+	 * @param commitID Commit ID.
+	 *  
+	 * @return true if this is a commit to push.
+	 */
+	private boolean isAheadCommit(String commitID) {
+	  boolean isIt = false;
+	  if (commitsAheadAndBehind != null) {
+	    List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
+	    for (RevCommit revCommit : commitsAhead) {
+	      if (revCommit.getId().getName().equals(commitID)) {
+	        isIt = true;
+	        break;
+	      }
+	    }
+	  }
+	  return isIt;
+	}
+  
+	/**
+   * Check if this is a commit to pull.
+   * 
+   * @param commitID Commit ID.
+   *  
+   * @return true if this is a commit to pull.
+   */
+	private boolean isBehindCommit(String commitID) {
+	  boolean isIt = false;
+	  if (commitsAheadAndBehind != null) {
+	    List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
+	    for (RevCommit revCommit : commitsBehind) {
+	      if (revCommit.getId().getName().equals(commitID)) {
+	        isIt = true;
+	        break;
+	      }
+	    }
+	  }
+	  return isIt;
+ }
 
 	/**
 	 * @see javax.swing.table.DefaultTableCellRenderer.getNoFocusBorder()
