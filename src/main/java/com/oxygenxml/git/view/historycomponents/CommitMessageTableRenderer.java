@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
 
@@ -182,14 +181,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	private boolean isAheadCommit(String commitID) {
 	  boolean isIt = false;
 	  if (commitsAheadAndBehind != null) {
-	    List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
-	    for (RevCommit revCommit : commitsAhead) {
-	      if (revCommit.getId().getName().equals(commitID)) {
-	        isIt = true;
-	        break;
-	      }
-	    }
+	    isIt = commitsAheadAndBehind.getCommitsAhead().stream().anyMatch(revCommit -> revCommit.getId().getName().equals(commitID));
 	  }
+	  
 	  return isIt;
 	}
   
@@ -203,14 +197,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	private boolean isBehindCommit(String commitID) {
 	  boolean isIt = false;
 	  if (commitsAheadAndBehind != null) {
-	    List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
-	    for (RevCommit revCommit : commitsBehind) {
-	      if (revCommit.getId().getName().equals(commitID)) {
-	        isIt = true;
-	        break;
-	      }
-	    }
+	    isIt = commitsAheadAndBehind.getCommitsBehind().stream().anyMatch(revCommit -> revCommit.getId().getName().equals(commitID));
 	  }
+	  
 	  return isIt;
  }
 
