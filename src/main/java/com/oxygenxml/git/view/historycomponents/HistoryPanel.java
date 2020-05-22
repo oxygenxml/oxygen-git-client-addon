@@ -50,6 +50,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
+import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
@@ -430,12 +431,19 @@ public class HistoryPanel extends JPanel {
 
         final List<CommitCharacteristics> commitCharacteristicsVector = gitAccess.getCommitsCharacteristics(filePath);
         
+        Repository repo = gitAccess.getRepository();
+        CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, repo.getFullBranch());
+        
         SwingUtilities.invokeLater(() -> {
           historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
           updateHistoryTableWidths();
           
-          historyTable.setDefaultRenderer(CommitCharacteristics.class, new CommitMessageTableRenderer(getRepository()));
-          historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
+          historyTable.setDefaultRenderer(
+              CommitCharacteristics.class,
+              new CommitMessageTableRenderer(repo, commitsAheadAndBehind));
+          historyTable.setDefaultRenderer(
+              Date.class,
+              new DateTableCellRenderer("d MMM yyyy HH:mm"));
           TableColumn authorColumn = historyTable.getColumn(translator.getTranslation(Tags.AUTHOR));
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
         });
@@ -457,9 +465,8 @@ public class HistoryPanel extends JPanel {
 
         // Select the local branch HEAD.
         if (!commitCharacteristicsVector.isEmpty()) {
-          Repository repository = gitAccess.getRepository();
-          String fullBranch = repository.getFullBranch();
-          Ref branchHead = repository.exactRef(fullBranch);
+          String fullBranch = repo.getFullBranch();
+          Ref branchHead = repo.exactRef(fullBranch);
           if (branchHead != null) {
             ObjectId objectId = branchHead.getObjectId();
             if (objectId != null) {
@@ -531,19 +538,6 @@ public class HistoryPanel extends JPanel {
         LOGGER.debug(e, e);
       }
     }
-  }
-
-  /**
-   * @return The repository or <code>null</code>.
-   */
-  private Repository getRepository() {
-    Repository repository = null;
-    try {
-      repository = gitAccess.getRepository();
-    } catch (NoRepositorySelected e) {
-      LOGGER.error(e, e);
-    }
-    return repository;
   }
 
   /**

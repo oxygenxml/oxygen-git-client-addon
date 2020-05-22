@@ -20,6 +20,7 @@ import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.BranchConfig;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -27,6 +28,8 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.RevWalkUtils;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -38,6 +41,7 @@ import org.eclipse.jgit.util.io.NullOutputStream;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
+import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
 
 /**
  * Utility methods for working with commits.
@@ -712,6 +716,55 @@ public class RevCommitUtil {
        }
 
       return toReturn;
+    }
+  }
+  
+  /**
+   * Get commits ahead and behind.
+   * 
+   * @param repository Current repo.
+   * @param branchName Current branch.
+   * 
+   * @return a structure that contains the lists of commits ahead and behind or <code>null</code>.
+   * 
+   * @throws IOException
+   */
+  public static CommitsAheadAndBehind getCommitsAheadAndBehind(Repository repository, String branchName)
+      throws IOException {
+
+    String shortBranchName = Repository.shortenRefName(branchName);
+    String fullBranchName = Constants.R_HEADS + shortBranchName;
+    BranchConfig branchConfig = new BranchConfig(repository.getConfig(),
+        shortBranchName);
+
+    String trackingBranch = branchConfig.getTrackingBranch();
+    if (trackingBranch == null)
+      return null;
+
+    Ref tracking = repository.exactRef(trackingBranch);
+    if (tracking == null)
+      return null;
+
+    Ref local = repository.exactRef(fullBranchName);
+    if (local == null)
+      return null;
+
+    try (RevWalk walk = new RevWalk(repository)) {
+
+      RevCommit localCommit = walk.parseCommit(local.getObjectId());
+      RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
+
+      walk.setRevFilter(RevFilter.MERGE_BASE);
+      walk.markStart(localCommit);
+      walk.markStart(trackingCommit);
+      RevCommit mergeBase = walk.next();
+
+      walk.reset();
+      walk.setRevFilter(RevFilter.ALL);
+      List<RevCommit> commitsAhead = RevWalkUtils.find(walk, localCommit, mergeBase);
+      List<RevCommit> commitsBehind = RevWalkUtils.find(walk, trackingCommit, mergeBase);
+
+      return new CommitsAheadAndBehind(commitsAhead, commitsBehind);
     }
   }
 
