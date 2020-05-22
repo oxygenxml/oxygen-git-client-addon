@@ -122,7 +122,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
       // Wait for the selection task to be completed by posting another task and waiting for its end.
       ScheduledFuture<?> schedule = GitOperationScheduler.getInstance().schedule(() -> {});
       schedule.get();
-      flushAWT();
+      sleep(300);
       
       sb = new StringBuilder();
       for (int i = 0 ; i < model.getSize(); i++) {
