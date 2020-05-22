@@ -33,7 +33,6 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
         getClass().getClassLoader().getResource("scripts/history_script_rename.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
   
-    try {
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
       String dump = dumpHistory(commitsCharacteristics, true);
@@ -77,10 +76,7 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
       
-      List<Action> actions = getCompareWithPreviousAction(fileStatus, cc);
-      
-      Action action = actions.get(0);
-      
+      Action action = getCompareWithPreviousAction(fileStatus, cc);
       action.actionPerformed(null);
       
       assertEquals("Unexpected number of URLs intercepted in the comparison support:" + urls2compare.toString(), 2, urls2compare.size());
@@ -90,11 +86,6 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
       
       assertEquals("git://" + model.getAllCommits().get(0).getCommitId() + "/file_renamed.txt", left.toString());
       assertEquals("git://" + model.getAllCommits().get(1).getCommitId() + "/file.txt", right.toString());
-  
-    } finally {
-      GitAccess.getInstance().closeRepo();
-  
-    }
   
   }
 
@@ -109,7 +100,6 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
         getClass().getClassLoader().getResource("scripts/history_script_follow_move.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowCopyRenames"));
   
-    try {
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
       String dump = dumpHistory(commitsCharacteristics, true);
@@ -154,11 +144,7 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
       
-      List<Action> actions = getCompareWithPreviousAction(fileStatus, cc);
-  
-      assertFalse("Unable to find the 'Compare with previous version' action.", actions.isEmpty());
-      
-      Action action = actions.get(0);
+      Action action = getCompareWithPreviousAction(fileStatus, cc);
       
       action.actionPerformed(null);
       
@@ -169,12 +155,6 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
       
       assertEquals("git://" + model.getAllCommits().get(0).getCommitId() + "/child/file.txt", left.toString());
       assertEquals("git://" + model.getAllCommits().get(1).getCommitId() + "/file.txt", right.toString());
-  
-    } finally {
-      GitAccess.getInstance().closeRepo();
-  
-    }
-  
   }
   
   /**
@@ -225,5 +205,70 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
     assertEquals("[Open_file, Compare_file_with_previous_version, Compare_file_with_working_tree_version]", collect.toString());
 
   }
-  
+
+  /**
+   * Tests the actions presented for multiple selection in the history panel.
+   * 
+   * EXM-44448
+   * 
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testMultipleSelectionHistoryActions() throws Exception {
+    generateRepositoryAndLoad(
+        getClass().getClassLoader().getResource("scripts/file_content_script.txt"), 
+        new File("target/gen/HistoryPanelTest/testMultipleSelectionHistoryActions"));
+
+    List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+
+    String dump = dumpHistory(commitsCharacteristics, true);
+
+    String expected =  
+        "[ Third. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+            "[ Second. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+            "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
+            "";
+
+    assertEquals(expected, dump);
+
+    historyPanel.showRepositoryHistory();
+
+    JTable historyTable = historyPanel.historyTable;
+
+    HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+
+    dump = dumpHistory(model.getAllCommits(), true);
+
+    assertEquals(expected, dump);
+    //---------------
+    // Invoke the Diff action to see if the built URLs are O.K.
+    //---------------
+    CommitCharacteristics cc1 = model.getAllCommits().get(0);
+    CommitCharacteristics cc3 = model.getAllCommits().get(2);
+
+    FileStatus fileStatus = new FileStatus(GitChangeType.CHANGED, "file1.txt");
+    Action action = getCompareWithEachOther(fileStatus , cc1, cc3);
+
+    action.actionPerformed(null);
+
+    assertEquals("Unexpected number of URLs intercepted in the comparison support:" + urls2compare.toString(), 2, urls2compare.size());
+
+    URL left = urls2compare.get(0);
+    URL right = urls2compare.get(1);
+
+    assertEquals("git://" + cc1.getCommitId() + "/file1.txt", left.toString());
+    assertEquals("git://" + cc3.getCommitId() + "/file1.txt", right.toString());
+
+    /////////////////
+    // Test the open multiple files
+    //////////////////
+    CommitCharacteristics cc2 = model.getAllCommits().get(1);
+    Action open = getOpenFileAction(fileStatus , cc1, cc2, cc3);
+    open.actionPerformed(null);
+
+    assertEquals(
+        "[" + "git://" + cc1.getCommitId() + "/file1.txt" + ", " +
+            "git://" + cc2.getCommitId() + "/file1.txt" + ", " + 
+            "git://" + cc3.getCommitId() + "/file1.txt" + "]", toOpen.toString());
+  }
 }

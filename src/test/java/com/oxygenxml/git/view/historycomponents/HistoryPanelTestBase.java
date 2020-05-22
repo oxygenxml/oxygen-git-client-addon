@@ -92,8 +92,19 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     return expected.replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date()));
   }
   
-
-  protected List<Action> getCompareWithPreviousAction(
+  /**
+   * Computes the contextual action over the given file.
+   * Returns the "Compare with each other" action available when you select 2 revisions.
+   * 
+   * @param fileStatus File information for which we want the action.
+   * @param cc Revision information.
+   * 
+   * @return The action. If not found, an assert will fail.
+   * 
+   * @throws IOException If it fails.
+   * @throws GitAPIException If it fails.
+   */
+  protected Action getCompareWithPreviousAction(
       FileStatus fileStatus, 
       CommitCharacteristics cc) throws IOException, GitAPIException {
     HistoryViewContextualMenuPresenter menuPresenter = 
@@ -110,7 +121,69 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
 
     assertFalse("Unable to find the 'Compare with previous version' action.", actions.isEmpty());
     
-    return actions;
+    return actions.get(0);
+  }
+  
+  /**
+   * Computes the contextual action over the given file.
+   * Returns the "Compare with each other" action available when you select 2 revisions.
+   * 
+   * @param fileStatus File informations for which we want the action.
+   * @param cc Revision information.
+   * 
+   * @return The action. If not found, an assert will fail.
+   * 
+   * @throws IOException If it fails.
+   * @throws GitAPIException If it fails.
+   */
+  protected Action getCompareWithEachOther(
+      FileStatus fileStatus, 
+      CommitCharacteristics... cc) throws IOException, GitAPIException {
+    HistoryViewContextualMenuPresenter menuPresenter = 
+        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
+    JPopupMenu jPopupMenu = new JPopupMenu();
+    menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
+    
+    MenuElement[] subElements = jPopupMenu.getSubElements();
+    
+    List<Action> actions = Arrays.asList(subElements).stream()
+        .map(t -> ((JMenuItem) t).getAction())
+        .filter(t -> ((String) t.getValue(Action.NAME)).startsWith("Compare_with_each_other"))
+        .collect(Collectors.toList());
+
+    assertFalse("Unable to find the 'Compare_with_each_other' action.", actions.isEmpty());
+    
+    return actions.get(0);
+  }
+  
+  /**
+   * Computes the contextual action over the given file.
+   * Returns the "Open file" action available when you select 2 revisions.
+   * 
+   * @param fileStatus File information for which we want the action.
+   * @param cc Revision information.
+   * 
+   * @return The action. If not found, an assert will fail.
+   * 
+   * @throws IOException If it fails.
+   * @throws GitAPIException If it fails.
+   */
+  protected Action getOpenFileAction(
+      FileStatus fileStatus, 
+      CommitCharacteristics... cc) throws IOException, GitAPIException {
+    HistoryViewContextualMenuPresenter menuPresenter = 
+        new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
+    JPopupMenu jPopupMenu = new JPopupMenu();
+    menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
+    
+    MenuElement[] subElements = jPopupMenu.getSubElements();
+    
+    List<Action> actions = Arrays.asList(subElements).stream()
+        .map(t -> ((JMenuItem) t).getAction())
+        .filter(t -> ((String) t.getValue(Action.NAME)).equals("Open_file"))
+        .collect(Collectors.toList());
+
+    return actions.get(0);
   }
   
   /**
@@ -141,6 +214,18 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     return actions;
   }
   
+  /**
+   * Computes the contextual action over the given file.
+   * Returns the "Compare_file_with_working_tree_version" action available when you select 2 revisions.
+   * 
+   * @param fileStatus File information for which we want the action.
+   * @param cc Revision information.
+   * 
+   * @return The action. If not found, an assert will fail.
+   * 
+   * @throws IOException If it fails.
+   * @throws GitAPIException If it fails.
+   */
   protected Action getCompareWithWCAction(
       FileStatus fileStatus, 
       CommitCharacteristics cc) throws IOException, GitAPIException {
@@ -150,10 +235,6 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
     
     MenuElement[] subElements = jPopupMenu.getSubElements();
-    
-//    for (int i = 0; i < subElements.length; i++) {
-//      System.out.println(((JMenuItem) subElements[i]).getAction().getValue(Action.NAME));
-//    }
     
     List<Action> actions = Arrays.asList(subElements).stream()
         .map(t -> ((JMenuItem) t).getAction())

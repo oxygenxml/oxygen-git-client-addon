@@ -319,6 +319,10 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * Refresh support.
    */
   protected PanelRefresh refreshSupport;
+  /**
+   * Intercepted open URL events called on the API.
+   */
+  protected List<URL> toOpen = new ArrayList<>();
   
   @Override
   @Before
@@ -348,6 +352,15 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         return null;
       }
     }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(Mockito.any(), Mockito.any());
+    
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        toOpen.add((URL) invocation.getArguments()[0]);
+        return null;
+      }
+    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).open(Mockito.any());
+    
     
     Mockito.doAnswer(new Answer<Void>() {
       @Override
