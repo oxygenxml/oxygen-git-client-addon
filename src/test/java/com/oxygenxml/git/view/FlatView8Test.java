@@ -18,7 +18,6 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.jidesoft.swing.JideToggleButton;
 import com.oxygenxml.git.service.GitAccess;
@@ -26,21 +25,17 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 
-import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-
 /**
  * Test cases.
  */
-public class FlatView5Test extends FlatViewTestBase {
+public class FlatView8Test extends FlatViewTestBase {
   
   
   /**
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static final Logger logger = LogManager.getLogger(FlatView5Test.class.getName());
+  private static final Logger logger = LogManager.getLogger(FlatView8Test.class.getName());
 
   @Override
   @Before
@@ -52,7 +47,7 @@ public class FlatView5Test extends FlatViewTestBase {
   }
   
   /**
-   * <p><b>Description:</b> Amend commit that was not yet pushed. Edit only the commit message.</p>
+   * <p><b>Description:</b> Amend commit that was not yet pushed. Edit the file content.</p>
    * <p><b>Bug ID:</b> EXM-41392</p>
    *
    * @author sorin_carbunaru
@@ -60,9 +55,9 @@ public class FlatView5Test extends FlatViewTestBase {
    * @throws Exception
    */
   @Test
-  public void testAmendCommitThatWasNotPushed_editCommitMessage() throws Exception {
-    String localTestRepository = "target/test-resources/testAmendCommitThatWasNotPushed_editCommitMessage_local";
-    String remoteTestRepository = "target/test-resources/testAmendCommitThatWasNotPushed_editCommitMessage_remote";
+  public void testAmendCommitThatWasNotPushed_editFileContent() throws Exception {
+    String localTestRepository = "target/test-resources/testAmendCommitThatWasNotPushed_editFileContent_local";
+    String remoteTestRepository = "target/test-resources/testAmendCommitThatWasNotPushed_editFileContent_remote";
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);
@@ -75,7 +70,7 @@ public class FlatView5Test extends FlatViewTestBase {
    
     // Create a new file
     new File(localTestRepository).mkdirs();
-    createNewFile(localTestRepository, "test.txt", "content");
+    File file = createNewFile(localTestRepository, "test.txt", "content");
     
     // Stage
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
@@ -98,6 +93,13 @@ public class FlatView5Test extends FlatViewTestBase {
     
     assertFalse(commitPanel.getCommitButton().isEnabled());
     
+    // Change the file again.
+    setFileContent(file, "modified");
+    add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    
+    SwingUtilities.invokeLater(() -> commitPanel.getCommitMessageArea().setText("REPLACE THIS, PLEASE"));
+    flushAWT();
+    
     SwingUtilities.invokeLater(() -> amendBtn.setSelected(true));
     flushAWT();
     assertTrue(amendBtn.isSelected());
@@ -106,19 +108,18 @@ public class FlatView5Test extends FlatViewTestBase {
     SwingUtilities.invokeLater(() -> amendBtn.setSelected(false));
     flushAWT();
     assertFalse(amendBtn.isSelected());
-    assertEquals("", commitPanel.getCommitMessageArea().getText());
+    assertEquals("REPLACE THIS, PLEASE", commitPanel.getCommitMessageArea().getText());
     
     SwingUtilities.invokeLater(() -> amendBtn.setSelected(true));
     waitForScheluerBetter();
     flushAWT();
     assertTrue(amendBtn.isSelected());
     assertEquals("FIRST COMMIT MESSAGE", commitPanel.getCommitMessageArea().getText());
-    assertTrue(commitPanel.getCommitButton().isEnabled());
     
-    SwingUtilities.invokeLater(() -> commitPanel.getCommitMessageArea().setText("EDITED MESSAGE"));
     SwingUtilities.invokeLater(() -> commitPanel.getCommitButton().doClick());
     waitForScheluerBetter();
     flushAWT();
+    sleep(500);
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     assertFalse(amendBtn.isSelected());
     assertEquals("", commitPanel.getCommitMessageArea().getText());
@@ -128,77 +129,10 @@ public class FlatView5Test extends FlatViewTestBase {
         .setOldTree(prepareTreeParser(GitAccess.getInstance().getRepository(), firstCommit.getName()))
         .setNewTree(prepareTreeParser(GitAccess.getInstance().getRepository(), lastCommit.getName()))
         .call();
-    assertEquals(0, diffs.size());
-    assertEquals("EDITED MESSAGE", lastCommit.getFullMessage());
-  }
-  
-  /**
-   * <p><b>Description:</b> Amend commit that was pushed. Edit commit message.</p>
-   * <p><b>Bug ID:</b> EXM-41392</p>
-   *
-   * @author sorin_carbunaru
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testAmendCommitThatWasPushed_editCommitMesage() throws Exception {
-    // Create repositories
-    String localTestRepository = "target/test-resources/testAmendCommitThatWasPushed_2_local";
-    String remoteTestRepository = "target/test-resources/testAmendCommitThatWasPushed_2_remote";
-    Repository remoteRepo = createRepository(remoteTestRepository);
-    Repository localRepo = createRepository(localTestRepository);
-    bindLocalToRemote(localRepo , remoteRepo);
+    assertEquals(1, diffs.size());
     
-    pushOneFileToRemote(localTestRepository, "init.txt", "hello");
-    flushAWT();
-   
-    // Create a new file
-    new File(localTestRepository).mkdirs();
-    createNewFile(localTestRepository, "test.txt", "content");
-    
-    // No amend by default
-    CommitAndStatusPanel commitPanel = stagingPanel.getCommitPanel();
-    JideToggleButton amendBtn = commitPanel.getAmendLastCommitToggle();
-    assertFalse(amendBtn.isSelected());
-    
-    // >>> Stage
-    add(new FileStatus(GitChangeType.ADD, "test.txt"));
-    // >>> Commit the test file
-    assertEquals(0, GitAccess.getInstance().getPushesAhead());
-    SwingUtilities.invokeLater(() -> {
-      commitPanel.getCommitMessageArea().setText("FIRST COMMIT MESSAGE");
-      commitPanel.getCommitButton().doClick();
-      });
-    waitForScheluerBetter();
-    assertEquals(1, GitAccess.getInstance().getPushesAhead());
-    // >>> Push
-    GitAccess.getInstance().push("", "");
-    waitForScheluerBetter();
-    refreshSupport.call();
-    waitForScheluerBetter();
-    assertEquals(0, GitAccess.getInstance().getPushesAhead());
-    
-    SwingUtilities.invokeLater(() -> {
-      commitPanel.getCommitMessageArea().setText("SECOND COMMIT MESSAGE");
-      });
-    flushAWT();
-    
-    PluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
-    Mockito.when(pluginWSMock.showConfirmDialog(
-        Mockito.anyString(),
-        Mockito.anyString(),
-        Mockito.any(),
-        Mockito.any())).thenReturn(0);
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
-    
-    SwingUtilities.invokeLater(() -> amendBtn.setSelected(true));
-    waitForScheluerBetter();
-    flushAWT();
-    // The amend was cancelled. We must not see the first commit message.
-    assertEquals("SECOND COMMIT MESSAGE", commitPanel.getCommitMessageArea().getText());
-    // Not enabled because we have don't have staged files.
-    assertFalse(commitPanel.getCommitButton().isEnabled());
-    assertFalse(amendBtn.isSelected());
+    DiffEntry diffEntry = diffs.get(0);
+    assertEquals("DiffEntry[MODIFY test.txt]", diffEntry.toString());
   }
   
   /**
