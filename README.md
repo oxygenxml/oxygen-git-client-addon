@@ -60,6 +60,7 @@ The **Git History** view presents all the affected resources for each commit in 
 - **Open previous version** (available for deleted resources): This action opens the version of the selected resource from before its deletion.
 - **Compare with previous version** (available for modified resources): This action compares the selected version of the selected resource with the previous one using the **Oxygen Diff Files** tool.
 - **Compare with working copy version** (available for modified resources): This action compares the selected version of the selected resource with the current one using the **Oxygen Diff Files** tool.
+- **Compare with each other** (available when selecting 2 versions of a single file): This action compares the selected versions with each other using the **Oxygen Diff Files** tool.
 
 ## Blame
 
