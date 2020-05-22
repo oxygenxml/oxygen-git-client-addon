@@ -372,8 +372,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		commitToolbar.setFloatable(false);
 		
 		addPreviouslyMessagesComboBox(commitToolbar);
-		addAmendLastCommitToggle(commitToolbar);
 		addAutoPushOnCommitToggle(commitToolbar);
+		addAmendLastCommitToggle(commitToolbar);
 		
 		gbc.insets = new Insets(
         UIConstants.COMPONENT_TOP_PADDING, 
@@ -396,7 +396,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
    * @param toolbar The toolbar to which to add.
    */
   private void addAmendLastCommitToggle(JToolBar toolbar) {
-    amendLastCommitToggle = new JideToggleButton(Icons.getIcon(Icons.AMEND));
+    amendLastCommitToggle = new JideToggleButton(Icons.getIcon(Icons.AMEND_COMMIT));
     amendLastCommitToggle.setFocusPainted(false);
     amendLastCommitToggle.setToolTipText(translator.getTranslation(Tags.AMEND_LAST_COMMIT));
     amendLastCommitToggle.addItemListener(new ItemListener() {
