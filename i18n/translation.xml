@@ -35,6 +35,22 @@
         <val lang="nl_NL">All credentials, for both HTTPS and SSH authentications,
         will be reset.\n\nAre you sure you want to continue?</val>
     </key>
+    <key value="File_not_present_in_revision">
+        <comment>A file is not found in a revision.</comment>
+        <val lang="en_US">File {0} is not present in commit {1}.</val>
+        <val lang="de_DE">File {0} is not present in commit {1}.</val>
+        <val lang="fr_FR">File {0} is not present in commit {1}.</val>
+        <val lang="ja_JP">File {0} is not present in commit {1}.</val>
+        <val lang="nl_NL">File {0} is not present in commit {1}.</val>
+    </key>
+    <key value="File_was_removed_in_revision">
+        <comment>A file was removed in a revision.</comment>
+        <val lang="en_US">File {0} was removed in commit {1}.</val>
+        <val lang="de_DE">File {0} was removed in commit {1}.</val>
+        <val lang="fr_FR">File {0} was removed in commit {1}.</val>
+        <val lang="ja_JP">File {0} was removed in commit {1}.</val>
+        <val lang="nl_NL">File {0} was removed in commit {1}.</val>
+    </key>
     <key value="Compare_with_each_other">
         <comment>Action in the history view to compare two revisions of the same file.</comment>
         <val lang="en_US">Compare with each other</val>

@@ -15,6 +15,14 @@ public class Tags {
   }
   
   /**
+   * A file is not present at a specific revision.
+   */
+  public static final String FILE_WAS_REMOVED_IN_REVISION = "File_was_removed_in_revision";
+  /**
+   * A file is not present at a specific revision.
+   */
+  public static final String FILE_NOT_PRESENT_IN_REVISION = "File_not_present_in_revision";
+  /**
    * Action in the history view to compare two revisions of the same file.
    */
   public static final String COMPARE_WITH_EACH_OTHER = "Compare_with_each_other";

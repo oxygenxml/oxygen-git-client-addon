@@ -6,10 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.swing.AbstractAction;
@@ -109,43 +106,26 @@ public class HistoryViewContextualMenuPresenter {
     String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
     String actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
 
-    Map<String, FileStatus> toOpen = new LinkedHashMap<>();
-    for (int i = 0; i < commitCharacteristics.length; i++) {
-      try {
-        Optional<FileStatus> fileStatus = getFileStatus(filePath, commitCharacteristics[i]);
+    Action open = new AbstractAction(actionName) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        for (int i = 0; i < commitCharacteristics.length; i++) {
+          try {
+            Optional<FileStatus> fileStatus = getFileStatus(filePath, commitCharacteristics[i]);
+            checkIfValidForOpen(filePath, commitCharacteristics[i], fileStatus);
 
-        if (fileStatus.isPresent() && fileStatus.get().getChangeType() !=  GitChangeType.REMOVED) {
-          toOpen.put(commitCharacteristics[i].getCommitId(), fileStatus.get());
+            Optional<URL> fileURL = getFileURL(commitCharacteristics[i].getCommitId(), fileStatus.get());
+            PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
+          } catch (IOException | GitAPIException | NoRepositorySelected e1) {
+            LOGGER.error(e1, e1);
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
+          } 
         }
-      } catch (IOException | GitAPIException e1) {
-        LOGGER.error(e1, e1);
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
-      } 
-    }
+      }
+    };
     
-    if (!toOpen.isEmpty()) {
-      Action open = new AbstractAction(actionName) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          for (Entry<String, FileStatus> entry : toOpen.entrySet()) {
-            try {
-              // If the file was actually removed, we can't open this revision.
-              Optional<URL> fileURL = getFileURL(entry.getKey(), entry.getValue());
-              
-              if (fileURL.isPresent()) {
-                PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
-              }
-            
-            } catch (NoRepositorySelected | IOException e1) {
-              LOGGER.error(e1, e1);
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
-            } 
-          }
-        }
-      };
-      
-      jPopupMenu.add(open);
-    }
+    jPopupMenu.add(open);
+  
 
     // Add Compare action.
     if (commitCharacteristics.length == 2) {
@@ -162,41 +142,61 @@ public class HistoryViewContextualMenuPresenter {
    * @param filePath File path.
    * @param commit1 First revision.
    * @param commit2 Second revision.
-   * 
-   * @throws IOException If it fails.
-   * @throws GitAPIException If it fails.
    */
   private void addCompareWithEachOtherAction(
       JPopupMenu jPopupMenu,
       String filePath,
       CommitCharacteristics commit1,
-      CommitCharacteristics commit2)
-      throws IOException, GitAPIException {
-    Optional<FileStatus> fileStatus1 = getFileStatus(filePath, commit1);
-    Optional<FileStatus> fileStatus2 = getFileStatus(filePath, commit2);
-    if (fileStatus1.isPresent() 
-        && fileStatus2.isPresent() 
-        && fileStatus1.get().getChangeType() != GitChangeType.REMOVED
-        && fileStatus2.get().getChangeType() != GitChangeType.REMOVED) {
-      // Create action
-      Action compareWithEachOther = 
-          new AbstractAction(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_EACH_OTHER)) {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          try {
-            DiffPresenter.showTwoWayDiff(
-                commit1.getCommitId(),
-                filePath, 
-                commit2.getCommitId(),
-                filePath);
-          } catch (MalformedURLException e1) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
-            LOGGER.error(e1, e1);
-          }
-        }
-      };
+      CommitCharacteristics commit2) {
 
-      jPopupMenu.add(compareWithEachOther);
+    // Create action
+    Action compareWithEachOther = 
+        new AbstractAction(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_EACH_OTHER)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          Optional<FileStatus> fileStatus1 = getFileStatus(filePath, commit1);
+          Optional<FileStatus> fileStatus2 = getFileStatus(filePath, commit2);
+
+          checkIfValidForOpen(filePath, commit1, fileStatus1);
+          checkIfValidForOpen(filePath, commit2, fileStatus2);
+
+          DiffPresenter.showTwoWayDiff(
+              commit1.getCommitId(),
+              filePath, 
+              commit2.getCommitId(),
+              filePath);
+        } catch (IOException | GitAPIException e1) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
+          LOGGER.error(e1, e1);
+        }
+      }
+    };
+
+    jPopupMenu.add(compareWithEachOther);
+  }
+  
+  /**
+   * Checks if there are any errors with the given path.
+   * 
+   * @param filePath File path.
+   * @param commit1 Revision information.
+   * @param fileStatus1 File information at the given revision.
+   */
+  private void checkIfValidForOpen(
+      String filePath, 
+      CommitCharacteristics commit1, 
+      Optional<FileStatus> fileStatus1) throws IOException {
+    if (!fileStatus1.isPresent()) {
+      String error = MessageFormat.format(
+          Translator.getInstance().getTranslation(Tags.FILE_NOT_PRESENT_IN_REVISION),
+          filePath, commit1.getCommitAbbreviatedId());
+      throw new IOException(error);
+    } else if (fileStatus1.get().getChangeType() == GitChangeType.REMOVED) {
+      String error = MessageFormat.format(
+          Translator.getInstance().getTranslation(Tags.FILE_WAS_REMOVED_IN_REVISION),
+          filePath, commit1.getCommitAbbreviatedId());
+      throw new IOException(error);
     }
   }
 
