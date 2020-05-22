@@ -46,6 +46,10 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Exception message prefix.
    */
+  private static final String UNABLE_TO_OPEN_REVISION = "Unable to open revision: ";
+  /**
+   * Exception message prefix.
+   */
   private static final String UNABLE_TO_COMPARE = "Unable to compare: ";
   /**
    * Logger for logging.
@@ -115,7 +119,7 @@ public class HistoryViewContextualMenuPresenter {
         }
       } catch (IOException | GitAPIException e1) {
         LOGGER.error(e1, e1);
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
       } 
     }
     
@@ -134,10 +138,8 @@ public class HistoryViewContextualMenuPresenter {
             
             } catch (NoRepositorySelected | IOException e1) {
               LOGGER.error(e1, e1);
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
             } 
-            
-          
           }
         }
       };
@@ -147,10 +149,8 @@ public class HistoryViewContextualMenuPresenter {
 
     // Add Compare action.
     if (commitCharacteristics.length == 2) {
-      // Check if 
       CommitCharacteristics c1 = commitCharacteristics[0];
       CommitCharacteristics c2 = commitCharacteristics[1];
-
       addCompareWithEachOtherAction(jPopupMenu, filePath, c1, c2);
     }
   }
@@ -160,16 +160,20 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @param jPopupMenu Popup menu.
    * @param filePath File path.
-   * @param c1 First revision.
-   * @param c2 Second revision.
+   * @param commit1 First revision.
+   * @param commit2 Second revision.
    * 
    * @throws IOException If it fails.
    * @throws GitAPIException If it fails.
    */
-  private void addCompareWithEachOtherAction(JPopupMenu jPopupMenu, String filePath, CommitCharacteristics c1, CommitCharacteristics c2)
+  private void addCompareWithEachOtherAction(
+      JPopupMenu jPopupMenu,
+      String filePath,
+      CommitCharacteristics commit1,
+      CommitCharacteristics commit2)
       throws IOException, GitAPIException {
-    Optional<FileStatus> fileStatus1 = getFileStatus(filePath, c1);
-    Optional<FileStatus> fileStatus2 = getFileStatus(filePath, c2);
+    Optional<FileStatus> fileStatus1 = getFileStatus(filePath, commit1);
+    Optional<FileStatus> fileStatus2 = getFileStatus(filePath, commit2);
     if (fileStatus1.isPresent() 
         && fileStatus2.isPresent() 
         && fileStatus1.get().getChangeType() != GitChangeType.REMOVED
@@ -181,9 +185,9 @@ public class HistoryViewContextualMenuPresenter {
         public void actionPerformed(ActionEvent e) {
           try {
             DiffPresenter.showTwoWayDiff(
-                c1.getCommitId(),
+                commit1.getCommitId(),
                 filePath, 
-                c2.getCommitId(),
+                commit2.getCommitId(),
                 filePath);
           } catch (MalformedURLException e1) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
@@ -206,8 +210,10 @@ public class HistoryViewContextualMenuPresenter {
    * @throws IOException If it fails.
    * @throws GitAPIException If it fails.
    */
-  private void populateActions4SingleSelection(JPopupMenu jPopupMenu, String filePath, CommitCharacteristics commitCharacteristics)
-      throws IOException, GitAPIException {
+  private void populateActions4SingleSelection(
+      JPopupMenu jPopupMenu,
+      String filePath,
+      CommitCharacteristics commitCharacteristics) throws IOException, GitAPIException {
     Optional<FileStatus> fileStatusOptional = getFileStatus(filePath, commitCharacteristics);
     if (fileStatusOptional.isPresent()) {
       populateContextualActions(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
@@ -249,7 +255,7 @@ public class HistoryViewContextualMenuPresenter {
 
 
   /**
-   * Contributes the DIFF actions between the current revision and the previous ones on the contextual menu.
+   * Contributes the contextual actions for the given commit.
    * 
    * @param jPopupMenu            Contextual menu.
    * @param fileStatus            File path do diff.
@@ -292,7 +298,6 @@ public class HistoryViewContextualMenuPresenter {
       boolean addFileName,
       FileStatus fileStatus) {
     String filePath = fileStatus.getFileLocation();
-    // A revision.
     
     if (fileStatus instanceof FileStatusOverDiffEntry
         && fileStatus.getChangeType() == GitChangeType.RENAME) {
@@ -322,12 +327,17 @@ public class HistoryViewContextualMenuPresenter {
    * @param addFileName <code>true</code> to add the name of the file to the action name.
    * @param filePath File location relative to the WC root.
    */
-  private void addCompareWithParentsAction(JPopupMenu jPopupMenu, CommitCharacteristics commitCharacteristics, boolean addFileName,
+  private void addCompareWithParentsAction(
+      JPopupMenu jPopupMenu,
+      CommitCharacteristics commitCharacteristics,
+      boolean addFileName,
       String filePath) {
     List<String> parents = commitCharacteristics.getParentCommitId();
     if (parents != null && !parents.isEmpty()) {
       try {
-        RevCommit[] parentsRevCommits = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(), commitCharacteristics.getCommitId());
+        RevCommit[] parentsRevCommits = RevCommitUtil.getParents(
+            GitAccess.getInstance().getRepository(),
+            commitCharacteristics.getCommitId());
         boolean addParentID = parents.size() > 1;
         for (RevCommit parentID : parentsRevCommits) {
           jPopupMenu.add(createCompareWithPrevVersionAction(
@@ -358,11 +368,11 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
       String filePath) {
-    // ========== Compare with working tree version ==========
     String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
     if (addFileName) {
-      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION), fileName);
+      actionName = MessageFormat.format(
+          Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION),
+          PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath));
     }
     jPopupMenu.add(new AbstractAction(actionName) {
       @Override
@@ -382,6 +392,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @param filePath                File to compare. Path relative to the working tree.
    * @param commitID                The current commit id. First version to compare.
+   * @param parentFilePath          The parent file path.
    * @param parentRevCommit         The parent revision. Second version to compare.
    * @param addParentIDInActionName <code>true</code> to put the ID of the parent version in the action's name.
    * @param addFileName             <code>true</code> to add the file name to the action's name. 
@@ -422,13 +433,14 @@ public class HistoryViewContextualMenuPresenter {
    * @param filePath Local 
    * @param addFileName <code>true</code> to add the name of the file to the action's name.
    * 
-   * @return The name of the comapre action.
+   * @return The name of the compare action.
    */
   private String getCompareWithPreviousVersionActionName(String filePath, boolean addFileName) {
     String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
     if (addFileName) {
-      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_PREVIOUS_VERSION), fileName);
+      actionName = MessageFormat.format(
+          Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_PREVIOUS_VERSION),
+          PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath));
     }
     return actionName;
   }
@@ -444,20 +456,17 @@ public class HistoryViewContextualMenuPresenter {
    * @return The action that will open the file when invoked.
    */
   private AbstractAction createOpenFileAction(String revisionID, FileStatus fileStatus, boolean addFileName) {
-    String actionName = getOpenFileActionName(fileStatus, addFileName);
-    
-    return new AbstractAction(actionName) {
+    return new AbstractAction(getOpenFileActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
           Optional<URL> fileURL = getFileURL(revisionID, fileStatus);
-          
           if (fileURL.isPresent()) {
             PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
           }
         } catch (NoRepositorySelected | IOException e1) {
           LOGGER.error(e1, e1);
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open revision: " + e1.getMessage());
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
         } 
       }
     };
@@ -509,7 +518,6 @@ public class HistoryViewContextualMenuPresenter {
           // Unable to find a parent with the given path.
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage("Unable to open file because of " + e1.getMessage());
         }
-        
         return false;
       }).findFirst();
       
