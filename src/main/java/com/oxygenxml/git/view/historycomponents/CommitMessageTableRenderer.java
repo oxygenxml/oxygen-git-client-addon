@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -21,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
 
@@ -108,10 +110,11 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         arrow = "\u2193";
       }
 			if (!arrow.isEmpty()) {
-			  JLabel component = new JLabel(arrow);
-			  component.setForeground(getForeground());
+			  JLabel arrowLabel = new JLabel(arrow);
+			  arrowLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
+			  arrowLabel.setForeground(getForeground());
 			  constr.gridx ++;
-			  add(component, constr);
+			  add(arrowLabel, constr);
 			}
 			
 			// bold the text for uncommitted changes
@@ -181,9 +184,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	private boolean isAheadCommit(String commitID) {
 	  boolean isIt = false;
 	  if (commitsAheadAndBehind != null) {
-	    isIt = commitsAheadAndBehind.getCommitsAhead().stream().anyMatch(revCommit -> revCommit.getId().getName().equals(commitID));
+	    List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
+	    isIt = commitsAhead.stream().anyMatch(commit -> commit.getId().getName().equals(commitID));
 	  }
-	  
 	  return isIt;
 	}
   
@@ -197,9 +200,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	private boolean isBehindCommit(String commitID) {
 	  boolean isIt = false;
 	  if (commitsAheadAndBehind != null) {
-	    isIt = commitsAheadAndBehind.getCommitsBehind().stream().anyMatch(revCommit -> revCommit.getId().getName().equals(commitID));
+	    List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
+	    isIt = commitsBehind.stream().anyMatch(commit -> commit.getId().getName().equals(commitID));
 	  }
-	  
 	  return isIt;
  }
 
