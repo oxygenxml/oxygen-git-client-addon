@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -109,10 +110,11 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         arrow = "\u2193";
       }
 			if (!arrow.isEmpty()) {
-			  JLabel component = new JLabel(arrow);
-			  component.setForeground(getForeground());
+			  JLabel arrowLabel = new JLabel(arrow);
+			  arrowLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
+			  arrowLabel.setForeground(getForeground());
 			  constr.gridx ++;
-			  add(component, constr);
+			  add(arrowLabel, constr);
 			}
 			
 			// bold the text for uncommitted changes
@@ -183,12 +185,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	  boolean isIt = false;
 	  if (commitsAheadAndBehind != null) {
 	    List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
-	    for (RevCommit revCommit : commitsAhead) {
-	      if (revCommit.getId().getName().equals(commitID)) {
-	        isIt = true;
-	        break;
-	      }
-	    }
+	    isIt = commitsAhead.stream().anyMatch(commit -> commit.getId().getName().equals(commitID));
 	  }
 	  return isIt;
 	}
@@ -204,12 +201,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	  boolean isIt = false;
 	  if (commitsAheadAndBehind != null) {
 	    List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
-	    for (RevCommit revCommit : commitsBehind) {
-	      if (revCommit.getId().getName().equals(commitID)) {
-	        isIt = true;
-	        break;
-	      }
-	    }
+	    isIt = commitsBehind.stream().anyMatch(commit -> commit.getId().getName().equals(commitID));
 	  }
 	  return isIt;
  }
