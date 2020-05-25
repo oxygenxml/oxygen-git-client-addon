@@ -96,12 +96,9 @@ public class HistoryViewContextualMenuPresenter {
    * @param jPopupMenu Menu to populate.
    * @param filePath Selected path.
    * @param commitCharacteristics Revisions.
-   * 
-   * @throws IOException If it fails.
-   * @throws GitAPIException If it fails.
    */
   private void populateActions4MultipleSelection(JPopupMenu jPopupMenu, String filePath,
-      CommitCharacteristics... commitCharacteristics) throws IOException, GitAPIException {
+      CommitCharacteristics... commitCharacteristics) {
     // Add open actions.
     String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
     String actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
