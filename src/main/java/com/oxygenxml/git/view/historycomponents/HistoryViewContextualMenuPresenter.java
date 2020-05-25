@@ -43,11 +43,11 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Exception message prefix.
    */
-  private static final String UNABLE_TO_OPEN_REVISION = "Unable to open revision: ";
+  private static final String UNABLE_TO_OPEN_REVISION = "Unable to open revision. ";
   /**
    * Exception message prefix.
    */
-  private static final String UNABLE_TO_COMPARE = "Unable to compare: ";
+  private static final String UNABLE_TO_COMPARE = "Unable to compare. ";
   /**
    * Logger for logging.
    */
