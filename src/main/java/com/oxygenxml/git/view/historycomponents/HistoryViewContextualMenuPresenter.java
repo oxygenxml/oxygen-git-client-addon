@@ -189,12 +189,14 @@ public class HistoryViewContextualMenuPresenter {
     if (!fileStatus.isPresent()) {
       String error = MessageFormat.format(
           Translator.getInstance().getTranslation(Tags.FILE_NOT_PRESENT_IN_REVISION),
-          filePath, commit  .getCommitAbbreviatedId());
+          filePath,
+          commit.getCommitAbbreviatedId());
       throw new IOException(error);
     } else if (fileStatus.get().getChangeType() == GitChangeType.REMOVED) {
       String error = MessageFormat.format(
           Translator.getInstance().getTranslation(Tags.FILE_WAS_REMOVED_IN_REVISION),
-          filePath, commit  .getCommitAbbreviatedId());
+          filePath,
+          commit.getCommitAbbreviatedId());
       throw new IOException(error);
     }
   }
