@@ -178,23 +178,23 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Checks if there are any errors with the given path.
    * 
-   * @param filePath File path.
-   * @param commit1 Revision information.
-   * @param fileStatus1 File information at the given revision.
+   * @param filePath   File path.
+   * @param commit     Revision information.
+   * @param fileStatus File information at the given revision.
    */
   private void checkIfValidForOpen(
       String filePath, 
-      CommitCharacteristics commit1, 
-      Optional<FileStatus> fileStatus1) throws IOException {
-    if (!fileStatus1.isPresent()) {
+      CommitCharacteristics commit, 
+      Optional<FileStatus> fileStatus) throws IOException {
+    if (!fileStatus.isPresent()) {
       String error = MessageFormat.format(
           Translator.getInstance().getTranslation(Tags.FILE_NOT_PRESENT_IN_REVISION),
-          filePath, commit1.getCommitAbbreviatedId());
+          filePath, commit  .getCommitAbbreviatedId());
       throw new IOException(error);
-    } else if (fileStatus1.get().getChangeType() == GitChangeType.REMOVED) {
+    } else if (fileStatus.get().getChangeType() == GitChangeType.REMOVED) {
       String error = MessageFormat.format(
           Translator.getInstance().getTranslation(Tags.FILE_WAS_REMOVED_IN_REVISION),
-          filePath, commit1.getCommitAbbreviatedId());
+          filePath, commit  .getCommitAbbreviatedId());
       throw new IOException(error);
     }
   }
