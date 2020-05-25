@@ -116,7 +116,7 @@ public class HistoryViewContextualMenuPresenter {
               PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
             }
           } catch (IOException | GitAPIException | NoRepositorySelected e1) {
-            LOGGER.error(e1, e1);
+            LOGGER.debug(e1, e1);
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
           } 
         }
