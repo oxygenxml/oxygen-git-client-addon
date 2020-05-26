@@ -172,11 +172,11 @@
     </key>
     <key value="Push_when_committing">
         <comment>Text for the toggle used to automatically push when committing.</comment>
-        <val lang="en_US">Automatically push changes to remote when committing</val>
-        <val lang="de_DE">Automatically push changes to remote when committing</val>
-        <val lang="fr_FR">Automatically push changes to remote when committing</val>
-        <val lang="ja_JP">Automatically push changes to remote when committing</val>
-        <val lang="nl_NL">Automatically push changes to remote when committing</val>
+        <val lang="en_US">Automatically push changes to remote branch</val>
+        <val lang="de_DE">Automatically push changes to remote branch</val>
+        <val lang="fr_FR">Automatically push changes to remote branch</val>
+        <val lang="ja_JP">Automatically push changes to remote branch</val>
+        <val lang="nl_NL">Automatically push changes to remote branch</val>
     </key>
     <key value="This_operation_requires_saving">
         <comment>Require saving</comment>
