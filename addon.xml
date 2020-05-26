@@ -26,6 +26,22 @@
                             changes.</p>
                     </div>
                     <div>
+                        <h3>What's new in version 2.2.0</h3>
+                        <ol>
+                          <li>Added the possibility to amend the last commit.</li>
+                          <li>Added the possibility to automatically push changes to the remote repository when committing.</li>
+                          <li>Added the possibility to compare two revisions of the same file from the Git History view, by using the "Compare with each other" action in the contextual menu of the history table.</li>
+                          <li>Added the possibility to reset the stored credentials, by using the "Reset credentials" action in the Settings menu from the main toolbar.</li>
+                          <li>When having a local branch that is not tracking a remote one, the push button tooltip suggests to push in order to create a remote branch having the same name as the local one.</li>
+                          <li>Incoming and outgoing commits are marked in the history table with corresponding arrow characters.</li>
+                          <li>Improved local repository detection when selecting a project.</li>
+                          <li>Updated JGit to version 5.7.0 (which, among others, fixes client-side hooks execution).</li>
+                          <li>Fixed a bug where failing commits did not show any messages to the user.</li>
+                          <li>Other small bug fixes.</li>
+                        </ol>
+                        <p>For more information about the add-on's features, see <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md.">the README document</a>.</p>
+                    </div>
+                    <div>
                         <h3>What's new in version 2.1.1</h3>
                         <ol>
                             <li>Fixed a bug where the Text/Author page contextual menu was not shown
