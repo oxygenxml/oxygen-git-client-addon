@@ -75,13 +75,13 @@
         <val lang="ja_JP">Reset all credentials</val>
         <val lang="nl_NL">Reset all credentials</val>
     </key>
-    <key value="Push_to_create_remote_branch">
-        <comment>"Push to create remote branch {0}."</comment>
-        <val lang="en_US">Push to create remote branch {0}.</val>
-        <val lang="de_DE">Push to create remote branch {0}.</val>
-        <val lang="fr_FR">Push to create remote branch {0}.</val>
-        <val lang="ja_JP">Push to create remote branch {0}.</val>
-        <val lang="nl_NL">Push to create remote branch {0}.</val>
+    <key value="Push_to_create_and_or_track_remote_branch">
+        <comment>"Push to create and/or track remote branch {0}."</comment>
+        <val lang="en_US">Push to create and/or track remote branch {0}.</val>
+        <val lang="de_DE">Push to create and/or track remote branch {0}.</val>
+        <val lang="fr_FR">Push to create and/or track remote branch {0}.</val>
+        <val lang="ja_JP">Push to create and/or track remote branch {0}.</val>
+        <val lang="nl_NL">Push to create and/or track remote branch {0}.</val>
     </key>
     <key value="Cannot_pull">
         <comment>"Cannot pull"</comment>

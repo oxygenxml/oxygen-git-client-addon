@@ -571,7 +571,7 @@ public class ToolbarPanel extends JPanel {
 				String pushButtonTooltip = "";
 				if (translator.getTranslation(Tags.NO_REMOTE_BRANCH).equals(upstreamBranch)) {
 				  pushButtonTooltip = "<html>" + MessageFormat.format(
-				      translator.getTranslation(Tags.PUSH_TO_CREATE_REMOTE_BRANCH),
+				      translator.getTranslation(Tags.PUSH_TO_CREATE_AND_OR_TRACK_REMOTE_BRANCH),
 				      "<b>" + branchInfo.getBranchName() + "</b>") + "</html>";
 				} else {
 				  pushButtonTooltip = MessageFormat.format(translator.getTranslation(Tags.PUSH_TO), upstreamBranch) + ".\n";

@@ -913,7 +913,7 @@ public class Tags {
   /**
    * Push to create remote branch {0}.
    */
-  public static final String PUSH_TO_CREATE_REMOTE_BRANCH = "Push_to_create_remote_branch";
+  public static final String PUSH_TO_CREATE_AND_OR_TRACK_REMOTE_BRANCH = "Push_to_create_and_or_track_remote_branch";
   
   /**
    * Reset all credentials.
