@@ -53,7 +53,7 @@ To open and work with a Git submodule, use the **Submodules** action from the to
 
 ## Showing the current branch history
 
-To show the history of the current branch, invoke the **Show current branch history** action from the toolar (look for the clock icon). This will open the **Git History** view at the bottom of Oxygen.
+To show the history of the current branch, invoke the **Show current branch history** action from the toolbar (look for the clock icon). This will open the **Git History** view at the bottom of Oxygen.
 
 The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. For each resource, the following actions are available in the contextual menu:
 - **Open** (available for added and modifed resources): This action opens the selected resource.
