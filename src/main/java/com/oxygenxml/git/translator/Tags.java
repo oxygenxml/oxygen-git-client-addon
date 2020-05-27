@@ -924,4 +924,9 @@ public class Tags {
    * Confirmation message shown when invoking "Reset credentials".
    */
   public static final String RESET_CREDENTIALS_CONFIRM_MESAGE = "Reset_credentials_confirm_mesage";
+  
+  /**
+   * Amended successfully.
+   */
+  public static final String AMENDED_SUCCESSFULLY = "Amended_successfully";
 }

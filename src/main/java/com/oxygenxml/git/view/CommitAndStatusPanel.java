@@ -157,8 +157,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
             "Commit failed.  " + e1.getMessage());
       } finally {
-        amendLastCommitToggle.setSelected(false);
-        
         stopTimer();
         handleCommitEnded(commitSuccessful);
         SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
@@ -204,8 +202,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         observer.stateChanged(pushPullEvent);
 
         SwingUtilities.invokeLater(() -> {
+          setStatusMessage(amendLastCommitToggle.isSelected() ? translator.getTranslation(Tags.AMENDED_SUCCESSFULLY)
+              : translator.getTranslation(Tags.COMMIT_SUCCESS));
+          amendLastCommitToggle.setSelected(false);
+          commitButton.setText(translator.getTranslation(Tags.COMMIT));
           commitMessageArea.setText("");
-          setStatusMessage(translator.getTranslation(Tags.COMMIT_SUCCESS));
         });
       } else {
         SwingUtilities.invokeLater(() -> setStatusMessage(""));
@@ -427,6 +428,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         } else {
           commitMessageArea.setText(previousText);
           toggleCommitButtonAndUpdateMessageArea(false);
+          commitButton.setText(translator.getTranslation(Tags.COMMIT));
         }
       }
       
@@ -438,6 +440,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         String text = messages != null && !messages.isEmpty() ? messages.get(0) : "";
         commitMessageArea.setText(text);
         toggleCommitButtonAndUpdateMessageArea(false);
+        commitButton.setText(translator.getTranslation(Tags.AMEND_LAST_COMMIT));
       }
       
     });

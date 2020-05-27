@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Amended_successfully">
+        <comment>Status message (Amendment successful).</comment>
+        <val lang="en_US">Amendment successful</val>
+        <val lang="de_DE">Amendment successful</val>
+        <val lang="fr_FR">Amendment successful</val>
+        <val lang="ja_JP">Amendment successful</val>
+        <val lang="nl_NL">Amendment successful</val>
+    </key>
     <key value="Check_ProjcetXPR_Is_Git">
         <comment>The text displayed in the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
         <val lang="en_US">Do you want your current project ({0}) to be a Git project?\n\nYour project 
