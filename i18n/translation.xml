@@ -4,6 +4,30 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+        <key value="No_remote_branch">
+        <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
+        <val lang="en_US">no remote branch detected for local branch "{0}"</val>
+        <val lang="de_DE">no remote branch detected for local branch "{0}"</val>
+        <val lang="fr_FR">no remote branch detected for local branch "{0}"</val>
+        <val lang="ja_JP">no remote branch detected for local branch "{0}"</val>
+        <val lang="nl_NL">no remote branch detected for local branch "{0}"</val>
+    </key>
+    <key value="No_upstream_branch">
+        <comment>"no upstream branch" label.</comment>
+        <val lang="en_US">no upstream branch</val>
+        <val lang="de_DE">no upstream branch</val>
+        <val lang="fr_FR">no upstream branch</val>
+        <val lang="ja_JP">no upstream branch</val>
+        <val lang="nl_NL">no upstream branch</val>
+    </key>
+    <key value="Upstream_branch">
+        <comment>"Upstream branch" label.</comment>
+        <val lang="en_US">Upstream branch:</val>
+        <val lang="de_DE">Upstream branch:</val>
+        <val lang="fr_FR">Upstream branch:</val>
+        <val lang="ja_JP">Upstream branch:</val>
+        <val lang="nl_NL">Upstream branch:</val>
+    </key>
     <key value="Amended_successfully">
         <comment>Status message (Amendment successful).</comment>
         <val lang="en_US">Amendment successful</val>
@@ -77,19 +101,19 @@
     </key>
     <key value="Push_to_create_and_track_remote_branch">
         <comment>Tooltip message for the push button.</comment>
-        <val lang="en_US">Create and track remote branch {0}, and push changes to it.</val>
-        <val lang="de_DE">Create and track remote branch {0}, and push changes to it.</val>
-        <val lang="fr_FR">Create and track remote branch {0}, and push changes to it.</val>
-        <val lang="ja_JP">Create and track remote branch {0}, and push changes to it.</val>
-        <val lang="nl_NL">Create and track remote branch {0}, and push changes to it.</val>
+        <val lang="en_US">Create and track remote branch "{0}", and push changes to it.</val>
+        <val lang="de_DE">Create and track remote branch "{0}", and push changes to it.</val>
+        <val lang="fr_FR">Create and track remote branch "{0}", and push changes to it.</val>
+        <val lang="ja_JP">Create and track remote branch "{0}", and push changes to it.</val>
+        <val lang="nl_NL">Create and track remote branch "{0}", and push changes to it.</val>
     </key>
     <key value="Push_to_track_remote_branch">
         <comment>Tooltip message for the push button.</comment>
-        <val lang="en_US">Track remote branch {0} and push changes to it.</val>
-        <val lang="de_DE">Track remote branch {0} and push changes to it.</val>
-        <val lang="fr_FR">Track remote branch {0} and push changes to it.</val>
-        <val lang="ja_JP">Track remote branch {0} and push changes to it.</val>
-        <val lang="nl_NL">Track remote branch {0} and push changes to it.</val>
+        <val lang="en_US">Track remote branch "{0}" and push changes to it.</val>
+        <val lang="de_DE">Track remote branch "{0}" and push changes to it.</val>
+        <val lang="fr_FR">Track remote branch "{0}" and push changes to it.</val>
+        <val lang="ja_JP">Track remote branch "{0}" and push changes to it.</val>
+        <val lang="nl_NL">Track remote branch "{0}" and push changes to it.</val>
     </key>
     <key value="Cannot_pull">
         <comment>"Cannot pull"</comment>
@@ -467,19 +491,19 @@
     </key>
     <key value="Pull_rebase_from">
         <comment>Pull (rebase) from</comment>
-        <val lang="en_US">Pull (rebase) from {0}</val>
-        <val lang="de_DE">Pull (Rebase) von {0}</val>
-        <val lang="fr_FR">Pull (rebase) from {0}</val>
-        <val lang="ja_JP">Pull (rebase) from {0}</val>
-        <val lang="nl_NL">Pull (rebase) from {0}</val>
+        <val lang="en_US">Pull (rebase) from "{0}"</val>
+        <val lang="de_DE">Pull (Rebase) von "{0}"</val>
+        <val lang="fr_FR">Pull (rebase) from "{0}"</val>
+        <val lang="ja_JP">Pull (rebase) from "{0}"</val>
+        <val lang="nl_NL">Pull (rebase) from "{0}"</val>
     </key>
     <key value="Pull_merge_from">
         <comment>Pull (merge) from</comment>
-        <val lang="en_US">Pull (merge) from {0}</val>
-        <val lang="de_DE">Pull (Merge) von {0}</val>
-        <val lang="fr_FR">Pull (merge) from {0}</val>
-        <val lang="ja_JP">Pull (merge) from {0}</val>
-        <val lang="nl_NL">Pull (merge) from {0}</val>
+        <val lang="en_US">Pull (merge) from "{0}"</val>
+        <val lang="de_DE">Pull (Merge) von "{0}"</val>
+        <val lang="fr_FR">Pull (merge) from "{0}"</val>
+        <val lang="ja_JP">Pull (merge) from "{0}"</val>
+        <val lang="nl_NL">Pull (merge) from "{0}"</val>
     </key>
     <key value="Pull_failed">
         <comment>Pull failed</comment>
@@ -561,14 +585,6 @@
         <val lang="ja_JP">Compare with previous version</val>
         <val lang="nl_NL">Compare with previous version</val>
     </key>
-    <key value="No_remote_branch">
-        <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
-        <val lang="en_US">no remote branch</val>
-        <val lang="de_DE">kein Remote-Branch</val>
-        <val lang="fr_FR">no remote branch</val>
-        <val lang="ja_JP">no remote branch</val>
-        <val lang="nl_NL">no remote branch</val>
-    </key>
     <key value="Refresh">
         <comment>Action in the history panel.</comment>
         <val lang="en_US">Refresh</val>
@@ -587,19 +603,19 @@
     </key>
     <key value="Push_to">
         <comment>Push to</comment>
-        <val lang="en_US">Push to {0}</val>
-        <val lang="de_DE">Push an {0}</val>
-        <val lang="fr_FR">Push to {0}</val>
-        <val lang="ja_JP">Push to {0}</val>
-        <val lang="nl_NL">Push to {0}</val>
+        <val lang="en_US">Push to "{0}"</val>
+        <val lang="de_DE">Push an "{0}"</val>
+        <val lang="fr_FR">Push to "{0}"</val>
+        <val lang="ja_JP">Push to "{0}"</val>
+        <val lang="nl_NL">Push to "{0}"</val>
     </key>
     <key value="Pull_from">
         <comment>Pull from</comment>
-        <val lang="en_US">Pull from {0}</val>
-        <val lang="de_DE">Pull von {0}</val>
-        <val lang="fr_FR">Pull from {0}</val>
-        <val lang="ja_JP">Pull from {0}</val>
-        <val lang="nl_NL">Pull from {0}</val>
+        <val lang="en_US">Pull from "{0}"</val>
+        <val lang="de_DE">Pull von "{0}"</val>
+        <val lang="fr_FR">Pull from "{0}"</val>
+        <val lang="ja_JP">Pull from "{0}"</val>
+        <val lang="nl_NL">Pull from "{0}"</val>
     </key>
     <key value="Remote">
         <comment>Remote</comment>

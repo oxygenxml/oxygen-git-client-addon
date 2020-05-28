@@ -460,11 +460,21 @@ public class Tags {
 	 * Local branch
 	 */
 	public static final String LOCAL_BRANCH = "Local_branch";
+
+	/**
+	 * Remote branch
+	 */
+	public static final String REMOTE_BRANCH = "Remote_branch";
+
+	/**
+	 * Upstream branch
+	 */
+	public static final String UPSTREAM_BRANCH = "Upstream_branch";
 	
-	 /**
-   * Remote branch
+	/**
+   * No upstream branch
    */
-  public static final String REMOTE_BRANCH = "Remote_branch";
+  public static final String NO_UPSTREAM_BRANCH = "No_upstream_branch";
 
 	/**
 	 * The text displayed on the right side of the toolbar buttons if the
