@@ -911,9 +911,14 @@ public class Tags {
   public static final String CANNOT_PULL = "Cannot_pull";
   
   /**
-   * Push to create remote branch {0}.
+   * Push to create and track remote branch {0}.
    */
-  public static final String PUSH_TO_CREATE_AND_OR_TRACK_REMOTE_BRANCH = "Push_to_create_and_or_track_remote_branch";
+  public static final String PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH = "Push_to_create_and_track_remote_branch";
+  
+  /**
+   * Push to track existing remote branch {0}.
+   */
+  public static final String PUSH_TO_TRACK_REMOTE_BRANCH = "Push_to_track_remote_branch";
   
   /**
    * Reset all credentials.

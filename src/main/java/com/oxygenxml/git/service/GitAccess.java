@@ -1021,7 +1021,7 @@ public class GitAccess {
 	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
 	      try {
 	        String localBranchName = getBranchInfo().getBranchName();
-          if (getRemote(localBranchName) == null) {
+          if (getRemoteFromConfig(localBranchName) == null) {
             repo.getConfig().setString(
                 ConfigConstants.CONFIG_BRANCH_SECTION,
                 getBranchInfo().getBranchName(),
@@ -1959,7 +1959,7 @@ public class GitAccess {
 	 * 
 	 * @throws NoRepositorySelected 
 	 */
-	public String getRemote(String branchName) throws NoRepositorySelected {
+	public String getRemoteFromConfig(String branchName) throws NoRepositorySelected {
 	  Repository repository = GitAccess.getInstance().getRepository();
 	  return repository.getConfig().getString("branch", branchName, ConfigConstants.CONFIG_KEY_REMOTE);
 	}
@@ -1973,7 +1973,7 @@ public class GitAccess {
 	 * 
 	 * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
 	 */
-	public String getUpstreamBranchName(String localBranchShortName) {
+	public String getUpstreamBranchNameFromConfig(String localBranchShortName) {
 	  return RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName);
   }
 	
@@ -1986,8 +1986,8 @@ public class GitAccess {
    * 
    * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
    */
-	public String getUpstreamBranchShortName(String localBranchShortName) {
-	  String remoteTrackingBranch = getUpstreamBranchName(localBranchShortName);
+	public String getUpstreamBranchShortNameFromConfig(String localBranchShortName) {
+	  String remoteTrackingBranch = getUpstreamBranchNameFromConfig(localBranchShortName);
 
 	  if (remoteTrackingBranch != null) {
 	    return org.eclipse.jgit.lib.Repository.shortenRefName(remoteTrackingBranch);

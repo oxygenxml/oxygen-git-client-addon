@@ -75,13 +75,21 @@
         <val lang="ja_JP">Reset all credentials</val>
         <val lang="nl_NL">Reset all credentials</val>
     </key>
-    <key value="Push_to_create_and_or_track_remote_branch">
-        <comment>"Push to create and/or track remote branch {0}."</comment>
-        <val lang="en_US">Push to create and/or track remote branch {0}.</val>
-        <val lang="de_DE">Push to create and/or track remote branch {0}.</val>
-        <val lang="fr_FR">Push to create and/or track remote branch {0}.</val>
-        <val lang="ja_JP">Push to create and/or track remote branch {0}.</val>
-        <val lang="nl_NL">Push to create and/or track remote branch {0}.</val>
+    <key value="Push_to_create_and_track_remote_branch">
+        <comment>Tooltip message for the push button.</comment>
+        <val lang="en_US">Create and track remote branch {0}, and push changes to it.</val>
+        <val lang="de_DE">Create and track remote branch {0}, and push changes to it.</val>
+        <val lang="fr_FR">Create and track remote branch {0}, and push changes to it.</val>
+        <val lang="ja_JP">Create and track remote branch {0}, and push changes to it.</val>
+        <val lang="nl_NL">Create and track remote branch {0}, and push changes to it.</val>
+    </key>
+    <key value="Push_to_track_remote_branch">
+        <comment>Tooltip message for the push button.</comment>
+        <val lang="en_US">Track remote branch {0} and push changes to it.</val>
+        <val lang="de_DE">Track remote branch {0} and push changes to it.</val>
+        <val lang="fr_FR">Track remote branch {0} and push changes to it.</val>
+        <val lang="ja_JP">Track remote branch {0} and push changes to it.</val>
+        <val lang="nl_NL">Track remote branch {0} and push changes to it.</val>
     </key>
     <key value="Cannot_pull">
         <comment>"Cannot pull"</comment>
