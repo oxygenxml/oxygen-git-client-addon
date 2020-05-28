@@ -62,10 +62,10 @@ public class FlatView7Test extends FlatViewTestBase {
         "Cannot_pull\nNo_remote_branch.",
         toolbarPanel.getPullMenuButton().getToolTipText());
     assertEquals(
-        "<html>Push_to_create_remote_branch</html>",
+        "Push_to_create_and_track_remote_branch",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>new_branch</b>.<br>Remote_branch <b>No_remote_branch</b>.<br></html>",
+        "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
         toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
     
     // Push to create the remote branch
@@ -82,7 +82,7 @@ public class FlatView7Test extends FlatViewTestBase {
         "Push_to.\nNothing_to_push",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>new_branch</b>.<br>Remote_branch <b>origin/new_branch</b>.<br>"
+        "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>origin/new_branch</b>.<br>"
         + "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
         toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
     
@@ -110,7 +110,7 @@ public class FlatView7Test extends FlatViewTestBase {
         "Push_to.\nOne_commit_ahead",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>master</b>.<br>Remote_branch <b>origin/master</b>.<br>"
+        "<html>Local_branch <b>master</b>.<br>Upstream_branch <b>origin/master</b>.<br>"
         + "One_commit_behind<br>One_commit_ahead</html>",
         toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
     
@@ -134,7 +134,7 @@ public class FlatView7Test extends FlatViewTestBase {
         "Push_to.\nCommits_ahead",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>master</b>.<br>Remote_branch <b>origin/master</b>.<br>"
+        "<html>Local_branch <b>master</b>.<br>Upstream_branch <b>origin/master</b>.<br>"
         + "Commits_behind<br>Commits_ahead</html>",
         toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
   }
