@@ -944,4 +944,9 @@ public class Tags {
    * Amended successfully.
    */
   public static final String AMENDED_SUCCESSFULLY = "Amended_successfully";
+  
+  /**
+   * Upstream branch {0} does not exist.
+   */
+  public static final String UPSTREAM_BRANCH_DOES_NOT_EXIST = "Upstream_branch_does_not_exist";
 }

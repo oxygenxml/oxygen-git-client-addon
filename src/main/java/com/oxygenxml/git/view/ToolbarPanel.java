@@ -40,7 +40,6 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
-import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -541,24 +540,31 @@ public class ToolbarPanel extends JPanel {
 			  branchInfoText = "<html><b>" + currentBranchName + "</b></html>";
 			  
 			  String upstreamBranchFromConfig = gitAccess.getUpstreamBranchShortNameFromConfig(currentBranchName);
-			  boolean isUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
+			  boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
 			  
-			  Ref remoteBranchWithLocalBranchName = getRemoteBranchWithLocalBranchName(currentBranchName);
-        boolean existsRemoteBranchWithLocalBranchName = remoteBranchWithLocalBranchName != null;
+        String upstreamShortestName = 
+            isAnUpstreamBranchDefinedInConfig 
+                ? upstreamBranchFromConfig.substring(upstreamBranchFromConfig.lastIndexOf('/') + 1)
+                : null;
+        Ref remoteBranchRefForUpstreamFromConfig = 
+            isAnUpstreamBranchDefinedInConfig 
+                ? getRemoteBranch(upstreamShortestName) 
+                : null;
+        boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
 
         branchTooltip = "<html>"
 				    + translator.getTranslation(Tags.LOCAL_BRANCH) 
 				    + " <b>" + currentBranchName + "</b>.<br>"
 				    + translator.getTranslation(Tags.UPSTREAM_BRANCH) 
 				    + " <b>" 
-				    + (existsRemoteBranchWithLocalBranchName && isUpstreamBranchDefinedInConfig 
+				    + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig 
 				        ? upstreamBranchFromConfig 
 				        : translator.getTranslation(Tags.NO_UPSTREAM_BRANCH)) 
 				    + "</b>.<br>";
         
         String commitsBehindMessage = "";
         String commitsAheadMessage = "";
-        if (existsRemoteBranchWithLocalBranchName && isUpstreamBranchDefinedInConfig) {
+        if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
           if (pullsBehind == 0) {
             commitsBehindMessage = translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
           } else if (pullsBehind == 1) {
@@ -579,56 +585,80 @@ public class ToolbarPanel extends JPanel {
         }
         
 				branchTooltip += "</html>";
-				
-				
-        // Push button tooltip
-        String pushButtonTooltip = "";
-        if (existsRemoteBranchWithLocalBranchName) {
-          if (isUpstreamBranchDefinedInConfig) {
-            pushButtonTooltip = MessageFormat.format(
-                translator.getTranslation(Tags.PUSH_TO),
-                upstreamBranchFromConfig) + ".\n";
-            pushButtonTooltip += commitsAheadMessage;
-          } else {
-            pushButtonTooltip = MessageFormat.format(
-                translator.getTranslation(Tags.PUSH_TO_TRACK_REMOTE_BRANCH),
-                currentBranchName);
-          }
-        } else {
-          pushButtonTooltip = MessageFormat.format(
-              translator.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
-              currentBranchName);
-        }
-        pushButton.setToolTipText(pushButtonTooltip);
 
-				// Pull button tooltip
-				String pullButtonTooltip = "";
-				String pullFromTag = Tags.PULL_FROM;
-				Object value = pullMenuButton.getAction().getValue(PullAction.PULL_TYPE_ACTION_PROP);
-				if (value instanceof PullType) {
-				  PullType pt = (PullType) value;
-				  if (pt == PullType.REBASE) {
-				    pullFromTag = Tags.PULL_REBASE_FROM;
-				  } else if (pt != PullType.UKNOWN) {
-				    pullFromTag = Tags.PULL_MERGE_FROM;
-				  }
-				}
-				if (existsRemoteBranchWithLocalBranchName) {
-				  pullButtonTooltip = MessageFormat.format(
-				      translator.getTranslation(pullFromTag),
-				      Repository.shortenRefName(remoteBranchWithLocalBranchName.getName())) + ".\n";
-				  if (isUpstreamBranchDefinedInConfig) {
-				    pullButtonTooltip += commitsBehindMessage;
+				// ===================== Push button tooltip =====================
+				String pushButtonTooltip = "";
+				if (isAnUpstreamBranchDefinedInConfig) {
+				  if (existsRemoteBranchForUpstreamDefinedInConfig) {
+				    // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
+				    pushButtonTooltip = MessageFormat.format(
+				        translator.getTranslation(Tags.PUSH_TO),
+				        upstreamBranchFromConfig) + ".\n";
+				    pushButtonTooltip += commitsAheadMessage;
+				  } else {
+				    // There is an upstream branch defined in "config",
+				    // but that branch does not exist in the remote repository.
+				    pushButtonTooltip = MessageFormat.format(
+				        translator.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
+				        currentBranchName);
 				  }
 				} else {
-				  pullButtonTooltip = translator.getTranslation(Tags.CANNOT_PULL) + "\n" 
-              + MessageFormat.format(
-                  StringUtils.capitalize(translator.getTranslation(Tags.NO_REMOTE_BRANCH)),
-                  currentBranchName) 
-				      + ".";
+				  Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
+				  if (remoteBranchWithLocalBranchName != null) {
+				    // No upstream branch defined in "config", but there is a remote branch
+				    // that has the same name as the local branch.
+				    pushButtonTooltip = MessageFormat.format(
+				        translator.getTranslation(Tags.PUSH_TO_TRACK_REMOTE_BRANCH),
+				        currentBranchName);
+				  } else {
+				    // No upstream branch defined in "config" and no remote branch
+				    // that has the same name as the local branch.
+				    pushButtonTooltip = MessageFormat.format(
+				        translator.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
+				        currentBranchName);
+				  }
 				}
-        pullMenuButton.setToolTipText(pullButtonTooltip);
+				pushButton.setToolTipText(pushButtonTooltip);
+
+				//  ===================== Pull button tooltip =====================
+				String pullButtonTooltip = "";
+				final String pullFromTag = getPullFromTranslationTag();
+				if (isAnUpstreamBranchDefinedInConfig) {
+				  if (existsRemoteBranchForUpstreamDefinedInConfig) {
+				    // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
+				    pullButtonTooltip = MessageFormat.format(
+				        translator.getTranslation(pullFromTag),
+				        Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName())) + ".\n";
+				    pullButtonTooltip += commitsBehindMessage;
+				  } else {
+				    // The upstream branch defined in "config" does not exists in the remote repository.
+            pullButtonTooltip = translator.getTranslation(Tags.CANNOT_PULL) + "\n" 
+                + MessageFormat.format(
+                    StringUtils.capitalize(translator.getTranslation(Tags.UPSTREAM_BRANCH_DOES_NOT_EXIST)),
+                    upstreamBranchFromConfig);
+				  }
+				} else {
+				  Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
+				  if (remoteBranchWithLocalBranchName != null) {
+				    // No upstream defined in config, but there is a remote branch
+				    // that has the same name as the local branch
+				    pullButtonTooltip = MessageFormat.format(
+				        translator.getTranslation(pullFromTag),
+				        Repository.shortenRefName(remoteBranchWithLocalBranchName.getName())) + ".\n";
+				  } else {
+				    // No upstream branch defined in "config" and no remote branch
+            // that has the same name as the local branch.
+				    pullButtonTooltip = translator.getTranslation(Tags.CANNOT_PULL) + "\n" 
+				        + MessageFormat.format(
+				            StringUtils.capitalize(translator.getTranslation(Tags.NO_REMOTE_BRANCH)),
+				            currentBranchName) 
+				        + ".";
+				  }
+				}
+				pullMenuButton.setToolTipText(pullButtonTooltip);
+        
 			}
+			
 			remoteAndBranchInfoLabel.setToolTipText(branchTooltip);
 		}
 		
@@ -636,25 +666,44 @@ public class ToolbarPanel extends JPanel {
 	}
 
 	/**
-	 * Get the remote branch that has the same name as the local branch.
+	 * @return The translation tag for the "Pull" button tooltip text.
+	 */
+  private String getPullFromTranslationTag() {
+    String pullFromTag = Tags.PULL_FROM;
+    Object value = pullMenuButton.getAction().getValue(PullAction.PULL_TYPE_ACTION_PROP);
+    if (value instanceof PullType) {
+      PullType pt = (PullType) value;
+      if (pt == PullType.REBASE) {
+        pullFromTag = Tags.PULL_REBASE_FROM;
+      } else if (pt != PullType.UKNOWN) {
+        pullFromTag = Tags.PULL_MERGE_FROM;
+      }
+    }
+    return pullFromTag;
+  }
+
+	/**
+	 * Get the remote branch that has the given name.
 	 * This seems to look in ".git\refs\remotes\origin" for the necessary information.
 	 * 
-	 * @param localBranchName Local branch name.
+	 * @param branchName Local branch name.
 	 * 
 	 * @return The remote branch or <code>null</code>;
 	 */
-  private Ref getRemoteBranchWithLocalBranchName(String localBranchName) {
-    Ref remoteBranchWithLocalBranchName = null;
-    List<Ref> remoteBrachListForCurrentRepo = GitAccess.getInstance().getRemoteBrachListForCurrentRepo();
-    for (Ref remoteBranchRef : remoteBrachListForCurrentRepo) {
-      String remoteBranchName = Repository.shortenRefName(remoteBranchRef.getName());
-      remoteBranchName = remoteBranchName.substring(remoteBranchName.lastIndexOf('/') + 1);
-      if (remoteBranchName.equals(localBranchName)) {
-        remoteBranchWithLocalBranchName = remoteBranchRef;
-        break;
-      }
-    }
-    return remoteBranchWithLocalBranchName;
+	private Ref getRemoteBranch(String branchName) {
+	  Ref remoteBranchWithLocalBranchName = null;
+	  if (branchName != null) {
+	    List<Ref> remoteBrachListForCurrentRepo = GitAccess.getInstance().getRemoteBrachListForCurrentRepo();
+	    for (Ref remoteBranchRef : remoteBrachListForCurrentRepo) {
+	      String remoteBranchName = Repository.shortenRefName(remoteBranchRef.getName());
+	      remoteBranchName = remoteBranchName.substring(remoteBranchName.lastIndexOf('/') + 1);
+	      if (remoteBranchName.equals(branchName)) {
+	        remoteBranchWithLocalBranchName = remoteBranchRef;
+	        break;
+	      }
+	    }
+	  }
+	  return remoteBranchWithLocalBranchName;
   }
 
 	/**

@@ -4,7 +4,7 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
-        <key value="No_remote_branch">
+    <key value="No_remote_branch">
         <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
         <val lang="en_US">no remote branch detected for local branch "{0}"</val>
         <val lang="de_DE">no remote branch detected for local branch "{0}"</val>
@@ -27,6 +27,14 @@
         <val lang="fr_FR">Upstream branch:</val>
         <val lang="ja_JP">Upstream branch:</val>
         <val lang="nl_NL">Upstream branch:</val>
+    </key>
+    <key value="Upstream_branch_does_not_exist">
+        <comment>"Upstream branch {0} does not exist" label.</comment>
+        <val lang="en_US">Upstream branch "{0}" does not exist.</val>
+        <val lang="de_DE">Upstream branch "{0}" does not exist.</val>
+        <val lang="fr_FR">Upstream branch "{0}" does not exist.</val>
+        <val lang="ja_JP">Upstream branch "{0}" does not exist.</val>
+        <val lang="nl_NL">Upstream branch "{0}" does not exist.</val>
     </key>
     <key value="Amended_successfully">
         <comment>Status message (Amendment successful).</comment>
