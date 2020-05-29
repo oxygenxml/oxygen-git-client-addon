@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.historycomponents;
 
+import java.awt.Component;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,6 +13,7 @@ import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
@@ -29,6 +32,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.event.GitController;
 
@@ -84,7 +88,7 @@ public class HistoryViewContextualMenuPresenter {
     if (commitCharacteristics != null && commitCharacteristics.length > 0) {
       if (commitCharacteristics.length == 1) {
         populateActions4SingleSelection(jPopupMenu, filePath, commitCharacteristics[0]);
-      } else {
+      } else if (filePath != null) {
         populateActions4MultipleSelection(jPopupMenu, filePath, commitCharacteristics);
       }
     }
@@ -214,12 +218,38 @@ public class HistoryViewContextualMenuPresenter {
       JPopupMenu jPopupMenu,
       String filePath,
       CommitCharacteristics commitCharacteristics) throws IOException, GitAPIException {
-    Optional<FileStatus> fileStatusOptional = getFileStatus(filePath, commitCharacteristics);
-    if (fileStatusOptional.isPresent()) {
-      populateContextualActions(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
-    } else {
-      LOGGER.warn("File path " + filePath + " is not present at revision " + commitCharacteristics.toString());
+    if (filePath != null) {
+      Optional<FileStatus> fileStatusOptional = getFileStatus(filePath, commitCharacteristics);
+      if (fileStatusOptional.isPresent()) {
+        populateContextualActions(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
+      }
     }
+
+    if (filePath != null) {
+      jPopupMenu.addSeparator();
+    }
+    jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        GitOperationScheduler.getInstance().schedule(() -> {
+          try {
+            String result = JOptionPane.showInputDialog(
+                (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+                Translator.getInstance().getTranslation(Tags.BRANCH_NAME),
+                Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
+                JOptionPane.PLAIN_MESSAGE);
+            if (result != null && !result.isEmpty()) {
+              GitAccess.getInstance().checkoutCommitAndCreateBranch(
+                  result,
+                  commitCharacteristics.getCommitId());
+            }
+          } catch (HeadlessException | GitAPIException e1) {
+            LOGGER.debug(e1);
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
+          }
+        });
+      }
+    });
   }
 
   /**

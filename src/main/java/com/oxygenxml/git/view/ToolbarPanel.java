@@ -471,12 +471,11 @@ public class ToolbarPanel extends JPanel {
 	 */
 	private void addBranchSelectButton() {
 		Action branchSelectAction = new AbstractAction() {
-
 			@Override
       public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						new BranchSelectDialog(refreshSupport);
+						new BranchSelectDialog();
 					}
 				} catch (NoRepositorySelected e1) {
           if(logger.isDebugEnabled()) {

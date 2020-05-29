@@ -25,8 +25,10 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.utils.PanelRefresh;
@@ -247,6 +249,16 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           if (cmd == GitCommand.CONTINUE_REBASE) {
             gitRefreshSupport.call();
           }
+        }
+      }
+      
+      @Override
+      public void branchChanged(String oldBranch, String newBranch) {
+        gitRefreshSupport.call();
+        try {
+          FileHelper.refreshProjectView();
+        } catch (NoRepositorySelected e) {
+          logger.debug(e, e);
         }
       }
     });

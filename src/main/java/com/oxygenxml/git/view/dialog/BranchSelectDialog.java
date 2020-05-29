@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,20 +20,16 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
-import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -56,11 +51,6 @@ public class BranchSelectDialog extends OKCancelDialog {
 	private JComboBox<String> branchesCombo;
 
 	/**
-	 * Git refresh support.
-	 */
-	private GitRefreshSupport gitRefreshSupport;
-
-	/**
 	 * The translator for i18n.
 	 */
 	private static Translator translator = Translator.getInstance();
@@ -72,16 +62,12 @@ public class BranchSelectDialog extends OKCancelDialog {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param parentFrame  The parent frame.
-	 * @param title        The dialog's title.
 	 */
-	public BranchSelectDialog(GitRefreshSupport refresh) {
+	public BranchSelectDialog() {
 		super(
 		    (JFrame) pluginWS.getParentFrame(),
 		    translator.getTranslation(Tags.BRANCH_SELECTION_DIALOG_TITLE),
 		    true);
-		this.gitRefreshSupport = refresh;
 
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -168,14 +154,10 @@ public class BranchSelectDialog extends OKCancelDialog {
 	  GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
 	      GitAccess.getInstance().setBranch((String) branchesCombo.getSelectedItem());
-	      gitRefreshSupport.call();
-	      refreshProjectView();
 	    } catch (CheckoutConflictException e) {
 	      logger.debug(e, e);
 	      showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-	    } catch (GitAPIException 
-	        // Shouldn't happen
-	        | NoRepositorySelected e) {
+	    } catch (GitAPIException e) {
 	      logger.debug(e, e);
 	      showErrorMessage(e.getMessage());
 	    } finally {
@@ -184,21 +166,6 @@ public class BranchSelectDialog extends OKCancelDialog {
 	    }
 	  });
 	}
-
-	/**
-	 * Refresh project view.
-	 */
-  private void refreshProjectView() throws NoRepositorySelected {
-    ProjectController projectManager = pluginWS.getProjectManager();
-    String projectDirPath = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
-    Repository repository = GitAccess.getInstance().getRepository();
-    String repoPath = repository.getDirectory().getParent();
-    if (repoPath.startsWith(projectDirPath)) {
-      projectManager.refreshFolders(new File[] { new File(repoPath) });
-    } else if (projectDirPath.startsWith(repoPath)) {
-      projectManager.refreshFolders(new File[] { new File(projectDirPath) });
-    }
-  }
 
 	/**
 	 * Show error message.

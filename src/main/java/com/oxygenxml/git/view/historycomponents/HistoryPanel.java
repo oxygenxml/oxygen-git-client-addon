@@ -264,29 +264,27 @@ public class HistoryPanel extends JPanel {
    * @param point                The point where to show the contextual menu.
    */
   protected void showHistoryTableContextualMenu(JTable historyTable, Point point) {
-    if (activeFilePath != null) {
-      // If we present the history for a specific file.
-      int rowAtPoint = historyTable.rowAtPoint(point);
-      if (rowAtPoint != -1) {
-        updateTableSelection(historyTable, rowAtPoint);
-        
-        int[] selectedRows = historyTable.getSelectedRows();
-        CommitCharacteristics[] cc = new CommitCharacteristics[selectedRows.length];
-        for (int i = 0; i < selectedRows.length; i++) {
-          HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
-          int convertedSelectedRow = historyTable.convertRowIndexToModel(selectedRows[i]);
-          CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
-          cc[i] = commitCharacteristics;
-        }
-        
-        try {
-          JPopupMenu jPopupMenu = new JPopupMenu();
-          contextualMenuPresenter.populateContextualActions(jPopupMenu, activeFilePath, cc);
-          
-          jPopupMenu.show(historyTable, point.x, point.y);
-        } catch (IOException | GitAPIException e) {
-          LOGGER.error(e, e);
-        }
+    // If we present the history for a specific file.
+    int rowAtPoint = historyTable.rowAtPoint(point);
+    if (rowAtPoint != -1) {
+      updateTableSelection(historyTable, rowAtPoint);
+
+      int[] selectedRows = historyTable.getSelectedRows();
+      CommitCharacteristics[] cc = new CommitCharacteristics[selectedRows.length];
+      for (int i = 0; i < selectedRows.length; i++) {
+        HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
+        int convertedSelectedRow = historyTable.convertRowIndexToModel(selectedRows[i]);
+        CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
+        cc[i] = commitCharacteristics;
+      }
+
+      try {
+        JPopupMenu jPopupMenu = new JPopupMenu();
+        contextualMenuPresenter.populateContextualActions(jPopupMenu, activeFilePath, cc);
+
+        jPopupMenu.show(historyTable, point.x, point.y);
+      } catch (IOException | GitAPIException e) {
+        LOGGER.error(e, e);
       }
     }
   }

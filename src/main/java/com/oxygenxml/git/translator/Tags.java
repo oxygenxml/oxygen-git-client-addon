@@ -949,4 +949,14 @@ public class Tags {
    * Upstream branch {0} does not exist.
    */
   public static final String UPSTREAM_BRANCH_DOES_NOT_EXIST = "Upstream_branch_does_not_exist";
+  
+  /**
+   * Create branch
+   */
+  public static final String CREATE_BRANCH = "Create_branch";
+  
+  /**
+   * Branch name
+   */
+  public static final String BRANCH_NAME = "Branch_name";
 }

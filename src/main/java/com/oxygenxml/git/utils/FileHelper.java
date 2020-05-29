@@ -12,9 +12,14 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 
 /**
  * An utility class for files
@@ -255,7 +260,8 @@ public class FileHelper {
    * @return <code>true</code> if the path corresponds to a Git repository.
    */
   public static boolean isGitRepository(File folder) {
-    File[] listOfFiles = folder.listFiles((FileFilter) pathname -> pathname.isDirectory() && ".git".equals(pathname.getName()));
+    FileFilter filter = pathname -> pathname.isDirectory() && ".git".equals(pathname.getName());
+    File[] listOfFiles = folder.listFiles(filter);
 
 		return listOfFiles != null && listOfFiles.length > 0;
   }
@@ -352,4 +358,20 @@ public class FileHelper {
 	public static boolean isArchiveExtension(String ext) {
 	  return ARCHIVE_EXTENSIONS.contains(ext);
 	}
+	
+	 /**
+   * Refresh project view.
+   */
+  public static void refreshProjectView() throws NoRepositorySelected {
+    StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+    ProjectController projectManager = pluginWS.getProjectManager();
+    String projectDirPath = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
+    Repository repository = GitAccess.getInstance().getRepository();
+    String repoPath = repository.getDirectory().getParent();
+    if (repoPath.startsWith(projectDirPath)) {
+      projectManager.refreshFolders(new File[] { new File(repoPath) });
+    } else if (projectDirPath.startsWith(repoPath)) {
+      projectManager.refreshFolders(new File[] { new File(projectDirPath) });
+    }
+  }
 }

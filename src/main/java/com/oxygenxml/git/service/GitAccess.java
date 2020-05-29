@@ -1914,7 +1914,24 @@ public class GitAccess {
 		git.checkout().setName(selectedBranch).call();
 		
 		fireBranchChanged(branchInfo.getBranchName(), selectedBranch);
-
+	}
+	
+	/**
+	 * Check out a specific commit and create a branch with it.
+	 * 
+	 * @param branchName The name of the new branch.
+	 * @param commitID   The ID of the commit to be checked-out as a new branch.
+	 * 
+	 * @throws GitAPIException 
+	 */
+	public void checkoutCommitAndCreateBranch(String branchName, String commitID) throws GitAPIException {
+	  String oldBranch = getBranchInfo().getBranchName();
+	  git.checkout()
+	      .setCreateBranch(true)
+	      .setName(branchName)
+	      .setStartPoint(commitID)
+	      .call();
+	  fireBranchChanged(oldBranch, branchName);
 	}
 
 	/**
