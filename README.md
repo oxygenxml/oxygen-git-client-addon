@@ -47,6 +47,8 @@ Click the **Browse** button to the right of the **Working copy** combo box to se
 
 To switch between local branches, use the **Change branch** action from the toolbar of the **Git Staging** view and select the desired branch from the presented combo box.
 
+New branches can be created from the History table using the **Create branch** action in the contextual menu.
+
 ## Working with submodules
 
 To open and work with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box.
@@ -61,6 +63,8 @@ The **Git History** view presents all the affected resources for each commit in 
 - **Compare with previous version** (available for modified resources): This action compares the selected version of the selected resource with the previous one using the **Oxygen Diff Files** tool.
 - **Compare with working copy version** (available for modified resources): This action compares the selected version of the selected resource with the current one using the **Oxygen Diff Files** tool.
 - **Compare with each other** (available when selecting 2 versions of a single file): This action compares the selected versions with each other using the **Oxygen Diff Files** tool.
+
+Moreover, new branches can be created from the History table using the **Create branch** action in the contextual menu.
 
 ## Blame
 
