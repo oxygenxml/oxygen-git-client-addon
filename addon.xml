@@ -30,6 +30,7 @@
                         <ol>
                           <li>Added the possibility to amend the last commit.</li>
                           <li>Added the possibility to automatically push changes to the remote repository when committing.</li>
+			  <li>Added the possibility to create a new branch starting from the selected commit in the History table, by using the "Create branch" contextual action.</li>
                           <li>Added the possibility to compare two revisions of the same file from the Git History view, by using the "Compare with each other" action in the contextual menu of the history table.</li>
                           <li>Added the possibility to reset the stored credentials, by using the "Reset credentials" action in the Settings menu from the main toolbar.</li>
                           <li>If you have a local branch that is not tracking a remote branch, the push button tooltip suggests that you push to create a remote branch with the same name as the local one.</li>
