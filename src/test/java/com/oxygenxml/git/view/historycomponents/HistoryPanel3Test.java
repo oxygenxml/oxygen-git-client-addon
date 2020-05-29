@@ -19,15 +19,15 @@ import com.oxygenxml.git.utils.script.RepoGenerationScript;
 public class HistoryPanel3Test extends HistoryPanelTestBase {
 
   /**
-   * <p><b>Description:</b> DESCRIBE THE TEST HERE!</p>
-   * <p><b>Bug ID:</b> EXM-</p>
+   * <p><b>Description:</b> create new branch starting from a commit from the history table.</p>
+   * <p><b>Bug ID:</b> EXM-45710-</p>
    *
    * @author sorin_carbunaru
    *
    * @throws Exception
    */
   @Test
-  public void testAffectedFiles() throws Exception {
+  public void testCreateBranchFromCommit() throws Exception {
     URL script = getClass().getClassLoader().getResource("scripts/history_script.txt");
 
     File wcTree = new File("target/gen/HistoryPanelTest/testAffectedFiles");
