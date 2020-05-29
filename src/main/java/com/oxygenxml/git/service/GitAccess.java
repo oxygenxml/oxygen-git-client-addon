@@ -1085,7 +1085,7 @@ public class GitAccess {
 	 * @throws GitAPIException other errors.
 	 */
   public PullResponse pull(String username, String password, PullType pullType) throws GitAPIException {
-	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<String>());
+	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
 	  AuthenticationInterceptor.install();
 
 		if (!getConflictingFiles().isEmpty()) {

@@ -179,7 +179,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    Thread.sleep(700);
+    sleep(700);
 		
 		String expected = "hellllo";
 		String actual = getFileContent(testFileSecondRepo);
@@ -190,7 +190,7 @@ public class GitAccessConflictTest {
 
     PushPullController ppc = new PushPullController();
     ppc.pull();
-    Thread.sleep(1200);
+    sleep(1200);
 
     assertEquals("Conclude_Merge_Message", shownWarningMess[0]);
 	}
@@ -232,7 +232,7 @@ public class GitAccessConflictTest {
 		assertEquals(expected, actual);
 		
 		gitAccess.restartMerge();
-		Thread.sleep(1000);
+		sleep(1000);
 		actual = gitAccess.getRepository().getRepositoryState();
 		expected = RepositoryState.MERGING;
 		assertEquals(expected, actual);
@@ -333,7 +333,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_MINE);
-    Thread.sleep(700);
+    sleep(700);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -349,7 +349,7 @@ public class GitAccessConflictTest {
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
     gitAccess.continueRebase();
-    Thread.sleep(700);
+    sleep(700);
     
     repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.SAFE, repositoryState);
@@ -457,7 +457,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_MINE);
-    Thread.sleep(700);
+    sleep(700);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -474,7 +474,7 @@ public class GitAccessConflictTest {
     
     // Abort. Go back to the state before trying to pull.
     gitAccess.abortRebase();
-    Thread.sleep(700);
+    sleep(700);
     
     repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.SAFE, repositoryState);
@@ -582,7 +582,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    Thread.sleep(700);
+    sleep(700);
     
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
@@ -602,7 +602,7 @@ public class GitAccessConflictTest {
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
     gitAccess.continueRebase();
-    Thread.sleep(700);
+    sleep(700);
     
     repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.SAFE, repositoryState);
@@ -709,7 +709,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    Thread.sleep(700);
+    sleep(700);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -728,7 +728,7 @@ public class GitAccessConflictTest {
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
     
     gitAccess.abortRebase();
-    Thread.sleep(700);
+    sleep(700);
     
     repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.SAFE, repositoryState);
@@ -837,7 +837,7 @@ public class GitAccessConflictTest {
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitCommand.RESOLVE_USING_THEIRS);
-    Thread.sleep(1000);
+    sleep(1000);
     
     // When having a conflict while rebasing, 'Mine' and 'Theirs' become reversed 
     assertEquals(
@@ -861,7 +861,7 @@ public class GitAccessConflictTest {
     
     // Restart merge
     gitAccess.restartMerge();
-    Thread.sleep(1000);
+    sleep(1000);
     
     repositoryState = gitAccess.getRepository().getRepositoryState();
     assertEquals(RepositoryState.REBASING_MERGE, repositoryState);
@@ -873,6 +873,17 @@ public class GitAccessConflictTest {
         gitStatus.getUnstagedFiles().toString());
     
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
+  }
+  
+  /**
+   * Sleep well!
+   * 
+   * @param delay Delay.
+   * 
+   * @throws InterruptedException
+   */
+  private void sleep(int delay) throws InterruptedException {
+    Thread.sleep(delay);
   }
 
   /**
