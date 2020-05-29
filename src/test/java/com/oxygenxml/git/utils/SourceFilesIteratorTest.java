@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ImmutableSet;
+
 import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.annotations.api.API;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -46,6 +48,13 @@ public class SourceFilesIteratorTest extends JFCTestCase {
         || line.contains("enum ") 
         || line.contains("interface ");
   }
+  
+  /**
+   * JOptionPane exceptions.
+   */
+  private static final ImmutableSet<String> J_OPTION_PANE_EXCEPTIONS =
+      ImmutableSet.of("HistoryViewContextualMenuPresenter.java");
+
   
   /**
    * <p><b>Description:</b> test that the oXygen Git plug-in doesn't use
@@ -128,38 +137,40 @@ public class SourceFilesIteratorTest extends JFCTestCase {
    */
   public void testDontUseJOptionPane() throws Exception {
     Set<String> classesToReport = new HashSet<>();
-    
+
     // Get all the "java.swing.JOptionPane" imports
     BufferedReader br = null;
     while (srcFilesIterator.hasNext()) {
       File file = srcFilesIterator.next();
-      try {
-        br = new BufferedReader(new FileReader(file));
-        String line = "";
-        while ((line = br.readLine()) != null && !shouldStopSearchingForImports(line)) {
-          if (line.startsWith("import javax.swing.JOptionPane")) {
-            String classQName = line.substring(
-                line.indexOf("import ") + "import ".length(),
-                line.indexOf(';'));
-            classesToReport.add(classQName + DELIMITER + file);
-          }
-        }
-      } catch (FileNotFoundException e) {
-        logger.error(e, e);
-      } finally {
+      if (!J_OPTION_PANE_EXCEPTIONS.contains(file.getName())) {
         try {
-          br.close();
-        } catch (IOException e) {
+          br = new BufferedReader(new FileReader(file));
+          String line = "";
+          while ((line = br.readLine()) != null && !shouldStopSearchingForImports(line)) {
+            if (line.startsWith("import javax.swing.JOptionPane")) {
+              String classQName = line.substring(
+                  line.indexOf("import ") + "import ".length(),
+                  line.indexOf(';'));
+              classesToReport.add(classQName + DELIMITER + file);
+            }
+          }
+        } catch (FileNotFoundException e) {
           logger.error(e, e);
+        } finally {
+          try {
+            br.close();
+          } catch (IOException e) {
+            logger.error(e, e);
+          }
         }
       }
     }
-    
+
     StringBuilder sb = new StringBuilder();
     for (String classToReport : classesToReport) {
       sb.append(classToReport + "\n");
     }
-    
+
     assertEquals("Use the confirmation, information, warning and error messages from "
         + "StandalonePluginWorkspace instead of JOptionPane. JOptionPane usages have been found in: ",
         "",

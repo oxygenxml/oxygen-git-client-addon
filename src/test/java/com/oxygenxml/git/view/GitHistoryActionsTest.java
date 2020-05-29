@@ -90,12 +90,16 @@ public class GitHistoryActionsTest extends GitTestBase {
       // Assert the available actions for the changed file.
       actions.clear();
       presenter.populateContextualActions(jPopupMenu, "file1.txt", t);
-      assertEquals("[Open_file, Compare_file_with_previous_version, Compare_file_with_working_tree_version]", dumpActions(actions));
+      assertEquals("["
+          + "Open_file, "
+          + "Compare_file_with_previous_version, "
+          + "Compare_file_with_working_tree_version, "
+          + "Create_branch]", dumpActions(actions));
       
       // A deleted file.
       actions.clear();
       presenter.populateContextualActions(jPopupMenu, "file2.txt", t);
-      assertEquals("[Open_previous_version]", dumpActions(actions));
+      assertEquals("[Open_previous_version, Create_branch]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       t = iterator.next();
@@ -105,7 +109,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           "", dumpFS);
       actions.clear();
       presenter.populateContextualActions(jPopupMenu, "file2.txt", t);
-      assertEquals("[Open_file]", dumpActions(actions));
+      assertEquals("[Open_file, Create_branch]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       t = iterator.next();
@@ -115,7 +119,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           "", dumpFS);
       actions.clear();
       presenter.populateContextualActions(jPopupMenu, "file1.txt", t);
-      assertEquals("[Open_file]", dumpActions(actions));
+      assertEquals("[Open_file, Create_branch]", dumpActions(actions));
 
     } finally {
       GitAccess.getInstance().closeRepo();
@@ -186,7 +190,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       // A deleted file.
       actions.clear();
       presenter.populateContextualActions(jPopupMenu, "file2.txt", t);
-      assertEquals("[Open_previous_version]", dumpActions(actions));
+      assertEquals("[Open_previous_version, Create_branch]", dumpActions(actions));
       
       final StringBuilder b = new StringBuilder();
       Mockito.when(PluginWorkspaceProvider.getPluginWorkspace().open((URL)Mockito.anyObject())).thenAnswer(new Answer<Void>() {
