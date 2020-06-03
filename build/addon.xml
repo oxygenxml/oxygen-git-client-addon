@@ -4,8 +4,8 @@
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension" id="com.oxygenxml.git">
         <xt:location
-            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.1.1/git.support-2.1.1-plugin.jar"/>
-        <xt:version>2.1.1</xt:version>
+            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.2.0/git.support-2.2.0-plugin.jar"/>
+        <xt:version>2.2.0</xt:version>
         <xt:oxy_version>20.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
@@ -24,6 +24,23 @@
                             perform common Git commands, such as push, pull, change branch, commit,
                             and more. It also includes a built-in tool for comparing and merging
                             changes.</p>
+                    </div>
+                    <div>
+                        <h3>What's new in version 2.2.0</h3>
+                        <ol>
+                          <li>Added the possibility to amend the last commit.</li>
+                          <li>Added the possibility to automatically push changes to the remote repository when committing.</li>
+			  <li>Added the possibility to create a new branch starting from the selected commit in the History table, by using the "Create branch" contextual action.</li>
+                          <li>Added the possibility to compare two revisions of the same file from the Git History view, by using the "Compare with each other" action in the contextual menu of the history table.</li>
+                          <li>Added the possibility to reset the stored credentials, by using the "Reset credentials" action in the Settings menu from the main toolbar.</li>
+                          <li>If you have a local branch that is not tracking a remote branch, the push button tooltip suggests that you push to create a remote branch with the same name as the local one.</li>
+                          <li>Incoming and outgoing commits are marked in the history table with corresponding arrow characters.</li>
+                          <li>Improved local repository detection when selecting a project.</li>
+                          <li>Updated JGit to version 5.7.0 (which, among other things, fixes client-side hooks execution).</li>
+                          <li>Fixed a bug where failing commits did not show any messages to the user.</li>
+                          <li>Fixed other small bugs.</li>
+                        </ol>
+                        <p>For more information about the add-on's features, see <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md.">the README document</a>.</p>
                     </div>
                     <div>
                         <h3>What's new in version 2.1.1</h3>
@@ -169,66 +186,9 @@
                         <p><b>Note:</b> After installing the plugin, if the <b>Git Staging</b> view
                             is not visible, you can open it from the <b>Window > Show View</b>
                             menu.</p>
-
-                        <h2>Selecting the working copy</h2>
-                        <div>
-                            <p>Click the <b>Browse</b> button to select a working copy from your
-                                file system. The selected folder must be a Git Repository. You can
-                                also clone a new repository using a toolbar action.</p>
-                        </div>
-
-                        <h2>Unstaged resources area</h2>
-                        <div>
-                            <p>In the unstaged resources area (the one on top) you will see all the
-                                modifications that have occurred since your last commit (files that
-                                have been modified, new files and deleted files). Various actions
-                                are available in the contextual menu (<b>Open</b>, <b>Open in
-                                    compare editor</b>).</p>
-                            <p>You can stage all the files by clicking the <b>Stage All</b> button
-                                or you can stage some of them by selecting and clicking the <b>Stage
-                                    Selected</b> button. You can even individually stage each file
-                                by clicking the <b>Stage</b> button that appears next to each
-                                file.</p>
-                            <p>You can switch from the flat(table) view to a tree view by clicking
-                                on the button positioned above area.</p>
-                        </div>
-
-                        <h2>Staged resources area</h2>
-                        <div>
-                            <p>In the staging area you will see all the resources that are ready to
-                                be committed. Any files from this area can be unstaged and sent back
-                                to the unstaged resources area. The staging area has similar actions
-                                with the unstaging area.</p>
-                        </div>
-
-                        <h2>Comparing changes and conflict resolution</h2>
-                        <div>
-                            <p>At any time, if you want to see the differences between the last
-                                commit and your current modifications you can double click the file
-                                that appears either in the staging or unstaging area and Oxygen's Diff
-                                window will appear and highlight the
-                                changes.</p>
-                            <p>If the file is in conflict (has been modified both by you and
-                                another), Oxygen's Three Way Diff will show a comparison between the
-                                local change, the remote change, and the original base revision.</p>
-                        </div>
-
-                        <h2>Committing</h2>
-                        <div>
-                            <p>After staging the files, on the bottom of the view you can input the
-                                commit message and commit them into your local repository. For
-                                convenience, you can also select one of the previously entered
-                                messages.</p>
-                        </div>
-
-                        <h2>Push/Pull</h2>
-                        <div>
-                            <p>To push your local repository changes to the remote one you must
-                                click on the <b>Push</b> button from the view's toolbar. To bring
-                                the changes from the remote repository into your local one you must
-                                click on the <b>Pull</b> button from the same toolbar.</p>
-                        </div>
-
+                        <p>For information about how to use the Git Client, please see the README document 
+                        on GitHub: <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md">
+                        https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md</a>.</p>
                     </div>
                 </body>
             </html>
