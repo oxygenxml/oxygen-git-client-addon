@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -243,6 +244,9 @@ public class HistoryViewContextualMenuPresenter {
                   result,
                   commitCharacteristics.getCommitId());
             }
+          } catch (CheckoutConflictException e1) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+                Translator.getInstance().getTranslation(Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS));
           } catch (HeadlessException | GitAPIException e1) {
             LOGGER.debug(e1);
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);

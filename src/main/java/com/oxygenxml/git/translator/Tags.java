@@ -959,4 +959,10 @@ public class Tags {
    * Branch name
    */
   public static final String BRANCH_NAME = "Branch_name";
+  
+  /**
+   * Message shown when cannot checkout newly created branch because of conflicts.
+   */
+  public static final String CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS = 
+      "Cannot_checkout_new_branch_when_having_conflicts";
 }

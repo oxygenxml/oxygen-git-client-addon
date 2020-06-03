@@ -4,6 +4,19 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Cannot_checkout_new_branch_when_having_conflicts">
+        <comment>Message shown when cannot checkout newly created branch because of conflicts.</comment>
+        <val lang="en_US">The new branch was created, but it could not be checked out because of 
+        unresolved conflicts in the index. You need to resolve the conflicts first.</val>
+        <val lang="de_DE">The new branch was created, but it could not be checked out because of 
+        unresolved conflicts in the index. You need to resolve the conflicts first.</val>
+        <val lang="fr_FR">The new branch was created, but it could not be checked out because of 
+        unresolved conflicts in the index. You need to resolve the conflicts first.</val>
+        <val lang="ja_JP">The new branch was created, but it could not be checked out because of 
+        unresolved conflicts in the index. You need to resolve the conflicts first.</val>
+        <val lang="nl_NL">The new branch was created, but it could not be checked out because of 
+        unresolved conflicts in the index. You need to resolve the conflicts first.</val>
+    </key>
     <key value="Create_branch">
         <comment>"Create branch" label.</comment>
         <val lang="en_US">Create branch</val>
