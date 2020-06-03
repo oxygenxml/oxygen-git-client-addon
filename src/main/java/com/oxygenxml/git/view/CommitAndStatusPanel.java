@@ -13,9 +13,9 @@ import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.jidesoft.swing.JideToggleButton;
 import com.oxygenxml.git.constants.Icons;
@@ -319,6 +320,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       }
       
       @Override
+      public void branchChanged(String oldBranch, String newBranch) {
+        reset();
+      }
+      
+      @Override
       public void stateChanged(GitEvent changeEvent) {
         GitCommand cmd = changeEvent.getGitCommand();
         GitCommandState cmdState = changeEvent.getGitComandState();
@@ -436,11 +442,18 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
        * Prepare amend.
        */
       private void prepareAmend() {
-        List<String> messages = optionsManager.getPreviouslyCommitedMessages();
-        String text = messages != null && !messages.isEmpty() ? messages.get(0) : "";
-        commitMessageArea.setText(text);
-        toggleCommitButtonAndUpdateMessageArea(false);
-        commitButton.setText(translator.getTranslation(Tags.AMEND_LAST_COMMIT));
+        RevCommit latestCommitOnBranch = null;
+        try {
+          latestCommitOnBranch = GitAccess.getInstance().getLatestCommitOnCurrentBranch();
+        } catch (GitAPIException | IOException e) {
+          logger.debug(e, e);
+        }
+        if (latestCommitOnBranch != null) {
+          String text = latestCommitOnBranch.getFullMessage();
+          commitMessageArea.setText(text);
+          toggleCommitButtonAndUpdateMessageArea(false);
+          commitButton.setText(translator.getTranslation(Tags.AMEND_LAST_COMMIT));
+        }
       }
       
     });
@@ -688,6 +701,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 */
 	public void reset() {
 		commitMessageArea.setText(null);
+		amendLastCommitToggle.setSelected(false);
 	}
 
 	/**

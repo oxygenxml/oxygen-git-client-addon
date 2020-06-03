@@ -77,6 +77,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.merge.ResolveMerger.MergeFailureReason;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
@@ -2294,6 +2295,20 @@ public class GitAccess {
 	 */
 	public boolean isRepoInitialized() {
 	  return git != null;
+	}
+	
+	/**
+	 * Get latest commit om current branch.
+	 * 
+	 * @throws GitAPIException 
+	 * @throws IOException 
+	 */
+	public RevCommit getLatestCommitOnCurrentBranch() throws GitAPIException, IOException {
+	  String branchNAme = getBranchInfo().getBranchName();
+	  Repository repo = git.getRepository();
+	  RevWalk revWalk = (RevWalk) git.log().add(repo.resolve(branchNAme)).call();
+	  revWalk.sort(RevSort.COMMIT_TIME_DESC);
+	  return revWalk.next();
 	}
 	
 }
