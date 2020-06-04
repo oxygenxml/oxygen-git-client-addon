@@ -40,7 +40,7 @@
                           <li>Fixed a bug where failing commits did not show any messages to the user.</li>
                           <li>Fixed other small bugs.</li>
                         </ol>
-                        <p>For more information about the add-on's features, see <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md.">the README document</a>.</p>
+                        <p>For more information about the add-on's features, see <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md">the README document</a>.</p>
                     </div>
                     <div>
                         <h3>What's new in version 2.1.1</h3>
