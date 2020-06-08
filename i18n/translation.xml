@@ -8,8 +8,8 @@
         <comment>Message shown when cannot checkout newly created branch because of conflicts.</comment>
         <val lang="en_US">The new branch was created, but it could not be checked out because of 
         unresolved conflicts in the index. You need to resolve the conflicts first.</val>
-        <val lang="de_DE">The new branch was created, but it could not be checked out because of 
-        unresolved conflicts in the index. You need to resolve the conflicts first.</val>
+        <val lang="de_DE">Der neue Branch wurde erstellt, aber er konnte nicht ausgecheckt werden
+        weil es Konflikte gibt. Sie müssen zuerst die Konflikte beheben.</val>
         <val lang="fr_FR">The new branch was created, but it could not be checked out because of 
         unresolved conflicts in the index. You need to resolve the conflicts first.</val>
         <val lang="ja_JP">The new branch was created, but it could not be checked out because of 
@@ -20,7 +20,7 @@
     <key value="Create_branch">
         <comment>"Create branch" label.</comment>
         <val lang="en_US">Create branch</val>
-        <val lang="de_DE">Create branch</val>
+        <val lang="de_DE">Branch erstellen</val>
         <val lang="fr_FR">Create branch</val>
         <val lang="ja_JP">Create branch</val>
         <val lang="nl_NL">Create branch</val>
@@ -28,7 +28,7 @@
     <key value="Branch_name">
         <comment>"Branch_name" label.</comment>
         <val lang="en_US">Branch name:</val>
-        <val lang="de_DE">Branch name:</val>
+        <val lang="de_DE">Name des Branch:</val>
         <val lang="fr_FR">Branch name:</val>
         <val lang="ja_JP">Branch name:</val>
         <val lang="nl_NL">Branch name:</val>
@@ -36,7 +36,7 @@
     <key value="No_remote_branch">
         <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
         <val lang="en_US">no remote branch detected for local branch "{0}"</val>
-        <val lang="de_DE">no remote branch detected for local branch "{0}"</val>
+        <val lang="de_DE">Es wurde kein Remote-Branch für den lokalen Branch "{0}" gefunden</val>
         <val lang="fr_FR">no remote branch detected for local branch "{0}"</val>
         <val lang="ja_JP">no remote branch detected for local branch "{0}"</val>
         <val lang="nl_NL">no remote branch detected for local branch "{0}"</val>
@@ -44,7 +44,7 @@
     <key value="No_upstream_branch">
         <comment>"no upstream branch" label.</comment>
         <val lang="en_US">no upstream branch</val>
-        <val lang="de_DE">no upstream branch</val>
+        <val lang="de_DE">Kein Upstream-Branch</val>
         <val lang="fr_FR">no upstream branch</val>
         <val lang="ja_JP">no upstream branch</val>
         <val lang="nl_NL">no upstream branch</val>
@@ -52,7 +52,7 @@
     <key value="Upstream_branch">
         <comment>"Upstream branch" label.</comment>
         <val lang="en_US">Upstream branch:</val>
-        <val lang="de_DE">Upstream branch:</val>
+        <val lang="de_DE">Upstream Branch:</val>
         <val lang="fr_FR">Upstream branch:</val>
         <val lang="ja_JP">Upstream branch:</val>
         <val lang="nl_NL">Upstream branch:</val>
@@ -60,7 +60,7 @@
     <key value="Upstream_branch_does_not_exist">
         <comment>"Upstream branch {0} does not exist" label.</comment>
         <val lang="en_US">Upstream branch "{0}" does not exist.</val>
-        <val lang="de_DE">Upstream branch "{0}" does not exist.</val>
+        <val lang="de_DE">Upstream-Branch "{0}" existiert nicht.</val>
         <val lang="fr_FR">Upstream branch "{0}" does not exist.</val>
         <val lang="ja_JP">Upstream branch "{0}" does not exist.</val>
         <val lang="nl_NL">Upstream branch "{0}" does not exist.</val>
@@ -68,7 +68,7 @@
     <key value="Amended_successfully">
         <comment>Status message (Amendment successful).</comment>
         <val lang="en_US">Amendment successful</val>
-        <val lang="de_DE">Amendment successful</val>
+        <val lang="de_DE"Git-Amend erfolgreich</val>
         <val lang="fr_FR">Amendment successful</val>
         <val lang="ja_JP">Amendment successful</val>
         <val lang="nl_NL">Amendment successful</val>
@@ -78,9 +78,9 @@
         <val lang="en_US">Do you want your current project ({0}) to be a Git project?\n\nYour project 
         will become a local Git repository and you''ll be asked to specify 
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
-        <val lang="de_DE">Do you want your current project ({0}) to be a Git project?\n\nYour project
-        will become a local Git repository and you''ll be asked to specify 
-        the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
+        <val lang="de_DE">Möchten Sie ihr aktuelles Projekte ({0}) als Git-Projekt aufsetzen?\n\nIhr Projekt
+        wird als lokales Git-Repository aufgesetzt und Sie werden beim ersten Versuch Änderungen zu Pushen oder Pullen
+	nach der URL zu einem zugehörigen Remote-Repository gefragt.</val>
         <val lang="fr_FR">Do you want your current project ({0}) to be a Git project?\n\nYour project 
         will become a local Git repository and you''ll be asked to specify 
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
@@ -95,8 +95,8 @@
         <comment>Confirmation message shown when invoking "Reset credentials".</comment>
         <val lang="en_US">All credentials, for both HTTPS and SSH authentications,
         will be reset.\n\nAre you sure you want to continue?</val>
-        <val lang="de_DE">All credentials, for both HTTPS and SSH authentications,
-        will be reset.\n\nAre you sure you want to continue?</val>
+        <val lang="de_DE">Alle Zugangsdaten, sowohl für HTTPS- als auch für SSL-Authentifizierung,
+        werden zurückgesetzt.\n\nSind Sie sicher, dass Sie fortfahren möchten?</val>
         <val lang="fr_FR">All credentials, for both HTTPS and SSH authentications,
         will be reset.\n\nAre you sure you want to continue?</val>
         <val lang="ja_JP">All credentials, for both HTTPS and SSH authentications,
@@ -107,7 +107,7 @@
     <key value="File_not_present_in_revision">
         <comment>A file is not found in a revision.</comment>
         <val lang="en_US">File "{0}" is not present in commit {1}.</val>
-        <val lang="de_DE">File "{0}" is not present in commit {1}.</val>
+        <val lang="de_DE">Datei "{0}" ist im Commit {1} nicht vorhanden.</val>
         <val lang="fr_FR">File "{0}" is not present in commit {1}.</val>
         <val lang="ja_JP">File "{0}" is not present in commit {1}.</val>
         <val lang="nl_NL">File "{0}" is not present in commit {1}.</val>
@@ -115,7 +115,7 @@
     <key value="File_was_removed_in_revision">
         <comment>A file was removed in a revision.</comment>
         <val lang="en_US">File "{0}" was removed in commit {1}.</val>
-        <val lang="de_DE">File "{0}" was removed in commit {1}.</val>
+        <val lang="de_DE">Datei "{0}" wurde in Commit {1} entfernt.</val>
         <val lang="fr_FR">File "{0}" was removed in commit {1}.</val>
         <val lang="ja_JP">File "{0}" was removed in commit {1}.</val>
         <val lang="nl_NL">File "{0}" was removed in commit {1}.</val>
@@ -123,7 +123,7 @@
     <key value="Compare_with_each_other">
         <comment>Action in the history view to compare two revisions of the same file.</comment>
         <val lang="en_US">Compare with each other</val>
-        <val lang="de_DE">Compare with each other</val>
+        <val lang="de_DE">Miteinander vergleichen</val>
         <val lang="fr_FR">Compare with each other</val>
         <val lang="ja_JP">Compare with each other</val>
         <val lang="nl_NL">Compare with each other</val>
@@ -131,7 +131,7 @@
     <key value="Reset_all_credentials">
         <comment>"Reset all credentials"</comment>
         <val lang="en_US">Reset all credentials</val>
-        <val lang="de_DE">Reset all credentials</val>
+        <val lang="de_DE">Zugangsdaten zurücksetzen</val>
         <val lang="fr_FR">Reset all credentials</val>
         <val lang="ja_JP">Reset all credentials</val>
         <val lang="nl_NL">Reset all credentials</val>
@@ -139,7 +139,7 @@
     <key value="Push_to_create_and_track_remote_branch">
         <comment>Tooltip message for the push button.</comment>
         <val lang="en_US">Create and track remote branch "{0}", and push changes to it.</val>
-        <val lang="de_DE">Create and track remote branch "{0}", and push changes to it.</val>
+        <val lang="de_DE">Erstellt und trackt den Remote-Branch "{0}" und pusht die Änderungen dort hin.</val>
         <val lang="fr_FR">Create and track remote branch "{0}", and push changes to it.</val>
         <val lang="ja_JP">Create and track remote branch "{0}", and push changes to it.</val>
         <val lang="nl_NL">Create and track remote branch "{0}", and push changes to it.</val>
@@ -147,7 +147,7 @@
     <key value="Push_to_track_remote_branch">
         <comment>Tooltip message for the push button.</comment>
         <val lang="en_US">Track remote branch "{0}" and push changes to it.</val>
-        <val lang="de_DE">Track remote branch "{0}" and push changes to it.</val>
+        <val lang="de_DE">Trackt den Remote-Branch "{0}" und pusht die Änderungen dort hin.</val>
         <val lang="fr_FR">Track remote branch "{0}" and push changes to it.</val>
         <val lang="ja_JP">Track remote branch "{0}" and push changes to it.</val>
         <val lang="nl_NL">Track remote branch "{0}" and push changes to it.</val>
@@ -155,7 +155,7 @@
     <key value="Cannot_pull">
         <comment>"Cannot pull"</comment>
         <val lang="en_US">Cannot pull.</val>
-        <val lang="de_DE">Cannot pull.</val>
+        <val lang="de_DE">Pull nicht möglich.</val>
         <val lang="fr_FR">Cannot pull.</val>
         <val lang="ja_JP">Cannot pull.</val>
         <val lang="nl_NL">Cannot pull.</val>
@@ -163,7 +163,7 @@
     <key value="One_commit_ahead">
         <comment>The text displayed on the right side of the toolbar buttons if the repository is one commit ahead.</comment>
         <val lang="en_US">1 commit ahead.</val>
-        <val lang="de_DE">1 commit ahead.</val>
+        <val lang="de_DE">1 Commit voraus.</val>
         <val lang="fr_FR">1 commit ahead.</val>
         <val lang="ja_JP">1 commit ahead.</val>
         <val lang="nl_NL">1 commit ahead.</val>
@@ -171,7 +171,7 @@
     <key value="Commits_ahead">
         <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits ahead.</comment>
         <val lang="en_US">{0} commits ahead.</val>
-        <val lang="de_DE">{0} commits ahead.</val>
+        <val lang="de_DE">{0} Commits voraus.</val>
         <val lang="fr_FR">{0} commits ahead.</val>
         <val lang="ja_JP">{0} commits ahead.</val>
         <val lang="nl_NL">{0} commits ahead.</val>
@@ -179,7 +179,7 @@
     <key value="Nothing_to_push">
         <comment>"Nothing to push"</comment>
         <val lang="en_US">Nothing to push.</val>
-        <val lang="de_DE">Nothing to push.</val>
+        <val lang="de_DE">Nichts zu pushen.</val>
         <val lang="fr_FR">Nothing to push.</val>
         <val lang="ja_JP">Nothing to push.</val>
         <val lang="nl_NL">Nothing to push.</val>
@@ -203,7 +203,7 @@
     <key value="Local_branch">
         <comment>"Local branch" label.</comment>
         <val lang="en_US">Local branch:</val>
-        <val lang="de_DE">Local branch:</val>
+        <val lang="de_DE">Lokaler Branch:</val>
         <val lang="fr_FR">Local branch:</val>
         <val lang="ja_JP">Local branch:</val>
         <val lang="nl_NL">Local branch:</val>
@@ -211,7 +211,7 @@
     <key value="Remote_branch">
         <comment>"Remote branch" label.</comment>
         <val lang="en_US">Remote branch:</val>
-        <val lang="de_DE">Remote branch:</val>
+        <val lang="de_DE">Remote-Branch:</val>
         <val lang="fr_FR">Remote branch:</val>
         <val lang="ja_JP">Remote branch:</val>
         <val lang="nl_NL">Remote branch:</val>
@@ -222,10 +222,10 @@
         It is highly recommended not to amend public commits that other people may have based their work on. 
         Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
         Are you sure you want to continue?</val>
-        <val lang="de_DE">The commit being amended has already been pushed to a remote branch. 
-        It is highly recommended not to amend public commits that other people may have based their work on. 
-        Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
-        Are you sure you want to continue?</val>
+        <val lang="de_DE">Der Commit der bearbeitet werden solle wurde bereits auf einen Remote-Branch gepusht. 
+        Es wird empfohlen, solche öffentliche Commits nicht via Git-Amend zu verändern, da andere Personen bereits darauf aufbauend weitergearbeitet haben könnten. 
+        Dies kann für andere Bearbeiter verwirrende und schwer lösbare Situationen erzeugen.\n\n
+        Sind Sie sicher, dass Sie fortfahren möchten?</val>
         <val lang="fr_FR">The commit being amended has already been pushed to a remote branch. 
         It is highly recommended not to amend public commits that other people may have based their work on. 
         Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
@@ -242,7 +242,7 @@
 	<key value="Amend_last_commit">
         <comment>Text for the toggle used to amend the last commit.</comment>
         <val lang="en_US">Amend last commit</val>
-        <val lang="de_DE">Amend last commit</val>
+        <val lang="de_DE">An letzten Commit anhängen</val>
         <val lang="fr_FR">Amend last commit</val>
         <val lang="ja_JP">Amend last commit</val>
         <val lang="nl_NL">Amend last commit</val>
@@ -250,7 +250,7 @@
     <key value="Push_when_committing">
         <comment>Text for the toggle used to automatically push when committing.</comment>
         <val lang="en_US">Automatically push changes to remote branch</val>
-        <val lang="de_DE">Automatically push changes to remote branch</val>
+        <val lang="de_DE">Änderungen automatisch auf Remote-Branch pushen</val>
         <val lang="fr_FR">Automatically push changes to remote branch</val>
         <val lang="ja_JP">Automatically push changes to remote branch</val>
         <val lang="nl_NL">Automatically push changes to remote branch</val>
