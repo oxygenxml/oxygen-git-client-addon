@@ -68,7 +68,7 @@
     <key value="Amended_successfully">
         <comment>Status message (Amendment successful).</comment>
         <val lang="en_US">Amendment successful</val>
-        <val lang="de_DE"Git-Amend erfolgreich</val>
+        <val lang="de_DE">Git-Amend erfolgreich</val>
         <val lang="fr_FR">Amendment successful</val>
         <val lang="ja_JP">Amendment successful</val>
         <val lang="nl_NL">Amendment successful</val>
