@@ -941,6 +941,16 @@ public class Tags {
   public static final String RESET_CREDENTIALS_CONFIRM_MESAGE = "Reset_credentials_confirm_mesage";
   
   /**
+   * Title for no message when commit
+   */
+  public static final String NO_COMMIT_MESSAGE_TITLE = "No_commit_massage_provided";
+  
+  /**
+   * Informations when about commit without a message   
+   */
+  public static final String NO_COMMIT_MESSAGE_DIALOG = "The_commit_message_is_empty";
+  
+  /**
    * Amended successfully.
    */
   public static final String AMENDED_SUCCESSFULLY = "Amended_successfully";

@@ -104,17 +104,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
     }
     
     /**
-     * Title for no message when commit
-     */
-    private static final String NO_COMMIT_MESSAGE_TITLE = "No commit massage provided";
-    
-    /**
-     * Informations when about commit without a message   
-     */
-    private static final String NO_COMMIT_MESSAGE_DIALOG = "The commit message is empty. "
-      		+ "It is recommended to give a description of your changes. "
-      		+ "Are you sure you want to commit without one?";
-    /**
      * Action performed.
      */
     @Override
@@ -129,15 +118,17 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
           PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
               translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
         } else {
-        	if(commitMessageArea.getText().contentEquals("")) {
-        		String[] buttonNames = {"Yes","Cancel"};
-        		int[] buttonValues = {1, 0};
-        		if(PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(NO_COMMIT_MESSAGE_TITLE, NO_COMMIT_MESSAGE_DIALOG,buttonNames,buttonValues) == 1) {
-        			executeCommit();
-        		}
+          if (commitMessageArea.getText().contentEquals("")) {
+            String[] options = { translator.getTranslation(Tags.COMMIT), translator.getTranslation(Tags.CANCEL) };
+            int[] optionsIds = { 1, 0 };
+            if (PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_TITLE),
+                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG), options, optionsIds) == 1) {
+              executeCommit();
             }
-        	else 
-        		executeCommit();
+          } else {
+            executeCommit();
+          }
         }
       });
     }
