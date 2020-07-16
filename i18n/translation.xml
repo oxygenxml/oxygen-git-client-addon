@@ -5,26 +5,26 @@
         <language description="German" lang="de_DE" />
     </languageList>
     <key value="No_commit_massage_provided">
-        <comment>"Create branch" label.</comment>
-        <val lang="en_US">No commit massage provided</val>
-        <val lang="de_DE">Keine Commit-Massage vorgesehen</val>
-        <val lang="fr_FR">No commit massage provided</val>
-        <val lang="ja_JP">No commit massage provided</val>
-        <val lang="nl_NL">No commit massage provided</val>
+        <comment>Dialog title when the user commits with an empty commit message.</comment>
+        <val lang="en_US">No commit message</val>
+        <val lang="de_DE">No commit message</val>
+        <val lang="fr_FR">No commit message</val>
+        <val lang="ja_JP">No commit message</val>
+        <val lang="nl_NL">No commit message</val>
     </key>
-     <key value="The_commit_message_is_empty">
-	<comment>"Create branch" label.</comment>
-	<val lang="en_US">The commit message is empty. It is recommended to give a
-		description of your changes. Are you sure you want to commit without one?</val>
-	<val lang="de_DE">Die Festschreibungsnachricht ist leer. Es wird empfohlen, eine Beschreibung 
-		Ihrer Änderungen anzugeben. Sind Sie sicher, dassSie sich ohne einen festlegen möchten?</val>
-	<val lang="fr_FR">Le message de validation est vide. Il est recommandé de donner 
-		une description de vos modifications. Êtes-vous sûr de vouloir vous engager sans un?</val>
-	<val lang="ja_JP">The commit message is empty. It is recommended to give a
-		description of your changes. Are you sure you want to commit without one?</val>
-	<val lang="nl_NL">The commit message is empty. It is recommended to give a
-		description of your changes. Are you sure you want to commit without one?</val>
-</key>
+    <key value="The_commit_message_is_empty">
+        <comment>Dialog title when the user commits with an empty commit message.</comment>
+        <val lang="en_US">The commit message is empty. It is recommended to give a
+            description of your changes. Are you sure you want to commit without one?</val>
+        <val lang="de_DE">The commit message is empty. It is recommended to give a
+            description of your changes. Are you sure you want to commit without one?</val>
+        <val lang="fr_FR">The commit message is empty. It is recommended to give a
+            description of your changes. Are you sure you want to commit without one?</val>
+        <val lang="ja_JP">The commit message is empty. It is recommended to give a
+            description of your changes. Are you sure you want to commit without one?</val>
+        <val lang="nl_NL">The commit message is empty. It is recommended to give a
+            description of your changes. Are you sure you want to commit without one?</val>
+    </key>
     <key value="Cannot_checkout_new_branch_when_having_conflicts">
         <comment>Message shown when cannot checkout newly created branch because of conflicts.</comment>
         <val lang="en_US">The new branch was created, but it could not be checked out because of 
