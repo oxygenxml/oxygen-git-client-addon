@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.historycomponents;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -163,14 +164,20 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	 */
 	private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr) {
 	  Color foregroundColor = getForeground();
-		if (nameForLabelList != null) {
+		if (nameForLabelList != null && !nameForLabelList.isEmpty()) {
+			constr.insets = new Insets(0, 0, 0, 0);
+			int lineSize = 1;
+			int cornerSize = 6;
 			for (String name : nameForLabelList) {
 				JLabel label = new JLabel(name);
 				label.setForeground(foregroundColor);
-				label.setBorder(BorderFactory.createLineBorder(foregroundColor));
+				label.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(foregroundColor, lineSize, cornerSize, true),
+						BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 				constr.gridx ++;
 				add(label, constr);
 			}
+			//Get the top inset from the rounded border
+			constr.insets = new Insets(	RoundedLineBorder.getTopInset(lineSize,cornerSize), 3, 0, 3);
 		}
 	}
 	
