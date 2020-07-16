@@ -975,4 +975,9 @@ public class Tags {
    */
   public static final String CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS = 
       "Cannot_checkout_new_branch_when_having_conflicts";
+  
+  /**
+   * Continue
+   */
+  public static final String CONTINUE = "Continue";
 }
