@@ -94,6 +94,28 @@ public class HistoryViewContextualMenuPresenter {
       }
     }
   }
+  
+  /**
+   * Compares the selected file with its previous version.
+   * @param filePath The file to compare.
+   * @param commitCharacteristics Revision information.
+   */
+  public void compareWithPreviousVersion(String filePath, CommitCharacteristics commitCharacteristics) {
+    String commitId = commitCharacteristics.getCommitId();
+    List<String> parents = commitCharacteristics.getParentCommitId();
+    if (parents != null && !parents.isEmpty()) {
+      RevCommit[] parentsRevCommits;
+      try {
+        parentsRevCommits = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(),
+            commitCharacteristics.getCommitId());
+        DiffPresenter.showTwoWayDiff(commitId, filePath, parentsRevCommits[0].name(),
+            filePath);
+      } catch (IOException | NoRepositorySelected e) {
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e.getMessage());
+        LOGGER.error(e, e);
+      }
+    }
+  }
 
   /**
    * We have multiple revisions selected for a given path.
@@ -128,7 +150,6 @@ public class HistoryViewContextualMenuPresenter {
       }
     };
     
-    jPopupMenu.add(open);
   
 
     // Add Compare action.
@@ -137,6 +158,7 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics c2 = commitCharacteristics[1];
       addCompareWithEachOtherAction(jPopupMenu, filePath, c1, c2);
     }
+    jPopupMenu.add(open);
   }
 
   /**
@@ -301,7 +323,6 @@ public class HistoryViewContextualMenuPresenter {
       FileStatus fileStatus,
       CommitCharacteristics commitCharacteristics,
       boolean addFileName) {
-    jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
     
     if (fileStatus.getChangeType() != GitChangeType.ADD && fileStatus.getChangeType() != GitChangeType.REMOVED) {
       if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
@@ -316,6 +337,7 @@ public class HistoryViewContextualMenuPresenter {
         });
       }
     }
+    jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
   }
 
   /**

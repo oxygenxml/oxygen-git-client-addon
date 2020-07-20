@@ -128,14 +128,26 @@ public class HistoryPanel extends JPanel {
       public void mousePressed(java.awt.event.MouseEvent e) {
         if (e.isPopupTrigger()) {
           showHistoryTableContextualMenu(historyTable, e.getPoint());
+        } else {
+          if (activeFilePath != null && e.getClickCount() == 2 && !e.isConsumed()) {
+            e.consume();
+            int rowAtPoint = historyTable.rowAtPoint(e.getPoint());
+            if (rowAtPoint != -1) {
+              updateTableSelection(historyTable, rowAtPoint);
+
+              HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
+              int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
+              CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
+
+              contextualMenuPresenter.compareWithPreviousVersion(activeFilePath, commitCharacteristics);
+            }
+          }
         }
       }
 
       @Override
       public void mouseReleased(java.awt.event.MouseEvent e) {
-        if (e.isPopupTrigger()) {
-          showHistoryTableContextualMenu(historyTable, e.getPoint());
-        }
+        mousePressed(e);
       }
     });
 
@@ -220,13 +232,29 @@ public class HistoryPanel extends JPanel {
       public void mousePressed(java.awt.event.MouseEvent e) {
         if (e.isPopupTrigger()) {
           showResourcesContextualMenu(table, e.getPoint());
+        } else {
+          if (e.getClickCount() == 2 && !e.isConsumed()) {
+            e.consume();
+            int rowAtPoint = table.rowAtPoint(e.getPoint());
+            if (rowAtPoint != -1) {
+              updateTableSelection(table, rowAtPoint);
+
+              StagingResourcesTableModel model = (StagingResourcesTableModel) table.getModel();
+              int convertedSelectedRow = table.convertRowIndexToModel(rowAtPoint);
+              FileStatus file = model.getFileStatus(convertedSelectedRow);
+
+              HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
+              CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits()
+                  .get(historyTable.getSelectedRow());
+
+              contextualMenuPresenter.compareWithPreviousVersion(file.getFileLocation(), commitCharacteristics);
+            }
+          }
         }
       }
       @Override
       public void mouseReleased(java.awt.event.MouseEvent e) {
-        if (e.isPopupTrigger()) {
-          showResourcesContextualMenu(table, e.getPoint());
-        }
+        mousePressed(e);
       }
     });
     
