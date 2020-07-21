@@ -22,12 +22,28 @@ public class VersionIdentifier {
 	 * in the user repository.
 	 */
 	public static final String MINE = "Mine";
-
+	
+	/**
+   * Used when a trying to rebase. My own version of the file.
+   * 
+   * The file having the LOCAL constant shows that this file content is located
+   * in the user repository.
+   */
+  public static final String MINE_RESOLVED = "MineResolved";
+  
+	/**
+   * Used when trying to rebase. My version of the file (from the remote server).
+   * 
+   * The file having the REMOTE constant shows that this file content is located
+   * in the remote repository.
+   */
+  public static final String MINE_ORIGINAL = "MineOriginal";
+  
 	/**
 	 * Used when a conflict occurs. The remote version of the file (from the remote server).
 	 * 
 	 * The file having the REMOTE constant shows that this file content is located
-	 * in the remote reposiory
+	 * in the remote repository.
 	 */
 	public static final String THEIRS = "Theirs";
 

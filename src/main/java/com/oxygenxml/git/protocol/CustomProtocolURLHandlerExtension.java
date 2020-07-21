@@ -60,10 +60,10 @@ public class CustomProtocolURLHandlerExtension
 	@Override
 	public boolean isReadOnly(URL url) {
 	  boolean isReadOnly = false;
-	  if (GIT.equals(url.getProtocol())
-	      && !VersionIdentifier.MINE.equals(url.getHost())) {
-	    isReadOnly = true;
-	  }
+    if (GIT.equals(url.getProtocol()) && !VersionIdentifier.MINE.equals(url.getHost())
+        && !VersionIdentifier.MINE_RESOLVED.equals(url.getHost())) {
+      isReadOnly = true;
+    }
 
 	  return isReadOnly;
 	}

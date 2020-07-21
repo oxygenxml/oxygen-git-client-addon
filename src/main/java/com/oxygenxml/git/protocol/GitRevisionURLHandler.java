@@ -102,7 +102,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			}
 			
 			GitAccess gitAccess = GitAccess.getInstance();
-			if (VersionIdentifier.MINE.equals(currentHost)) {
+			if (VersionIdentifier.MINE.equals(currentHost) || VersionIdentifier.MINE_RESOLVED.equals(currentHost)) {
 			  fileObject = gitAccess.getCommit(Commit.MINE, path);
 			} else if (VersionIdentifier.INDEX_OR_LAST_COMMIT.equals(currentHost)) {
 			  try {
@@ -115,7 +115,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			  }
 			} else if (VersionIdentifier.LAST_COMMIT.equals(currentHost)) {
 			  fileObject = gitAccess.getCommit(Commit.LOCAL, path);
-			} else if (VersionIdentifier.THEIRS.equals(currentHost)) {
+			} else if (VersionIdentifier.THEIRS.equals(currentHost) || VersionIdentifier.MINE_ORIGINAL.equals(currentHost)) {
 			  fileObject = gitAccess.getCommit(Commit.THEIRS, path);
 			} else if (VersionIdentifier.BASE.equals(currentHost)) {
 			  fileObject = gitAccess.getCommit(Commit.BASE, path);
@@ -164,7 +164,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		 */
 		@Override
 		public OutputStream getOutputStream() throws IOException {
-			if (VersionIdentifier.MINE.equals(currentHost)) {
+			if (VersionIdentifier.MINE.equals(currentHost) || VersionIdentifier.MINE_RESOLVED.equals(currentHost)) {
         try {
           URL fileContent = FileHelper.getFileURL(path);
           return fileContent.openConnection().getOutputStream();

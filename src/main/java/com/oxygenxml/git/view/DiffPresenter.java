@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.options.OptionsManager;
@@ -221,9 +222,19 @@ public class DiffPresenter {
 	 */
 	private static void showConflictDiff(FileStatus file, GitController stageController) {
 		try {
-			// builds the URL for the files
-			URL local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());
-			URL remote = GitRevisionURLHandler.encodeURL(VersionIdentifier.THEIRS, file.getFileLocation());
+			// builds the URL for the files depending if we are in rebasing state or not
+		  URL local, remote;
+      RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
+      if (repositoryState.equals(RepositoryState.REBASING)
+          || repositoryState.equals(RepositoryState.REBASING_INTERACTIVE)
+          || repositoryState.equals(RepositoryState.REBASING_MERGE)
+          || repositoryState.equals(RepositoryState.REBASING_REBASING)) {
+        local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_RESOLVED, file.getFileLocation());
+        remote = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_ORIGINAL, file.getFileLocation());
+      } else {
+        local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());
+        remote = GitRevisionURLHandler.encodeURL(VersionIdentifier.THEIRS, file.getFileLocation());
+      }
 			URL base = GitRevisionURLHandler.encodeURL(VersionIdentifier.BASE, file.getFileLocation());
 
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
@@ -265,7 +276,7 @@ public class DiffPresenter {
 			  })
 			);
 
-		} catch (MalformedURLException e1) {
+		} catch (MalformedURLException | NoRepositorySelected e1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(e1, e1);
 			}
