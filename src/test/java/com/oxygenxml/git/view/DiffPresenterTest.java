@@ -1,7 +1,17 @@
 package com.oxygenxml.git.view;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -18,13 +28,20 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.service.PullResponse;
+import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.Observer;
+import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 
 /**
  * @author alex_jitianu
@@ -48,8 +65,7 @@ public class DiffPresenterTest extends GitTestBase {
     super.setUp();
 
     try {
-      StandalonePluginWorkspace mock = Mockito.mock(StandalonePluginWorkspace.class);
-      PluginWorkspaceProvider.setPluginWorkspace(mock);
+      StandalonePluginWorkspace mock = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       
       Mockito.when(mock.open((URL)Mockito.any())).thenAnswer(new Answer<Boolean>() {
         @Override
@@ -71,6 +87,9 @@ public class DiffPresenterTest extends GitTestBase {
           return frame;
         }
       });
+      
+      ProjectController projectManager = Mockito.mock(ProjectController.class);
+      Mockito.when(mock.getProjectManager()).thenReturn(projectManager);
     } catch (Throwable t) {
       t.printStackTrace();
     }
@@ -301,6 +320,147 @@ public class DiffPresenterTest extends GitTestBase {
     String right = "git://PreviousSubmodule/modules/submodule.txt";
     assertEquals(right, rightDiff.toString());
     assertTrue(read(new URL(right)).startsWith("Subproject commit "));
+  }
+  
+  @Test
+  public void testRebasingFileDiff() throws Exception{
+     //The local repositories. 
+    String localTestRepository1 = "target/test-resources/local1";
+    String localTestRepository2 = "target/test-resources/local2";
+    
+    //The remote repository. 
+    String remoteTestRepository = "target/test-resources/remote";
+
+    GitAccess gitAccess = GitAccess.getInstance();
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo1 = createRepository(localTestRepository1);
+    Repository localRepo2 = createRepository(localTestRepository2);
+    
+    //----------------
+    // LOCAL 1
+    //----------------
+    
+    // Bind the local repository 1 to the remote one.
+    bindLocalToRemote(localRepo1, remoteRepo);
+    gitAccess.setRepositorySynchronously(localTestRepository1);
+
+    // Create a new file for the first repository.
+    File localFile1 = new File(localTestRepository1 + "/test.txt");
+    localFile1.createNewFile();
+    // Modify the newly created file.
+    setFileContent(localFile1, "initial content");
+    
+    // Add it to the index.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("First commit.");
+    // Send it to remote/upstream.
+    gitAccess.push("", "");
+    
+    //----------------
+    // LOCAL 2
+    //----------------
+    
+    // Bind the local repository 2 to the remote one.
+    bindLocalToRemote(localRepo2, remoteRepo);
+    gitAccess.setRepositorySynchronously(localTestRepository2);
+    
+    // Receive changes from remote/upstream.
+    PullResponse pull = gitAccess.pull("", "");
+    assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
+    
+    //Create new file for second repository.
+    File local2File = new File(localTestRepository2, "test.txt");
+    assertEquals("initial content", getFileContent(local2File));
+    
+    // Modify the file.
+    setFileContent(local2File, "changed in local 2, resolved");
+    // Add it to the index.
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    gitAccess.commit("Second commit");
+    // Send it to remote/upstream.
+    gitAccess.push("", "");
+
+    //----------------
+    // LOCAL 1
+    //----------------
+    
+    gitAccess.setRepositorySynchronously(localTestRepository1);
+    // Modify the file.
+    setFileContent(localFile1, "changed in local 1, conflict content, original");
+    // Add it to the index.
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    // Commit the file.
+    gitAccess.commit("Third commit, with conflict");
+    
+    final StringBuilder pullWithConflictsSB = new StringBuilder();
+    boolean[] wasRebaseInterrupted = new boolean[1];
+    final String[] pullFailedMessage = new String[1];
+    PushPullController pc = new PushPullController() {
+      @Override
+      protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
+        pullFailedMessage[0] = message;
+      };
+      @Override
+      protected void showPullSuccessfulWithConflicts(PullResponse response) {
+        pullWithConflictsSB.append(response);
+      }
+      @Override
+      protected void showRebaseInProgressDialog() {
+        wasRebaseInterrupted[0] = true;
+      }
+    };
+    
+    final StringBuilder b = new StringBuilder();
+    pc.addObserver(new Observer<PushPullEvent>() {
+      @Override
+      public void stateChanged(PushPullEvent changeEvent) {
+        b.append(changeEvent).append("\n");
+      }
+    });
+    
+    // Get conflict
+    pc.pull(PullType.REBASE).get();
+    assertNull(pullFailedMessage[0]);
+    assertFalse(wasRebaseInterrupted[0]);
+    assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
+    assertTrue(getFileContent(localFile1).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
+
+    leftDiff = null;
+    rightDiff = null;
+
+    // Mock the GitController
+    GitController stageController = Mockito.mock(GitController.class);
+    FileStatus fileStatus = new FileStatus(GitChangeType.CONFLICT, "test.txt");
+
+    // Invoke DIFF over the changed file.
+    DiffPresenter.showDiff(fileStatus, stageController);
+    assertNotNull(leftDiff);
+    assertNotNull(rightDiff);
+
+    // Verify that each side has the proper tag and content.
+    assertTrue(leftDiff.toString().contains("MineResolved"));
+    assertTrue(rightDiff.toString().contains("MineOriginal"));
+    assertEquals("changed in local 2, resolved", read(leftDiff));
+    assertEquals("changed in local 1, conflict content, original", read(rightDiff));
+  }
+  /**
+   * 
+   * @param file
+   * @return
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
+  private String getFileContent(File file) throws FileNotFoundException, IOException {
+    FileReader fr = new FileReader(file);
+    BufferedReader br = new BufferedReader(fr);
+    String sCurrentLine;
+    String content = "";
+    while ((sCurrentLine = br.readLine()) != null) {
+      content += sCurrentLine;
+    }
+    br.close();
+    fr.close();
+    return content;
   }
   
 }
