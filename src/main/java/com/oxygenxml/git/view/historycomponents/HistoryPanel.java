@@ -151,8 +151,15 @@ public class HistoryPanel extends JPanel {
             HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
             int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
             CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
-
-            contextualMenuPresenter.compareWithPreviousVersion(activeFilePath, commitCharacteristics);
+            try {
+              FileStatus fileStatus = contextualMenuPresenter.getFileStatus(activeFilePath, commitCharacteristics).get();
+              List<Action> contextualActions = contextualMenuPresenter.getContextualActions(fileStatus,
+                  commitCharacteristics, false);
+              contextualActions.get(0).actionPerformed(new ActionEvent(e, convertedSelectedRow, activeFilePath));
+            } catch (IOException | GitAPIException e1) {
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage());
+              LOGGER.error(e1, e1);
+            }
           }
         }
       }
@@ -262,7 +269,8 @@ public class HistoryPanel extends JPanel {
             CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits()
                 .get(historyTable.getSelectedRow());
 
-            contextualMenuPresenter.compareWithPreviousVersion(file.getFileLocation(), commitCharacteristics);
+            List<Action> contextualActions = contextualMenuPresenter.getContextualActions(file, commitCharacteristics, false);
+            contextualActions.get(0).actionPerformed(new ActionEvent(e, convertedSelectedRow, activeFilePath));
           }
         }
       };

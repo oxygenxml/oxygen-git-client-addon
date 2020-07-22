@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -289,7 +290,7 @@ public class HistoryViewContextualMenuPresenter {
    * @throws IOException Problems trying to iterate over the repository.
    * @throws GitAPIException Problems trying to iterate over the repository.
    */
-  private Optional<FileStatus> getFileStatus(String filePath, CommitCharacteristics commitCharacteristics)
+  public Optional<FileStatus> getFileStatus(String filePath, CommitCharacteristics commitCharacteristics)
       throws IOException, GitAPIException {
     List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
     Optional<FileStatus> fileStatusOptional = changes.stream().filter(f -> filePath.equals(f.getFileLocation())).findFirst();
@@ -324,32 +325,59 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics commitCharacteristics,
       boolean addFileName) {
     
+    List<Action> contextualActions = getContextualActions(fileStatus, commitCharacteristics, addFileName);
+    
+    for (Action action : contextualActions) {
+      jPopupMenu.add(action);
+    }
+  }
+
+  /**
+   * Contributes the contextual actions for the given commit.
+   * 
+   * @param fileStatus            File path do diff.
+   * @param commitCharacteristics Current commit data.
+   * @param addFileName           <code>true</code> to add the name of the file to the action's name.
+   * 
+   * @return A list with actions that can be executed over the given file. Never null.
+   * @throws GitAPIException 
+   * @throws IOException 
+   */
+  public List<Action> getContextualActions(
+      FileStatus fileStatus,
+      CommitCharacteristics commitCharacteristics,
+      boolean addFileName) {
+    
+    List<Action> actions = new LinkedList<>();
+    
     if (fileStatus.getChangeType() != GitChangeType.ADD && fileStatus.getChangeType() != GitChangeType.REMOVED) {
       if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
-        createCompareActionsForCommit(jPopupMenu, commitCharacteristics, addFileName, fileStatus);
+        createCompareActionsForCommit(actions, commitCharacteristics, addFileName, fileStatus);
       } else {
         // Uncommitted changes. Compare between local and HEAD.
-        jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
+        actions.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
           @Override
           public void actionPerformed(ActionEvent e) {
             DiffPresenter.showDiff(fileStatus, gitCtrl);
           }
         });
       }
-    }
-    jPopupMenu.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
+    } 
+    actions.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
+    
+    return actions;
   }
 
   /**
    * Creates the DIFF actions for an actual commit from history.
    * 
-   * @param jPopupMenu            Menu where to add the actions.
+   * @param actions               List where to put the actions.
    * @param commitCharacteristics Commit data.
    * @param addFileName           <code>true</code> to append the name of the file to the actions' name.
    * @param filePath              File to DIFF.
    */
   private void createCompareActionsForCommit(
-      JPopupMenu jPopupMenu, 
+      List<Action> actions, 
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
       FileStatus fileStatus) {
@@ -357,7 +385,7 @@ public class HistoryViewContextualMenuPresenter {
     
     if (fileStatus instanceof FileStatusOverDiffEntry
         && fileStatus.getChangeType() == GitChangeType.RENAME) {
-      jPopupMenu.add(new AbstractAction(getCompareWithPreviousVersionActionName(filePath, addFileName)) {
+      actions.add(new AbstractAction(getCompareWithPreviousVersionActionName(filePath, addFileName)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           try {
@@ -369,22 +397,22 @@ public class HistoryViewContextualMenuPresenter {
         }
       });
     } else {
-      addCompareWithParentsAction(jPopupMenu, commitCharacteristics, addFileName, filePath);
+      addCompareWithParentsAction(actions, commitCharacteristics, addFileName, filePath);
     }
     
-    addCompareWithWorkingTreeAction(jPopupMenu, commitCharacteristics, addFileName, filePath);
+    addCompareWithWorkingTreeAction(actions, commitCharacteristics, addFileName, filePath);
   }
 
   /**
    * Iterate over the parent revisions and add one Compare action for each.
    * 
-   * @param jPopupMenu Contextual menu.
+   * @param actions List where to put the actions.
    * @param commitCharacteristics Revision information.
    * @param addFileName <code>true</code> to add the name of the file to the action name.
    * @param filePath File location relative to the WC root.
    */
   private void addCompareWithParentsAction(
-      JPopupMenu jPopupMenu,
+      List<Action> actions,
       CommitCharacteristics commitCharacteristics,
       boolean addFileName,
       String filePath) {
@@ -396,7 +424,7 @@ public class HistoryViewContextualMenuPresenter {
             commitCharacteristics.getCommitId());
         boolean addParentID = parents.size() > 1;
         for (RevCommit parentID : parentsRevCommits) {
-          jPopupMenu.add(createCompareWithPrevVersionAction(
+          actions.add(createCompareWithPrevVersionAction(
               filePath, 
               commitCharacteristics.getCommitId(),
               filePath,
@@ -414,13 +442,13 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Compare the current revision with the working tree version.
    * 
-   * @param jPopupMenu Contextual menu.
+   * @param actions List where to put the actions.
    * @param commitCharacteristics Revision information.
    * @param addFileName <code>true</code> to also add the name of the file to the action name.
    * @param filePath Path of the resource to compare. Relative to the WC root.
    */
   private void addCompareWithWorkingTreeAction(
-      JPopupMenu jPopupMenu, 
+      List<Action> actions, 
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
       String filePath) {
@@ -430,7 +458,7 @@ public class HistoryViewContextualMenuPresenter {
           Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION),
           PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath));
     }
-    jPopupMenu.add(new AbstractAction(actionName) {
+    actions.add(new AbstractAction(actionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
