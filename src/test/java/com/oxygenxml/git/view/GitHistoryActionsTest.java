@@ -89,7 +89,7 @@ public class GitHistoryActionsTest extends GitTestBase {
 
       // Assert the available actions for the changed file.
       actions.clear();
-      presenter.populateContextualActions(jPopupMenu, "file1.txt", t);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file1.txt", t);
       assertEquals("["
           + "Open_file, "
           + "Compare_file_with_previous_version, "
@@ -98,7 +98,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       // A deleted file.
       actions.clear();
-      presenter.populateContextualActions(jPopupMenu, "file2.txt", t);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", t);
       assertEquals("[Open_previous_version, Create_branch]", dumpActions(actions));
       
       // Next COMMIT / REVISION
@@ -108,7 +108,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           "(changeType=ADD, fileLocation=file2.txt)\n" + 
           "", dumpFS);
       actions.clear();
-      presenter.populateContextualActions(jPopupMenu, "file2.txt", t);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", t);
       assertEquals("[Open_file, Create_branch]", dumpActions(actions));
       
       // Next COMMIT / REVISION
@@ -118,7 +118,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           "(changeType=ADD, fileLocation=file1.txt)\n" + 
           "", dumpFS);
       actions.clear();
-      presenter.populateContextualActions(jPopupMenu, "file1.txt", t);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file1.txt", t);
       assertEquals("[Open_file, Create_branch]", dumpActions(actions));
 
     } finally {
@@ -189,7 +189,7 @@ public class GitHistoryActionsTest extends GitTestBase {
   
       // A deleted file.
       actions.clear();
-      presenter.populateContextualActions(jPopupMenu, "file2.txt", t);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", t);
       assertEquals("[Open_previous_version, Create_branch]", dumpActions(actions));
       
       final StringBuilder b = new StringBuilder();

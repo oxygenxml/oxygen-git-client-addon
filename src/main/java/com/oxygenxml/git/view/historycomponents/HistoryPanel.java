@@ -326,7 +326,7 @@ public class HistoryPanel extends JPanel {
 
       try {
         JPopupMenu jPopupMenu = new JPopupMenu();
-        contextualMenuPresenter.populateContextualActions4Selection(jPopupMenu, activeFilePath, cc);
+        contextualMenuPresenter.populateContextualActionsHistoryContext(jPopupMenu, activeFilePath, cc);
 
         jPopupMenu.show(historyTable, point.x, point.y);
       } catch (IOException | GitAPIException e) {

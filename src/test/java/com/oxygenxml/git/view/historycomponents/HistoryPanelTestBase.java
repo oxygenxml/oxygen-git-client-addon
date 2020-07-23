@@ -110,7 +110,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     HistoryViewContextualMenuPresenter menuPresenter = 
         new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
-    menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
+    menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
     MenuElement[] subElements = jPopupMenu.getSubElements();
     
@@ -142,7 +142,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     HistoryViewContextualMenuPresenter menuPresenter = 
         new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
-    menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
+    menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
     MenuElement[] subElements = jPopupMenu.getSubElements();
     
@@ -174,7 +174,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     HistoryViewContextualMenuPresenter menuPresenter = 
         new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
-    menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
+    menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
     MenuElement[] subElements = jPopupMenu.getSubElements();
     
@@ -203,7 +203,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     HistoryViewContextualMenuPresenter menuPresenter = 
         new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
-    menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
+    menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
     MenuElement[] subElements = jPopupMenu.getSubElements();
     
@@ -232,7 +232,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     HistoryViewContextualMenuPresenter menuPresenter = 
         new HistoryViewContextualMenuPresenter(PowerMockito.mock(GitController.class));
     JPopupMenu jPopupMenu = new JPopupMenu();
-    menuPresenter.populateContextualActions(jPopupMenu, fileStatus.getFileLocation(), cc);
+    menuPresenter.populateContextualActionsHistoryContext(jPopupMenu, fileStatus.getFileLocation(), cc);
     
     MenuElement[] subElements = jPopupMenu.getSubElements();
     

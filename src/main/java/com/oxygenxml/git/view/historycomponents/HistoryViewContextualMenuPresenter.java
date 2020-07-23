@@ -82,7 +82,7 @@ public class HistoryViewContextualMenuPresenter {
    * @throws IOException If it fails.
    * @throws GitAPIException If it fails.
    */
-  public void populateContextualActions4Selection(
+  public void populateContextualActionsHistoryContext(
       JPopupMenu jPopupMenu,
       String filePath,
       CommitCharacteristics... commitCharacteristics) throws IOException, GitAPIException {
