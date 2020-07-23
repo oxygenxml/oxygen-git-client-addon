@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -152,10 +153,16 @@ public class HistoryPanel extends JPanel {
             int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
             CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
             try {
-              FileStatus fileStatus = contextualMenuPresenter.getFileStatus(activeFilePath, commitCharacteristics).get();
-              List<Action> contextualActions = contextualMenuPresenter.getContextualActions(fileStatus,
-                  commitCharacteristics, false);
-              contextualActions.get(0).actionPerformed(new ActionEvent(e, convertedSelectedRow, activeFilePath));
+              Optional<FileStatus> optionalFileStatus = contextualMenuPresenter.getFileStatus(activeFilePath,
+                  commitCharacteristics);
+              if (optionalFileStatus.isPresent()) {
+                FileStatus fileStatus = optionalFileStatus.get();
+                List<Action> contextualActions = contextualMenuPresenter.getContextualActions(fileStatus,
+                    commitCharacteristics, false);
+                if (!contextualActions.isEmpty()) {
+                  contextualActions.get(0).actionPerformed(null);
+                }
+              }
             } catch (IOException | GitAPIException e1) {
               PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage());
               LOGGER.error(e1, e1);
