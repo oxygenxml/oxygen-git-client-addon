@@ -12,23 +12,33 @@ import java.awt.Stroke;
 import javax.swing.border.AbstractBorder;
 
 /**
- * LineBorder can create a rounded border with only the top left corner slightly rounded.
- * This class is needed to create a border with all the corners rounded, allowing us to 
- * set the diameter of the round corner and the width of the line to any preferred size
+ * The LineBorder class from javax.swing.border.LineBorder can create a rounded
+ * border with only the top left corner slightly rounded. The RoundedLineBorder
+ * class is needed to create a border with all the corners rounded, allowing the
+ * user to set the diameter of the round corner and the width of the line to any
+ * preferred size.
  */
 @SuppressWarnings("serial")
 public class RoundedLineBorder extends AbstractBorder {
   /**
-   * lineSize   an integer that specifies the width of the border
-   * cornerSize an integer that specifies the diameter of the round corner
-   * fill       a paint that specifies the color of the foreground
-   * stroke     a stroke that is initialized in constructor with a BasicStroke with line width of lineSize
-   * aaHint     an object that gets the renderingHint for anti aliasing
+   * Specifies the width of the border.
    */
   private int lineSize;
+  /**
+   * The diameter of the round corner.
+   */
   private int cornerSize;
+  /**
+   * The color of the foreground.
+   */
   private Paint fill;
+  /**
+   * Initialized in constructor with a BasicStroke with line width of lineSize.
+   */
   private Stroke stroke;
+  /**
+   * RenderingHint for anti aliasing.
+   */
   private Object aaHint;
 
   /**
@@ -47,7 +57,14 @@ public class RoundedLineBorder extends AbstractBorder {
     stroke = new BasicStroke(lineSize);
     aaHint = antiAlias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF;
   }
-
+  /**
+   * Reinitializes the insets parameter with the maximum between
+   * line width and corner size of the current round border.
+   *  
+   * @param c       the component for which this border insets value applies
+   * @param insets  the object to be reinitialized
+   * @return the <code>insets</code> object
+   */
   @Override
   public Insets getBorderInsets(Component c, Insets insets) {
     int size = Math.max(lineSize, cornerSize);
@@ -57,8 +74,12 @@ public class RoundedLineBorder extends AbstractBorder {
       insets.left = insets.top = insets.right = insets.bottom = size;
     return insets;
   }
+  
   /**
-   * @param lineSize integer that specifies the width of the line
+   * Returns the best size for the top inset, given the line width and corner size
+   * of a rounded line border
+   * 
+   * @param lineSize   integer that specifies the width of the line
    * @param cornerSize integer that specifies the diameter of the rounded corner
    * @return size of the inset for the top margin
    */
@@ -70,23 +91,33 @@ public class RoundedLineBorder extends AbstractBorder {
   /**
    * Paints the rounded border using the parameters from AbstractBorder
    * and the variables from this class
+   * @param c       the component for which this border is being painted
+   * @param g       the paint graphics
+   * @param x       the x position of the rounded border
+   * @param y       the y position of the rounded border
+   * @param width   the width of the rounded border
+   * @param height  the height of the rounded border
    */
   @Override
   public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
     Graphics2D g2d = (Graphics2D) g;
+    //Stores the paint, stroke and rendering hint for the old graphics
     Paint oldPaint = g2d.getPaint();
     Stroke oldStroke = g2d.getStroke();
     Object oldAA = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
     try {
+      //Uses the new paint, stroke and rendering hint for drawing the border
       g2d.setPaint(fill != null ? fill : c.getForeground());
       g2d.setStroke(stroke);
-      if (aaHint != null)
+      if (aaHint != null) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, aaHint);
+      }
       int off = lineSize << 1;
       // Draws a rectangle with rounded corners, using the coordinates of
       // AbstractBorder, width of lines and the diameter of the corners
       g2d.drawRoundRect(x + off, y + off, width - off * 3, height - off * 3, cornerSize, cornerSize);
     } finally {
+      //Resets the graphics to the old paint, stroke and rendering hint
       g2d.setPaint(oldPaint);
       g2d.setStroke(oldStroke);
       if (aaHint != null)
