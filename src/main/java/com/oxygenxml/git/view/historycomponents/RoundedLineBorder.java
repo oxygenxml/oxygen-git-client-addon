@@ -12,16 +12,16 @@ import java.awt.Stroke;
 import javax.swing.border.AbstractBorder;
 
 /**
- * The LineBorder class from javax.swing.border.LineBorder can create a rounded
- * border with only the top left corner slightly rounded. The RoundedLineBorder
- * class is needed to create a border with all the corners rounded, allowing the
- * user to set the diameter of the round corner and the width of the line to any
- * preferred size.
+ * The RoundedLineBorder class is needed to create a border with all the corners rounded, allowing the user to set the 
+ * diameter of the round corner and the width of the line to any preferred size.
+ * 
+ * We added this class because the in built-in {@link javax.swing.border.LineBorder} the rounded corner depends on the thickness of the line. For a thickness or 
+ * 1 is not enough to create a visible rounded effect
  */
 @SuppressWarnings("serial")
 public class RoundedLineBorder extends AbstractBorder {
   /**
-   * Specifies the width of the border.
+   * The width of the border.
    */
   private int lineSize;
   /**
@@ -45,10 +45,10 @@ public class RoundedLineBorder extends AbstractBorder {
    * A class that extends AbstractBorder and is used for creating borders with
    * rounded corners
    * 
-   * @param fill       a paint that specifies the color of the foreground
-   * @param lineSize   an integer that specifies the width of the border
-   * @param cornerSize an integer that specifies the diameter of the round corner
-   * @param antiAlias  a boolean that sets the anti aliasing on or off
+   * @param fill       The color of the foreground.
+   * @param lineSize   the width of the border.
+   * @param cornerSize The diameter of the round corner.
+   * @param antiAlias  Sets the anti aliasing on or off.
    */
   public RoundedLineBorder(Paint fill, int lineSize, int cornerSize, boolean antiAlias) {
     this.fill = fill;
@@ -58,12 +58,12 @@ public class RoundedLineBorder extends AbstractBorder {
     aaHint = antiAlias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF;
   }
   /**
-   * Reinitializes the insets parameter with the maximum between
-   * line width and corner size of the current round border.
+   * Reinitializes the insets parameter with the maximum between line width and corner size of the current round border.
    *  
-   * @param c       the component for which this border insets value applies
-   * @param insets  the object to be reinitialized
-   * @return the <code>insets</code> object
+   * @param c       The component for which this border insets value applies
+   * @param insets  The object to be reinitialized
+   * 
+   * @return The <code>insets</code> object
    */
   @Override
   public Insets getBorderInsets(Component c, Insets insets) {
@@ -76,12 +76,12 @@ public class RoundedLineBorder extends AbstractBorder {
   }
   
   /**
-   * Returns the best size for the top inset, given the line width and corner size
-   * of a rounded line border
+   * Returns the best size for the top inset, given the line width and corner size of a rounded line border.
    * 
-   * @param lineSize   integer that specifies the width of the line
-   * @param cornerSize integer that specifies the diameter of the rounded corner
-   * @return size of the inset for the top margin
+   * @param lineSize   The width of the line.
+   * @param cornerSize The diameter of the rounded corner.
+   * 
+   * @return Size of the inset for the top margin
    */
   public static int getTopInset(int lineSize, int cornerSize) {
     int size = Math.max(lineSize, cornerSize);
@@ -89,8 +89,8 @@ public class RoundedLineBorder extends AbstractBorder {
   }
 
   /**
-   * Paints the rounded border using the parameters from AbstractBorder
-   * and the variables from this class
+   * Paints the rounded border using the parameters from AbstractBorder and the variables from this class.
+   * 
    * @param c       the component for which this border is being painted
    * @param g       the paint graphics
    * @param x       the x position of the rounded border
