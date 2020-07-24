@@ -277,7 +277,9 @@ public class HistoryPanel extends JPanel {
                 .get(historyTable.getSelectedRow());
 
             List<Action> contextualActions = contextualMenuPresenter.getContextualActions(file, commitCharacteristics, false);
-            contextualActions.get(0).actionPerformed(new ActionEvent(e, convertedSelectedRow, activeFilePath));
+            if (!contextualActions.isEmpty()) {
+              contextualActions.get(0).actionPerformed(null);
+            }
           }
         }
       };
