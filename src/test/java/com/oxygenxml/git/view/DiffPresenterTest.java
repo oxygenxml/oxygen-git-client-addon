@@ -1,15 +1,6 @@
 package com.oxygenxml.git.view;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -374,7 +365,7 @@ public class DiffPresenterTest extends GitTestBase {
     
     //Create new file for second repository.
     File local2File = new File(localTestRepository2, "test.txt");
-    assertEquals("initial content", getFileContent(local2File));
+    assertEquals("initial content", read(local2File.toURI().toURL()));
     
     // Modify the file.
     setFileContent(local2File, "changed in local 2, resolved");
@@ -431,7 +422,7 @@ public class DiffPresenterTest extends GitTestBase {
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
-    assertTrue(getFileContent(localFile1).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
+    assertTrue(read(localFile1.toURI().toURL()).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
 
     leftDiff = null;
     rightDiff = null;
@@ -451,24 +442,4 @@ public class DiffPresenterTest extends GitTestBase {
     assertEquals("changed in local 2, resolved", read(leftDiff));
     assertEquals("changed in local 1, conflict content, original", read(rightDiff));
   }
-  /**
-   * 
-   * @param file
-   * @return
-   * @throws FileNotFoundException
-   * @throws IOException
-   */
-  private String getFileContent(File file) throws FileNotFoundException, IOException {
-    FileReader fr = new FileReader(file);
-    BufferedReader br = new BufferedReader(fr);
-    String sCurrentLine;
-    String content = "";
-    while ((sCurrentLine = br.readLine()) != null) {
-      content += sCurrentLine;
-    }
-    br.close();
-    fr.close();
-    return content;
-  }
-  
 }
