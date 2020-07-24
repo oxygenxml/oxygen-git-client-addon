@@ -220,7 +220,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * @return The content, never <code>null</code>.
    */
   @SuppressWarnings("unused")
-  protected String read(URL url) throws IOException {
+  protected final static String read(URL url) throws IOException {
     String result = null;
     try (
         // Java will try to automatically close each of the declared resources

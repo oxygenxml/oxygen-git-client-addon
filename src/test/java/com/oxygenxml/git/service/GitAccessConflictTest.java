@@ -5,10 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -152,9 +150,7 @@ public class GitAccessConflictTest {
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     OptionsManager.getInstance().saveSelectedRepository(FIRST_LOCAL_TEST_REPOSITPRY);
 
-    PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
-    out.println("hellllo");
-    out.close();
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
@@ -166,9 +162,7 @@ public class GitAccessConflictTest {
 		File testFileSecondRepo = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		testFileSecondRepo.createNewFile();
 
-		out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
-		out.println("teeeeeest");
-		out.close();
+		writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "teeeeeest");
 
 		FileStatus fileStatus = new FileStatus(GitChangeType.ADD, "test.txt");
     gitAccess.add(fileStatus);
@@ -201,9 +195,7 @@ public class GitAccessConflictTest {
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     OptionsManager.getInstance().saveSelectedRepository(FIRST_LOCAL_TEST_REPOSITPRY);
 
-    PrintWriter out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
-    out.println("hellllo");
-    out.close();
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
@@ -215,9 +207,7 @@ public class GitAccessConflictTest {
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();
 
-		out = new PrintWriter(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt");
-		out.println("teeeeeest");
-		out.close();
+		writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "teeeeeest");;
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
@@ -887,34 +877,32 @@ public class GitAccessConflictTest {
   }
 
   /**
+   * Writes content to file.
    * 
-   * @param file
-   * @param content
-   * @throws FileNotFoundException
+   * @param file Target file.
+   * @param content Content to write in the file.
+   * 
+   * @throws FileNotFoundException File not found.
    */
   private void writeToFile(File file, String content) throws FileNotFoundException {
     PrintWriter out = new PrintWriter(file);
-    out.println(content);
-    out.close();
+    try {
+    out.print(content);
+    } finally {
+      out.close();
+    }
   }
 
   /**
+   * Reads file content.
    * 
-   * @param file
-   * @return
-   * @throws FileNotFoundException
-   * @throws IOException
+   * @param file File to read.
+   * 
+   * @return The file content.
+   * 
+   * @throws IOException Unable to read the file.
    */
-	private String getFileContent(File file) throws FileNotFoundException, IOException {
-		FileReader fr = new FileReader(file);
-		BufferedReader br = new BufferedReader(fr);
-		String sCurrentLine;
-		String content = "";
-		while ((sCurrentLine = br.readLine()) != null) {
-			content += sCurrentLine;
-		}
-		br.close();
-		fr.close();
-		return content;
+	private String getFileContent(File file) throws IOException {
+		return GitTestBase.read(file.toURI().toURL());
 	}
 }
