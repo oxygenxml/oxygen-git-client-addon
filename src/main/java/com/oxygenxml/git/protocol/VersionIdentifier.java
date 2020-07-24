@@ -24,18 +24,24 @@ public class VersionIdentifier {
 	public static final String MINE = "Mine";
 	
 	/**
-   * Used when a trying to rebase. My own version of the file.
+   * Used when a trying to rebase. The URL that appears on the left.
    * 
-   * The file having the LOCAL constant shows that this file content is located
-   * in the user repository.
+   * Rebase works by doing a series of cherry-picks, into an anonymous branch (detached HEAD mode). The target branch is 
+   * the anonymous branch and the merge-from branch is your original (pre-rebase) branch: so "--ours" means the anonymous 
+   * one rebase is building while "--theirs" means "our branch being rebased".
+   * 
+   * This version represents the version of the file in which the rebase is resolved.
    */
   public static final String MINE_RESOLVED = "MineResolved";
   
 	/**
-   * Used when trying to rebase. My version of the file (from the remote server).
+   * Used when trying to rebase. The URL that appears on the right.
    * 
-   * The file having the REMOTE constant shows that this file content is located
-   * in the remote repository.
+   * Rebase works by doing a series of cherry-picks, into an anonymous branch (detached HEAD mode). The target branch is 
+   * the anonymous branch and the merge-from branch is your original (pre-rebase) branch: so "--ours" means the anonymous 
+   * one rebase is building while "--theirs" means "our branch being rebased".
+   * 
+   * This version represents the original version of the file that was in the local branch.
    */
   public static final String MINE_ORIGINAL = "MineOriginal";
   

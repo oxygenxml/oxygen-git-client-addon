@@ -222,20 +222,22 @@ public class DiffPresenter {
 	 */
 	private static void showConflictDiff(FileStatus file, GitController stageController) {
 		try {
-			// builds the URL for the files depending if we are in rebasing state or not
-		  URL local, remote;
+		  URL base = GitRevisionURLHandler.encodeURL(VersionIdentifier.BASE, file.getFileLocation());
+		  URL left = null;
+		  URL right = null;
+		  // builds the URL for the files depending if we are in rebasing state or not
       RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
       if (repositoryState.equals(RepositoryState.REBASING)
           || repositoryState.equals(RepositoryState.REBASING_INTERACTIVE)
           || repositoryState.equals(RepositoryState.REBASING_MERGE)
           || repositoryState.equals(RepositoryState.REBASING_REBASING)) {
-        local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_RESOLVED, file.getFileLocation());
-        remote = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_ORIGINAL, file.getFileLocation());
+        // An unfinished rebased. 
+        left = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_RESOLVED, file.getFileLocation());
+        right = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_ORIGINAL, file.getFileLocation());
       } else {
-        local = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());
-        remote = GitRevisionURLHandler.encodeURL(VersionIdentifier.THEIRS, file.getFileLocation());
+        left = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE, file.getFileLocation());
+        right = GitRevisionURLHandler.encodeURL(VersionIdentifier.THEIRS, file.getFileLocation());
       }
-			URL base = GitRevisionURLHandler.encodeURL(VersionIdentifier.BASE, file.getFileLocation());
 
 			String selectedRepository = OptionsManager.getInstance().getSelectedRepository();
 			final File localCopy = new File(selectedRepository, file.getFileLocation());
@@ -243,7 +245,7 @@ public class DiffPresenter {
 			// time stamp used for detecting if the file was changed in the diff view
 			final long diffStartedTimeStamp = localCopy.lastModified();
 
-			Optional<JFrame> diffFrame = showDiffFrame(local, remote, base, file.getFileLocation());
+			Optional<JFrame> diffFrame = showDiffFrame(left, right, base, file.getFileLocation());
 			// checks if the file in conflict has been resolved or not after the diff
 			// view was closed
 			diffFrame.ifPresent(d -> 

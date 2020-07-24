@@ -259,10 +259,10 @@ public class DiffPresenterTest extends GitTestBase {
   }
   
   /**
-   * <p><b>Description:</b> diff on submodule.</p>
-   * <p><b>Bug ID:</b> EXM-40621</p>
+   * <p><b>Description:</b> Checks the URL used in a rebase conflicts.</p>
+   * <p><b>Bug ID:</b> EXM-45843</p>
    *
-   * @author sorin_carbunaru
+   * @author bogdan_dragici
    *
    * @throws Exception
    */
@@ -336,6 +336,10 @@ public class DiffPresenterTest extends GitTestBase {
     Repository localRepo1 = createRepository(localTestRepository1);
     Repository localRepo2 = createRepository(localTestRepository2);
     
+    //-------------
+    // Set up the repositories for a rebase conflict
+    //-------------
+    
     //----------------
     // LOCAL 1
     //----------------
@@ -391,6 +395,10 @@ public class DiffPresenterTest extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     // Commit the file.
     gitAccess.commit("Third commit, with conflict");
+    
+    //------------
+    // Rebase conflict prepared and will happen after the pull.
+    //------------
     
     final StringBuilder pullWithConflictsSB = new StringBuilder();
     boolean[] wasRebaseInterrupted = new boolean[1];
