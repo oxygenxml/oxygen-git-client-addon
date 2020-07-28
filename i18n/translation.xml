@@ -4,6 +4,48 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value = "Always_notify_on_new_commits">
+	<comment> Option text for always notifying when there are new commits upstream.</comment>
+        <val lang="en_US">As soon as there are new commits in the remote</val>
+        <val lang="de_DE">As soon as there are new commits in the remote</val>
+        <val lang="fr_FR">As soon as there are new commits in the remote</val>
+        <val lang="ja_JP">As soon as there are new commits in the remote</val>
+        <val lang="nl_NL">As soon as there are new commits in the remote</val>
+    </key>
+    <key value = "Notify_on_possible_conflicts">
+	<comment> Option text for notifying when there are new commits upstream that may cause conflicts.</comment>
+        <val lang="en_US">When I open a file, check to see if there are remote commits in which the file was changed.</val>
+        <val lang="de_DE">When I open a file, check to see if there are remote commits in which the file was changed.</val>
+        <val lang="fr_FR">When I open a file, check to see if there are remote commits in which the file was changed.</val>
+        <val lang="ja_JP">When I open a file, check to see if there are remote commits in which the file was changed.</val>
+        <val lang="nl_NL">When I open a file, check to see if there are remote commits in which the file was changed.</val>
+    </key>
+    <key value = "New_commit_with_modified_opened_files">
+	<comment>Option text for never notifying when there are new commits upstream.</comment>
+        <val lang="en_US">Never notify me about new commits in the remote.</val>
+        <val lang="de_DE">Never notify me about new commits in the remote.</val>
+        <val lang="fr_FR">Never notify me about new commits in the remote.</val>
+        <val lang="ja_JP">Never notify me about new commits in the remote.</val>
+        <val lang="nl_NL">Never notify me about new commits in the remote.</val>
+    </key>
+    <key value = "New_commit_with_modified_opened_files">
+	<comment> Dialog message when there is a new commit in the remote
+		repository that has modifications to at least one file opened in the
+		editing areas.</comment>
+        <val lang="en_US">There is a new commit upstream that has modified the following opened files:\n</val>
+        <val lang="de_DE">There is a new commit upstream that has modified the following opened files:\n</val>
+        <val lang="fr_FR">There is a new commit upstream that has modified the following opened files:\n</val>
+        <val lang="ja_JP">There is a new commit upstream that has modified the following opened files:\n</val>
+        <val lang="nl_NL">There is a new commit upstream that has modified the following opened files:\n</val>
+    </key>
+    <key value="New_commit_upstream">
+        <comment>Dialog message when there is a new commit in the remote repository that has not  been pulled yet.</comment>
+        <val lang="en_US">There is a new commit upstream for the current repository.</val>
+        <val lang="de_DE">There is a new commit upstream for the current repository.</val>
+        <val lang="fr_FR">There is a new commit upstream for the current repository.</val>
+        <val lang="ja_JP">There is a new commit upstream for the current repository.</val>
+        <val lang="nl_NL">There is a new commit upstream for the current repository.</val>
+    </key>
     <key value="Continue">
         <comment>Continue</comment>
         <val lang="en_US">Continue</val>

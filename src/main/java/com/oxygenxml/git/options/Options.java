@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.oxygenxml.git.OxygenGitOptionPagePluginExtension;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
@@ -33,6 +34,11 @@ public class Options {
 	 */
 	@XmlElement(name = "repositoryLocations")
 	private RepositoryLocations repositoryLocations = new RepositoryLocations();
+	
+	/**
+	 * Stores the notify option selected for when there are new changes in the remote
+	 */
+	public String warnOnUpstreamChange = OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_NEVER;
 
 	/**
 	 * Last selected repository from the user
@@ -151,6 +157,15 @@ public class Options {
 	public void setRepositoryLocations(RepositoryLocations repositoryLocations) {
 		this.repositoryLocations = repositoryLocations;
 	}
+	
+	 
+  public void setWarnOnUpstreamChange(String warnOnUpstreamChange) {
+    this.warnOnUpstreamChange = warnOnUpstreamChange;
+  }
+  
+  public String getWarnOnUpstreamChange() {
+    return warnOnUpstreamChange;
+  }
 
 	public String getSelectedRepository() {
 		return selectedRepository;
@@ -219,6 +234,8 @@ public class Options {
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
+		result = prime * result + ((warnOnUpstreamChange == null) ? 0 : warnOnUpstreamChange.hashCode());
+		
 		return result;
 	}
 
@@ -232,6 +249,7 @@ public class Options {
 	        && Equaler.verifyEquals(passphrase, opt.getPassphrase())
 	        && Equaler.verifyEquals(projectsTestsForGit, opt.getProjectsTestsForGit())
 	        && Equaler.verifyEquals(repositoryLocations, opt.getRepositoryLocations())
+	        && Equaler.verifyEquals(warnOnUpstreamChange, opt.getWarnOnUpstreamChange())
 	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
 	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())

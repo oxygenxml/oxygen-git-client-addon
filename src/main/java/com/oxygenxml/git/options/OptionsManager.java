@@ -509,4 +509,13 @@ public class OptionsManager {
   public void setAutoPushWhenCommitting(boolean isAutoPushWhenCommitting) {
     getOptions().setAutoPushWhenCommitting(isAutoPushWhenCommitting);
   }
+  
+  
+ public void setWarnOnUpstreamChange(String warnOnUpstreamChange) {
+   getOptions().setWarnOnUpstreamChange(warnOnUpstreamChange);
+ }
+ 
+ public String getWarnOnUpstreamChange() {
+   return getOptions().getWarnOnUpstreamChange();
+ }
 }

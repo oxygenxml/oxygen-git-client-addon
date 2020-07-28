@@ -15,6 +15,30 @@ public class Tags {
   }
   
   /**
+   * Option text for always notifying when there are new commits upstream.
+   */
+  public static final String ALWAYS_NOTIFY_ON_NEW_COMMITS = "Always_notify_on_new_commits";
+  
+  /**
+   * Option text for notifying when there are new commits upstream that may cause conflicts.
+   */
+  public static final String NOTIFY_ON_POSSIBLE_CONFLICTS = "Notify_on_possible_conflicts";
+  
+  /**
+   * Option text for never notifying when there are new commits upstream.
+   */
+  public static final String NEVER_NOTIFY_ON_NEW_COMMITS = "Never notify me about new commits in the remote";
+  
+  /**
+   * There is a new commit in the remote repository that has modifications to at least one file opened in the editing areas.
+   */
+  public static final String NEW_COMMIT_WITH_MODIFIED_OPENED_FILES = "New_commit_with_modified_opened_files";
+  
+  /**
+   * There is a new commit in the remote repository that has not been pulled.
+   */
+  public static final String NEW_COMMIT_UPSTREAM = "New_commit_upstream";
+  /**
    * A file is not present at a specific revision.
    */
   public static final String FILE_WAS_REMOVED_IN_REVISION = "File_was_removed_in_revision";
@@ -980,4 +1004,9 @@ public class Tags {
    * Continue
    */
   public static final String CONTINUE = "Continue";
+  
+  /**
+   * 
+   */
+  public static final String WARN_IF_BEHIND = "Warn_if_behind";
 }

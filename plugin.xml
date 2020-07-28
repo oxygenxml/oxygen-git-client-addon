@@ -20,6 +20,7 @@
  
     <extension type="WorkspaceAccess" class="com.oxygenxml.git.OxygenGitPluginExtension"/>
     <extension type="URLHandler" class="com.oxygenxml.git.protocol.CustomProtocolURLHandlerExtension"/>
+    <extension type="OptionPage" class="com.oxygenxml.git.OxygenGitOptionPagePluginExtension"/>
     
     <!--The sample view which will present messages from the sample plugin.-->
     <view id="GitStagingView" initialSide="WEST" initialRow="0" initialState="docked">
