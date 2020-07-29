@@ -403,6 +403,20 @@ public class RevCommitUtil {
       }
     }
   }
+  
+  /**
+   * Creates a list with the characteristics of all revisions.
+   * 
+   * @param revCommits The list of the revisions.
+   * @return A list with all commit characteristics.
+   */
+  public static List<CommitCharacteristics> createRevCommitCharacteristics(List<RevCommit> revCommits){
+    List<CommitCharacteristics> commitCharacteristics = new ArrayList<>();
+    for(RevCommit revCommitIterator : revCommits) {
+      appendRevCommit(commitCharacteristics, revCommitIterator);
+    }
+    return commitCharacteristics;
+  }
 
   /**
    * Adds the revision into the collecting list.
