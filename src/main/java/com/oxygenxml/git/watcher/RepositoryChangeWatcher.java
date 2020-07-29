@@ -35,7 +35,11 @@ import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class RepositoryChangeWatcher {
-  
+  /**
+   * Sleeping time used to implement the coalescing.
+   */
+  private static final int SLEEP = 400;
+
   protected static ScheduledFuture<?> future;
 
   private static Logger logger = Logger.getLogger(RepositoryChangeWatcher.class);
@@ -54,7 +58,7 @@ public class RepositoryChangeWatcher {
   public static void initialize(StandalonePluginWorkspace standalonePluginWorkspace) {
     RepositoryChangeWatcher.addListeners4EditingAreas(standalonePluginWorkspace);
     String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-    GitOperationScheduler.getInstance().schedule(() -> task(value), 400);
+    GitOperationScheduler.getInstance().schedule(() -> notifyUser(value), SLEEP);
   }
   
   /**
@@ -82,7 +86,7 @@ public class RepositoryChangeWatcher {
           if (future != null) {
             future.cancel(false);
           }
-          future = GitOperationScheduler.getInstance().schedule(() -> task(value), 400);
+          future = GitOperationScheduler.getInstance().schedule(() -> notifyUser(value), SLEEP);
         }
       }
     };
@@ -91,7 +95,7 @@ public class RepositoryChangeWatcher {
    * Executes the task accordingly to the option
    * @param notifyMode Contains the option chosen by the user
    */
-  public static void task(String notifyMode) {
+  public static void notifyUser(String notifyMode) {
     if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)
         || notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
       List<RevCommit> commitsBehind = checkForRemoteCommits();
