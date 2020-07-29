@@ -7,11 +7,14 @@ import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 public class RepositoryChangeWatcher {
   /**
+   * Private constructor.
+   */
+  private RepositoryChangeWatcher() {}
+  /**
    * Add a listener for the editing areas and schedule the first search for changes in the remote repository
    * @param standalonePluginWorkspace
    */
   public static void initialize(StandalonePluginWorkspace standalonePluginWorkspace) {
-    
     RepositoryChangeWatcher.addListeners4EditingAreas(standalonePluginWorkspace);
     String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
     GitOperationScheduler.getInstance().schedule(() -> RepositoryChangeListeners.task(value), 400);

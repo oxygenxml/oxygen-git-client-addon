@@ -31,14 +31,14 @@ public class CommitsAheadAndBehind {
   }
 
   /**
-   * @return the commits ahead
+   * @return The commits in the local branch that haven't been pushed yet.
    */
   public List<RevCommit> getCommitsAhead() {
     return commitsAhead;
   }
   
   /**
-   * @return the commits behind
+   * @return The commits present in the upstream branch that haven't been pulled yet.
    */
   public List<RevCommit> getCommitsBehind() {
     return commitsBehind;

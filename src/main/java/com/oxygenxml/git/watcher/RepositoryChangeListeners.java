@@ -21,11 +21,11 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -44,8 +44,7 @@ public class RepositoryChangeListeners {
    * Creates the listener for supervising changes in the remote repository
    */
   public static WSEditorChangeListener createWatcherListener() {
-
-    WSEditorChangeListener wsEditorChangeListener = new WSEditorChangeListener() {
+    return new WSEditorChangeListener() {
       @Override
       public void editorOpened(URL editorLocation) {
         String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
@@ -59,23 +58,20 @@ public class RepositoryChangeListeners {
         }
       }
     };
-    return wsEditorChangeListener;
   }
   /**
    * Executes the task accordingly to the option
-   * @param option Contains the option chosen by the user
-   * @return <code>null</code>
+   * @param notifyMode Contains the option chosen by the user
    */
-  public static Object task(String option) {
-    if (option.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)
-        || option.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
-      List<RevCommit> commitsAhead;
-      commitsAhead = checkForRemoteCommits();
+  public static void task(String notifyMode) {
+    if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)
+        || notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
+      List<RevCommit> commitsAhead = checkForRemoteCommits();
       if (!commitsAhead.isEmpty()) {
-        if (option.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)) {
+        if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)) {
           // notify new commit in remote
           pluginWorkspace.showInformationMessage(Translator.getInstance().getTranslation(Tags.NEW_COMMIT_UPSTREAM));
-        } else if (option.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
+        } else if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
           HashMap<String, String> checkForRemoteFileChanges = checkForRemoteFileChanges();
           if (!checkForRemoteFileChanges.isEmpty()) {
             pluginWorkspace.showInformationMessage(
@@ -85,21 +81,20 @@ public class RepositoryChangeListeners {
         }
       }
     }
-    return null;
   }
   
   /**
-   * Checks in the remote repository if there are changes that affect the opened files in the editor areas
-   * @return <code>changedRemoteFiles</code> a map with all the files modified remote that are opened locally
+   * Checks in the remote repository if there are changes that affect the opened files in the editor areas.
+   * 
+   * @return A map with all the files modified remote that are opened locally
    */
   private static HashMap<String, String> checkForRemoteFileChanges() {
     GitAccess gitAccess = GitAccess.getInstance();
-    Repository repo;
-    HashMap<String, String> changedRemoteFiles = new HashMap<String, String>();
+    HashMap<String, String> changedRemoteFiles = new HashMap<>();
     HashMap<String, String> openedLocalFiles = getFilesOpenedInEditors();
 
     try {
-      repo = gitAccess.getRepository();
+      Repository repo = gitAccess.getRepository();
       List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(repo.getFullBranch());
 
       for (CommitCharacteristics commitsCharacteristicsIterator : commitsCharacteristics) {
@@ -124,8 +119,7 @@ public class RepositoryChangeListeners {
    * @return  <code>changedLocalFiles</code> a map with all the opened files
    */
   private static HashMap<String, String> getFilesOpenedInEditors() {
-
-    HashMap<String, String> changedLocalFiles = new HashMap<String, String>();
+    HashMap<String, String> changedLocalFiles = new HashMap<>();
     getFilesFromEditor(changedLocalFiles, StandalonePluginWorkspace.MAIN_EDITING_AREA);
     getFilesFromEditor(changedLocalFiles, StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
 
@@ -152,7 +146,7 @@ public class RepositoryChangeListeners {
   private static List<RevCommit> checkForRemoteCommits() {
     GitAccess gitAccess = GitAccess.getInstance();
     Repository repo;
-    List<RevCommit> commitsAhead = new ArrayList<RevCommit>();
+    List<RevCommit> commitsAhead = new ArrayList<>();
     try {
       gitAccess.fetch();
       repo = gitAccess.getRepository();
