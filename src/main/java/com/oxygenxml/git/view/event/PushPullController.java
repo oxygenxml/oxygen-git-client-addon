@@ -1,14 +1,24 @@
 package com.oxygenxml.git.view.event;
 
+import java.io.File;
+import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.PullCommand;
+import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.errors.LockFailedException;
+import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.transport.TrackingRefUpdate;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
 import com.oxygenxml.git.auth.AuthUtil;
@@ -186,8 +196,24 @@ public class PushPullController implements Subject<PushPullEvent> {
           showPullFailedBecauseOfCertainChanges(
               Arrays.asList(conflictingFile),
               translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
+        } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
+          String conflictingFile = ((org.eclipse.jgit.errors.LockFailedException) cause).getFile().getPath();
+          String message2 = ((org.eclipse.jgit.errors.LockFailedException) cause).getMessage();
+
+          PullCommand pullCmd = gitAccess.getGit().pull().setCredentialsProvider(CredentialsProvider.getDefault());
+          try {
+            PullResult pullCommandResult = pullCmd.call();
+            Collection<TrackingRefUpdate> trackingRefUpdates = pullCommandResult.getFetchResult().getTrackingRefUpdates();
+            message2 = createLockFailureMessageIfNeeded(trackingRefUpdates);
+          } catch (GitAPIException e1) {
+            logger.error(e1, e1);
+          } finally {
+            showPullFailedBecauseOfCertainChanges(Arrays.asList(conflictingFile), message2);
+          }
+
         } else {
-          throw e;
+           message = composeAndReturnFailureMessage(e.getMessage());
+           logger.error(e, e);
         }
       } catch (RebaseUncommittedChangesException e) {
         showPullFailedBecauseOfCertainChanges(
@@ -218,6 +244,7 @@ public class PushPullController implements Subject<PushPullEvent> {
           message = composeAndReturnFailureMessage(e.getMessage());
         }
       } catch (Exception e) {
+        message = composeAndReturnFailureMessage(e.getMessage());
         logger.error(e, e);
       } finally {
         if (notifyFinish) {
@@ -236,7 +263,42 @@ public class PushPullController implements Subject<PushPullEvent> {
      * Push or pull, depending on the implementation.
      */
     protected abstract String doOperation(UserCredentials userCredentials) throws GitAPIException;
-
+    
+    
+    /**
+     * Create lock failure message when pulling/fetching, if needed.
+     * 
+     * @param trackingRefUpdates Give us details about the fetch result.
+     * 
+     * @return the message.
+     */
+    private String createLockFailureMessageIfNeeded(Collection<TrackingRefUpdate> trackingRefUpdates) {
+      StringBuilder fetchResultStringBuilder = new StringBuilder();
+      for (Iterator<TrackingRefUpdate> iterator = trackingRefUpdates.iterator(); iterator.hasNext();) {
+        TrackingRefUpdate trackingRefUpdate = iterator.next();
+        if (trackingRefUpdate.getResult() == RefUpdate.Result.LOCK_FAILURE) {
+          if (fetchResultStringBuilder.length() > 0) {
+            fetchResultStringBuilder.append("\n\n");
+          }
+          fetchResultStringBuilder.append(translator.getTranslation(Tags.ERROR) + ": ");
+          try {
+            String repoDir = gitAccess.getRepository().getDirectory().getAbsolutePath();
+            File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock");
+            fetchResultStringBuilder.append(
+                MessageFormat.format(translator.getTranslation(Tags.UNABLE_TO_CREATE_FILE), lockFile.getAbsolutePath())
+                    + " ");
+            if (lockFile.exists()) {
+              fetchResultStringBuilder.append(translator.getTranslation(Tags.FILE_EXISTS) + "\n");
+            }
+          } catch (NoRepositorySelected e) {
+            logger.error(e, e);
+          }
+          fetchResultStringBuilder.append(translator.getTranslation(Tags.LOCK_FAILED_EXPLANATION));
+        }
+      }
+      return fetchResultStringBuilder.toString();
+    }
+    
   }
 
   /**
