@@ -13,6 +13,10 @@ public class Tags {
   private Tags() {
     // Nothing.
   }
+  /**
+   * Option text for showing the commit id where possible conflicts may appear.
+   */
+  public static final String SHOW_COMMIT_ID_ON_CHANGE = "Show_commit_id_on_change";
   
   /**
    * Option text for always notifying when there are new commits upstream.
@@ -27,7 +31,7 @@ public class Tags {
   /**
    * Option text for never notifying when there are new commits upstream.
    */
-  public static final String NEVER_NOTIFY_ON_NEW_COMMITS = "Never notify me about new commits in the remote";
+  public static final String NEVER_NOTIFY_ON_NEW_COMMITS = "Never_notify_on_new_commits";
   
   /**
    * There is a new commit in the remote repository that has modifications to at least one file opened in the editing areas.

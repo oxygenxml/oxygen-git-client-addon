@@ -38,8 +38,13 @@ public class Options {
 	/**
 	 * Stores the notify option selected for when there are new changes in the remote
 	 */
-	public String warnOnUpstreamChange = OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_NEVER;
+	private String warnOnUpstreamChange = OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_NEVER;
 
+	/**
+	 * Option to show or not the commit id when conflicts may appear/
+	 */
+	private boolean showCommitIdOnConflicts = OxygenGitOptionPagePluginExtension.DO_NOT_SHOW_COMMIT_ID;
+	
 	/**
 	 * Last selected repository from the user
 	 */
@@ -166,6 +171,14 @@ public class Options {
   public String getWarnOnUpstreamChange() {
     return warnOnUpstreamChange;
   }
+  
+  public boolean getShowCommitIdOnConflicts() {
+    return showCommitIdOnConflicts;
+  }
+  
+  public void setShowCommitIdOnConflicts(boolean showCommitIdOnConflicts) {
+    this.showCommitIdOnConflicts = showCommitIdOnConflicts;
+  }
 
 	public String getSelectedRepository() {
 		return selectedRepository;
@@ -235,6 +248,7 @@ public class Options {
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
 		result = prime * result + ((warnOnUpstreamChange == null) ? 0 : warnOnUpstreamChange.hashCode());
+    result = prime * result + ((showCommitIdOnConflicts == false) ? 0 : 1);
 		
 		return result;
 	}
@@ -254,7 +268,8 @@ public class Options {
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
 	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())
 	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode)
-	        && Equaler.verifyEquals(defaultPullType, opt.defaultPullType);
+	        && Equaler.verifyEquals(defaultPullType, opt.defaultPullType)
+	        && Equaler.verifyEquals(showCommitIdOnConflicts, opt.getShowCommitIdOnConflicts());
 	  }
 	  return toReturn;
 	}

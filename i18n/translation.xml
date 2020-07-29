@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value = "Show_commit_id_on_change">
+	<comment> Option text for showing in the warning dialog the commit id where possible conflicts may appear.</comment>
+        <val lang="en_US">I want to see in which commit conflicts may appear.</val>
+        <val lang="de_DE">I want to see in which commit conflicts may appear.</val>
+        <val lang="fr_FR">I want to see in which commit conflicts may appear.</val>
+        <val lang="ja_JP">I want to see in which commit conflicts may appear.</val>
+        <val lang="nl_NL">I want to see in which commit conflicts may appear.</val>
+    </key>
     <key value = "Always_notify_on_new_commits">
 	<comment> Option text for always notifying when there are new commits upstream.</comment>
         <val lang="en_US">As soon as there are new commits in the remote</val>
@@ -20,8 +28,8 @@
         <val lang="ja_JP">When I open a file, check to see if there are remote commits in which the file was changed.</val>
         <val lang="nl_NL">When I open a file, check to see if there are remote commits in which the file was changed.</val>
     </key>
-    <key value = "New_commit_with_modified_opened_files">
-	<comment>Option text for never notifying when there are new commits upstream.</comment>
+    <key value = "Never_notify_on_new_commits">
+	<comment> Option text for never notifying when there are new commits upstream.</comment>
         <val lang="en_US">Never notify me about new commits in the remote.</val>
         <val lang="de_DE">Never notify me about new commits in the remote.</val>
         <val lang="fr_FR">Never notify me about new commits in the remote.</val>

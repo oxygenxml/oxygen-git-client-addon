@@ -518,4 +518,11 @@ public class OptionsManager {
  public String getWarnOnUpstreamChange() {
    return getOptions().getWarnOnUpstreamChange();
  }
+
+ public boolean getShowCommitIdOnConflicts() {
+   return getOptions().getShowCommitIdOnConflicts();
+ }
+ public void setShowCommitIdOnConflicts(boolean showCommitIdOnConflicts) {
+   getOptions().setShowCommitIdOnConflicts(showCommitIdOnConflicts);
+ }
 }

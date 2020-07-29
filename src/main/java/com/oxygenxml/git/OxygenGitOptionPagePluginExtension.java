@@ -43,6 +43,11 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   public static final String WARN_UPSTREAM_NEVER = "never";
   
+  /**
+   * Value for not showing the commit id when possible conflicts appear.
+   */
+  public static final boolean DO_NOT_SHOW_COMMIT_ID = false;
+
   private ButtonGroup group;
   
   private JCheckBox alwaysCheckBox;
@@ -50,6 +55,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   private JCheckBox onChangeCheckBox;
 
   private JCheckBox neverCheckBox;
+  
+  private JCheckBox showCommitIdCheckBox;
   
   private static final Translator translator = Translator.getInstance();
   
@@ -61,6 +68,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void apply(PluginWorkspace pluginWorkspace) {
     
     OptionsManager.getInstance().setWarnOnUpstreamChange(WARN_UPSTREAM_NEVER);
+    OptionsManager.getInstance().setShowCommitIdOnConflicts(DO_NOT_SHOW_COMMIT_ID);
     OptionsManager.getInstance().saveOptions();
     
     if (alwaysCheckBox.isSelected()) {
@@ -136,6 +144,12 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     group.add(neverCheckBox);
     panel.add(neverCheckBox, c);
     
+    //Add the showCommitIdCheckBox option that toggles the commit id view
+    c.gridy ++;
+    c.weighty++;
+    showCommitIdCheckBox = new JCheckBox(translator.getTranslation(Tags.SHOW_COMMIT_ID_ON_CHANGE));
+    panel.add(showCommitIdCheckBox, c);
+    
     c.gridx = 0;
     c.gridy ++;
     c.gridwidth = 3;
@@ -154,6 +168,9 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     } else {
       neverCheckBox.setSelected(true);
     }
+    
+    boolean showCommitIdChange = OptionsManager.getInstance().getShowCommitIdOnConflicts();
+    showCommitIdCheckBox.setSelected(showCommitIdChange);
     
     return panel;
   }

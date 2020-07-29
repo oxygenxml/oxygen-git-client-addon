@@ -198,8 +198,8 @@ public class RepositoryChangeWatcher {
 
     for (Map.Entry<String, String> entry : filesMap.entrySet()) {
       String commitId = entry.getValue();
-      if (commitId != previousCommitId) {
-        stringBuilder.append("commitID: " + commitId + "\n");
+      if (!commitId.equals(previousCommitId)) {
+        stringBuilder.append("\nCommitID " + commitId + ": ");
         previousCommitId = commitId;
       }
       stringBuilder.append(entry.getKey() + ", ");
