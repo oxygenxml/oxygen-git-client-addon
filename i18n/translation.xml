@@ -6,27 +6,27 @@
     </languageList>
     <key value = "Always_notify_on_new_commits">
 	<comment> Option text for always notifying when there are new commits upstream.</comment>
-        <val lang="en_US">As soon as there are new commits in the remote</val>
-        <val lang="de_DE">As soon as there are new commits in the remote</val>
-        <val lang="fr_FR">As soon as there are new commits in the remote</val>
-        <val lang="ja_JP">As soon as there are new commits in the remote</val>
-        <val lang="nl_NL">As soon as there are new commits in the remote</val>
+        <val lang="en_US">As soon as new commits are detected</val>
+        <val lang="de_DE">As soon as new commits are detected</val>
+        <val lang="fr_FR">As soon as new commits are detected</val>
+        <val lang="ja_JP">As soon as new commits are detected</val>
+        <val lang="nl_NL">As soon as new commits are detected</val>
     </key>
     <key value = "Notify_on_possible_conflicts">
 	<comment> Option text for notifying when there are new commits upstream that may cause conflicts.</comment>
-        <val lang="en_US">When I open a file, check to see if there are remote commits in which the file was changed.</val>
-        <val lang="de_DE">When I open a file, check to see if there are remote commits in which the file was changed.</val>
-        <val lang="fr_FR">When I open a file, check to see if there are remote commits in which the file was changed.</val>
-        <val lang="ja_JP">When I open a file, check to see if there are remote commits in which the file was changed.</val>
-        <val lang="nl_NL">When I open a file, check to see if there are remote commits in which the file was changed.</val>
+        <val lang="en_US">When working with files that were changed in a remote commit</val>
+        <val lang="de_DE">When working with files that were changed in a remote commit</val>
+        <val lang="fr_FR">When working with files that were changed in a remote commit</val>
+        <val lang="ja_JP">When working with files that were changed in a remote commit</val>
+        <val lang="nl_NL">When working with files that were changed in a remote commit</val>
     </key>
     <key value = "Never_notify_on_new_commits">
 	<comment> Option text for never notifying when there are new commits upstream.</comment>
-        <val lang="en_US">Never notify me about new commits in the remote.</val>
-        <val lang="de_DE">Never notify me about new commits in the remote.</val>
-        <val lang="fr_FR">Never notify me about new commits in the remote.</val>
-        <val lang="ja_JP">Never notify me about new commits in the remote.</val>
-        <val lang="nl_NL">Never notify me about new commits in the remote.</val>
+        <val lang="en_US">Never</val>
+        <val lang="de_DE">Never</val>
+        <val lang="fr_FR">Never</val>
+        <val lang="ja_JP">Never</val>
+        <val lang="nl_NL">Never</val>
     </key>
     <key value = "New_commit_with_modified_opened_files">
 	<comment> Dialog message when there is a new commit in the remote
