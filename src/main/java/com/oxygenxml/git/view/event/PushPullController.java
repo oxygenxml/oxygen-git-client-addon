@@ -1,24 +1,15 @@
 package com.oxygenxml.git.view.event;
 
-import java.io.File;
-import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.PullCommand;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.errors.LockFailedException;
-import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.RepositoryState;
-import org.eclipse.jgit.transport.TrackingRefUpdate;
-import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
 import com.oxygenxml.git.auth.AuthUtil;
@@ -190,6 +181,8 @@ public class PushPullController implements Subject<PushPullEvent> {
         }
         message = doOperation(userCredentials);
       } catch (JGitInternalException e) {
+        logger.debug(e, e);
+        
         Throwable cause = e.getCause();
         if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
           String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
@@ -197,13 +190,16 @@ public class PushPullController implements Subject<PushPullEvent> {
               Arrays.asList(conflictingFile),
               translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
         } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
-          String conflictingFile = ((org.eclipse.jgit.errors.LockFailedException) cause).getFile().getPath();
-          String message2 = ((org.eclipse.jgit.errors.LockFailedException) cause).getMessage();
-          showPullFailedBecauseOfCertainChanges(Arrays.asList(conflictingFile), message2);
-
+          // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
+          LockFailedException lockFailedException = (org.eclipse.jgit.errors.LockFailedException) cause;
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage());
+          
+          // This message gets presented in a status, at the bottom of the staging view.
+          message = composeAndReturnFailureMessage(lockFailedException.getMessage());
         } else {
-           message = composeAndReturnFailureMessage(e.getMessage());
-           logger.error(e, e);
+          // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
+          message = composeAndReturnFailureMessage(e.getMessage());
         }
       } catch (RebaseUncommittedChangesException e) {
         showPullFailedBecauseOfCertainChanges(
