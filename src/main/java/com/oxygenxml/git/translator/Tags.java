@@ -14,11 +14,6 @@ public class Tags {
     // Nothing.
   }
   /**
-   * Option text for showing the commit id where possible conflicts may appear.
-   */
-  public static final String SHOW_COMMIT_ID_ON_CHANGE = "Show_commit_id_on_change";
-  
-  /**
    * Option text for always notifying when there are new commits upstream.
    */
   public static final String ALWAYS_NOTIFY_ON_NEW_COMMITS = "Always_notify_on_new_commits";

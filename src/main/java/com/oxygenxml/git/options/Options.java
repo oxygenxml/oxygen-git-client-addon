@@ -41,9 +41,9 @@ public class Options {
 	private String warnOnUpstreamChange = OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_NEVER;
 
 	/**
-	 * Option to show or not the commit id when conflicts may appear/
+	 * The id from the last commit fetched.
 	 */
-	private boolean showCommitIdOnConflicts = OxygenGitOptionPagePluginExtension.DO_NOT_SHOW_COMMIT_ID;
+	private String warnOnCommitIdChange = "";
 	
 	/**
 	 * Last selected repository from the user
@@ -172,12 +172,12 @@ public class Options {
     return warnOnUpstreamChange;
   }
   
-  public boolean getShowCommitIdOnConflicts() {
-    return showCommitIdOnConflicts;
+  public String getWarnOnCommitIdChange() {
+    return warnOnCommitIdChange;
   }
   
-  public void setShowCommitIdOnConflicts(boolean showCommitIdOnConflicts) {
-    this.showCommitIdOnConflicts = showCommitIdOnConflicts;
+  public void setWarnOnCommitIdChange(String warnOnCommitIdChange) {
+    this.warnOnCommitIdChange = warnOnCommitIdChange;
   }
 
 	public String getSelectedRepository() {
@@ -248,7 +248,7 @@ public class Options {
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
 		result = prime * result + ((warnOnUpstreamChange == null) ? 0 : warnOnUpstreamChange.hashCode());
-    result = prime * result + ((showCommitIdOnConflicts == false) ? 0 : 1);
+    result = prime * result + ((warnOnCommitIdChange == null) ? 0 : warnOnCommitIdChange.hashCode());
 		
 		return result;
 	}
@@ -269,7 +269,7 @@ public class Options {
 	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())
 	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode)
 	        && Equaler.verifyEquals(defaultPullType, opt.defaultPullType)
-	        && Equaler.verifyEquals(showCommitIdOnConflicts, opt.getShowCommitIdOnConflicts());
+	        && Equaler.verifyEquals(warnOnCommitIdChange, opt.getWarnOnCommitIdChange());
 	  }
 	  return toReturn;
 	}

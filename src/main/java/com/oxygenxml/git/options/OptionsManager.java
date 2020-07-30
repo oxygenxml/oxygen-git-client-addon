@@ -510,19 +510,32 @@ public class OptionsManager {
     getOptions().setAutoPushWhenCommitting(isAutoPushWhenCommitting);
   }
   
-  
+  /**
+   * Set when to verify for remote changes in the repository.
+   * @param warnOnUpstreamChange Option chosen about when to verify.
+   */
  public void setWarnOnUpstreamChange(String warnOnUpstreamChange) {
    getOptions().setWarnOnUpstreamChange(warnOnUpstreamChange);
  }
- 
+ /**
+  * Get the option about when to verify about remote changes in the repository.
+  * @return Option stored about when to verify.
+  */
  public String getWarnOnUpstreamChange() {
    return getOptions().getWarnOnUpstreamChange();
  }
-
- public boolean getShowCommitIdOnConflicts() {
-   return getOptions().getShowCommitIdOnConflicts();
+/**
+ * Get the ID of the latest commit fetched.
+ * @return Commit ID.
+ */
+ public String getWarnOnCommitIdChange() {
+   return getOptions().getWarnOnCommitIdChange();
  }
- public void setShowCommitIdOnConflicts(boolean showCommitIdOnConflicts) {
-   getOptions().setShowCommitIdOnConflicts(showCommitIdOnConflicts);
+ /**
+  * Set the commit ID to the newest commit fetched.
+  * @param warnOnCommitIdChange The newest commit ID.
+  */
+ public void setWarnOnCommitIdChange(String warnOnCommitIdChange) {
+   getOptions().setWarnOnCommitIdChange(warnOnCommitIdChange);
  }
 }

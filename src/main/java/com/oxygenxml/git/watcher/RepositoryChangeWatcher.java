@@ -3,10 +3,8 @@ package com.oxygenxml.git.watcher;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Logger;
@@ -39,13 +37,26 @@ public class RepositoryChangeWatcher {
    * Sleeping time used to implement the coalescing.
    */
   private static final int SLEEP = 400;
-
+  
+  /**
+   * Task for verifying and coalescing.
+   */
   protected static ScheduledFuture<?> future;
-
+  
+  /**
+   * Logger used to display exceptions.
+   */
   private static Logger logger = Logger.getLogger(RepositoryChangeWatcher.class);
-
+  
+  /**
+   * The Plugin Workspace.
+   */
   private static PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-
+  
+  /**
+   * The Option Manager instance.
+   */
+  private static OptionsManager optionsManager = OptionsManager.getInstance();
   /**
    * Private constructor.
    */
@@ -103,12 +114,13 @@ public class RepositoryChangeWatcher {
         if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)) {
           // notify new commit in remote
           pluginWorkspace.showInformationMessage(Translator.getInstance().getTranslation(Tags.NEW_COMMIT_UPSTREAM));
-        } else if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
-          HashMap<String, String> checkForRemoteFileChanges = checkForRemoteFileChanges(commitsBehind);
-          if (!checkForRemoteFileChanges.isEmpty()) {
+        } else if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)
+            && setNewCommitIdOnChange(commitsBehind.get(0))) {
+          HashSet<String> remoteFilesChanges = checkForRemoteFileChanges(commitsBehind);
+          if (!remoteFilesChanges.isEmpty()) {
             pluginWorkspace.showInformationMessage(
                 Translator.getInstance().getTranslation(Tags.NEW_COMMIT_WITH_MODIFIED_OPENED_FILES)
-                    + getFilesModified(checkForRemoteFileChanges));
+                    + getFilesModified(remoteFilesChanges));
           }
         }
       }
@@ -121,8 +133,8 @@ public class RepositoryChangeWatcher {
    * 
    * @return A map with all the files modified remote that are opened locally
    */
-  private static HashMap<String, String> checkForRemoteFileChanges(List<RevCommit> commitsBehind) {
-    HashMap<String, String> changedRemoteFiles = new HashMap<>();
+  private static HashSet<String> checkForRemoteFileChanges(List<RevCommit> commitsBehind) {
+    HashSet<String> changedRemoteFiles = new HashSet<>();
     HashSet<String> openedLocalFiles = getFilesOpenedInEditors();
 
     List<CommitCharacteristics> commitsCharacteristics = RevCommitUtil.createRevCommitCharacteristics(commitsBehind);
@@ -135,7 +147,7 @@ public class RepositoryChangeWatcher {
         for (FileStatus changedFilesIterator : changedFiles) {
           String fileLocation = changedFilesIterator.getFileLocation();
           if (openedLocalFiles.contains(fileLocation)) {
-            changedRemoteFiles.put(fileLocation, commitId);
+            changedRemoteFiles.add(fileLocation);
           }
         }
       } catch (IOException | GitAPIException e) {
@@ -145,6 +157,22 @@ public class RepositoryChangeWatcher {
     return changedRemoteFiles;
   }
 
+  /**
+   * Compares the new commit with the one stored in com.oxygenxml.git.options.Options
+   * and modifies the stored commit in case it is different from the new one.
+   * 
+   * @param revCommit The newest commit fetched from upstream.
+   * @return A boolean that represents if the commit id was changed or not
+   */
+  private static boolean setNewCommitIdOnChange(RevCommit revCommit) {
+    String commitId = revCommit.getId().getName();
+    if(!commitId.contentEquals(optionsManager.getWarnOnCommitIdChange())) {
+      optionsManager.setWarnOnCommitIdChange(commitId);
+      return true;
+    }
+    return false;
+  }
+  
   /**
    * Retrieves all the files opened in dita maps and main editing areas
    * @return  <code>changedLocalFiles</code> a map with all the opened files
@@ -196,17 +224,11 @@ public class RepositoryChangeWatcher {
    * @param filesMap  Map that contains the files to be transformed
    * @return a string which represents the list of files
    */
-  private static String getFilesModified(HashMap<String, String> filesMap) {
+  private static String getFilesModified(HashSet<String> filesSet) {
     StringBuilder stringBuilder = new StringBuilder();
-    String previousCommitId = "";
 
-    for (Map.Entry<String, String> entry : filesMap.entrySet()) {
-      String commitId = entry.getValue();
-      if (!commitId.equals(previousCommitId)) {
-        stringBuilder.append("\nCommitID " + commitId + ": ");
-        previousCommitId = commitId;
-      }
-      stringBuilder.append(entry.getKey() + ", ");
+    for (String file : filesSet) {
+      stringBuilder.append(file + ", ");
     }
 
     stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), ".");

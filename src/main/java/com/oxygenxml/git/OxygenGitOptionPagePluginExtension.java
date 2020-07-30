@@ -7,7 +7,6 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.Collections;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -24,11 +23,6 @@ import com.oxygenxml.git.translator.Translator;
 public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtension{
  
   /**
-   * The option key describing when to notify the user for new commits.
-   */
-  public static final String KEY_NOTIFY_ON_NEW_COMMITS= "notify.new.commits";
-  
-  /**
    * Value for as soon as there are new commits upstream.
    */
   public static final String WARN_UPSTREAM_ALWAYS = "always";
@@ -44,20 +38,33 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public static final String WARN_UPSTREAM_NEVER = "never";
   
   /**
-   * Value for not showing the commit id when possible conflicts appear.
+   * A group for buttons so that will always be only one button selected.
    */
-  public static final boolean DO_NOT_SHOW_COMMIT_ID = false;
-
   private ButtonGroup group;
   
+  /**
+   * CheckBox for the option to notify the user as soon as there are new commits.
+   */
   private JCheckBox alwaysCheckBox;
   
+  /**
+   * CheckBox for the option to notify the user when there is a change in the opened files.
+   */
   private JCheckBox onChangeCheckBox;
-
+  
+  /**
+   * CheckBock for the option to never notify the user when there are new commits.
+   */
   private JCheckBox neverCheckBox;
   
-  private JCheckBox showCommitIdCheckBox;
+  /**
+   * The OptionsManager instance
+   */
+  private static final OptionsManager optionsManager = OptionsManager.getInstance();
   
+  /**
+   * The Translator instance
+   */
   private static final Translator translator = Translator.getInstance();
   
   /**
@@ -66,27 +73,18 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   
   @Override
   public void apply(PluginWorkspace pluginWorkspace) {
-    
-    OptionsManager.getInstance().setWarnOnUpstreamChange(WARN_UPSTREAM_NEVER);
-    OptionsManager.getInstance().setShowCommitIdOnConflicts(DO_NOT_SHOW_COMMIT_ID);
-    OptionsManager.getInstance().saveOptions();
-    
     if (alwaysCheckBox.isSelected()) {
-      pluginWorkspace.getOptionsStorage().setOption(KEY_NOTIFY_ON_NEW_COMMITS,
-          translator.getTranslation(Tags.ALWAYS_NOTIFY_ON_NEW_COMMITS));
+      optionsManager.setWarnOnUpstreamChange(WARN_UPSTREAM_ALWAYS);
     } else {
       if (onChangeCheckBox.isSelected()) {
-        pluginWorkspace.getOptionsStorage().setOption(KEY_NOTIFY_ON_NEW_COMMITS,
-            translator.getTranslation(Tags.NEVER_NOTIFY_ON_NEW_COMMITS));
+        optionsManager.setWarnOnUpstreamChange(WARN_UPSTREAM_ON_CHANGE);
       } else {
         if (neverCheckBox.isSelected()) {
-          pluginWorkspace.getOptionsStorage().setOption(KEY_NOTIFY_ON_NEW_COMMITS,
-              translator.getTranslation(Tags.NOTIFY_ON_POSSIBLE_CONFLICTS));
+          optionsManager.setWarnOnUpstreamChange(WARN_UPSTREAM_NEVER);
         }
       }
     }
-
-    Collections.emptyList();
+    optionsManager.saveOptions();
   }
 
   /**
@@ -144,12 +142,6 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     group.add(neverCheckBox);
     panel.add(neverCheckBox, c);
     
-    //Add the showCommitIdCheckBox option that toggles the commit id view
-    c.gridy ++;
-    c.weighty++;
-    showCommitIdCheckBox = new JCheckBox(translator.getTranslation(Tags.SHOW_COMMIT_ID_ON_CHANGE));
-    panel.add(showCommitIdCheckBox, c);
-    
     c.gridx = 0;
     c.gridy ++;
     c.gridwidth = 3;
@@ -159,7 +151,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     panel.add(new JPanel(), c);
 
     //Set the initial state of the option.
-    String warnOnUpstreamChange = OptionsManager.getInstance().getWarnOnUpstreamChange();
+    String warnOnUpstreamChange = optionsManager.getWarnOnUpstreamChange();
 
     if (WARN_UPSTREAM_ALWAYS.equals(warnOnUpstreamChange)) {
       alwaysCheckBox.setSelected(true);
@@ -169,11 +161,6 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
       neverCheckBox.setSelected(true);
     }
     
-    boolean showCommitIdChange = OptionsManager.getInstance().getShowCommitIdOnConflicts();
-    showCommitIdCheckBox.setSelected(showCommitIdChange);
-    
     return panel;
   }
-
 }
-
