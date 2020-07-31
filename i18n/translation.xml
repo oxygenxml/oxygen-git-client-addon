@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value = "Want_to_pull_question">
+	<comment> The message when the user has the choice to pull new commits.</comment>
+        <val lang="en_US">Do you want to pull the changes now?</val>
+        <val lang="de_DE">Do you want to pull the changes now?</val>
+        <val lang="fr_FR">Do you want to pull the changes now?</val>
+        <val lang="ja_JP">Do you want to pull the changes now?</val>
+        <val lang="nl_NL">Do you want to pull the changes now?</val>
+    </key>
      <key value = "When_to_notify_on_new_commits">
 	<comment> The message before showing the options available for notifying the user on new commits.</comment>
         <val lang="en_US">Notify about new commits in the remote:</val>
