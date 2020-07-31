@@ -19,6 +19,7 @@ import javax.swing.WindowConstants;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Ref;
 
 import com.oxygenxml.git.constants.UIConstants;
@@ -157,7 +158,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 	    } catch (CheckoutConflictException e) {
 	      logger.debug(e, e);
 	      showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-	    } catch (GitAPIException e) {
+	    } catch (GitAPIException | JGitInternalException e) {
 	      logger.debug(e, e);
 	      showErrorMessage(e.getMessage());
 	    } finally {
