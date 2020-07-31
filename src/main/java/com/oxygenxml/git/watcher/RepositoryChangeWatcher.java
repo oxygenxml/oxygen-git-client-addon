@@ -16,6 +16,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension;
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
@@ -59,6 +60,16 @@ public class RepositoryChangeWatcher {
    * The Option Manager instance.
    */
   private static OptionsManager optionsManager = OptionsManager.getInstance();
+  
+  /**
+   * The Git Access instance.
+   */
+  private static GitAccess gitAccess = GitAccess.getInstance();
+  
+  /**
+   * The Translator instance.
+   */
+  private static Translator translator = Translator.getInstance();
   /**
    * Private constructor.
    */
@@ -130,11 +141,36 @@ public class RepositoryChangeWatcher {
             // Remember that we warn the user about this particular commit.
             optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
             
-            pluginWorkspace.showInformationMessage(
-                Translator.getInstance().getTranslation(Tags.NEW_COMMIT_WITH_MODIFIED_OPENED_FILES)
-                    + getFilesModified(conflictingFiles));
+            showNewCommitsMessage(translator.getTranslation(Tags.NEW_COMMIT_WITH_MODIFIED_OPENED_FILES)
+                + getFilesModified(conflictingFiles));
           }
         }
+      }
+    }
+  }
+  
+  /**
+   * Show a confirmation message that notifies about new commits in the remote
+   * repository and asks the user if he wants to pull the changes.
+   * 
+   * @param newCommitMessage The message to be displayed to the user
+   */
+  private static void showNewCommitsMessage(String newCommitMessage) {
+    String[] options = { translator.getTranslation(Tags.YES), translator.getTranslation(Tags.NO) };
+    int[] optionsIds = { 1, 0 };
+    StringBuilder fullMessage = new StringBuilder(newCommitMessage);
+    fullMessage.append("\n\n");
+    fullMessage.append(translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
+
+    if (PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+        translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL), fullMessage.toString(), options, optionsIds) == 1) {
+      String hostName = gitAccess.getHostName();
+      UserCredentials userCredentials = optionsManager.getGitCredentials(hostName);
+      try {
+        gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
+      } catch (GitAPIException e) {
+        pluginWorkspace.showInformationMessage(e.getMessage());
+        logger.error(e, e);
       }
     }
   }

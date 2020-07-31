@@ -1,4 +1,4 @@
-package com.oxygenxml.git;
+  package com.oxygenxml.git;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -104,8 +104,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     JPanel panel = new JPanel(new GridBagLayout());
     
     //Add a label that asks us when do we want to see if there are remote changes for the repository.
-    // TODO i18n
-    JLabel whatcherTypeLbl = new JLabel("Notify about new commits in the remote:");
+    JLabel whatcherTypeLbl = new JLabel(translator.getTranslation(Tags.WHEN_TO_NOTIFY_ON_NEW_COMMITS));
     c.gridx = 0;
     c.gridy = 0;
     c.weightx = 0;
