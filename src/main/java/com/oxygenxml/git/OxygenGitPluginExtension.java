@@ -39,6 +39,7 @@ import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.historycomponents.HistoryPanel;
+import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
 
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -201,6 +202,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			pluginWorkspaceAccess.showErrorMessage(t.getMessage());
 			logger.fatal(t, t);
 		}
+		
+		RepositoryChangeWatcher.initialize(pluginWorkspaceAccess);
 	}
 	
 	/**

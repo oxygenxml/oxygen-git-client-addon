@@ -1,10 +1,12 @@
 package com.oxygenxml.git.watcher;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Logger;
@@ -107,20 +109,30 @@ public class RepositoryChangeWatcher {
    * @param notifyMode Contains the option chosen by the user
    */
   public static void notifyUser(String notifyMode) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Handle notification mode: " + notifyMode);
+    }
+    
     if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)
         || notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
       List<RevCommit> commitsBehind = checkForRemoteCommits();
-      if (!commitsBehind.isEmpty()) {
+      
+      if (!commitsBehind.isEmpty() && shouldNotifyUser(commitsBehind.get(0))) {
         if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)) {
+          // Remember that we warn the user about this particular commit.
+          optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
+          
           // notify new commit in remote
           pluginWorkspace.showInformationMessage(Translator.getInstance().getTranslation(Tags.NEW_COMMIT_UPSTREAM));
-        } else if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)
-            && setNewCommitIdOnChange(commitsBehind.get(0))) {
-          HashSet<String> remoteFilesChanges = checkForRemoteFileChanges(commitsBehind);
-          if (!remoteFilesChanges.isEmpty()) {
+        } else if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
+          Set<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
+          if (!conflictingFiles.isEmpty()) {
+            // Remember that we warn the user about this particular commit.
+            optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
+            
             pluginWorkspace.showInformationMessage(
                 Translator.getInstance().getTranslation(Tags.NEW_COMMIT_WITH_MODIFIED_OPENED_FILES)
-                    + getFilesModified(remoteFilesChanges));
+                    + getFilesModified(conflictingFiles));
           }
         }
       }
@@ -129,13 +141,16 @@ public class RepositoryChangeWatcher {
   
   /**
    * Checks in the remote repository if there are changes that affect the opened files in the editor areas.
+   * 
+   * @param localFiles Local files relative paths.
    * @param commitsBehind A list of new commits from remote that have to be checked 
    * 
    * @return A map with all the files modified remote that are opened locally
    */
-  private static HashSet<String> checkForRemoteFileChanges(List<RevCommit> commitsBehind) {
+  private static Set<String> checkForRemoteFileChanges(
+      Set<String> localFiles,
+      List<RevCommit> commitsBehind) {
     HashSet<String> changedRemoteFiles = new HashSet<>();
-    HashSet<String> openedLocalFiles = getFilesOpenedInEditors();
 
     List<CommitCharacteristics> commitsCharacteristics = RevCommitUtil.createRevCommitCharacteristics(commitsBehind);
 
@@ -146,7 +161,7 @@ public class RepositoryChangeWatcher {
         
         for (FileStatus changedFilesIterator : changedFiles) {
           String fileLocation = changedFilesIterator.getFileLocation();
-          if (openedLocalFiles.contains(fileLocation)) {
+          if (localFiles.contains(fileLocation)) {
             changedRemoteFiles.add(fileLocation);
           }
         }
@@ -161,16 +176,14 @@ public class RepositoryChangeWatcher {
    * Compares the new commit with the one stored in com.oxygenxml.git.options.Options
    * and modifies the stored commit in case it is different from the new one.
    * 
-   * @param revCommit The newest commit fetched from upstream.
-   * @return A boolean that represents if the commit id was changed or not
+   * @param topRevCommit The newest commit fetched from upstream.
+   * 
+   * @return <code>true</code> to present a notification to the user.
    */
-  private static boolean setNewCommitIdOnChange(RevCommit revCommit) {
-    String commitId = revCommit.getId().getName();
-    if(!commitId.contentEquals(optionsManager.getWarnOnCommitIdChange())) {
-      optionsManager.setWarnOnCommitIdChange(commitId);
-      return true;
-    }
-    return false;
+  private static boolean shouldNotifyUser(RevCommit topRevCommit) {
+    String commitId = topRevCommit.getId().getName();
+    
+    return !commitId.contentEquals(optionsManager.getWarnOnCommitIdChange());
   }
   
   /**
@@ -179,22 +192,46 @@ public class RepositoryChangeWatcher {
    */
   private static HashSet<String> getFilesOpenedInEditors() {
     HashSet<String> changedLocalFiles = new HashSet<>();
-    getFilesFromEditor(changedLocalFiles, StandalonePluginWorkspace.MAIN_EDITING_AREA);
-    getFilesFromEditor(changedLocalFiles, StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
+    
+    try {
+      URL wcDir = pluginWorkspace.getUtilAccess().convertFileToURL(GitAccess.getInstance().getWorkingCopy());
+      
+      collectFilesFromRepository(
+          wcDir, 
+          pluginWorkspace.getAllEditorLocations(StandalonePluginWorkspace.MAIN_EDITING_AREA), 
+          changedLocalFiles);
+      collectFilesFromRepository(
+          wcDir, 
+          pluginWorkspace.getAllEditorLocations(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA),
+          changedLocalFiles);
+    } catch (MalformedURLException | NoRepositorySelected e) {
+      logger.debug(e, e);
+    }
+    
+    logger.info("File to test: " + changedLocalFiles);
 
     return changedLocalFiles;
   }
   
   /**
-   * Stores in the map <code>changedLocalFiles</code> all files opened in a specific editing area <code>editingArea</code>
-   * @param changedLocalFiles   Map in which to store the files
-   * @param editingArea         Editing area from which to get the files        
+   * Collects the path relative to the repository directory. Only the resources that are actually from the repository 
+   * will be collected.
+   * 
+   * @param wcDir Working copy directory.
+   * @param resources URLs to test.
+   * @param changedLocalFiles   Resources from the repository are collected in here in their relative form.
    */
-  private static void getFilesFromEditor(HashSet<String> changedLocalFiles, int editingArea) {
-    URL[] allEditorLocations = pluginWorkspace.getAllEditorLocations(editingArea);
-    for (URL editorLocationIterator : allEditorLocations) {
-      String file = editorLocationIterator.getFile();
-      changedLocalFiles.add(file);
+  private static void collectFilesFromRepository(
+      URL wcDir,
+      URL[] resources,
+      Set<String> changedLocalFiles) {
+    String wcDirPath = wcDir.toExternalForm();
+    for (URL editorLocationIterator : resources) {
+      String externalForm = editorLocationIterator.toExternalForm();
+      if (externalForm.startsWith(wcDirPath)) {
+        // This resource is from the repository.
+        changedLocalFiles.add(externalForm.substring(wcDirPath.length()));
+      }
     }
   }
   
@@ -224,7 +261,7 @@ public class RepositoryChangeWatcher {
    * @param filesMap  Map that contains the files to be transformed
    * @return a string which represents the list of files
    */
-  private static String getFilesModified(HashSet<String> filesSet) {
+  private static String getFilesModified(Set<String> filesSet) {
     StringBuilder stringBuilder = new StringBuilder();
 
     for (String file : filesSet) {
