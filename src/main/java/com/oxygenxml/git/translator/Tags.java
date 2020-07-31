@@ -14,6 +14,10 @@ public class Tags {
     // Nothing.
   }
   /**
+   * The message before showing the options available for notifying the user on new commits.
+   */
+  public static final String WHEN_TO_NOTIFY_ON_NEW_COMMITS = "When_to_notify_on_new_commits";
+  /**
    * Option text for always notifying when there are new commits upstream.
    */
   public static final String ALWAYS_NOTIFY_ON_NEW_COMMITS = "Always_notify_on_new_commits";
