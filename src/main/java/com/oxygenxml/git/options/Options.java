@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.oxygenxml.git.OxygenGitOptionPagePluginExtension;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.watcher.RemoteTrackingAction;
 
 /**
  * Entity for the JAXB to store the plugin options
@@ -38,7 +38,7 @@ public class Options {
 	/**
 	 * Stores the notify option selected for when there are new changes in the remote
 	 */
-	private String warnOnUpstreamChange = OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_NEVER;
+	private String warnOnUpstreamChange = RemoteTrackingAction.WARN_UPSTREAM_NEVER;
 
 	/**
 	 * The id from the last commit fetched.

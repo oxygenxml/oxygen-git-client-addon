@@ -203,7 +203,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			logger.fatal(t, t);
 		}
 		
-		RepositoryChangeWatcher.initialize(pluginWorkspaceAccess);
+		RepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess);
 	}
 	
 	/**

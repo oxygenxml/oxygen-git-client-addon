@@ -13,6 +13,7 @@ import javax.swing.JRadioButton;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.watcher.RemoteTrackingAction;
 
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -21,22 +22,6 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
  * Plugin option page extension.
  */
 public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtension{
- 
-  /**
-   * Value for as soon as there are new commits upstream.
-   */
-  public static final String WARN_UPSTREAM_ALWAYS = "always";
-  
-  /**
-   * Value for notifying when there are new commits upstream that may cause conflicts.
-   */
-  public static final String WARN_UPSTREAM_ON_CHANGE = "onChange";
-  
-  /**
-   * Value to skip any checks on the upstream state.
-   */
-  public static final String WARN_UPSTREAM_NEVER = "never";
-  
   /**
    * CheckBox for the option to notify the user as soon as there are new commits.
    */
@@ -68,11 +53,11 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   
   @Override
   public void apply(PluginWorkspace pluginWorkspace) {
-    String warnOnUpstream = WARN_UPSTREAM_NEVER;
+    String warnOnUpstream = RemoteTrackingAction.WARN_UPSTREAM_NEVER;
     if (alwaysCheckBox.isSelected()) {
-      warnOnUpstream = WARN_UPSTREAM_ALWAYS;
+      warnOnUpstream = RemoteTrackingAction.WARN_UPSTREAM_ALWAYS;
     } else if (onChangeCheckBox.isSelected()) {
-      warnOnUpstream = WARN_UPSTREAM_ON_CHANGE;
+      warnOnUpstream = RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE;
     } 
     
     optionsManager.setWarnOnUpstreamChange(warnOnUpstream);
@@ -146,9 +131,9 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     //Set the initial state of the option.
     String warnOnUpstreamChange = optionsManager.getWarnOnUpstreamChange();
 
-    if (WARN_UPSTREAM_ALWAYS.equals(warnOnUpstreamChange)) {
+    if (RemoteTrackingAction.WARN_UPSTREAM_ALWAYS.equals(warnOnUpstreamChange)) {
       alwaysCheckBox.setSelected(true);
-    } else if (WARN_UPSTREAM_ON_CHANGE.equals(warnOnUpstreamChange)) {
+    } else if (RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE.equals(warnOnUpstreamChange)) {
       onChangeCheckBox.setSelected(true);
     } else {
       neverCheckBox.setSelected(true);

@@ -14,7 +14,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import com.oxygenxml.git.OxygenGitOptionPagePluginExtension;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
@@ -35,7 +34,15 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+/**
+ * Tracks changes in the remote repository and notifies the user.
+ */
 public class RepositoryChangeWatcher {
+  /**
+   * Logger used to display exceptions.
+   */
+  private static Logger logger = Logger.getLogger(RepositoryChangeWatcher.class);
+  
   /**
    * Sleeping time used to implement the coalescing.
    */
@@ -44,104 +51,103 @@ public class RepositoryChangeWatcher {
   /**
    * Task for verifying and coalescing.
    */
-  protected static ScheduledFuture<?> future;
-  
-  /**
-   * Logger used to display exceptions.
-   */
-  private static Logger logger = Logger.getLogger(RepositoryChangeWatcher.class);
-  
+  protected ScheduledFuture<?> future;
+
   /**
    * The Plugin Workspace.
    */
-  private static PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+  private PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
   
   /**
    * The Option Manager instance.
    */
-  private static OptionsManager optionsManager = OptionsManager.getInstance();
+  private OptionsManager optionsManager = OptionsManager.getInstance();
   
   /**
    * The Git Access instance.
    */
-  private static GitAccess gitAccess = GitAccess.getInstance();
+  private GitAccess gitAccess = GitAccess.getInstance();
   
   /**
    * The Translator instance.
    */
-  private static Translator translator = Translator.getInstance();
+  private Translator translator = Translator.getInstance();
   /**
    * Private constructor.
    */
-  private RepositoryChangeWatcher() {}
+  private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace) {
+    addListeners4EditingAreas(standalonePluginWorkspace);
+    
+    // Check the currently opened editors.
+    String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
+    GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(value), SLEEP);
+  
+  }
   
   /**
-   * Add a listener for the editing areas and schedule the first search for changes in the remote repository
+   * Adds hooks on the workspace and initializes the watcher which will notify the user when the remote 
+   * repository changes.
+   * 
    * @param standalonePluginWorkspace The Plugin Workspace
+   * 
+   * @return An watcher that keeps track of the remote changes.
    */
-  public static void initialize(StandalonePluginWorkspace standalonePluginWorkspace) {
-    RepositoryChangeWatcher.addListeners4EditingAreas(standalonePluginWorkspace);
-    String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-    GitOperationScheduler.getInstance().schedule(() -> notifyUser(value), SLEEP);
+  public static RepositoryChangeWatcher createWatcher(StandalonePluginWorkspace standalonePluginWorkspace) {
+    return new RepositoryChangeWatcher(standalonePluginWorkspace);
   }
   
   /**
    * Creates a new listener to supervise the remote changes and adds it to the editing areas
    * @param standalonePluginWorkspace The Plugin Workspace
    */
-  public static void addListeners4EditingAreas(StandalonePluginWorkspace standalonePluginWorkspace) {
-    WSEditorChangeListener editorListenerAlways = createWatcherListener();
+  public void addListeners4EditingAreas(StandalonePluginWorkspace standalonePluginWorkspace) {
+    WSEditorChangeListener editorListenerAlways = new WSEditorChangeListener() {
+      @Override
+      public void editorOpened(URL editorLocation) {
+        String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
+        if (value.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)
+            || value.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
+          // Remote tracking is activated.
+          // Cancel the previous scheduled task, if any, to implement coalescing.
+          if (future != null) {
+            future.cancel(false);
+          }
+          future = GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(value), SLEEP);
+        }
+      }
+    };
     standalonePluginWorkspace.addEditorChangeListener(editorListenerAlways, StandalonePluginWorkspace.MAIN_EDITING_AREA);
     standalonePluginWorkspace.addEditorChangeListener(editorListenerAlways, StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
   }
   
- 
   /**
-   * Creates the listener for supervising changes in the remote repository
+   * The main task. Analyzes the remote repository to identify changes that are not in the local repository.
+   * 
+   * @param notifyMode One of {@link RemoteTrackingAction}. Controls when and if the user receives a notification.
    */
-  public static WSEditorChangeListener createWatcherListener() {
-    return new WSEditorChangeListener() {
-      @Override
-      public void editorOpened(URL editorLocation) {
-        String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-        if (value.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)
-            || value.equals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
-          // coalescing
-          if (future != null) {
-            future.cancel(false);
-          }
-          future = GitOperationScheduler.getInstance().schedule(() -> notifyUser(value), SLEEP);
-        }
-      }
-    };
-  }
-  /**
-   * Executes the task accordingly to the option
-   * @param notifyMode Contains the option chosen by the user
-   */
-  public static void notifyUser(String notifyMode) {
+  public void checkRemoteRepository(String notifyMode) {
     if (logger.isDebugEnabled()) {
       logger.debug("Handle notification mode: " + notifyMode);
     }
     
-    if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)
-        || notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
+    if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)
+        || notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
       List<RevCommit> commitsBehind = checkForRemoteCommits();
       
       if (!commitsBehind.isEmpty() && shouldNotifyUser(commitsBehind.get(0))) {
-        if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ALWAYS)) {
+        if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
           // Remember that we warn the user about this particular commit.
           optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
           
           // notify new commit in remote
           pluginWorkspace.showInformationMessage(Translator.getInstance().getTranslation(Tags.NEW_COMMIT_UPSTREAM));
-        } else if (notifyMode.contentEquals(OxygenGitOptionPagePluginExtension.WARN_UPSTREAM_ON_CHANGE)) {
+        } else if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
           Set<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
           if (!conflictingFiles.isEmpty()) {
             // Remember that we warn the user about this particular commit.
             optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
             
-            showNewCommitsMessage(translator.getTranslation(Tags.NEW_COMMIT_WITH_MODIFIED_OPENED_FILES)
+            showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_WITH_MODIFIED_OPENED_FILES)
                 + getFilesModified(conflictingFiles));
           }
         }
@@ -150,15 +156,15 @@ public class RepositoryChangeWatcher {
   }
   
   /**
-   * Show a confirmation message that notifies about new commits in the remote
-   * repository and asks the user if he wants to pull the changes.
+   * present to the user a notification aboutt the state of the remote repository and asks the user if he wants to pull
+   *  the changes.
    * 
-   * @param newCommitMessage The message to be displayed to the user
+   * @param message The message to be displayed to the user
    */
-  private static void showNewCommitsMessage(String newCommitMessage) {
+  private void showNewCommitsInRemoteMessage(String message) {
     String[] options = { translator.getTranslation(Tags.YES), translator.getTranslation(Tags.NO) };
     int[] optionsIds = { 1, 0 };
-    StringBuilder fullMessage = new StringBuilder(newCommitMessage);
+    StringBuilder fullMessage = new StringBuilder(message);
     fullMessage.append("\n\n");
     fullMessage.append(translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
 
@@ -176,14 +182,14 @@ public class RepositoryChangeWatcher {
   }
   
   /**
-   * Checks in the remote repository if there are changes that affect the opened files in the editor areas.
+   * Checks if the given local files were changed in the commits detected in the remote repository.
    * 
-   * @param localFiles Local files relative paths.
-   * @param commitsBehind A list of new commits from remote that have to be checked 
+   * @param localFiles Local files paths, relative to the working copy directory.
+   * @param commitsBehind A list of new commits from remote that haven't been pulled yet into the local.
    * 
-   * @return A map with all the files modified remote that are opened locally
+   * @return All local files modified in the remote.
    */
-  private static Set<String> checkForRemoteFileChanges(
+  private Set<String> checkForRemoteFileChanges(
       Set<String> localFiles,
       List<RevCommit> commitsBehind) {
     HashSet<String> changedRemoteFiles = new HashSet<>();
@@ -209,24 +215,24 @@ public class RepositoryChangeWatcher {
   }
 
   /**
-   * Compares the new commit with the one stored in com.oxygenxml.git.options.Options
-   * and modifies the stored commit in case it is different from the new one.
+   * Checks if the user should receive a notification regarding the remote repository state.
    * 
    * @param topRevCommit The newest commit fetched from upstream.
    * 
    * @return <code>true</code> to present a notification to the user.
    */
-  private static boolean shouldNotifyUser(RevCommit topRevCommit) {
+  private boolean shouldNotifyUser(RevCommit topRevCommit) {
     String commitId = topRevCommit.getId().getName();
     
     return !commitId.contentEquals(optionsManager.getWarnOnCommitIdChange());
   }
   
   /**
-   * Retrieves all the files opened in dita maps and main editing areas
-   * @return  <code>changedLocalFiles</code> a map with all the opened files
+   * Retrieves all the files opened in dita maps and main editing areas.
+   * 
+   * @return Paths relative to the working copy directory.
    */
-  private static HashSet<String> getFilesOpenedInEditors() {
+  private HashSet<String> getFilesOpenedInEditors() {
     HashSet<String> changedLocalFiles = new HashSet<>();
     
     try {
@@ -244,7 +250,9 @@ public class RepositoryChangeWatcher {
       logger.debug(e, e);
     }
     
-    logger.info("File to test: " + changedLocalFiles);
+    if (logger.isDebugEnabled()) {
+      logger.debug("Repository files open in the editor: " + changedLocalFiles);
+    }
 
     return changedLocalFiles;
   }
@@ -273,15 +281,15 @@ public class RepositoryChangeWatcher {
   
   /**
    * Checks in the remote repository if there are new commits. 
+   * 
    * @return <code>commitsAhead</code> a list with all new commits
    */
   private static List<RevCommit> checkForRemoteCommits() {
     GitAccess gitAccess = GitAccess.getInstance();
-    Repository repo;
     List<RevCommit> commitsBehind = new ArrayList<>();
     try {
       gitAccess.fetch();
-      repo = gitAccess.getRepository();
+      Repository repo = gitAccess.getRepository();
       CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, repo.getFullBranch());
       commitsBehind = commitsAheadAndBehind.getCommitsBehind();
 
