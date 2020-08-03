@@ -24,7 +24,7 @@ import com.oxygenxml.git.service.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
-import com.oxygenxml.git.view.dialog.PullStatusAndFilesDialog;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -128,7 +128,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * @param response Pull response.
 	 */
 	protected void showPullSuccessfulWithConflicts(PullResponse response) {
-    new PullStatusAndFilesDialog(
+	  FileStatusDialog.showMessage(
         translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
         response.getConflictingFiles(),
         translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
@@ -144,7 +144,7 @@ public class PushPullController implements Subject<PushPullEvent> {
     if (logger.isDebugEnabled()) {
       logger.info("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
     }
-    new PullStatusAndFilesDialog(
+    FileStatusDialog.showMessage(
         translator.getTranslation(Tags.PULL_STATUS), 
         filesWithChanges, 
         message);
