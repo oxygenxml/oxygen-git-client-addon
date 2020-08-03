@@ -26,6 +26,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
+import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
 
@@ -58,6 +59,8 @@ public class RepositoryChangeWatcher {
    */
   private PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
   
+  private PushPullController pushPullController;
+  
   /**
    * The Option Manager instance.
    */
@@ -74,9 +77,11 @@ public class RepositoryChangeWatcher {
   private Translator translator = Translator.getInstance();
   /**
    * Private constructor.
+   * @param pushPullController 
    */
-  private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace) {
+  private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace, PushPullController pushPullController) {
     addListeners4EditingAreas(standalonePluginWorkspace);
+    this.pushPullController = pushPullController;
     
     // Check the currently opened editors.
     String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
@@ -92,8 +97,8 @@ public class RepositoryChangeWatcher {
    * 
    * @return An watcher that keeps track of the remote changes.
    */
-  public static RepositoryChangeWatcher createWatcher(StandalonePluginWorkspace standalonePluginWorkspace) {
-    return new RepositoryChangeWatcher(standalonePluginWorkspace);
+  public static RepositoryChangeWatcher createWatcher(StandalonePluginWorkspace standalonePluginWorkspace, PushPullController pushPullController) {
+    return new RepositoryChangeWatcher(standalonePluginWorkspace, pushPullController);
   }
   
   /**
@@ -140,14 +145,14 @@ public class RepositoryChangeWatcher {
           optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
           
           // notify new commit in remote
-          pluginWorkspace.showInformationMessage(Translator.getInstance().getTranslation(Tags.NEW_COMMIT_UPSTREAM));
+          showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM));
         } else if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
           Set<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
           if (!conflictingFiles.isEmpty()) {
             // Remember that we warn the user about this particular commit.
             optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
             
-            showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_WITH_MODIFIED_OPENED_FILES)
+            showNewCommitsInRemoteMessage(translator.getTranslation(Tags.FILES_CHANGED_REMOTE)
                 + getFilesModified(conflictingFiles));
           }
         }
@@ -165,11 +170,11 @@ public class RepositoryChangeWatcher {
     String[] options = { translator.getTranslation(Tags.YES), translator.getTranslation(Tags.NO) };
     int[] optionsIds = { 1, 0 };
     StringBuilder fullMessage = new StringBuilder(message);
-    fullMessage.append("\n\n");
+    fullMessage.append("\n");
     fullMessage.append(translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
 
     if (PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-        translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL), fullMessage.toString(), options, optionsIds) == 1) {
+        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), fullMessage.toString(), options, optionsIds) == 1) {
       String hostName = gitAccess.getHostName();
       UserCredentials userCredentials = optionsManager.getGitCredentials(hostName);
       try {
@@ -305,14 +310,14 @@ public class RepositoryChangeWatcher {
    * @param filesMap  Map that contains the files to be transformed
    * @return a string which represents the list of files
    */
-  private static String getFilesModified(Set<String> filesSet) {
-    StringBuilder stringBuilder = new StringBuilder();
-
+  private String getFilesModified(Set<String> filesSet) {
+    StringBuilder stringBuilder = new StringBuilder(translator.getTranslation(Tags.FILES_CHANGED_REMOTE));
+    stringBuilder.append("\n\n");
+    
     for (String file : filesSet) {
-      stringBuilder.append(file + ", ");
+      stringBuilder.append(file);
+      stringBuilder.append("\n");
     }
-
-    stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), ".");
 
     return stringBuilder.toString();
   }
