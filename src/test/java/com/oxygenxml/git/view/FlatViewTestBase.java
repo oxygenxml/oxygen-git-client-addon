@@ -55,7 +55,12 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
         refreshSupport,
         new GitController(),
         null, 
-        new PushPullController()) {
+        new PushPullController() {
+          @Override
+          protected void showPullSuccessfulWithConflicts(PullResponse response) {
+            // Nothing to do.
+          }
+        }) {
       
       @Override
       protected ToolbarPanel createToolbar(HistoryController historyController) {

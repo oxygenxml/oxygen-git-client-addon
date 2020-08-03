@@ -130,6 +130,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
    * @param refreshSupport   Refresh support.        
    * @param stageController  Staging controller.
    * @param historyController History related interaction.
+   * @param pushPullController High level push and pull support.
    */
   public StagingPanel(
       GitRefreshSupport refreshSupport, 
