@@ -54,16 +54,8 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     stagingPanel = new StagingPanel(
         refreshSupport,
         new GitController(),
-        null) {
-      @Override
-      public PushPullController createPushPullController() {
-        return new PushPullController() {
-          @Override
-          protected void showPullSuccessfulWithConflicts(PullResponse response) {
-            // Nothing to do.
-          }
-        };
-      }
+        null, 
+        new PushPullController()) {
       
       @Override
       protected ToolbarPanel createToolbar(HistoryController historyController) {

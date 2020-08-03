@@ -37,6 +37,7 @@ import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.historycomponents.HistoryPanel;
 import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
@@ -74,6 +75,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * Refresh support.
 	 */
 	final PanelRefresh gitRefreshSupport = new PanelRefresh();
+	
+	/**
+	 * Manages Push/Pull actions.
+	 */
+	private PushPullController pushPullController;
 	
 	/**
 	 * Window listener used to call the refresh command when the Oxygen window is activated
@@ -124,6 +130,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
 	  pluginWorkspaceAccess = pluginWS;
+	  pushPullController = PushPullController.createPushPullController();
 		try {
 		  // Uncomment this to start with fresh options. For testing purposes
 //			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null); NOSONAR
@@ -203,7 +210,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			logger.fatal(t, t);
 		}
 		
-		RepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess);
+		RepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, pushPullController);
 	}
 	
 	/**
@@ -215,7 +222,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	private void customizeGitStagingView(GitController gitCtrl, ViewInfo viewInfo) {
     boolean shouldRecreateStagingPanel = stagingPanel == null;
     if (shouldRecreateStagingPanel) {
-      stagingPanel = new StagingPanel(gitRefreshSupport, gitCtrl, OxygenGitPluginExtension.this);
+      stagingPanel = new StagingPanel(gitRefreshSupport, gitCtrl, OxygenGitPluginExtension.this, pushPullController);
       gitRefreshSupport.setPanel(stagingPanel);
     }
     viewInfo.setComponent(stagingPanel);

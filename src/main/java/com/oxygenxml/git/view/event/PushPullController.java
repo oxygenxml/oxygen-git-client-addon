@@ -59,6 +59,15 @@ public class PushPullController implements Subject<PushPullEvent> {
 	private Translator translator = Translator.getInstance();
 	
 	/**
+   * Create the push/pull controller.
+   * 
+   * @return the controller.
+   */
+	public static PushPullController createPushPullController() {
+	  return new PushPullController();
+	}
+	
+	/**
 	 * Execute an push or pull action, depending on the given command.
 	 * 
 	 * @param command The command runnable to execute.

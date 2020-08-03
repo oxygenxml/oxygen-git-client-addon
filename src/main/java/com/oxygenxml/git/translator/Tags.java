@@ -14,6 +14,14 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Notifies the user about changes in remote repository before showing the modified files.
+   */
+  public static final String FILES_CHANGED_REMOTE = "Files_changed_remote";
+  /**
+   * The message when there are changes in the remote repository.
+   */
+  public static final String REMOTE_CHANGES_LABEL = "Remote_changes_label";
+  /**
    * The message when the user has the choice to pull new commits.
    */
   public static final String WANT_TO_PULL_QUESTION = "Want_to_pull_question";
@@ -35,11 +43,6 @@ public class Tags {
    * Option text for never notifying when there are new commits upstream.
    */
   public static final String NEVER_NOTIFY_ON_NEW_COMMITS = "Never_notify_on_new_commits";
-  
-  /**
-   * There is a new commit in the remote repository that has modifications to at least one file opened in the editing areas.
-   */
-  public static final String NEW_COMMIT_WITH_MODIFIED_OPENED_FILES = "New_commit_with_modified_opened_files";
   
   /**
    * There is a new commit in the remote repository that has not been pulled.

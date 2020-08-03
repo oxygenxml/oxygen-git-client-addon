@@ -134,9 +134,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   public StagingPanel(
       GitRefreshSupport refreshSupport, 
       GitController stageController, 
-      HistoryController historyController) {
+      HistoryController historyController,
+      PushPullController pushPullController) {
 		this.refreshSupport = refreshSupport;
 		this.stageController = stageController;
+		this.pushPullController = pushPullController;
 		
 		createGUI(historyController);
 	}
@@ -159,8 +161,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 */
 	private void createGUI(HistoryController historyController) {
 		this.setLayout(new GridBagLayout());
-
-		pushPullController = createPushPullController();
 
 		// Creates the panels objects that will be in the staging panel
 		unstagedChangesPanel = new ChangesPanel(stageController, historyController, false);
@@ -318,15 +318,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
     gbc.weightx = 1;
     gbc.weighty = 0;
 		add(rebasePanel, gbc);
-  }
-
-	/**
-	 * Create the push/pull controller.
-	 * 
-	 * @return the controller.
-	 */
-  protected PushPullController createPushPullController() {
-    return new PushPullController();
   }
 
 	/**
