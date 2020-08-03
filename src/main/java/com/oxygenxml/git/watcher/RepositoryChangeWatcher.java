@@ -15,7 +15,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
@@ -26,6 +25,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
@@ -34,6 +34,7 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Tracks changes in the remote repository and notifies the user.
@@ -65,11 +66,6 @@ public class RepositoryChangeWatcher {
    * The Option Manager instance.
    */
   private OptionsManager optionsManager = OptionsManager.getInstance();
-  
-  /**
-   * The Git Access instance.
-   */
-  private GitAccess gitAccess = GitAccess.getInstance();
   
   /**
    * The Translator instance.
@@ -143,17 +139,20 @@ public class RepositoryChangeWatcher {
         if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
           // Remember that we warn the user about this particular commit.
           optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
-          
+
           // notify new commit in remote
-          showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM));
+          showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
+              + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
         } else if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
           Set<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
           if (!conflictingFiles.isEmpty()) {
             // Remember that we warn the user about this particular commit.
             optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
-            
-            showNewCommitsInRemoteMessage(translator.getTranslation(Tags.FILES_CHANGED_REMOTE)
-                + getFilesModified(conflictingFiles));
+            if (FileStatusDialog.showMessage(translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), conflictingFiles,
+                translator.getTranslation(Tags.FILES_CHANGED_REMOTE),
+                translator.getTranslation(Tags.WANT_TO_PULL_QUESTION)) == OKCancelDialog.RESULT_OK) {
+              pushPullController.pull();
+            }
           }
         }
       }
@@ -161,28 +160,18 @@ public class RepositoryChangeWatcher {
   }
   
   /**
-   * present to the user a notification aboutt the state of the remote repository and asks the user if he wants to pull
-   *  the changes.
+   * Present to the user a notification about the state of the remote repository
+   * and asks the user if he wants to pull the changes.
    * 
    * @param message The message to be displayed to the user
    */
   private void showNewCommitsInRemoteMessage(String message) {
     String[] options = { translator.getTranslation(Tags.YES), translator.getTranslation(Tags.NO) };
     int[] optionsIds = { 1, 0 };
-    StringBuilder fullMessage = new StringBuilder(message);
-    fullMessage.append("\n");
-    fullMessage.append(translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
 
     if (PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), fullMessage.toString(), options, optionsIds) == 1) {
-      String hostName = gitAccess.getHostName();
-      UserCredentials userCredentials = optionsManager.getGitCredentials(hostName);
-      try {
-        gitAccess.pull(userCredentials.getUsername(), userCredentials.getPassword());
-      } catch (GitAPIException e) {
-        pluginWorkspace.showInformationMessage(e.getMessage());
-        logger.error(e, e);
-      }
+        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), message, options, optionsIds) == 1) {
+      pushPullController.pull();
     }
   }
   
@@ -305,20 +294,4 @@ public class RepositoryChangeWatcher {
     return commitsBehind;
   }
   
-  /**
-   * Creates a list in string format from all files in <code>filesMap</code> map
-   * @param filesMap  Map that contains the files to be transformed
-   * @return a string which represents the list of files
-   */
-  private String getFilesModified(Set<String> filesSet) {
-    StringBuilder stringBuilder = new StringBuilder(translator.getTranslation(Tags.FILES_CHANGED_REMOTE));
-    stringBuilder.append("\n\n");
-    
-    for (String file : filesSet) {
-      stringBuilder.append(file);
-      stringBuilder.append("\n");
-    }
-
-    return stringBuilder.toString();
-  }
 }
