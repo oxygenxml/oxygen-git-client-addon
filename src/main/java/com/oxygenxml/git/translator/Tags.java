@@ -1019,4 +1019,14 @@ public class Tags {
    * 
    */
   public static final String WARN_IF_BEHIND = "Warn_if_behind";
+  
+  /**
+   * No details available.
+   */
+  public static final String NO_DETAILS_AVAILABLE = "No_details_available";
+  
+  /**
+   * Details.
+   */
+  public static final String DETAILS = "Details";
 }

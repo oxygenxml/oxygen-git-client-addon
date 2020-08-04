@@ -4,8 +4,16 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value = "Details">
+		<comment>"Details:"</comment>
+        <val lang="en_US">Details:</val>
+        <val lang="de_DE">Details:</val>
+        <val lang="fr_FR">Details:</val>
+        <val lang="ja_JP">Details:</val>
+        <val lang="nl_NL">Details:</val>
+    </key>
     <key value = "Files_changed_remote">
-	<comment> Notifies the user about changes in remote repository before showing the modified files.</comment>
+		<comment> Notifies the user about changes in remote repository before showing the modified files.</comment>
         <val lang="en_US">The following files changed in the remote repository.</val>
         <val lang="de_DE">The following files changed in the remote repository.</val>
         <val lang="fr_FR">The following files changed in the remote repository.</val>
@@ -13,7 +21,7 @@
         <val lang="nl_NL">The following files changed in the remote repository.</val>
     </key>
     <key value = "Remote_changes_label">
-	<comment> The message when there are changes in the remote repository.</comment>
+		<comment> The message when there are changes in the remote repository.</comment>
         <val lang="en_US">Remote changes detected</val>
         <val lang="de_DE">Remote changes detected</val>
         <val lang="fr_FR">Remote changes detected</val>
@@ -21,7 +29,7 @@
         <val lang="nl_NL">Remote changes detected</val>
     </key>
     <key value = "Want_to_pull_question">
-	<comment> The message when the user has the choice to pull new commits.</comment>
+		<comment> The message when the user has the choice to pull new commits.</comment>
         <val lang="en_US">It is recommended to pull these changes into the local repository to avoid 
         	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
         <val lang="de_DE">It is recommended to pull these changes into the local repository to avoid 
@@ -34,7 +42,7 @@
         	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
     </key>
     <key value = "When_to_notify_on_new_commits">
-	<comment> The message before showing the options available for notifying the user on new commits.</comment>
+		<comment> The message before showing the options available for notifying the user on new commits.</comment>
         <val lang="en_US">Notify about new commits in the remote:</val>
         <val lang="de_DE">Notify about new commits in the remote:</val>
         <val lang="fr_FR">Notify about new commits in the remote:</val>
@@ -42,7 +50,7 @@
         <val lang="nl_NL">Notify about new commits in the remote:</val>
     </key>
     <key value = "Always_notify_on_new_commits">
-	<comment> Option text for always notifying when there are new commits upstream.</comment>
+		<comment> Option text for always notifying when there are new commits upstream.</comment>
         <val lang="en_US">As soon as new commits are detected</val>
         <val lang="de_DE">As soon as new commits are detected</val>
         <val lang="fr_FR">As soon as new commits are detected</val>
@@ -50,7 +58,7 @@
         <val lang="nl_NL">As soon as new commits are detected</val>
     </key>
     <key value = "Notify_on_possible_conflicts">
-	<comment> Option text for notifying when there are new commits upstream that may cause conflicts.</comment>
+		<comment> Option text for notifying when there are new commits upstream that may cause conflicts.</comment>
         <val lang="en_US">When working with files that were changed in a remote commit</val>
         <val lang="de_DE">When working with files that were changed in a remote commit</val>
         <val lang="fr_FR">When working with files that were changed in a remote commit</val>
@@ -58,7 +66,7 @@
         <val lang="nl_NL">When working with files that were changed in a remote commit</val>
     </key>
     <key value = "Never_notify_on_new_commits">
-	<comment> Option text for never notifying when there are new commits upstream.</comment>
+		<comment> Option text for never notifying when there are new commits upstream.</comment>
         <val lang="en_US">Never</val>
         <val lang="de_DE">Never</val>
         <val lang="fr_FR">Never</val>

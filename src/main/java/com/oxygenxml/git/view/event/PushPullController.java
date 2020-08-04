@@ -277,17 +277,17 @@ public class PushPullController implements Subject<PushPullEvent> {
         message = translator.getTranslation(Tags.PUSH_SUCCESSFUL);
       } else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
+            .showErrorMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
       } else if (Status.UP_TO_DATE == response.getStatus()) {
         message = translator.getTranslation(Tags.PUSH_UP_TO_DATE);
       } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
-        String warnMess = "The operation was rejected.";
+        String errMess = translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN) + ".";
         if (response.getMessage() != null) {
-          warnMess += " Details: " + response.getMessage();
+          errMess += " " + translator.getTranslation(Tags.DETAILS) + " " + response.getMessage();
         } else {
-          warnMess += " No details available.";
+          errMess += " " + translator.getTranslation(Tags.NO_DETAILS_AVAILABLE);
         }
-        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showWarningMessage(warnMess);
+        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(errMess);
       }
       return message;
     }
