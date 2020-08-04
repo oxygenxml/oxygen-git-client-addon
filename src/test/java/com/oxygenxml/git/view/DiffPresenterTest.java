@@ -453,6 +453,9 @@ public class DiffPresenterTest extends GitTestBase {
     assertEquals("changed in local 1, conflict content, original", read(rightDiff));
   }
   
+  /**
+   * EXM-46016
+   */
   @Test
   public void testLockFailedExceptionHandler() throws Exception {
     
