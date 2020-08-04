@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 import com.oxygenxml.git.constants.Icons;
@@ -45,7 +46,7 @@ public class FileStatusDialog extends OKCancelDialog {
 		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
 		    title,
 		    true);
-		JLabel label = new JLabel(message);
+		JTextArea label = UIUtil.createMessageArea(message);
 
 		// populating the JList with the conflict files
 		Collections.sort(targetFiles);
@@ -98,7 +99,7 @@ public class FileStatusDialog extends OKCancelDialog {
       // No question message. Hide Cancel button.
       getCancelButton().setVisible(false);
     } else {
-      JLabel questionLabel = new JLabel(questionMessage);
+      JTextArea questionLabel = UIUtil.createMessageArea(questionMessage);
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.weightx = 1;
@@ -114,7 +115,7 @@ public class FileStatusDialog extends OKCancelDialog {
     
     getContentPane().add(panel);
 		this.setResizable(true);
-		this.setMinimumSize(new Dimension(420, 220));
+		this.setMinimumSize(new Dimension(500, 220));
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
 		pack();
@@ -123,6 +124,7 @@ public class FileStatusDialog extends OKCancelDialog {
 		  this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		}
 	}
+
 
   /**
    * Inform the user about the files' status.

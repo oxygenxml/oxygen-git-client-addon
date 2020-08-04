@@ -146,7 +146,7 @@ public class RepositoryChangeWatcher {
 
           // notify new commit in remote
           showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
-              + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
+              + " " + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
         } else if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
           List<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
           if (!conflictingFiles.isEmpty()) {

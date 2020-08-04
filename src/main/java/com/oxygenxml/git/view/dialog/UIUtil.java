@@ -1,19 +1,27 @@
 package com.oxygenxml.git.view.dialog;
 
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
+import javax.accessibility.AccessibleContext;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
@@ -25,6 +33,7 @@ import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.renderer.StagingResourcesTableCellRenderer;
 
+import ro.sync.basic.util.LFDetector;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -218,6 +227,48 @@ public class UIUtil {
         pageComp.setCursor(cursor);
       }
     }
+  }
+  
+  
+  /**
+   * Create a multiline message area.
+   * 
+   * @param text Text to present.
+   * 
+   * @return The message area.
+   */
+  public static JTextArea createMessageArea(String text) {
+    JTextArea msgArea = new JTextArea(text) {
+      /**
+       * @see javax.swing.JTextArea#getAccessibleContext()
+       */
+      @Override
+      public AccessibleContext getAccessibleContext() {
+        return new JLabel(getText()).getAccessibleContext();
+      }
+    };
+    
+    msgArea.setWrapStyleWord(true);
+    msgArea.setLineWrap(true);
+    msgArea.setEditable(false);
+    msgArea.setCaretPosition(0);
+    msgArea.setHighlighter(null);
+    // Reject focus in the message area.
+    msgArea.setFocusable(false);
+
+    Font font = UIManager.getFont("Label.font");
+    if (font != null) {
+      msgArea.setFont(font);
+    }
+    msgArea.setOpaque(false);
+    if (LFDetector.isNimbusLF()){
+      msgArea.setBackground(new Color(0, 0, 0, 0));
+    }
+    
+    Border emptyBorder = BorderFactory.createEmptyBorder();
+    msgArea.setBorder(emptyBorder);
+    
+    return msgArea;
   }
 
 }
