@@ -1,13 +1,22 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import javax.swing.JFrame;
 
 import org.eclipse.jgit.api.SubmoduleAddCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleStatusType;
@@ -19,6 +28,7 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.entities.FileStatus;

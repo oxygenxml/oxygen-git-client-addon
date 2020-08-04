@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +31,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  */
 public class FileStatusDialog extends OKCancelDialog {
   
-	private FileStatusDialog(String title, Collection<String> conflictFiles, String message, String questionMessage) {
+	private FileStatusDialog(String title, List<String> conflictFiles, String message, String questionMessage) {
 		super(
 		    PluginWorkspaceProvider.getPluginWorkspace() != null ? 
 		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
@@ -42,9 +41,8 @@ public class FileStatusDialog extends OKCancelDialog {
 
 		// populating the JList with the conflict files
 		DefaultListModel<String> model = new DefaultListModel<>();
-		List<String> filePaths = (List<String>) conflictFiles;
-		Collections.sort(filePaths);
-		for(String listElement : filePaths) {
+		Collections.sort(conflictFiles);
+		for(String listElement : conflictFiles) {
 		  model.addElement(listElement);
 		}
 		JList<String> filesInConflictList = new JList<>(model);
@@ -124,7 +122,7 @@ public class FileStatusDialog extends OKCancelDialog {
    * @param conflictFiles Files with conflicts
    * @param message       Message shown
    */
-  public static void showMessage(String title, Collection<String> conflictFiles, String message) {
+  public static void showMessage(String title, List<String> conflictFiles, String message) {
 
     FileStatusDialog pullStatusAndFilesDialog = new FileStatusDialog(title, conflictFiles, message,
         null);
@@ -142,7 +140,7 @@ public class FileStatusDialog extends OKCancelDialog {
    * @param questionMessage Question for the user
    * @return The option chosen by the user.
    */
-  public static int showMessage(String title, Collection<String> conflictFiles, String message,
+  public static int showMessage(String title, List<String> conflictFiles, String message,
       String questionMessage) {
     FileStatusDialog pullStatusAndFilesDialog = new FileStatusDialog(title, conflictFiles, message,
         questionMessage);

@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.event;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -128,9 +129,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 * @param response Pull response.
 	 */
 	protected void showPullSuccessfulWithConflicts(PullResponse response) {
+	  List<String> conflictingFilesList = new ArrayList<>();
+	  conflictingFilesList.addAll(response.getConflictingFiles());
 	  FileStatusDialog.showMessage(
         translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
-        response.getConflictingFiles(),
+        conflictingFilesList,
         translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
   }
 	
@@ -192,7 +195,7 @@ public class PushPullController implements Subject<PushPullEvent> {
         } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
           // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
           LockFailedException lockFailedException = (org.eclipse.jgit.errors.LockFailedException) cause;
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage(), cause);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage(), lockFailedException);
           
           // This message gets presented in a status, at the bottom of the staging view.
           message = composeAndReturnFailureMessage(lockFailedException.getMessage());
