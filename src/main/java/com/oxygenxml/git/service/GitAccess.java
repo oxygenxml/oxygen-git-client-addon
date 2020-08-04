@@ -996,7 +996,7 @@ public class GitAccess {
 	  }
 	  
 	  if (getPullsBehind() > 0) {
-	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD);
 	    response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
 	    return response;
 	  }
@@ -1808,10 +1808,11 @@ public class GitAccess {
 	      cause = cause.getCause();
 	    }
 
-			if (e.getMessage().contains("Authentication is required but no CredentialsProvider has been registered")
-					|| e.getMessage().contains("not authorized")) {
+			String message = e.getMessage();
+      if (message != null && (message.contains("Authentication is required but no CredentialsProvider has been registered")
+					|| message.contains("not authorized"))) {
 				throw new PrivateRepositoryException(e);
-			} else if (e.getMessage().contains("Auth fail") && credentialsProvider.isPassphaseRequested()
+			} else if (message != null && message.contains("Auth fail") && credentialsProvider.isPassphaseRequested()
 			    || (cause instanceof SshException)
               && ((SshException) cause).getDisconnectCode() == SshConstants.SSH2_DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE) {
 			  throw new SSHPassphraseRequiredException(e);
