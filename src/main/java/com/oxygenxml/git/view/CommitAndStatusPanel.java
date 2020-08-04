@@ -119,11 +119,12 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
               translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
         } else {
           if (commitMessageArea.getText().isEmpty()) {
-            String[] options = { translator.getTranslation(Tags.CONTINUE), translator.getTranslation(Tags.CANCEL) };
-            int[] optionsIds = { 1, 0 };
-            if (PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+            int userAnswer = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
                 translator.getTranslation(Tags.NO_COMMIT_MESSAGE_TITLE),
-                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG), options, optionsIds) == 1) {
+                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG),
+                new String[] { translator.getTranslation(Tags.CONTINUE), translator.getTranslation(Tags.CANCEL) },
+                new int[] { 1, 0 });
+            if (userAnswer == 1) {
               executeCommit();
             }
           } else {
