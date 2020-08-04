@@ -152,7 +152,9 @@ public class RepositoryChangeWatcher {
           if (!conflictingFiles.isEmpty()) {
             // Remember that we warn the user about this particular commit.
             optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
-            if (FileStatusDialog.showMessage(translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), conflictingFiles,
+            if (FileStatusDialog.showQuestionMessage(
+                translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
+                conflictingFiles,
                 translator.getTranslation(Tags.FILES_CHANGED_REMOTE),
                 translator.getTranslation(Tags.WANT_TO_PULL_QUESTION)) == OKCancelDialog.RESULT_OK) {
               pushPullController.pull();
@@ -171,10 +173,11 @@ public class RepositoryChangeWatcher {
    */
   private void showNewCommitsInRemoteMessage(String message) {
     String[] options = { translator.getTranslation(Tags.YES), translator.getTranslation(Tags.NO) };
-    int[] optionsIds = { 1, 0 };
+    int okPressed = 1;
+    int[] optionsIds = { okPressed, 0 };
 
     if (PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), message, options, optionsIds) == 1) {
+        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), message, options, optionsIds) == okPressed) {
       pushPullController.pull();
     }
   }
