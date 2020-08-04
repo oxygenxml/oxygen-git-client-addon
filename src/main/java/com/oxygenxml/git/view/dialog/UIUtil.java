@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.dialog;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.util.List;
@@ -33,7 +32,6 @@ import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.renderer.StagingResourcesTableCellRenderer;
 
-import ro.sync.basic.util.LFDetector;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -261,9 +259,6 @@ public class UIUtil {
       msgArea.setFont(font);
     }
     msgArea.setOpaque(false);
-    if (LFDetector.isNimbusLF()){
-      msgArea.setBackground(new Color(0, 0, 0, 0));
-    }
     
     Border emptyBorder = BorderFactory.createEmptyBorder();
     msgArea.setBorder(emptyBorder);
