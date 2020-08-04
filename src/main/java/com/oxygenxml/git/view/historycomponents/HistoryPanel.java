@@ -149,25 +149,7 @@ public class HistoryPanel extends JPanel {
           int rowAtPoint = historyTable.rowAtPoint(e.getPoint());
           if (rowAtPoint != -1) {
             updateTableSelection(historyTable, rowAtPoint);
-
-            HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
-            int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
-            CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
-            try {
-              Optional<FileStatus> optionalFileStatus = contextualMenuPresenter.getFileStatus(activeFilePath,
-                  commitCharacteristics);
-              if (optionalFileStatus.isPresent()) {
-                FileStatus fileStatus = optionalFileStatus.get();
-                List<Action> contextualActions = contextualMenuPresenter.getContextualActions(fileStatus,
-                    commitCharacteristics, false);
-                if (!contextualActions.isEmpty()) {
-                  contextualActions.get(0).actionPerformed(null);
-                }
-              }
-            } catch (IOException | GitAPIException e1) {
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage());
-              LOGGER.error(e1, e1);
-            }
+            historyDoubleClickAction(rowAtPoint);
           }
         }
       }
@@ -237,6 +219,33 @@ public class HistoryPanel extends JPanel {
 
     add(centerSplitPane, BorderLayout.CENTER);
   }
+  
+  /**
+   * Opens the first action in the contextual menu when an element inside the
+   * history table is double clicked.
+   * 
+   * @param rowAtPoint Position of the element in the history table.
+   */
+  private void historyDoubleClickAction(int rowAtPoint) {
+    HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
+    int convertedSelectedRow = historyTable.convertRowIndexToModel(rowAtPoint);
+    CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(convertedSelectedRow);
+    try {
+      Optional<FileStatus> optionalFileStatus = contextualMenuPresenter.getFileStatus(activeFilePath,
+          commitCharacteristics);
+      if (optionalFileStatus.isPresent()) {
+        FileStatus fileStatus = optionalFileStatus.get();
+        List<Action> contextualActions = contextualMenuPresenter.getContextualActions(fileStatus,
+            commitCharacteristics, false);
+        if (!contextualActions.isEmpty()) {
+          contextualActions.get(0).actionPerformed(null);
+        }
+      }
+    } catch (IOException | GitAPIException e1) {
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage());
+      LOGGER.error(e1, e1);
+    }
+  }
 
   /**
    * Creates the table that presents the files changed in a revision.
@@ -260,6 +269,7 @@ public class HistoryPanel extends JPanel {
       public void mouseReleased(java.awt.event.MouseEvent e) {
         mousePressed(e);
       }
+      @Override
       public void mouseClicked(MouseEvent e) {
         if (!e.isConsumed()
             && !e.isPopupTrigger()
@@ -283,7 +293,7 @@ public class HistoryPanel extends JPanel {
             }
           }
         }
-      };
+      }
     });
     
     return table;
