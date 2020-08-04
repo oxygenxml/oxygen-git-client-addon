@@ -140,26 +140,37 @@ public class RepositoryChangeWatcher {
       List<RevCommit> commitsBehind = checkForRemoteCommits();
       
       if (!commitsBehind.isEmpty() && shouldNotifyUser(commitsBehind.get(0))) {
-        if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
-          // Remember that we warn the user about this particular commit.
-          optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
+        notifyUserAboutNewCommits(notifyMode, commitsBehind);
+      }
+    }
+  }
+  
+  /**
+   * Notifies the user about new commits in the remote repository and asks to pull
+   * the changes
+   * 
+   * @param notifyMode    One of {@link RemoteTrackingAction}.
+   * @param commitsBehind The new commits in remote repository.
+   */
+  private void notifyUserAboutNewCommits(String notifyMode, List<RevCommit> commitsBehind) {
+    if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
+      // Remember that we warn the user about this particular commit.
+      optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
 
-          // notify new commit in remote
-          showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
-              + " " + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
-        } else if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
-          List<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
-          if (!conflictingFiles.isEmpty()) {
-            // Remember that we warn the user about this particular commit.
-            optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
-            if (FileStatusDialog.showQuestionMessage(
-                translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
-                conflictingFiles,
-                translator.getTranslation(Tags.FILES_CHANGED_REMOTE),
-                translator.getTranslation(Tags.WANT_TO_PULL_QUESTION)) == OKCancelDialog.RESULT_OK) {
-              pushPullController.pull();
-            }
-          }
+      // Notify new commit in remote.
+      showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
+          + " " + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
+    } else if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
+      List<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
+      if (!conflictingFiles.isEmpty()) {
+        // Warn the user about new commit in remote with possible conflicting files.
+        optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
+        if (FileStatusDialog.showQuestionMessage(
+            translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
+            conflictingFiles,
+            translator.getTranslation(Tags.FILES_CHANGED_REMOTE),
+            translator.getTranslation(Tags.WANT_TO_PULL_QUESTION)) == OKCancelDialog.RESULT_OK) {
+          pushPullController.pull();
         }
       }
     }
