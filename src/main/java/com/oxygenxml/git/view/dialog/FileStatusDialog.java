@@ -24,25 +24,33 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
- * Show pull status and corresponding files.
+ * Shows information regarding files status.
  * 
  * @author Beniamin Savu
  *
  */
 public class FileStatusDialog extends OKCancelDialog {
   
-	private FileStatusDialog(String title, List<String> conflictFiles, String message, String questionMessage) {
+  /**
+   * Constructor.
+   * 
+   * @param title Dialog title.
+   * @param targetFiles Files that relate to the message.
+   * @param message The message.
+   * @param questionMessage A question message connected to the presented information.
+   */
+	private FileStatusDialog(String title, List<String> targetFiles, String message, String questionMessage) {
 		super(
 		    PluginWorkspaceProvider.getPluginWorkspace() != null ? 
 		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
 		    title,
 		    true);
-		JLabel label = new JLabel("<html>" + message + "</html>");
+		JLabel label = new JLabel(message);
 
 		// populating the JList with the conflict files
+		Collections.sort(targetFiles);
 		DefaultListModel<String> model = new DefaultListModel<>();
-		Collections.sort(conflictFiles);
-		for(String listElement : conflictFiles) {
+		for(String listElement : targetFiles) {
 		  model.addElement(listElement);
 		}
 		JList<String> filesInConflictList = new JList<>(model);
@@ -53,9 +61,12 @@ public class FileStatusDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JLabel iconLabel = new JLabel();
-        iconLabel.setIcon(Icons.getIcon(Icons.WARNING_ICON));
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    iconLabel.setIcon(Icons.getIcon(Icons.WARNING_ICON));
+		gbc.insets = new Insets(
+		    UIConstants.COMPONENT_TOP_PADDING, 
+		    UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING, 
+				UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0;
@@ -65,8 +76,6 @@ public class FileStatusDialog extends OKCancelDialog {
 		gbc.gridheight = 2;
 		panel.add(iconLabel, gbc);
 		
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
@@ -76,8 +85,6 @@ public class FileStatusDialog extends OKCancelDialog {
 		gbc.gridheight = 1;
 		panel.add(label, gbc);
 		
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1;
@@ -87,67 +94,68 @@ public class FileStatusDialog extends OKCancelDialog {
 		gbc.gridheight = 1;
 		panel.add(scollPane, gbc);
 		
-		JLabel questionLabel = new JLabel("<html>" + questionMessage + "</html>");
-    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.weightx = 1;
-    gbc.weighty = 1;
-    gbc.gridx = 1;
-    gbc.gridy = 2;
-    gbc.gridheight = 1;
-    panel.add(questionLabel, gbc);
-	
     if (questionMessage == null) {
+      // No question message. Hide Cancel button.
       getCancelButton().setVisible(false);
-      questionLabel.setVisible(false);
     } else {
+      JLabel questionLabel = new JLabel(questionMessage);
+      gbc.anchor = GridBagConstraints.WEST;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      gbc.weightx = 1;
+      gbc.weighty = 1;
+      gbc.gridx = 1;
+      gbc.gridy = 2;
+      gbc.gridheight = 1;
+      panel.add(questionLabel, gbc);
+      
       setOkButtonText(Translator.getInstance().getTranslation(Tags.YES));
       setCancelButtonText(Translator.getInstance().getTranslation(Tags.NO));
     }
+    
     getContentPane().add(panel);
 		this.setResizable(true);
 		this.setMinimumSize(new Dimension(420, 220));
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		
+		pack();
+		
 		if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
 		  this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		}
 	}
 
   /**
-   * Shows pull status and corresponding files.
+   * Inform the user about the files' status.
    * 
    * @param title         Title of the Dialog
-   * @param conflictFiles Files with conflicts
-   * @param message       Message shown
+   * @param conflictFiles The message.
+   * @param message       The message.
    */
-  public static void showMessage(String title, List<String> conflictFiles, String message) {
-
-    FileStatusDialog pullStatusAndFilesDialog = new FileStatusDialog(title, conflictFiles, message,
-        null);
+  public static void showInformationMessage(String title, List<String> conflictFiles, String message) {
+    FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, null);
     
-    pullStatusAndFilesDialog.pack();
-    pullStatusAndFilesDialog.setVisible(true);
+    dialog.setVisible(true);
   }
   
   /**
    * Shows pull status and conflicting files and asks the user a question.
    * 
-   * @param title           Title of the Dialog
-   * @param conflictFiles   Files with conflicts
+   * @param title           Dialog title.
+   * @param conflictFiles   Files that relate to the message.
    * @param message         Message shown
-   * @param questionMessage Question for the user
-   * @return The option chosen by the user.
+   * @param questionMessage A question message connected to the presented information.
+   * 
+   * @return The option chosen by the user. {@link #RESULT_OK} or {@link #RESULT_CANCEL}
    */
-  public static int showMessage(String title, List<String> conflictFiles, String message,
+  public static int showQuestionMessage(
+      String title, 
+      List<String> conflictFiles, 
+      String message,
       String questionMessage) {
-    FileStatusDialog pullStatusAndFilesDialog = new FileStatusDialog(title, conflictFiles, message,
-        questionMessage);
+    FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, questionMessage);
 
-    pullStatusAndFilesDialog.pack();
-    pullStatusAndFilesDialog.setVisible(true);
+    dialog.setVisible(true);
 
-    return pullStatusAndFilesDialog.getResult();
+    return dialog.getResult();
   }
 }
