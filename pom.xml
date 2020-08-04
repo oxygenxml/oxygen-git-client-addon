@@ -25,16 +25,12 @@
 	</repositories>
 
 	<dependencies>
-	<!-- Used from tests -->
-	
-	
-	 
-	  <dependency>
-        <groupId>net.sf.jfcunit</groupId>
-        <artifactId>jfcunit</artifactId>
-        <version>2.08</version>
-        <scope>test</scope>
-      </dependency>
+	    <dependency>
+            <groupId>net.sf.jfcunit</groupId>
+            <artifactId>jfcunit</artifactId>
+            <version>2.08</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 		    <groupId>org.mockito</groupId>
 		    <artifactId>mockito-all</artifactId>
@@ -56,16 +52,15 @@
 		<dependency>
 		    <groupId>org.eclipse.jgit</groupId>
 		    <artifactId>org.eclipse.jgit.ssh.apache</artifactId>
-		    <version>5.7.0.202003110725-r</version>
+		    <version>5.8.1.202007141445-r</version>
 		</dependency>
 		
 		<dependency>
 		    <groupId>org.eclipse.jgit</groupId>
 		    <artifactId>org.eclipse.jgit.junit</artifactId>
-		    <version>5.7.0.202003110725-r</version>
+		    <version>5.8.1.202007141445-r</version>
 		    <scope>test</scope>
 		</dependency>
-		
 		
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
@@ -104,8 +99,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-
 	</dependencies>
 
 	<build>
