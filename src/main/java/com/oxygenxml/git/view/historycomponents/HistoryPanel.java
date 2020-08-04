@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -487,18 +488,24 @@ public class HistoryPanel extends JPanel {
         Repository repo = gitAccess.getRepository();
         CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, repo.getFullBranch());
         
+        // Compute the row height.
+        CommitMessageTableRenderer renderer = new CommitMessageTableRenderer(repo, commitsAheadAndBehind);
+        int rh = getRowHeight(renderer, getFirstCommit(commitCharacteristicsVector));
+        
         SwingUtilities.invokeLater(() -> {
           historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
           updateHistoryTableWidths();
           
           historyTable.setDefaultRenderer(
               CommitCharacteristics.class,
-              new CommitMessageTableRenderer(repo, commitsAheadAndBehind));
+              renderer);
           historyTable.setDefaultRenderer(
               Date.class,
               new DateTableCellRenderer("d MMM yyyy HH:mm"));
           TableColumn authorColumn = historyTable.getColumn(translator.getTranslation(Tags.AUTHOR));
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
+          
+          historyTable.setRowHeight(rh);
         });
         
         revisionDataUpdater = new RowHistoryTableSelectionListener(
@@ -543,6 +550,49 @@ public class HistoryPanel extends JPanel {
                 + StringUtils.toLowerCase(translator.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
       }
     }
+  }
+
+  /**
+   * Gets the preferred height needed to render the commit information.
+   *  
+   * @param renderer Commit message renderer.
+   * @param ff Commit to render.
+   * 
+   * @return The preferred row height.
+   */
+  private int getRowHeight(CommitMessageTableRenderer renderer, CommitCharacteristics ff) {
+    Component tableCellRendererComponent = renderer.getTableCellRendererComponent(
+        historyTable, 
+        ff, 
+        false, false, 1, 1);
+    
+    int rowHeight = historyTable.getRowHeight();
+    if (rowHeight < tableCellRendererComponent.getPreferredSize().height) {
+      rowHeight = tableCellRendererComponent.getPreferredSize().height;
+    }
+    
+    return rowHeight;
+  }
+
+  /**
+   * Gets the first actually commit from the list of commits. It ignores the {@link GitAccess.UNCOMMITED_CHANGES} entry.
+   * 
+   * @param commitCharacteristics A list with commits from the repository.
+   * 
+   * @return The top actual commit.
+   */
+  private CommitCharacteristics getFirstCommit(final List<CommitCharacteristics> commitCharacteristics) {
+    Iterator<CommitCharacteristics> iterator = commitCharacteristics.iterator();
+    CommitCharacteristics first = null;
+    while (first == null && iterator.hasNext()) {
+      CommitCharacteristics cc = iterator.next();
+      
+      if (cc != GitAccess.UNCOMMITED_CHANGES ) {
+        first = cc;
+      }
+    }
+    
+    return first;
   }
 
   /**

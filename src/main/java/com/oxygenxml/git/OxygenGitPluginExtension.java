@@ -130,7 +130,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	@Override
 	public void applicationStarted(final StandalonePluginWorkspace pluginWS) {
 	  pluginWorkspaceAccess = pluginWS;
-	  pushPullController = PushPullController.createPushPullController();
+	  pushPullController = new PushPullController();
 		try {
 		  // Uncomment this to start with fresh options. For testing purposes
 //			PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption("GIT_PLUGIN_OPTIONS", null); NOSONAR

@@ -59,7 +59,9 @@ public class RepositoryChangeWatcher {
    * The Plugin Workspace.
    */
   private PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-  
+  /**
+   * High level push and pull support.
+   */
   private PushPullController pushPullController;
   
   /**
@@ -73,7 +75,8 @@ public class RepositoryChangeWatcher {
   private Translator translator = Translator.getInstance();
   /**
    * Private constructor.
-   * @param pushPullController 
+   * 
+   * @param pushPullController High level push and pull support.
    */
   private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace, PushPullController pushPullController) {
     addListeners4EditingAreas(standalonePluginWorkspace);
@@ -89,7 +92,8 @@ public class RepositoryChangeWatcher {
    * Adds hooks on the workspace and initializes the watcher which will notify the user when the remote 
    * repository changes.
    * 
-   * @param standalonePluginWorkspace The Plugin Workspace
+   * @param standalonePluginWorkspace The Plugin Workspace.
+   * @param pushPullController High level push and pull support.
    * 
    * @return An watcher that keeps track of the remote changes.
    */

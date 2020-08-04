@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -177,9 +176,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 			for (String name : nameForLabelList) {
 				JLabel label = new JLabel(name);
 				label.setForeground(foregroundColor);
-				label.setBorder(
-				    BorderFactory.createCompoundBorder(new RoundedLineBorder(foregroundColor, lineSize, cornerSize, true),
-						BorderFactory.createEmptyBorder(1, 1, 1, 1)));
+				label.setBorder(new RoundedLineBorder(foregroundColor, lineSize, cornerSize, true));
 				constr.gridx ++;
 				add(label, constr);
 			}
