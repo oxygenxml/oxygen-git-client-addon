@@ -68,26 +68,23 @@ public class RoundedLineBorder extends AbstractBorder {
   @Override
   public Insets getBorderInsets(Component c, Insets insets) {
     int size = Math.max(lineSize, cornerSize);
-    if (insets == null)
-      insets = new Insets(size, size, size, size);
-    else
-      insets.left = insets.top = insets.right = insets.bottom = size;
+    int offs = lineSize << 1;
+    int top = offs;
+    int bottom = offs + lineSize + 1;
+    int left = size;
+    int right = size;
+    
+    if (insets == null) {
+      insets = new Insets(top, left, bottom, right);
+    } else {
+      insets.left = left;
+      insets.right = right;
+      insets.top = top;
+      insets.bottom = bottom;
+    }
     return insets;
   }
   
-  /**
-   * Returns the best size for the top inset, given the line width and corner size of a rounded line border.
-   * 
-   * @param lineSize   The width of the line.
-   * @param cornerSize The diameter of the rounded corner.
-   * 
-   * @return Size of the inset for the top margin
-   */
-  public static int getTopInset(int lineSize, int cornerSize) {
-    int size = Math.max(lineSize, cornerSize);
-    return size/2;
-  }
-
   /**
    * Paints the rounded border using the parameters from AbstractBorder and the variables from this class.
    * 
@@ -115,7 +112,7 @@ public class RoundedLineBorder extends AbstractBorder {
       int off = lineSize << 1;
       // Draws a rectangle with rounded corners, using the coordinates of
       // AbstractBorder, width of lines and the diameter of the corners
-      g2d.drawRoundRect(x + off, y + off, width - off * 3, height - off * 3, cornerSize, cornerSize);
+      g2d.drawRoundRect(x + off, y + off, width - off * 2 - 1 , height - off * 2 - 1, cornerSize, cornerSize);
     } finally {
       //Resets the graphics to the old paint, stroke and rendering hint
       g2d.setPaint(oldPaint);
@@ -123,5 +120,9 @@ public class RoundedLineBorder extends AbstractBorder {
       if (aaHint != null)
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
     }
+  }
+  
+  public static void main(String[] args) {
+    System.out.println(1 << 1);
   }
 }

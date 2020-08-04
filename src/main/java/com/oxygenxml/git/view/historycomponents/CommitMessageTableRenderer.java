@@ -182,11 +182,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 			}
 			
 			// We added a label. Update the top insets of the initial insets.
-			constr.insets = new Insets(
-			    RoundedLineBorder.getTopInset(lineSize, cornerSize), 
-			    oldInsets.left,
-			    oldInsets.bottom, 
-			    oldInsets.right);
+			constr.insets = oldInsets;
 		}
 	}
 	
