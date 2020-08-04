@@ -69,7 +69,7 @@ public class RoundedLineBorder extends AbstractBorder {
   public Insets getBorderInsets(Component c, Insets insets) {
     int size = Math.max(lineSize, cornerSize);
     int offs = lineSize << 1;
-    int top = offs;
+    int top = offs + lineSize;
     int bottom = offs + lineSize + 1;
     int left = size;
     int right = size;
