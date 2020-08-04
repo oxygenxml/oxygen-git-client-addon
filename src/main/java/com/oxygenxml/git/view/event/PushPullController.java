@@ -201,7 +201,7 @@ public class PushPullController implements Subject<PushPullEvent> {
         } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
           // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
           LockFailedException lockFailedException = (org.eclipse.jgit.errors.LockFailedException) cause;
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage(), cause);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage(), lockFailedException);
           
           // This message gets presented in a status, at the bottom of the staging view.
           message = composeAndReturnFailureMessage(lockFailedException.getMessage());
