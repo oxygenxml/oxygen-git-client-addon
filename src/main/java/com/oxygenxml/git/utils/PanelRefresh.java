@@ -29,6 +29,8 @@ import com.oxygenxml.git.view.ChangesPanel;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
+import com.oxygenxml.git.watcher.RemoteTrackingAction;
+import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -87,6 +89,10 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	private ScheduledFuture<?> refreshFuture;
 	/**
+	 * Repository change watcher.
+	 */
+	private RepositoryChangeWatcher watcher;
+	/**
 	 * Refresh task.
 	 */
 	private Runnable refreshRunnable = () -> {
@@ -106,7 +112,16 @@ public class PanelRefresh implements GitRefreshSupport {
 	        updateFiles(
 	            stagingPanel.getStagedChangesPanel(), 
 	            status.getStagedFiles());
-	        updateCounters();
+	        
+	        RepositoryStatus rstatus = fetch();
+	        
+	        updateCounters(rstatus);
+	        
+	        String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
+	        if (value.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
+	          // Make the check more frequently.
+	          watcher.checkRemoteRepository(value, false);
+	        }
 	      }
 	    } catch (NoRepositorySelected e) {
 	      logger.debug(e, e);
@@ -116,6 +131,15 @@ public class PanelRefresh implements GitRefreshSupport {
 	  logger.debug("End refresh on thread.");
 	};
   
+	/**
+	 * Constructor.
+	 * 
+	 * @param watcher repository change watcher.
+	 */
+  public PanelRefresh(RepositoryChangeWatcher watcher) {
+    this.watcher = watcher;
+  }
+
   @Override
   public void call() {
     if (refreshFuture != null && !refreshFuture.isDone()) {
@@ -289,7 +313,22 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Update the counters presented on the Pull/Push toolbar action.
 	 */
-	private void updateCounters() {
+	private void updateCounters(RepositoryStatus status) {
+    final RepositoryStatus fStatus = status;
+	  SwingUtilities.invokeLater(() -> {
+      stagingPanel.getCommitPanel().setRepoStatus(fStatus);
+      if (stagingPanel.getToolbarPanel() != null) {
+        stagingPanel.getToolbarPanel().updateStatus();
+      }
+    });
+	}
+
+	/**
+	 * Fetch the latest changes from the remote repository.
+	 * 
+	 * @return Repository status.
+	 */
+  private RepositoryStatus fetch() {
     // Connect to the remote.
     RepositoryStatus status = RepositoryStatus.AVAILABLE;
     try {
@@ -322,15 +361,8 @@ public class PanelRefresh implements GitRefreshSupport {
     } catch (Exception e) {
       logger.error(e, e);
     }
-
-    final RepositoryStatus fStatus = status;
-	  SwingUtilities.invokeLater(() -> {
-      stagingPanel.getCommitPanel().setRepoStatus(fStatus);
-      if (stagingPanel.getToolbarPanel() != null) {
-        stagingPanel.getToolbarPanel().updateStatus();
-      }
-    });
-	}
+    return status;
+  }
 
 	/**
 	 * Updates the files in the model. 

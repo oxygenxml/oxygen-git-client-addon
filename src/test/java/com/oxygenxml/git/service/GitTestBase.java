@@ -331,7 +331,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     
     // Create the unstaged resources panel
-    refreshSupport = new PanelRefresh() {
+    refreshSupport = new PanelRefresh(null) {
       @Override
       protected int getScheduleDelay() {
         // Execute refresh events immediately from tests.

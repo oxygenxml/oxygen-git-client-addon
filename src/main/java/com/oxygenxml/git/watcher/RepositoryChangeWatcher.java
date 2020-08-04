@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class RepositoryChangeWatcher {
     
     // Check the currently opened editors.
     String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-    GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(value), SLEEP);
+    GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(value, true), 2 * SLEEP);
   
   }
   
@@ -105,7 +106,7 @@ public class RepositoryChangeWatcher {
    * Creates a new listener to supervise the remote changes and adds it to the editing areas
    * @param standalonePluginWorkspace The Plugin Workspace
    */
-  public void addListeners4EditingAreas(StandalonePluginWorkspace standalonePluginWorkspace) {
+  private void addListeners4EditingAreas(StandalonePluginWorkspace standalonePluginWorkspace) {
     WSEditorChangeListener editorListenerAlways = new WSEditorChangeListener() {
       @Override
       public void editorOpened(URL editorLocation) {
@@ -117,7 +118,7 @@ public class RepositoryChangeWatcher {
           if (future != null) {
             future.cancel(false);
           }
-          future = GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(value), SLEEP);
+          future = GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(value, true), SLEEP);
         }
       }
     };
@@ -129,15 +130,16 @@ public class RepositoryChangeWatcher {
    * The main task. Analyzes the remote repository to identify changes that are not in the local repository.
    * 
    * @param notifyMode One of {@link RemoteTrackingAction}. Controls when and if the user receives a notification.
+   * @param fetch <code>true</code> to execute a fetch before making the checks.
    */
-  public void checkRemoteRepository(String notifyMode) {
+  public void checkRemoteRepository(String notifyMode, boolean fetch) {
     if (logger.isDebugEnabled()) {
       logger.debug("Handle notification mode: " + notifyMode);
     }
     
     if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)
         || notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
-      List<RevCommit> commitsBehind = checkForRemoteCommits();
+      List<RevCommit> commitsBehind = checkForRemoteCommits(fetch);
       
       if (!commitsBehind.isEmpty() && shouldNotifyUser(commitsBehind.get(0))) {
         if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
@@ -284,14 +286,17 @@ public class RepositoryChangeWatcher {
   
   /**
    * Checks in the remote repository if there are new commits. 
+   * @param fetch <code>true</code> to execute a fetch before making the checks.
    * 
    * @return <code>commitsAhead</code> a list with all new commits
    */
-  private static List<RevCommit> checkForRemoteCommits() {
-    GitAccess gitAccess = GitAccess.getInstance();
-    List<RevCommit> commitsBehind = new ArrayList<>();
+  private static List<RevCommit> checkForRemoteCommits(boolean fetch) {
+    List<RevCommit> commitsBehind = Collections.emptyList();
     try {
-      gitAccess.fetch();
+      GitAccess gitAccess = GitAccess.getInstance();
+      if (fetch) {
+        gitAccess.fetch();
+      }
       Repository repo = gitAccess.getRepository();
       CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, repo.getFullBranch());
       commitsBehind = commitsAheadAndBehind.getCommitsBehind();

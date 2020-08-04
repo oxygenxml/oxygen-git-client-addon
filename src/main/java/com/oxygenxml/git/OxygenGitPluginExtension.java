@@ -74,7 +74,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	/**
 	 * Refresh support.
 	 */
-	final PanelRefresh gitRefreshSupport = new PanelRefresh();
+	private PanelRefresh gitRefreshSupport;
 	
 	/**
 	 * Manages Push/Pull actions.
@@ -210,7 +210,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			logger.fatal(t, t);
 		}
 		
-		RepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, pushPullController);
+		RepositoryChangeWatcher watcher = RepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, pushPullController);
+		
+		gitRefreshSupport = new PanelRefresh(watcher);
 	}
 	
 	/**
