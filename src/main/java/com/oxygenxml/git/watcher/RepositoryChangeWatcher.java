@@ -148,7 +148,7 @@ public class RepositoryChangeWatcher {
           showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
               + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
         } else if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
-          Set<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
+          List<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
           if (!conflictingFiles.isEmpty()) {
             // Remember that we warn the user about this particular commit.
             optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
@@ -187,7 +187,7 @@ public class RepositoryChangeWatcher {
    * 
    * @return All local files modified in the remote.
    */
-  private Set<String> checkForRemoteFileChanges(
+  private List<String> checkForRemoteFileChanges(
       Set<String> localFiles,
       List<RevCommit> commitsBehind) {
     HashSet<String> changedRemoteFiles = new HashSet<>();
@@ -209,7 +209,9 @@ public class RepositoryChangeWatcher {
         logger.error(e, e);
       }
     }
-    return changedRemoteFiles;
+    List<String> changedOpenedFiles = new ArrayList<>();
+    changedOpenedFiles.addAll(changedRemoteFiles);
+    return changedOpenedFiles;
   }
 
   /**
