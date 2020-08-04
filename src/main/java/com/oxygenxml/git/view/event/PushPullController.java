@@ -283,7 +283,11 @@ public class PushPullController implements Subject<PushPullEvent> {
       } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
         String errMess = translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN) + ".";
         if (response.getMessage() != null) {
-          errMess += " " + translator.getTranslation(Tags.DETAILS) + " " + response.getMessage();
+          String details = " " + response.getMessage();
+          if (details.contains("pre-receive hook declined")) {
+            details = " " + translator.getTranslation(Tags.PRE_RECEIVE_HOOK_DECLINED_CUSTOM_MESSAGE);
+          }
+          errMess += " " + translator.getTranslation(Tags.DETAILS) + details;
         } else {
           errMess += " " + translator.getTranslation(Tags.NO_DETAILS_AVAILABLE);
         }

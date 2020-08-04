@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value = "Pre_receive_hook_declined_custom_message">
+		<comment>"The 'pre-receive' server-side hook declined the operation."</comment>
+        <val lang="en_US">The "pre-receive" server-side hook declined the operation.</val>
+        <val lang="de_DE">The "pre-receive" server-side hook declined the operation.</val>
+        <val lang="fr_FR">The "pre-receive" server-side hook declined the operation.</val>
+        <val lang="ja_JP">The "pre-receive" server-side hook declined the operation.</val>
+        <val lang="nl_NL">The "pre-receive" server-side hook declined the operation.</val>
+    </key>
     <key value = "Details">
 		<comment>"Details:"</comment>
         <val lang="en_US">Details:</val>

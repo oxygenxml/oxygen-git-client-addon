@@ -1029,4 +1029,9 @@ public class Tags {
    * Details.
    */
   public static final String DETAILS = "Details";
+  
+  /**
+   * A custom message for the Git "pre-receive hook declined" message.
+   */
+  public static final String PRE_RECEIVE_HOOK_DECLINED_CUSTOM_MESSAGE = "Pre_receive_hook_declined_custom_message";
 }
