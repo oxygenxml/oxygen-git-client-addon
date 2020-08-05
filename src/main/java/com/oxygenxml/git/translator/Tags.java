@@ -1011,14 +1011,9 @@ public class Tags {
       "Cannot_checkout_new_branch_when_having_conflicts";
   
   /**
-   * Continue
+   * Commit anyway.
    */
-  public static final String CONTINUE = "Continue";
-  
-  /**
-   * 
-   */
-  public static final String WARN_IF_BEHIND = "Warn_if_behind";
+  public static final String COMMIT_ANYWAY = "Commit_anyway";
   
   /**
    * No details available.

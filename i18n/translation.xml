@@ -89,13 +89,13 @@
 		<val lang="ja_JP">New commits were detected in the remote repository.</val>
 		<val lang="nl_NL">New commits were detected in the remote repository.</val>
     </key>
-    <key value="Continue">
+    <key value="Commit_anyway">
         <comment>Continue</comment>
-        <val lang="en_US">Continue</val>
-        <val lang="de_DE">Continue</val>
-        <val lang="fr_FR">Continue</val>
-        <val lang="ja_JP">Continue</val>
-        <val lang="nl_NL">Continue</val>
+        <val lang="en_US">Commit anyway</val>
+        <val lang="de_DE">Commit anyway</val>
+        <val lang="fr_FR">Commit anyway</val>
+        <val lang="ja_JP">Commit anyway</val>
+        <val lang="nl_NL">Commit anyway</val>
     </key>
     <key value="No_commit_massage_provided">
         <comment>Dialog title when the user commits with an empty commit message.</comment>
@@ -107,16 +107,16 @@
     </key>
     <key value="The_commit_message_is_empty">
         <comment>Dialog message when the user commits with an empty commit message.</comment>
-        <val lang="en_US">The commit message is empty. It is recommended to give a
-            description of your changes. \n\nAre you sure you want to commit without a message?</val>
-        <val lang="de_DE">The commit message is empty. It is recommended to give a
-            description of your changes. \n\nAre you sure you want to commit without a message?</val>
-        <val lang="fr_FR">The commit message is empty. It is recommended to give a
-            description of your changes. \n\nAre you sure you want to commit without a message?</val>
-        <val lang="ja_JP">The commit message is empty. It is recommended to give a
-            description of your changes. \n\nAre you sure you want to commit without a message?</val>
-        <val lang="nl_NL">The commit message is empty. It is recommended to give a
-            description of your changes. \n\nAre you sure you want to commit without a message?</val>
+        <val lang="en_US">The commit message is empty! \nIt is recommended to give a
+            description of your changes.</val>
+        <val lang="de_DE">The commit message is empty! \nIt is recommended to give a
+            description of your changes.</val>
+        <val lang="fr_FR">The commit message is empty! \nIt is recommended to give a
+            description of your changes.</val>
+        <val lang="ja_JP">The commit message is empty! \nIt is recommended to give a
+            description of your changes.</val>
+        <val lang="nl_NL">The commit message is empty! \nIt is recommended to give a
+            description of your changes.</val>
     </key>
     <key value="Cannot_checkout_new_branch_when_having_conflicts">
         <comment>Message shown when cannot checkout newly created branch because of conflicts.</comment>
