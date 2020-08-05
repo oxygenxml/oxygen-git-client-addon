@@ -130,12 +130,11 @@ public class FileStatusDialog extends OKCancelDialog {
    * Inform the user about the files' status.
    * 
    * @param title         Title of the Dialog
-   * @param conflictFiles The message.
+   * @param conflictFiles Files that relate to the message / Files with conflicts.
    * @param message       The message.
    */
   public static void showInformationMessage(String title, List<String> conflictFiles, String message) {
     FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, null);
-    
     dialog.setVisible(true);
   }
   
@@ -155,9 +154,8 @@ public class FileStatusDialog extends OKCancelDialog {
       String message,
       String questionMessage) {
     FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, questionMessage);
-
     dialog.setVisible(true);
-
     return dialog.getResult();
   }
+  
 }
