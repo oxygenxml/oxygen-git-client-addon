@@ -118,7 +118,8 @@ public class PanelRefresh implements GitRefreshSupport {
 	        updateCounters(rstatus);
 	        
 	        String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-	        if (value.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
+	        if (RemoteTrackingAction.WARN_UPSTREAM_ALWAYS.equals(value)
+	            || RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE.equals(value)) {
 	          // Make the check more frequently.
 	          watcher.checkRemoteRepository(value, false);
 	        }
