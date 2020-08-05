@@ -131,7 +131,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	protected void showPullSuccessfulWithConflicts(PullResponse response) {
 	  List<String> conflictingFilesList = new ArrayList<>();
 	  conflictingFilesList.addAll(response.getConflictingFiles());
-	  FileStatusDialog.showInformationMessage(
+	  FileStatusDialog.showWarningMessage(
         translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
         conflictingFilesList,
         translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
@@ -147,7 +147,7 @@ public class PushPullController implements Subject<PushPullEvent> {
     if (logger.isDebugEnabled()) {
       logger.info("Pull failed with the following message: " + message + ". Resources: " + filesWithChanges);
     }
-    FileStatusDialog.showInformationMessage(
+    FileStatusDialog.showWarningMessage(
         translator.getTranslation(Tags.PULL_STATUS), 
         filesWithChanges, 
         message);
