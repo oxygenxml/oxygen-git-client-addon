@@ -525,17 +525,19 @@ public class OptionsManager {
    return getOptions().getWarnOnUpstreamChange();
  }
 /**
- * Get the ID of the latest commit fetched.
+ * Get the ID of the latest commit fetched from a given repository.
+ * @param repositoryId The repository from which to get the commit ID.
  * @return Commit ID.
  */
- public String getWarnOnCommitIdChange() {
-   return getOptions().getWarnOnCommitIdChange();
+ public String getWarnOnCommitIdChange(String repositoryId) {
+   return getOptions().getWarnOnCommitIdChange(repositoryId);
  }
  /**
-  * Set the commit ID to the newest commit fetched.
-  * @param warnOnCommitIdChange The newest commit ID.
+  * Set the commit ID to the newest commit fetched from a given repository.
+  * @param repositoryId The repository in which to put the commit ID.
+  * @param commitId The newest commit ID.
   */
- public void setWarnOnCommitIdChange(String warnOnCommitIdChange) {
-   getOptions().setWarnOnCommitIdChange(warnOnCommitIdChange);
+ public void setWarnOnCommitIdChange(String repositoryId, String commitId) {
+   getOptions().setWarnOnCommitIdChange(repositoryId, commitId);
  }
 }

@@ -43,7 +43,7 @@ public class Options {
 	/**
 	 * The id from the last commit fetched.
 	 */
-	private String warnOnCommitIdChange = "";
+	private HashMap<String, String> warnOnCommitIdChange = new HashMap<>();
 	
 	/**
 	 * Last selected repository from the user
@@ -172,12 +172,17 @@ public class Options {
     return warnOnUpstreamChange;
   }
   
-  public String getWarnOnCommitIdChange() {
+  public HashMap<String, String> getWarnOnCommitIdChange() {
     return warnOnCommitIdChange;
   }
   
-  public void setWarnOnCommitIdChange(String warnOnCommitIdChange) {
-    this.warnOnCommitIdChange = warnOnCommitIdChange;
+  public String getWarnOnCommitIdChange(String repositoryId) {
+    warnOnCommitIdChange.putIfAbsent(repositoryId, "");
+    return warnOnCommitIdChange.get(repositoryId);
+  }
+  
+  public void setWarnOnCommitIdChange(String repositoryId, String commitId) {
+    warnOnCommitIdChange.put(repositoryId, commitId);
   }
 
 	public String getSelectedRepository() {

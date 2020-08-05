@@ -66,6 +66,11 @@ public class RepositoryChangeWatcher {
   private PushPullController pushPullController;
   
   /**
+   * Stores the current working repository.
+   */
+  private Repository repository;
+
+  /**
    * The Option Manager instance.
    */
   private OptionsManager optionsManager = OptionsManager.getInstance();
@@ -157,7 +162,7 @@ public class RepositoryChangeWatcher {
   private void notifyUserAboutNewCommits(String notifyMode, List<RevCommit> commitsBehind) {
     if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
       // Remember that we warn the user about this particular commit.
-      optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
+      optionsManager.setWarnOnCommitIdChange(repository.getIdentifier(), commitsBehind.get(0).name());
 
       // Notify new commit in remote.
       showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
@@ -166,7 +171,7 @@ public class RepositoryChangeWatcher {
       List<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
       if (!conflictingFiles.isEmpty()) {
         // Warn the user about new commit in remote with possible conflicting files.
-        optionsManager.setWarnOnCommitIdChange(commitsBehind.get(0).name());
+        optionsManager.setWarnOnCommitIdChange(repository.getIdentifier(), commitsBehind.get(0).name());
         if (FileStatusDialog.showQuestionMessage(
             translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
             conflictingFiles,
@@ -240,7 +245,7 @@ public class RepositoryChangeWatcher {
   private boolean shouldNotifyUser(RevCommit topRevCommit) {
     String commitId = topRevCommit.getId().getName();
     
-    return !commitId.contentEquals(optionsManager.getWarnOnCommitIdChange());
+    return !commitId.contentEquals(optionsManager.getWarnOnCommitIdChange(repository.getIdentifier()));
   }
   
   /**
@@ -301,15 +306,15 @@ public class RepositoryChangeWatcher {
    * 
    * @return <code>commitsAhead</code> a list with all new commits
    */
-  private static List<RevCommit> checkForRemoteCommits(boolean fetch) {
+  private List<RevCommit> checkForRemoteCommits(boolean fetch) {
     List<RevCommit> commitsBehind = Collections.emptyList();
     try {
       GitAccess gitAccess = GitAccess.getInstance();
       if (fetch) {
         gitAccess.fetch();
       }
-      Repository repo = gitAccess.getRepository();
-      CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, repo.getFullBranch());
+      repository = gitAccess.getRepository();
+      CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repository, repository.getFullBranch());
       commitsBehind = commitsAheadAndBehind.getCommitsBehind();
 
     } catch (NoRepositorySelected | IOException | SSHPassphraseRequiredException | PrivateRepositoryException
