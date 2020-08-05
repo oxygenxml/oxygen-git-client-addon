@@ -127,8 +127,8 @@ public class RepositoryChangeWatcher {
         }
       }
     };
-    standalonePluginWorkspace.addEditorChangeListener(editorListenerAlways, StandalonePluginWorkspace.MAIN_EDITING_AREA);
-    standalonePluginWorkspace.addEditorChangeListener(editorListenerAlways, StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
+    standalonePluginWorkspace.addEditorChangeListener(editorListenerAlways, PluginWorkspace.MAIN_EDITING_AREA);
+    standalonePluginWorkspace.addEditorChangeListener(editorListenerAlways, PluginWorkspace.DITA_MAPS_EDITING_AREA);
   }
   
   /**
@@ -261,11 +261,11 @@ public class RepositoryChangeWatcher {
       
       collectFilesFromRepository(
           wcDir, 
-          pluginWorkspace.getAllEditorLocations(StandalonePluginWorkspace.MAIN_EDITING_AREA), 
+          pluginWorkspace.getAllEditorLocations(PluginWorkspace.MAIN_EDITING_AREA), 
           changedLocalFiles);
       collectFilesFromRepository(
           wcDir, 
-          pluginWorkspace.getAllEditorLocations(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA),
+          pluginWorkspace.getAllEditorLocations(PluginWorkspace.DITA_MAPS_EDITING_AREA),
           changedLocalFiles);
     } catch (MalformedURLException | NoRepositorySelected e) {
       logger.debug(e, e);

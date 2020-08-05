@@ -3,7 +3,9 @@ package com.oxygenxml.git.watcher;
 /**
  * The possible ways of tracking the remote and notify the user about its changes.
  */
-public interface RemoteTrackingAction {
+public class RemoteTrackingAction {
+  
+  private RemoteTrackingAction() {}
   
   /**
    * Value for as soon as there are new commits upstream.
