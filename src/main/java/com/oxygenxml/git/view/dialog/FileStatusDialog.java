@@ -49,7 +49,7 @@ public class FileStatusDialog extends OKCancelDialog {
 		JTextArea label = UIUtil.createMessageArea(message);
 
 		// populating the JList with the conflict files
-		Collections.sort(targetFiles);
+		Collections.sort(targetFiles, String.CASE_INSENSITIVE_ORDER);
 		DefaultListModel<String> model = new DefaultListModel<>();
 		for(String listElement : targetFiles) {
 		  model.addElement(listElement);
