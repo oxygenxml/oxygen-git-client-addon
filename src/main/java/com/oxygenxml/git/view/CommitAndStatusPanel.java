@@ -53,6 +53,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitCommandState;
@@ -119,11 +120,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
               translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
         } else {
           if (commitMessageArea.getText().trim().isEmpty()) {
-            int userAnswer = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+            int userAnswer = FileStatusDialog.showQuestionMessage(
                 translator.getTranslation(Tags.NO_COMMIT_MESSAGE_TITLE),
-                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG),
-                new String[] { translator.getTranslation(Tags.COMMIT_ANYWAY), translator.getTranslation(Tags.CANCEL) },
-                new int[] { 1, 0 });
+                translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG), 
+                translator.getTranslation(Tags.COMMIT_ANYWAY),
+                translator.getTranslation(Tags.CANCEL));
             if (userAnswer == 1) {
               executeCommit();
             }
