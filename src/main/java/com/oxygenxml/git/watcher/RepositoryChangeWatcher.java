@@ -319,7 +319,7 @@ public class RepositoryChangeWatcher {
 
     } catch (NoRepositorySelected | IOException | SSHPassphraseRequiredException | PrivateRepositoryException
         | RepositoryUnavailableException e) {
-      logger.error(e, e);
+      logger.debug(e, e);
     }
     return commitsBehind;
   }
