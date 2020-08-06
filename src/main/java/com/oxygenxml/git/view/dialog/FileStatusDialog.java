@@ -39,24 +39,16 @@ public class FileStatusDialog extends OKCancelDialog {
    * @param targetFiles Files that relate to the message.
    * @param message The message.
    * @param questionMessage A question message connected to the presented information.
+   * @param okButtonName Text to be written on the button in case the answer to the question is affirmative
+   * @param cancelButtonName Text to be written on the button in case the answer to the question is negative
    */
-	private FileStatusDialog(String title, List<String> targetFiles, String message, String questionMessage) {
+  private FileStatusDialog(String title, List<String> targetFiles, String message, String questionMessage,
+      String okButtonName, String cancelButtonName) {
 		super(
 		    PluginWorkspaceProvider.getPluginWorkspace() != null ? 
 		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
 		    title,
 		    true);
-		JTextArea label = UIUtil.createMessageArea(message);
-
-		// populating the JList with the conflict files
-		Collections.sort(targetFiles, String.CASE_INSENSITIVE_ORDER);
-		DefaultListModel<String> model = new DefaultListModel<>();
-		for(String listElement : targetFiles) {
-		  model.addElement(listElement);
-		}
-		JList<String> filesInConflictList = new JList<>(model);
-		JScrollPane scollPane = new JScrollPane(filesInConflictList);
-		scollPane.setPreferredSize(new Dimension(scollPane.getPreferredSize().width, 50));
 		
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -77,24 +69,38 @@ public class FileStatusDialog extends OKCancelDialog {
 		gbc.gridheight = 2;
 		panel.add(iconLabel, gbc);
 		
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridx = 1;
-		gbc.gridy = 0;
-		gbc.gridheight = 1;
-		panel.add(label, gbc);
-		
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		gbc.gridheight = 1;
-		panel.add(scollPane, gbc);
-		
+    if (message != null) {
+      JTextArea label = UIUtil.createMessageArea(message);
+      gbc.anchor = GridBagConstraints.WEST;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      gbc.weightx = 1;
+      gbc.weighty = 1;
+      gbc.gridx = 1;
+      gbc.gridheight = 1;
+      panel.add(label, gbc);
+      gbc.gridy++;
+    }
+    
+    if (targetFiles != null) {
+      // populating the JList with the conflict files
+      Collections.sort(targetFiles, String.CASE_INSENSITIVE_ORDER);
+      DefaultListModel<String> model = new DefaultListModel<>();
+      for (String listElement : targetFiles) {
+        model.addElement(listElement);
+      }
+      JList<String> filesInConflictList = new JList<>(model);
+      JScrollPane scollPane = new JScrollPane(filesInConflictList);
+      scollPane.setPreferredSize(new Dimension(scollPane.getPreferredSize().width, 50));
+      gbc.anchor = GridBagConstraints.WEST;
+      gbc.fill = GridBagConstraints.BOTH;
+      gbc.weightx = 1;
+      gbc.weighty = 1;
+      gbc.gridx = 1;
+      gbc.gridheight = 1;
+      panel.add(scollPane, gbc);
+      gbc.gridy++;
+    }
+    
     if (questionMessage == null) {
       // No question message. Hide Cancel button.
       getCancelButton().setVisible(false);
@@ -105,17 +111,16 @@ public class FileStatusDialog extends OKCancelDialog {
       gbc.weightx = 1;
       gbc.weighty = 1;
       gbc.gridx = 1;
-      gbc.gridy = 2;
       gbc.gridheight = 1;
       panel.add(questionLabel, gbc);
       
-      setOkButtonText(Translator.getInstance().getTranslation(Tags.YES));
-      setCancelButtonText(Translator.getInstance().getTranslation(Tags.NO));
+      setOkButtonText(okButtonName);
+      setCancelButtonText(cancelButtonName);
     }
     
     getContentPane().add(panel);
 		this.setResizable(true);
-		this.setMinimumSize(new Dimension(500, 220));
+		this.setMinimumSize(new Dimension(500, 80));
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
 		pack();
@@ -134,17 +139,19 @@ public class FileStatusDialog extends OKCancelDialog {
    * @param message       The message.
    */
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
-    FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, null);
+    FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, null, null, null);
     dialog.setVisible(true);
   }
   
   /**
    * Shows pull status and conflicting files and asks the user a question.
    * 
-   * @param title           Dialog title.
-   * @param conflictFiles   Files that relate to the message.
-   * @param message         Message shown
-   * @param questionMessage A question message connected to the presented information.
+   * @param title            Dialog title.
+   * @param conflictFiles    Files that relate to the message.
+   * @param message          Message shown
+   * @param questionMessage  A question message connected to the presented information.
+   * @param okButtonName     The name given to the button for answering affirmative to the question.
+   * @param cancelButtonName The name given to the button for answering negative to the question.
    * 
    * @return The option chosen by the user. {@link #RESULT_OK} or {@link #RESULT_CANCEL}
    */
@@ -152,9 +159,30 @@ public class FileStatusDialog extends OKCancelDialog {
       String title, 
       List<String> conflictFiles, 
       String message,
-      String questionMessage) {
-    FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, questionMessage);
+      String questionMessage,
+      String okButtonName,
+      String cancelButtonName) {
+    FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, questionMessage, okButtonName, cancelButtonName);
     dialog.setVisible(true);  
+    return dialog.getResult();
+  }
+
+  /**
+   * Shows a warning and asks the user a question.
+   * 
+   * @param title            Dialog title.
+   * @param questionMessage  The warning and question message to be presented.
+   * @param okButtonName     The name given to the button for answering affirmative to the question.
+   * @param cancelButtonName The name given to the button for answering negative to the question.
+   * @return The option chosen by the user. {@link #RESULT_OK} or {@link #RESULT_CANCEL}
+   */
+  public static int showQuestionMessage(
+      String title,
+      String questionMessage,
+      String okButtonName,
+      String cancelButtonName) {
+    FileStatusDialog dialog = new FileStatusDialog(title, null, null, questionMessage, okButtonName, cancelButtonName);
+    dialog.setVisible(true);
     return dialog.getResult();
   }
   

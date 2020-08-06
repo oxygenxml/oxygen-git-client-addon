@@ -524,20 +524,23 @@ public class OptionsManager {
  public String getWarnOnUpstreamChange() {
    return getOptions().getWarnOnUpstreamChange();
  }
-/**
- * Get the ID of the latest commit fetched from a given repository.
- * @param repositoryId The repository from which to get the commit ID.
- * @return Commit ID.
- */
- public String getWarnOnCommitIdChange(String repositoryId) {
-   return getOptions().getWarnOnCommitIdChange(repositoryId);
+ /**
+  * Get the ID of the latest commit fetched from a given repository.
+  * @param repositoryId The repository from which to get the commit ID, obtained from
+  *                     {@link org.eclipse.jgit.lib.Repository.getIdentifier()}.
+  * @return The commit ID that comes from  {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}.
+  */
+ public String getWarnOnChangeCommitId(String repositoryId) {
+   return getOptions().getWarnOnChangeCommitId(repositoryId);
  }
  /**
   * Set the commit ID to the newest commit fetched from a given repository.
-  * @param repositoryId The repository in which to put the commit ID.
-  * @param commitId The newest commit ID.
+  * @param repositoryId The repository in which to put the commit ID, obtained from
+  *                     {@link org.eclipse.jgit.lib.Repository.getIdentifier()}.
+  * @param commitId     The newest commit ID, obtained from 
+  *                     {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}.
   */
- public void setWarnOnCommitIdChange(String repositoryId, String commitId) {
-   getOptions().setWarnOnCommitIdChange(repositoryId, commitId);
+ public void setWarnOnChangeCommitId(String repositoryId, String commitId) {
+   getOptions().setWarnOnChangeCommitId(repositoryId, commitId);
  }
 }

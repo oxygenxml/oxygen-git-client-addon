@@ -43,7 +43,7 @@ public class Options {
 	/**
 	 * The id from the last commit fetched.
 	 */
-	private HashMap<String, String> warnOnCommitIdChange = new HashMap<>();
+	private HashMap<String, String> warnOnChangeCommitId = new HashMap<>();
 	
 	/**
 	 * Last selected repository from the user
@@ -172,17 +172,16 @@ public class Options {
     return warnOnUpstreamChange;
   }
   
-  public HashMap<String, String> getWarnOnCommitIdChange() {
-    return warnOnCommitIdChange;
+  public Map<String, String> getWarnOnChangeCommitId() {
+    return warnOnChangeCommitId;
   }
   
-  public String getWarnOnCommitIdChange(String repositoryId) {
-    warnOnCommitIdChange.putIfAbsent(repositoryId, "");
-    return warnOnCommitIdChange.get(repositoryId);
+  public String getWarnOnChangeCommitId(String repositoryId) {
+    return warnOnChangeCommitId.getOrDefault(repositoryId,"");
   }
   
-  public void setWarnOnCommitIdChange(String repositoryId, String commitId) {
-    warnOnCommitIdChange.put(repositoryId, commitId);
+  public void setWarnOnChangeCommitId(String repositoryId, String commitId) {
+    warnOnChangeCommitId.put(repositoryId, commitId);
   }
 
 	public String getSelectedRepository() {
@@ -253,7 +252,7 @@ public class Options {
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
 		result = prime * result + ((warnOnUpstreamChange == null) ? 0 : warnOnUpstreamChange.hashCode());
-    result = prime * result + ((warnOnCommitIdChange == null) ? 0 : warnOnCommitIdChange.hashCode());
+    result = prime * result + ((warnOnChangeCommitId == null) ? 0 : warnOnChangeCommitId.hashCode());
 		
 		return result;
 	}
@@ -274,7 +273,7 @@ public class Options {
 	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())
 	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode)
 	        && Equaler.verifyEquals(defaultPullType, opt.defaultPullType)
-	        && Equaler.verifyEquals(warnOnCommitIdChange, opt.getWarnOnCommitIdChange());
+	        && Equaler.verifyEquals(warnOnChangeCommitId, opt.getWarnOnChangeCommitId());
 	  }
 	  return toReturn;
 	}
