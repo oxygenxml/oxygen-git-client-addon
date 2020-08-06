@@ -18,8 +18,6 @@ import javax.swing.WindowConstants;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -35,15 +33,20 @@ public class FileStatusDialog extends OKCancelDialog {
   /**
    * Constructor.
    * 
-   * @param title Dialog title.
-   * @param targetFiles Files that relate to the message.
-   * @param message The message.
-   * @param questionMessage A question message connected to the presented information.
-   * @param okButtonName Text to be written on the button in case the answer to the question is affirmative
+   * @param title            Dialog title.
+   * @param targetFiles      Files that relate to the message. May be <code>null</code>.
+   * @param message          An information message. May be <code>null</code>.
+   * @param questionMessage  A question message connected to the presented information. May be <code>null</code>.
+   * @param okButtonName     Text to be written on the button in case the answer to the question is affirmative
    * @param cancelButtonName Text to be written on the button in case the answer to the question is negative
    */
-  private FileStatusDialog(String title, List<String> targetFiles, String message, String questionMessage,
-      String okButtonName, String cancelButtonName) {
+  private FileStatusDialog(
+      String title,
+      List<String> targetFiles,
+      String message,
+      String questionMessage,
+      String okButtonName,
+      String cancelButtonName) {
 		super(
 		    PluginWorkspaceProvider.getPluginWorkspace() != null ? 
 		        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
