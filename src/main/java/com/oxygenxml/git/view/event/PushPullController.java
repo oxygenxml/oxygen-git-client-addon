@@ -132,7 +132,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	  List<String> conflictingFilesList = new ArrayList<>();
 	  conflictingFilesList.addAll(response.getConflictingFiles());
 	  FileStatusDialog.showWarningMessage(
-        translator.getTranslation(Tags.PULL_WITH_CONFLICTS_DIALOG_TITLE),
+        translator.getTranslation(Tags.PULL_STATUS),
         conflictingFilesList,
         translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
   }

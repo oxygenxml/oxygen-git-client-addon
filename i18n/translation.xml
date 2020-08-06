@@ -1305,14 +1305,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="Pull_With_Conflicts_Dialog_Title">
-        <comment>The text displayed in the title for the dialog that appears when you pull and bring conflicts</comment>
-        <val lang="en_US">Information</val>
-        <val lang="de_DE">Information</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
     <key value="Add_Remote_Dialog_Title">
         <comment>The text displayed in the title for the dialog that appears when you push while having no remote set</comment>
         <val lang="en_US">Add Remote</val>

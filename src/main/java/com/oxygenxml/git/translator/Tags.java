@@ -378,12 +378,6 @@ public class Tags {
 	public static final String COMMIT_CHANGES_BEFORE_CHANGING_BRANCH = "Change_Branch_Error_Message";
 
 	/**
-	 * The text displayed in the title for the dialog that appears when you pull
-	 * and bring conflicts
-	 */
-	public static final String PULL_WITH_CONFLICTS_DIALOG_TITLE = "Pull_With_Conflicts_Dialog_Title";
-
-	/**
 	 * The text displayed in the title for the dialog that appears when you push
 	 * while having no remote set
 	 */
