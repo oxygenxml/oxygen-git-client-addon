@@ -107,15 +107,15 @@
     </key>
     <key value="The_commit_message_is_empty">
         <comment>Dialog message when the user commits with an empty commit message.</comment>
-        <val lang="en_US">The commit message is empty! \nIt is recommended to give a
+        <val lang="en_US">The commit message is empty. It is recommended to provide a
             description of your changes.</val>
-        <val lang="de_DE">The commit message is empty! \nIt is recommended to give a
+        <val lang="de_DE">The commit message is empty. It is recommended to provide a
             description of your changes.</val>
-        <val lang="fr_FR">The commit message is empty! \nIt is recommended to give a
+        <val lang="fr_FR">The commit message is empty. It is recommended to provide a
             description of your changes.</val>
-        <val lang="ja_JP">The commit message is empty! \nIt is recommended to give a
+        <val lang="ja_JP">The commit message is empty. It is recommended to provide a
             description of your changes.</val>
-        <val lang="nl_NL">The commit message is empty! \nIt is recommended to give a
+        <val lang="nl_NL">The commit message is empty. It is recommended to provide a
             description of your changes.</val>
     </key>
     <key value="Cannot_checkout_new_branch_when_having_conflicts">
