@@ -162,7 +162,7 @@ public class RepositoryChangeWatcher {
   private void notifyUserAboutNewCommits(String notifyMode, List<RevCommit> commitsBehind) {
     if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
       // Remember that we warn the user about this particular commit.
-      optionsManager.setWarnOnCommitIdChange(repository.getIdentifier(), commitsBehind.get(0).name());
+      optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
 
       // Notify new commit in remote.
       showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
@@ -171,12 +171,14 @@ public class RepositoryChangeWatcher {
       List<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
       if (!conflictingFiles.isEmpty()) {
         // Warn the user about new commit in remote with possible conflicting files.
-        optionsManager.setWarnOnCommitIdChange(repository.getIdentifier(), commitsBehind.get(0).name());
+        optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
         if (FileStatusDialog.showQuestionMessage(
             translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
             conflictingFiles,
             translator.getTranslation(Tags.FILES_CHANGED_REMOTE),
-            translator.getTranslation(Tags.WANT_TO_PULL_QUESTION)) == OKCancelDialog.RESULT_OK) {
+            translator.getTranslation(Tags.WANT_TO_PULL_QUESTION),
+            translator.getTranslation(Tags.YES),
+            translator.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
           pushPullController.pull();
         }
       }
@@ -236,7 +238,10 @@ public class RepositoryChangeWatcher {
   }
 
   /**
-   * Checks if the user should receive a notification regarding the remote repository state.
+   * Checks if the user should receive a notification regarding the remote
+   * repository state. \nCompares the two commit IDs that come from
+   * {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}, and in case of
+   * inequality, informs that there are new commits by returning true.
    * 
    * @param topRevCommit The newest commit fetched from upstream.
    * 
@@ -245,7 +250,7 @@ public class RepositoryChangeWatcher {
   private boolean shouldNotifyUser(RevCommit topRevCommit) {
     String commitId = topRevCommit.getId().getName();
     
-    return !commitId.contentEquals(optionsManager.getWarnOnCommitIdChange(repository.getIdentifier()));
+    return !commitId.contentEquals(optionsManager.getWarnOnChangeCommitId(repository.getIdentifier()));
   }
   
   /**
@@ -315,8 +320,9 @@ public class RepositoryChangeWatcher {
       }
       repository = gitAccess.getRepository();
       CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repository, repository.getFullBranch());
-      commitsBehind = commitsAheadAndBehind.getCommitsBehind();
-
+      if (commitsAheadAndBehind != null) {
+        commitsBehind = commitsAheadAndBehind.getCommitsBehind();
+      }
     } catch (NoRepositorySelected | IOException | SSHPassphraseRequiredException | PrivateRepositoryException
         | RepositoryUnavailableException e) {
       logger.debug(e, e);
