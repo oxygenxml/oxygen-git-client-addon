@@ -128,7 +128,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
             if (userAnswer == 1) {
               executeCommit();
             }else {
-              commitButton.transferFocusBackward();
+              commitMessageArea.requestFocus();
             }
           } else {
             executeCommit();
