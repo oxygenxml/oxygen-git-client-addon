@@ -1317,7 +1317,7 @@
         <comment>The text displayed in the title for the dialog that appears if the project.xpr is not a git repository and has no got repositories</comment>
         <val lang="en_US">New Git Project</val>
         <val lang="de_DE">Neues Git-Projekt</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Nouveau projet Git</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1325,7 +1325,7 @@
         <comment>The tooltip for the select submodule button</comment>
         <val lang="en_US">Submodules</val>
         <val lang="de_DE">Submodules</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Sous-modules</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1333,7 +1333,7 @@
         <comment>The text displayed in the dialog that appears near the combo box</comment>
         <val lang="en_US">Submodule: </val>
         <val lang="de_DE">Submodule: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Sous-module: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1341,7 +1341,7 @@
         <comment>The text displayed in the title for the dialog that appears when you select a submodule</comment>
         <val lang="en_US">Submodules</val>
         <val lang="de_DE">Submodules</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Sous-modules</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1349,7 +1349,7 @@
         <comment>The tooltip for the submodule icon that appears on the left side of the file</comment>
         <val lang="en_US">Submodule</val>
         <val lang="de_DE">Submodule</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Sous-module</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1357,7 +1357,7 @@
         <comment>The text displayed on the label for the username</comment>
         <val lang="en_US">Username: </val>
         <val lang="de_DE">Benutzername: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Nom d'utilisateur: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1365,7 +1365,7 @@
         <comment>The text displayed on the label for the password</comment>
         <val lang="en_US">Password: </val>
         <val lang="de_DE">Passwort: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Mot de passe: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1373,7 +1373,7 @@
         <comment>The text displayed on the title for the login dialog</comment>
         <val lang="en_US">Git Account</val>
         <val lang="de_DE">Git-Account</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Compte Git</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1381,7 +1381,7 @@
         <comment>The text displayed above the text fields</comment>
         <val lang="en_US">Enter account for</val>
         <val lang="de_DE">Account angeben für</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Entrez le compte pour</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1389,7 +1389,7 @@
         <comment>The text displayed on the first row of the login dialog if there are no credentials stored</comment>
         <val lang="en_US">No credentials found</val>
         <val lang="de_DE">Keine Zugangsdaten gefunden</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Aucun identifiant trouvé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1397,7 +1397,7 @@
         <comment>The text displayed on the first row of the login dialog if the credentials are invalid</comment>
         <val lang="en_US">Invalid credentials for </val>
         <val lang="de_DE">Ungültige Zugangsdaten für </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Identifiants invalides pour </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1405,7 +1405,7 @@
         <comment>The text displayed on the right side of the toolbar buttons if the repository is up to date </comment>
         <val lang="en_US">Up to date.</val>
         <val lang="de_DE">Aktuell.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">A jour.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1413,7 +1413,7 @@
         <comment>The text displayed on the right side of the toolbar buttons if the repository has a detached head </comment>
         <val lang="en_US">Detached HEAD on commit</val>
         <val lang="de_DE">Detached HEAD an Commit</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">HEAD détaché lors du commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1421,7 +1421,7 @@
         <comment>The text displayed for the "Git" contextual menu item in the project view </comment>
         <val lang="en_US">Git</val>
         <val lang="de_DE">Git</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Git</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1429,7 +1429,7 @@
         <comment>The text displayed for the "Git Diff" contextual menu item in the project view </comment>
         <val lang="en_US">Git Diff</val>
         <val lang="de_DE">Git-Diff</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Git Diff</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1437,7 +1437,7 @@
         <comment>The text displayed for the "Commit" contextual menu item in the project view </comment>
         <val lang="en_US">Commit</val>
         <val lang="de_DE">Commit</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1445,7 +1445,7 @@
         <comment>The text displayed when you push but don't have rights for that repository</comment>
         <val lang="en_US">You have no rights to push in this repository</val>
         <val lang="de_DE">Sie haben keine Push-Berechtigung in diesem Repository</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Vous n'avez pas le droit d'effectuer un push dans ce dépôt</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1453,7 +1453,7 @@
         <comment>The text displayed on the first row of the login dialog if the user entered doesn't have rights for that repository</comment>
         <val lang="en_US">You don't have rights to push</val>
         <val lang="de_DE">Keine Push-Berechtigung</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Vous n'avez pas les droits pour le push</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1461,7 +1461,7 @@
         <comment>The tooltip for the ChangeView button when the icon shows the tree view icon</comment>
         <val lang="en_US">Switch to tree view</val>
         <val lang="de_DE">Zur Baumansicht wechseln</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Passer à la vue arborescente</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1469,7 +1469,7 @@
         <comment>The tooltip for the ChangeView button when the icon shows the flat view icon</comment>
         <val lang="en_US">Switch to flat view</val>
         <val lang="de_DE">Zur Pfadansicht wechseln</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Passer à la vue à plat</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1477,7 +1477,7 @@
         <comment>The text displayed on the first row of the login dialog if the repositroy is private</comment>
         <val lang="en_US">This is a private repository. We need your credentials for synchronization.</val>
         <val lang="de_DE">Dies ist ein privates Repository. Es werden Zugangsdaten benötigt um zu synchronisieren.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Il s'agit d'un dépôt privé. Nous avons besoin de vos identifiants pour la synchronisation.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1485,7 +1485,7 @@
         <comment>The tooltip for the clone repository button</comment>
         <val lang="en_US">Clone new repository</val>
         <val lang="de_DE">Neues Repository klonen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Clone un nouveau dépôt</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1493,7 +1493,7 @@
         <comment>The text displayed in the title for the dialog that appears when you clone a new repository</comment>
         <val lang="en_US">Clone Repository</val>
         <val lang="de_DE">Repository klonen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Clonage de dépôt</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1501,7 +1501,7 @@
         <comment>The text displayed for the "URL" label in the clone repository dialog</comment>
         <val lang="en_US">Repository URL</val>
         <val lang="de_DE">Repository-URL</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">URL du dépôt</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1509,7 +1509,7 @@
         <comment>The text displayed for the "Destination Path" label in the clone repository dialog</comment>
         <val lang="en_US">Destination path:</val>
         <val lang="de_DE">Zielverzeichnis:</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Chemin de destination:</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1517,7 +1517,7 @@
         <comment>The text displayed if the destination path is invalid</comment>
         <val lang="en_US">Destination path is invalid</val>
         <val lang="de_DE">Zielverzeichnis ist ungültig</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le chemin de destination est invalide</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1525,7 +1525,7 @@
         <comment>The text displayed if an error occured during cloning</comment>
         <val lang="en_US">We could not clone the repository</val>
         <val lang="de_DE">Dieses Repository konnte nicht geklont werden</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Nous n'avons pas pu cloner le dépôt</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1533,7 +1533,7 @@
         <comment>The text displayed if the chosen destionation path is not an empty folder</comment>
         <val lang="en_US">The destination path already exists and is not an empty folder.</val>
         <val lang="de_DE">Das Zielverzeichnis existiert bereits und ist nicht leer.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le chemin de destination existe déjà et n'est pas un dossier vide.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1541,7 +1541,7 @@
         <comment>The text displayed in the login dialog if you are not authorized to clone the repository</comment>
         <val lang="en_US">You are not authorized to clone this repository</val>
         <val lang="de_DE">Sie haben keine Berechtigung dieses Repository zu klonen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Vous n'êtes pas autorisé à cloner ce dépôt</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1549,7 +1549,7 @@
         <comment>The text in the title of the cloning progress dialog </comment>
         <val lang="en_US">Cloning repository</val>
         <val lang="de_DE">Repository wird geklont</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Clonage du dépôt</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1557,7 +1557,7 @@
         <comment>The text is displayed in the bottom left corner in the commit panel when the host is down</comment>
         <val lang="en_US">Cannot reach host</val>
         <val lang="de_DE">Host nicht erreichbar</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Impossible de joindre l'hôte</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1565,7 +1565,7 @@
         <comment>The text is displayed when your repository is on a detached head</comment>
         <val lang="en_US">You are on a detached HEAD. We suggest you checkout to a branch</val>
         <val lang="de_DE">Das Repository befindet sich im "detached HEAD" Status. Wir empfehlen einen Branch auszuchecken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Vous êtes sur une branche HEAD détachée. Nous suggérons une extraction vers une branche</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1573,7 +1573,7 @@
         <comment>The text is displayed when you fix all conflicts and you try to pull without committing the merge.</comment>
         <val lang="en_US">All conflicts were resolved, but you are still merging. Commit to conclude the merge.</val>
         <val lang="de_DE">Alle Konflikte gelöst, aber der Merge läuft noch. Bitte committen Sie um den Merge abzuschließen.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Tous les conflits ont été résolus, mais la fusion n'est pas terminée. Effectuez un commit pour finaliser la fusion.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1581,7 +1581,7 @@
         <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
         <val lang="en_US">Cannot pull. Your uncommitted local changes done to the following files would be overwritten by merge: </val>
         <val lang="de_DE">Pull nicht möglich. Die folgenden nicht-committeten lokalen Änderungen würden bei einem Pull überschrieben werden: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Impossible d'effectuer le pull. Vos modifications locales hors commit effectuées sur les fichiers suivants seraient écrasées par la fusion: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
