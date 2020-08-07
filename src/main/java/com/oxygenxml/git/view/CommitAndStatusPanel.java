@@ -127,6 +127,8 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
                 translator.getTranslation(Tags.CANCEL));
             if (userAnswer == 1) {
               executeCommit();
+            }else {
+              commitButton.transferFocusBackward();
             }
           } else {
             executeCommit();
