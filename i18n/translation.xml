@@ -20,14 +20,6 @@
         <val lang="ja_JP">Details:</val>
         <val lang="nl_NL">Details:</val>
     </key>
-    <key value = "Files_changed_remote">
-		<comment> Notifies the user about changes in remote repository before showing the modified files.</comment>
-        <val lang="en_US">The following files changed in the remote repository.</val>
-        <val lang="de_DE">The following files changed in the remote repository.</val>
-        <val lang="fr_FR">The following files changed in the remote repository.</val>
-        <val lang="ja_JP">The following files changed in the remote repository.</val>
-        <val lang="nl_NL">The following files changed in the remote repository.</val>
-    </key>
     <key value = "Remote_changes_label">
 		<comment> The message when there are changes in the remote repository.</comment>
         <val lang="en_US">Remote changes detected</val>
@@ -51,35 +43,19 @@
     </key>
     <key value = "When_to_notify_on_new_commits">
 		<comment> The message before showing the options available for notifying the user on new commits.</comment>
-        <val lang="en_US">Notify about new commits in the remote:</val>
-        <val lang="de_DE">Notify about new commits in the remote:</val>
-        <val lang="fr_FR">Notify about new commits in the remote:</val>
-        <val lang="ja_JP">Notify about new commits in the remote:</val>
-        <val lang="nl_NL">Notify about new commits in the remote:</val>
+        <val lang="en_US">Notifications for new commits in the remote</val>
+        <val lang="de_DE">Notifications for new commits in the remote</val>
+        <val lang="fr_FR">Notifications for new commits in the remote</val>
+        <val lang="ja_JP">Notifications for new commits in the remote</val>
+        <val lang="nl_NL">Notifications for new commits in the remote</val>
     </key>
-    <key value = "Always_notify_on_new_commits">
-		<comment> Option text for always notifying when there are new commits upstream.</comment>
-        <val lang="en_US">As soon as new commits are detected</val>
-        <val lang="de_DE">As soon as new commits are detected</val>
-        <val lang="fr_FR">As soon as new commits are detected</val>
-        <val lang="ja_JP">As soon as new commits are detected</val>
-        <val lang="nl_NL">As soon as new commits are detected</val>
-    </key>
-    <key value = "Notify_on_possible_conflicts">
-		<comment> Option text for notifying when there are new commits upstream that may cause conflicts.</comment>
-        <val lang="en_US">When working with files that were changed in a remote commit</val>
-        <val lang="de_DE">When working with files that were changed in a remote commit</val>
-        <val lang="fr_FR">When working with files that were changed in a remote commit</val>
-        <val lang="ja_JP">When working with files that were changed in a remote commit</val>
-        <val lang="nl_NL">When working with files that were changed in a remote commit</val>
-    </key>
-    <key value = "Never_notify_on_new_commits">
-		<comment> Option text for never notifying when there are new commits upstream.</comment>
-        <val lang="en_US">Never</val>
-        <val lang="de_DE">Never</val>
-        <val lang="fr_FR">Never</val>
-        <val lang="ja_JP">Never</val>
-        <val lang="nl_NL">Never</val>
+    <key value = "Notify_on_new_commits">
+		<comment> Option text for notifying when there are new commits upstream.</comment>
+        <val lang="en_US">Notify me about new commits in the remote repository</val>
+        <val lang="de_DE">Notify me about new commits in the remote repository</val>
+        <val lang="fr_FR">Notify me about new commits in the remote repository</val>
+        <val lang="ja_JP">Notify me about new commits in the remote repository</val>
+        <val lang="nl_NL">Notify me about new commits in the remote repository</val>
     </key>
     <key value="New_commit_upstream">
         <comment>Dialog message when there is a new commit in the remote repository that has not been pulled yet.</comment>

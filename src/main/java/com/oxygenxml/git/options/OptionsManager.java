@@ -512,16 +512,16 @@ public class OptionsManager {
   
   /**
    * Set when to verify for remote changes in the repository.
-   * @param warnOnUpstreamChange Option chosen about when to verify.
+   * @param warnOnUpstreamChange Option chosen about if to verify or not.
    */
- public void setWarnOnUpstreamChange(String warnOnUpstreamChange) {
+ public void setWarnOnUpstreamChange(boolean warnOnUpstreamChange) {
    getOptions().setWarnOnUpstreamChange(warnOnUpstreamChange);
  }
  /**
   * Get the option about when to verify about remote changes in the repository.
-  * @return Option stored about when to verify.
+  * @return Option stored about to verify or not.
   */
- public String getWarnOnUpstreamChange() {
+ public boolean getWarnOnUpstreamChange() {
    return getOptions().getWarnOnUpstreamChange();
  }
  /**

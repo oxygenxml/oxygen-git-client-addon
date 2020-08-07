@@ -35,7 +35,6 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Tracks changes in the remote repository and notifies the user.
@@ -89,8 +88,10 @@ public class RepositoryChangeWatcher {
     this.pushPullController = pushPullController;
     
     // Check the currently opened editors.
-    String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-    GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(value, true), 2 * SLEEP);
+    boolean value = OptionsManager.getInstance().getWarnOnUpstreamChange();
+    if(value) {
+      GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(true), 2 * SLEEP);
+    }
   
   }
   
@@ -115,15 +116,14 @@ public class RepositoryChangeWatcher {
     WSEditorChangeListener editorListenerAlways = new WSEditorChangeListener() {
       @Override
       public void editorOpened(URL editorLocation) {
-        String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-        if (value.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)
-            || value.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
+        boolean value = OptionsManager.getInstance().getWarnOnUpstreamChange();
+        if (value) {
           // Remote tracking is activated.
           // Cancel the previous scheduled task, if any, to implement coalescing.
           if (future != null) {
             future.cancel(false);
           }
-          future = GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(value, true), SLEEP);
+          future = GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(true), SLEEP);
         }
       }
     };
@@ -134,21 +134,17 @@ public class RepositoryChangeWatcher {
   /**
    * The main task. Analyzes the remote repository to identify changes that are not in the local repository.
    * 
-   * @param notifyMode One of {@link RemoteTrackingAction}. Controls when and if the user receives a notification.
    * @param fetch <code>true</code> to execute a fetch before making the checks.
    */
-  public void checkRemoteRepository(String notifyMode, boolean fetch) {
+  public void checkRemoteRepository(boolean fetch) {
     if (logger.isDebugEnabled()) {
-      logger.debug("Handle notification mode: " + notifyMode);
+      logger.debug("Handle notification mode");
     }
-    
-    if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)
-        || notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
-      List<RevCommit> commitsBehind = checkForRemoteCommits(fetch);
-      
-      if (!commitsBehind.isEmpty() && shouldNotifyUser(commitsBehind.get(0))) {
-        notifyUserAboutNewCommits(notifyMode, commitsBehind);
-      }
+
+    List<RevCommit> commitsBehind = checkForRemoteCommits(fetch);
+
+    if (!commitsBehind.isEmpty() && shouldNotifyUser(commitsBehind.get(0))) {
+      notifyUserAboutNewCommits(commitsBehind);
     }
   }
   
@@ -156,33 +152,15 @@ public class RepositoryChangeWatcher {
    * Notifies the user about new commits in the remote repository and asks to pull
    * the changes
    * 
-   * @param notifyMode    One of {@link RemoteTrackingAction}.
    * @param commitsBehind The new commits in remote repository.
    */
-  private void notifyUserAboutNewCommits(String notifyMode, List<RevCommit> commitsBehind) {
-    if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ALWAYS)) {
-      // Remember that we warn the user about this particular commit.
-      optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
+  private void notifyUserAboutNewCommits(List<RevCommit> commitsBehind) {
+    // Remember that we warn the user about this particular commit.
+    optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
 
-      // Notify new commit in remote.
-      showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
-          + " " + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
-    } else if (notifyMode.equals(RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE)) {
-      List<String> conflictingFiles = checkForRemoteFileChanges(getFilesOpenedInEditors(), commitsBehind);
-      if (!conflictingFiles.isEmpty()) {
-        // Warn the user about new commit in remote with possible conflicting files.
-        optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
-        if (FileStatusDialog.showQuestionMessage(
-            translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
-            conflictingFiles,
-            translator.getTranslation(Tags.FILES_CHANGED_REMOTE),
-            translator.getTranslation(Tags.WANT_TO_PULL_QUESTION),
-            translator.getTranslation(Tags.YES),
-            translator.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
-          pushPullController.pull();
-        }
-      }
-    }
+    // Notify new commit in remote.
+    showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM) + " "
+        + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
   }
   
   /**

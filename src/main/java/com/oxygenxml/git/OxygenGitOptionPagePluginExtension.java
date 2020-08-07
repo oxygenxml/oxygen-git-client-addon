@@ -13,7 +13,6 @@ import javax.swing.JRadioButton;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.watcher.RemoteTrackingAction;
 
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -23,19 +22,9 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
  */
 public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtension{
   /**
-   * CheckBox for the option to notify the user as soon as there are new commits.
+   * CheckBox for the option to notify the user about new commits in the remote.
    */
-  private JRadioButton alwaysCheckBox;
-  
-  /**
-   * CheckBox for the option to notify the user when there is a change in the opened files.
-   */
-  private JRadioButton onChangeCheckBox;
-  
-  /**
-   * CheckBock for the option to never notify the user when there are new commits.
-   */
-  private JRadioButton neverCheckBox;
+  private JRadioButton warnOnNewCommitsCheckBox;
   
   /**
    * The OptionsManager instance
@@ -53,12 +42,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   
   @Override
   public void apply(PluginWorkspace pluginWorkspace) {
-    String warnOnUpstream = RemoteTrackingAction.WARN_UPSTREAM_NEVER;
-    if (alwaysCheckBox.isSelected()) {
-      warnOnUpstream = RemoteTrackingAction.WARN_UPSTREAM_ALWAYS;
-    } else if (onChangeCheckBox.isSelected()) {
-      warnOnUpstream = RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE;
-    } 
+    boolean warnOnUpstream = warnOnNewCommitsCheckBox.isSelected();
     
     optionsManager.setWarnOnUpstreamChange(warnOnUpstream);
     optionsManager.saveOptions();
@@ -69,7 +53,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   @Override
   public void restoreDefaults() {
-    neverCheckBox.setSelected(true);
+    warnOnNewCommitsCheckBox.setSelected(false);
   }
 
   /**
@@ -98,27 +82,11 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     c.insets = new Insets(0, 0, 5, 0);
     panel.add(whatcherTypeLbl, c);
     
-    //Create a ButtonGroup so that there will be always only one option selected.
-    ButtonGroup group = new ButtonGroup();
-
-    //Add the alwayCheckBox option that notifies us as soon as there are any remote changes.
+    //Add the warnOnNewCommitsCheckBox option that notifies us as soon as there are any remote changes.
     c.gridy ++;
     c.insets = new Insets(0, 0, 0, 0);
-    alwaysCheckBox = new JRadioButton(translator.getTranslation(Tags.ALWAYS_NOTIFY_ON_NEW_COMMITS));
-    group.add(alwaysCheckBox);
-    panel.add(alwaysCheckBox, c);
-    
-    //Add the onChangeCheckBox option that looks for remote changes in the files opened in the editing areas.
-    c.gridy ++;
-    onChangeCheckBox = new JRadioButton(translator.getTranslation(Tags.NOTIFY_ON_POSSIBLE_CONFLICTS));
-    group.add(onChangeCheckBox);
-    panel.add(onChangeCheckBox, c);
-    
-    //Add the neverCheckBox option that never looks for remote changes.
-    c.gridy ++;
-    neverCheckBox = new JRadioButton(translator.getTranslation(Tags.NEVER_NOTIFY_ON_NEW_COMMITS));
-    group.add(neverCheckBox);
-    panel.add(neverCheckBox, c);
+    warnOnNewCommitsCheckBox = new JRadioButton(translator.getTranslation(Tags.NOTIFY_ON_NEW_COMMITS));
+    panel.add(warnOnNewCommitsCheckBox, c);
     
     c.gridx = 0;
     c.gridy ++;
@@ -129,15 +97,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     panel.add(new JPanel(), c);
 
     //Set the initial state of the option.
-    String warnOnUpstreamChange = optionsManager.getWarnOnUpstreamChange();
-
-    if (RemoteTrackingAction.WARN_UPSTREAM_ALWAYS.equals(warnOnUpstreamChange)) {
-      alwaysCheckBox.setSelected(true);
-    } else if (RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE.equals(warnOnUpstreamChange)) {
-      onChangeCheckBox.setSelected(true);
-    } else {
-      neverCheckBox.setSelected(true);
-    }
+    boolean warnOnUpstreamChange = optionsManager.getWarnOnUpstreamChange();
+    warnOnNewCommitsCheckBox.setSelected(warnOnUpstreamChange);
     
     return panel;
   }

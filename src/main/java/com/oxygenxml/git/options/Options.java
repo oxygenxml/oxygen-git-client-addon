@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.watcher.RemoteTrackingAction;
 
 /**
  * Entity for the JAXB to store the plugin options
@@ -36,9 +35,9 @@ public class Options {
 	private RepositoryLocations repositoryLocations = new RepositoryLocations();
 	
 	/**
-	 * Stores the notify option selected for when there are new changes in the remote
+	 * Stores the option selected to notify or not if there are new changes in the remote
 	 */
-	private String warnOnUpstreamChange = RemoteTrackingAction.WARN_UPSTREAM_NEVER;
+	private boolean warnOnUpstreamChange = false;
 
 	/**
 	 * The id from the last commit fetched.
@@ -164,11 +163,11 @@ public class Options {
 	}
 	
 	 
-  public void setWarnOnUpstreamChange(String warnOnUpstreamChange) {
+  public void setWarnOnUpstreamChange(boolean warnOnUpstreamChange) {
     this.warnOnUpstreamChange = warnOnUpstreamChange;
   }
   
-  public String getWarnOnUpstreamChange() {
+  public boolean getWarnOnUpstreamChange() {
     return warnOnUpstreamChange;
   }
   
@@ -251,7 +250,7 @@ public class Options {
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
-		result = prime * result + ((warnOnUpstreamChange == null) ? 0 : warnOnUpstreamChange.hashCode());
+		result = prime * result + ((warnOnUpstreamChange == false) ? 0 : 1);
     result = prime * result + ((warnOnChangeCommitId == null) ? 0 : warnOnChangeCommitId.hashCode());
 		
 		return result;

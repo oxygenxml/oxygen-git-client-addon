@@ -14,10 +14,6 @@ public class Tags {
     // Nothing.
   }
   /**
-   * Notifies the user about changes in remote repository before showing the modified files.
-   */
-  public static final String FILES_CHANGED_REMOTE = "Files_changed_remote";
-  /**
    * The message when there are changes in the remote repository.
    */
   public static final String REMOTE_CHANGES_LABEL = "Remote_changes_label";
@@ -30,19 +26,9 @@ public class Tags {
    */
   public static final String WHEN_TO_NOTIFY_ON_NEW_COMMITS = "When_to_notify_on_new_commits";
   /**
-   * Option text for always notifying when there are new commits upstream.
+   * Option text for notifying when there are new commits upstream.
    */
-  public static final String ALWAYS_NOTIFY_ON_NEW_COMMITS = "Always_notify_on_new_commits";
-  
-  /**
-   * Option text for notifying when there are new commits upstream that may cause conflicts.
-   */
-  public static final String NOTIFY_ON_POSSIBLE_CONFLICTS = "Notify_on_possible_conflicts";
-  
-  /**
-   * Option text for never notifying when there are new commits upstream.
-   */
-  public static final String NEVER_NOTIFY_ON_NEW_COMMITS = "Never_notify_on_new_commits";
+  public static final String NOTIFY_ON_NEW_COMMITS = "Notify_on_new_commits";
   
   /**
    * There is a new commit in the remote repository that has not been pulled.

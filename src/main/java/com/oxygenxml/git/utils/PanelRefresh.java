@@ -29,7 +29,6 @@ import com.oxygenxml.git.view.ChangesPanel;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
-import com.oxygenxml.git.watcher.RemoteTrackingAction;
 import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -117,11 +116,10 @@ public class PanelRefresh implements GitRefreshSupport {
 	        
 	        updateCounters(rstatus);
 	        
-	        String value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-	        if (RemoteTrackingAction.WARN_UPSTREAM_ALWAYS.equals(value)
-	            || RemoteTrackingAction.WARN_UPSTREAM_ON_CHANGE.equals(value)) {
+	        boolean value = OptionsManager.getInstance().getWarnOnUpstreamChange();
+	        if (value) {
 	          // Make the check more frequently.
-	          watcher.checkRemoteRepository(value, false);
+	          watcher.checkRemoteRepository(false);
 	        }
 	      }
 	    } catch (NoRepositorySelected e) {
