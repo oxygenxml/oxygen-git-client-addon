@@ -30,16 +30,16 @@
     </key>
     <key value = "Want_to_pull_question">
 		<comment> The message when the user has the choice to pull new commits.</comment>
-        <val lang="en_US">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
-        <val lang="de_DE">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
-        <val lang="fr_FR">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
-        <val lang="ja_JP">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
-        <val lang="nl_NL">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
+        <val lang="en_US">It is recommended to pull these changes to the local repository to avoid 
+        	future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
+        <val lang="de_DE">It is recommended to pull these changes to the local repository to avoid 
+            future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
+        <val lang="fr_FR">It is recommended to pull these changes to the local repository to avoid 
+            future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
+        <val lang="ja_JP">It is recommended to pull these changes to the local repository to avoid 
+            future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
+        <val lang="nl_NL">It is recommended to pull these changes to the local repository to avoid 
+            future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
     </key>
     <key value = "Notify_on_new_commits">
 		<comment> Option text for notifying when there are new commits upstream.</comment>
