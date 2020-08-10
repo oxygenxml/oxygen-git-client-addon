@@ -250,7 +250,7 @@ public class Options {
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
-		result = prime * result + ((!notifyAboutNewRemoteCommits) ? 0 : 1);
+		result = prime * result + (notifyAboutNewRemoteCommits ? 1 : 0);
     result = prime * result + ((warnOnChangeCommitId == null) ? 0 : warnOnChangeCommitId.hashCode());
 		
 		return result;
