@@ -37,7 +37,7 @@ public class Options {
 	/**
 	 * Stores the option selected to notify or not if there are new changes in the remote
 	 */
-	private boolean warnOnUpstreamChange = false;
+	private boolean notifyAboutNewRemoteCommits;
 
 	/**
 	 * The id from the last commit fetched.
@@ -163,12 +163,12 @@ public class Options {
 	}
 	
 	 
-  public void setWarnOnUpstreamChange(boolean warnOnUpstreamChange) {
-    this.warnOnUpstreamChange = warnOnUpstreamChange;
+  public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) {
+    this.notifyAboutNewRemoteCommits = notifyAboutNewRemoteCommits;
   }
   
-  public boolean getWarnOnUpstreamChange() {
-    return warnOnUpstreamChange;
+  public boolean getNotifyAboutNewRemoteCommits() {
+    return notifyAboutNewRemoteCommits;
   }
   
   public Map<String, String> getWarnOnChangeCommitId() {
@@ -250,7 +250,7 @@ public class Options {
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
-		result = prime * result + ((warnOnUpstreamChange == false) ? 0 : 1);
+		result = prime * result + ((!notifyAboutNewRemoteCommits) ? 0 : 1);
     result = prime * result + ((warnOnChangeCommitId == null) ? 0 : warnOnChangeCommitId.hashCode());
 		
 		return result;
@@ -266,7 +266,7 @@ public class Options {
 	        && Equaler.verifyEquals(passphrase, opt.getPassphrase())
 	        && Equaler.verifyEquals(projectsTestsForGit, opt.getProjectsTestsForGit())
 	        && Equaler.verifyEquals(repositoryLocations, opt.getRepositoryLocations())
-	        && Equaler.verifyEquals(warnOnUpstreamChange, opt.getWarnOnUpstreamChange())
+	        && Equaler.verifyEquals(notifyAboutNewRemoteCommits, opt.getNotifyAboutNewRemoteCommits())
 	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
 	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())

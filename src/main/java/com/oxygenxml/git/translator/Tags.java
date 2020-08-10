@@ -22,10 +22,6 @@ public class Tags {
    */
   public static final String WANT_TO_PULL_QUESTION = "Want_to_pull_question";
   /**
-   * The message before showing the options available for notifying the user on new commits.
-   */
-  public static final String WHEN_TO_NOTIFY_ON_NEW_COMMITS = "When_to_notify_on_new_commits";
-  /**
    * Option text for notifying when there are new commits upstream.
    */
   public static final String NOTIFY_ON_NEW_COMMITS = "Notify_on_new_commits";

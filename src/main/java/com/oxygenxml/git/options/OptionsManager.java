@@ -512,17 +512,17 @@ public class OptionsManager {
   
   /**
    * Set when to verify for remote changes in the repository.
-   * @param warnOnUpstreamChange Option chosen about if to verify or not.
+   * @param notifyAboutNewRemoteCommits Option chosen about if to verify or not.
    */
- public void setWarnOnUpstreamChange(boolean warnOnUpstreamChange) {
-   getOptions().setWarnOnUpstreamChange(warnOnUpstreamChange);
+ public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) {
+   getOptions().setNotifyAboutNewRemoteCommits(notifyAboutNewRemoteCommits);
  }
  /**
   * Get the option about when to verify about remote changes in the repository.
   * @return Option stored about to verify or not.
   */
- public boolean getWarnOnUpstreamChange() {
-   return getOptions().getWarnOnUpstreamChange();
+ public boolean getNotifyAboutNewRemoteCommits() {
+   return getOptions().getNotifyAboutNewRemoteCommits();
  }
  /**
   * Get the ID of the latest commit fetched from a given repository.

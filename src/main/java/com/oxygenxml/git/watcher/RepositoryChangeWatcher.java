@@ -26,7 +26,6 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
@@ -88,8 +87,8 @@ public class RepositoryChangeWatcher {
     this.pushPullController = pushPullController;
     
     // Check the currently opened editors.
-    boolean value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-    if(value) {
+    boolean isNotifyAboutNewRemoteCommits = OptionsManager.getInstance().getNotifyAboutNewRemoteCommits();
+    if(isNotifyAboutNewRemoteCommits) {
       GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(true), 2 * SLEEP);
     }
   
@@ -116,8 +115,8 @@ public class RepositoryChangeWatcher {
     WSEditorChangeListener editorListenerAlways = new WSEditorChangeListener() {
       @Override
       public void editorOpened(URL editorLocation) {
-        boolean value = OptionsManager.getInstance().getWarnOnUpstreamChange();
-        if (value) {
+        boolean isNotifyAboutNewRemoteCommits = OptionsManager.getInstance().getNotifyAboutNewRemoteCommits();
+        if (isNotifyAboutNewRemoteCommits) {
           // Remote tracking is activated.
           // Cancel the previous scheduled task, if any, to implement coalescing.
           if (future != null) {

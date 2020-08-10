@@ -41,14 +41,6 @@
         <val lang="nl_NL">It is recommended to pull these changes into the local repository to avoid 
         	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
     </key>
-    <key value = "When_to_notify_on_new_commits">
-		<comment> The message before showing the options available for notifying the user on new commits.</comment>
-        <val lang="en_US">Notifications for new commits in the remote</val>
-        <val lang="de_DE">Notifications for new commits in the remote</val>
-        <val lang="fr_FR">Notifications for new commits in the remote</val>
-        <val lang="ja_JP">Notifications for new commits in the remote</val>
-        <val lang="nl_NL">Notifications for new commits in the remote</val>
-    </key>
     <key value = "Notify_on_new_commits">
 		<comment> Option text for notifying when there are new commits upstream.</comment>
         <val lang="en_US">Notify me about new commits in the remote repository</val>
