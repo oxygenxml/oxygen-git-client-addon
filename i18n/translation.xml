@@ -4,6 +4,15 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    Branch_manager_title
+    <key value = "Branch_manager_title">
+		<comment>"The title for the Branch Manager side view."</comment>
+        <val lang="en_US">Git Branch Manager</val>
+        <val lang="de_DE">Git Branch Manager</val>
+        <val lang="fr_FR">Git Branch Manager</val>
+        <val lang="ja_JP">Git Branch Manager</val>
+        <val lang="nl_NL">Git Branch Manager</val>
+    </key>
     <key value = "Pre_receive_hook_declined_custom_message">
 		<comment>"The 'pre-receive' server-side hook declined the operation."</comment>
         <val lang="en_US">The "pre-receive" server-side hook declined the operation.</val>

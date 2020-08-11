@@ -18,6 +18,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
@@ -55,6 +56,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
         refreshSupport,
         new GitController(),
         null, 
+        null, 
         new PushPullController() {
           @Override
           protected void showPullSuccessfulWithConflicts(PullResponse response) {
@@ -63,7 +65,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
         }) {
       
       @Override
-      protected ToolbarPanel createToolbar(HistoryController historyController) {
+      protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
         // We don't need the toolbar from 99% of the test cases.
         // It actually interfered with the tests before we decided 
         // not to create it anymore

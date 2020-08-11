@@ -243,14 +243,14 @@ public class FlatViewTest extends FlatViewTestBase {
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
     // ================= No submodules ====================
     stagingPanel.setToolbarPanelFromTests(
-        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null));
+        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null));
     Future<?> pull2 = stagingPanel.getPushPullController().pull();
     pull2.get();
     
     assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
     
     // ================= Set submodule ====================
-    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null) {
+    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null) {
       @Override
       boolean gitRepoHasSubmodules() {
         return true;

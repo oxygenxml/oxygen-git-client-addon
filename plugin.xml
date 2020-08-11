@@ -29,4 +29,5 @@
     	<perspective id="database" initialState="hidden"/>
     </view>
     <view id="GitHistoryView" initialSide="SOUTH" initialRow="0" initialState="hidden"/>
+    <view id="GitBranchView" initialSide="EAST" initialRow="0" initialState="hidden"/>
 </plugin>

@@ -33,6 +33,8 @@ import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
+import com.oxygenxml.git.view.branches.BranchPanel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitCommandState;
@@ -54,7 +56,7 @@ import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributor
  * 
  * @author Beniamin Savu
  */
-public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension, HistoryController {
+public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension, HistoryController, BranchManagementViewPresenter {
 
 	/**
 	 * Logger for logging.
@@ -70,6 +72,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * ID of the Git History view.
 	 */
 	public static final String GIT_HISTORY_VIEW = "GitHistoryView";
+	
+	/**
+   * ID of the Git Branch view.
+   */
+	public static final String GIT_BRANCH_VIEW = "GitBranchView";
 
 	/**
 	 * Refresh support.
@@ -123,6 +130,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
    * History view.
    */
   private HistoryPanel historyView;
+  
+  /**
+   * Branch panel.
+   */
+  private BranchPanel branchView;
   
 	/**
 	 * @see WorkspaceAccessPluginExtension#applicationStarted(StandalonePluginWorkspace)
@@ -180,6 +192,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
               customizeGitStagingView(gitCtrl, viewInfo);
           	} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
           	  customizeHistoryView(gitCtrl, viewInfo);
+          	} else if(GIT_BRANCH_VIEW.equals(viewInfo.getViewID())) {
+          	  customizeBranchView(gitCtrl, viewInfo);
           	}
           });
 
@@ -224,7 +238,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	private void customizeGitStagingView(GitController gitCtrl, ViewInfo viewInfo) {
     boolean shouldRecreateStagingPanel = stagingPanel == null;
     if (shouldRecreateStagingPanel) {
-      stagingPanel = new StagingPanel(gitRefreshSupport, gitCtrl, OxygenGitPluginExtension.this, pushPullController);
+      //TODO branchmngmt
+      stagingPanel = new StagingPanel(gitRefreshSupport, gitCtrl, OxygenGitPluginExtension.this, OxygenGitPluginExtension.this, pushPullController);
       gitRefreshSupport.setPanel(stagingPanel);
     }
     viewInfo.setComponent(stagingPanel);
@@ -296,8 +311,23 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     viewInfo.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
     viewInfo.setTitle(Translator.getInstance().getTranslation(Tags.GIT_HISTORY));
   }
-
-
+  
+  /**
+   * Customize the branch view.
+   * 
+   * @param gitCtrl  Git controller.
+   * @param viewInfo View information.
+   */
+  private void customizeBranchView(GitController gitCtrl, ViewInfo viewInfo) {
+    // TODO Auto-generated method stub
+    if(branchView == null) {
+      branchView = new BranchPanel(gitCtrl);
+    }
+    
+    viewInfo.setComponent(branchView);
+    viewInfo.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
+    viewInfo.setTitle(Translator.getInstance().getTranslation((Tags.BRANCH_MANAGER_TITLE)));
+  }
 
 	/**
 	 * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationClosing()
@@ -314,7 +344,15 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		// Close application.
 		return true;
 	}
-
+	@Override
+	public void showBranchManagement() {
+	  pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_BRANCH_VIEW, true);
+	  branchView.showBranches();
+	}
+  @Override
+  public boolean isBranchManagementShowing() {
+    return pluginWorkspaceAccess.isViewShowing(com.oxygenxml.git.OxygenGitPluginExtension.GIT_BRANCH_VIEW);
+  }
   @Override
   public void showRepositoryHistory() {
     pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_HISTORY_VIEW, true);

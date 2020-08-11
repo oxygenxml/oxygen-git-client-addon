@@ -14,6 +14,10 @@ public class Tags {
     // Nothing.
   }
   /**
+   * The title for the Branch Manager side view.
+   */
+  public static final String BRANCH_MANAGER_TITLE = "Branch_manager_title";
+  /**
    * The message when there are changes in the remote repository.
    */
   public static final String REMOTE_CHANGES_LABEL = "Remote_changes_label";

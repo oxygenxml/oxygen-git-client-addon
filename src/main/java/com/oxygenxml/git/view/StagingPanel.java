@@ -33,6 +33,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.GitRefreshSupport;
+import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitCommandState;
@@ -136,12 +137,13 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
       GitRefreshSupport refreshSupport, 
       GitController stageController, 
       HistoryController historyController,
+      BranchManagementViewPresenter branchManagementView,
       PushPullController pushPullController) {
 		this.refreshSupport = refreshSupport;
 		this.stageController = stageController;
 		this.pushPullController = pushPullController;
 		
-		createGUI(historyController);
+		createGUI(historyController, branchManagementView);
 	}
   
   /**
@@ -151,8 +153,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
    * 
    * @param historyController History controller.
    */
-  protected ToolbarPanel createToolbar(HistoryController historyController) {
-    return new ToolbarPanel(pushPullController, refreshSupport, historyController);
+  protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
+    return new ToolbarPanel(pushPullController, refreshSupport, historyController, branchManagementViewPresenter);
   }
 
 	/**
@@ -160,7 +162,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * 
 	 * @param historyController History related interaction.
 	 */
-	private void createGUI(HistoryController historyController) {
+	private void createGUI(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
 		this.setLayout(new GridBagLayout());
 
 		// Creates the panels objects that will be in the staging panel
@@ -168,7 +170,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		stagedChangesPanel = new ChangesPanel(stageController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel();
 		commitPanel = new CommitAndStatusPanel(pushPullController);
-		toolbarPanel = createToolbar(historyController);
+		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
 		rebasePanel = new RebasePanel();
 		
 		// adds the unstaged and the staged panels to a split pane

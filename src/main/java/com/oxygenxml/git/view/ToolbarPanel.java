@@ -44,7 +44,7 @@ import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitRefreshSupport;
-import com.oxygenxml.git.view.dialog.BranchSelectDialog;
+import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
@@ -201,12 +201,13 @@ public class ToolbarPanel extends JPanel {
 	public ToolbarPanel(
 	    PushPullController pushPullController, 
 	    GitRefreshSupport refreshSupport,
-	    HistoryController historyController) {
+	    HistoryController historyController,
+	    BranchManagementViewPresenter branchManagementViewPresenter) {
 	  this.pushPullController = pushPullController;
 	  this.remoteAndBranchInfoLabel = new JLabel();
 	  this.refreshSupport = refreshSupport;
 
-	  createGUI(historyController);
+	  createGUI(historyController, branchManagementViewPresenter);
 
 	  GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
@@ -314,7 +315,7 @@ public class ToolbarPanel extends JPanel {
 	 * making them visible
 	 * @param historyController History controller.
 	 */
-	public void createGUI(HistoryController historyController) {
+	public void createGUI(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
 		gitToolbar = new JToolBar();
 		gitToolbar.setOpaque(false);
 		gitToolbar.setFloatable(false);
@@ -338,7 +339,7 @@ public class ToolbarPanel extends JPanel {
 		
 		addCloneRepositoryButton();
 		addPushAndPullButtons();
-		addBranchSelectButton();
+		addBranchSelectButton(branchManagementViewPresenter);
 		addSubmoduleSelectButton();
 		addHistoryButton(historyController);
 		addSettingsButton();
@@ -469,13 +470,13 @@ public class ToolbarPanel extends JPanel {
 	 * dialog appears that shows all the branches for the current repository and
 	 * allows the user to select one of them
 	 */
-	private void addBranchSelectButton() {
+	private void addBranchSelectButton(BranchManagementViewPresenter branchManagementViewPresenter) {
 		Action branchSelectAction = new AbstractAction() {
 			@Override
       public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						new BranchSelectDialog();
+					  branchManagementViewPresenter.showBranchManagement();
 					}
 				} catch (NoRepositorySelected e1) {
           if(logger.isDebugEnabled()) {
