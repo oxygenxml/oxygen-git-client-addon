@@ -13,6 +13,16 @@ public class Tags {
   private Tags() {
     // Nothing.
   }
+  
+  /**
+   * Action in the dialog that notifies the user that there are changes in the remote.
+   */
+  public static final String CLOSE = "Close";
+  /**
+   * Action in the dialog that notifies the user that there are changes in the remote.
+   */
+  public static final String PULL_CHANGES = "Pull_changes";
+  
   /**
    * The message when there are changes in the remote repository.
    */

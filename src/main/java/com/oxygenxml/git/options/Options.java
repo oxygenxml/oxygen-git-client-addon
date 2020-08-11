@@ -162,11 +162,20 @@ public class Options {
 		this.repositoryLocations = repositoryLocations;
 	}
 	
-	 
+  /**
+   * Set when to verify for remote changes in the repository.
+   * 
+   * @param notifyAboutNewRemoteCommits Option chosen about if to verify or not.
+   */
   public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) {
     this.notifyAboutNewRemoteCommits = notifyAboutNewRemoteCommits;
   }
   
+  /**
+   * Get the option about when to verify about remote changes in the repository.
+   * 
+   * @return Option stored about to verify or not.
+   */
   public boolean getNotifyAboutNewRemoteCommits() {
     return notifyAboutNewRemoteCommits;
   }
@@ -175,10 +184,28 @@ public class Options {
     return warnOnChangeCommitId;
   }
   
+  /**
+   * Get the ID of the latest commit fetched from a given repository.
+   * 
+   * @param repositoryId The repository from which to get the commit ID, obtained from
+   *                     {@link org.eclipse.jgit.lib.Repository.getIdentifier()}.
+   *                     
+   * @return The commit ID that comes from  {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}.
+   */
+  
   public String getWarnOnChangeCommitId(String repositoryId) {
     return warnOnChangeCommitId.getOrDefault(repositoryId,"");
   }
   
+  /**
+   * Set the commit ID to the newest commit fetched from a given repository.
+   * 
+   * @param repositoryId The repository in which to put the commit ID, obtained from
+   *                     {@link org.eclipse.jgit.lib.Repository.getIdentifier()}.
+   *                     
+   * @param commitId     The newest commit ID, obtained from 
+   *                     {@link org.eclipse.jgit.revwalk.RevCommit.getId().getName()}.
+   */
   public void setWarnOnChangeCommitId(String repositoryId, String commitId) {
     warnOnChangeCommitId.put(repositoryId, commitId);
   }

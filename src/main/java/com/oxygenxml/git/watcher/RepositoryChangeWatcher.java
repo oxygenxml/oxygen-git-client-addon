@@ -158,7 +158,7 @@ public class RepositoryChangeWatcher {
    * @param message The message to be displayed to the user
    */
   private void showNewCommitsInRemoteMessage(String message) {
-    String[] options = { translator.getTranslation(Tags.YES), translator.getTranslation(Tags.NO) };
+    String[] options = { translator.getTranslation(Tags.PULL_CHANGES), translator.getTranslation(Tags.CLOSE) };
     int okPressed = 1;
     int[] optionsIds = { okPressed, 0 };
 

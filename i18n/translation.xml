@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value = "Pull_changes">
+        <comment>Action in the dialog that notifies the user that there are changes in the remote.</comment>
+        <val lang="en_US">Pull changes</val>
+        <val lang="de_DE">Pull changes</val>
+        <val lang="fr_FR">Pull changes</val>
+        <val lang="ja_JP">Pull changes</val>
+        <val lang="nl_NL">Pull changes</val>
+    </key>
     <key value = "Pre_receive_hook_declined_custom_message">
 		<comment>"The 'pre-receive' server-side hook declined the operation."</comment>
         <val lang="en_US">The "pre-receive" server-side hook declined the operation.</val>
@@ -31,15 +39,15 @@
     <key value = "Want_to_pull_question">
 		<comment> The message when the user has the choice to pull new commits.</comment>
         <val lang="en_US">It is recommended to pull these changes to the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
+        	future conflicts.</val>
         <val lang="de_DE">It is recommended to pull these changes to the local repository to avoid 
-            future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
+            future conflicts.</val>
         <val lang="fr_FR">Il est recommandé d'effectuer un pull de ces modifications sur le dépôt local afin d'éviter 
-            de futurs conflits.\n\nVoulez-vous effectuer un pull des modifications distantes sur le dépôt local?</val>
+            de futurs conflits.</val>
         <val lang="ja_JP">It is recommended to pull these changes to the local repository to avoid 
-            future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
+            future conflicts.</val>
         <val lang="nl_NL">It is recommended to pull these changes to the local repository to avoid 
-            future conflicts.\n\nDo you want to pull the remote changes to the local repository?</val>
+            future conflicts.</val>
     </key>
     <key value = "Notify_on_new_commits">
 		<comment> Option text for notifying when there are new commits upstream.</comment>
