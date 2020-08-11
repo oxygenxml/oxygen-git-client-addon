@@ -804,7 +804,7 @@
         <comment>Message shown when trying to clone from an invalid remote.</comment>
         <val lang="en_US">Invalid remote</val>
         <val lang="de_DE">Remote ungültig</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Remote invalide</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -812,7 +812,7 @@
         <comment>The text displayed if the URL doesn't point to a remote repository</comment>
         <val lang="en_US">No remote repository found for the provided URL.</val>
         <val lang="de_DE">Unter dieser URL wurde kein Remote-Repository gefunden.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Aucun dépôt distant n'a été trouvé pour l'URL fournie.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -820,7 +820,7 @@
         <comment>"Checkout branch" label in the dialog shown when cloning a repository.</comment>
         <val lang="en_US">Checkout branch</val>
         <val lang="de_DE">Branch auschecken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Extraction de branche</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -828,7 +828,7 @@
         <comment>"Yes"</comment>
         <val lang="en_US">Yes</val>
         <val lang="de_DE">Ja</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Oui</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -836,7 +836,7 @@
         <comment>"No"</comment>
         <val lang="en_US">No</val>
         <val lang="de_DE">Nein</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Non</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -844,7 +844,7 @@
         <comment>Message shown when a previous SSH passphrase was invalid.</comment>
         <val lang="en_US">The previous passphrase is invalid.</val>
         <val lang="de_DE">Der vorherige SSH-Passphrase ist ungültig.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">La passphrase précédente est invalide.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -852,7 +852,7 @@
         <comment>Label.</comment>
         <val lang="en_US">Pull status</val>
         <val lang="de_DE">Pull-Status</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Statut du pull</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -860,7 +860,7 @@
         <comment>Message asking for the SSH passphrase.</comment>
         <val lang="en_US">Please enter your SSH passphrase</val>
         <val lang="de_DE">Bitte gib deinen SSH-Passphrase ein</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Veuillez entrer votre passphrase SSH</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -868,7 +868,7 @@
         <comment>Message displayed when a command is aborted.</comment>
         <val lang="en_US">Command aborted.</val>
         <val lang="de_DE">Aktion abgebrochen.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Commande annulée.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -876,7 +876,7 @@
         <comment>Label displayed on the left of the working copy combo box</comment>
         <val lang="en_US">Working copy: </val>
         <val lang="de_DE">Arbeitskopie: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Copie de travail: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -884,7 +884,7 @@
         <comment>The tooltip for the push button</comment>
         <val lang="en_US">Push</val>
         <val lang="de_DE">Push</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Push</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -892,7 +892,7 @@
         <comment>The tooltip for the pull button</comment>
         <val lang="en_US">Pull</val>
         <val lang="de_DE">Pull</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Pull</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -900,7 +900,7 @@
         <comment>The tooltip for the browse button</comment>
         <val lang="en_US">Browse File System</val>
         <val lang="de_DE">Im Dateisystem suchen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Parcourir le système de fichiers</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -908,7 +908,7 @@
         <comment>The text displayed on the StageAll button</comment>
         <val lang="en_US">Stage All</val>
         <val lang="de_DE">Alle vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Tout marquer</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -916,7 +916,7 @@
         <comment>The text displayed on the UnstageAll button</comment>
         <val lang="en_US">Unstage All</val>
         <val lang="de_DE">Alle nicht mehr vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ne plus rien marquer</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -924,7 +924,7 @@
         <comment>The text displayed on the Stage Selected button</comment>
         <val lang="en_US">Stage Selected</val>
         <val lang="de_DE">Auswahl vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Marquer la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -932,7 +932,7 @@
         <comment>The text displayed on the Unstage Selected button</comment>
         <val lang="en_US">Unstage Selected</val>
         <val lang="de_DE">Auswahl nicht mehr vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ne plus marquer la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -940,7 +940,7 @@
         <comment>The tooltip for the ChangeView button</comment>
         <val lang="en_US">Change View</val>
         <val lang="de_DE">Ansicht ändern</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Changer de vue</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -948,7 +948,7 @@
         <comment>The tooltip for the "+" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Created</val>
         <val lang="de_DE">Datei erstellt</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Fichier créé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -956,7 +956,7 @@
         <comment>The tooltip for the "*" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Modified</val>
         <val lang="de_DE">Datei geändert</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Fichier modifié</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -964,7 +964,7 @@
         <comment>The tooltip for the "-" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Deleted</val>
         <val lang="de_DE">Datei gelöscht</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Fichier supprimé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -972,7 +972,7 @@
         <comment>The tooltip for the "!" icon that appears on the left side of the file</comment>
         <val lang="en_US">Conflict</val>
         <val lang="de_DE">Konflikt</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Conflit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -980,7 +980,7 @@
         <comment>The massage displayed above the previously committed messages combo box</comment>
         <val lang="en_US">Commit message: </val>
         <val lang="de_DE">Commit-Nachricht: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Message de commit: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -988,7 +988,7 @@
         <comment>The massage displayed on the combo box containing the previouslt commited messages</comment>
         <val lang="en_US">Choose a previously used comment</val>
         <val lang="de_DE">Wähle eine vorherige Commit-Nachricht</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Choisir un commentaire déjà utilisé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -996,7 +996,7 @@
         <comment>The massage displayed on the commit button</comment>
         <val lang="en_US">Commit</val>
         <val lang="de_DE">Commit</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1004,7 +1004,7 @@
         <comment>The massage displayed when a commit is successful</comment>
         <val lang="en_US">Commit successful</val>
         <val lang="de_DE">Commit erfolgreich</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Commit effectué avec succès</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1012,7 +1012,7 @@
         <comment>The massage displayed when you commit with conflicts conflicts</comment>
         <val lang="en_US">Cannot commit while having conflicts.</val>
         <val lang="de_DE">Commit nicht möglich während ungelöste Konflikte bestehen.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Commit impossible lors de conflits.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1020,7 +1020,7 @@
         <comment>The massage displayed when you push with conflicts</comment>
         <val lang="en_US">Cannot push. Please resolve conflicts</val>
         <val lang="de_DE">Push nicht möglich. Bitte Konflikte lösen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push impossible. Veuillez résoudre les conflits</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1028,7 +1028,7 @@
         <comment>The massage displayed when you push but your repository is not up to date</comment>
         <val lang="en_US">Cannot push. Your current branch is behind. Pull first.</val>
         <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück. Bitte erst pullen.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push impossible. Votre branche actuelle n'est pas à jour. Effectuez d'abord un pull.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1036,7 +1036,7 @@
         <comment>The massage displayed when you push successful</comment>
         <val lang="en_US">Push successful</val>
         <val lang="de_DE">Push erfolgreich</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push réussi</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1044,7 +1044,7 @@
         <comment>The massage displayed when your push fails</comment>
         <val lang="en_US">Cannot push.</val>
         <val lang="de_DE">Push nicht möglich.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push impossible.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1052,7 +1052,7 @@
         <comment>The massage displayed when you push with no changes</comment>
         <val lang="en_US">There was nothing to push</val>
         <val lang="de_DE">Es wurde nichts gepusht</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Il n'y a rien à envoyer</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1060,7 +1060,7 @@
         <comment>The massage displayed when your push is in progress</comment>
         <val lang="en_US">Pushing...</val>
         <val lang="de_DE">Push läuft...</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push en cours...</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1068,7 +1068,7 @@
         <comment>The massage displayed when you pull with uncommitted files</comment>
         <val lang="en_US">Cannot pull with uncommitted changes</val>
         <val lang="de_DE">Pull kann nicht ausgeführt werden solange es nicht-committete Änderungen gibt</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull impossible avec des changements hors commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1077,7 +1077,7 @@
         <comment>The massage displayed when your repository is up to date</comment>
         <val lang="en_US">Repository is already up to date</val>
         <val lang="de_DE">Repository ist bereits auf dem aktuellen Stand</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le dépôt est déjà à jour</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1085,7 +1085,7 @@
         <comment>The massage displayed when your pull is successful</comment>
         <val lang="en_US">Pull successful. Repository up to date</val>
         <val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull réussi. Dépôt à jour</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1093,7 +1093,7 @@
         <comment>The massage displayed when your pull is in progress</comment>
         <val lang="en_US">Pulling...</val>
         <val lang="de_DE">Pull läuft...</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull en cours...</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1101,7 +1101,7 @@
         <comment>The massage displayed when you pull while having conflicts</comment>
         <val lang="en_US">Cannot pull. Please resolve conflicts</val>
         <val lang="de_DE">Pull nicht möglich. Bitte Konflikte lösen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull impossible. Veuillez résoudre les conflits</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1109,7 +1109,7 @@
         <comment>The massage displayed when your pull is successful but has conflicts</comment>
         <val lang="en_US">Pull successful with conflicts: </val>
         <val lang="de_DE">Beim Pullen sind Konflikte aufgetreten: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull réussi mais avec des conflits: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1117,7 +1117,7 @@
         <comment>The text displayed for the "Open in compare editor" contextual menu item </comment>
         <val lang="en_US">Open in compare editor</val>
         <val lang="de_DE">Änderungen anzeigen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ouvrir dans l'éditeur de comparaison</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1125,7 +1125,7 @@
         <comment>The text displayed for the "Open" contextual menu item</comment>
         <val lang="en_US">Open</val>
         <val lang="de_DE">Öffnen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ouvrir</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1133,7 +1133,7 @@
         <comment>The text displayed for the "Unstage" contextual menu item</comment>
         <val lang="en_US">Unstage</val>
         <val lang="de_DE">Nicht mehr vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ne plus marquer</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1141,7 +1141,7 @@
         <comment>The text displayed for the "Stage" contextual menu item</comment>
         <val lang="en_US">Stage</val>
         <val lang="de_DE">Für Commit vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Marquer pour commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1149,7 +1149,7 @@
         <comment>The text displayed for "Resolve_Conflict".</comment>
         <val lang="en_US">Resolve Conflict</val>
         <val lang="de_DE">Konflikt lösen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Résoudre les conflits</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1157,7 +1157,7 @@
         <comment>The text displayed for the "Discard" contextual menu item</comment>
         <val lang="en_US">Discard</val>
         <val lang="de_DE">Änderung verwerfen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Abandonner</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1165,7 +1165,7 @@
         <comment>The text displayed when you click on the "Discard" contextual menu item</comment>
         <val lang="en_US">Are you sure you want to discard your changes?</val>
         <val lang="de_DE">Sind Sie sicher, dass Sie die Änderungen verwerfen wollen?</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir abandonner vos changements?</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1173,7 +1173,7 @@
         <comment>The text displayed for " Resolve Using "Mine" ".</comment>
         <val lang="en_US">Resolve Using "Mine"</val>
         <val lang="de_DE">Konflikt lösen mit "Meins"</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Résoudre en utilisant ma version.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1181,7 +1181,7 @@
         <comment>The text displayed for " Resolve Using "Theirs" ".</comment>
         <val lang="en_US">Resolve Using "Theirs"</val>
         <val lang="de_DE">Konflikt lösen mit "Ihres"</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Résoudre en utilisant leur version.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1189,7 +1189,7 @@
         <comment>The text displayed for the "Restart Merge " contextual menu item</comment>
         <val lang="en_US">Restart Merge</val>
         <val lang="de_DE">Merge erneut starten</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Relancer la fusion</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1197,7 +1197,7 @@
         <comment>The text displayed for the "Mark Resolved" contextual menu item</comment>
         <val lang="en_US">Mark Resolved</val>
         <val lang="de_DE">Als gelöst markieren</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Marquer comme résolu</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1205,7 +1205,7 @@
         <comment>The text displayed when the user selects a repository from the working copy selector and it doesn't exists anymore</comment>
         <val lang="en_US">The selected repository was not found</val>
         <val lang="de_DE">Das ausgewählte Repository wurde nicht gefunden</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le dépôt sélectionné n'a pas été trouvé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1213,7 +1213,7 @@
         <comment>The text displayed when the user selects a non git folder(It doesn't contain the ".git" folder)</comment>
         <val lang="en_US">Please select a git directory</val>
         <val lang="de_DE">Bitte wählen Sie ein Git-Repository aus</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Veuillez sélectionner un répertoire git</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1221,7 +1221,7 @@
         <comment>The text displayed when the application starts and the last selected repository doesn't exists</comment>
         <val lang="en_US">Last selected repository not found. It may have been deleted</val>
         <val lang="de_DE">Das zuletzt verwendete Repository wurde nicht gefunden. Eventuell wurde es gelöscht.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le dernier dépôt sélectionné n'a pas été trouvé. Il peut avoir été supprimé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1229,7 +1229,7 @@
         <comment>The text displayed after exiting the diff for a conflict file and you don't modify anithing</comment>
         <val lang="en_US">You haven't modified the local version. Do you want to resolve the conflict by keeping your version?</val>
         <val lang="de_DE">Es wurden keine Änderungen angewandt. Soll der Konflikt gelöst werden indem Ihre Version beibehalten wird?</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Vous n'avez pas modifié la version locale. Voulez-vous résoudre le conflit en conservant votre version?</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1237,7 +1237,7 @@
         <comment>The text displayed in the title for the dialog that appears after exiting the diff for a conflict file and you don't modify anithing</comment>
         <val lang="en_US">Conflict Resolution</val>
         <val lang="de_DE">Konflikt-Lösung</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Résolution de conflits</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1245,7 +1245,7 @@
         <comment>The text displayed in the title for the dialog that appears when you select your current branch</comment>
         <val lang="en_US">Select Branch</val>
         <val lang="de_DE">Branch-Auswahl</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Sélectionner une branche</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1253,7 +1253,7 @@
         <comment>The text displayed in the dialog that appears near the combo box</comment>
         <val lang="en_US">Branch: </val>
         <val lang="de_DE">Branch: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Branche: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1261,7 +1261,7 @@
         <comment>The tooltip for the change branch button</comment>
         <val lang="en_US">Change Branch</val>
         <val lang="de_DE">Branch wechseln</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Changer de branche</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1269,7 +1269,7 @@
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">Please commit your changes before you switch branches.</val>
         <val lang="de_DE">Bitte committen Sie die Änderungen bevor Sie den Branch wechseln.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Veuillez faire un commit de vos modifications avant de changer de branche.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1277,7 +1277,7 @@
         <comment>The text displayed in the title for the dialog that appears when you push while having no remote set</comment>
         <val lang="en_US">Add Remote</val>
         <val lang="de_DE">Remote hinzufügen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ajouter un remote</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1285,7 +1285,7 @@
         <comment>The text displayed in the dialog that appears near the text field for remote name</comment>
         <val lang="en_US">Remote Name: </val>
         <val lang="de_DE">Remote-Name: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Nom du remote: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1293,7 +1293,7 @@
         <comment>The text displayed in the dialog that appears near the text field for remote repo</comment>
         <val lang="en_US">Remote repository URL: </val>
         <val lang="de_DE">Remote-URL: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">URL du dépôt remote: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1301,7 +1301,7 @@
         <comment>The text displayed in the dialog that appears at the top of the dialog</comment>
         <val lang="en_US">This repository has no remotes. Please provide one.</val>
         <val lang="de_DE">Dieses Repository hat keine Remote-Verbindung. Bitte ergänzen Sie eine.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ce dépôt n'a pas de remote. Veuillez en fournir un.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
