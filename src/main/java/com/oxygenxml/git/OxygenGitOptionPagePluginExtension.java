@@ -40,9 +40,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   
   @Override
   public void apply(PluginWorkspace pluginWorkspace) {
-    boolean warnOnUpstream = notifyAboutRemoteCommitsCheckBox.isSelected();
-    
-    optionsManager.setNotifyAboutNewRemoteCommits(warnOnUpstream);
+    optionsManager.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
     optionsManager.saveOptions();
   }
 

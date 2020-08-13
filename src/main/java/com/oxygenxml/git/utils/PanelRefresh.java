@@ -116,8 +116,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	        
 	        updateCounters(rstatus);
 	        
-	        boolean isNotifyAboutNewRemoteCommits = OptionsManager.getInstance().getNotifyAboutNewRemoteCommits();
-	        if (isNotifyAboutNewRemoteCommits) {
+	        if (OptionsManager.getInstance().getNotifyAboutNewRemoteCommits()) {
 	          // Make the check more frequently.
 	          watcher.checkRemoteRepository(false);
 	        }

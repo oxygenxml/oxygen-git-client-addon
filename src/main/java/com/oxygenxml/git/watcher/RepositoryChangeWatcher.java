@@ -1,17 +1,12 @@
 package com.oxygenxml.git.watcher;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -22,12 +17,10 @@ import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
-import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -54,10 +47,6 @@ public class RepositoryChangeWatcher {
    */
   protected ScheduledFuture<?> future;
 
-  /**
-   * The Plugin Workspace.
-   */
-  private PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
   /**
    * High level push and pull support.
    */
@@ -169,7 +158,7 @@ public class RepositoryChangeWatcher {
    * @param message The message to be displayed to the user
    */
   private void showNewCommitsInRemoteMessage(String message) {
-    String[] options = { translator.getTranslation(Tags.YES), translator.getTranslation(Tags.NO) };
+    String[] options = { translator.getTranslation(Tags.PULL_CHANGES), translator.getTranslation(Tags.CLOSE) };
     int okPressed = 1;
     int[] optionsIds = { okPressed, 0 };
 
@@ -179,40 +168,6 @@ public class RepositoryChangeWatcher {
     }
   }
   
-  /**
-   * Checks if the given local files were changed in the commits detected in the remote repository.
-   * 
-   * @param localFiles Local files paths, relative to the working copy directory.
-   * @param commitsBehind A list of new commits from remote that haven't been pulled yet into the local.
-   * 
-   * @return All local files modified in the remote.
-   */
-  private List<String> checkForRemoteFileChanges(
-      Set<String> localFiles,
-      List<RevCommit> commitsBehind) {
-    HashSet<String> changedRemoteFiles = new HashSet<>();
-
-    List<CommitCharacteristics> commitsCharacteristics = RevCommitUtil.createRevCommitCharacteristics(commitsBehind);
-
-    for (CommitCharacteristics commitsCharacteristicsIterator : commitsCharacteristics) {
-      String commitId = commitsCharacteristicsIterator.getCommitId();
-      try {
-        List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitId);
-        
-        for (FileStatus changedFilesIterator : changedFiles) {
-          String fileLocation = changedFilesIterator.getFileLocation();
-          if (localFiles.contains(fileLocation)) {
-            changedRemoteFiles.add(fileLocation);
-          }
-        }
-      } catch (IOException | GitAPIException e) {
-        logger.error(e, e);
-      }
-    }
-    List<String> changedOpenedFiles = new ArrayList<>();
-    changedOpenedFiles.addAll(changedRemoteFiles);
-    return changedOpenedFiles;
-  }
 
   /**
    * Checks if the user should receive a notification regarding the remote
@@ -228,58 +183,6 @@ public class RepositoryChangeWatcher {
     String commitId = topRevCommit.getId().getName();
     
     return !commitId.contentEquals(optionsManager.getWarnOnChangeCommitId(repository.getIdentifier()));
-  }
-  
-  /**
-   * Retrieves all the files opened in dita maps and main editing areas.
-   * 
-   * @return Paths relative to the working copy directory.
-   */
-  private HashSet<String> getFilesOpenedInEditors() {
-    HashSet<String> changedLocalFiles = new HashSet<>();
-    
-    try {
-      URL wcDir = pluginWorkspace.getUtilAccess().convertFileToURL(GitAccess.getInstance().getWorkingCopy());
-      
-      collectFilesFromRepository(
-          wcDir, 
-          pluginWorkspace.getAllEditorLocations(PluginWorkspace.MAIN_EDITING_AREA), 
-          changedLocalFiles);
-      collectFilesFromRepository(
-          wcDir, 
-          pluginWorkspace.getAllEditorLocations(PluginWorkspace.DITA_MAPS_EDITING_AREA),
-          changedLocalFiles);
-    } catch (MalformedURLException | NoRepositorySelected e) {
-      logger.debug(e, e);
-    }
-    
-    if (logger.isDebugEnabled()) {
-      logger.debug("Repository files open in the editor: " + changedLocalFiles);
-    }
-
-    return changedLocalFiles;
-  }
-  
-  /**
-   * Collects the path relative to the repository directory. Only the resources that are actually from the repository 
-   * will be collected.
-   * 
-   * @param wcDir Working copy directory.
-   * @param resources URLs to test.
-   * @param changedLocalFiles   Resources from the repository are collected in here in their relative form.
-   */
-  private static void collectFilesFromRepository(
-      URL wcDir,
-      URL[] resources,
-      Set<String> changedLocalFiles) {
-    String wcDirPath = wcDir.toExternalForm();
-    for (URL editorLocationIterator : resources) {
-      String externalForm = editorLocationIterator.toExternalForm();
-      if (externalForm.startsWith(wcDirPath)) {
-        // This resource is from the repository.
-        changedLocalFiles.add(externalForm.substring(wcDirPath.length()));
-      }
-    }
   }
   
   /**
