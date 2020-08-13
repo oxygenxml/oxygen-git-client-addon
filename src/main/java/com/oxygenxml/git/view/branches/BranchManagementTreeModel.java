@@ -26,7 +26,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
   /**
    * The branches in the model for the current repository.
    */
-  private List<BranchType> repositoryBranches = Collections.synchronizedList(new ArrayList<>());
+  private List<BranchType> branches = Collections.synchronizedList(new ArrayList<>());
 
   /**
    * Public Constructor
@@ -51,7 +51,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
       branchList = Collections.emptyList();
     }
 
-    deleteNodes(this.repositoryBranches);
+    deleteNodes(branches);
     insertNodes(branchList);
 
     fireTreeStructureChanged(this, null, null, null);
@@ -67,7 +67,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
     for (BranchType branchTypeIterator : branchesToBeUpdated) {
       TreeFormatter.buildTreeFromString(this, branchTypeIterator.getName());
     }
-    repositoryBranches.addAll(branchesToBeUpdated);
+    branches.addAll(branchesToBeUpdated);
     sortTree();
   }
 
@@ -90,7 +90,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
         node = parentNode;
       }
     }
-    repositoryBranches.removeAll(branchesToBeUpdated);
+    branches.removeAll(branchesToBeUpdated);
     sortTree();
   }
 

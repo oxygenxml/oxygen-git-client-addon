@@ -1,7 +1,5 @@
 package com.oxygenxml.git.view.branches;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,7 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
-import javax.swing.border.LineBorder;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
@@ -31,17 +28,18 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.TreeFormatter;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.historycomponents.HistoryPanel;
 
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 @SuppressWarnings("serial")
-public class BranchPanel extends JPanel{
+// TODO: We should extract as much duplicated code as possible. Some code is also found in ChangesPanel. 
+// Perhaps extract some utility methods.
+public class BranchManagementPanel extends JPanel {
   
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(HistoryPanel.class);
+  private static final Logger LOGGER = Logger.getLogger(BranchManagementPanel.class);
   
   /**
    * Git API access.
@@ -65,23 +63,22 @@ public class BranchPanel extends JPanel{
   
   /**
    * Public constructor
-   * 
    */
-  public BranchPanel() {
-    createBranchTree();
-    
-    ToolTipManager.sharedInstance().registerComponent(branchesTree);
+  public BranchManagementPanel() {
     createGUI();
   }
+  
   /**
    * Creates the tree for the branches in the current repository.
    */
-  private void createBranchTree() {
+  private void createBranchesTree() {
     branchesToBeAdded = getBranches();
     
     branchesTree = new Tree(new BranchManagementTreeModel(null, branchesToBeAdded));
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
+    
+    ToolTipManager.sharedInstance().registerComponent(branchesTree);
   }
 
   /**
@@ -89,40 +86,35 @@ public class BranchPanel extends JPanel{
    */
   private void createGUI() {
     setLayout(new GridBagLayout());
+    
+    createSearchBar();
     GridBagConstraints gbc = new GridBagConstraints();
-    
-    createSearchBar(gbc);
-    add(searchBar, gbc);
-    add(createScrollPane4Tree(gbc), gbc);
-    addTreeExpandListener();
-    
-    setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
-    setVisible(false);
-  }
-  
-  /**
-   * Creates the scroll pane for the tree.
-   * @param gbc GridBagConstraints.
-   * @return The scroll pane.
-   */
-  private Component createScrollPane4Tree(GridBagConstraints gbc) {
-    JScrollPane treeView = new JScrollPane(branchesTree); 
-    gbc.insets = new Insets(3, 5, 3, 5);
     gbc.gridx = 0;
-    gbc.gridy = 1;
+    gbc.gridy = 0;
+    gbc.anchor = GridBagConstraints.NORTH;
+    gbc.weightx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.insets = new Insets(0, 5, 0, 5);
+    add(searchBar, gbc);
+    
+    createBranchesTree();
+    JScrollPane branchesTreeScrollPane = new JScrollPane(branchesTree); 
+    gbc.insets = new Insets(3, 5, 3, 5);
+    gbc.gridy++;
     gbc.weightx = 1;
     gbc.weighty = 1;
     gbc.fill = GridBagConstraints.BOTH;
     gbc.anchor = GridBagConstraints.NORTHWEST;
-    treeView.setVisible(true);
-    return treeView;
-  }
-
-  /**
-   * @return The tree that renders resources.
-   */
-  JTree getTreeView() {
-    return branchesTree;
+    add(branchesTreeScrollPane, gbc);
+    
+    addTreeExpandListener();
+    
+    setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
+    
+    // TODO: this is probably only temporary. Perhaps we should also make the view work fine when Oxygen starts.
+    // We should probably populate it when the Git Staging panel refreshes and isAfterRefresh = true. See PanelRefresh.
+    setVisible(false); 
+    
   }
   
   /**
@@ -135,7 +127,7 @@ public class BranchPanel extends JPanel{
       if(repository != null) {
         List<Ref> localBranches = gitAccess.getLocalBranchList();
         for(Ref localBranchIterator : localBranches) {
-          branchList.add(new BranchType(localBranchIterator.getName(),BranchType.BranchLocation.LOCAL));
+          branchList.add(new BranchType(localBranchIterator.getName(), BranchType.BranchLocation.LOCAL));
         }
         List<Ref> remoteBranches = gitAccess.getRemoteBrachListForCurrentRepo();
         for(Ref remoteBranchIterator : remoteBranches) {
@@ -227,22 +219,11 @@ public class BranchPanel extends JPanel{
 
   /**
    * Creates the search bar for the branches in the current repository. 
-   * @param gbc GridBagConstraints.
    */
-  private void createSearchBar(GridBagConstraints gbc) {
-    gbc.insets = new Insets(0, 5, 0, 5);
-    gbc.anchor = GridBagConstraints.NORTH;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.weightx = 1;
-    gbc.weighty = 0;
+  private void createSearchBar() {
     searchBar = UIUtil.createTextField();
     searchBar.setText("Search");
-    searchBar.setEditable(true);
-    searchBar.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
-    searchBar.setToolTipText("Type here the branch you want to find");
-    searchBar.setVisible(true);    
+    searchBar.setToolTipText("Type here the name of the branch you want to find");
   }
   
   /**
@@ -254,11 +235,4 @@ public class BranchPanel extends JPanel{
     setVisible(true);
   }
   
-  /**
-   * Hides the panel.
-   */
-  public void hideBranches() {
-    setVisible(false);
-  }
-
 }

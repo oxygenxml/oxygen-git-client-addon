@@ -33,8 +33,8 @@ import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
-import com.oxygenxml.git.view.branches.BranchPanel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitCommandState;
@@ -132,9 +132,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
   private HistoryPanel historyView;
   
   /**
-   * Branch panel.
+   * Branch management panel.
    */
-  private BranchPanel branchView;
+  private BranchManagementPanel branchManagementPanel;
   
 	/**
 	 * @see WorkspaceAccessPluginExtension#applicationStarted(StandalonePluginWorkspace)
@@ -193,7 +193,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           	} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
           	  customizeHistoryView(gitCtrl, viewInfo);
           	} else if(GIT_BRANCH_VIEW.equals(viewInfo.getViewID())) {
-          	  customizeBranchView(gitCtrl, viewInfo);
+          	  customizeBranchView(viewInfo);
           	}
           });
 
@@ -313,18 +313,16 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
   }
   
   /**
-   * Customize the branch view.
+   * Customize the branch management view.
    * 
-   * @param gitCtrl  Git controller.
    * @param viewInfo View information.
    */
-  private void customizeBranchView(GitController gitCtrl, ViewInfo viewInfo) {
-    // TODO Auto-generated method stub
-    if(branchView == null) {
-      branchView = new BranchPanel();
+  private void customizeBranchView(ViewInfo viewInfo) {
+    if(branchManagementPanel == null) {
+      branchManagementPanel = new BranchManagementPanel();
     }
     
-    viewInfo.setComponent(branchView);
+    viewInfo.setComponent(branchManagementPanel);
     viewInfo.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
     viewInfo.setTitle(Translator.getInstance().getTranslation((Tags.BRANCH_MANAGER_TITLE)));
   }
@@ -347,7 +345,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	@Override
 	public void showBranchManagement() {
 	  pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_BRANCH_VIEW, true);
-	  branchView.showBranches();
+	  branchManagementPanel.showBranches();
 	}
   @Override
   public boolean isBranchManagementShowing() {
