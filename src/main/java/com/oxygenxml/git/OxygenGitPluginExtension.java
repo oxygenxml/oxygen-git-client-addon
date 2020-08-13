@@ -321,7 +321,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
   private void customizeBranchView(GitController gitCtrl, ViewInfo viewInfo) {
     // TODO Auto-generated method stub
     if(branchView == null) {
-      branchView = new BranchPanel(gitCtrl);
+      branchView = new BranchPanel();
     }
     
     viewInfo.setComponent(branchView);
