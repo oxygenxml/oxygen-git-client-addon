@@ -2,12 +2,14 @@ package com.oxygenxml.git.view.branches;
 
 /**
  * Contains the constants for the branch management.
+ * 
  * @author Bogdan Draghici
- *
  */
-public class BranchManagementConstants {
+public final class BranchManagementConstants {
 
-  public static final String LOCAL_BRANCHES = "Local";
-  public static final String REMOTE_BRANCHES = "Remote";
-  public static final String ORIGIN_BRANCHES = "Remote/origin";
+  private BranchManagementConstants() {}
+  
+  public static final String LOCAL = "Local";
+  public static final String REMOTE = "Remote";
+  public static final String REMOTE_ORIGIN = "Remote/origin";
 }

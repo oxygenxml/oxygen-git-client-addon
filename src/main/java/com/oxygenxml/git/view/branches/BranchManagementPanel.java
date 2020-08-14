@@ -223,9 +223,9 @@ public class BranchManagementPanel extends JPanel {
     String newBranchName;
     name = name.replaceFirst("^(refs[/])", "");
     if(name.contains("heads")) {
-      newBranchName = name.replaceFirst("^(heads)", BranchManagementConstants.LOCAL_BRANCHES);
+      newBranchName = name.replaceFirst("^(heads)", BranchManagementConstants.LOCAL);
     }else {
-      newBranchName = name.replaceFirst("^remotes", BranchManagementConstants.REMOTE_BRANCHES);
+      newBranchName = name.replaceFirst("^remotes", BranchManagementConstants.REMOTE);
     }
     return newBranchName;
   }

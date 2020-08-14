@@ -38,7 +38,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
 
     JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-    Icon icon = Icons.getIcon(Icons.REPOSITORY_ICON);
+    Icon icon = Icons.getIcon(Icons.LOCAL_REPO);
 
     TreePath treePath = tree.getPathForRow(row);
     if (treePath != null) {

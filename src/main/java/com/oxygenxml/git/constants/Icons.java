@@ -42,10 +42,10 @@ public class Icons {
   public static final String AMEND_COMMIT = "/images/AmendCommit16.png";
   public static final String SETTINGS = "/images/SettingsToolbar16.png";
   
-  public static final String REPOSITORY_ICON = "/images/repository16.png";
-  public static final String LOCAL_BRANCHES_ICON = "/images/localBranches16.png";
-  public static final String REMOTE_BRANCHES_ICON = "/images/remoteBranches16.png";
-  public static final String ORIGIN_BRANCHES_ICON = "/images/originBranches16.png";
+  public static final String LOCAL_REPO = "/images/LocalRepo16.png";
+  public static final String LOCAL = "/images/Local16.png";
+  public static final String REMOTE = "/images/Remote16.png";
+  public static final String REMOTE_REPO = "/images/RemoteRepo16.png";
 
   /**
    * Get icon.
