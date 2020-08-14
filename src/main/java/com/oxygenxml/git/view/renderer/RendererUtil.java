@@ -11,6 +11,7 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.branches.BranchManagementConstants;
 
 public class RendererUtil {
   /**
@@ -60,6 +61,26 @@ public class RendererUtil {
     return renderingInfo;
   }
   
+  /**
+   * Get the rendering info (such as icon) for the given branch.
+   * 
+   * @param branchPath The string path to the branch.
+   * 
+   * @return The rendering info.
+   */
+  public static RenderingInfo getRenderingInfo(String branchPath) {
+    RenderingInfo renderingInfo = null;
+    if (branchPath.contentEquals(BranchManagementConstants.LOCAL_BRANCHES)) {
+      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.LOCAL_BRANCHES_ICON), null);
+    } else if (branchPath.contentEquals(BranchManagementConstants.REMOTE_BRANCHES)) {
+      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.REMOTE_BRANCHES_ICON), null);
+    } else if (branchPath.contentEquals(BranchManagementConstants.ORIGIN_BRANCHES)) {
+      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.ORIGIN_BRANCHES_ICON), null);
+    } else {
+      renderingInfo = new RenderingInfo(null, null);
+    }
+    return renderingInfo;
+  }
 
   /**
    * Get inactive selection color.

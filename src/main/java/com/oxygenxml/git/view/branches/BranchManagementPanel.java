@@ -59,7 +59,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * The list with the branches from the current repository.
    */
-  private List<BranchType> branchesToBeAdded;
+  private List<String> branchesToBeAdded;
   
   /**
    * Public constructor
@@ -75,6 +75,7 @@ public class BranchManagementPanel extends JPanel {
     branchesToBeAdded = getBranches();
     
     branchesTree = new Tree(new BranchManagementTreeModel(null, branchesToBeAdded));
+    branchesTree.setCellRenderer(new BranchesTreeCellRenderer());
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
     
@@ -121,17 +122,14 @@ public class BranchManagementPanel extends JPanel {
    * Creates a list with all branches, local and remote, for the current repository.
    * @return The branches in the repository.
    */
-  public List<BranchType> getBranches() {
+  public List<String> getBranches() {
       Repository repository = getCurrentRepository();
-      List<BranchType> branchList = new ArrayList<>();
+      List<String> branchList = new ArrayList<>();
       if(repository != null) {
-        List<Ref> localBranches = gitAccess.getLocalBranchList();
-        for(Ref localBranchIterator : localBranches) {
-          branchList.add(new BranchType(localBranchIterator.getName(), BranchType.BranchLocation.LOCAL));
-        }
-        List<Ref> remoteBranches = gitAccess.getRemoteBrachListForCurrentRepo();
-        for(Ref remoteBranchIterator : remoteBranches) {
-          branchList.add(new BranchType(remoteBranchIterator.getName(), BranchType.BranchLocation.REMOTE));
+        List<Ref> branches = gitAccess.getLocalBranchList();
+        branches.addAll(gitAccess.getRemoteBrachListForCurrentRepo());
+        for(Ref branchIterator : branches) {
+          branchList.add(rewriteBranchName(branchIterator.getName()));
         }
       }
       return branchList;
@@ -142,7 +140,7 @@ public class BranchManagementPanel extends JPanel {
    * 
    * @param branchList The branches used to generate the nodes.
    */
-  private void updateTreeView(List<BranchType> branchList) {
+  private void updateTreeView(List<String> branchList) {
     if (branchesTree != null) {
       Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
       TreePath[] selectionPaths = branchesTree.getSelectionPaths();
@@ -216,6 +214,21 @@ public class BranchManagementPanel extends JPanel {
       }
     });
   }
+  /**
+   * Rewrites the path to the branch in order to explicitly show the branch types, such as "Local" or "Remote".
+   * @param name The branch name to be altered.
+   * @return The new name
+   */
+  public String rewriteBranchName(String name) {
+    String newBranchName;
+    name = name.replaceFirst("^(refs[/])", "");
+    if(name.contains("heads")) {
+      newBranchName = name.replaceFirst("^(heads)", BranchManagementConstants.LOCAL_BRANCHES);
+    }else {
+      newBranchName = name.replaceFirst("^remotes", BranchManagementConstants.REMOTE_BRANCHES);
+    }
+    return newBranchName;
+  }
 
   /**
    * Creates the search bar for the branches in the current repository. 
@@ -232,6 +245,7 @@ public class BranchManagementPanel extends JPanel {
   public void showBranches() {
     branchesToBeAdded = getBranches();
     updateTreeView(branchesToBeAdded);
+    TreeFormatter.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
     setVisible(true);
   }
   
