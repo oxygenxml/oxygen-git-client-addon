@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.dialog;
 
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Insets;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -22,6 +23,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.TableColumn;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.View;
 
 import org.apache.log4j.Logger;
 
@@ -132,6 +135,31 @@ public class UIUtil {
     }
     
     return t;
+  }
+  
+  /**
+   * Compute necessary height for text area with <b>line wrap and wrap style word</b>
+   *  to display contained all rows.
+   *
+   * @param textComp The text area.
+   * @param width The fixed width of the text area.
+   * @param maxHeight The maximum allowed height.
+   * @return The display height.
+   */
+  public static int computeHeight(JTextComponent textComp, int width, int maxHeight) {
+    View view = textComp.getUI().getRootView(textComp);
+    view.setSize(width, 0);
+    int height = (int) view.getPreferredSpan(View.Y_AXIS);
+   
+    Insets insets = textComp.getInsets();
+    if (insets != null) {
+      height += insets.top + insets.bottom;      
+    }
+   
+    if (maxHeight < height) {
+      return maxHeight;
+    }
+    return height;
   }
   
   /**
