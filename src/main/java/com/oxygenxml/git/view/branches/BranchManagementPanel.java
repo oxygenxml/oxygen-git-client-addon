@@ -1,9 +1,14 @@
 package com.oxygenxml.git.view.branches;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -13,9 +18,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
@@ -45,7 +54,7 @@ public class BranchManagementPanel extends JPanel {
    * Git API access.
    */ 
   private static final GitAccess gitAccess = GitAccess.getInstance();
-  
+
   /**
    * A field for searching branches in the current repository.
    */
@@ -61,6 +70,12 @@ public class BranchManagementPanel extends JPanel {
    */
   private List<String> branchesToBeAdded;
   
+  /**
+   * A list with the branches that have been removed from the tree due to
+   * filtering.
+   */
+  private List<String> removedBranches;
+
   /**
    * Public constructor
    */
@@ -229,14 +244,111 @@ public class BranchManagementPanel extends JPanel {
     }
     return newBranchName;
   }
+  
+  /**
+   * Updater that executes a runnable with a given delay.
+   * 
+   * @author Bogdan Draghici
+   *
+   */
+  public class CoalescedFilterUpdater {
+    private Timer timer;
+
+    public CoalescedFilterUpdater(int delay, Runnable callback) {
+      timer = new Timer(delay, e -> {
+        timer.stop();
+        callback.run();
+      });
+    }
+
+    public void update() {
+      if (!SwingUtilities.isEventDispatchThread()) {
+        SwingUtilities.invokeLater(() -> {
+          timer.restart();
+        });
+      } else {
+        timer.restart();
+      }
+    }
+  }
 
   /**
    * Creates the search bar for the branches in the current repository. 
    */
   private void createSearchBar() {
     searchBar = UIUtil.createTextField();
-    searchBar.setText("Search");
+    searchBar.setText("Search Branch");
+    searchBar.setForeground(Color.GRAY);
     searchBar.setToolTipText("Type here the name of the branch you want to find");
+    
+    searchBar.addFocusListener(new FocusListener() {
+
+      @Override
+      public void focusGained(FocusEvent e) {
+        if (searchBar.getText().contentEquals("Search Branch")) {
+          searchBar.setText("");
+        } else {
+          searchBar.selectAll();
+        }
+        updateTreeView(branchesToBeAdded);
+        TreeFormatter.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+        searchBar.setForeground(Color.BLACK);
+      }
+
+      @Override
+      public void focusLost(FocusEvent e) {
+        if(searchBar.getText().isEmpty()) {
+          searchBar.setText("Search Branch");
+          searchBar.setForeground(Color.GRAY);
+        }
+      }
+      
+    });
+    CoalescedFilterUpdater updater = new CoalescedFilterUpdater(500, () -> {
+//      // Version 1 to filter the tree by searching in all branches the text for
+//      // filtering and recreating the tree with only those who contain it.
+//       searchInTree(searchBar.getText());
+
+      // Version 2 to filter the current tree by adding and removing branches from it.
+      BranchManagementTreeModel model = (BranchManagementTreeModel) branchesTree.getModel();
+      model.filterForTree(branchesTree, searchBar.getText(), removedBranches);
+    });
+    
+    searchBar.addKeyListener(new KeyAdapter() {
+      public void keyReleased(KeyEvent evt) {
+        updater.update();
+      }
+    });
+  }
+  /**
+   * Searches in tree for the branches that contains a string of characters and updates the tree with those branches.
+   * @param text The string to find.
+   */
+  private void searchInTree(String text) {
+    updateTreeView(branchesToBeAdded);
+    List<String> remainingBranches = new ArrayList<>();
+    TreeModel model = branchesTree.getModel();
+    GitTreeNode root = (GitTreeNode) model.getRoot();
+    Enumeration<?> e = root.depthFirstEnumeration();
+    while (e.hasMoreElements()) {
+      GitTreeNode node = (GitTreeNode) e.nextElement();
+      if (node.isLeaf()) {
+        String userObject = (String) node.getUserObject();
+        if (userObject.contains(text)) {
+          TreeNode[] path = node.getPath();
+          StringBuilder branchPath = new StringBuilder();
+          for (int i = 1; i < path.length; ++i) {
+            branchPath.append(path[i].toString());
+            if (i + 1 < path.length) {
+              branchPath.append("/");
+            }
+          }
+          remainingBranches.add(branchPath.toString());
+        }
+      }
+    }
+    updateTreeView(remainingBranches);
+    TreeFormatter.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
   }
   
   /**
@@ -244,6 +356,7 @@ public class BranchManagementPanel extends JPanel {
    */
   public void showBranches() {
     branchesToBeAdded = getBranches();
+    removedBranches = new ArrayList<>();
     updateTreeView(branchesToBeAdded);
     TreeFormatter.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
     setVisible(true);
