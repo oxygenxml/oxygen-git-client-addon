@@ -10,7 +10,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.renderer.RendererUtil;
 import com.oxygenxml.git.view.renderer.RenderingInfo;
 
@@ -42,7 +42,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
 
     TreePath treePath = tree.getPathForRow(row);
     if (treePath != null) {
-      String path = TreeFormatter.getStringPath(treePath);
+      String path = TreeUtil.getStringPath(treePath);
       if (!path.isEmpty()) {
         RenderingInfo renderingInfo = RendererUtil.getRenderingInfo(path);
         if (renderingInfo != null) {

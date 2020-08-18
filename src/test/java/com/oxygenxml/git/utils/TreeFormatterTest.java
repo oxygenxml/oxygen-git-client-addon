@@ -28,10 +28,10 @@ public class TreeFormatterTest {
 		DefaultTreeModel model = new DefaultTreeModel(root);
 
 		for (String string : paths) {
-			TreeFormatter.buildTreeFromString(model, string);
+			TreeUtil.buildTreeFromString(model, string);
 		}
 
-		GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, "src/add/java/info.txt");
+		GitTreeNode node = TreeUtil.getTreeNodeFromString(model, "src/add/java/info.txt");
 		String actual = (String) node.getUserObject();
 		String expected = "info.txt";
 
@@ -63,7 +63,7 @@ public class TreeFormatterTest {
 			trePaths[i] = new TreePath(p.get(i));
 		}
 
-		List<TreePath> actual = TreeFormatter.getTreeCommonAncestors(trePaths);
+		List<TreePath> actual = TreeUtil.getTreeCommonAncestors(trePaths);
 		List<TreePath> expected = new ArrayList<TreePath>();
 		expected.add(new TreePath(new Object[] { "resources", "java" }));
 		expected.add(new TreePath(new Object[] { "src" }));
@@ -90,13 +90,13 @@ public class TreeFormatterTest {
     DefaultTreeModel model = new DefaultTreeModel(root);
 
     for (String string : paths) {
-      TreeFormatter.buildTreeFromString(model, string);
+      TreeUtil.buildTreeFromString(model, string);
     }
 
-    GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, "path/to/non/existing/file.xml");
+    GitTreeNode node = TreeUtil.getTreeNodeFromString(model, "path/to/non/existing/file.xml");
     assertNull(node);
     
-    node = TreeFormatter.getTreeNodeFromString(model, "src/add/non-existing.txt");
+    node = TreeUtil.getTreeNodeFromString(model, "src/add/non-existing.txt");
     assertNull(node);
   }
 	
@@ -115,10 +115,10 @@ public class TreeFormatterTest {
     DefaultTreeModel model = new DefaultTreeModel(root);
 
     for (String string : paths) {
-      TreeFormatter.buildTreeFromString(model, string);
+      TreeUtil.buildTreeFromString(model, string);
     }
 
-    GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, "");
+    GitTreeNode node = TreeUtil.getTreeNodeFromString(model, "");
     assertEquals(root, node);
   }
 

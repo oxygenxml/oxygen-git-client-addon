@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitController;
@@ -131,7 +131,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	private void insertNodes(List<FileStatus> fileToBeUpdated) {
 
 		for (FileStatus fileStatus : fileToBeUpdated) {
-			TreeFormatter.buildTreeFromString(this, fileStatus.getFileLocation());
+			TreeUtil.buildTreeFromString(this, fileStatus.getFileLocation());
 		}
 		filesStatuses.addAll(fileToBeUpdated);
 		sortTree();
@@ -147,7 +147,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 */
 	private void deleteNodes(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
-			GitTreeNode node = TreeFormatter.getTreeNodeFromString(this, fileStatus.getFileLocation());
+			GitTreeNode node = TreeUtil.getTreeNodeFromString(this, fileStatus.getFileLocation());
 			while (node != null && node.getParent() != null) {
 				GitTreeNode parentNode = (GitTreeNode) node.getParent();
 				if (node.getSiblingCount() != 1) {

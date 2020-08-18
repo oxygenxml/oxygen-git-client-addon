@@ -13,7 +13,7 @@ import javax.swing.tree.TreePath;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.StagingResourcesTreeModel;
 
 /**
@@ -57,8 +57,8 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 		StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 		TreePath treePath = tree.getPathForRow(row);
 		if (treePath != null) {
-			String path = TreeFormatter.getStringPath(treePath);
-			if (!"".equals(path) && model.isLeaf(TreeFormatter.getTreeNodeFromString(model, path))) {
+			String path = TreeUtil.getStringPath(treePath);
+			if (!"".equals(path) && model.isLeaf(TreeUtil.getTreeNodeFromString(model, path))) {
 				FileStatus file = model.getFileByPath(path);
 				if (file != null) {
 				  GitChangeType changeType = file.getChangeType();

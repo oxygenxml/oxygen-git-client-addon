@@ -34,7 +34,7 @@ import org.eclipse.jgit.lib.Repository;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
@@ -157,7 +157,7 @@ public class BranchManagementPanel extends JPanel {
    */
   private void updateTreeView(List<String> branchList) {
     if (branchesTree != null) {
-      Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
+      Enumeration<TreePath> expandedPaths = TreeUtil.getLastExpandedPaths(branchesTree);
       TreePath[] selectionPaths = branchesTree.getSelectionPaths();
 
       // Create the tree with the new model
@@ -167,7 +167,7 @@ public class BranchManagementPanel extends JPanel {
               branchList));
 
       // restore last expanded paths after refresh
-      TreeFormatter.restoreLastExpandedPaths(expandedPaths, branchesTree);
+      TreeUtil.restoreLastExpandedPaths(expandedPaths, branchesTree);
       branchesTree.setSelectionPaths(selectionPaths);
     }
   }
@@ -188,22 +188,6 @@ public class BranchManagementPanel extends JPanel {
   }
   
   /**
-   * Returns all the current expanded paths
-   * 
-   * @return - the current expanded paths
-   */
-  private Enumeration<TreePath> getLastExpandedPaths() {
-    BranchManagementTreeModel treeModel = (BranchManagementTreeModel) branchesTree.getModel();
-    GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
-    Enumeration<TreePath> expandedPaths = null;
-    if (rootNode != null) {
-      TreePath rootTreePath = new TreePath(rootNode);
-      expandedPaths = branchesTree.getExpandedDescendants(rootTreePath);
-    }
-    return expandedPaths;
-  }
-  
-  /**
    * Adds an expand listener to the tree: When the user expands a node, the node
    * will expand as long as it has only one child.
    */
@@ -211,17 +195,7 @@ public class BranchManagementPanel extends JPanel {
     branchesTree.addTreeExpansionListener(new TreeExpansionListener() {
       @Override
       public void treeExpanded(TreeExpansionEvent event) {
-        TreePath path = event.getPath();
-        BranchManagementTreeModel model = (BranchManagementTreeModel) branchesTree.getModel();
-        GitTreeNode node = (GitTreeNode) path.getLastPathComponent();
-        if (!model.isLeaf(node)) {
-          int children = node.getChildCount();
-          if (children == 1) {
-            GitTreeNode child = (GitTreeNode) node.getChildAt(0);
-            TreePath childPath = new TreePath(child.getPath());
-            branchesTree.expandPath(childPath);
-          }
-        }
+        TreeUtil.expandSingleChildPath(branchesTree, event);
       }
       @Override
       public void treeCollapsed(TreeExpansionEvent event) {
@@ -291,7 +265,7 @@ public class BranchManagementPanel extends JPanel {
           searchBar.selectAll();
         }
         updateTreeView(branchesToBeAdded);
-        TreeFormatter.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+        TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
         searchBar.setForeground(Color.BLACK);
       }
 
@@ -348,7 +322,7 @@ public class BranchManagementPanel extends JPanel {
       }
     }
     updateTreeView(remainingBranches);
-    TreeFormatter.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+    TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
   }
   
   /**
@@ -358,7 +332,7 @@ public class BranchManagementPanel extends JPanel {
     branchesToBeAdded = getBranches();
     removedBranches = new ArrayList<>();
     updateTreeView(branchesToBeAdded);
-    TreeFormatter.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+    TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
     setVisible(true);
   }
   

@@ -55,7 +55,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
-import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEvent;
@@ -290,7 +290,7 @@ public class ChangesPanel extends JPanel {
 	 */
 	private void updateTreeView(List<FileStatus> filesStatus) {
 	  if (tree != null) {
-	    Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
+	    Enumeration<TreePath> expandedPaths = TreeUtil.getLastExpandedPaths(tree);
 	    TreePath[] selectionPaths = tree.getSelectionPaths();
 
 	    // Create the tree with the new model
@@ -302,25 +302,9 @@ public class ChangesPanel extends JPanel {
 	            filesStatus));
 
 	    // restore last expanded paths after refresh
-	    TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
+	    TreeUtil.restoreLastExpandedPaths(expandedPaths, tree);
 	    tree.setSelectionPaths(selectionPaths);
 	  }
-	}
-
-	/**
-	 * Returns all the current expanded paths
-	 * 
-	 * @return - the current expanded paths
-	 */
-	private Enumeration<TreePath> getLastExpandedPaths() {
-		StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-		GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
-		Enumeration<TreePath> expandedPaths = null;
-		if (rootNode != null) {
-			TreePath rootTreePath = new TreePath(rootNode);
-			expandedPaths = tree.getExpandedDescendants(rootTreePath);
-		}
-		return expandedPaths;
 	}
 
 	/**
@@ -367,14 +351,14 @@ public class ChangesPanel extends JPanel {
 	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
 	    modelTable.stateChanged(changeEvent);
 	  } else {
-	    Enumeration<TreePath> expandedPaths = getLastExpandedPaths();
+	    Enumeration<TreePath> expandedPaths = TreeUtil.getLastExpandedPaths(tree);
 	    TreePath[] selectionPaths = tree.getSelectionPaths();
 
 	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
 	    treeModel.stateChanged(changeEvent);
 
 	    // Restore last expanded paths after refresh
-	    TreeFormatter.restoreLastExpandedPaths(expandedPaths, tree);
+	    TreeUtil.restoreLastExpandedPaths(expandedPaths, tree);
 	    tree.setSelectionPaths(selectionPaths);
 	  }
 	  
@@ -448,8 +432,8 @@ public class ChangesPanel extends JPanel {
 		      }
 		      if (pathForRow != null) {
 		        StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-		        String stringPath = TreeFormatter.getStringPath(pathForRow);
-		        GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+		        String stringPath = TreeUtil.getStringPath(pathForRow);
+		        GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
 		        if (model != null && node != null
 		            && model.isLeaf(node) && !model.getRoot().equals(node)) {
 		          FileStatus file = model.getFileByPath(stringPath);
@@ -484,18 +468,8 @@ public class ChangesPanel extends JPanel {
 		tree.addTreeExpansionListener(new TreeExpansionListener() {
 		  @Override
 			public void treeExpanded(TreeExpansionEvent event) {
-				TreePath path = event.getPath();
-				StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-				GitTreeNode node = (GitTreeNode) path.getLastPathComponent();
-				if (!model.isLeaf(node)) {
-					int children = node.getChildCount();
-					if (children == 1) {
-						GitTreeNode child = (GitTreeNode) node.getChildAt(0);
-						TreePath childPath = new TreePath(child.getPath());
-						tree.expandPath(childPath);
-					}
-				}
-			}
+		    TreeUtil.expandSingleChildPath(tree, event);
+		  }
 		  @Override
 			public void treeCollapsed(TreeExpansionEvent event) {
 		    // Nothing
@@ -564,9 +538,9 @@ public class ChangesPanel extends JPanel {
 	        }
 
 	        if (treePath != null) {
-	          String stringPath = TreeFormatter.getStringPath(treePath);
+	          String stringPath = TreeUtil.getStringPath(treePath);
 	          StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-	          GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+	          GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
 
 	          if (!node.isRoot() 
 	              || node.children().hasMoreElements()
@@ -588,9 +562,9 @@ public class ChangesPanel extends JPanel {
 	        // ============= Double click event ==============
 	        TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
 	        if (treePath != null) {
-	          String stringPath = TreeFormatter.getStringPath(treePath);
+	          String stringPath = TreeUtil.getStringPath(treePath);
 	          StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-	          GitTreeNode node = TreeFormatter.getTreeNodeFromString(model, stringPath);
+	          GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
 	          if (model.isLeaf(node) && !model.getRoot().equals(node)) {
 	            FileStatus file = model.getFileByPath(stringPath);
 	            DiffPresenter.showDiff(file, stageController);
@@ -649,7 +623,7 @@ public class ChangesPanel extends JPanel {
    * @param treePath  The current tree path.
    */
   private void showContextualMenuForTree(int x, int y, final StagingResourcesTreeModel model) {
-    final List<String> selPaths = TreeFormatter.getStringComonAncestor(tree);
+    final List<String> selPaths = TreeUtil.getStringComonAncestor(tree);
     GitViewResourceContextualMenu contextualMenu = new GitViewResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
@@ -719,7 +693,7 @@ public class ChangesPanel extends JPanel {
 						fileStatuses.add(fileStatus);
 					}
 				} else {
-					List<String> selectedFiles = TreeFormatter.getStringComonAncestor(tree);
+					List<String> selectedFiles = TreeUtil.getStringComonAncestor(tree);
 					StagingResourcesTreeModel fileTreeModel = (StagingResourcesTreeModel) tree.getModel();
 					List<FileStatus> fileStatusesForPaths = fileTreeModel.getFilesByPaths(selectedFiles);
 					fileStatuses.addAll(fileStatusesForPaths);
@@ -796,10 +770,10 @@ public class ChangesPanel extends JPanel {
 	    StagingResourcesTableModel tableModel = (StagingResourcesTableModel) filesTable.getModel();
 	    tableModel.setFilesStatus(filesStatuses);
 
-	    List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(tree.getSelectionPaths());
+	    List<TreePath> commonAncestors = TreeUtil.getTreeCommonAncestors(tree.getSelectionPaths());
 	    List<Integer> tableRowsToSelect = new ArrayList<>();
 	    for (TreePath treePath : commonAncestors) {
-	      String path = TreeFormatter.getStringPath(treePath);
+	      String path = TreeUtil.getStringPath(treePath);
 	      tableRowsToSelect.addAll(tableModel.getRows(path));
 	    }
 
@@ -851,7 +825,7 @@ public class ChangesPanel extends JPanel {
 			int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
 			String absolutePath = fileTableModel.getFileLocation(convertedRow);
 
-			GitTreeNode nodeBuilder = TreeFormatter.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(),
+			GitTreeNode nodeBuilder = TreeUtil.getTreeNodeFromString((StagingResourcesTreeModel) tree.getModel(),
 					absolutePath);
 			GitTreeNode[] selectedPath = new GitTreeNode[absolutePath.split("/").length + 1];
 			int count = selectedPath.length;

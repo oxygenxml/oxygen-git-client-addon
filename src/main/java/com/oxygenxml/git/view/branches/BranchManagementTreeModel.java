@@ -13,7 +13,7 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.NodeTreeComparator;
 
@@ -74,7 +74,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
   private void insertNodes(List<String> branchesToBeUpdated) {
 
     for (String branchName : branchesToBeUpdated) {
-      TreeFormatter.buildTreeFromString(this, branchName);
+      TreeUtil.buildTreeFromString(this, branchName);
     }
     branches.addAll(branchesToBeUpdated);
     sortTree();
@@ -87,7 +87,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
    */
   private void deleteNodes(List<String> branchesToBeUpdated) {
     for (String branchName : branchesToBeUpdated) {
-      GitTreeNode node = TreeFormatter.getTreeNodeFromString(this, branchName);
+      GitTreeNode node = TreeUtil.getTreeNodeFromString(this, branchName);
       while (node != null && node.getParent() != null) {
         GitTreeNode parentNode = (GitTreeNode) node.getParent();
         if (node.getSiblingCount() != 1) {
@@ -131,7 +131,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
     removeFromCurrentBranches(branchesTree, text, removedBranches );
     sortTree();
     fireTreeStructureChanged(this, null, null, null);
-    TreeFormatter.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+    TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
   }
 
   /**

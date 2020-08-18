@@ -18,7 +18,7 @@ import org.junit.Test;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.TreeFormatter;
+import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.GitCommand;
 
@@ -60,7 +60,7 @@ public class TreeViewTest extends FlatViewTestBase {
     
     expandAll(filesTree);
     
-    TreePath treePath = TreeFormatter.getTreePath(filesTree.getModel(), fileToSelect);
+    TreePath treePath = TreeUtil.getTreePath(filesTree.getModel(), fileToSelect);
     filesTree.getSelectionModel().setSelectionPath(treePath);
     flushAWT();
     
@@ -71,7 +71,7 @@ public class TreeViewTest extends FlatViewTestBase {
   }
   
   private static void expandAll(JTree tree) {
-    TreeFormatter.expandAllNodes(tree, 0, tree.getRowCount());
+    TreeUtil.expandAllNodes(tree, 0, tree.getRowCount());
   }
   
   /**

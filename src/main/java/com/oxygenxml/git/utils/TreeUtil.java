@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -18,11 +19,11 @@ import com.oxygenxml.git.view.GitTreeNode;
  * @author Beniamin Savu
  *
  */
-public class TreeFormatter {
+public class TreeUtil {
   /**
    * Hidden constructor.
    */
-  private TreeFormatter() {
+  private TreeUtil() {
     // Nothing
   }
 
@@ -197,10 +198,10 @@ public class TreeFormatter {
 	public static List<String> getStringComonAncestor(JTree tree) {
 		List<String> selectedFiles = new ArrayList<>();
 		TreePath[] selectedPaths = tree.getSelectionPaths();
-		List<TreePath> commonAncestors = TreeFormatter.getTreeCommonAncestors(selectedPaths);
+		List<TreePath> commonAncestors = TreeUtil.getTreeCommonAncestors(selectedPaths);
 		String fullPath = "";
 		for (TreePath treePath : commonAncestors) {
-			fullPath = TreeFormatter.getStringPath(treePath);
+			fullPath = TreeUtil.getStringPath(treePath);
 			selectedFiles.add(fullPath);
 		}
 		return selectedFiles;
@@ -219,9 +220,9 @@ public class TreeFormatter {
 			List<TreePath> paths = Collections.list(expandedPaths);
 			for (int i = 0; i < tree.getRowCount(); i++) {
 				TreePath currentPath = tree.getPathForRow(i);
-				String currentStringPath = TreeFormatter.getStringPath(currentPath);
+				String currentStringPath = TreeUtil.getStringPath(currentPath);
 				for (TreePath treePath : paths) {
-					String stringTreePahr = TreeFormatter.getStringPath(treePath);
+					String stringTreePahr = TreeUtil.getStringPath(treePath);
 					if (currentStringPath.equals(stringTreePahr)) {
 						tree.expandRow(i);
 					}
@@ -247,5 +248,43 @@ public class TreeFormatter {
     }
 	  
 	  return new TreePath(parts);
+  }
+	
+	 /**
+   * Returns all the current expanded paths for a tree.
+   * 
+   * @param tree The tree used to find the expanded paths.
+   * @return The current expanded paths.
+   */
+  public static Enumeration<TreePath> getLastExpandedPaths(JTree tree) {
+    TreeModel treeModel = tree.getModel();
+    GitTreeNode rootNode = (GitTreeNode) treeModel.getRoot();
+    Enumeration<TreePath> expandedPaths = null;
+    if (rootNode != null) {
+      TreePath rootTreePath = new TreePath(rootNode);
+      expandedPaths = tree.getExpandedDescendants(rootTreePath);
+    }
+    return expandedPaths;
+  }
+  
+  /**
+   * Adds an expand new functionality to the tree: When the user expands a node, the node
+   * will expand as long as it has only one child.
+   * 
+   * @param tree The tree for which to add the listener.
+   * @param event The event used to get the tree path.
+   */
+  public static void expandSingleChildPath(JTree tree, TreeExpansionEvent event) {
+    TreePath path = event.getPath();
+    TreeModel treeModel = tree.getModel();
+    GitTreeNode node = (GitTreeNode) path.getLastPathComponent();
+    if (!treeModel.isLeaf(node)) {
+      int children = node.getChildCount();
+      if (children == 1) {
+        GitTreeNode child = (GitTreeNode) node.getChildAt(0);
+        TreePath childPath = new TreePath(child.getPath());
+        tree.expandPath(childPath);
+      }
+    }
   }
 }
