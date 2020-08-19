@@ -8,10 +8,12 @@ import java.util.List;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.NodeTreeComparator;
 
 /**
  * An utility class for JTree.
@@ -286,5 +288,35 @@ public class TreeUtil {
         tree.expandPath(childPath);
       }
     }
+  }
+  
+  /**
+   * Sorts the entire tree.
+   */
+  public static void sortGitTree(DefaultTreeModel treeModel) {
+    GitTreeNode root = (GitTreeNode) treeModel.getRoot();
+    Enumeration<?> e = root.depthFirstEnumeration();
+    while (e.hasMoreElements()) {
+      GitTreeNode node = (GitTreeNode) e.nextElement();
+      if (!node.isLeaf()) {
+        sort(node);
+      }
+    }
+  }
+  
+  /**
+   * Sorts the given node
+   * 
+   * @param node The node to be sorted.
+   */
+  private static void sort(GitTreeNode node) {
+    int childCount = node.getChildCount();
+    List<GitTreeNode> children = new ArrayList<>(childCount);
+    for (int i = 0; i < childCount; i++) {
+      children.add((GitTreeNode) node.getChildAt(i));
+    }
+    Collections.sort(children, new NodeTreeComparator());
+    node.removeAllChildren();
+    children.forEach(node::add);
   }
 }

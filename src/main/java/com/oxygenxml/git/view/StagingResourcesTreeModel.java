@@ -2,11 +2,9 @@ package com.oxygenxml.git.view;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 
 import org.apache.log4j.Logger;
 
@@ -134,7 +132,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 			TreeUtil.buildTreeFromString(this, fileStatus.getFileLocation());
 		}
 		filesStatuses.addAll(fileToBeUpdated);
-		sortTree();
+		TreeUtil.sortGitTree(this);
 	}
 
 	/**
@@ -160,7 +158,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 			}
 		}
 		filesStatuses.removeAll(fileToBeUpdated);
-		sortTree();
+		TreeUtil.sortGitTree(this);
 	}
 
 	/**
@@ -241,39 +239,6 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 		insertNodes(filesStatus);
 		
 		fireTreeStructureChanged(this, null, null, null);
-	}
-
-	/**
-	 * Sorts the entire tree
-	 */
-	private void sortTree() {
-		GitTreeNode root = (GitTreeNode) getRoot();
-		Enumeration<?> e = root.depthFirstEnumeration();
-		while (e.hasMoreElements()) {
-			GitTreeNode node = (GitTreeNode) e.nextElement();
-			if (!node.isLeaf()) {
-				sort(node);
-			}
-		}
-	}
-
-	/**
-	 * Sorts the given node
-	 * 
-	 * @param parent
-	 *          - the node to be sorted
-	 */
-	private void sort(GitTreeNode parent) {
-		int n = parent.getChildCount();
-		List<GitTreeNode> children = new ArrayList<>(n);
-		for (int i = 0; i < n; i++) {
-			children.add((GitTreeNode) parent.getChildAt(i));
-		}
-		Collections.sort(children, new NodeTreeComparator());
-		parent.removeAllChildren();
-		for (MutableTreeNode node : children) {
-			parent.add(node);
-		}
 	}
 
 	/**

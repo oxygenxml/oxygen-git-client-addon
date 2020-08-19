@@ -8,14 +8,12 @@ import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.GitTreeNode;
-import com.oxygenxml.git.view.NodeTreeComparator;
 
 /**
  * The tree model for the branches.
@@ -23,7 +21,6 @@ import com.oxygenxml.git.view.NodeTreeComparator;
  * @author Bogdan Draghici
  *
  */
-@SuppressWarnings("serial")
 public class BranchManagementTreeModel extends DefaultTreeModel {
 
   /**
@@ -38,7 +35,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
   private List<String> branches = Collections.synchronizedList(new ArrayList<>());
 
   /**
-   * Public Constructor
+   * Constructor.
    * 
    * @param root               The root note of the Tree Model.
    * @param repositoryBranches The branches contained in the current repository.
@@ -72,12 +69,9 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
    * @param branchesToBeUpdated The branches on which the nodes will be created.
    */
   private void insertNodes(List<String> branchesToBeUpdated) {
-
-    for (String branchName : branchesToBeUpdated) {
-      TreeUtil.buildTreeFromString(this, branchName);
-    }
+    branchesToBeUpdated.forEach((String branchName) -> TreeUtil.buildTreeFromString(this, branchName));
     branches.addAll(branchesToBeUpdated);
-    sortTree();
+    TreeUtil.sortGitTree(this);
   }
 
   /**
@@ -100,21 +94,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
       }
     }
     branches.removeAll(branchesToBeUpdated);
-    sortTree();
-  }
-
-  /**
-   * Sorts the entire tree.
-   */
-  private void sortTree() {
-    GitTreeNode root = (GitTreeNode) getRoot();
-    Enumeration<?> e = root.depthFirstEnumeration();
-    while (e.hasMoreElements()) {
-      GitTreeNode node = (GitTreeNode) e.nextElement();
-      if (!node.isLeaf()) {
-        sort(node);
-      }
-    }
+    TreeUtil.sortGitTree(this);
   }
 
   /**
@@ -126,10 +106,10 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
    * @param removedBranches A list with the branches that have been removed
    *                        because of the filtering.
    */
-  public void filterForTree(JTree branchesTree, String text, List<String>removedBranches) {
+  public void filterTree(JTree branchesTree, String text, List<String> removedBranches) {
     addFromRemovedBranches(text, removedBranches);
-    removeFromCurrentBranches(branchesTree, text, removedBranches );
-    sortTree();
+    removeFromCurrentBranches(text, removedBranches);
+    TreeUtil.sortGitTree(this);
     fireTreeStructureChanged(this, null, null, null);
     TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
   }
@@ -138,14 +118,10 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
    * Remove the branches that do not contain in their name a text given and add
    * those branches to a list of removed branches.
    * 
-   * @param branchesTree    The tree to be modified.
-   * 
-   * @param text            The text used to filter which branches remain and
-   *                        which are removed.
-   * @param removedBranches A list with the branches that have been removed
-   *                        because of the filtering.
+   * @param text            The text used to filter which branches remain and which are removed.
+   * @param removedBranches A list with the branches that have been removed because of the filtering.
    */
-  private void removeFromCurrentBranches(JTree branchesTree, String text, List<String> removedBranches ) {
+  private void removeFromCurrentBranches(String text, List<String> removedBranches) {
     //Create a new list in which to add the branches that are removed now.
     List<String> branchesToBeRemoved = new ArrayList<>();
     GitTreeNode root = (GitTreeNode) this.getRoot();
@@ -183,7 +159,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
    * @param text The text used to see if any of the removed branches contains it.
    * @param removedBranches The list of branches that have been removed from the tree.
    */
-  private void addFromRemovedBranches(String text, List<String>removedBranches) {
+  private void addFromRemovedBranches(String text, List<String> removedBranches) {
     // Create a new list in which to add the branches that contain a given text so
     // that they are eligible to be added to the tree.
     List<String> branchesToBeAdded = new ArrayList<>();
@@ -196,23 +172,6 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
       }
     }
     insertNodes(branchesToBeAdded);
-  }
-  /**
-   * Sorts the given node
-   * 
-   * @param parent The node to be sorted.
-   */
-  private void sort(GitTreeNode parent) {
-    int n = parent.getChildCount();
-    List<GitTreeNode> children = new ArrayList<>(n);
-    for (int i = 0; i < n; i++) {
-      children.add((GitTreeNode) parent.getChildAt(i));
-    }
-    Collections.sort(children, new NodeTreeComparator());
-    parent.removeAllChildren();
-    for (MutableTreeNode node : children) {
-      parent.add(node);
-    }
   }
   
   /**

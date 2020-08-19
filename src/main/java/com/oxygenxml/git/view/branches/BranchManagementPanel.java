@@ -12,14 +12,13 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
@@ -27,7 +26,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 
@@ -35,20 +33,17 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.TreeUtil;
+import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
-@SuppressWarnings("serial")
-// TODO: We should extract as much duplicated code as possible. Some code is also found in ChangesPanel. 
-// Perhaps extract some utility methods.
+/**
+ * Branch management panel. Contains the branches tree (local + remote branches).
+ */
 public class BranchManagementPanel extends JPanel {
-  
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = Logger.getLogger(BranchManagementPanel.class);
   
   /**
    * Git API access.
@@ -68,7 +63,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * The list with the branches from the current repository.
    */
-  private List<String> branchesToBeAdded;
+  private List<String> allBranches;
   
   /**
    * A list with the branches that have been removed from the tree due to
@@ -87,9 +82,9 @@ public class BranchManagementPanel extends JPanel {
    * Creates the tree for the branches in the current repository.
    */
   private void createBranchesTree() {
-    branchesToBeAdded = getBranches();
+    allBranches = getBranches();
     
-    branchesTree = new Tree(new BranchManagementTreeModel(null, branchesToBeAdded));
+    branchesTree = new Tree(new BranchManagementTreeModel(null, allBranches));
     branchesTree.setCellRenderer(new BranchesTreeCellRenderer());
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
@@ -123,7 +118,16 @@ public class BranchManagementPanel extends JPanel {
     gbc.anchor = GridBagConstraints.NORTHWEST;
     add(branchesTreeScrollPane, gbc);
     
-    addTreeExpandListener();
+    branchesTree.addTreeExpansionListener(new TreeExpansionListener() {
+      @Override
+      public void treeExpanded(TreeExpansionEvent event) {
+        TreeUtil.expandSingleChildPath(branchesTree, event);
+      }
+      @Override
+      public void treeCollapsed(TreeExpansionEvent event) {
+        // Nothing
+      }
+    });
     
     setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
     
@@ -135,19 +139,22 @@ public class BranchManagementPanel extends JPanel {
   
   /**
    * Creates a list with all branches, local and remote, for the current repository.
-   * @return The branches in the repository.
+   * 
+   * @return The list of all branches. Never <code>null</code>.
    */
   public List<String> getBranches() {
-      Repository repository = getCurrentRepository();
-      List<String> branchList = new ArrayList<>();
-      if(repository != null) {
-        List<Ref> branches = gitAccess.getLocalBranchList();
-        branches.addAll(gitAccess.getRemoteBrachListForCurrentRepo());
-        for(Ref branchIterator : branches) {
-          branchList.add(rewriteBranchName(branchIterator.getName()));
-        }
-      }
-      return branchList;
+    List<String> branchList = new ArrayList<>();
+    Repository repository = getCurrentRepository();
+    if(repository != null) {
+      List<Ref> branches = new ArrayList<>();
+      branches.addAll(gitAccess.getLocalBranchList());
+      branches.addAll(gitAccess.getRemoteBrachListForCurrentRepo());
+      branchList = branches
+          .stream()
+          .map(branch -> rewriteBranchName(branch.getName()))
+          .collect(Collectors.toList());
+    }
+    return branchList;
   }
   
   /**
@@ -180,91 +187,53 @@ public class BranchManagementPanel extends JPanel {
     try {
       repo = GitAccess.getInstance().getRepository();
     } catch (NoRepositorySelected e) {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(e, e);
-      }
+      // TODO: this shows an error on loading... We should take care of the loading part,
+      // because in other cases we should show this error
+//      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
     return repo;
   }
   
   /**
-   * Adds an expand listener to the tree: When the user expands a node, the node
-   * will expand as long as it has only one child.
-   */
-  private void addTreeExpandListener() {
-    branchesTree.addTreeExpansionListener(new TreeExpansionListener() {
-      @Override
-      public void treeExpanded(TreeExpansionEvent event) {
-        TreeUtil.expandSingleChildPath(branchesTree, event);
-      }
-      @Override
-      public void treeCollapsed(TreeExpansionEvent event) {
-        // Nothing
-      }
-    });
-  }
-  /**
    * Rewrites the path to the branch in order to explicitly show the branch types, such as "Local" or "Remote".
+   * 
    * @param name The branch name to be altered.
+   * 
    * @return The new name
    */
   public String rewriteBranchName(String name) {
     String newBranchName;
     name = name.replaceFirst("^(refs[/])", "");
-    if(name.contains("heads")) {
+    if (name.contains("heads")) {
       newBranchName = name.replaceFirst("^(heads)", BranchManagementConstants.LOCAL);
-    }else {
+    } else {
       newBranchName = name.replaceFirst("^remotes", BranchManagementConstants.REMOTE);
     }
     return newBranchName;
   }
   
   /**
-   * Updater that executes a runnable with a given delay.
-   * 
-   * @author Bogdan Draghici
-   *
-   */
-  public class CoalescedFilterUpdater {
-    private Timer timer;
-
-    public CoalescedFilterUpdater(int delay, Runnable callback) {
-      timer = new Timer(delay, e -> {
-        timer.stop();
-        callback.run();
-      });
-    }
-
-    public void update() {
-      if (!SwingUtilities.isEventDispatchThread()) {
-        SwingUtilities.invokeLater(() -> {
-          timer.restart();
-        });
-      } else {
-        timer.restart();
-      }
-    }
-  }
-
-  /**
    * Creates the search bar for the branches in the current repository. 
    */
   private void createSearchBar() {
     searchBar = UIUtil.createTextField();
-    searchBar.setText("Search Branch");
+    // TODO: i18n
+    searchBar.setText("Search branch");
     searchBar.setForeground(Color.GRAY);
+    // TODO: i18n
     searchBar.setToolTipText("Type here the name of the branch you want to find");
     
     searchBar.addFocusListener(new FocusListener() {
 
       @Override
       public void focusGained(FocusEvent e) {
-        if (searchBar.getText().contentEquals("Search Branch")) {
+        // TODO: i18n
+        if (searchBar.getText().contentEquals("Search branch")) {
           searchBar.setText("");
         } else {
           searchBar.selectAll();
         }
-        updateTreeView(branchesToBeAdded);
+        updateTreeView(allBranches);
         TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
         searchBar.setForeground(Color.BLACK);
       }
@@ -272,23 +241,25 @@ public class BranchManagementPanel extends JPanel {
       @Override
       public void focusLost(FocusEvent e) {
         if(searchBar.getText().isEmpty()) {
+          // TODO: i18n
           searchBar.setText("Search Branch");
           searchBar.setForeground(Color.GRAY);
         }
       }
       
     });
-    CoalescedFilterUpdater updater = new CoalescedFilterUpdater(500, () -> {
+    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> {
 //      // Version 1 to filter the tree by searching in all branches the text for
 //      // filtering and recreating the tree with only those who contain it.
 //       searchInTree(searchBar.getText());
 
       // Version 2 to filter the current tree by adding and removing branches from it.
       BranchManagementTreeModel model = (BranchManagementTreeModel) branchesTree.getModel();
-      model.filterForTree(branchesTree, searchBar.getText(), removedBranches);
+      model.filterTree(branchesTree, searchBar.getText(), removedBranches);
     });
     
     searchBar.addKeyListener(new KeyAdapter() {
+      @Override
       public void keyReleased(KeyEvent evt) {
         updater.update();
       }
@@ -299,7 +270,7 @@ public class BranchManagementPanel extends JPanel {
    * @param text The string to find.
    */
   private void searchInTree(String text) {
-    updateTreeView(branchesToBeAdded);
+    updateTreeView(allBranches);
     List<String> remainingBranches = new ArrayList<>();
     TreeModel model = branchesTree.getModel();
     GitTreeNode root = (GitTreeNode) model.getRoot();
@@ -329,9 +300,9 @@ public class BranchManagementPanel extends JPanel {
    * Shows the branch panel with all its components.
    */
   public void showBranches() {
-    branchesToBeAdded = getBranches();
+    allBranches = getBranches();
     removedBranches = new ArrayList<>();
-    updateTreeView(branchesToBeAdded);
+    updateTreeView(allBranches);
     TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
     setVisible(true);
   }
