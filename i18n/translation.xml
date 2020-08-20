@@ -8,7 +8,7 @@
         <comment>Action in the dialog that notifies the user that there are changes in the remote.</comment>
         <val lang="en_US">Pull changes</val>
         <val lang="de_DE">Pull changes</val>
-        <val lang="fr_FR">Pull changes</val>
+        <val lang="fr_FR">Faire un pull des modifications</val>
         <val lang="ja_JP">Pull changes</val>
         <val lang="nl_NL">Pull changes</val>
     </key>
