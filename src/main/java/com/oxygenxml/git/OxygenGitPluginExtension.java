@@ -238,7 +238,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	private void customizeGitStagingView(GitController gitCtrl, ViewInfo viewInfo) {
     boolean shouldRecreateStagingPanel = stagingPanel == null;
     if (shouldRecreateStagingPanel) {
-      //TODO branchmngmt
       stagingPanel = new StagingPanel(gitRefreshSupport, gitCtrl, OxygenGitPluginExtension.this, OxygenGitPluginExtension.this, pushPullController);
       gitRefreshSupport.setPanel(stagingPanel);
     }

@@ -28,6 +28,7 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutCommand.Stage;
 import org.eclipse.jgit.api.CloneCommand;
+import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.LogCommand;
@@ -48,8 +49,11 @@ import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
@@ -1916,6 +1920,29 @@ public class GitAccess {
 		git.checkout().setName(selectedBranch).call();
 		
 		fireBranchChanged(branchInfo.getBranchName(), selectedBranch);
+	}
+	
+	/**
+	 * Creates a local branch for a remote branch and sets it as the current branch
+	 * @param remoteBranch The branch for checkout.
+	 * @throws GitAPIException 
+	 * @throws InvalidRefNameException 
+	 * @throws RefNotFoundException 
+	 * @throws RefAlreadyExistsException 
+	 */
+	public void checkoutRemoteBranch(String remoteBranch) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, GitAPIException{
+	  String branchName = remoteBranch;
+	  git.checkout().setName(remoteBranch).setForceRefUpdate(true).call();
+    logger.info("Checkout to remote branch:" + remoteBranch);
+    git.branchCreate() 
+       .setName(branchName)
+       .setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
+       .setStartPoint("origin/" + remoteBranch)
+       .setForce(true)
+       .call(); 
+    logger.info("create new local branch:" + branchName + "set_upstream with:" + remoteBranch);
+    git.checkout().setName(branchName).setForceRefUpdate(true).call();
+    logger.info("Checkout to local branch:" + branchName);
 	}
 	
 	/**

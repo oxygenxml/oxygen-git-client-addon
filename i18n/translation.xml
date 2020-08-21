@@ -6,14 +6,6 @@
     </languageList>
     <key value = "Search_bar_tool_tip">
 		<comment>"The tool tip for the filter of the braches tree."</comment>
-        <val lang="en_US">Search bar</val>
-        <val lang="de_DE">Search bar</val>
-        <val lang="fr_FR">Search bar</val>
-        <val lang="ja_JP">Search bar</val>
-        <val lang="nl_NL">Search bar</val>
-    </key>
-    <key value = "Search_bar_label">
-		<comment>"The label for the filter of the braches tree."</comment>
         <val lang="en_US">Type here the name of the branch you want to find.</val>
         <val lang="de_DE">Type here the name of the branch you want to find.</val>
         <val lang="fr_FR">Type here the name of the branch you want to find.</val>

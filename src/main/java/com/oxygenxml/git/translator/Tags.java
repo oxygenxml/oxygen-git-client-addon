@@ -14,13 +14,13 @@ public class Tags {
     // Nothing.
   }
   /**
+   * The filter hint for search bar.
+   */
+  public static final String FILTER_HINT = "Filter_hint";
+  /**
    * The tool tip for the filter of the braches tree.
    */
-  public static final String SEARCH_BAR_TOOL_TIP ="Search_bar_tool_tip";
-  /**
-   * The label for the filter of the braches tree.
-   */
-  public static final String SEARCH_BAR_LABEL = "Search_bar_label";
+  public static final String SEARCH_BAR_TOOL_TIP = "Search_bar_tool_tip";
   /**
    * Action in the dialog that notifies the user that there are changes in the remote.
    */
