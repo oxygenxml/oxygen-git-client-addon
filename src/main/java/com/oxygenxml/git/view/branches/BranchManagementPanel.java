@@ -35,7 +35,9 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 
@@ -45,11 +47,13 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 /**
@@ -345,13 +349,18 @@ public class BranchManagementPanel extends JPanel {
         if (node.isLeaf()) {
           String branchName = (String) node.getUserObject();
           TreeNode[] path = node.getPath();
-          if (path[BranchManagementConstants.BRANCH_TYPE_NODE_TREE_LEVEL].toString().contentEquals(BranchManagementConstants.LOCAL)) {
-            try {//TODO see if it is necessary full path
-              gitAccess.setBranch(branchName);
-            } catch (GitAPIException e1) {
-              LOGGER.error(e);
-            }
-          } else if (path[BranchManagementConstants.BRANCH_TYPE_NODE_TREE_LEVEL].toString().contentEquals(BranchManagementConstants.REMOTE)) {
+          if (path[BranchManagementConstants.BRANCH_TYPE_NODE_TREE_LEVEL].toString().equals(BranchManagementConstants.LOCAL)) {
+            GitOperationScheduler.getInstance().schedule(() -> {
+              try {
+                GitAccess.getInstance().setBranch(branchName);
+              } catch (CheckoutConflictException ex) {
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+                    translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
+              } catch (GitAPIException | JGitInternalException ex) {
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+              }
+            });
+          } else if (path[BranchManagementConstants.BRANCH_TYPE_NODE_TREE_LEVEL].toString().equals(BranchManagementConstants.REMOTE)) {
             try {//TODO test if it works
               gitAccess.checkoutRemoteBranch(branchName);
             } catch (GitAPIException e1) {
