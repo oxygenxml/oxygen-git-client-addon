@@ -37,7 +37,9 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
 
     JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
     
-    // TODO: mark the current branch
+    // TODO: mark the current branch... perhaps make it bold and add a small empty circle as the icon
+    // if we add the empty circle icon, we need to add empty icons for the other branches to keep the
+    // alignment beautiful :P
 
     Icon icon = Icons.getIcon(Icons.LOCAL_REPO);
 
