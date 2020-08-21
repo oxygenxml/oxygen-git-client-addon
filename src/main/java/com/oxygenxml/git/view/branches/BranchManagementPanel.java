@@ -104,15 +104,14 @@ public class BranchManagementPanel extends JPanel {
    */
   public BranchManagementPanel() {
     createGUI();
-    //Add listener that refreshes the tree on repository or branch changed.
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void repositoryChanged() {
-        SwingUtilities.invokeLater(() -> showBranches());
+        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
       }
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
-        //TODO bold the current branch
+        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
       }
     });
     addTreeListeners();
@@ -341,7 +340,6 @@ public class BranchManagementPanel extends JPanel {
    */
   private AbstractAction createCheckoutBranchAction(String actionName) {
     return new AbstractAction(actionName) {
-
       @Override
       public void actionPerformed(ActionEvent e) {
         // TODO use getSelectionPath
@@ -361,10 +359,10 @@ public class BranchManagementPanel extends JPanel {
               }
             });
           } else if (path[BranchManagementConstants.BRANCH_TYPE_NODE_TREE_LEVEL].toString().equals(BranchManagementConstants.REMOTE)) {
-            try {//TODO test if it works
+            try {
               gitAccess.checkoutRemoteBranch(branchName);
-            } catch (GitAPIException e1) {
-              LOGGER.error(e1);
+            } catch (GitAPIException ex) {
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
             }
           }
         }

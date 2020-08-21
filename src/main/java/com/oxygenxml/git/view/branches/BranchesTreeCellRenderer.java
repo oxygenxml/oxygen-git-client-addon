@@ -21,7 +21,6 @@ import com.oxygenxml.git.view.renderer.RenderingInfo;
  * @author Bogdan Draghici
  *
  */
-@SuppressWarnings("serial")
 public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Default selection color.
@@ -37,6 +36,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       int row, boolean hasFocus) {
 
     JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+    
+    // TODO: mark the current branch
 
     Icon icon = Icons.getIcon(Icons.LOCAL_REPO);
 

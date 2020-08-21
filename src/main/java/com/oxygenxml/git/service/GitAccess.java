@@ -28,7 +28,6 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutCommand.Stage;
 import org.eclipse.jgit.api.CloneCommand;
-import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.LogCommand;
@@ -96,6 +95,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.api.CreateBranchCommand;
 
 import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
 import com.oxygenxml.git.auth.AuthUtil;
@@ -1911,38 +1911,36 @@ public class GitAccess {
 	/**
 	 * Sets the given branch as the current branch
 	 * 
-	 * @param selectedBranch
+	 * @param selectedBranch The short name of the branch to set.
 	 * 
 	 * @throws GitAPIException
 	 */
 	public void setBranch(String selectedBranch) throws GitAPIException {
-	  BranchInfo branchInfo = getBranchInfo();
-		git.checkout().setName(selectedBranch).call();
+	  String oldBranchName = getBranchInfo().getBranchName();
 		
-		fireBranchChanged(branchInfo.getBranchName(), selectedBranch);
+	  git.checkout().setName(selectedBranch).call();
+		
+		fireBranchChanged(oldBranchName, selectedBranch);
 	}
 	
 	/**
-	 * Creates a local branch for a remote branch and sets it as the current branch
-	 * @param remoteBranch The branch for checkout.
+	 * Creates a local branch for a remote branch (which it starts tracking), and sets it as the current branch.
+	 * 
+	 * @param remoteBranchName The branch to checkout (short name).
+	 * 
 	 * @throws GitAPIException 
-	 * @throws InvalidRefNameException 
-	 * @throws RefNotFoundException 
-	 * @throws RefAlreadyExistsException 
 	 */
-	public void checkoutRemoteBranch(String remoteBranch) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, GitAPIException{
-	  String branchName = remoteBranch;
-	  git.checkout().setName(remoteBranch).setForceRefUpdate(true).call();
-    logger.info("Checkout to remote branch:" + remoteBranch);
-    git.branchCreate() 
-       .setName(branchName)
-       .setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
-       .setStartPoint("origin/" + remoteBranch)
-       .setForce(true)
-       .call(); 
-    logger.info("create new local branch:" + branchName + "set_upstream with:" + remoteBranch);
-    git.checkout().setName(branchName).setForceRefUpdate(true).call();
-    logger.info("Checkout to local branch:" + branchName);
+	public void checkoutRemoteBranch(String remoteBranchName) throws GitAPIException{
+	  String oldBranchName = getBranchInfo().getBranchName();
+
+	  git.checkout()
+	      .setCreateBranch(true)
+	      .setName(remoteBranchName)
+	      .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+	      .setStartPoint("origin/" + remoteBranchName)
+	      .call();
+	  
+	  fireBranchChanged(oldBranchName, remoteBranchName);
 	}
 	
 	/**
