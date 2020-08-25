@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+     <key value = "Branch_manager_button_tool_tip">
+		<comment>"The tool tip for the button that opens the branch manager side view."</comment>
+        <val lang="en_US">Show Branch Manager</val>
+        <val lang="de_DE">Show Branch Manager</val>
+        <val lang="fr_FR">Show Branch Manager</val>
+        <val lang="ja_JP">Show Branch Manager</val>
+        <val lang="nl_NL">Show Branch Manager</val>
+    </key>
     <key value = "Search_bar_tool_tip">
 		<comment>"The tool tip for the filter of the braches tree."</comment>
         <val lang="en_US">Type here the name of the branch you want to find.</val>
@@ -1277,14 +1285,6 @@
         <comment>The text displayed in the dialog that appears near the combo box</comment>
         <val lang="en_US">Branch: </val>
         <val lang="de_DE">Branch: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="Change_Branch_Button_Tooltip">
-        <comment>The tooltip for the change branch button</comment>
-        <val lang="en_US">Change Branch</val>
-        <val lang="de_DE">Branch wechseln</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>

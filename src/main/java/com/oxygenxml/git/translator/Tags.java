@@ -14,6 +14,10 @@ public class Tags {
     // Nothing.
   }
   /**
+   * The tool tip for the button that opens the branch manager side view.
+   */
+  public static final String BRANCH_MANAGER_BUTTON_TOOL_TIP = "Branch_manager_button_tool_tip";
+  /**
    * The filter hint for search bar.
    */
   public static final String FILTER_HINT = "Filter_hint";
@@ -369,11 +373,6 @@ public class Tags {
 	 * The text displayed in the dialog that appears near the combo box
 	 */
 	public static final String BRANCH_DIALOG_BRANCH_SELECTION_LABEL = "Branch_Dialog_Branch_Selection_Label";
-
-	/**
-	 * The tooltip for the change branch button
-	 */
-	public static final String CHANGE_BRANCH_BUTTON_TOOLTIP = "Change_Branch_Button_Tooltip";
 
 	/**
 	 * The the message displayed when branch selection fails

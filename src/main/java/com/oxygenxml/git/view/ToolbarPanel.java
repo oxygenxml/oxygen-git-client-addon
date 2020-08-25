@@ -487,7 +487,7 @@ public class ToolbarPanel extends JPanel {
 		};
 		branchSelectButton = new ToolbarButton(branchSelectAction, false);
 		branchSelectButton.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
-		branchSelectButton.setToolTipText(translator.getTranslation(Tags.CHANGE_BRANCH_BUTTON_TOOLTIP));
+		branchSelectButton.setToolTipText(translator.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
 		setDefaultToolbarButtonWidth(branchSelectButton);
 
 		gitToolbar.add(branchSelectButton);
