@@ -121,36 +121,60 @@ public class BranchManagementPanel extends JPanel {
     branchesTree.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
-        addContextualMenuActions4Tree(e);
+        if(e.isPopupTrigger()) {
+          createContextualMenu4SelectedNode(e);
+        }
       }
       @Override
       public void mouseReleased(MouseEvent e) {
-        addContextualMenuActions4Tree(e);
+        mousePressed(e);
+      }
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (!e.isConsumed()
+            && !e.isPopupTrigger()
+            && e.getClickCount() == 2) {
+          e.consume();
+          List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(e);
+          if(!actionsForSelectedNode.isEmpty()) {
+            actionsForSelectedNode.get(0).actionPerformed(null);
+          }
+        }
       }
     });
   }    
   
   /**
-   * Adds the actions for the tree in the contextual menu.
+   * Gets a list of actions for the selected node from the BranchTreeActionProvider.
    * @param e Mouse event.
+   * @return The list of actions.
    */
-  private void addContextualMenuActions4Tree(MouseEvent e) {
-    if (e.isPopupTrigger()) {
-      Point nodePoint = e.getPoint();
-      TreePath pathForLocation = branchesTree.getPathForLocation(nodePoint.x, nodePoint.y);
-      if (pathForLocation != null) {
-        branchesTree.setSelectionPath(pathForLocation);
-        JPopupMenu popupMenu = new JPopupMenu();
-        BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(branchesTree);
-        List<AbstractAction> actionsForBranchTree = branchTreeActions.getActionsForBranchTree();
-        for (AbstractAction branchTreeAction : actionsForBranchTree) {
-          JMenuItem menuItem = new JMenuItem(branchTreeAction);
-          menuItem.setVisible(true);
-          popupMenu.add(menuItem);
-        }
-        popupMenu.show(branchesTree, nodePoint.x, nodePoint.y);
-        popupMenu.setVisible(true);
+  private List<AbstractAction> getActionsList4SelectedNode(MouseEvent e) {
+    Point nodePoint = e.getPoint();
+    TreePath pathForLocation = branchesTree.getPathForLocation(nodePoint.x, nodePoint.y);
+    if (pathForLocation != null) {
+      branchesTree.setSelectionPath(pathForLocation);
+      BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(branchesTree);
+      return branchTreeActions.getActionsForBranchTree();
+    }
+    return new ArrayList<>();
+  }
+  
+  /**
+   * Creates the contextual menu and populates it with action for the selected node.
+   * @param e The Mouse Event.
+   */
+  private void createContextualMenu4SelectedNode(MouseEvent e) {
+    List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(e);
+    if (!actionsForSelectedNode.isEmpty()) {
+      JPopupMenu popupMenu = new JPopupMenu();
+      for (AbstractAction branchTreeAction : actionsForSelectedNode) {
+        JMenuItem menuItem = new JMenuItem(branchTreeAction);
+        menuItem.setVisible(true);
+        popupMenu.add(menuItem);
       }
+      popupMenu.show(branchesTree, e.getPoint().x, e.getPoint().y);
+      popupMenu.setVisible(true);
     }
   }
 
