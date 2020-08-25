@@ -227,10 +227,11 @@ public class DiffPresenter {
 		  URL right = null;
 		  // builds the URL for the files depending if we are in rebasing state or not
       RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
-      if (repositoryState.equals(RepositoryState.REBASING)
+      boolean isRebase = repositoryState.equals(RepositoryState.REBASING)
           || repositoryState.equals(RepositoryState.REBASING_INTERACTIVE)
           || repositoryState.equals(RepositoryState.REBASING_MERGE)
-          || repositoryState.equals(RepositoryState.REBASING_REBASING)) {
+          || repositoryState.equals(RepositoryState.REBASING_REBASING);
+      if (isRebase) {
         // An unfinished rebased. 
         left = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_RESOLVED, file.getFileLocation());
         right = GitRevisionURLHandler.encodeURL(VersionIdentifier.MINE_ORIGINAL, file.getFileLocation());
@@ -253,14 +254,16 @@ public class DiffPresenter {
 			    @Override
 			    public void componentHidden(ComponentEvent e) {
 			      long diffClosedTimeStamp = localCopy.lastModified();
-			      
 			      if (diffClosedTimeStamp == diffStartedTimeStamp) {
-			        
 			        String[] options = new String[] { "   Yes   ", "   No   " };
 			        int[] optonsId = new int[] { 0, 1 };
-			        int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
+			        String message = isRebase ? Translator.getInstance().getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
+			            : Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
+              int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
 			            Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
-			            Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED), options, optonsId);
+			            message,
+			            options,
+			            optonsId);
 			        if (response == 0) {
 			          stageController.doGitCommand(
 			              Arrays.asList(file),
