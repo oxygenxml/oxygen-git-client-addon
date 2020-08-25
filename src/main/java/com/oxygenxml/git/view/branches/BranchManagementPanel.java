@@ -84,13 +84,6 @@ public class BranchManagementPanel extends JPanel {
   private List<String> allBranches;
 
   /**
-   * A list with the branches that have been removed from the tree due to
-   * filtering.
-   */
-  @SuppressWarnings("unused")
-  private List<String> removedBranches;
-
-  /**
    * Public constructor
    */
   public BranchManagementPanel() {
@@ -286,9 +279,7 @@ public class BranchManagementPanel extends JPanel {
     searchBar.setText(translator.getTranslation(Tags.FILTER_HINT));
     searchBar.setForeground(Color.GRAY);
     searchBar.setToolTipText(translator.getTranslation(Tags.SEARCH_BAR_TOOL_TIP));
-
     searchBar.addFocusListener(new FocusListener() {
-
       @Override
       public void focusGained(FocusEvent e) {
         if (searchBar.getText().contentEquals(translator.getTranslation(Tags.FILTER_HINT))) {
@@ -298,7 +289,6 @@ public class BranchManagementPanel extends JPanel {
         }
         searchBar.setForeground(Color.BLACK);
       }
-
       @Override
       public void focusLost(FocusEvent e) {
         if (searchBar.getText().isEmpty()) {
@@ -306,18 +296,9 @@ public class BranchManagementPanel extends JPanel {
           searchBar.setForeground(Color.GRAY);
         }
       }
-
     });
-    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> {
-      // Version 1 to filter the tree by searching in all branches the text for
-      // filtering and recreating the tree with only those who contain it.
-      searchInTree(searchBar.getText());
-
-//      // Version 2 to filter the current tree by adding and removing branches from it.
-//      BranchManagementTreeModel model = (BranchManagementTreeModel) branchesTree.getModel();
-//      model.filterTree(branchesTree, searchBar.getText(), removedBranches);
-    });
-
+    
+    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> searchInTree(searchBar.getText()));
     searchBar.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent evt) {
@@ -337,7 +318,7 @@ public class BranchManagementPanel extends JPanel {
     for(String branch : allBranches) {
       String[] path = branch.split("/");
       // Sees if the leaf node/branch contains the given text
-      if(path[path.length-1].contains(text))
+      if(path[path.length - 1].contains(text))
         remainingBranches.add(branch);
     }
     updateTreeView(remainingBranches);
@@ -349,7 +330,6 @@ public class BranchManagementPanel extends JPanel {
    */
   public void showBranches() {
     allBranches = getBranches();
-    removedBranches = new ArrayList<>();
     updateTreeView(allBranches);
     TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
     setVisible(true);

@@ -22,6 +22,9 @@ import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
+/**
+ * Action provider for the contextual menu of the branches tree. 
+ */
 public class BranchTreeMenuActionsProvider {
   /**
    * Git access instance.
@@ -32,38 +35,40 @@ public class BranchTreeMenuActionsProvider {
    */
   private static final Translator translator = Translator.getInstance();
   /**
-   * The tree for which the actions are created.
-   */
-  private JTree branchesTree;
-  /**
    * Action used to checkout a branch.
    */
-  AbstractAction checkoutBranchAction;
-  
-  AbstractAction newBranchAction;
+  private AbstractAction checkoutBranchAction;
   /**
-   * Public constructor
-   * @param branchesTree The tree used to creating actions.
-   * @param e 
+   * Action for creating a new branch.
+   */
+  private AbstractAction newBranchAction;
+  
+  /**
+   * Constructor.
+   * 
+   * @param branchesTree The tree used for creating actions.
    */
   public BranchTreeMenuActionsProvider(JTree branchesTree) {
-    this.branchesTree = branchesTree;
-    GitTreeNode node = (GitTreeNode)branchesTree.getSelectionPath().getLastPathComponent();
+    GitTreeNode node = (GitTreeNode) branchesTree.getSelectionPath().getLastPathComponent();
     if(node.isLeaf()) {
       createBranchTreeActions(node);
     }
   }
+  
   /**
    * Creates the actions for the tree and stores them.
-   * @param e 
+   * 
+   * @param node The node for which to create actions.
    */
   private void createBranchTreeActions(GitTreeNode node) {
     checkoutBranchAction = createCheckoutBranchAction(node);
     newBranchAction = createNewBranchAction(node);
     //TODO add the other actions
   }
+  
   /**
-   * Gets the actions created and adds them in a list of abstract actions.
+   * Gets the actions created and adds them to a list.
+   * 
    * @return The list of actions.
    */
   public List<AbstractAction> getActionsForBranchTree() {
@@ -74,11 +79,12 @@ public class BranchTreeMenuActionsProvider {
     }
     return treeActions;
   }
+  
   /**
-   * Creates checkout branch action for local and remote branches. 
+   * Creates the checkout action for local and remote branches. 
+   * 
    * @return The action created.
    */
-  @SuppressWarnings("serial")
   private AbstractAction createCheckoutBranchAction(GitTreeNode node) {
     return new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
       @Override
@@ -109,7 +115,13 @@ public class BranchTreeMenuActionsProvider {
     };
   }
   
-  @SuppressWarnings("serial")
+  /**
+   * Create the action that creates a new branch starting from the given one.
+   * 
+   * @param node Node corresponding to a branch.
+   * 
+   * @return
+   */
   private AbstractAction createNewBranchAction(GitTreeNode node) {
     return new AbstractAction("Create new branch - option in progress") {
       @Override

@@ -9,17 +9,19 @@ import org.junit.Test;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
-
+/**
+ * Test cases for checking out branches.
+ */
 public class GitCheckoutBranchTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/local";
   private final static String REMOTE_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/remote";
   private final static String LOCAL_BRANCH_NAME = "LocalBranch";
   private final static String REMOTE_BRANCH_NAME = "RemoteBranch";
   
-
   private GitAccess gitAccess;
   private Repository remoteRepository;
   private Repository localRepository;
+  
   @Before
   public void setUp() throws Exception {
     
@@ -50,21 +52,24 @@ public class GitCheckoutBranchTest extends GitTestBase {
     gitAccess.createBranch(LOCAL_BRANCH_NAME);
   }
   
+  /**
+   * <p><b>Description:</b> checkout remote branch.</p>
+   * <p><b>Bug ID:</b> EXM-41701</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
   @Test
-  public void testCheckoutBranch() throws Exception {
+  public void testCheckoutRemoteBranch() throws Exception {
     // Bind the local repository to the remote one.
     bindLocalToRemote(localRepository , remoteRepository);
     
     gitAccess.fetch();
-    
-    //Checkout the remote branch
     gitAccess.checkoutRemoteBranch(REMOTE_BRANCH_NAME);
     
     Repository currentRepository = gitAccess.getRepository();
-    
     assertEquals(localRepository, currentRepository);
     assertEquals(REMOTE_BRANCH_NAME, currentRepository.getBranch());
-    
-    
   }
 }

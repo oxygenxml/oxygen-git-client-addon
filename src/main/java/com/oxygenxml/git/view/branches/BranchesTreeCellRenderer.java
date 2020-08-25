@@ -42,10 +42,6 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
 
     JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
     
-    String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-    RoundedLineBorder roundedLineBorder = new RoundedLineBorder(label.getForeground(), 1, 8, true);
-    EmptyBorder emptyBorder = new EmptyBorder(roundedLineBorder.getBorderInsets(this));
-
     Icon icon = Icons.getIcon(Icons.LOCAL_REPO);
     String path = "";
     TreePath treePath = tree.getPathForRow(row);
@@ -62,6 +58,10 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     if (label != null) {
       label.setIcon(icon);
       if (!path.isEmpty()) {
+        String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+        RoundedLineBorder roundedLineBorder = new RoundedLineBorder(label.getForeground(), 1, 8, true);
+        EmptyBorder emptyBorder = new EmptyBorder(roundedLineBorder.getBorderInsets(this));
+        
         String[] split = path.split("/");
         if (split[split.length - 1].contentEquals(branchName)) {
           label.setFont(new Font("Arial", Font.BOLD, 12));
@@ -81,15 +81,17 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
         }
       }
     }
-    /**
-     * Paints the value.  The background is filled based on selected.
-     */
 
     return label;
   }
+  
+  /**
+   * @see com.oxygenxml.git.view.branches.BranchesTreeCellRenderer.paint(Graphics)
+   */
   @Override
   public void paint(Graphics g) {
     hasFocus = false;
     super.paint(g);
   }
+  
 }
