@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -30,14 +29,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.CheckoutConflictException;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 
@@ -47,13 +41,10 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.CoalescedEventUpdater;
-import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 /**
@@ -121,7 +112,6 @@ public class BranchManagementPanel extends JPanel {
    * Adds the tree listeners.
    */
   private void addTreeListeners() {
-    //TODO create BranchTreeContextualMenuActionsProvider
     
     branchesTree.addTreeExpansionListener(new TreeExpansionListener() {
       @Override
@@ -158,10 +148,13 @@ public class BranchManagementPanel extends JPanel {
       if (pathForLocation != null) {
         branchesTree.setSelectionPath(pathForLocation);
         JPopupMenu popupMenu = new JPopupMenu();
-
-        JMenuItem menuItem = new JMenuItem(createCheckoutBranchAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)));
-        menuItem.setVisible(true);
-        popupMenu.add(menuItem);
+        BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(branchesTree);
+        List<AbstractAction> actionsForBranchTree = branchTreeActions.getActionsForBranchTree();
+        for (AbstractAction branchTreeAction : actionsForBranchTree) {
+          JMenuItem menuItem = new JMenuItem(branchTreeAction);
+          menuItem.setVisible(true);
+          popupMenu.add(menuItem);
+        }
         popupMenu.show(branchesTree, nodePoint.x, nodePoint.y);
         popupMenu.setVisible(true);
       }
@@ -334,70 +327,18 @@ public class BranchManagementPanel extends JPanel {
   }
 
   /**
-   * Creates checkout branch action for local and remote branches. 
-   * @param actionName The name of the action.
-   * @return The action created.
-   */
-  private AbstractAction createCheckoutBranchAction(String actionName) {
-    return new AbstractAction(actionName) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        // TODO use getSelectionPath
-        GitTreeNode node = (GitTreeNode) branchesTree.getSelectionPath().getLastPathComponent();
-        if (node.isLeaf()) {
-          String branchName = (String) node.getUserObject();
-          TreeNode[] path = node.getPath();
-          if (path[BranchManagementConstants.BRANCH_TYPE_NODE_TREE_LEVEL].toString().equals(BranchManagementConstants.LOCAL)) {
-            GitOperationScheduler.getInstance().schedule(() -> {
-              try {
-                GitAccess.getInstance().setBranch(branchName);
-              } catch (CheckoutConflictException ex) {
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-                    translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-              } catch (GitAPIException | JGitInternalException ex) {
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-              }
-            });
-          } else if (path[BranchManagementConstants.BRANCH_TYPE_NODE_TREE_LEVEL].toString().equals(BranchManagementConstants.REMOTE)) {
-            try {
-              gitAccess.checkoutRemoteBranch(branchName);
-            } catch (GitAPIException ex) {
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-            }
-          }
-        }
-      }
-    };
-  }
-
-  /**
    * Searches in tree for the branches that contains a string of characters and
    * updates the tree with those branches.
    * 
    * @param text The string to find.
    */
   private void searchInTree(String text) {
-    updateTreeView(allBranches);
     List<String> remainingBranches = new ArrayList<>();
-    TreeModel model = branchesTree.getModel();
-    GitTreeNode root = (GitTreeNode) model.getRoot();
-    Enumeration<?> e = root.depthFirstEnumeration();
-    while (e.hasMoreElements()) {
-      GitTreeNode node = (GitTreeNode) e.nextElement();
-      if (node.isLeaf()) {
-        String userObject = (String) node.getUserObject();
-        if (userObject.contains(text)) {
-          TreeNode[] path = node.getPath();
-          StringBuilder branchPath = new StringBuilder();
-          for (int i = 1; i < path.length; ++i) {
-            branchPath.append(path[i].toString());
-            if (i + 1 < path.length) {
-              branchPath.append("/");
-            }
-          }
-          remainingBranches.add(branchPath.toString());
-        }
-      }
+    for(String branch : allBranches) {
+      String[] path = branch.split("/");
+      // Sees if the leaf node/branch contains the given text
+      if(path[path.length-1].contains(text))
+        remainingBranches.add(branch);
     }
     updateTreeView(remainingBranches);
     TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
