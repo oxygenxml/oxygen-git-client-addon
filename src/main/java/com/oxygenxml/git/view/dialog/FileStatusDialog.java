@@ -4,22 +4,24 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -41,6 +43,7 @@ public class FileStatusDialog extends OKCancelDialog {
    * @param cancelButtonName Text to be written on the button in case the answer to the question is negative
    */
   private FileStatusDialog(
+      String iconPath,
       String title,
       List<String> targetFiles,
       String message,
@@ -57,13 +60,19 @@ public class FileStatusDialog extends OKCancelDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JLabel iconLabel = new JLabel();
-    iconLabel.setIcon(Icons.getIcon(Icons.WARNING_ICON));
+    URL iconURL =  PluginWorkspaceProvider.class.getResource(iconPath);
+    if (iconURL != null) {
+      ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
+      Icon icon = (Icon) imageUtilities.loadIcon(iconURL);
+      iconLabel.setIcon(icon);
+    }
+		
 		gbc.insets = new Insets(
 		    UIConstants.COMPONENT_TOP_PADDING, 
 		    UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, 
 				UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
@@ -74,6 +83,7 @@ public class FileStatusDialog extends OKCancelDialog {
 		
     if (message != null) {
       JTextArea label = UIUtil.createMessageArea(message);
+      label.setPreferredSize(new Dimension(300,UIUtil.computeHeight(label, 300, 800)));
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.weightx = 1;
@@ -109,6 +119,7 @@ public class FileStatusDialog extends OKCancelDialog {
       getCancelButton().setVisible(false);
     } else {
       JTextArea questionLabel = UIUtil.createMessageArea(questionMessage);
+      questionLabel.setPreferredSize(new Dimension(300,UIUtil.computeHeight(questionLabel, 300, 800)));
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.weightx = 1;
@@ -122,14 +133,11 @@ public class FileStatusDialog extends OKCancelDialog {
     }
     
     getContentPane().add(panel);
-		this.setResizable(true);
-		this.setMinimumSize(new Dimension(500, 80));
-		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		
+		setResizable(true);
 		pack();
 		
 		if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
-		  this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+		  setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		}
 	}
 
@@ -142,7 +150,7 @@ public class FileStatusDialog extends OKCancelDialog {
    * @param message       The message.
    */
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
-    FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, null, null, null);
+    FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
     dialog.setVisible(true);
   }
   
@@ -165,7 +173,7 @@ public class FileStatusDialog extends OKCancelDialog {
       String questionMessage,
       String okButtonName,
       String cancelButtonName) {
-    FileStatusDialog dialog = new FileStatusDialog(title, conflictFiles, message, questionMessage, okButtonName, cancelButtonName);
+    FileStatusDialog dialog = new FileStatusDialog(Icons.QUESTION_ICON, title, conflictFiles, message, questionMessage, okButtonName, cancelButtonName);
     dialog.setVisible(true);  
     return dialog.getResult();
   }
@@ -184,9 +192,30 @@ public class FileStatusDialog extends OKCancelDialog {
       String questionMessage,
       String okButtonName,
       String cancelButtonName) {
-    FileStatusDialog dialog = new FileStatusDialog(title, null, null, questionMessage, okButtonName, cancelButtonName);
+    FileStatusDialog dialog = new FileStatusDialog(Icons.QUESTION_ICON, title, null, null, questionMessage, okButtonName, cancelButtonName);
     dialog.setVisible(true);
     return dialog.getResult();
   }
   
+  /**
+   * Shows an information and gives the user 2 options.
+   * 
+   * @param title              Dialog title.
+   * @param informationMessage The information message to be presented.
+   * @param okButtonName       The name given to the button for answering
+   *                           affirmative to the question.
+   * @param cancelButtonName   The name given to the button for answering negative
+   *                           to the question.
+   * @return The option chosen by the user. {@link #RESULT_OK} or
+   *         {@link #RESULT_CANCEL}
+   */
+  public static int showInformationMessage(
+      String title, 
+      String informationMessage, 
+      String okButtonName, 
+      String cancelButtonName) {
+    FileStatusDialog dialog = new FileStatusDialog(Icons.INFO_ICON, title, null, null, informationMessage, okButtonName, cancelButtonName);
+    dialog.setVisible(true);
+    return dialog.getResult();
+  }
 }

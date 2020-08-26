@@ -931,6 +931,11 @@ public class Tags {
   public static final String AMEND_LAST_COMMIT = "Amend_last_commit";
   
   /**
+   * The text displayed after exiting the diff for a rebase conflict file and you didn't modify anything.
+   */
+  public static final String KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT = "Keep_resolved_version_for_rebase_conflict";
+  
+  /**
    * Nothing to push.
    */
   public static final String NOTHING_TO_PUSH = "Nothing_to_push";

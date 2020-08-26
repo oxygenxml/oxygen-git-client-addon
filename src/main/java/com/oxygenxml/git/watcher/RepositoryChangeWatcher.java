@@ -20,11 +20,12 @@ import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
 
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -158,12 +159,11 @@ public class RepositoryChangeWatcher {
    * @param message The message to be displayed to the user
    */
   private void showNewCommitsInRemoteMessage(String message) {
-    String[] options = { translator.getTranslation(Tags.PULL_CHANGES), translator.getTranslation(Tags.CLOSE) };
-    int okPressed = 1;
-    int[] optionsIds = { okPressed, 0 };
-
-    if (PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), message, options, optionsIds) == okPressed) {
+    if (FileStatusDialog.showInformationMessage(
+        translator.getTranslation(Tags.REMOTE_CHANGES_LABEL), 
+        message,
+        translator.getTranslation(Tags.PULL_CHANGES),
+        translator.getTranslation(Tags.CLOSE)) == OKCancelDialog.RESULT_OK) {
       pushPullController.pull();
     }
   }
