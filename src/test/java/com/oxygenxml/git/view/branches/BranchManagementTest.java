@@ -18,7 +18,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.GitTreeNode;
 
-public class BranchesTreeTest extends GitTestBase{
+public class BranchManagementTest extends GitTestBase{
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/local";
   private final static String REMOTE_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/remote";
   private final static String LOCAL_BRANCH_NAME1 = "LocalBranch";
@@ -67,39 +67,29 @@ public class BranchesTreeTest extends GitTestBase{
   }
   
   /**
-   * <p><b>Description:</b> checkout remote branch.</p>
-   * <p><b>Bug ID:</b> EXM-41701</p>
+   * <p><b>Description:</b> branches in current repo.</p>
    *
-   * @author sorin_carbunaru
+   * @author Bogdan Draghici
    *
    * @throws Exception
    */
   @Test
-  public void testCheckoutRemoteBranch() throws Exception {
-    // Bind the local repository to the remote one.
-    
+  public void testBranchesTreeContent() throws Exception {
     gitAccess.fetch();
-//    gitAccess.setRepositoryAsync(REMOTE_TEST_REPOSITORY);
-//    
-//    File file = new File(REMOTE_TEST_REPOSITORY + "remote2.txt");
-//    file.createNewFile();
-//    setFileContent(file, "remote content for second branch");
-    
-//    gitAccess.setRepositoryAsync(LOCAL_TEST_REPOSITORY);
 
-    
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
-    assertEquals(root.getChildCount(), 2);
+    assertEquals(2, root.getChildCount());
     
     GitTreeNode localTag = (GitTreeNode)root.getFirstChild();
-    assertEquals((String)localTag.getUserObject(),"Local");
+    assertEquals("Local",(String)localTag.getUserObject());
     
     GitTreeNode remoteTag = (GitTreeNode)root.getLastChild();
-    assertEquals((String)remoteTag.getUserObject(),"Remote");
+    assertEquals("Remote",(String)remoteTag.getUserObject());
     
     //===================== Local branches comparison ==============================
+    //asserting with lists
     Enumeration<?> breadthFirstLocalEnumeration = localTag.breadthFirstEnumeration();
     List<String> expectedLocalBranches = new ArrayList<>();
     expectedLocalBranches.add("Local");
@@ -110,6 +100,7 @@ public class BranchesTreeTest extends GitTestBase{
     while(breadthFirstLocalEnumeration.hasMoreElements()) {
       GitTreeNode node = (GitTreeNode) breadthFirstLocalEnumeration.nextElement();
       actualLocalBranches.add((String)node.getUserObject());
+      assertTrue(node.isLeaf() || "Local".contentEquals((String)node.getUserObject()));
     }
     assertTrue(expectedLocalBranches.containsAll(actualLocalBranches));
     assertEquals(expectedLocalBranches.size(), actualLocalBranches.size());
@@ -122,17 +113,64 @@ public class BranchesTreeTest extends GitTestBase{
       assertEquals(expected, actual);
     }
     
-    
-    //===================== Local branches comparison ==============================
-    Enumeration<?> breadththFirstRemoteEnumeration = remoteTag.breadthFirstEnumeration();
-    String[]remoteBranches = {"Remote", "origin", "master", "RemoteBranch", "RemoteBranch2"};
+    //===================== Remote branches comparison ==============================
+    //asserting with array and enumeration
+    assertEquals(remoteTag.getChildCount(), 1);
+    GitTreeNode originTag = (GitTreeNode) remoteTag.getFirstChild();
+    assertEquals("origin", (String)originTag.getUserObject());
+    Enumeration<?> breadththFirstOriginEnumeration = originTag.breadthFirstEnumeration();
+    String[]remoteBranches = {"origin", "master", "RemoteBranch", "RemoteBranch2"};
     int remoteStringIterator = 0;
-    while(breadththFirstRemoteEnumeration.hasMoreElements()) {
-      GitTreeNode node = (GitTreeNode) breadththFirstRemoteEnumeration.nextElement();
+    while(breadththFirstOriginEnumeration.hasMoreElements()) {
+      GitTreeNode node = (GitTreeNode) breadththFirstOriginEnumeration.nextElement();
+      assertTrue(node.isLeaf() || "origin".contentEquals((String)node.getUserObject()));
       assertEquals(remoteBranches[remoteStringIterator], (String)node.getUserObject());
       assertTrue(remoteStringIterator < remoteBranches.length);
       ++remoteStringIterator;
     }
     assertEquals(remoteBranches.length, remoteStringIterator);
+  }
+  
+  private void serializeTree(StringBuilder stringTree, GitTreeNode currentNode) {
+    int level = currentNode.getLevel();
+    while(level != 0) {
+      stringTree.append("  ");
+      --level;
+    }
+    stringTree.append( currentNode.getUserObject());
+    stringTree.append("\n");
+    if (!currentNode.isLeaf()) {
+      Enumeration<GitTreeNode> children = currentNode.children();
+      while (children.hasMoreElements()) {
+        serializeTree(stringTree, children.nextElement());
+      }
+    }
+  }
+  
+  @Test
+  public void testBranchesTreeStructure() throws Exception {
+    gitAccess.fetch();
+
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    JTree tree = branchManagementPanel.getTree();
+    GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
+    
+    StringBuilder actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    System.out.println(actualTree.toString());
+    
+    StringBuilder expectedTree = new StringBuilder();
+    expectedTree.append("\n");
+    expectedTree.append("  Local\n");
+    expectedTree.append("    LocalBranch\n");
+    expectedTree.append("    LocalBranch2\n");
+    expectedTree.append("    master\n");
+    expectedTree.append("  Remote\n");
+    expectedTree.append("    origin\n");
+    expectedTree.append("      master\n");
+    expectedTree.append("      RemoteBranch\n");
+    expectedTree.append("      RemoteBranch2\n");
+    
+    assertEquals(expectedTree.toString(), actualTree.toString());
   }
 }
