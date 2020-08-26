@@ -19,7 +19,7 @@ import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 
-import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**

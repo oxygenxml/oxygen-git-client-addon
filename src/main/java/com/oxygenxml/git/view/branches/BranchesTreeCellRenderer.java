@@ -60,6 +60,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       EmptyBorder emptyBorder = new EmptyBorder(roundedLineBorder.getBorderInsets(this));
       Font font = label.getFont();
       label.setIcon(icon);
+      label.setIconTextGap(18);
+      label.setHorizontalAlignment(label.CENTER);
       label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
       label.setBorder(emptyBorder);
       if (!path.isEmpty()) {
