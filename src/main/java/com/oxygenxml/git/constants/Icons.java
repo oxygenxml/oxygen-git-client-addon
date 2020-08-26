@@ -42,11 +42,17 @@ public class Icons {
   public static final String AMEND_COMMIT = "/images/AmendCommit16.png";
   public static final String SETTINGS = "/images/SettingsToolbar16.png";
   
+  //=============== These icons are loaded from Oxygen =================
+  public static final String INFO_ICON = "/images/Info32.png";
+  public static final String QUESTION_ICON = "/images/Help32.png";
+  public static final String ERROR_ICON = "/images/Error32.png";
+  // ====================================================================
+
   public static final String LOCAL_REPO = "/images/LocalRepo16.png";
   public static final String LOCAL = "/images/Local16.png";
   public static final String REMOTE = "/images/Remote16.png";
   public static final String REMOTE_REPO = "/images/RemoteRepo16.png";
-
+  
   /**
    * Get icon.
    *  
