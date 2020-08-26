@@ -43,9 +43,9 @@ public class Icons {
   public static final String SETTINGS = "/images/SettingsToolbar16.png";
   
   // =============== These icons are loaded from Oxygen =================
-  public static final String INFO_ICON = "/images/Info32@2x.png";
-  public static final String QUESTION_ICON = "/images/Help32@2x.png";
-  public static final String ERROR_ICON = "/images/Error32@2x.png";
+  public static final String INFO_ICON = "/images/Info32.png";
+  public static final String QUESTION_ICON = "/images/Help32.png";
+  public static final String ERROR_ICON = "/images/Error32.png";
   // ====================================================================
 
   /**
