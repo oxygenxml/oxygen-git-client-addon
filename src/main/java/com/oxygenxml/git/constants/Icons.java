@@ -51,7 +51,6 @@ public class Icons {
   public static final String LOCAL_REPO = "/images/LocalRepo16.png";
   public static final String LOCAL = "/images/Local16.png";
   public static final String REMOTE = "/images/Remote16.png";
-  public static final String REMOTE_REPO = "/images/RemoteRepo16.png";
   
   /**
    * Get icon.

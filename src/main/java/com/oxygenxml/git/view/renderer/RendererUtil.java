@@ -74,8 +74,6 @@ public class RendererUtil {
       renderingInfo = new RenderingInfo(Icons.getIcon(Icons.LOCAL), null);
     } else if (branchPath.equals(BranchManagementConstants.REMOTE)) {
       renderingInfo = new RenderingInfo(Icons.getIcon(Icons.REMOTE), null);
-    } else if (branchPath.equals(BranchManagementConstants.REMOTE_ORIGIN)) {
-      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.REMOTE_REPO), null);
     } else {
       renderingInfo = new RenderingInfo(null, null);
     }
