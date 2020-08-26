@@ -39,97 +39,14 @@ public class BranchManagementTest extends GitTestBase{
     //Creates the remote repository.
     createRepository(REMOTE_TEST_REPOSITORY);
     remoteRepository = gitAccess.getRepository();
-    File file = new File(REMOTE_TEST_REPOSITORY + "remote1.txt");
-    file.createNewFile();
-    setFileContent(file, "remote content");
-    
-    //Make the first commit for the remote repository and create a branch for it.
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
-    gitAccess.commit("First remote commit.");
-    gitAccess.createBranch(REMOTE_BRANCH_NAME1);
-    gitAccess.createBranch(REMOTE_BRANCH_NAME2);
-
     
     //Creates the local repository.
     createRepository(LOCAL_TEST_REPOSITORY);
     localRepository = gitAccess.getRepository();
-    file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
-    file.createNewFile();
-    setFileContent(file, "local content");
-    //Make the first commit for the local repository and create a branch for it.
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("First local commit.");
-    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
-    gitAccess.createBranch(LOCAL_BRANCH_NAME2);
-
     
     bindLocalToRemote(localRepository , remoteRepository);
   }
   
-  /**
-   * <p><b>Description:</b> branches in current repo.</p>
-   *
-   * @author Bogdan Draghici
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testBranchesTreeContent() throws Exception {
-    gitAccess.fetch();
-
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
-    JTree tree = branchManagementPanel.getTree();
-    GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
-    assertEquals(2, root.getChildCount());
-    
-    GitTreeNode localTag = (GitTreeNode)root.getFirstChild();
-    assertEquals("Local",(String)localTag.getUserObject());
-    
-    GitTreeNode remoteTag = (GitTreeNode)root.getLastChild();
-    assertEquals("Remote",(String)remoteTag.getUserObject());
-    
-    //===================== Local branches comparison ==============================
-    //asserting with lists
-    Enumeration<?> breadthFirstLocalEnumeration = localTag.breadthFirstEnumeration();
-    List<String> expectedLocalBranches = new ArrayList<>();
-    expectedLocalBranches.add("Local");
-    expectedLocalBranches.add("LocalBranch");
-    expectedLocalBranches.add("LocalBranch2");
-    expectedLocalBranches.add("master");
-    List<String> actualLocalBranches = new ArrayList<>();
-    while(breadthFirstLocalEnumeration.hasMoreElements()) {
-      GitTreeNode node = (GitTreeNode) breadthFirstLocalEnumeration.nextElement();
-      actualLocalBranches.add((String)node.getUserObject());
-      assertTrue(node.isLeaf() || "Local".contentEquals((String)node.getUserObject()));
-    }
-    assertTrue(expectedLocalBranches.containsAll(actualLocalBranches));
-    assertEquals(expectedLocalBranches.size(), actualLocalBranches.size());
-    
-    ListIterator<String> expectedListIterator = expectedLocalBranches.listIterator();
-    ListIterator<String> actualListIterator = actualLocalBranches.listIterator();
-    while(actualListIterator.hasNext()) {
-      String actual = actualListIterator.next();
-      String expected = expectedListIterator.next();
-      assertEquals(expected, actual);
-    }
-    
-    //===================== Remote branches comparison ==============================
-    //asserting with array and enumeration
-    assertEquals(remoteTag.getChildCount(), 1);
-    GitTreeNode originTag = (GitTreeNode) remoteTag.getFirstChild();
-    assertEquals("origin", (String)originTag.getUserObject());
-    Enumeration<?> breadththFirstOriginEnumeration = originTag.breadthFirstEnumeration();
-    String[]remoteBranches = {"origin", "master", "RemoteBranch", "RemoteBranch2"};
-    int remoteStringIterator = 0;
-    while(breadththFirstOriginEnumeration.hasMoreElements()) {
-      GitTreeNode node = (GitTreeNode) breadththFirstOriginEnumeration.nextElement();
-      assertTrue(node.isLeaf() || "origin".contentEquals((String)node.getUserObject()));
-      assertEquals(remoteBranches[remoteStringIterator], (String)node.getUserObject());
-      assertTrue(remoteStringIterator < remoteBranches.length);
-      ++remoteStringIterator;
-    }
-    assertEquals(remoteBranches.length, remoteStringIterator);
-  }
   
   private void serializeTree(StringBuilder stringTree, GitTreeNode currentNode) {
     int level = currentNode.getLevel();
@@ -149,6 +66,28 @@ public class BranchManagementTest extends GitTestBase{
   
   @Test
   public void testBranchesTreeStructure() throws Exception {
+    File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    //Make the first commit for the local repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.createBranch(LOCAL_BRANCH_NAME2);
+    
+    gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
+    
+    file = new File(REMOTE_TEST_REPOSITORY + "remote1.txt");
+    file.createNewFile();
+    setFileContent(file, "remote content");
+    
+    //Make the first commit for the remote repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
+    gitAccess.commit("First remote commit.");
+    gitAccess.createBranch(REMOTE_BRANCH_NAME1);
+    gitAccess.createBranch(REMOTE_BRANCH_NAME2);
+    
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
@@ -162,14 +101,114 @@ public class BranchManagementTest extends GitTestBase{
     StringBuilder expectedTree = new StringBuilder();
     expectedTree.append("\n");
     expectedTree.append("  Local\n");
-    expectedTree.append("    LocalBranch\n");
-    expectedTree.append("    LocalBranch2\n");
+    expectedTree.append("    " + LOCAL_BRANCH_NAME1 + "\n");
+    expectedTree.append("    " + LOCAL_BRANCH_NAME2 + "\n");
     expectedTree.append("    master\n");
     expectedTree.append("  Remote\n");
     expectedTree.append("    origin\n");
     expectedTree.append("      master\n");
-    expectedTree.append("      RemoteBranch\n");
-    expectedTree.append("      RemoteBranch2\n");
+    expectedTree.append("      " + REMOTE_BRANCH_NAME1 + "\n");
+    expectedTree.append("      " + REMOTE_BRANCH_NAME2 + "\n");
+    
+    assertEquals(expectedTree.toString(), actualTree.toString());
+  }
+  
+  @Test
+  public void testBranchesTreeStructureLocalBranchesOnly() throws Exception {
+    File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    //Make the first commit for the local repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.createBranch(LOCAL_BRANCH_NAME2);
+    
+    gitAccess.fetch();
+
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    JTree tree = branchManagementPanel.getTree();
+    GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
+    
+    StringBuilder actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    System.out.println(actualTree.toString());
+    
+    StringBuilder expectedTree = new StringBuilder();
+    expectedTree.append("\n");
+    expectedTree.append("  Local\n");
+    expectedTree.append("    " + LOCAL_BRANCH_NAME1 + "\n");
+    expectedTree.append("    " + LOCAL_BRANCH_NAME2 + "\n");
+    expectedTree.append("    master\n");
+    
+    assertEquals(expectedTree.toString(), actualTree.toString());
+  }
+  
+  @Test
+  public void testBranchesTreeStructureRemoteBranchesOnly() throws Exception{
+    gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
+    
+    File file = new File(REMOTE_TEST_REPOSITORY + "remote1.txt");
+    file.createNewFile();
+    setFileContent(file, "remote content");
+    
+    //Make the first commit for the remote repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
+    gitAccess.commit("First remote commit.");
+    //Create new remote branches
+    gitAccess.createBranch(REMOTE_BRANCH_NAME1);
+    gitAccess.createBranch(REMOTE_BRANCH_NAME2);
+    
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
+    gitAccess.fetch();
+    
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    JTree tree = branchManagementPanel.getTree();
+    GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
+    
+    StringBuilder actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    System.out.println(actualTree.toString());
+    
+    StringBuilder expectedTree = new StringBuilder();
+    expectedTree.append("\n");
+    expectedTree.append("  Remote\n");
+    expectedTree.append("    origin\n");
+    expectedTree.append("      master\n");
+    expectedTree.append("      " + REMOTE_BRANCH_NAME1 + "\n");
+    expectedTree.append("      " + REMOTE_BRANCH_NAME2 + "\n");
+
+    assertEquals(expectedTree.toString(), actualTree.toString());
+  }
+  
+  
+  
+  @Test
+  public void testBranchesTreeStructureRemoteMasterOnly() throws Exception {
+    gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
+    File file = new File(REMOTE_TEST_REPOSITORY + "remote.txt");
+    file.createNewFile();
+    setFileContent(file, "remote content");
+    //Make the first commit for the remote repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "remote.txt"));
+    gitAccess.commit("First remote commit.");
+    
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
+    gitAccess.fetch();
+
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    JTree tree = branchManagementPanel.getTree();
+    GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
+    
+    StringBuilder actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    System.out.println(actualTree.toString());
+    
+    StringBuilder expectedTree = new StringBuilder();
+    expectedTree.append("\n");
+    expectedTree.append("  Remote\n");
+    expectedTree.append("    origin\n");
+    expectedTree.append("      master\n");
     
     assertEquals(expectedTree.toString(), actualTree.toString());
   }
