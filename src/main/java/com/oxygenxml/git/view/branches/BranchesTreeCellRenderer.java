@@ -56,24 +56,24 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     }
 
     if (label != null) {
+      RoundedLineBorder roundedLineBorder = new RoundedLineBorder(label.getForeground(), 1, 8, true);
+      EmptyBorder emptyBorder = new EmptyBorder(roundedLineBorder.getBorderInsets(this));
+      Font font = label.getFont();
       label.setIcon(icon);
+      label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
+      label.setBorder(emptyBorder);
       if (!path.isEmpty()) {
-        String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-        RoundedLineBorder roundedLineBorder = new RoundedLineBorder(label.getForeground(), 1, 8, true);
-        EmptyBorder emptyBorder = new EmptyBorder(roundedLineBorder.getBorderInsets(this));
-        
         String[] split = path.split("/");
+        String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
         if (split[split.length - 1].contentEquals(branchName)) {
-          label.setFont(new Font("Arial", Font.BOLD, 12));
+          label.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
           label.setBorder(roundedLineBorder);
-        } else {
-          label.setFont(new Font("Arial", Font.PLAIN, 12));
-          label.setBorder(emptyBorder);
         }
       }
       // Active/inactive table selection
       if (sel) {
         if (tree.hasFocus()) {
+          setBorderSelectionColor(new Color(102,167,232));
           setBackgroundSelectionColor(defaultSelectionColor);
         } else {
           // Do not render the tree as inactive if we have a contextual menu over it.
@@ -86,12 +86,33 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   }
   
   /**
+   * Paints the node, and in case it is also selected, take care not to draw the dashed rectangle border.
    * @see com.oxygenxml.git.view.branches.BranchesTreeCellRenderer.paint(Graphics)
    */
   @Override
   public void paint(Graphics g) {
-    hasFocus = false;
-    super.paint(g);
+    if (selected) {
+      hasFocus = false;
+      super.paint(g);
+      paintBorder(g, 0, 0, getWidth(), getHeight());      
+    }else {
+      super.paint(g);
+    }
   }
-  
+  /**
+   * Paints the border for the selected node.
+   * @param g
+   * @param x
+   * @param y
+   * @param width
+   * @param height
+   */
+  private void paintBorder(Graphics g, int x, int y, int w, int h) {
+    Color bsColor = getBorderSelectionColor();
+
+    if (bsColor != null && (selected)) {
+        g.setColor(bsColor);
+        g.drawRect(x, y, w - 1, h - 1);
+    }
+  }
 }

@@ -358,5 +358,12 @@ public class BranchManagementPanel extends JPanel {
     TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
     setVisible(true);
   }
+  /**
+   * Returns the tree that contains all the branches for the current repository
+   * @return the branches tree.
+   */
+  public JTree getTree() {
+    return branchesTree;
+  }
 
 }
