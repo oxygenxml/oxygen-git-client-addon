@@ -16,7 +16,7 @@
         <comment>The text displayed after exiting the diff for a rebase conflict file and you didn't modify anything.</comment>
         <val lang="en_US">You have not modified the resolved version (left side). Do you want to resolve the conflict by keeping that version as it is?</val>
         <val lang="de_DE">You have not modified the resolved version (left side). Do you want to resolve the conflict by keeping that version as it is?</val>
-        <val lang="fr_FR">You have not modified the resolved version (left side). Do you want to resolve the conflict by keeping that version as it is?</val>
+        <val lang="fr_FR">Vous n'avez pas modifié la version résolue (côté gauche). Voulez-vous résoudre le conflit en gardant cette version telle quelle?</val>
         <val lang="ja_JP">You have not modified the resolved version (left side). Do you want to resolve the conflict by keeping that version as it is?</val>
         <val lang="nl_NL">You have not modified the resolved version (left side). Do you want to resolve the conflict by keeping that version as it is?</val>
     </key>
