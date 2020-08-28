@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -88,7 +89,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       label.setBorder(emptyBorder);
       if (!path.isEmpty()) {
         String[] split = path.split("/");
-        if (split[split.length - 1].equals(currentBranchNameSupplier.get())) {
+        if (split[0].equals(BranchManagementConstants.LOCAL)
+            && split[split.length - 1].equals(currentBranchNameSupplier.get())) {
           label.setFont(font.deriveFont(Font.BOLD));
           label.setBorder(roundedLineBorder);
         }
