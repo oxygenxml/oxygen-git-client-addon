@@ -13,13 +13,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -27,6 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
@@ -82,6 +84,11 @@ public class BranchManagementPanel extends JPanel {
    * The list with the branches from the current repository.
    */
   private List<String> allBranches;
+  
+  /**
+   * The name of the current branch.
+   */
+  private String currentBranchName;
 
   /**
    * Public constructor
@@ -92,10 +99,12 @@ public class BranchManagementPanel extends JPanel {
       @Override
       public void repositoryChanged() {
         SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
+        currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
       }
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
         SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
+        currentBranchName = newBranch;
       }
     });
     addTreeListeners();
@@ -122,7 +131,7 @@ public class BranchManagementPanel extends JPanel {
       @Override
       public void mousePressed(MouseEvent e) {
         if(e.isPopupTrigger()) {
-          createContextualMenu4SelectedNode(e);
+          showContextualMenu(e);
         }
       }
       @Override
@@ -157,24 +166,36 @@ public class BranchManagementPanel extends JPanel {
       BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(branchesTree);
       return branchTreeActions.getActionsForBranchTree();
     }
-    return new ArrayList<>();
+    return Collections.emptyList();
   }
+  
+  boolean isContextMenuShowing;
   
   /**
    * Creates the contextual menu and populates it with action for the selected node.
    * @param e The Mouse Event.
    */
-  private void createContextualMenu4SelectedNode(MouseEvent e) {
+  private void showContextualMenu(MouseEvent e) {
     List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(e);
     if (!actionsForSelectedNode.isEmpty()) {
       JPopupMenu popupMenu = new JPopupMenu();
-      for (AbstractAction branchTreeAction : actionsForSelectedNode) {
-        JMenuItem menuItem = new JMenuItem(branchTreeAction);
-        menuItem.setVisible(true);
-        popupMenu.add(menuItem);
-      }
+      popupMenu.addPopupMenuListener(new PopupMenuListener() {
+        @Override
+        public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+          isContextMenuShowing = true;
+        }
+        @Override
+        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+          isContextMenuShowing = false;
+          popupMenu.removePopupMenuListener(this);
+        }
+        @Override
+        public void popupMenuCanceled(PopupMenuEvent e) {
+          isContextMenuShowing = false;
+        }
+      });
+      actionsForSelectedNode.forEach(popupMenu::add);
       popupMenu.show(branchesTree, e.getPoint().x, e.getPoint().y);
-      popupMenu.setVisible(true);
     }
   }
 
@@ -185,7 +206,7 @@ public class BranchManagementPanel extends JPanel {
     allBranches = getBranches();
 
     branchesTree = new Tree(new BranchManagementTreeModel(null, allBranches));
-    branchesTree.setCellRenderer(new BranchesTreeCellRenderer());
+    branchesTree.setCellRenderer(new BranchesTreeCellRenderer(() -> isContextMenuShowing, () -> currentBranchName));
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
 

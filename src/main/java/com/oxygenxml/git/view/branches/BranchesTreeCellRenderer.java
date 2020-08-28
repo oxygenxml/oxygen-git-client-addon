@@ -4,16 +4,18 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.historycomponents.RoundedLineBorder;
 import com.oxygenxml.git.view.renderer.RendererUtil;
@@ -31,10 +33,30 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * Default selection color.
    */
   private final Color defaultSelectionColor = getBackgroundSelectionColor();
+  /**
+   * Tells us if the context menu is showing.
+   */
+  private BooleanSupplier isContextMenuShowing;
+  /**
+   * Supplies the current branch.
+   */
+  private Supplier<String> currentBranchNameSupplier;
+  
+  /**
+   * Constructor.
+   * 
+   * @param isContextMenuShowing Tells us if the context menu is showing.
+   * @param currentBranchNameSupplier Gives us the current branch name.
+   */
+  public BranchesTreeCellRenderer(
+      BooleanSupplier isContextMenuShowing,
+      Supplier<String> currentBranchNameSupplier) {
+    this.isContextMenuShowing = isContextMenuShowing;
+    this.currentBranchNameSupplier = currentBranchNameSupplier;
+  }
 
   /**
-   * @see javax.swing.tree.DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree,
-   *      Object, boolean, boolean, boolean, int, boolean)
+   * @see DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
    */
   @Override
   public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
@@ -61,23 +83,24 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       Font font = label.getFont();
       label.setIcon(icon);
       label.setIconTextGap(18);
-      label.setHorizontalAlignment(label.CENTER);
-      label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
+      label.setHorizontalAlignment(SwingConstants.CENTER);
+      label.setFont(font.deriveFont(Font.PLAIN));
       label.setBorder(emptyBorder);
       if (!path.isEmpty()) {
         String[] split = path.split("/");
-        String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-        if (split[split.length - 1].contentEquals(branchName)) {
-          label.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
+        if (split[split.length - 1].equals(currentBranchNameSupplier.get())) {
+          label.setFont(font.deriveFont(Font.BOLD));
           label.setBorder(roundedLineBorder);
         }
       }
+      
       // Active/inactive table selection
       if (sel) {
         if (tree.hasFocus()) {
           setBorderSelectionColor(new Color(102,167,232));
           setBackgroundSelectionColor(defaultSelectionColor);
-        } else {
+        } else if (!isContextMenuShowing.getAsBoolean()) {
+          // TODO: why does the selection sometimes become inactive when showing the context menu?????????????? 
           // Do not render the tree as inactive if we have a contextual menu over it.
           setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
         }
