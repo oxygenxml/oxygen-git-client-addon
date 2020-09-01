@@ -65,7 +65,7 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
    * @param branchesToBeUpdated The branches on which the nodes will be created.
    */
   private void insertNodes(List<String> branchesToBeUpdated) {
-    branchesToBeUpdated.forEach((String branchName) -> TreeUtil.buildTreeFromString(this, branchName));
+    branchesToBeUpdated.forEach((String branchName) -> TreeUtil.buildTreeFromStringFullPath(this, branchName));
     branches.addAll(branchesToBeUpdated);
     TreeUtil.sortGitTree(this);
   }

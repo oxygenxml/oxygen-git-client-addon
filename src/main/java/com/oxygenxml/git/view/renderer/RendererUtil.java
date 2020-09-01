@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -70,12 +71,13 @@ public class RendererUtil {
    */
   public static RenderingInfo getRenderingInfo(String branchPath) {
     RenderingInfo renderingInfo = null;
-    if (branchPath.equals(BranchManagementConstants.LOCAL)) {
-      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.LOCAL), null);
-    } else if (branchPath.equals(BranchManagementConstants.REMOTE)) {
-      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.REMOTE), null);
+    if (branchPath.equals(Constants.R_HEADS)) {
+      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.LOCAL), BranchManagementConstants.LOCAL);
+    } else if (branchPath.equals(Constants.R_REMOTES)) {
+      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.REMOTE), BranchManagementConstants.REMOTE);
     } else {
-      renderingInfo = new RenderingInfo(null, null);
+      String[] split = branchPath.split("/");
+      renderingInfo = new RenderingInfo(null, split[split.length - 1]);
     }
     return renderingInfo;
   }

@@ -1,10 +1,7 @@
 package com.oxygenxml.git.view.branches;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.ListIterator;
 
 import javax.swing.JTree;
 
@@ -96,7 +93,6 @@ public class BranchManagementTest extends GitTestBase{
     
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
-    System.out.println(actualTree.toString());
     
     StringBuilder expectedTree = new StringBuilder();
     expectedTree.append("\n");
@@ -132,7 +128,6 @@ public class BranchManagementTest extends GitTestBase{
     
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
-    System.out.println(actualTree.toString());
     
     StringBuilder expectedTree = new StringBuilder();
     expectedTree.append("\n");
@@ -168,7 +163,6 @@ public class BranchManagementTest extends GitTestBase{
     
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
-    System.out.println(actualTree.toString());
     
     StringBuilder expectedTree = new StringBuilder();
     expectedTree.append("\n");
@@ -202,7 +196,6 @@ public class BranchManagementTest extends GitTestBase{
     
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
-    System.out.println(actualTree.toString());
     
     StringBuilder expectedTree = new StringBuilder();
     expectedTree.append("\n");

@@ -98,16 +98,82 @@ public class BranchManagementPanel extends JPanel {
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void repositoryChanged() {
-        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
         currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
       }
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
-        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
         currentBranchName = newBranch;
+        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
       }
     });
+    //TODO add and modify the focus listener such that the branch panel will gain focus on right click
+    //installFocusListener(this, createFocusListener());
     addTreeListeners();
+  }
+//  /**
+//   * Adds a focus listener on the component and its descendents.
+//   * 
+//   * @param c
+//   *          The component.
+//   * @param focusListener
+//   *          Focus Listener.
+//   */
+//  private void installFocusListener(Component c, FocusListener focusListener) {
+//    c.addFocusListener(focusListener);
+//
+//    if (c instanceof Container) {
+//      Container container = (Container) c;
+//      int componentCount = container.getComponentCount();
+//      for (int i = 0; i < componentCount; i++) {
+//        Component child = container.getComponent(i);
+//        installFocusListener(child, focusListener);
+//      }
+//    }
+//  }
+//  /**
+//   * @return The focus listener.
+//   */
+//  private FocusAdapter createFocusListener() {
+//    return new FocusAdapter() {
+//      boolean inTheView = false;
+//
+//      @Override
+//      public void focusGained(final FocusEvent e) {
+//        // The focus is somewhere in the view.
+//        if (!inTheView) {
+//          // EXM-40880: Invoke later so that the focus event gets processed.
+//          //SwingUtilities.invokeLater(() -> refreshSupport.call());
+//        }
+//        inTheView = true;
+//      }
+//
+//      @Override
+//      public void focusLost(FocusEvent e) {
+//        
+//        // The focus might still be somewhere in the view.
+//        if(e.getOppositeComponent() != null){
+//          Window windowAncestor = SwingUtilities.getWindowAncestor(e.getOppositeComponent());
+//          if (windowAncestor != null) {
+//            boolean contains = windowAncestor.toString().contains("MainFrame");
+//            if(contains && !SwingUtilities.isDescendingFrom(e.getOppositeComponent(), BranchManagementPanel.this)){
+//              inTheView = false;
+//            } else {
+//              inTheView = true;
+//            }
+//          }
+//        } else {
+//          inTheView = true;
+//        }
+//      }
+//    };
+//  }
+  /**
+   * 
+   * @return
+   */
+  public boolean isContextMenuShowing() {
+    return isContextMenuShowing;
   }
   
   /**
@@ -164,7 +230,7 @@ public class BranchManagementPanel extends JPanel {
     if (pathForLocation != null) {
       branchesTree.setSelectionPath(pathForLocation);
       BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(branchesTree);
-      return branchTreeActions.getActionsForBranchTree();
+      return branchTreeActions.getActionsForBranchNode();
     }
     return Collections.emptyList();
   }
@@ -256,7 +322,7 @@ public class BranchManagementPanel extends JPanel {
       List<Ref> branches = new ArrayList<>();
       branches.addAll(gitAccess.getLocalBranchList());
       branches.addAll(gitAccess.getRemoteBrachListForCurrentRepo());
-      branchList = branches.stream().map(branch -> rewriteBranchName(branch.getName())).collect(Collectors.toList());
+      branchList = branches.stream().map(branch -> branch.getName()).collect(Collectors.toList());
     }
     return branchList;
   }
@@ -295,25 +361,6 @@ public class BranchManagementPanel extends JPanel {
 //      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
     return repo;
-  }
-
-  /**
-   * Rewrites the path to the branch in order to explicitly show the branch types,
-   * such as "Local" or "Remote".
-   * 
-   * @param name The branch name to be altered.
-   * 
-   * @return The new name
-   */
-  public String rewriteBranchName(String name) {
-    String newBranchName;
-    name = name.replaceFirst("^(refs[/])", "");
-    if (name.contains("heads")) {
-      newBranchName = name.replaceFirst("^(heads)", BranchManagementConstants.LOCAL);
-    } else {
-      newBranchName = name.replaceFirst("^remotes", BranchManagementConstants.REMOTE);
-    }
-    return newBranchName;
   }
 
   /**

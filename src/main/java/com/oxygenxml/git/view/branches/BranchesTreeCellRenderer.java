@@ -4,20 +4,19 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreePath;
+
+import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.historycomponents.RoundedLineBorder;
 import com.oxygenxml.git.view.renderer.RendererUtil;
 import com.oxygenxml.git.view.renderer.RenderingInfo;
@@ -65,16 +64,16 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
 
     JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
     
-    Icon icon = Icons.getIcon(Icons.LOCAL_REPO);
-    String path = "";
-    TreePath treePath = tree.getPathForRow(row);
-    if (treePath != null) {
-      path = TreeUtil.getStringPath(treePath);
-      if (!path.isEmpty()) {
-        RenderingInfo renderingInfo = RendererUtil.getRenderingInfo(path);
-        if (renderingInfo != null) {
-          icon = renderingInfo.getIcon();
-        }
+    Icon icon = null;
+    String text = "";
+    String path = value.toString();
+    if (((DefaultMutableTreeNode) value).getParent() == null) {
+      icon = Icons.getIcon(Icons.LOCAL_REPO);
+    } else {
+      RenderingInfo renderingInfo = RendererUtil.getRenderingInfo(path);
+      if (renderingInfo != null) {
+        icon = renderingInfo.getIcon();
+        text = renderingInfo.getTooltip();
       }
     }
 
@@ -83,19 +82,15 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       EmptyBorder emptyBorder = new EmptyBorder(roundedLineBorder.getBorderInsets(this));
       Font font = label.getFont();
       label.setIcon(icon);
-      label.setIconTextGap(18);
-      label.setHorizontalAlignment(SwingConstants.CENTER);
+      if (!text.isEmpty()) {
+        label.setText(text);
+      }
       label.setFont(font.deriveFont(Font.PLAIN));
       label.setBorder(emptyBorder);
-      if (!path.isEmpty()) {
-        String[] split = path.split("/");
-        if (split[0].equals(BranchManagementConstants.LOCAL)
-            && split[split.length - 1].equals(currentBranchNameSupplier.get())) {
-          label.setFont(font.deriveFont(Font.BOLD));
-          label.setBorder(roundedLineBorder);
-        }
+      if (path.contains(Constants.R_HEADS) && path.contains(currentBranchNameSupplier.get())) {
+        label.setFont(font.deriveFont(Font.BOLD));
+        label.setBorder(roundedLineBorder);
       }
-      
       // Active/inactive table selection
       if (sel) {
         if (tree.hasFocus()) {
