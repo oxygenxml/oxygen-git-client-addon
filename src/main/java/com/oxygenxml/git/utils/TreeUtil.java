@@ -70,37 +70,34 @@ public class TreeUtil {
 	}
 
   /**
-   * Builds a tree from a given forward slash delimited string and puts the full path to the node in its user object.
+   * Builds a tree from a given forward slash delimited string and puts the full
+   * path to the node in its user object.
    * 
-   * @param model
-   *          The tree model
-   * @param str
-   *          The string to build the tree from
+   * @param model The tree model
+   * @param str   The string to build the tree from
    */
   public static void buildTreeFromStringFullPath(final DefaultTreeModel model, final String str) {
-    // Fetch the root node
     GitTreeNode root = (GitTreeNode) model.getRoot();
-
-    // Split the string around the delimiter
     String[] strings = str.split("/");
 
     // Create a node object to use for traversing down the tree as it
     // is being created
     GitTreeNode node = root;
-    StringBuilder s = new StringBuilder();
-    // Iterate of the string array
-    for (String string : strings) {
-      s.append(string);
-      s.append("/");
-      if (!s.toString().contentEquals(Constants.R_REFS)) {
+    StringBuilder currentNodePath = new StringBuilder();
+    for (int i = 0; i < strings.length; ++i) {
+      currentNodePath.append(strings[i]);
+      if (i < strings.length - 1) {
+        currentNodePath.append("/");
+      }
+      // Make sure not to add the refs/ node in the tree.
+      if (!currentNodePath.toString().equals(Constants.R_REFS)) {
         // Look for the index of a node at the current level that
         // has a value equal to the current string
-        int index = childIndex(node, s.toString());
+        int index = childIndex(node, currentNodePath.toString());
 
         // Index less than 0, this is a new node not currently present on the tree
         if (index < 0) {
-          // Add the new node
-          GitTreeNode newChild = new GitTreeNode(s.toString());
+          GitTreeNode newChild = new GitTreeNode(currentNodePath.toString());
           node.insert(newChild, node.getChildCount());
           node = newChild;
         }

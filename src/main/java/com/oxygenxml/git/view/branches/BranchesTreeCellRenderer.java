@@ -87,7 +87,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       }
       label.setFont(font.deriveFont(Font.PLAIN));
       label.setBorder(emptyBorder);
-      if (path.contains(Constants.R_HEADS) && path.contains(currentBranchNameSupplier.get())) {
+      if (path.equals(Constants.R_HEADS + currentBranchNameSupplier.get())) {
         label.setFont(font.deriveFont(Font.BOLD));
         label.setBorder(roundedLineBorder);
       }
