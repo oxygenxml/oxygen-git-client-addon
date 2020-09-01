@@ -48,6 +48,7 @@ public class BranchTreeMenuActionsProvider {
    */
   public BranchTreeMenuActionsProvider(JTree branchesTree) {
     GitTreeNode node = (GitTreeNode) branchesTree.getSelectionPath().getLastPathComponent();
+    nodeActions = new ArrayList<>();
     if(node.isLeaf()) {
       createBranchTreeActions(node);
     }
@@ -59,7 +60,6 @@ public class BranchTreeMenuActionsProvider {
    * @param node The node for which to create actions.
    */
   private void createBranchTreeActions(GitTreeNode node) {
-    nodeActions = new ArrayList<>();
     String nodeContent = (String) node.getUserObject();
     addCheckoutBranchAction(nodeContent);
     //if the current node is a local branch, add new branch action.
@@ -79,6 +79,32 @@ public class BranchTreeMenuActionsProvider {
   }
   
   /**
+   * Creates the path to a branch without having its type node, starting from the
+   * full path of the node that contains the branch.
+   * 
+   * @param nodePath                The path of the node that contains the branch.
+   * 
+   * @param startingIndexBranchType The position from which to start to add to the
+   *                                branch path, depending on type of the branch.
+   *                                This parameter can only be
+   *                                {@link com.oxygenxml.git.view.branches.BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL} or
+   *                                {@link com.oxygenxml.git.view.branches.BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL}
+   * 
+   * @return The branch path in string format.
+   */
+  private String createBranchPath(String nodePath, int startingIndexBranchType) {
+    StringBuilder branchPath = new StringBuilder();
+    String[] split = nodePath.split("/");
+    for (int i = startingIndexBranchType; i < split.length; i++) {
+      branchPath.append(split[i]);
+      if (i < split.length - 1) {
+        branchPath.append("/");
+      }
+    }
+    return branchPath.toString();
+  }
+  
+  /**
    * Creates the checkout action for local and remote branches and adds it to a
    * list of actions.
    * 
@@ -90,12 +116,10 @@ public class BranchTreeMenuActionsProvider {
     nodeActions.add(new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String[] split = nodePath.split("/");
-        String branchName = split[split.length - 1];
         if (nodePath.contains(Constants.R_HEADS)) {
           GitOperationScheduler.getInstance().schedule(() -> {
             try {
-              gitAccess.setBranch(branchName);
+              gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
             } catch (CheckoutConflictException ex) {
               PluginWorkspaceProvider.getPluginWorkspace()
                   .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
@@ -105,7 +129,7 @@ public class BranchTreeMenuActionsProvider {
           });
         } else if (nodePath.contains(Constants.R_REMOTES)) {
           try {
-            gitAccess.checkoutRemoteBranch(branchName);
+            gitAccess.checkoutRemoteBranch(createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL));
           } catch (GitAPIException ex) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
@@ -121,14 +145,12 @@ public class BranchTreeMenuActionsProvider {
    *                 represents the branch.
    */
   private void addNewBranchAction(String nodePath) {
-    String[] split = nodePath.split("/");
-    String branchName = split[split.length - 1];
     nodeActions.add(new AbstractAction("Create new branch") {
       @Override
       public void actionPerformed(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
-            gitAccess.setBranch(branchName);
+            gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
             String result = JOptionPane.showInputDialog(
                 (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
                 Translator.getInstance().getTranslation(Tags.BRANCH_NAME),
@@ -155,8 +177,6 @@ public class BranchTreeMenuActionsProvider {
    *                 represents the branch.
    */
   private void createDeleteBranchAction(String nodePath) {
-    String[] split = nodePath.split("/");
-    String branchName = split[split.length - 1];
     nodeActions.add(new AbstractAction("Delete branch - option in progress") {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -164,7 +184,7 @@ public class BranchTreeMenuActionsProvider {
         if (nodePath.contains(Constants.R_HEADS)) {
           GitOperationScheduler.getInstance().schedule(() -> {
             try {
-              gitAccess.setBranch(branchName);
+              gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
               //TODO the delete action for local
             } catch (CheckoutConflictException ex) {
               PluginWorkspaceProvider.getPluginWorkspace()
@@ -176,7 +196,7 @@ public class BranchTreeMenuActionsProvider {
         } else if (nodePath.contains(Constants.R_REMOTES)) {
           GitOperationScheduler.getInstance().schedule(() -> {
             try {
-              gitAccess.setBranch(branchName);
+              gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL));
               //TODO the delete action for remote
             } catch (CheckoutConflictException ex) {
               PluginWorkspaceProvider.getPluginWorkspace()

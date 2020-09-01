@@ -12,5 +12,6 @@ public final class BranchManagementConstants {
   public static final String LOCAL = "Local";
   public static final String REMOTE = "Remote";
   public static final String REMOTE_ORIGIN = "Remote/origin";
-  public static final int BRANCH_TYPE_NODE_TREE_LEVEL = 1;
+  public static final int LOCAL_BRANCH_NODE_TREE_LEVEL = 2;
+  public static final int REMOTE_BRANCH_NODE_TREE_LEVEL = 3;
 }
