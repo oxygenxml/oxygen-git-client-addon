@@ -130,8 +130,8 @@ For resources from Git repositories, this add-on also contributes a variety of a
 
 ## Preferences
 
-The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (Options menu > Preferences) and go to **Plugins > Git Client**. This preferences page includes the following options:
-- **Notify me about new commits in the remote repository** - when this option is active, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.
+The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (Options menu -> Preferences) and go to **Plugins > Git Client**. This preferences page includes the following option:
+- **Notify me about new commits in the remote repository** - When this option is selected, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.
 
 Copyright and License
 ---------------------
