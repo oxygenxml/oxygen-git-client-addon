@@ -31,11 +31,13 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.GitCommand;
 import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Displays the diff depending on the what change type the file is.
@@ -45,7 +47,12 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class DiffPresenter {
 
-	/**
+  /**
+   * i18n
+   */
+	private static final Translator translator = Translator.getInstance();
+	
+  /**
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(DiffPresenter.class);
@@ -255,16 +262,14 @@ public class DiffPresenter {
 			    public void componentHidden(ComponentEvent e) {
 			      long diffClosedTimeStamp = localCopy.lastModified();
 			      if (diffClosedTimeStamp == diffStartedTimeStamp) {
-			        String[] options = new String[] { "   Yes   ", "   No   " };
-			        int[] optonsId = new int[] { 0, 1 };
-			        String message = isRebase ? Translator.getInstance().getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
-			            : Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
-              int response = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showConfirmDialog(
-			            Translator.getInstance().getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
+			        String message = isRebase ? translator.getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
+			            : translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
+			        int response = FileStatusDialog.showWarningMessageWithConfirmation(
+			            translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
 			            message,
-			            options,
-			            optonsId);
-			        if (response == 0) {
+			            translator.getTranslation(Tags.YES),
+			            translator.getTranslation(Tags.NO));
+			        if (response == OKCancelDialog.RESULT_OK) {
 			          stageController.doGitCommand(
 			              Arrays.asList(file),
 			              GitCommand.RESOLVE_USING_MINE);

@@ -71,7 +71,7 @@ public class FileStatusDialog extends OKCancelDialog {
 		    UIConstants.COMPONENT_TOP_PADDING, 
 		    UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, 
-				UIConstants.COMPONENT_RIGHT_PADDING);
+				10);
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0;
@@ -152,6 +152,27 @@ public class FileStatusDialog extends OKCancelDialog {
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
     FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
     dialog.setVisible(true);
+  }
+  
+  /**
+   * Presents a warning message where the user also has to confirm something.
+   * 
+   * @param title             Title of the Dialog
+   * @param message           The message.
+   * @param okButtonLabel     The label of the OK button.
+   * @param cancelButtonLabel The label of the cancel dialog.
+   * 
+   * @return The option chosen by the user. {@link #RESULT_OK} or {@link #RESULT_CANCEL}
+   */
+  public static int showWarningMessageWithConfirmation(
+      String title,
+      String message,
+      String okButtonLabel,
+      String cancelButtonLabel) {
+    FileStatusDialog dialog = 
+        new FileStatusDialog(Icons.WARNING_ICON,title, null, null, message, okButtonLabel, cancelButtonLabel);
+    dialog.setVisible(true);
+    return dialog.getResult();
   }
   
   /**
