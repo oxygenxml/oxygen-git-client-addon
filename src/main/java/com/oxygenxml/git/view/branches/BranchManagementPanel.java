@@ -173,7 +173,7 @@ public class BranchManagementPanel extends JPanel {
     TreePath pathForLocation = branchesTree.getPathForLocation(nodePoint.x, nodePoint.y);
     if (pathForLocation != null) {
       branchesTree.setSelectionPath(pathForLocation);
-      BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(branchesTree);
+      BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(this);
       return branchTreeActions.getActionsForBranchNode();
     }
     return Collections.emptyList();

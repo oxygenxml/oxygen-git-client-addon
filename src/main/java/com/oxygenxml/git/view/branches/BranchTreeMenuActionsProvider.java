@@ -8,11 +8,11 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-import javax.swing.JTree;
 
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -42,12 +42,18 @@ public class BranchTreeMenuActionsProvider {
   private List<AbstractAction> nodeActions;
   
   /**
+   * The branch management panel.
+   */
+  private BranchManagementPanel branchesPanel;
+  
+  /**
    * Constructor.
    * 
    * @param branchesTree The tree used for creating actions.
    */
-  public BranchTreeMenuActionsProvider(JTree branchesTree) {
-    GitTreeNode node = (GitTreeNode) branchesTree.getSelectionPath().getLastPathComponent();
+  public BranchTreeMenuActionsProvider(BranchManagementPanel branchesPanel) {
+    this.branchesPanel = branchesPanel;
+    GitTreeNode node = (GitTreeNode) branchesPanel.getTree().getSelectionPath().getLastPathComponent();
     nodeActions = new ArrayList<>();
     if(node.isLeaf()) {
       createBranchTreeActions(node);
@@ -66,7 +72,7 @@ public class BranchTreeMenuActionsProvider {
     if(nodeContent.contains(Constants.R_HEADS)) {
       addNewBranchAction(nodeContent);
     }
-    createDeleteBranchAction(nodeContent);
+    addDeleteBranchAction(nodeContent);
   }
   
   /**
@@ -128,11 +134,29 @@ public class BranchTreeMenuActionsProvider {
             }
           });
         } else if (nodePath.contains(Constants.R_REMOTES)) {
-          try {
-            gitAccess.checkoutRemoteBranch(createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL));
-          } catch (GitAPIException ex) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-          }
+          boolean branchAlreadyExists = false;
+          String newBranchPath = createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
+          do {
+            branchAlreadyExists = false;
+            try {
+              String newBranchName = (String) JOptionPane.showInputDialog(
+                  (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+                  Translator.getInstance().getTranslation(Tags.BRANCH_NAME),
+                  Translator.getInstance().getTranslation(Tags.CHECKOUT_BRANCH), JOptionPane.PLAIN_MESSAGE, null, null,
+                  newBranchPath);
+              if (newBranchName != null && !newBranchName.isEmpty()) {
+                gitAccess.checkoutRemoteBranchWithNewName(newBranchPath, newBranchName);
+              }
+            } catch (CheckoutConflictException ex) {
+              PluginWorkspaceProvider.getPluginWorkspace()
+                  .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
+            } catch (RefAlreadyExistsException ex) {
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+              branchAlreadyExists = true;
+            } catch (GitAPIException ex) {
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+            }
+          } while (branchAlreadyExists);
         }
       }
     });
@@ -151,12 +175,12 @@ public class BranchTreeMenuActionsProvider {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
             gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
-            String result = JOptionPane.showInputDialog(
+            String newBranchName = JOptionPane.showInputDialog(
                 (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
                 Translator.getInstance().getTranslation(Tags.BRANCH_NAME),
                 Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), JOptionPane.PLAIN_MESSAGE);
-            if (result != null && !result.isEmpty()) {
-              GitAccess.getInstance().checkoutCommitAndCreateBranch(result,
+            if (newBranchName != null && !newBranchName.isEmpty()) {
+              GitAccess.getInstance().checkoutCommitAndCreateBranch(newBranchName,
                   gitAccess.getLatestCommitOnCurrentBranch().getName());
             }
           } catch (CheckoutConflictException ex) {
@@ -176,7 +200,7 @@ public class BranchTreeMenuActionsProvider {
    * @param nodePath Node A string that contains the full path to the node that
    *                 represents the branch.
    */
-  private void createDeleteBranchAction(String nodePath) {
+  private void addDeleteBranchAction(String nodePath) {
     nodeActions.add(new AbstractAction("Delete branch - option in progress") {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -184,24 +208,18 @@ public class BranchTreeMenuActionsProvider {
         if (nodePath.contains(Constants.R_HEADS)) {
           GitOperationScheduler.getInstance().schedule(() -> {
             try {
-              gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
-              //TODO the delete action for local
-            } catch (CheckoutConflictException ex) {
-              PluginWorkspaceProvider.getPluginWorkspace()
-                  .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-            } catch (GitAPIException | JGitInternalException ex) {
+              gitAccess.deleteBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
+              branchesPanel.showBranches();
+            } catch (JGitInternalException ex) {
               PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
             }
           });
         } else if (nodePath.contains(Constants.R_REMOTES)) {
           GitOperationScheduler.getInstance().schedule(() -> {
             try {
-              gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL));
-              //TODO the delete action for remote
-            } catch (CheckoutConflictException ex) {
-              PluginWorkspaceProvider.getPluginWorkspace()
-                  .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-            } catch (GitAPIException | JGitInternalException ex) {
+              //TODO change the functionality, this does not delete the remote branch 
+              gitAccess.deleteRemoteBranch(createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL));
+            } catch (JGitInternalException ex) {
               PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
             }
           });

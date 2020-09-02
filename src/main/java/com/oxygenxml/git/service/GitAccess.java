@@ -29,6 +29,7 @@ import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutCommand.Stage;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CreateBranchCommand;
+import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.LogCommand;
@@ -46,6 +47,7 @@ import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.SubmoduleAddCommand;
 import org.eclipse.jgit.api.SubmoduleStatusCommand;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
+import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -66,6 +68,7 @@ import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -972,6 +975,41 @@ public class GitAccess {
 		  logger.error(e, e);
 		}
 
+	}
+	/**
+	 * Deletes from the current repository a local branch with a specified name.
+	 * @param branchName The name of the branch to be deleted.
+	 */
+	public void deleteBranch(String branchName) {
+	  DeleteBranchCommand command = git.branchDelete();
+	  command.setBranchNames(branchName);
+	  command.setForce(true);
+	  try {
+	      command.call();
+	  } catch(CannotDeleteCurrentBranchException e) {
+	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+	  } catch (GitAPIException e) {
+	    logger.error("Error while deleting branch [" + branchName + "]", e);
+	  }
+	}
+	/**
+	 * Deletes from the current repository a remote branch with a specified name.
+	 * @param branchName The name of the branch to be deleted.
+	 */
+	//TODO not working correctly
+	public void deleteRemoteBranch(String branchName) {
+	  git.fetch();
+	  DeleteBranchCommand command = git.branchDelete();
+    command.setBranchNames(Constants.R_REMOTES + "origin/" + branchName);
+    command.setForce(true);
+    try {
+        command.call();
+        git.push();
+    } catch(CannotDeleteCurrentBranchException e) {
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+    } catch (GitAPIException e) {
+      logger.error("Error while deleting branch [" + branchName + "]", e);
+    }
 	}
 
 	/**
@@ -1939,6 +1977,26 @@ public class GitAccess {
 	  
 	  fireBranchChanged(oldBranchName, remoteBranchName);
 	}
+	
+	/**
+   * Creates a local branch for a remote branch (which it starts tracking), and sets it as the current branch.
+   * 
+   * @param remoteBranchName The branch to checkout (short name).
+   * @param newBranchName The name of the new branch created at checkout.
+   * @throws GitAPIException 
+   */
+  public void checkoutRemoteBranchWithNewName(String remoteBranchName, String newBranchName) throws GitAPIException{
+    String oldBranchName = getBranchInfo().getBranchName();
+
+    git.checkout()
+        .setCreateBranch(true)
+        .setName(newBranchName)
+        .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+        .setStartPoint("origin/" + remoteBranchName)
+        .call();
+    
+    fireBranchChanged(oldBranchName, newBranchName);
+  }
 	
 	/**
 	 * Check out a specific commit and create a branch with it.
