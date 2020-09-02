@@ -32,6 +32,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Ref;
@@ -107,67 +108,9 @@ public class BranchManagementPanel extends JPanel {
         SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
       }
     });
-    //TODO add and modify the focus listener such that the branch panel will gain focus on right click
-    //installFocusListener(this, createFocusListener());
     addTreeListeners();
   }
-//  /**
-//   * Adds a focus listener on the component and its descendents.
-//   * 
-//   * @param c
-//   *          The component.
-//   * @param focusListener
-//   *          Focus Listener.
-//   */
-//  private void installFocusListener(Component c, FocusListener focusListener) {
-//    c.addFocusListener(focusListener);
-//
-//    if (c instanceof Container) {
-//      Container container = (Container) c;
-//      int componentCount = container.getComponentCount();
-//      for (int i = 0; i < componentCount; i++) {
-//        Component child = container.getComponent(i);
-//        installFocusListener(child, focusListener);
-//      }
-//    }
-//  }
-//  /**
-//   * @return The focus listener.
-//   */
-//  private FocusAdapter createFocusListener() {
-//    return new FocusAdapter() {
-//      boolean inTheView = false;
-//
-//      @Override
-//      public void focusGained(final FocusEvent e) {
-//        // The focus is somewhere in the view.
-//        if (!inTheView) {
-//          // EXM-40880: Invoke later so that the focus event gets processed.
-//          //SwingUtilities.invokeLater(() -> refreshSupport.call());
-//        }
-//        inTheView = true;
-//      }
-//
-//      @Override
-//      public void focusLost(FocusEvent e) {
-//        
-//        // The focus might still be somewhere in the view.
-//        if(e.getOppositeComponent() != null){
-//          Window windowAncestor = SwingUtilities.getWindowAncestor(e.getOppositeComponent());
-//          if (windowAncestor != null) {
-//            boolean contains = windowAncestor.toString().contains("MainFrame");
-//            if(contains && !SwingUtilities.isDescendingFrom(e.getOppositeComponent(), BranchManagementPanel.this)){
-//              inTheView = false;
-//            } else {
-//              inTheView = true;
-//            }
-//          }
-//        } else {
-//          inTheView = true;
-//        }
-//      }
-//    };
-//  }
+  
   /**
    * 
    * @return
@@ -196,6 +139,7 @@ public class BranchManagementPanel extends JPanel {
     branchesTree.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
+        branchesTree.requestFocus();
         if(e.isPopupTrigger()) {
           showContextualMenu(e);
         }
@@ -275,6 +219,7 @@ public class BranchManagementPanel extends JPanel {
     branchesTree.setCellRenderer(new BranchesTreeCellRenderer(() -> isContextMenuShowing, () -> currentBranchName));
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
+    branchesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
     ToolTipManager.sharedInstance().registerComponent(branchesTree);
   }
@@ -350,7 +295,7 @@ public class BranchManagementPanel extends JPanel {
    * @return the current repository or <code>null</code> if there's no repository
    *         selected.
    */
-  private Repository getCurrentRepository() {
+  protected Repository getCurrentRepository() {
     Repository repo = null;
     try {
       repo = GitAccess.getInstance().getRepository();

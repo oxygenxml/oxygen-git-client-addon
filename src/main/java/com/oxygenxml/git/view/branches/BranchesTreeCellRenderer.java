@@ -97,8 +97,6 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
           setBorderSelectionColor(new Color(102,167,232));
           setBackgroundSelectionColor(defaultSelectionColor);
         } else if (!isContextMenuShowing.getAsBoolean()) {
-          // TODO: why does the selection sometimes become inactive when showing the context menu?????????????? 
-          // Do not render the tree as inactive if we have a contextual menu over it.
           setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
         }
       }
@@ -114,6 +112,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   @Override
   public void paint(Graphics g) {
     if (selected) {
+      g.setColor(getBackgroundSelectionColor());
+      g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
       hasFocus = false;
       super.paint(g);
       paintBorder(g, 0, 0, getWidth(), getHeight());      
