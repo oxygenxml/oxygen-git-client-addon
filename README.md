@@ -128,6 +128,11 @@ At this point, the next actions depend on which **Pull** action was chosen:
 
 For resources from Git repositories, this add-on also contributes a variety of actions in the contextual menus of the **Project** side-view and the current editor (Text and Author pages). These actions include: **Show history**, **Show blame**, **Git Diff** (only in the Project view), and **Commit** (only in the Project view).
 
+## Preferences
+
+The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (Options > Preferences) and go to **Plugins > Git Client**. This preferences page includes the following options:
+- **Notify me about new commits in the remote repository** - when this option is active, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.
+
 Copyright and License
 ---------------------
 Copyright 2018 Syncro Soft SRL.
