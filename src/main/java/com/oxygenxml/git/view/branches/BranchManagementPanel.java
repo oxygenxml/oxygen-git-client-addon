@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -46,6 +47,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.CoalescedEventUpdater;
+import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
@@ -54,7 +56,7 @@ import ro.sync.exml.workspace.api.standalone.ui.Tree;
  * Branch management panel. Contains the branches tree (local + remote
  * branches).
  */
-public class BranchManagementPanel extends JPanel {
+public class BranchManagementPanel extends JPanel implements BranchTreeRefresher {
 
   /**
    * Git API access.
@@ -136,12 +138,30 @@ public class BranchManagementPanel extends JPanel {
       }
     });
     
+    branchesTree.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+          TreePath selectionPath = branchesTree.getSelectionPath();
+          if (selectionPath != null) {
+            Rectangle pathBounds = branchesTree.getPathBounds(selectionPath);
+            if (pathBounds != null) {
+              Point nodePoint = new Point(pathBounds.x, pathBounds.y + pathBounds.height);
+              showContextualMenu(selectionPath, nodePoint);
+            }
+          }
+        }
+      }
+    });
+    
     branchesTree.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
         branchesTree.requestFocus();
         if(e.isPopupTrigger()) {
-          showContextualMenu(e);
+          Point nodePoint = e.getPoint();
+          TreePath pathForLocation = branchesTree.getPathForLocation(nodePoint.x, nodePoint.y);
+          showContextualMenu(pathForLocation, nodePoint);
         }
       }
       @Override
@@ -154,7 +174,9 @@ public class BranchManagementPanel extends JPanel {
             && !e.isPopupTrigger()
             && e.getClickCount() == 2) {
           e.consume();
-          List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(e);
+          Point nodePoint = e.getPoint();
+          TreePath pathForLocation = branchesTree.getPathForLocation(nodePoint.x, nodePoint.y);
+          List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(pathForLocation);
           if(!actionsForSelectedNode.isEmpty()) {
             actionsForSelectedNode.get(0).actionPerformed(null);
           }
@@ -168,12 +190,11 @@ public class BranchManagementPanel extends JPanel {
    * @param e Mouse event.
    * @return The list of actions.
    */
-  private List<AbstractAction> getActionsList4SelectedNode(MouseEvent e) {
-    Point nodePoint = e.getPoint();
-    TreePath pathForLocation = branchesTree.getPathForLocation(nodePoint.x, nodePoint.y);
+  private List<AbstractAction> getActionsList4SelectedNode(TreePath pathForLocation) {
     if (pathForLocation != null) {
       branchesTree.setSelectionPath(pathForLocation);
-      BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(this);
+      BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(this,
+          (GitTreeNode) branchesTree.getSelectionPath().getLastPathComponent());
       return branchTreeActions.getActionsForBranchNode();
     }
     return Collections.emptyList();
@@ -185,8 +206,8 @@ public class BranchManagementPanel extends JPanel {
    * Creates the contextual menu and populates it with action for the selected node.
    * @param e The Mouse Event.
    */
-  private void showContextualMenu(MouseEvent e) {
-    List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(e);
+  private void showContextualMenu(TreePath  selectionPath, Point point) {
+    List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(selectionPath);
     if (!actionsForSelectedNode.isEmpty()) {
       JPopupMenu popupMenu = new JPopupMenu();
       popupMenu.addPopupMenuListener(new PopupMenuListener() {
@@ -205,7 +226,7 @@ public class BranchManagementPanel extends JPanel {
         }
       });
       actionsForSelectedNode.forEach(popupMenu::add);
-      popupMenu.show(branchesTree, e.getPoint().x, e.getPoint().y);
+      popupMenu.show(branchesTree, point.x, point.y);
     }
   }
 
@@ -324,13 +345,13 @@ public class BranchManagementPanel extends JPanel {
         } else {
           searchBar.selectAll();
         }
-        searchBar.setForeground(Color.BLACK);
+        searchBar.setForeground(getForeground());
       }
       @Override
       public void focusLost(FocusEvent e) {
         if (searchBar.getText().isEmpty()) {
           searchBar.setText(translator.getTranslation(Tags.FILTER_HINT));
-          searchBar.setForeground(Color.GRAY);
+          searchBar.setForeground(searchBar.getDisabledTextColor());
         }
       }
     });

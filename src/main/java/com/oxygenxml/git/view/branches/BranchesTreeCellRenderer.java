@@ -97,6 +97,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
           setBorderSelectionColor(new Color(102,167,232));
           setBackgroundSelectionColor(defaultSelectionColor);
         } else if (!isContextMenuShowing.getAsBoolean()) {
+          setBorderSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
           setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
         }
       }

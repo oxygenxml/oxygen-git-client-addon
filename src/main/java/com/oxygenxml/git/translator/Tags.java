@@ -14,6 +14,14 @@ public class Tags {
     // Nothing.
   }
   /**
+   * The confirmation message when trying to delete a branch.
+   */
+  public static final String CONFIRMATION_DIALOG_DELETE_BRANCH = "Confirmation_dialog_delete_branch";
+  /**
+   * Delete branch.
+   */
+  public static final String DELETE_BRANCH = "Delete_branch";
+  /**
    * The tool tip for the button that opens the branch manager side view.
    */
   public static final String BRANCH_MANAGER_BUTTON_TOOL_TIP = "Branch_manager_button_tool_tip";
