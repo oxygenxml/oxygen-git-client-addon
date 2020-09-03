@@ -21,6 +21,9 @@ import com.oxygenxml.git.view.historycomponents.RoundedLineBorder;
 import com.oxygenxml.git.view.renderer.RendererUtil;
 import com.oxygenxml.git.view.renderer.RenderingInfo;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.util.ColorTheme;
+
 /**
  * Renderer for the nodes icon in the branches tree, based on the path to the
  * node.
@@ -33,6 +36,10 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * Default selection color.
    */
   private final Color defaultSelectionColor = getBackgroundSelectionColor();
+  /**
+   * Default border color for selection.
+   */
+  private final Color defaultBorderSelectionColor = new Color(102,167,232);
   /**
    * Tells us if the context menu is showing.
    */
@@ -78,23 +85,27 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     }
 
     if (label != null) {
-      RoundedLineBorder roundedLineBorder = new RoundedLineBorder(label.getForeground(), 1, 8, true);
-      EmptyBorder emptyBorder = new EmptyBorder(roundedLineBorder.getBorderInsets(this));
-      Font font = label.getFont();
       label.setIcon(icon);
       if (!text.isEmpty()) {
         label.setText(text);
       }
+      
+      Font font = label.getFont();
       label.setFont(font.deriveFont(Font.PLAIN));
-      label.setBorder(emptyBorder);
+      RoundedLineBorder roundedLineBorder = new RoundedLineBorder(label.getForeground(), 1, 8, true);
+      label.setBorder(new EmptyBorder(roundedLineBorder.getBorderInsets(this)));
       if (path.equals(Constants.R_HEADS + currentBranchNameSupplier.get())) {
+        // Current branch is bold and has border.
         label.setFont(font.deriveFont(Font.BOLD));
         label.setBorder(roundedLineBorder);
       }
+      
       // Active/inactive table selection
       if (sel) {
         if (tree.hasFocus()) {
-          setBorderSelectionColor(new Color(102,167,232));
+          ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
+          setBorderSelectionColor(colorTheme.isDarkTheme() ? defaultSelectionColor 
+              : defaultBorderSelectionColor);
           setBackgroundSelectionColor(defaultSelectionColor);
         } else if (!isContextMenuShowing.getAsBoolean()) {
           setBorderSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
@@ -118,7 +129,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       hasFocus = false;
       super.paint(g);
       paintBorder(g, 0, 0, getWidth(), getHeight());      
-    }else {
+    } else {
       super.paint(g);
     }
   }
@@ -132,8 +143,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    */
   private void paintBorder(Graphics g, int x, int y, int w, int h) {
     Color bsColor = getBorderSelectionColor();
-
-    if (bsColor != null && (selected)) {
+    if (bsColor != null && selected) {
         g.setColor(bsColor);
         g.drawRect(x, y, w - 1, h - 1);
     }
