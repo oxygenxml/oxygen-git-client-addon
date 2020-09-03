@@ -200,7 +200,8 @@ public class BranchTreeMenuActionsProvider {
                 Translator.getInstance().getTranslation(Tags.BRANCH_NAME),
                 Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), JOptionPane.PLAIN_MESSAGE);
             if (newBranchName != null && !newBranchName.isEmpty()) {
-              GitAccess.getInstance().checkoutCommitAndCreateBranch(newBranchName,
+              GitAccess.getInstance().checkoutCommitAndCreateBranch(
+                  newBranchName,
                   gitAccess.getLatestCommitOnCurrentBranch().getName());
             }
           } catch (CheckoutConflictException ex) {
@@ -229,9 +230,9 @@ public class BranchTreeMenuActionsProvider {
             translator.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
           GitOperationScheduler.getInstance().schedule(() -> {
             try {
-              gitAccess
-                  .deleteBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
-              branchTreeRefresher.showBranches();
+              String branch = createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
+              gitAccess.deleteBranch(branch);
+              branchTreeRefresher.refreshBranchesTree();
             } catch (JGitInternalException ex) {
               PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
             }
@@ -254,8 +255,8 @@ public class BranchTreeMenuActionsProvider {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
             // TODO change the functionality, this does not delete the remote branch
-            gitAccess.deleteRemoteBranch(
-                createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL));
+            String branch = createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
+            gitAccess.deleteRemoteBranch(branch);
           } catch (JGitInternalException ex) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }

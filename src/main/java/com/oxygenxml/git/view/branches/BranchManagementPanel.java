@@ -53,10 +53,9 @@ import com.oxygenxml.git.view.dialog.UIUtil;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 /**
- * Branch management panel. Contains the branches tree (local + remote
- * branches).
+ * Branch management panel. Contains the branches tree (local + remote branches).
  */
-public class BranchManagementPanel extends JPanel implements BranchTreeRefresher {
+public class BranchManagementPanel extends JPanel {
 
   /**
    * Git API access.
@@ -66,12 +65,13 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
   /**
    * A field for searching branches in the current repository.
    */
-  private JTextField searchBar;
+  private JTextField searchField;
 
   /**
    * Logger for this class.
    */
-  private Logger LOGGER = Logger.getLogger(BranchManagementPanel.class);
+  @SuppressWarnings("unused")
+  private static final Logger LOGGER = Logger.getLogger(BranchManagementPanel.class);
   
   /**
    * Translator for translation.
@@ -92,6 +92,11 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
    * The name of the current branch.
    */
   private String currentBranchName;
+  
+  /**
+   * <code>true</code> if the context menu is showing.
+   */
+  private boolean isContextMenuShowing;
 
   /**
    * Public constructor
@@ -102,20 +107,19 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
       @Override
       public void repositoryChanged() {
         currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
+        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
       }
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
         currentBranchName = newBranch;
-        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
+        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
       }
     });
     addTreeListeners();
   }
   
   /**
-   * 
-   * @return
+   * @return <code>true</code> if the context menu is showing.
    */
   public boolean isContextMenuShowing() {
     return isContextMenuShowing;
@@ -131,7 +135,6 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
       public void treeExpanded(TreeExpansionEvent event) {
         TreeUtil.expandSingleChildPath(branchesTree, event);
       }
-
       @Override
       public void treeCollapsed(TreeExpansionEvent event) {
         // Nothing
@@ -157,6 +160,7 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
     branchesTree.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
+        // Show context menu
         branchesTree.requestFocus();
         if(e.isPopupTrigger()) {
           Point nodePoint = e.getPoint();
@@ -173,6 +177,7 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
         if (!e.isConsumed()
             && !e.isPopupTrigger()
             && e.getClickCount() == 2) {
+          // Checkout branch on double click
           e.consume();
           Point nodePoint = e.getPoint();
           TreePath pathForLocation = branchesTree.getPathForLocation(nodePoint.x, nodePoint.y);
@@ -187,20 +192,22 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
   
   /**
    * Gets a list of actions for the selected node from the BranchTreeActionProvider.
+   * 
    * @param e Mouse event.
+   * 
    * @return The list of actions.
    */
   private List<AbstractAction> getActionsList4SelectedNode(TreePath pathForLocation) {
     if (pathForLocation != null) {
       branchesTree.setSelectionPath(pathForLocation);
-      BranchTreeMenuActionsProvider branchTreeActions = new BranchTreeMenuActionsProvider(this,
-          (GitTreeNode) branchesTree.getSelectionPath().getLastPathComponent());
-      return branchTreeActions.getActionsForBranchNode();
+      BranchTreeMenuActionsProvider actionProvider =
+          new BranchTreeMenuActionsProvider(
+              this::refreshBranches,
+              (GitTreeNode) branchesTree.getSelectionPath().getLastPathComponent());
+      return actionProvider.getActionsForBranchNode();
     }
     return Collections.emptyList();
   }
-  
-  boolean isContextMenuShowing;
   
   /**
    * Creates the contextual menu and populates it with action for the selected node.
@@ -259,7 +266,7 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(0, 5, 0, 5);
-    add(searchBar, gbc);
+    add(searchField, gbc);
 
     createBranchesTree();
     JScrollPane branchesTreeScrollPane = new JScrollPane(branchesTree);
@@ -276,8 +283,7 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
   }
 
   /**
-   * Creates a list with all branches, local and remote, for the current
-   * repository.
+   * Creates a list with all branches, local and remote, for the current repository.
    * 
    * @return The list of all branches. Never <code>null</code>.
    */
@@ -288,7 +294,7 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
       List<Ref> branches = new ArrayList<>();
       branches.addAll(gitAccess.getLocalBranchList());
       branches.addAll(gitAccess.getRemoteBrachListForCurrentRepo());
-      branchList = branches.stream().map(branch -> branch.getName()).collect(Collectors.toList());
+      branchList = branches.stream().map(Ref::getName).collect(Collectors.toList());
     }
     return branchList;
   }
@@ -333,31 +339,31 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
    * Creates the search bar for the branches in the current repository.
    */
   private void createSearchBar() {
-    searchBar = UIUtil.createTextField();
-    searchBar.setText(translator.getTranslation(Tags.FILTER_HINT));
-    searchBar.setForeground(Color.GRAY);
-    searchBar.setToolTipText(translator.getTranslation(Tags.SEARCH_BAR_TOOL_TIP));
-    searchBar.addFocusListener(new FocusListener() {
+    searchField = UIUtil.createTextField();
+    searchField.setText(translator.getTranslation(Tags.FILTER_HINT));
+    searchField.setForeground(Color.GRAY);
+    searchField.setToolTipText(translator.getTranslation(Tags.SEARCH_BAR_TOOL_TIP));
+    searchField.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        if (searchBar.getText().contentEquals(translator.getTranslation(Tags.FILTER_HINT))) {
-          searchBar.setText("");
+        if (searchField.getText().contentEquals(translator.getTranslation(Tags.FILTER_HINT))) {
+          searchField.setText("");
         } else {
-          searchBar.selectAll();
+          searchField.selectAll();
         }
-        searchBar.setForeground(getForeground());
+        searchField.setForeground(getForeground());
       }
       @Override
       public void focusLost(FocusEvent e) {
-        if (searchBar.getText().isEmpty()) {
-          searchBar.setText(translator.getTranslation(Tags.FILTER_HINT));
-          searchBar.setForeground(searchBar.getDisabledTextColor());
+        if (searchField.getText().isEmpty()) {
+          searchField.setText(translator.getTranslation(Tags.FILTER_HINT));
+          searchField.setForeground(searchField.getDisabledTextColor());
         }
       }
     });
     
-    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> searchInTree(searchBar.getText()));
-    searchBar.addKeyListener(new KeyAdapter() {
+    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> searchInTree(searchField.getText()));
+    searchField.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent evt) {
         updater.update();
@@ -387,13 +393,22 @@ public class BranchManagementPanel extends JPanel implements BranchTreeRefresher
    * Shows the branch panel with all its components.
    */
   public void showBranches() {
+    refreshBranches();
+    setVisible(true);
+  }
+
+  /**
+   * Refresh branches.
+   */
+  private void refreshBranches() {
     allBranches = getBranches();
     updateTreeView(allBranches);
     TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
-    setVisible(true);
   }
+  
   /**
-   * Returns the tree that contains all the branches for the current repository
+   * Returns the tree that contains all the branches for the current repository.
+   * 
    * @return the branches tree.
    */
   public JTree getTree() {
