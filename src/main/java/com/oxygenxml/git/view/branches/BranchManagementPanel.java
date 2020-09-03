@@ -341,7 +341,7 @@ public class BranchManagementPanel extends JPanel {
   private void createSearchBar() {
     searchField = UIUtil.createTextField();
     searchField.setText(translator.getTranslation(Tags.FILTER_HINT));
-    searchField.setForeground(Color.GRAY);
+    searchField.setForeground(searchField.getDisabledTextColor());
     searchField.setToolTipText(translator.getTranslation(Tags.SEARCH_BAR_TOOL_TIP));
     searchField.addFocusListener(new FocusListener() {
       @Override
