@@ -67,7 +67,7 @@ public class BranchTreeMenuActionsProvider {
     // Adds either the local branch actions, or the remote branch actions.
     if (nodeContent.contains(Constants.R_HEADS)) {
       addCheckoutLocalBranchAction(nodeContent);
-      addNewBranchAction(nodeContent);
+      addCreateBranchAction(nodeContent);
       addDeleteLocalBranchAction(nodeContent);
     } else if (nodeContent.contains(Constants.R_REMOTES)) {
       addCheckoutRemoteBranchAction(nodeContent);
@@ -190,7 +190,7 @@ public class BranchTreeMenuActionsProvider {
    * @param nodePath A string that contains the full path to the node that
    *                 represents the branch.
    */
-  private void addNewBranchAction(String nodePath) {
+  private void addCreateBranchAction(String nodePath) {
     nodeActions.add(new AbstractAction(translator.getTranslation(Tags.CREATE_BRANCH)) {
       @Override
       public void actionPerformed(ActionEvent e) {
