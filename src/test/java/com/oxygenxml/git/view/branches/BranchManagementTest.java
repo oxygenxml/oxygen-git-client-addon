@@ -61,6 +61,14 @@ public class BranchManagementTest extends GitTestBase{
     }
   }
   
+  /**
+   * <p><b>Description:</b> A tree with both local and remote branches.</p>
+   * <p><b>Bug ID:</b> EXM-41701</p>
+   *
+   * @author bogdan_draghici
+   *
+   * @throws Exception
+   */
   @Test
   public void testBranchesTreeStructure() throws Exception {
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
@@ -94,21 +102,29 @@ public class BranchManagementTest extends GitTestBase{
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
     
-    StringBuilder expectedTree = new StringBuilder();
-    expectedTree.append("\n");
-    expectedTree.append("  Local\n");
-    expectedTree.append("    " + LOCAL_BRANCH_NAME1 + "\n");
-    expectedTree.append("    " + LOCAL_BRANCH_NAME2 + "\n");
-    expectedTree.append("    master\n");
-    expectedTree.append("  Remote\n");
-    expectedTree.append("    origin\n");
-    expectedTree.append("      master\n");
-    expectedTree.append("      " + REMOTE_BRANCH_NAME1 + "\n");
-    expectedTree.append("      " + REMOTE_BRANCH_NAME2 + "\n");
-    
-    assertEquals(expectedTree.toString(), actualTree.toString());
+    assertEquals(
+        "\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/LocalBranch\n" + 
+        "    refs/heads/LocalBranch2\n" + 
+        "    refs/heads/master\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/RemoteBranch\n" + 
+        "      refs/remotes/origin/RemoteBranch2\n" + 
+        "",
+        actualTree.toString());
   }
   
+  /**
+   * <p><b>Description:</b> A tree with only local branches.</p>
+   * <p><b>Bug ID:</b> EXM-41701</p>
+   *
+   * @author bogdan_draghici
+   *
+   * @throws Exception
+   */
   @Test
   public void testBranchesTreeStructureLocalBranchesOnly() throws Exception {
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
@@ -129,16 +145,24 @@ public class BranchManagementTest extends GitTestBase{
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
     
-    StringBuilder expectedTree = new StringBuilder();
-    expectedTree.append("\n");
-    expectedTree.append("  Local\n");
-    expectedTree.append("    " + LOCAL_BRANCH_NAME1 + "\n");
-    expectedTree.append("    " + LOCAL_BRANCH_NAME2 + "\n");
-    expectedTree.append("    master\n");
-    
-    assertEquals(expectedTree.toString(), actualTree.toString());
+    assertEquals(
+        "\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/LocalBranch\n" + 
+        "    refs/heads/LocalBranch2\n" + 
+        "    refs/heads/master\n" + 
+        "",
+        actualTree.toString());
   }
   
+  /**
+   * <p><b>Description:</b> A tree with only remote branches.</p>
+   * <p><b>Bug ID:</b> EXM-41701</p>
+   *
+   * @author bogdan_draghici
+   *
+   * @throws Exception
+   */
   @Test
   public void testBranchesTreeStructureRemoteBranchesOnly() throws Exception{
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
@@ -164,19 +188,25 @@ public class BranchManagementTest extends GitTestBase{
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
     
-    StringBuilder expectedTree = new StringBuilder();
-    expectedTree.append("\n");
-    expectedTree.append("  Remote\n");
-    expectedTree.append("    origin\n");
-    expectedTree.append("      master\n");
-    expectedTree.append("      " + REMOTE_BRANCH_NAME1 + "\n");
-    expectedTree.append("      " + REMOTE_BRANCH_NAME2 + "\n");
-
-    assertEquals(expectedTree.toString(), actualTree.toString());
+    assertEquals(
+        "\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/RemoteBranch\n" + 
+        "      refs/remotes/origin/RemoteBranch2\n" + 
+        "",
+        actualTree.toString());
   }
   
-  
-  
+  /**
+   * <p><b>Description:</b> A tree with only remote branches.</p>
+   * <p><b>Bug ID:</b> EXM-41701</p>
+   *
+   * @author bogdan_draghici
+   *
+   * @throws Exception
+   */
   @Test
   public void testBranchesTreeStructureRemoteMasterOnly() throws Exception {
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
@@ -197,12 +227,12 @@ public class BranchManagementTest extends GitTestBase{
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
     
-    StringBuilder expectedTree = new StringBuilder();
-    expectedTree.append("\n");
-    expectedTree.append("  Remote\n");
-    expectedTree.append("    origin\n");
-    expectedTree.append("      master\n");
-    
-    assertEquals(expectedTree.toString(), actualTree.toString());
+    assertEquals(
+        "\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/master\n" + 
+        "",
+        actualTree.toString());
   }
 }
