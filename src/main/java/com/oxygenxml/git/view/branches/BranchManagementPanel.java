@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.branches;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -61,18 +60,18 @@ public class BranchManagementPanel extends JPanel {
    * Git API access.
    */
   private static final GitAccess gitAccess = GitAccess.getInstance();
+  
+  /**
+   * Logger for this class.
+   */
+  @SuppressWarnings("unused")
+  private static final Logger LOGGER = Logger.getLogger(BranchManagementPanel.class);
 
   /**
    * A field for searching branches in the current repository.
    */
   private JTextField searchField;
 
-  /**
-   * Logger for this class.
-   */
-  @SuppressWarnings("unused")
-  private static final Logger LOGGER = Logger.getLogger(BranchManagementPanel.class);
-  
   /**
    * Translator for translation.
    */
@@ -99,6 +98,11 @@ public class BranchManagementPanel extends JPanel {
   private boolean isContextMenuShowing;
 
   /**
+   * Provides the actions for a node in the branches tree.
+   */
+  private BranchTreeMenuActionsProvider branchesTreeActionProvider;
+
+  /**
    * Public constructor
    */
   public BranchManagementPanel() {
@@ -116,6 +120,8 @@ public class BranchManagementPanel extends JPanel {
       }
     });
     addTreeListeners();
+    
+    branchesTreeActionProvider = new BranchTreeMenuActionsProvider(this::refreshBranches);
   }
   
   /**
@@ -129,7 +135,7 @@ public class BranchManagementPanel extends JPanel {
    * Adds the tree listeners.
    */
   private void addTreeListeners() {
-    
+    // Expand several levels at once when only one child on each level
     branchesTree.addTreeExpansionListener(new TreeExpansionListener() {
       @Override
       public void treeExpanded(TreeExpansionEvent event) {
@@ -141,6 +147,7 @@ public class BranchManagementPanel extends JPanel {
       }
     });
     
+    // Show context menu when pressing the Meny key
     branchesTree.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
@@ -193,27 +200,24 @@ public class BranchManagementPanel extends JPanel {
   /**
    * Gets a list of actions for the selected node from the BranchTreeActionProvider.
    * 
-   * @param e Mouse event.
+   * @param treePath Tree path.
    * 
    * @return The list of actions.
    */
-  private List<AbstractAction> getActionsList4SelectedNode(TreePath pathForLocation) {
-    if (pathForLocation != null) {
-      branchesTree.setSelectionPath(pathForLocation);
-      BranchTreeMenuActionsProvider actionProvider =
-          new BranchTreeMenuActionsProvider(
-              this::refreshBranches,
-              (GitTreeNode) branchesTree.getSelectionPath().getLastPathComponent());
-      return actionProvider.getActionsForBranchNode();
-    }
-    return Collections.emptyList();
+  private List<AbstractAction> getActionsList4SelectedNode(TreePath treePath) {
+    return treePath == null ? Collections.emptyList()
+        : branchesTreeActionProvider.getActionsForNode((GitTreeNode) treePath.getLastPathComponent());
   }
   
   /**
    * Creates the contextual menu and populates it with action for the selected node.
-   * @param e The Mouse Event.
+   * 
+   * @param selectionPath The path of the selection.
+   * @param point         Point where to show the menu.
    */
   private void showContextualMenu(TreePath  selectionPath, Point point) {
+    branchesTree.setSelectionPath(selectionPath);
+    
     List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(selectionPath);
     if (!actionsForSelectedNode.isEmpty()) {
       JPopupMenu popupMenu = new JPopupMenu();
@@ -362,7 +366,7 @@ public class BranchManagementPanel extends JPanel {
       }
     });
     
-    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> searchInTree(searchField.getText()));
+    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> filterTree(searchField.getText()));
     searchField.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent evt) {
@@ -372,17 +376,16 @@ public class BranchManagementPanel extends JPanel {
   }
 
   /**
-   * Searches in tree for the branches that contains a string of characters and
-   * updates the tree with those branches.
+   * Filters the tree by keeping only the nodes that match to the given text.
    * 
-   * @param text The string to find.
+   * @param filterText The string to find.
    */
-  private void searchInTree(String text) {
+  private void filterTree(String filterText) {
     List<String> remainingBranches = new ArrayList<>();
     for(String branch : allBranches) {
       String[] path = branch.split("/");
       // Sees if the leaf node/branch contains the given text
-      if(path[path.length - 1].contains(text))
+      if(path[path.length - 1].contains(filterText))
         remainingBranches.add(branch);
     }
     updateTreeView(remainingBranches);

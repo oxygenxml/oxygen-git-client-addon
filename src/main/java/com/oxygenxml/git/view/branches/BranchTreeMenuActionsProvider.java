@@ -53,12 +53,8 @@ public class BranchTreeMenuActionsProvider {
    * 
    * @param branchesTree The tree used for creating actions.
    */
-  public BranchTreeMenuActionsProvider(BranchTreeRefresher branchTreeRefresher, GitTreeNode node) {
+  public BranchTreeMenuActionsProvider(BranchTreeRefresher branchTreeRefresher) {
     this.branchTreeRefresher = branchTreeRefresher;
-    nodeActions = new ArrayList<>();
-    if(node.isLeaf()) {
-      createBranchTreeActions(node);
-    }
   }
   
   /**
@@ -75,16 +71,21 @@ public class BranchTreeMenuActionsProvider {
       addDeleteLocalBranchAction(nodeContent);
     } else if (nodeContent.contains(Constants.R_REMOTES)) {
       addCheckoutRemoteBranchAction(nodeContent);
-      addDeleteRemoteBranchAction(nodeContent);
     }
   }
   
   /**
    * Gets the actions created for the specific node.
    * 
+   * @param node The current node.
+   * 
    * @return A list of actions.
    */
-  public List<AbstractAction> getActionsForBranchNode() {
+  public List<AbstractAction> getActionsForNode(GitTreeNode node) {
+    nodeActions = new ArrayList<>();
+    if(node.isLeaf()) {
+      createBranchTreeActions(node);
+    }
     return nodeActions;
   }
   
@@ -156,6 +157,7 @@ public class BranchTreeMenuActionsProvider {
         boolean branchAlreadyExists = false;
         String newBranchPath = createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
         String newBranchName = newBranchPath;
+        // TODO: replace JOptionPane with a dialog of ours
         do {
           try {
             newBranchName = (String) JOptionPane.showInputDialog(
@@ -238,29 +240,6 @@ public class BranchTreeMenuActionsProvider {
             }
           });
         }
-      }
-    });
-  }
-  
-  /**
-   * Create the delete remote branch action and adds it to a list of actions.
-   * 
-   * @param nodePath A string that contains the full path to the node that
-   *                 represents the branch.
-   */
-  private void addDeleteRemoteBranchAction(String nodePath) {
-    nodeActions.add(new AbstractAction(translator.getTranslation(Tags.DELETE_BRANCH)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        GitOperationScheduler.getInstance().schedule(() -> {
-          try {
-            // TODO change the functionality, this does not delete the remote branch
-            String branch = createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
-            gitAccess.deleteRemoteBranch(branch);
-          } catch (JGitInternalException ex) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-          }
-        });
       }
     });
   }
