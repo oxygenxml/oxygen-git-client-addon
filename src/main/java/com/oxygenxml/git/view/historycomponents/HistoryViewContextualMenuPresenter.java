@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.historycomponents;
 
-import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
@@ -36,9 +34,12 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.DiffPresenter;
+import com.oxygenxml.git.view.branches.BranchesUtil;
+import com.oxygenxml.git.view.branches.CreateBranchDialog;
 import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Presents contextual actions over a resource in the history view.
@@ -235,20 +236,19 @@ public class HistoryViewContextualMenuPresenter {
       public void actionPerformed(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
-            String result = JOptionPane.showInputDialog(
-                (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-                Translator.getInstance().getTranslation(Tags.BRANCH_NAME),
-                Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
-                JOptionPane.PLAIN_MESSAGE);
-            if (result != null && !result.isEmpty()) {
+            CreateBranchDialog dialog = new CreateBranchDialog(
+                Translator.getInstance().getTranslation(Tags.CHECKOUT_BRANCH),
+                GitAccess.getInstance().getBranchInfo().getBranchName(),
+                BranchesUtil.getLocalBranches());
+            if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
               GitAccess.getInstance().checkoutCommitAndCreateBranch(
-                  result,
+                  dialog.getBranchName(),
                   commitCharacteristics.getCommitId());
             }
           } catch (CheckoutConflictException e1) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
                 Translator.getInstance().getTranslation(Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS));
-          } catch (HeadlessException | GitAPIException e1) {
+          } catch (HeadlessException | GitAPIException |  NoRepositorySelected e1) {
             LOGGER.debug(e1);
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
           }

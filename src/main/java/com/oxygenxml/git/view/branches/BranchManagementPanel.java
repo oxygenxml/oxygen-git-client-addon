@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -35,8 +34,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -49,6 +46,7 @@ import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 /**
@@ -56,11 +54,6 @@ import ro.sync.exml.workspace.api.standalone.ui.Tree;
  */
 public class BranchManagementPanel extends JPanel {
 
-  /**
-   * Git API access.
-   */
-  private static final GitAccess gitAccess = GitAccess.getInstance();
-  
   /**
    * Logger for this class.
    */
@@ -188,9 +181,12 @@ public class BranchManagementPanel extends JPanel {
           e.consume();
           Point nodePoint = e.getPoint();
           TreePath pathForLocation = branchesTree.getPathForLocation(nodePoint.x, nodePoint.y);
-          List<AbstractAction> actionsForSelectedNode = getActionsList4SelectedNode(pathForLocation);
-          if(!actionsForSelectedNode.isEmpty()) {
-            actionsForSelectedNode.get(0).actionPerformed(null);
+          if (pathForLocation != null) {
+            AbstractAction checkoutAction = branchesTreeActionProvider
+                .getCheckoutAction((GitTreeNode) pathForLocation.getLastPathComponent());
+            if (checkoutAction != null) {
+              checkoutAction.actionPerformed(null);
+            }
           }
         }
       }
@@ -245,8 +241,7 @@ public class BranchManagementPanel extends JPanel {
    * Creates the tree for the branches in the current repository.
    */
   private void createBranchesTree() {
-    allBranches = getBranches();
-
+    allBranches = getAllBranches();
     branchesTree = new Tree(new BranchManagementTreeModel(null, allBranches));
     branchesTree.setCellRenderer(new BranchesTreeCellRenderer(() -> isContextMenuShowing, () -> currentBranchName));
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
@@ -287,23 +282,6 @@ public class BranchManagementPanel extends JPanel {
   }
 
   /**
-   * Creates a list with all branches, local and remote, for the current repository.
-   * 
-   * @return The list of all branches. Never <code>null</code>.
-   */
-  public List<String> getBranches() {
-    List<String> branchList = new ArrayList<>();
-    Repository repository = getCurrentRepository();
-    if (repository != null) {
-      List<Ref> branches = new ArrayList<>();
-      branches.addAll(gitAccess.getLocalBranchList());
-      branches.addAll(gitAccess.getRemoteBrachListForCurrentRepo());
-      branchList = branches.stream().map(Ref::getName).collect(Collectors.toList());
-    }
-    return branchList;
-  }
-
-  /**
    * Updates a tree structure with the given branches.
    * 
    * @param branchList The branches used to generate the nodes.
@@ -320,23 +298,6 @@ public class BranchManagementPanel extends JPanel {
       TreeUtil.restoreLastExpandedPaths(expandedPaths, branchesTree);
       branchesTree.setSelectionPaths(selectionPaths);
     }
-  }
-
-  /**
-   * @return the current repository or <code>null</code> if there's no repository
-   *         selected.
-   */
-  protected Repository getCurrentRepository() {
-    Repository repo = null;
-    try {
-      repo = GitAccess.getInstance().getRepository();
-    } catch (NoRepositorySelected e) {
-      // TODO: this shows an error on loading... We should take care of the loading
-      // part,
-      // because in other cases we should show this error
-//      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
-    }
-    return repo;
   }
 
   /**
@@ -399,12 +360,24 @@ public class BranchManagementPanel extends JPanel {
     refreshBranches();
     setVisible(true);
   }
+  
+  private static List<String> getAllBranches(){
+    try {
+      return BranchesUtil.getAllBranches();
+    } catch (NoRepositorySelected e) {
+      // TODO: this shows an error on loading... We should take care of the loading
+      // part,
+      // because in other cases we should show this error
+      //PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+    }
+    return Collections.emptyList();
+  }
 
   /**
    * Refresh branches.
    */
   private void refreshBranches() {
-    allBranches = getBranches();
+    allBranches = getAllBranches();
     updateTreeView(allBranches);
     TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
   }

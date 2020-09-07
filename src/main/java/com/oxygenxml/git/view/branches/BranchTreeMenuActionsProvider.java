@@ -1,21 +1,19 @@
 package com.oxygenxml.git.view.branches;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
 
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
@@ -66,12 +64,32 @@ public class BranchTreeMenuActionsProvider {
     String nodeContent = (String) node.getUserObject();
     // Adds either the local branch actions, or the remote branch actions.
     if (nodeContent.contains(Constants.R_HEADS)) {
-      addCheckoutLocalBranchAction(nodeContent);
-      addCreateBranchAction(nodeContent);
-      addDeleteLocalBranchAction(nodeContent);
+      nodeActions.add(createCheckoutLocalBranchAction(nodeContent));
+      nodeActions.add(createNewBranchAction(nodeContent));
+      nodeActions.add(createDeleteLocalBranchAction(nodeContent));
     } else if (nodeContent.contains(Constants.R_REMOTES)) {
-      addCheckoutRemoteBranchAction(nodeContent);
+      nodeActions.add(createCheckoutRemoteBranchAction(nodeContent));
     }
+  }
+  
+  /**
+   * Gets the checkout action for a specific node, depending if it is a local or
+   * a remote branch.
+   * 
+   * @param node The node for which to get the action.
+   * 
+   * @return The action for the node.
+   */
+  public AbstractAction getCheckoutAction(GitTreeNode node) {
+    if (node.isLeaf()) {
+      String nodeContent = (String) node.getUserObject();
+      if (nodeContent.contains(Constants.R_HEADS)) {
+        return createCheckoutLocalBranchAction(nodeContent);
+      } else if (nodeContent.contains(Constants.R_REMOTES)) {
+        return createCheckoutRemoteBranchAction(nodeContent);
+      }
+    }
+    return null;
   }
   
   /**
@@ -89,47 +107,23 @@ public class BranchTreeMenuActionsProvider {
     return nodeActions;
   }
   
-  /**
-   * Creates the path to a branch without having its type node, starting from the
-   * full path of the node that contains the branch.
-   * 
-   * @param nodePath                The path of the node that contains the branch.
-   * 
-   * @param startingIndexBranchType The position from which to start to add to the
-   *                                branch path, depending on type of the branch.
-   *                                This parameter can only be
-   *                                {@link com.oxygenxml.git.view.branches.BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL} or
-   *                                {@link com.oxygenxml.git.view.branches.BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL}
-   * 
-   * @return The branch path in string format.
-   */
-  private String createBranchPath(String nodePath, int startingIndexBranchType) {
-    StringBuilder branchPath = new StringBuilder();
-    String[] split = nodePath.split("/");
-    for (int i = startingIndexBranchType; i < split.length; i++) {
-      branchPath.append(split[i]);
-      if (i < split.length - 1) {
-        branchPath.append("/");
-      }
-    }
-    return branchPath.toString();
-  }
+  
   
   /**
-   * Creates the checkout action for local branches and adds it to a
-   * list of actions.
+   * Creates the checkout action for local branches.
    * 
    * @param nodePath A string that contains the full path to the node that
    *                 represents the branch.
    * 
+   * @return The action created.
    */
-  private void addCheckoutLocalBranchAction(String nodePath) {
-    nodeActions.add(new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
+  private AbstractAction createCheckoutLocalBranchAction(String nodePath) {
+    return new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
-            gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
+            gitAccess.setBranch(BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
           } catch (CheckoutConflictException ex) {
             PluginWorkspaceProvider.getPluginWorkspace()
                 .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
@@ -138,93 +132,86 @@ public class BranchTreeMenuActionsProvider {
           }
         });
       }
-    });
+    };
   }
   
 
   /**
-   * Creates the checkout action for remote branches and adds it to a
-   * list of actions.
+   * Creates the checkout action for remote branches.
    * 
    * @param nodePath A string that contains the full path to the node that
    *                 represents the branch.
    * 
+   * @return The action created.
    */
-  private void addCheckoutRemoteBranchAction(String nodePath) {
-    nodeActions.add(new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
+  private AbstractAction createCheckoutRemoteBranchAction(String nodePath) {
+    return new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        boolean branchAlreadyExists = false;
-        String newBranchPath = createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
-        String newBranchName = newBranchPath;
-        // TODO: replace JOptionPane with a dialog of ours
-        do {
-          try {
-            newBranchName = (String) JOptionPane.showInputDialog(
-                (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-                Translator.getInstance().getTranslation(Tags.BRANCH_NAME),
-                Translator.getInstance().getTranslation(Tags.CHECKOUT_BRANCH), JOptionPane.PLAIN_MESSAGE, null, null,
-                newBranchPath);
-            branchAlreadyExists = false;
-            if (newBranchName != null && !newBranchName.isEmpty()) {
-              gitAccess.checkoutRemoteBranchWithNewName(newBranchPath, newBranchName);
-            }
-          } catch (CheckoutConflictException ex) {
-            PluginWorkspaceProvider.getPluginWorkspace()
-                .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-          } catch (RefAlreadyExistsException ex) {
-            //PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-            branchAlreadyExists = true;
-          } catch (GitAPIException ex) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        String branchPath = BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
+        try {
+          CreateBranchDialog dialog = new CreateBranchDialog(
+              translator.getTranslation(Tags.CHECKOUT_BRANCH),
+              branchPath,
+              BranchesUtil.getLocalBranches());
+          if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+            gitAccess.checkoutRemoteBranchWithNewName(branchPath, dialog.getBranchName());
           }
-        } while (branchAlreadyExists);
+        } catch (CheckoutConflictException ex) {
+          PluginWorkspaceProvider.getPluginWorkspace()
+              .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
+        } catch (GitAPIException | NoRepositorySelected ex) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        }
       }
-    });
+    };
   }
   
   /**
-   * Create the new branch action for a local branch and adds it to a list of
-   * actions.
+   * Create the new branch action for a local branch.
    * 
    * @param nodePath A string that contains the full path to the node that
    *                 represents the branch.
+   *            
+   * @return The action created.
    */
-  private void addCreateBranchAction(String nodePath) {
-    nodeActions.add(new AbstractAction(translator.getTranslation(Tags.CREATE_BRANCH)) {
+  private AbstractAction createNewBranchAction(String nodePath) {
+    return new AbstractAction(translator.getTranslation(Tags.CREATE_BRANCH)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
-            gitAccess.setBranch(createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
-            String newBranchName = JOptionPane.showInputDialog(
-                (Component) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-                Translator.getInstance().getTranslation(Tags.BRANCH_NAME),
-                Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), JOptionPane.PLAIN_MESSAGE);
-            if (newBranchName != null && !newBranchName.isEmpty()) {
+            CreateBranchDialog dialog = new CreateBranchDialog(
+                translator.getTranslation(Tags.CREATE_BRANCH),
+                null,
+                BranchesUtil.getLocalBranches());
+            if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+              gitAccess.setBranch(BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
               GitAccess.getInstance().checkoutCommitAndCreateBranch(
-                  newBranchName,
+                  dialog.getBranchName(),
                   gitAccess.getLatestCommitOnCurrentBranch().getName());
             }
           } catch (CheckoutConflictException ex) {
             PluginWorkspaceProvider.getPluginWorkspace()
                 .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-          } catch (GitAPIException | JGitInternalException | IOException ex) {
+          } catch (GitAPIException | JGitInternalException | IOException | NoRepositorySelected ex) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
         });
       }
-    });
+    };
   }
   
   /**
-   * Create the delete local branch action and adds it to a list of actions.
+   * Create the delete local branch action.
    * 
    * @param nodePath A string that contains the full path to the node that
    *                 represents the branch.
+   *                 
+   * @return The action created.
    */
-  private void addDeleteLocalBranchAction(String nodePath) {
-    nodeActions.add(new AbstractAction(translator.getTranslation(Tags.DELETE_BRANCH)) {
+  private AbstractAction createDeleteLocalBranchAction(String nodePath) {
+    return new AbstractAction(translator.getTranslation(Tags.DELETE_BRANCH)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.DELETE_BRANCH),
@@ -232,7 +219,7 @@ public class BranchTreeMenuActionsProvider {
             translator.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
           GitOperationScheduler.getInstance().schedule(() -> {
             try {
-              String branch = createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
+              String branch = BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
               gitAccess.deleteBranch(branch);
               branchTreeRefresher.refreshBranchesTree();
             } catch (JGitInternalException ex) {
@@ -241,7 +228,7 @@ public class BranchTreeMenuActionsProvider {
           });
         }
       }
-    });
+    };
   }
   
 }
