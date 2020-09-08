@@ -299,6 +299,9 @@ public class BranchManagementPanel extends JPanel {
     setVisible(false);
   }
 
+  /**
+   * Create refresh button.
+   */
   private void createRefreshButton() {
     Action refreshAction = new AbstractAction() {
       @Override
