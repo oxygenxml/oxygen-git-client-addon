@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -18,6 +19,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -35,6 +37,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
@@ -46,6 +49,7 @@ import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
+import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 /**
@@ -63,6 +67,11 @@ public class BranchManagementPanel extends JPanel {
    * A field for searching branches in the current repository.
    */
   private JTextField searchField;
+  
+  /**
+   * The refresh button for the tree.
+   */
+  private ToolbarButton refreshButton;
 
   /**
    * Translator for translation.
@@ -263,21 +272,43 @@ public class BranchManagementPanel extends JPanel {
     gbc.anchor = GridBagConstraints.NORTH;
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.insets = new Insets(0, 5, 0, 5);
+    gbc.insets = new Insets(0, 3, 0, 0);
     add(searchField, gbc);
-
+    
+    createRefreshButton();
+    gbc.gridx = 1;
+    gbc.anchor = GridBagConstraints.NORTH;
+    gbc.weightx = 0;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.insets = new Insets(0, 3, 0, 3);
+    add(refreshButton, gbc);
+    
     createBranchesTree();
     JScrollPane branchesTreeScrollPane = new JScrollPane(branchesTree);
-    gbc.insets = new Insets(3, 5, 3, 5);
+    gbc.insets = new Insets(3, 3, 3, 3);
+    gbc.gridx = 0;
     gbc.gridy++;
     gbc.weightx = 1;
     gbc.weighty = 1;
+    gbc.gridwidth = 2;
     gbc.fill = GridBagConstraints.BOTH;
     gbc.anchor = GridBagConstraints.NORTHWEST;
     add(branchesTreeScrollPane, gbc);
 
     setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
     setVisible(false);
+  }
+
+  private void createRefreshButton() {
+    Action refreshAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        refreshBranches();
+      }
+    };
+    refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
+    refreshAction.putValue(Action.SHORT_DESCRIPTION, Translator.getInstance().getTranslation(Tags.REFRESH));
+    refreshButton = new ToolbarButton(refreshAction, false);
   }
 
   /**

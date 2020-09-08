@@ -94,7 +94,7 @@ public class CreateBranchDialog extends OKCancelDialog {
         UIConstants.COMPONENT_BOTTOM_PADDING, 
         UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.NORTHWEST;
-    gbc.fill = GridBagConstraints.NONE;
+    gbc.fill = GridBagConstraints.VERTICAL;
     gbc.weightx = 0;
     gbc.weighty = 0;
     gbc.gridx = 0;

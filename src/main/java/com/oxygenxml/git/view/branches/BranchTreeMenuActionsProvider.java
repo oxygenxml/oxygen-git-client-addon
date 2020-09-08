@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.branches;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
