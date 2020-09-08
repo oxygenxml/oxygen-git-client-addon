@@ -269,15 +269,14 @@ public class BranchManagementPanel extends JPanel {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
-    gbc.anchor = GridBagConstraints.NORTH;
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.anchor = GridBagConstraints.WEST;
     gbc.insets = new Insets(0, 3, 0, 0);
     add(searchField, gbc);
     
     createRefreshButton();
-    gbc.gridx = 1;
-    gbc.anchor = GridBagConstraints.NORTH;
+    gbc.gridx ++;
     gbc.weightx = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.insets = new Insets(0, 3, 0, 3);
@@ -292,7 +291,6 @@ public class BranchManagementPanel extends JPanel {
     gbc.weighty = 1;
     gbc.gridwidth = 2;
     gbc.fill = GridBagConstraints.BOTH;
-    gbc.anchor = GridBagConstraints.NORTHWEST;
     add(branchesTreeScrollPane, gbc);
 
     setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
