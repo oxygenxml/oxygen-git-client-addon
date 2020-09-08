@@ -62,7 +62,7 @@ public class BranchManagementTest extends GitTestBase{
   }
   
   /**
-   * <p><b>Description:</b> A tree with both local and remote branches.</p>
+   * <p><b>Description:</b> Tests the structure of a tree with both local and remote branches.</p>
    * <p><b>Bug ID:</b> EXM-41701</p>
    *
    * @author bogdan_draghici
@@ -118,7 +118,7 @@ public class BranchManagementTest extends GitTestBase{
   }
   
   /**
-   * <p><b>Description:</b> A tree with only local branches.</p>
+   * <p><b>Description:</b> Tests the structure of a tree with only local branches.</p>
    * <p><b>Bug ID:</b> EXM-41701</p>
    *
    * @author bogdan_draghici
@@ -156,7 +156,7 @@ public class BranchManagementTest extends GitTestBase{
   }
   
   /**
-   * <p><b>Description:</b> A tree with only remote branches.</p>
+   * <p><b>Description:</b> Tests the structure of a tree with only remote branches.</p>
    * <p><b>Bug ID:</b> EXM-41701</p>
    *
    * @author bogdan_draghici
@@ -200,7 +200,7 @@ public class BranchManagementTest extends GitTestBase{
   }
   
   /**
-   * <p><b>Description:</b> A tree with only remote branches.</p>
+   * <p><b>Description:</b> Tests the structure of a tree with only master remote branch.</p>
    * <p><b>Bug ID:</b> EXM-41701</p>
    *
    * @author bogdan_draghici
@@ -235,6 +235,15 @@ public class BranchManagementTest extends GitTestBase{
         "",
         actualTree.toString());
   }
+  
+  /**
+   * <p><b>Description:</b> Tests the filter for branches on a tree with only local branches.</p>
+   * <p><b>Bug ID:</b> EXM-41701</p>
+   *
+   * @author bogdan_draghici
+   *
+   * @throws Exception
+   */
   @Test
   public void testBranchesTreeFilterLocalBranchesOnly() throws Exception{
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
@@ -289,6 +298,14 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
   }
   
+  /**
+   * <p><b>Description:</b> Tests the filter for branches on a tree with only remote branches.</p>
+   * <p><b>Bug ID:</b> EXM-41701</p>
+   *
+   * @author bogdan_draghici
+   *
+   * @throws Exception
+   */
   @Test
   public void testBranchesTreeFilterRemoteBranchesOnly() throws Exception{
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
@@ -363,6 +380,15 @@ public class BranchManagementTest extends GitTestBase{
             "      refs/remotes/origin/RemoteBranch2\n",
         actualTree.toString());
   }
+  
+  /**
+   * <p><b>Description:</b> Tests the filter for branches on a tree with both local and remote branches.</p>
+   * <p><b>Bug ID:</b> EXM-41701</p>
+   *
+   * @author bogdan_draghici
+   *
+   * @throws Exception
+   */
   @Test
   public void testBranchesTreeFilterAllBranches() throws Exception{
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
