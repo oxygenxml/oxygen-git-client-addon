@@ -107,8 +107,6 @@ public class BranchTreeMenuActionsProvider {
     return nodeActions;
   }
   
-  
-  
   /**
    * Creates the checkout action for local branches.
    * 
@@ -134,7 +132,6 @@ public class BranchTreeMenuActionsProvider {
       }
     };
   }
-  
 
   /**
    * Creates the checkout action for remote branches.
@@ -148,21 +145,24 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String branchPath = BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
-        try {
-          CreateBranchDialog dialog = new CreateBranchDialog(
-              translator.getTranslation(Tags.CHECKOUT_BRANCH),
-              branchPath,
-              BranchesUtil.getLocalBranches());
-          if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-            gitAccess.checkoutRemoteBranchWithNewName(branchPath, dialog.getBranchName());
+        String branchPath = BranchesUtil.createBranchPath(nodePath,
+            BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
+        GitOperationScheduler.getInstance().schedule(() -> {
+          try {
+            CreateBranchDialog dialog = new CreateBranchDialog(
+                translator.getTranslation(Tags.CHECKOUT_BRANCH),
+                branchPath,
+                BranchesUtil.getLocalBranches());
+            if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+              gitAccess.checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath);
+            }
+          } catch (CheckoutConflictException ex) {
+            PluginWorkspaceProvider.getPluginWorkspace()
+                .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
+          } catch (GitAPIException | NoRepositorySelected ex) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
-        } catch (CheckoutConflictException ex) {
-          PluginWorkspaceProvider.getPluginWorkspace()
-              .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-        } catch (GitAPIException | NoRepositorySelected ex) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-        }
+        });
       }
     };
   }
@@ -186,15 +186,10 @@ public class BranchTreeMenuActionsProvider {
                 null,
                 BranchesUtil.getLocalBranches());
             if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-              gitAccess.setBranch(BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
-              GitAccess.getInstance().checkoutCommitAndCreateBranch(
-                  dialog.getBranchName(),
-                  gitAccess.getLatestCommitOnCurrentBranch().getName());
+              gitAccess.createBranchFromLocalBranch(dialog.getBranchName(), nodePath);
+              branchTreeRefresher.refreshBranchesTree();
             }
-          } catch (CheckoutConflictException ex) {
-            PluginWorkspaceProvider.getPluginWorkspace()
-                .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
-          } catch (GitAPIException | JGitInternalException | IOException | NoRepositorySelected ex) {
+          } catch (JGitInternalException | NoRepositorySelected ex) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
         });
@@ -214,8 +209,10 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(translator.getTranslation(Tags.DELETE_BRANCH)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.DELETE_BRANCH),
-            translator.getTranslation(Tags.CONFIRMATION_DIALOG_DELETE_BRANCH), translator.getTranslation(Tags.YES),
+        if (FileStatusDialog.showQuestionMessage(
+            translator.getTranslation(Tags.DELETE_BRANCH),
+            translator.getTranslation(Tags.CONFIRMATION_DIALOG_DELETE_BRANCH), 
+            translator.getTranslation(Tags.YES),
             translator.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
           GitOperationScheduler.getInstance().schedule(() -> {
             try {

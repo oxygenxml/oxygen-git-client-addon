@@ -14,6 +14,10 @@ public class Tags {
     // Nothing.
   }
   /**
+   * The warning message when trying to create a branch with the same name as another local branch.
+   */
+  public static final String LOCAL_BRANCH_ALREADY_EXISTS = "Local_branch_already_exists";
+  /**
    * The confirmation message when trying to delete a branch.
    */
   public static final String CONFIRMATION_DIALOG_DELETE_BRANCH = "Confirmation_dialog_delete_branch";

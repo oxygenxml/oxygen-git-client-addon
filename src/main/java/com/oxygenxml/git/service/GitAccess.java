@@ -977,6 +977,22 @@ public class GitAccess {
 
 	}
 	/**
+	 * Creates a new local branch in the current repository, starting from another local branch.
+	 * 
+	 * @param newBranchName The name for the new branch.
+	 * @param localBranchPath The full path for the local branch from which to create the new branch.
+	 */
+	public void createBranchFromLocalBranch(String newBranchName, String localBranchPath) {
+	  try {
+      git.branchCreate().
+      setName(newBranchName).
+      setStartPoint(localBranchPath).
+      call();
+    } catch (GitAPIException e) {
+      logger.error(e, e);
+    }
+	}
+	/**
 	 * Deletes from the current repository a local branch with a specified name.
 	 * @param branchName The name of the branch to be deleted.
 	 */
@@ -1981,11 +1997,11 @@ public class GitAccess {
 	/**
    * Creates a local branch for a remote branch (which it starts tracking), and sets it as the current branch.
    * 
-   * @param remoteBranchName The branch to checkout (short name).
    * @param newBranchName The name of the new branch created at checkout.
+   * @param remoteBranchName The branch to checkout (short name).
    * @throws GitAPIException 
    */
-  public void checkoutRemoteBranchWithNewName(String remoteBranchName, String newBranchName) throws GitAPIException{
+  public void checkoutRemoteBranchWithNewName(String newBranchName, String remoteBranchName) throws GitAPIException{
     String oldBranchName = getBranchInfo().getBranchName();
 
     git.checkout()

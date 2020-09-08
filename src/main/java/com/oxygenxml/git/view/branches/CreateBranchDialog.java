@@ -35,7 +35,7 @@ public class CreateBranchDialog extends OKCancelDialog {
   /**
    * The warning message in case the name for the branch already exists.
    */
-  private final static String warningMessage = "The local branch already exists!";
+  private final static String warningMessage =  Translator.getInstance().getTranslation(Tags.LOCAL_BRANCH_ALREADY_EXISTS);
   /**
    * A text field for the branch name.
    */

@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value = "Local_branch_already_exists">
+		<comment>"The warning message when trying to create a branch with the same name as another local branch."</comment>
+        <val lang="en_US">The local branch already exists!</val>
+        <val lang="de_DE">The local branch already exists!</val>
+        <val lang="fr_FR">The local branch already exists!</val>
+        <val lang="ja_JP">The local branch already exists!</val>
+        <val lang="nl_NL">The local branch already exists!</val>
+    </key>
     <key value = "Confirmation_dialog_delete_branch">
 		<comment>"The confirmation message when trying to delete a branch."</comment>
         <val lang="en_US">Are you sure you want to delete this branch?</val>
