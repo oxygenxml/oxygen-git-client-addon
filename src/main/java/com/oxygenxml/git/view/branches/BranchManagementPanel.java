@@ -374,7 +374,7 @@ public class BranchManagementPanel extends JPanel {
    * 
    * @param filterText The string to find.
    */
-  private void filterTree(String filterText) {
+  protected void filterTree(String filterText) {
     List<String> remainingBranches = new ArrayList<>();
     for(String branch : allBranches) {
       String[] path = branch.split("/");
