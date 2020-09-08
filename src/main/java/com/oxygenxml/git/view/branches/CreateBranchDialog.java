@@ -101,7 +101,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     gbc.weightx = 0;
     gbc.weighty = 0;
     gbc.fill = GridBagConstraints.NONE;
-    gbc.anchor = GridBagConstraints.NORTHWEST;
+    gbc.anchor = GridBagConstraints.WEST;
     gbc.insets = new Insets(
         UIConstants.COMPONENT_TOP_PADDING, 
         UIConstants.COMPONENT_LEFT_PADDING,
@@ -120,6 +120,8 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     panel.add(branchNameField, gbc);
+    
+    label.setLabelFor(branchNameField);
 
     // Error message area
     errorMessageTextArea = UIUtil.createMessageArea("");
