@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.branches;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.lib.Ref;
@@ -32,12 +31,9 @@ public class BranchesUtil {
     if (repository != null) {
       List<Ref> branches = new ArrayList<>();
       branches.addAll(GitAccess.getInstance().getLocalBranchList());
-      branchList = branches.stream().map(new Function<Ref, String>() {
-        @Override
-        public String apply(Ref t) {
-          return createBranchPath(t.getName(), BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
-        }
-      }).collect(Collectors.toList());
+      branchList = branches.stream()
+          .map(t -> createBranchPath(t.getName(), BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL))
+          .collect(Collectors.toList());
     }
     return branchList;
   }
@@ -47,7 +43,6 @@ public class BranchesUtil {
    * full path of the node that contains the branch.
    * 
    * @param nodePath                The path of the node that contains the branch.
-   * 
    * @param startingIndexBranchType The position from which to start to add to the
    *                                branch path, depending on type of the branch.
    *                                This parameter can only be
@@ -70,8 +65,7 @@ public class BranchesUtil {
   }
 
   /**
-   * Creates a list with all branches, local and remote, for the current
-   * repository.
+   * Creates a list with all branches, local and remote, for the current repository.
    * 
    * @return The list of all branches. Never <code>null</code>.
    * 

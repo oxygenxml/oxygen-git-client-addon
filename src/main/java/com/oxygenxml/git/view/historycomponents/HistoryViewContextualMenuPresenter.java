@@ -237,8 +237,8 @@ public class HistoryViewContextualMenuPresenter {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
             CreateBranchDialog dialog = new CreateBranchDialog(
-                Translator.getInstance().getTranslation(Tags.CHECKOUT_BRANCH),
-                GitAccess.getInstance().getBranchInfo().getBranchName(),
+                Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
+                null,
                 BranchesUtil.getLocalBranches());
             if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
               GitAccess.getInstance().checkoutCommitAndCreateBranch(

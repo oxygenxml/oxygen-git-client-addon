@@ -18,32 +18,31 @@ import javax.swing.JTextField;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
- * A dialog used to get the name for a new branch and verifies if that name
- * already exists.
+ * Dialog used to create a new local branch (from commit, from another branch, etc.)
+ * or checkout a remote one.
  * 
  * @author Bogdan Draghici
  *
  */
-public class CreateBranchDialog extends OKCancelDialog {
+public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
   /**
-   * The warning message in case the name for the branch already exists.
+   * Translator.
    */
-  private final static String warningMessage =  Translator.getInstance().getTranslation(Tags.LOCAL_BRANCH_ALREADY_EXISTS);
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    * A text field for the branch name.
    */
   private JTextField branchNameField;
   /**
-   * The warning message area.
+   * The error message area.
    */
-  private JTextArea warningMessageArea;
+  private JTextArea errorMessageTextArea;
   /**
    * The list with all the local branches.
    */
@@ -53,24 +52,32 @@ public class CreateBranchDialog extends OKCancelDialog {
    * Public constructor.
    * 
    * @param title            The title of the dialog.
-   * @param currentBranch    The name of the branch from which to do the checkout.
+   * @param sourceBranch     The name of the branch from which to create a new one. Can be <code>null</code>,
+   *                         for example when creating a branch from a commit.
    * @param existingBranches A list with all existing local branches.
    */
-  public CreateBranchDialog(String title, String currentBranch, List<String> existingBranches) {
+  public CreateBranchDialog(String title, String sourceBranch, List<String> existingBranches) {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
         ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
         : null, title, true);
 
     this.existingBranches = existingBranches;
     
+    // Create GUI
     JPanel panel = new JPanel(new GridBagLayout());
-    createGUI(panel, currentBranch);
+    createGUI(panel, sourceBranch);
     getContentPane().add(panel);
     setResizable(true);
     pack();
     
-    getOkButton().setEnabled(!verifyBranchExistence());
-    addCoalescingForBranchField();
+    // Enable or disable the OK button based on the user input
+    updateUI(branchNameField.getText());
+    branchNameField.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyReleased(KeyEvent e) {
+        updateUI(branchNameField.getText());
+      }
+    });
 
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
@@ -79,94 +86,84 @@ public class CreateBranchDialog extends OKCancelDialog {
   }
 
   /**
-   * Adds the elements to the user interface in a graphical way.
+   * Adds the elements to the user interface/
    * 
    * @param panel The panel in which the components are added.
-   * @param gbc   A GridBagConstraints instance.
+   * @param sourceBranch The name of the source branch. Can be <code>null</code>,
+   *                         for example when creating a branch from a commit.
    */
-  private void createGUI(JPanel panel,String currentBranch) {
+  private void createGUI(JPanel panel, String sourceBranch) {
     // Branch name label.
-    JLabel label = new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH_NAME));
+    JLabel label = new JLabel(TRANSLATOR.getTranslation(Tags.BRANCH_NAME));
     GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.weightx = 0;
+    gbc.weighty = 0;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.anchor = GridBagConstraints.NORTHWEST;
     gbc.insets = new Insets(
         UIConstants.COMPONENT_TOP_PADDING, 
         UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING, 
         UIConstants.COMPONENT_RIGHT_PADDING);
-    gbc.anchor = GridBagConstraints.NORTHWEST;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.weightx = 0;
-    gbc.weighty = 0;
-    gbc.gridx = 0;
-    gbc.gridy = 0;
     panel.add(label, gbc);
     
     // Branch name field.
     branchNameField = UIUtil.createTextField();
-    if (currentBranch != null) {
-      branchNameField.setText(currentBranch);
+    if (sourceBranch != null) {
+      branchNameField.setText(sourceBranch);
     }
     branchNameField.setPreferredSize(new Dimension(200, branchNameField.getPreferredSize().height));
     branchNameField.selectAll();
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridx ++;
     gbc.weightx = 1;
-    gbc.weighty = 0;
-    gbc.gridx = 1;
-    gbc.gridy = 0;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
     panel.add(branchNameField, gbc);
 
-    // Warning message for branch name.
-    warningMessageArea = UIUtil.createMessageArea(warningMessage);
-    warningMessageArea.setForeground(Color.RED);
+    // Error message area
+    errorMessageTextArea = UIUtil.createMessageArea("");
+    errorMessageTextArea.setForeground(Color.RED);
     gbc.gridx = 0;
-    gbc.gridy = 1;
+    gbc.gridy ++;
     gbc.gridwidth = 2;
-    panel.add(warningMessageArea, gbc);
+    panel.add(errorMessageTextArea, gbc);
   }
 
   /**
-   * Adds coalescing for the branch name field that also sets enable the ok button.
-   */
-  private void addCoalescingForBranchField() {
-    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> {
-      getOkButton().setEnabled(!verifyBranchExistence());
-    });
-    branchNameField.addKeyListener(new KeyAdapter() {
-      public void keyReleased(KeyEvent e) {
-        updater.update();
-      }
-    });
-  }
-
-  /**
-   * {@see ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog.doOK()}
+   * @see ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog.doOK()
    */
   @Override
   protected void doOK() {
-    boolean branchAlreadyExists = verifyBranchExistence();
-    getOkButton().setEnabled(!branchAlreadyExists);
-    if (!branchAlreadyExists) {
+    updateUI(branchNameField.getText());
+    if (getOkButton().isEnabled()) {
       super.doOK();
     }
   }
 
   /**
-   * Verifies the existence of a branch with the same name as the one typed in the
-   * TextField.
+   * Check if the given branch already exists.
+   * 
+   * @param branchName The branch name to check.
+   * 
+   * @return <code>true</code> if a locals branch with the given name already exists.
    */
-  private boolean verifyBranchExistence() {
-    String text = branchNameField.getText();
-    boolean isBranchExistent = false;
-    for (String string : existingBranches) {
-      if (string.equals(text)) {
-        isBranchExistent = true;
-      }
-    }
-    warningMessageArea.setText(isBranchExistent ? warningMessage : "");
-    if (isBranchExistent || text.isEmpty()) {
-      return true;
-    }
-    return false;
+  private boolean doesBranchAlreadyExist(String branchName) {
+    return existingBranches.stream().anyMatch((String branch) -> branch.equals(branchName));
+  }
+  
+  /**
+   * Update UI components depending whether the provided branch name
+   * is valid or not.
+   * 
+   * @param branchName The branch name provided in the input field.
+   */
+  private void updateUI(String branchName) {
+    boolean branchAlreadyExists = doesBranchAlreadyExist(branchName);
+    errorMessageTextArea.setText(branchAlreadyExists ? TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH_ALREADY_EXISTS) : "");
+    
+    boolean isBranchNameValid = !branchName.isEmpty() && !branchAlreadyExists;
+    getOkButton().setEnabled(isBranchNameValid);
   }
 
   /**

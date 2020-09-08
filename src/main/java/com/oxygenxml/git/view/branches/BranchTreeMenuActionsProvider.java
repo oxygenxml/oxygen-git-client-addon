@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.branches;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,15 +80,16 @@ public class BranchTreeMenuActionsProvider {
    * @return The action for the node.
    */
   public AbstractAction getCheckoutAction(GitTreeNode node) {
+    AbstractAction action = null;
     if (node.isLeaf()) {
       String nodeContent = (String) node.getUserObject();
       if (nodeContent.contains(Constants.R_HEADS)) {
-        return createCheckoutLocalBranchAction(nodeContent);
+        action = createCheckoutLocalBranchAction(nodeContent);
       } else if (nodeContent.contains(Constants.R_REMOTES)) {
-        return createCheckoutRemoteBranchAction(nodeContent);
+        action = createCheckoutRemoteBranchAction(nodeContent);
       }
     }
-    return null;
+    return action;
   }
   
   /**
@@ -189,7 +189,7 @@ public class BranchTreeMenuActionsProvider {
               gitAccess.createBranchFromLocalBranch(dialog.getBranchName(), nodePath);
               branchTreeRefresher.refreshBranchesTree();
             }
-          } catch (JGitInternalException | NoRepositorySelected ex) {
+          } catch (NoRepositorySelected ex) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
         });

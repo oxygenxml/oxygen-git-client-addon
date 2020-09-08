@@ -47,7 +47,6 @@ import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.SubmoduleAddCommand;
 import org.eclipse.jgit.api.SubmoduleStatusCommand;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
-import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -68,7 +67,6 @@ import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ConfigConstants;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -972,7 +970,7 @@ public class GitAccess {
 			
 			fireBranchChanged(branchInfo.getBranchName(), branchName);
 		} catch (GitAPIException e) {
-		  logger.error(e, e);
+		  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 		}
 
 	}
@@ -980,18 +978,19 @@ public class GitAccess {
 	 * Creates a new local branch in the current repository, starting from another local branch.
 	 * 
 	 * @param newBranchName The name for the new branch.
-	 * @param localBranchPath The full path for the local branch from which to create the new branch.
+	 * @param sourceBranch The full path for the local branch from which to create the new branch.
 	 */
-	public void createBranchFromLocalBranch(String newBranchName, String localBranchPath) {
+	public void createBranchFromLocalBranch(String newBranchName, String sourceBranch) {
 	  try {
-      git.branchCreate().
-      setName(newBranchName).
-      setStartPoint(localBranchPath).
-      call();
+      git.branchCreate()
+        .setName(newBranchName)
+        .setStartPoint(sourceBranch)
+        .call();
     } catch (GitAPIException e) {
-      logger.error(e, e);
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
 	}
+	
 	/**
 	 * Deletes from the current repository a local branch with a specified name.
 	 * @param branchName The name of the branch to be deleted.
@@ -1002,30 +1001,9 @@ public class GitAccess {
 	  command.setForce(true);
 	  try {
 	      command.call();
-	  } catch(CannotDeleteCurrentBranchException e) {
+	  } catch(GitAPIException e) {
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
-	  } catch (GitAPIException e) {
-	    logger.error("Error while deleting branch [" + branchName + "]", e);
 	  }
-	}
-	/**
-	 * Deletes from the current repository a remote branch with a specified name.
-	 * @param branchName The name of the branch to be deleted.
-	 */
-	//TODO not working correctly
-	public void deleteRemoteBranch(String branchName) {
-	  git.fetch();
-	  DeleteBranchCommand command = git.branchDelete();
-    command.setBranchNames(Constants.R_REMOTES + "origin/" + branchName);
-    command.setForce(true);
-    try {
-        command.call();
-        git.push();
-    } catch(CannotDeleteCurrentBranchException e) {
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
-    } catch (GitAPIException e) {
-      logger.error("Error while deleting branch [" + branchName + "]", e);
-    }
 	}
 
 	/**
