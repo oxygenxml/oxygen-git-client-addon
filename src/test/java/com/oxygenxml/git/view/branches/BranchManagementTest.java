@@ -45,7 +45,7 @@ public class BranchManagementTest extends GitTestBase{
   }
   
   
-  private void serializeTree(StringBuilder stringTree, GitTreeNode currentNode) {
+  protected static void serializeTree(StringBuilder stringTree, GitTreeNode currentNode) {
     int level = currentNode.getLevel();
     while(level != 0) {
       stringTree.append("  ");
