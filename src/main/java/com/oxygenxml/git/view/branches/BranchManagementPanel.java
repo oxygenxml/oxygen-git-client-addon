@@ -111,12 +111,10 @@ public class BranchManagementPanel extends JPanel {
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
       public void repositoryChanged() {
-        currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
         SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
       }
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
-        currentBranchName = newBranch;
         SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
       }
     });
@@ -255,7 +253,8 @@ public class BranchManagementPanel extends JPanel {
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
     branchesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
+    branchesTree.setVisible(false);
+    
     ToolTipManager.sharedInstance().registerComponent(branchesTree);
   }
 
@@ -294,7 +293,6 @@ public class BranchManagementPanel extends JPanel {
     add(branchesTreeScrollPane, gbc);
 
     setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
-    setVisible(false);
   }
 
   /**
@@ -304,7 +302,7 @@ public class BranchManagementPanel extends JPanel {
     Action refreshAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        refreshBranches();
+        SwingUtilities.invokeLater(BranchManagementPanel.this::showBranches);
       }
     };
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
@@ -374,11 +372,15 @@ public class BranchManagementPanel extends JPanel {
    */
   protected void filterTree(String filterText) {
     List<String> remainingBranches = new ArrayList<>();
-    for(String branch : allBranches) {
-      String[] path = branch.split("/");
-      // Sees if the leaf node/branch contains the given text
-      if(path[path.length - 1].contains(filterText))
-        remainingBranches.add(branch);
+    if (filterText.equals(translator.getTranslation(Tags.FILTER_HINT)) || filterText.isEmpty()) {
+      remainingBranches.addAll(allBranches);
+    } else {
+      for (String branch : allBranches) {
+        String[] path = branch.split("/");
+        // Sees if the leaf node/branch contains the given text
+        if (path[path.length - 1].contains(filterText))
+          remainingBranches.add(branch);
+      }
     }
     updateTreeView(remainingBranches);
     TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
@@ -389,7 +391,7 @@ public class BranchManagementPanel extends JPanel {
    */
   public void showBranches() {
     refreshBranches();
-    setVisible(true);
+    branchesTree.setVisible(true);
   }
   
   private static List<String> getAllBranches(){
@@ -407,10 +409,10 @@ public class BranchManagementPanel extends JPanel {
   /**
    * Refresh branches.
    */
-  private void refreshBranches() {
+  protected void refreshBranches() {
+    currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
     allBranches = getAllBranches();
-    updateTreeView(allBranches);
-    TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+    filterTree(searchField.getText());
   }
   
   /**
