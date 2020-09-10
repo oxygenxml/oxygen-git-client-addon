@@ -49,6 +49,7 @@ import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
@@ -247,7 +248,6 @@ public class BranchManagementPanel extends JPanel {
    * Creates the tree for the branches in the current repository.
    */
   private void createBranchesTree() {
-    allBranches = getAllBranches();
     branchesTree = new Tree(new BranchManagementTreeModel(null, allBranches));
     branchesTree.setCellRenderer(new BranchesTreeCellRenderer(() -> isContextMenuShowing, () -> currentBranchName));
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
@@ -398,10 +398,7 @@ public class BranchManagementPanel extends JPanel {
     try {
       return BranchesUtil.getAllBranches();
     } catch (NoRepositorySelected e) {
-      // TODO: this shows an error on loading... We should take care of the loading
-      // part,
-      // because in other cases we should show this error
-      //PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
     return Collections.emptyList();
   }

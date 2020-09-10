@@ -67,6 +67,7 @@ import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -1060,7 +1061,7 @@ public class GitAccess {
                 ConfigConstants.CONFIG_BRANCH_SECTION,
                 getBranchInfo().getBranchName(),
                 ConfigConstants.CONFIG_KEY_REMOTE,
-                "origin");
+                Constants.DEFAULT_REMOTE_NAME);
             repo.getConfig().setString(
                 ConfigConstants.CONFIG_BRANCH_SECTION,
                 getBranchInfo().getBranchName(),
@@ -1581,7 +1582,7 @@ public class GitAccess {
 		if (git != null) {
 			Config storedConfig = git.getRepository().getConfig();
 			// TODO How we should react when there are multiple remote repositories?
-			String url = storedConfig.getString(ConfigConstants.CONFIG_KEY_REMOTE, "origin", "url");
+			String url = storedConfig.getString(ConfigConstants.CONFIG_KEY_REMOTE, Constants.DEFAULT_REMOTE_NAME, "url");
 			if (url == null) {
 			  Set<String> remoteNames = git.getRepository().getRemoteNames();
 			  Iterator<String> iterator = remoteNames.iterator();
@@ -1625,7 +1626,7 @@ public class GitAccess {
 		Repository repo = git.getRepository();
 		ObjectId remoteCommit = null;
 		try {
-			remoteCommit = repo.resolve("origin/" + branchInfo.getBranchName() + "^{commit}");
+			remoteCommit = repo.resolve(Constants.DEFAULT_REMOTE_NAME + "/" + branchInfo.getBranchName() + "^{commit}");
 			return remoteCommit;
 		} catch (IOException e) {
 		  logger.error(e, e);
@@ -1650,7 +1651,8 @@ public class GitAccess {
 		ObjectId remoteCommit = null;
 		ObjectId baseCommit = null;
 		try {
-			remoteCommit = repository.resolve("origin/" + branchInfo.getBranchName() + "^{commit}");
+			remoteCommit = repository.resolve(Constants.DEFAULT_REMOTE_NAME + "/" 
+			    + branchInfo.getBranchName() + "^{commit}");
 			localCommit = repository.resolve("HEAD^{commit}");
 			if (remoteCommit != null && localCommit != null) {
 				RevCommit base = getCommonAncestor(walk, walk.parseCommit(localCommit), walk.parseCommit(remoteCommit));
@@ -1966,7 +1968,7 @@ public class GitAccess {
 	      .setCreateBranch(true)
 	      .setName(remoteBranchName)
 	      .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-	      .setStartPoint("origin/" + remoteBranchName)
+	      .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
 	      .call();
 	  
 	  fireBranchChanged(oldBranchName, remoteBranchName);
@@ -1986,7 +1988,7 @@ public class GitAccess {
         .setCreateBranch(true)
         .setName(newBranchName)
         .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-        .setStartPoint("origin/" + remoteBranchName)
+        .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
         .call();
     
     fireBranchChanged(oldBranchName, newBranchName);

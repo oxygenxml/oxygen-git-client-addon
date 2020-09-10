@@ -17,6 +17,8 @@ import com.oxygenxml.git.service.NoRepositorySelected;
  *
  */
 public class BranchesUtil {
+  
+  private BranchesUtil() {}
 
   /**
    * Creates a list with local branches short names for the current repository.
