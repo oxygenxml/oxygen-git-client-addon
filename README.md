@@ -55,7 +55,7 @@ To open and work with a Git submodule, use the **Submodules** action from the to
 
 ## Showing the current branch history
 
-To show the history of the current branch, invoke the **Show current branch history** action from the toolbar (look for the clock icon). This will open the **Git History** view at the bottom of Oxygen.
+To show the history of the current branch, invoke the **Show current branch history** action from the toolbar of the Git Staging panel (look for the clock icon), or go to the **Window menu > Show view > Git History**. This will open the **Git History** view at the bottom of Oxygen.
 
 The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. For each resource, the following actions are available in the contextual menu:
 - **Open** (available for added and modifed resources): This action opens the selected resource.
@@ -127,6 +127,20 @@ At this point, the next actions depend on which **Pull** action was chosen:
 ## The Project view and the current editor
 
 For resources from Git repositories, this add-on also contributes a variety of actions in the contextual menus of the **Project** side-view and the current editor (Text and Author pages). These actions include: **Show history**, **Show blame**, **Git Diff** (only in the Project view), and **Commit** (only in the Project view).
+
+## Git Branch Manager
+
+To show all the local and remote branches, invoke the **Show Branch Manager** action from the toolbar of the Git Staging panel (look for the branches icon), or go to the **Window menu > Show view > Git Branch Manager**. By default the Git Branch Manager will be presented to the right of the editing area.
+
+The Git Branch Manager side-view present all the branches as a tree. The tree can be filtered by typing in the text field at the top of the panel or reloaded by using the **Refresh** action.
+
+The following actions are available in the contextual menu for each local branch:
+- **Checkout branch**: checks out the selected branch - it switches the local repository to the selected branch.
+- **Create branch**: creates a new branch using the selected one as the starting point.
+- **Delete branch**: deletes the selected branch.
+
+For the remote branches, the following action is available:
+- **Checkout branch**: checks out the selected branch - it creates a local branch from the selected remote one.
 
 ## Preferences
 
