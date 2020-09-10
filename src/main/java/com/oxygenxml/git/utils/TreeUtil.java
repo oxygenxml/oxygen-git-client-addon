@@ -24,6 +24,10 @@ import com.oxygenxml.git.view.NodeTreeComparator;
  */
 public class TreeUtil {
   /**
+   * This string is used to verify the name of the branch created when having a conflict with rebase
+   */
+  public static final String HEAD = "HEAD";
+  /**
    * Hidden constructor.
    */
   private TreeUtil() {
@@ -90,7 +94,7 @@ public class TreeUtil {
         currentNodePath.append("/");
       }
       // Make sure not to add the refs/ node in the tree.
-      if (!currentNodePath.toString().equals(Constants.R_REFS)) {
+      if (!currentNodePath.toString().equals(Constants.R_REFS) && !currentNodePath.toString().equals(HEAD)) {
         // Look for the index of a node at the current level that
         // has a value equal to the current string
         int index = childIndex(node, currentNodePath.toString());
