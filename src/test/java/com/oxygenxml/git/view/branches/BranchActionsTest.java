@@ -4,6 +4,10 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -24,7 +28,9 @@ public class BranchActionsTest extends GitTestBase {
   private final static String REMOTE_BRANCH_NAME1 = "RemoteBranch";
   private final static String LOCAL_BRANCH_NAME2 = "LocalBranch2";
   private final static String REMOTE_BRANCH_NAME2 = "RemoteBranch2";
-  
+  private final static String LOCAL_BRANCH_COPY_NAME = "LocalBranchCopy";
+  private final static String REMOTE_BRANCH_NAME1_COPY = "RemoteBranchCopy";
+  private final static String REMOTE_BRANCH_NAME2_COPY = "RemoteBranch2Copy";
   private GitAccess gitAccess;
   private Repository remoteRepository;
   private Repository localRepository;
@@ -70,7 +76,7 @@ public class BranchActionsTest extends GitTestBase {
         branchManagementPanel::refreshBranches);
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
    
-    //------------- Checkout the first branch in the list: LOCAL_BRANCH_NAME1 -------------
+    //------------- Checkout the first branch in the tree: LOCAL_BRANCH_NAME1 -------------
     GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
     String firstLeafPath = (String)firstLeaf.getUserObject();
     assertTrue(firstLeafPath.contains(Constants.R_HEADS));
@@ -88,7 +94,7 @@ public class BranchActionsTest extends GitTestBase {
     gitAccess.fetch();
     assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
     
-    //------------- Checkout the next branch in the list: LOCAL_BRANCH_NAME1 -------------
+    //------------- Checkout the next branch in the tree: LOCAL_BRANCH_NAME1 -------------
     GitTreeNode nextLeaf = (GitTreeNode)firstLeaf.getNextLeaf();
     String nextLeafPath = (String) nextLeaf.getUserObject();
     assertTrue(nextLeafPath.contains(Constants.R_HEADS));
@@ -99,7 +105,6 @@ public class BranchActionsTest extends GitTestBase {
     AbstractAction checkoutAction = branchTreeMenuActionsProvider.getCheckoutAction(nextLeaf);
     if (checkoutAction != null) {
       checkoutAction.actionPerformed(null);
-      System.out.println("action done");
     }
     sleep(500);
     gitAccess.fetch();
@@ -121,7 +126,6 @@ public class BranchActionsTest extends GitTestBase {
     gitAccess.commit("First local commit.");
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
     gitAccess.createBranch(LOCAL_BRANCH_NAME2);
-    
     gitAccess.fetch();
     
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
@@ -131,6 +135,8 @@ public class BranchActionsTest extends GitTestBase {
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(
         branchManagementPanel::refreshBranches);
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    
+    //------------- Create branch LOCAL_BRANCH_COPY_NAME from first branch in the tree: LOCAL_BRANCH_NAME1 -------------
     GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
     String firstLeafPath = (String)firstLeaf.getUserObject();
     assertTrue(firstLeafPath.contains(Constants.R_HEADS));
@@ -139,16 +145,35 @@ public class BranchActionsTest extends GitTestBase {
     
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
-      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH))) {
-        //TODO solve the dialogs that appear and ask for an input when executing the action.
-        abstractAction.actionPerformed(null);
+      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH))) {
+        SwingUtilities.invokeLater(() -> {
+          abstractAction.actionPerformed(null);
+        });
+        JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
+        JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
+            translator.getTranslation(Tags.BRANCH_NAME), JTextField.class);
+        branchNameTextField.setText(LOCAL_BRANCH_COPY_NAME);
+        JButton okButton = findFirstButton(createBranchDialog, "OK");
+        if (okButton != null) {
+          okButton.setEnabled(true);
+          okButton.doClick();
+        }
       }
     }
     sleep(500);
+    
     gitAccess.fetch();
-    String currentBranchName = gitAccess.getBranchInfo().getBranchName();
-
-    assertEquals(LOCAL_BRANCH_NAME1, currentBranchName);
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    StringBuilder actualTree = new StringBuilder();
+    BranchManagementTest.serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/LocalBranch\n" +
+        "    refs/heads/LocalBranch2\n" +
+        "    refs/heads/LocalBranchCopy\n" +
+        "    refs/heads/master\n",
+        actualTree.toString());
   }
   
   /**
@@ -166,7 +191,6 @@ public class BranchActionsTest extends GitTestBase {
     gitAccess.commit("First local commit.");
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
     gitAccess.createBranch(LOCAL_BRANCH_NAME2);
-    
     gitAccess.fetch();
     
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
@@ -177,6 +201,7 @@ public class BranchActionsTest extends GitTestBase {
         branchManagementPanel::refreshBranches);
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
+    //------------- Delete first branch in the tree: LOCAL_BRANCH_NAME1 -------------
     GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
     String firstLeafPath = (String)firstLeaf.getUserObject();
     assertTrue(firstLeafPath.contains(Constants.R_HEADS));
@@ -186,12 +211,17 @@ public class BranchActionsTest extends GitTestBase {
     
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
-      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.DELETE_BRANCH))) {
-      //TODO solve the dialogs that appear and ask for an input when executing the action.
-        abstractAction.actionPerformed(null);
+      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.DELETE_BRANCH))) {
+        SwingUtilities.invokeLater(() -> {
+          abstractAction.actionPerformed(null);
+        });
+        JDialog deleteBranchDialog = findDialog(translator.getTranslation(Tags.DELETE_BRANCH));
+        JButton yesButton = findFirstButton(deleteBranchDialog, translator.getTranslation(Tags.YES));
+        yesButton.doClick();
       }
     }
     sleep(500);
+    
     gitAccess.fetch();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
@@ -234,7 +264,7 @@ public class BranchActionsTest extends GitTestBase {
         branchManagementPanel::refreshBranches);
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
-    //------------- Checkout the last branch in the list: REMOTE_BRANCH_NAME2 -------------
+    //------------- Checkout the last branch in the tree: REMOTE_BRANCH_NAME2, with the name REMOTE_BRANCH_NAME2_COPY-------------
     GitTreeNode lastLeaf = (GitTreeNode)root.getLastLeaf();
     String lastLeafPath = (String)lastLeaf.getUserObject();
     assertTrue(lastLeafPath.contains(Constants.R_REMOTES));
@@ -244,15 +274,41 @@ public class BranchActionsTest extends GitTestBase {
     
     AbstractAction checkoutAction = branchTreeMenuActionsProvider.getCheckoutAction(lastLeaf);
     if(checkoutAction != null) {
-      //TODO solve the dialogs that appear and ask for an input when executing the action.
-      checkoutAction.actionPerformed(null);
+      SwingUtilities.invokeLater(() -> {
+        checkoutAction.actionPerformed(null);
+      });
+      JDialog checkoutBranchDialog = findDialog(translator.getTranslation(Tags.CHECKOUT_BRANCH));
+      if (checkoutBranchDialog != null) {
+        JTextField branchNameTextField = findComponentNearJLabel(checkoutBranchDialog,
+            translator.getTranslation(Tags.BRANCH_NAME), JTextField.class);
+        branchNameTextField.setText(REMOTE_BRANCH_NAME2_COPY);
+        JButton firstButtonFound = findFirstButton(checkoutBranchDialog, "OK");
+        if (firstButtonFound != null) {
+          firstButtonFound.setEnabled(true);
+          firstButtonFound.doClick();
+        }
+      }
     }
     sleep(500);
     gitAccess.fetch();
-    assertEquals(REMOTE_BRANCH_NAME2, gitAccess.getRepository().getBranch());
     
-    //------------- Checkout the previous branch in the list: REMOTE_BRANCH_NAME1 -------------
-    GitTreeNode previousLeaf = (GitTreeNode)root.getLastLeaf();
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    StringBuilder actualTree = new StringBuilder();
+    BranchManagementTest.serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/RemoteBranch2Copy\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/RemoteBranch\n" + 
+        "      refs/remotes/origin/RemoteBranch2\n" + 
+        "",
+        actualTree.toString());
+    
+    //------------- Checkout the previous branch in the tree: REMOTE_BRANCH_NAME1, with the name REMOTE_BRANCH_NAME1_COPY-------------
+    GitTreeNode previousLeaf = (GitTreeNode)lastLeaf.getPreviousLeaf();
     String previousLeafPath = (String)previousLeaf.getUserObject();
     assertTrue(lastLeafPath.contains(Constants.R_REMOTES));
     
@@ -261,13 +317,40 @@ public class BranchActionsTest extends GitTestBase {
     
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(previousLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
-      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT_BRANCH))) {
-        //TODO solve the dialogs that appear and ask for an input when executing the action.
-        abstractAction.actionPerformed(null);
+      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT_BRANCH))) {
+        SwingUtilities.invokeLater(() -> {
+          abstractAction.actionPerformed(null);
+        });
+        JDialog checkoutDialog = findDialog(translator.getTranslation(Tags.CHECKOUT_BRANCH));
+        if (checkoutDialog != null) {
+          JTextField branchNameTextField = findComponentNearJLabel(checkoutDialog,
+              translator.getTranslation(Tags.BRANCH_NAME), JTextField.class);
+          branchNameTextField.setText(REMOTE_BRANCH_NAME1_COPY);
+          JButton firstButtonFound = findFirstButton(checkoutDialog, "OK");
+          if (firstButtonFound != null) {
+            firstButtonFound.setEnabled(true);
+            firstButtonFound.doClick();
+          }
+        }
       }
     }
     sleep(500);
     gitAccess.fetch();
-    assertEquals(REMOTE_BRANCH_NAME1, gitAccess.getRepository().getBranch());
+    
+    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    actualTree = new StringBuilder();
+    BranchManagementTest.serializeTree(actualTree, root);
+    assertEquals(
+        "localRepository\n" + 
+        "  refs/heads/\n" + 
+        "    refs/heads/RemoteBranch2Copy\n" + 
+        "    refs/heads/RemoteBranchCopy\n" + 
+        "  refs/remotes/\n" + 
+        "    refs/remotes/origin/\n" + 
+        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/RemoteBranch\n" + 
+        "      refs/remotes/origin/RemoteBranch2\n" + 
+        "",
+        actualTree.toString());
   }
 }

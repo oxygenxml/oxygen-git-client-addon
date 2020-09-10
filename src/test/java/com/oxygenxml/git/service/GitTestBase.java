@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -281,6 +282,54 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     loadedRepos.add(repo);
     
     return repo;
+  }
+  
+  /**
+   * Searches for the nearest component from the specified class, relative to the label having that text.
+   * 
+   * @param parent The parent container.
+   * @param text The text in the label.
+   * @param clazz The class of the component.
+   * @return The component if found, or null.
+   */
+  protected <T extends Component> T findComponentNearJLabel(Container parent, String text, Class<T> clazz) {
+    T ret = null;
+    
+    ComponentFinder cf = new ComponentFinder(JLabel.class);
+    List<Component> allLabels = cf.findAll(parent);
+    for (Iterator iterator = allLabels.iterator(); iterator.hasNext();) {
+      JLabel label= (JLabel) iterator.next();
+      if(text.equals(label.getText())){
+        // Found the label.
+        int xl = label.getLocationOnScreen().x;
+        int yl = label.getLocationOnScreen().y;
+        
+        logger.debug("Found: " + label.getText() + " ( " +xl + "," + yl + " ) ");
+        
+        logger.debug("Searching for " + clazz);
+        List<T> allComponents = new ComponentFinder(clazz).findAll(parent);
+        
+        int min = Integer.MAX_VALUE;
+        T closest = allComponents.get(0);
+        
+        for (Iterator comIter = allComponents.iterator(); comIter.hasNext();) {
+          T c = (T) comIter.next(); 
+          int xc = c.getLocationOnScreen().x;
+          int yc = c.getLocationOnScreen().y;
+          logger.debug("Checking:  ( " +xl + "," + yl + " ) " + c);
+          // Favour components from the left and right.
+          int distance = (int) Math.sqrt((xc - xl)*(xc - xl) + (yc - yl)*(yc - yl) * 5);
+          if(distance < min){
+            closest = c;
+            min = distance;
+          }
+        }
+        
+        ret = closest;
+        logger.debug("The closest is: " + ret);          
+      }
+    }
+    return ret;
   }
   
   /**
