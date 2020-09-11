@@ -96,6 +96,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.fetch();
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    branchManagementPanel.refreshBranches();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
     
@@ -103,7 +104,7 @@ public class BranchManagementTest extends GitTestBase{
     serializeTree(actualTree, root);
     
     assertEquals(
-        "\n" + 
+        "localRepository\n" + 
         "  refs/heads/\n" + 
         "    refs/heads/LocalBranch\n" + 
         "    refs/heads/LocalBranch2\n" + 
@@ -139,6 +140,8 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.fetch();
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    branchManagementPanel.refreshBranches();
+    branchManagementPanel.refreshBranches();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
     
@@ -146,7 +149,7 @@ public class BranchManagementTest extends GitTestBase{
     serializeTree(actualTree, root);
     
     assertEquals(
-        "\n" + 
+        "localRepository\n" + 
         "  refs/heads/\n" + 
         "    refs/heads/LocalBranch\n" + 
         "    refs/heads/LocalBranch2\n" + 
@@ -182,6 +185,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.fetch();
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    branchManagementPanel.refreshBranches();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
     
@@ -189,7 +193,7 @@ public class BranchManagementTest extends GitTestBase{
     serializeTree(actualTree, root);
     
     assertEquals(
-        "\n" + 
+        "localRepository\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
         "      refs/remotes/origin/master\n" + 
@@ -221,6 +225,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.fetch();
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    branchManagementPanel.refreshBranches();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
     
@@ -228,7 +233,7 @@ public class BranchManagementTest extends GitTestBase{
     serializeTree(actualTree, root);
     
     assertEquals(
-        "\n" + 
+        "localRepository\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
         "      refs/remotes/origin/master\n" + 
@@ -258,6 +263,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.fetch();
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    branchManagementPanel.refreshBranches();
     branchManagementPanel.filterTree("heads");
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
@@ -325,6 +331,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.fetch();
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    branchManagementPanel.refreshBranches();
     branchManagementPanel.filterTree("remotes");
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
@@ -416,6 +423,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.fetch();
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    branchManagementPanel.refreshBranches();
     branchManagementPanel.filterTree("ewu82m");
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
