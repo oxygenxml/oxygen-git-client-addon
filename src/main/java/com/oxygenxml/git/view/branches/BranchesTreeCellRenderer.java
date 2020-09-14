@@ -92,12 +92,11 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       
       Font font = label.getFont();
       label.setFont(font.deriveFont(Font.PLAIN));
-      RoundedLineBorder roundedLineBorder = new RoundedLineBorder(label.getForeground(), 1, 8, true);
-      label.setBorder(new EmptyBorder(roundedLineBorder.getBorderInsets(this)));
+      label.setBorder(new EmptyBorder(0, 5, 0, 0));
       if (path.equals(Constants.R_HEADS + currentBranchNameSupplier.get())) {
-        // Current branch is bold and has border.
+        // Mark the current branch
         label.setFont(font.deriveFont(Font.BOLD));
-        label.setBorder(roundedLineBorder);
+        label.setBorder(new RoundedLineBorder(label.getForeground(), 1, 8, true));
       }
       
       // Active/inactive table selection
