@@ -10,13 +10,13 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
@@ -24,6 +24,9 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -43,8 +46,10 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
+import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
@@ -127,11 +132,10 @@ public class ToolbarPanel extends JPanel {
 	private JToolBar gitToolbar;
 
 	/**
-	 * Status presenting on which branch the user is and whether the repository is
-	 * up to date or not
+	 * SplitMenuButton for selecting the local branch.
 	 */
-	private JLabel remoteAndBranchInfoLabel;
-
+	private SplitMenuButton branchesSplitMenuButton;
+	
 	/**
 	 * Used to execute the push and pull commands
 	 */
@@ -204,8 +208,8 @@ public class ToolbarPanel extends JPanel {
 	    HistoryController historyController,
 	    BranchManagementViewPresenter branchManagementViewPresenter) {
 	  this.pushPullController = pushPullController;
-	  this.remoteAndBranchInfoLabel = new JLabel();
 	  this.refreshSupport = refreshSupport;
+	  this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
 
 	  createGUI(historyController, branchManagementViewPresenter);
 
@@ -352,13 +356,85 @@ public class ToolbarPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-		updateStatus();
-		this.add(remoteAndBranchInfoLabel, gbc);
-
+		this.add(branchesSplitMenuButton, gbc);
+		 
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
 
 	/**
+	 * Updates the local branches in the split menu button where you can checkout them.
+	 */
+  private void updateBranches() {
+    boolean isVisible = branchesSplitMenuButton.isPopupMenuVisible();
+    branchesSplitMenuButton.setPopupMenuVisible(false);
+    
+    branchesSplitMenuButton.removeAll();
+    addActionsToBranchSplitMenuButton(getBranches());
+    
+    branchesSplitMenuButton.revalidate();
+    branchesSplitMenuButton.setPopupMenuVisible(isVisible);
+  }
+  
+  /**
+   * Adds the branches given as a parameter to the branchSplitMenuButton.
+   * 
+   * @param branches A list with the branches to be added.
+   */
+  private void addActionsToBranchSplitMenuButton(List<String> branches) {
+    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+    ButtonGroup branchActionsGroup = new ButtonGroup();
+
+    branches.forEach((String branchName) -> {
+      AbstractAction checkoutAction = createCheckoutActionForBranch(branchName);
+      JRadioButtonMenuItem branchRadioButtonMenuItem = new JRadioButtonMenuItem(checkoutAction);
+      branchActionsGroup.add(branchRadioButtonMenuItem);
+      branchesSplitMenuButton.add(branchRadioButtonMenuItem);
+      if (branchName.equals(currentBranchName)) {
+        branchRadioButtonMenuItem.setSelected(true);
+      }
+    });
+  }
+
+  /**
+   * Gets all the local branches from the current repository.
+   * 
+   * @return The list of local branches.
+   */
+  private List<String> getBranches() {
+    List<String> localBranches = new ArrayList<>();
+    try {
+      localBranches = BranchesUtil.getLocalBranches();
+    } catch (NoRepositorySelected e1) {
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
+    }
+    return localBranches;
+  }
+  /**
+   * Creates the checkout action for a local branch.
+   * 
+   * @param branchName The name of the branch to checkout.
+   * 
+   * @return The action created.
+   */
+  private AbstractAction createCheckoutActionForBranch(String branchName) {
+    return new AbstractAction(branchName) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        GitOperationScheduler.getInstance().schedule(() -> {
+          try {
+            GitAccess.getInstance().setBranch(branchName);
+          } catch (CheckoutConflictException ex) {
+            PluginWorkspaceProvider.getPluginWorkspace()
+                .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
+          } catch (GitAPIException | JGitInternalException ex) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+          }
+        });
+      }
+    };
+  }
+
+  /**
 	 * Add the settings button.
 	 */
 	private void addSettingsButton() {
@@ -499,6 +575,7 @@ public class ToolbarPanel extends JPanel {
 	 */
 	public void updateStatus() {
     GitAccess gitAccess = GitAccess.getInstance();
+    updateBranches();
     
     this.pullsBehind = gitAccess.getPullsBehind();
     pullMenuButton.repaint();
@@ -531,7 +608,7 @@ public class ToolbarPanel extends JPanel {
 		    tooltipText += "<br>" + translator.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
 		  }
 		  tooltipText += "</html>";
-		  remoteAndBranchInfoLabel.setToolTipText(tooltipText);
+		  branchesSplitMenuButton.setToolTipText(tooltipText);
 		  pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
 		  pullMenuButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		} else {
@@ -659,10 +736,10 @@ public class ToolbarPanel extends JPanel {
         
 			}
 			
-			remoteAndBranchInfoLabel.setToolTipText(branchTooltip);
+			branchesSplitMenuButton.setToolTipText(branchTooltip);
 		}
 		
-		remoteAndBranchInfoLabel.setText(branchInfoText);
+		branchesSplitMenuButton.setText(branchInfoText);
 	}
 
 	/**
@@ -912,7 +989,7 @@ public class ToolbarPanel extends JPanel {
     return pullMenuButton;
   }
 	
-	public JLabel getRemoteAndBranchInfoLabel() {
-    return remoteAndBranchInfoLabel;
+	public SplitMenuButton getBranchSplitMenuButton() {
+    return branchesSplitMenuButton;
   }
 }

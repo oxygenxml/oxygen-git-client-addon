@@ -239,7 +239,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     boolean shouldRecreateStagingPanel = stagingPanel == null;
     if (shouldRecreateStagingPanel) {
       stagingPanel = new StagingPanel(gitRefreshSupport, gitCtrl, OxygenGitPluginExtension.this, OxygenGitPluginExtension.this, pushPullController);
-      gitRefreshSupport.setPanel(stagingPanel);
+      gitRefreshSupport.setStagingPanel(stagingPanel);
     }
     viewInfo.setComponent(stagingPanel);
     
@@ -319,6 +319,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
   private void customizeBranchView(ViewInfo viewInfo) {
     if(branchManagementPanel == null) {
       branchManagementPanel = new BranchManagementPanel();
+      gitRefreshSupport.setBranchPanel(branchManagementPanel);
     }
     
     viewInfo.setComponent(branchManagementPanel);
