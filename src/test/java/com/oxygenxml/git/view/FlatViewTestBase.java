@@ -74,7 +74,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
     };
     // TODO: Maybe move this init on the StagingPanel constructor. 
     // Careful not to create a cycle.
-    refreshSupport.setPanel(stagingPanel);
+    refreshSupport.setStagingPanel(stagingPanel);
     
     mainFrame = new JFrame("Git test");
     mainFrame.getContentPane().add(stagingPanel, BorderLayout.CENTER);

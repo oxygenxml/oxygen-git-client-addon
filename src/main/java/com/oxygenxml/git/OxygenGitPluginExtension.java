@@ -239,7 +239,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     boolean shouldRecreateStagingPanel = stagingPanel == null;
     if (shouldRecreateStagingPanel) {
       stagingPanel = new StagingPanel(gitRefreshSupport, gitCtrl, OxygenGitPluginExtension.this, OxygenGitPluginExtension.this, pushPullController);
-      gitRefreshSupport.setPanel(stagingPanel);
+      gitRefreshSupport.setStagingPanel(stagingPanel);
     }
     viewInfo.setComponent(stagingPanel);
     

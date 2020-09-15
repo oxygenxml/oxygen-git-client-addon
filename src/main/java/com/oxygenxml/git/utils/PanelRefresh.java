@@ -406,7 +406,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * 
 	 * @param stagingPanel Staging panel.
 	 */
-  public void setPanel(StagingPanel stagingPanel) {
+  public void setStagingPanel(StagingPanel stagingPanel) {
 		this.stagingPanel = stagingPanel;
 	}
   
