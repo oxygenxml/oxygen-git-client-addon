@@ -134,6 +134,7 @@ public class FileStatusDialog extends OKCancelDialog {
     
     getContentPane().add(panel);
 		setResizable(true);
+		setMinimumSize(new Dimension(250, 125));
 		pack();
 		
 		if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
