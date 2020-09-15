@@ -369,18 +369,46 @@ public class ToolbarPanel extends JPanel {
     branchesSplitMenuButton.setPopupMenuVisible(false);
     
     branchesSplitMenuButton.removeAll();
+    addActionsToBranchSplitMenuButton(getBranches());
+    
+    branchesSplitMenuButton.revalidate();
+    branchesSplitMenuButton.setPopupMenuVisible(isVisible);
+  }
+  
+  /**
+   * Adds the branches given as a parameter to the branchSplitMenuButton.
+   * 
+   * @param branches A list with the branches to be added.
+   */
+  private void addActionsToBranchSplitMenuButton(List<String> branches) {
+    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+    ButtonGroup branchActionsGroup = new ButtonGroup();
+
+    branches.forEach((branchName) -> {
+      AbstractAction checkoutAction = createCheckoutActionForBranch(branchName);
+      JRadioButtonMenuItem branchRadioButtonMenuItem = new JRadioButtonMenuItem(checkoutAction);
+      
+      branchActionsGroup.add(branchRadioButtonMenuItem);
+      branchesSplitMenuButton.add(branchRadioButtonMenuItem);
+      if (branchName.equals(currentBranchName)) {
+        branchRadioButtonMenuItem.setSelected(true);
+      }
+    });
+  }
+
+  /**
+   * Gets all the local branches from the current repository.
+   * 
+   * @return The list of local branches.
+   */
+  private List<String> getBranches() {
     List<String> localBranches = new ArrayList<>();
     try {
       localBranches = BranchesUtil.getLocalBranches();
     } catch (NoRepositorySelected e1) {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
     }
-    localBranches.forEach((branchName) -> {
-      branchesSplitMenuButton.add(createCheckoutActionForLocalBranch(branchName));
-    });
-    
-    branchesSplitMenuButton.revalidate();
-    branchesSplitMenuButton.setPopupMenuVisible(isVisible);
+    return localBranches;
   }
   /**
    * Creates the checkout action for a local branch.
@@ -389,7 +417,7 @@ public class ToolbarPanel extends JPanel {
    * 
    * @return The action created.
    */
-  private AbstractAction createCheckoutActionForLocalBranch(String branchName) {
+  private AbstractAction createCheckoutActionForBranch(String branchName) {
     return new AbstractAction(branchName) {
       @Override
       public void actionPerformed(ActionEvent e) {
