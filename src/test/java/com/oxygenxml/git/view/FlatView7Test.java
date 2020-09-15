@@ -66,7 +66,7 @@ public class FlatView7Test extends FlatViewTestBase {
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
         "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
-        toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
+        toolbarPanel.getBranchSplitMenuButton().getToolTipText());
     
     // Push to create the remote branch
     stagingPanel.getPushPullController().push();
@@ -84,7 +84,7 @@ public class FlatView7Test extends FlatViewTestBase {
     assertEquals(
         "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>origin/new_branch</b>.<br>"
         + "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
-        toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
+        toolbarPanel.getBranchSplitMenuButton().getToolTipText());
     
     gitAccess.setBranch("master");
     flushAWT();
@@ -112,7 +112,7 @@ public class FlatView7Test extends FlatViewTestBase {
     assertEquals(
         "<html>Local_branch <b>master</b>.<br>Upstream_branch <b>origin/master</b>.<br>"
         + "One_commit_behind<br>One_commit_ahead</html>",
-        toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
+        toolbarPanel.getBranchSplitMenuButton().getToolTipText());
     
     // Commit a new change locally
     commitOneFile(localTestRepository, "anotherFile.txt", "changed");
@@ -136,7 +136,7 @@ public class FlatView7Test extends FlatViewTestBase {
     assertEquals(
         "<html>Local_branch <b>master</b>.<br>Upstream_branch <b>origin/master</b>.<br>"
         + "Commits_behind<br>Commits_ahead</html>",
-        toolbarPanel.getRemoteAndBranchInfoLabel().getToolTipText());
+        toolbarPanel.getBranchSplitMenuButton().getToolTipText());
   }
   
 }

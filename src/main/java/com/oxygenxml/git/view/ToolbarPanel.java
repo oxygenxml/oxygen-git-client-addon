@@ -141,7 +141,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * SplitMenuButton for selecting the local branch.
 	 */
-	private SplitMenuButton splitMenuButtonLocalBanches;
+	private SplitMenuButton branchesSplitMenuButton;
 	
 	/**
 	 * Used to execute the push and pull commands
@@ -217,7 +217,7 @@ public class ToolbarPanel extends JPanel {
 	  this.pushPullController = pushPullController;
 	  this.remoteAndBranchInfoLabel = new JLabel();
 	  this.refreshSupport = refreshSupport;
-	  this.splitMenuButtonLocalBanches = new SplitMenuButton(null, null, true, false, true, true);
+	  this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
 
 	  createGUI(historyController, branchManagementViewPresenter);
 
@@ -364,9 +364,7 @@ public class ToolbarPanel extends JPanel {
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
-		splitMenuButtonLocalBanches.setOpaque(false);
-    splitMenuButtonLocalBanches.setBackground(getBackground());
-		this.add(splitMenuButtonLocalBanches, gbc);
+		this.add(branchesSplitMenuButton, gbc);
 		 
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
@@ -374,11 +372,11 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Updates the local branches in the split menu button where you can checkout them.
 	 */
-  private void updateLocalBranchesInSplitMenuButton() {
-    boolean isVisible = splitMenuButtonLocalBanches.isPopupMenuVisible();
-    splitMenuButtonLocalBanches.setPopupMenuVisible(false);
+  private void updateBranches() {
+    boolean isVisible = branchesSplitMenuButton.isPopupMenuVisible();
+    branchesSplitMenuButton.setPopupMenuVisible(false);
     
-    splitMenuButtonLocalBanches.removeAll();
+    branchesSplitMenuButton.removeAll();
     List<String> localBranches = new ArrayList<>();
     try {
       localBranches = BranchesUtil.getLocalBranches();
@@ -386,11 +384,11 @@ public class ToolbarPanel extends JPanel {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
     }
     localBranches.forEach((branchName) -> {
-      splitMenuButtonLocalBanches.add(createCheckoutActionForLocalBranch(branchName));
+      branchesSplitMenuButton.add(createCheckoutActionForLocalBranch(branchName));
     });
     
-    splitMenuButtonLocalBanches.revalidate();
-    splitMenuButtonLocalBanches.setPopupMenuVisible(isVisible);
+    branchesSplitMenuButton.revalidate();
+    branchesSplitMenuButton.setPopupMenuVisible(isVisible);
   }
   /**
    * Creates the checkout action for a local branch.
@@ -558,7 +556,7 @@ public class ToolbarPanel extends JPanel {
 	 */
 	public void updateStatus() {
     GitAccess gitAccess = GitAccess.getInstance();
-    updateLocalBranchesInSplitMenuButton();
+    updateBranches();
     
     this.pullsBehind = gitAccess.getPullsBehind();
     pullMenuButton.repaint();
@@ -591,7 +589,7 @@ public class ToolbarPanel extends JPanel {
 		    tooltipText += "<br>" + translator.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
 		  }
 		  tooltipText += "</html>";
-		  splitMenuButtonLocalBanches.setToolTipText(tooltipText);
+		  branchesSplitMenuButton.setToolTipText(tooltipText);
 		  pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
 		  pullMenuButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		} else {
@@ -719,10 +717,10 @@ public class ToolbarPanel extends JPanel {
         
 			}
 			
-			splitMenuButtonLocalBanches.setToolTipText(branchTooltip);
+			branchesSplitMenuButton.setToolTipText(branchTooltip);
 		}
 		
-		splitMenuButtonLocalBanches.setText(branchInfoText);
+		branchesSplitMenuButton.setText(branchInfoText);
 	}
 
 	/**
@@ -972,7 +970,7 @@ public class ToolbarPanel extends JPanel {
     return pullMenuButton;
   }
 	
-	public JLabel getRemoteAndBranchInfoLabel() {
-    return remoteAndBranchInfoLabel;
+	public SplitMenuButton getBranchSplitMenuButton() {
+    return branchesSplitMenuButton;
   }
 }
