@@ -319,6 +319,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
   private void customizeBranchView(ViewInfo viewInfo) {
     if(branchManagementPanel == null) {
       branchManagementPanel = new BranchManagementPanel();
+      gitRefreshSupport.setBranchPanel(branchManagementPanel);
     }
     
     viewInfo.setComponent(branchManagementPanel);

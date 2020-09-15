@@ -27,6 +27,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.ChangesPanel;
 import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
@@ -92,6 +93,10 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	private RepositoryChangeWatcher watcher;
 	/**
+	 * Branch management panel.
+	 */
+  private BranchManagementPanel branchesPanel;
+	/**
 	 * Refresh task.
 	 */
 	private Runnable refreshRunnable = () -> {
@@ -120,6 +125,9 @@ public class PanelRefresh implements GitRefreshSupport {
 	          // Make the check more frequently.
 	          watcher.checkRemoteRepository(false);
 	        }
+	      }
+	      if(gitAccess.getRepository() != null && branchesPanel != null) {
+	        branchesPanel.refreshBranches();
 	      }
 	    } catch (NoRepositorySelected e) {
 	      logger.debug(e, e);
@@ -401,6 +409,10 @@ public class PanelRefresh implements GitRefreshSupport {
   public void setPanel(StagingPanel stagingPanel) {
 		this.stagingPanel = stagingPanel;
 	}
+  
+  public void setBranchPanel(BranchManagementPanel branchesPanel) {
+    this.branchesPanel = branchesPanel;
+  }
 
   /**
    * Attempts to shutdown any running refresh tasks.

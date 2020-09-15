@@ -409,7 +409,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * Refresh branches.
    */
-  protected void refreshBranches() {
+  public void refreshBranches() {
     currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
     allBranches = getAllBranches();
     filterTree(searchField.getText());
