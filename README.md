@@ -45,9 +45,9 @@ Click the **Browse** button to the right of the **Working copy** combo box to se
 
 ## Switching between local branches
 
-To switch between local branches, use the **Change branch** action from the toolbar of the **Git Staging** view and select the desired branch from the presented combo box.
+To easily switch between local branches, use the menu shown when pressing the button from the top-right corner of the **Git Staging** view, button that presents the name of the current branch. Local branches can also be changed using the **Git Branch Manager** (more information in the "Git Branch Manager" section).
 
-New branches can be created from the History table using the **Create branch** action in the contextual menu.
+New branches can be created from the Git Branch Manager or from the History table using the **Create branch** action in the contextual menu.
 
 ## Working with submodules
 
