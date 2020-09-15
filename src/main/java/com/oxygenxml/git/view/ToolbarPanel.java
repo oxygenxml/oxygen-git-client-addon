@@ -384,10 +384,9 @@ public class ToolbarPanel extends JPanel {
     String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
     ButtonGroup branchActionsGroup = new ButtonGroup();
 
-    branches.forEach((branchName) -> {
+    branches.forEach((String branchName) -> {
       AbstractAction checkoutAction = createCheckoutActionForBranch(branchName);
       JRadioButtonMenuItem branchRadioButtonMenuItem = new JRadioButtonMenuItem(checkoutAction);
-      
       branchActionsGroup.add(branchRadioButtonMenuItem);
       branchesSplitMenuButton.add(branchRadioButtonMenuItem);
       if (branchName.equals(currentBranchName)) {
