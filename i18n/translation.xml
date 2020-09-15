@@ -8,7 +8,7 @@
 		<comment>"The warning message when trying to create a branch with the same name as another local branch."</comment>
         <val lang="en_US">The local branch already exists!</val>
         <val lang="de_DE">The local branch already exists!</val>
-        <val lang="fr_FR">The local branch already exists!</val>
+        <val lang="fr_FR">La branche locale existe déjà!</val>
         <val lang="ja_JP">The local branch already exists!</val>
         <val lang="nl_NL">The local branch already exists!</val>
     </key>
@@ -16,7 +16,7 @@
 		<comment>"The confirmation message when trying to delete a branch."</comment>
         <val lang="en_US">Are you sure you want to delete this branch?</val>
         <val lang="de_DE">Are you sure you want to delete this branch?</val>
-        <val lang="fr_FR">Are you sure you want to delete this branch?</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir supprimer cette branche?</val>
         <val lang="ja_JP">Are you sure you want to delete this branch?</val>
         <val lang="nl_NL">Are you sure you want to delete this branch?</val>
     </key>
@@ -24,7 +24,7 @@
 		<comment>"The message for branch deletion."</comment>
         <val lang="en_US">Delete branch</val>
         <val lang="de_DE">Delete branch</val>
-        <val lang="fr_FR">Delete branch</val>
+        <val lang="fr_FR">Supprimer une branche</val>
         <val lang="ja_JP">Delete branch</val>
         <val lang="nl_NL">Delete branch</val>
     </key>
@@ -32,7 +32,7 @@
 		<comment>"The tool tip for the button that opens the branch manager side view."</comment>
         <val lang="en_US">Show Branch Manager</val>
         <val lang="de_DE">Show Branch Manager</val>
-        <val lang="fr_FR">Show Branch Manager</val>
+        <val lang="fr_FR">Afficher le Gestionnaire de Branches</val>
         <val lang="ja_JP">Show Branch Manager</val>
         <val lang="nl_NL">Show Branch Manager</val>
     </key>
@@ -40,7 +40,7 @@
 		<comment>"The tool tip for the filter of the braches tree."</comment>
         <val lang="en_US">Type here the name of the branch you want to find.</val>
         <val lang="de_DE">Type here the name of the branch you want to find.</val>
-        <val lang="fr_FR">Type here the name of the branch you want to find.</val>
+        <val lang="fr_FR">Saisissez ici le nom de la branche que vous souhaitez trouver.</val>
         <val lang="ja_JP">Type here the name of the branch you want to find.</val>
         <val lang="nl_NL">Type here the name of the branch you want to find.</val>
     </key>
@@ -48,7 +48,7 @@
 		<comment>"The title for the Branch Manager side view."</comment>
         <val lang="en_US">Git Branch Manager</val>
         <val lang="de_DE">Git Branch Manager</val>
-        <val lang="fr_FR">Git Branch Manager</val>
+        <val lang="fr_FR">Gestionnaire de Branches Git</val>
         <val lang="ja_JP">Git Branch Manager</val>
         <val lang="nl_NL">Git Branch Manager</val>
     </key>
@@ -68,9 +68,9 @@
         <val lang="de_DE">No changes have been made to the version that will be used to resolve the conflict (left side).
          Are you sure you want to resolve the conflict by keeping this version as it is?
         \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
-        <val lang="fr_FR">No changes have been made to the version that will be used to resolve the conflict (left side).
-         Are you sure you want to resolve the conflict by keeping this version as it is?
-        \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
+        <val lang="fr_FR">Aucune modification n'a été apportée à la version qui sera utilisée pour résoudre le conflit (côté gauche).
+         Êtes-vous sûr de vouloir résoudre le conflit en gardant cette version telle quelle?
+        \n\nVous perdrez vos modifications (côté droit) en ne les fusionnant pas dans la version finale.</val>
         <val lang="ja_JP">No changes have been made to the version that will be used to resolve the conflict (left side).
          Are you sure you want to resolve the conflict by keeping this version as it is?
         \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
@@ -82,7 +82,7 @@
 		<comment>"The 'pre-receive' server-side hook declined the operation."</comment>
         <val lang="en_US">The "pre-receive" server-side hook declined the operation.</val>
         <val lang="de_DE">The "pre-receive" server-side hook declined the operation.</val>
-        <val lang="fr_FR">The "pre-receive" server-side hook declined the operation.</val>
+        <val lang="fr_FR">L'attache "pre-receive" côté serveur a refusé l'opération.</val>
         <val lang="ja_JP">The "pre-receive" server-side hook declined the operation.</val>
         <val lang="nl_NL">The "pre-receive" server-side hook declined the operation.</val>
     </key>
@@ -90,7 +90,7 @@
 		<comment>"Details:"</comment>
         <val lang="en_US">Details:</val>
         <val lang="de_DE">Details:</val>
-        <val lang="fr_FR">Details:</val>
+        <val lang="fr_FR">Détails:</val>
         <val lang="ja_JP">Details:</val>
         <val lang="nl_NL">Details:</val>
     </key>
@@ -98,7 +98,7 @@
 		<comment> The message when there are changes in the remote repository.</comment>
         <val lang="en_US">Remote changes detected</val>
         <val lang="de_DE">Remote changes detected</val>
-        <val lang="fr_FR">Remote changes detected</val>
+        <val lang="fr_FR">Modifications remote détectées</val>
         <val lang="ja_JP">Remote changes detected</val>
         <val lang="nl_NL">Remote changes detected</val>
     </key>
@@ -108,8 +108,8 @@
         	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
         <val lang="de_DE">It is recommended to pull these changes into the local repository to avoid 
         	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
-        <val lang="fr_FR">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
+        <val lang="fr_FR">Il est recommandé d'enregistrer ces modifications dans le dépôt local afin 
+            d'éviter de futurs conflits.\n\nVoulez-vous effectuer un pull les modifications remote dans le dépôt local?</val>
         <val lang="ja_JP">It is recommended to pull these changes into the local repository to avoid 
         	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
         <val lang="nl_NL">It is recommended to pull these changes into the local repository to avoid 
@@ -119,7 +119,7 @@
 		<comment> Option text for notifying when there are new commits upstream.</comment>
         <val lang="en_US">Notify me about new commits in the remote repository</val>
         <val lang="de_DE">Notify me about new commits in the remote repository</val>
-        <val lang="fr_FR">Notify me about new commits in the remote repository</val>
+        <val lang="fr_FR">M'avertir des nouveaux commits dans le dépôt remote</val>
         <val lang="ja_JP">Notify me about new commits in the remote repository</val>
         <val lang="nl_NL">Notify me about new commits in the remote repository</val>
     </key>
@@ -127,7 +127,7 @@
         <comment>Dialog message when there is a new commit in the remote repository that has not been pulled yet.</comment>
 		<val lang="en_US">New commits were detected in the remote repository.</val>
 		<val lang="de_DE">New commits were detected in the remote repository.</val>
-		<val lang="fr_FR">New commits were detected in the remote repository.</val>
+		<val lang="fr_FR">De nouveaux commit ont été détectés dans le dépôt remote.</val>
 		<val lang="ja_JP">New commits were detected in the remote repository.</val>
 		<val lang="nl_NL">New commits were detected in the remote repository.</val>
     </key>
@@ -135,7 +135,7 @@
         <comment>Continue</comment>
         <val lang="en_US">Commit anyway</val>
         <val lang="de_DE">Commit anyway</val>
-        <val lang="fr_FR">Commit anyway</val>
+        <val lang="fr_FR">Effectuer le commit quand même</val>
         <val lang="ja_JP">Commit anyway</val>
         <val lang="nl_NL">Commit anyway</val>
     </key>
@@ -143,7 +143,7 @@
         <comment>Dialog title when the user commits with an empty commit message.</comment>
         <val lang="en_US">No commit message</val>
         <val lang="de_DE">No commit message</val>
-        <val lang="fr_FR">No commit message</val>
+        <val lang="fr_FR">Aucun message de commit</val>
         <val lang="ja_JP">No commit message</val>
         <val lang="nl_NL">No commit message</val>
     </key>
@@ -153,8 +153,8 @@
             description of your changes.</val>
         <val lang="de_DE">The commit message is empty. It is recommended to provide a
             description of your changes.</val>
-        <val lang="fr_FR">The commit message is empty. It is recommended to provide a
-            description of your changes.</val>
+        <val lang="fr_FR">Le message de commit est vide. Il est recommandé de fournir une
+            description de vos modifications.</val>
         <val lang="ja_JP">The commit message is empty. It is recommended to provide a
             description of your changes.</val>
         <val lang="nl_NL">The commit message is empty. It is recommended to provide a
@@ -166,8 +166,8 @@
         unresolved conflicts in the index. You need to resolve the conflicts first.</val>
         <val lang="de_DE">Der neue Branch wurde erstellt, aber er konnte nicht ausgecheckt werden
         weil es Konflikte gibt. Sie müssen zuerst die Konflikte beheben.</val>
-        <val lang="fr_FR">The new branch was created, but it could not be checked out because of 
-        unresolved conflicts in the index. You need to resolve the conflicts first.</val>
+        <val lang="fr_FR">La nouvelle branche a été créée, mais elle n'a pas pu être extraite à cause 
+        de conflits non résolus dans l'index. Vous devez d'abord résoudre les conflits.</val>
         <val lang="ja_JP">The new branch was created, but it could not be checked out because of 
         unresolved conflicts in the index. You need to resolve the conflicts first.</val>
         <val lang="nl_NL">The new branch was created, but it could not be checked out because of 
@@ -177,7 +177,7 @@
         <comment>"Create branch" label.</comment>
         <val lang="en_US">Create branch</val>
         <val lang="de_DE">Branch erstellen</val>
-        <val lang="fr_FR">Create branch</val>
+        <val lang="fr_FR">Créer une branche</val>
         <val lang="ja_JP">Create branch</val>
         <val lang="nl_NL">Create branch</val>
     </key>
@@ -185,7 +185,7 @@
         <comment>"Branch_name" label.</comment>
         <val lang="en_US">Branch name:</val>
         <val lang="de_DE">Name des Branch:</val>
-        <val lang="fr_FR">Branch name:</val>
+        <val lang="fr_FR">Nom de la branche:</val>
         <val lang="ja_JP">Branch name:</val>
         <val lang="nl_NL">Branch name:</val>
     </key>
@@ -193,7 +193,7 @@
         <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>
         <val lang="en_US">no remote branch detected for local branch "{0}"</val>
         <val lang="de_DE">Es wurde kein Remote-Branch für den lokalen Branch "{0}" gefunden</val>
-        <val lang="fr_FR">no remote branch detected for local branch "{0}"</val>
+        <val lang="fr_FR">aucune branche remote détectée pour la branche "{0}" locale</val>
         <val lang="ja_JP">no remote branch detected for local branch "{0}"</val>
         <val lang="nl_NL">no remote branch detected for local branch "{0}"</val>
     </key>
@@ -201,7 +201,7 @@
         <comment>"no upstream branch" label.</comment>
         <val lang="en_US">no upstream branch</val>
         <val lang="de_DE">Kein Upstream-Branch</val>
-        <val lang="fr_FR">no upstream branch</val>
+        <val lang="fr_FR">aucune branche upstream</val>
         <val lang="ja_JP">no upstream branch</val>
         <val lang="nl_NL">no upstream branch</val>
     </key>
@@ -209,7 +209,7 @@
         <comment>"Upstream branch" label.</comment>
         <val lang="en_US">Upstream branch:</val>
         <val lang="de_DE">Upstream Branch:</val>
-        <val lang="fr_FR">Upstream branch:</val>
+        <val lang="fr_FR">Branche upstream:</val>
         <val lang="ja_JP">Upstream branch:</val>
         <val lang="nl_NL">Upstream branch:</val>
     </key>
@@ -217,7 +217,7 @@
         <comment>"Upstream branch {0} does not exist" label.</comment>
         <val lang="en_US">Upstream branch "{0}" does not exist.</val>
         <val lang="de_DE">Upstream-Branch "{0}" existiert nicht.</val>
-        <val lang="fr_FR">Upstream branch "{0}" does not exist.</val>
+        <val lang="fr_FR">La branche upstream  "{0}" n'existe pas.</val>
         <val lang="ja_JP">Upstream branch "{0}" does not exist.</val>
         <val lang="nl_NL">Upstream branch "{0}" does not exist.</val>
     </key>
@@ -225,7 +225,7 @@
         <comment>Status message (Amendment successful).</comment>
         <val lang="en_US">Amendment successful</val>
         <val lang="de_DE">Git-Amend erfolgreich</val>
-        <val lang="fr_FR">Amendment successful</val>
+        <val lang="fr_FR">Amendement réussi</val>
         <val lang="ja_JP">Amendment successful</val>
         <val lang="nl_NL">Amendment successful</val>
     </key>
@@ -236,10 +236,10 @@
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
         <val lang="de_DE">Möchten Sie ihr aktuelles Projekte ({0}) als Git-Projekt aufsetzen?\n\nIhr Projekt
         wird als lokales Git-Repository aufgesetzt und Sie werden beim ersten Versuch Änderungen zu Pushen oder Pullen
-	nach der URL zu einem zugehörigen Remote-Repository gefragt.</val>
-        <val lang="fr_FR">Do you want your current project ({0}) to be a Git project?\n\nYour project 
-        will become a local Git repository and you''ll be asked to specify 
-        the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
+        nach der URL zu einem zugehörigen Remote-Repository gefragt.</val>
+        <val lang="fr_FR">Voulez-vous que votre projet actuel ({0}) soit un projet Git?\n\nVotre projet 
+        deviendra un dépôt Git local et il vous sera demandé de préciser 
+        l''URL du dépôt remote correspondant lors de votre première tentative de push ou de pull des modifications.</val>
         <val lang="ja_JP">Do you want your current project ({0}) to be a Git project?\n\nYour project 
         will become a local Git repository and you''ll be asked to specify 
         the URL of the corresponding remote repository on your first attempt to push or pull changes.</val>
@@ -253,8 +253,8 @@
         will be reset.\n\nAre you sure you want to continue?</val>
         <val lang="de_DE">Alle Zugangsdaten, sowohl für HTTPS- als auch für SSL-Authentifizierung,
         werden zurückgesetzt.\n\nSind Sie sicher, dass Sie fortfahren möchten?</val>
-        <val lang="fr_FR">All credentials, for both HTTPS and SSH authentications,
-        will be reset.\n\nAre you sure you want to continue?</val>
+        <val lang="fr_FR">Tous les identifiants, à la fois pour HTTPS et SSH,
+        seront réinitialisés.\n\nÊtes-vous sûr de vouloir continuer?</val>
         <val lang="ja_JP">All credentials, for both HTTPS and SSH authentications,
         will be reset.\n\nAre you sure you want to continue?</val>
         <val lang="nl_NL">All credentials, for both HTTPS and SSH authentications,
@@ -264,7 +264,7 @@
         <comment>A file is not found in a revision.</comment>
         <val lang="en_US">File "{0}" is not present in commit {1}.</val>
         <val lang="de_DE">Datei "{0}" ist im Commit {1} nicht vorhanden.</val>
-        <val lang="fr_FR">File "{0}" is not present in commit {1}.</val>
+        <val lang="fr_FR">Le fichier "{0}" n''est pas présent dans le commit {1}.</val>
         <val lang="ja_JP">File "{0}" is not present in commit {1}.</val>
         <val lang="nl_NL">File "{0}" is not present in commit {1}.</val>
     </key>
@@ -272,7 +272,7 @@
         <comment>A file was removed in a revision.</comment>
         <val lang="en_US">File "{0}" was removed in commit {1}.</val>
         <val lang="de_DE">Datei "{0}" wurde in Commit {1} entfernt.</val>
-        <val lang="fr_FR">File "{0}" was removed in commit {1}.</val>
+        <val lang="fr_FR">Le fichier "{0}" a été supprimé dans le commit {1}.</val>
         <val lang="ja_JP">File "{0}" was removed in commit {1}.</val>
         <val lang="nl_NL">File "{0}" was removed in commit {1}.</val>
     </key>
@@ -280,7 +280,7 @@
         <comment>Action in the history view to compare two revisions of the same file.</comment>
         <val lang="en_US">Compare with each other</val>
         <val lang="de_DE">Miteinander vergleichen</val>
-        <val lang="fr_FR">Compare with each other</val>
+        <val lang="fr_FR">Comparer entre eux</val>
         <val lang="ja_JP">Compare with each other</val>
         <val lang="nl_NL">Compare with each other</val>
     </key>
@@ -288,7 +288,7 @@
         <comment>"Reset all credentials"</comment>
         <val lang="en_US">Reset all credentials</val>
         <val lang="de_DE">Zugangsdaten zurücksetzen</val>
-        <val lang="fr_FR">Reset all credentials</val>
+        <val lang="fr_FR">Réinitialiser tous les identifiants</val>
         <val lang="ja_JP">Reset all credentials</val>
         <val lang="nl_NL">Reset all credentials</val>
     </key>
@@ -296,7 +296,7 @@
         <comment>Tooltip message for the push button.</comment>
         <val lang="en_US">Create and track remote branch "{0}", and push changes to it.</val>
         <val lang="de_DE">Erstellt und trackt den Remote-Branch "{0}" und pusht die Änderungen dort hin.</val>
-        <val lang="fr_FR">Create and track remote branch "{0}", and push changes to it.</val>
+        <val lang="fr_FR">Créer et suivre la branche remote "{0}", et y effectuer un push des modifications.</val>
         <val lang="ja_JP">Create and track remote branch "{0}", and push changes to it.</val>
         <val lang="nl_NL">Create and track remote branch "{0}", and push changes to it.</val>
     </key>
@@ -304,7 +304,7 @@
         <comment>Tooltip message for the push button.</comment>
         <val lang="en_US">Track remote branch "{0}" and push changes to it.</val>
         <val lang="de_DE">Trackt den Remote-Branch "{0}" und pusht die Änderungen dort hin.</val>
-        <val lang="fr_FR">Track remote branch "{0}" and push changes to it.</val>
+        <val lang="fr_FR">Suivre la branche remote "{0}" et y effectuer un push des modifications.</val>
         <val lang="ja_JP">Track remote branch "{0}" and push changes to it.</val>
         <val lang="nl_NL">Track remote branch "{0}" and push changes to it.</val>
     </key>
@@ -312,7 +312,7 @@
         <comment>"Cannot pull"</comment>
         <val lang="en_US">Cannot pull.</val>
         <val lang="de_DE">Pull nicht möglich.</val>
-        <val lang="fr_FR">Cannot pull.</val>
+        <val lang="fr_FR">Pull impossible.</val>
         <val lang="ja_JP">Cannot pull.</val>
         <val lang="nl_NL">Cannot pull.</val>
     </key>
@@ -320,7 +320,7 @@
         <comment>The text displayed on the right side of the toolbar buttons if the repository is one commit ahead.</comment>
         <val lang="en_US">1 commit ahead.</val>
         <val lang="de_DE">1 Commit voraus.</val>
-        <val lang="fr_FR">1 commit ahead.</val>
+        <val lang="fr_FR">1 commit d'avance</val>
         <val lang="ja_JP">1 commit ahead.</val>
         <val lang="nl_NL">1 commit ahead.</val>
     </key>
@@ -328,7 +328,7 @@
         <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits ahead.</comment>
         <val lang="en_US">{0} commits ahead.</val>
         <val lang="de_DE">{0} Commits voraus.</val>
-        <val lang="fr_FR">{0} commits ahead.</val>
+        <val lang="fr_FR">{0} commits d'avance.</val>
         <val lang="ja_JP">{0} commits ahead.</val>
         <val lang="nl_NL">{0} commits ahead.</val>
     </key>
@@ -336,7 +336,7 @@
         <comment>"Nothing to push"</comment>
         <val lang="en_US">Nothing to push.</val>
         <val lang="de_DE">Nichts zu pushen.</val>
-        <val lang="fr_FR">Nothing to push.</val>
+        <val lang="fr_FR">Rien dans le push.</val>
         <val lang="ja_JP">Nothing to push.</val>
         <val lang="nl_NL">Nothing to push.</val>
     </key>
@@ -344,7 +344,7 @@
         <comment>The text displayed on the right side of the toolbar buttons if the repository is one commit behind</comment>
         <val lang="en_US">1 commit behind.</val>
         <val lang="de_DE">1 Commit zurück.</val>
-        <val lang="fr_FR">1 commit behind.</val>
+        <val lang="fr_FR">1 commit de retard.</val>
         <val lang="ja_JP">1 commit behind.</val>
         <val lang="nl_NL">1 commit behind.</val>
     </key>
@@ -352,7 +352,7 @@
         <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits behind </comment>
         <val lang="en_US">{0} commits behind.</val>
         <val lang="de_DE">{0} Commits zurück.</val>
-        <val lang="fr_FR">{0} commits behind.</val>
+        <val lang="fr_FR">{0} commits de retard.</val>
         <val lang="ja_JP">{0} commits behind.</val>
         <val lang="nl_NL">{0} commits behind.</val>
     </key>
@@ -360,7 +360,7 @@
         <comment>"Local branch" label.</comment>
         <val lang="en_US">Local branch:</val>
         <val lang="de_DE">Lokaler Branch:</val>
-        <val lang="fr_FR">Local branch:</val>
+        <val lang="fr_FR">Branche locale:</val>
         <val lang="ja_JP">Local branch:</val>
         <val lang="nl_NL">Local branch:</val>
     </key>
@@ -368,7 +368,7 @@
         <comment>"Remote branch" label.</comment>
         <val lang="en_US">Remote branch:</val>
         <val lang="de_DE">Remote-Branch:</val>
-        <val lang="fr_FR">Remote branch:</val>
+        <val lang="fr_FR">Branche remote:</val>
         <val lang="ja_JP">Remote branch:</val>
         <val lang="nl_NL">Remote branch:</val>
     </key>
@@ -382,10 +382,10 @@
         Es wird empfohlen, solche öffentliche Commits nicht via Git-Amend zu verändern, da andere Personen bereits darauf aufbauend weitergearbeitet haben könnten. 
         Dies kann für andere Bearbeiter verwirrende und schwer lösbare Situationen erzeugen.\n\n
         Sind Sie sicher, dass Sie fortfahren möchten?</val>
-        <val lang="fr_FR">The commit being amended has already been pushed to a remote branch. 
-        It is highly recommended not to amend public commits that other people may have based their work on. 
-        Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
-        Are you sure you want to continue?</val>
+        <val lang="fr_FR">Le commit amendé a déjà fait l'objet d'un push sur une branche remote. 
+        Il est fortement recommandé de ne pas amender les commits publics sur lesquels d'autres personnes ont pu baser leur travail.  
+        Agir autrement pourrait créer une situation confuse et difficile à récupérer pour les autres contributeurs.\n\n
+        Êtes-vous sûr de vouloir continuer?</val>
         <val lang="ja_JP">The commit being amended has already been pushed to a remote branch. 
         It is highly recommended not to amend public commits that other people may have based their work on. 
         Doing otherwise may create a confusing and complicated to recover from situation for other contributors.\n\n
@@ -399,7 +399,7 @@
         <comment>Text for the toggle used to amend the last commit.</comment>
         <val lang="en_US">Amend last commit</val>
         <val lang="de_DE">An letzten Commit anhängen</val>
-        <val lang="fr_FR">Amend last commit</val>
+        <val lang="fr_FR">Amender le dernier commit</val>
         <val lang="ja_JP">Amend last commit</val>
         <val lang="nl_NL">Amend last commit</val>
     </key>
@@ -407,7 +407,7 @@
         <comment>Text for the toggle used to automatically push when committing.</comment>
         <val lang="en_US">Automatically push changes to remote branch</val>
         <val lang="de_DE">Änderungen automatisch auf Remote-Branch pushen</val>
-        <val lang="fr_FR">Automatically push changes to remote branch</val>
+        <val lang="fr_FR">Effectuer un push automatique des modifications sur la branche remote</val>
         <val lang="ja_JP">Automatically push changes to remote branch</val>
         <val lang="nl_NL">Automatically push changes to remote branch</val>
     </key>
@@ -415,7 +415,7 @@
         <comment>Require saving</comment>
         <val lang="en_US">This operation requires saving ''{0}''. Do you want to save it now?</val>
         <val lang="de_DE">Dieser Vorgang erfordert das Speichern von ''{0}''. Soll nun gespeichert werden?</val>
-        <val lang="fr_FR">This operation requires saving ''{0}''. Do you want to save it now?</val>
+        <val lang="fr_FR">Cette opération nécessite la sauvegarde de ''{0}''. Voulez-vous le sauvegarder maintenant?</val>
         <val lang="ja_JP">This operation requires saving ''{0}''. Do you want to save it now?</val>
         <val lang="nl_NL">This operation requires saving ''{0}''. Do you want to save it now?</val>
     </key>
@@ -423,7 +423,7 @@
         <comment>Message for when no history or blame can be shown (for new files).</comment>
         <val lang="en_US">Nothing to show for new files.</val>
         <val lang="de_DE">Hier gibt es nichts anzuzeigen für neue Dateien.</val>
-        <val lang="fr_FR">Nothing to show for new files.</val>
+        <val lang="fr_FR">Rien à afficher pour les nouveaux fichiers.</val>
         <val lang="ja_JP">Nothing to show for new files.</val>
         <val lang="nl_NL">Nothing to show for new files.</val>
     </key>
@@ -431,7 +431,7 @@
         <comment>The tooltip for the renamed icon that appears on the left side of a file.</comment>
         <val lang="en_US">File renamed</val>
         <val lang="de_DE">Datei umbenannt</val>
-        <val lang="fr_FR">File renamed</val>
+        <val lang="fr_FR">Fichier renommé</val>
         <val lang="ja_JP">File renamed</val>
         <val lang="nl_NL">File renamed</val>
     </key>
@@ -439,7 +439,7 @@
         <comment>"Change working copy" label.</comment>
         <val lang="en_US">Change working copy</val>
         <val lang="de_DE">Wechsle Arbeitsverzeichnis</val>
-        <val lang="fr_FR">Change working copy</val>
+        <val lang="fr_FR">Changer de copie de travail</val>
         <val lang="ja_JP">Change working copy</val>
         <val lang="nl_NL">Change working copy</val>
     </key>
@@ -450,8 +450,8 @@
             Do you want to set it as the current working copy?</val>
         <val lang="de_DE">Das Verzeichnis "{0}" wurde als lokales Git-Repository erkannt.
             Soll es als aktuelles Arbeitsverzeichnis verwendet werden?</val>
-        <val lang="fr_FR">The "{0}" directory was detected as being a local Git repository.
-            Do you want to set it as the current working copy?</val>
+        <val lang="fr_FR">Le répertoire "{0}" a été détecté comme un dépôt Git local.
+            Voulez-vous le définir comme la copie de travail actuelle?</val>
         <val lang="ja_JP">The "{0}" directory was detected as being a local Git repository.
             Do you want to set it as the current working copy?</val>
         <val lang="nl_NL">The "{0}" directory was detected as being a local Git repository.
@@ -461,7 +461,7 @@
         <comment>"Clear history" label.</comment>
         <val lang="en_US">Clear history</val>
         <val lang="de_DE">Historie löschen</val>
-        <val lang="fr_FR">Clear history</val>
+        <val lang="fr_FR">Effacer l'historique</val>
         <val lang="ja_JP">Clear history</val>
         <val lang="nl_NL">Clear history</val>
     </key>
@@ -469,7 +469,7 @@
         <comment>"Clear history" confirmation message.</comment>
         <val lang="en_US">Are you sure you want to clear the history?</val>
         <val lang="de_DE">Sind Sie sicher, dass die Historie gelöscht werden soll?</val>
-        <val lang="fr_FR">Are you sure you want to clear the history?</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir effacer l'historique?</val>
         <val lang="ja_JP">Are you sure you want to clear the history?</val>
         <val lang="nl_NL">Are you sure you want to clear the history?</val>
     </key>
@@ -477,7 +477,7 @@
         <comment>Committing</comment>
         <val lang="en_US">Committing</val>
         <val lang="de_DE">Wird committet</val>
-        <val lang="fr_FR">Committing</val>
+        <val lang="fr_FR">Commit en cours</val>
         <val lang="ja_JP">Committing</val>
         <val lang="nl_NL">Committing</val>
     </key>
@@ -486,7 +486,7 @@
             It appears as the commit message.</comment>
         <val lang="en_US">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
         <val lang="de_DE">Alle Konflikte wurden gelöst. Bitte committen Sie um den Branch ''{0}'' von {1} zu mergen.</val>
-        <val lang="fr_FR">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
+        <val lang="fr_FR">Tous les conflits ont été résolus. Commit pour fusionner la branche ''{0}'' de {1}.</val>
         <val lang="ja_JP">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
         <val lang="nl_NL">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
     </key>
@@ -494,7 +494,7 @@
         <comment>Information message when there is nothing to commit.</comment>
         <val lang="en_US">There are no changes to commit.</val>
         <val lang="de_DE">Es gibt keine Änderungen zu Committen.</val>
-        <val lang="fr_FR">There are no changes to commit.</val>
+        <val lang="fr_FR">Il n'y a aucune modification pour commit.</val>
         <val lang="ja_JP">There are no changes to commit.</val>
         <val lang="nl_NL">There are no changes to commit.</val>
     </key>
@@ -502,7 +502,7 @@
         <comment>Contextual action in the History view, to open the previous version of a file.</comment>
         <val lang="en_US">Open previous version</val>
         <val lang="de_DE">Öffne vorherige Version</val>
-        <val lang="fr_FR">Open previous version</val>
+        <val lang="fr_FR">Ouvrir la version précédente</val>
         <val lang="ja_JP">Open previous version</val>
         <val lang="nl_NL">Open previous version</val>
     </key>
@@ -510,7 +510,7 @@
         <comment>Show current branch history</comment>
         <val lang="en_US">Show current branch history</val>
         <val lang="de_DE">Zeige die Historie des aktuellen Branch</val>
-        <val lang="fr_FR">Show current branch history</val>
+        <val lang="fr_FR">Afficher l'historique de la branche courante</val>
         <val lang="ja_JP">Show current branch history</val>
         <val lang="nl_NL">Show current branch history</val>
     </key>
@@ -518,7 +518,7 @@
         <comment>The title for the "Git History" panel/view.</comment>
         <val lang="en_US">Git History</val>
         <val lang="de_DE">Git Historie</val>
-        <val lang="fr_FR">Git History</val>
+        <val lang="fr_FR">Historique Git</val>
         <val lang="ja_JP">Git History</val>
         <val lang="nl_NL">Git History</val>
     </key>
@@ -526,7 +526,7 @@
         <comment>The title for the "Git Staging" panel/view.</comment>
         <val lang="en_US">Git Staging</val>
         <val lang="de_DE">Git Staging</val>
-        <val lang="fr_FR">Git Staging</val>
+        <val lang="fr_FR">Staging Git</val>
         <val lang="ja_JP">Git Staging</val>
         <val lang="nl_NL">Git Staging</val>
     </key>
@@ -534,7 +534,7 @@
         <comment>History table column name.</comment>
         <val lang="en_US">Committer</val>
         <val lang="de_DE">Committer</val>
-        <val lang="fr_FR">Committer</val>
+        <val lang="fr_FR">Auteur du commit</val>
         <val lang="ja_JP">Committer</val>
         <val lang="nl_NL">Committer</val>
     </key>
@@ -542,7 +542,7 @@
         <comment>History table column name.</comment>
         <val lang="en_US">Date</val>
         <val lang="de_DE">Datum</val>
-        <val lang="fr_FR">Date</val>
+        <val lang="fr_FR" skipTranslation="true">Date</val>
         <val lang="ja_JP">Date</val>
         <val lang="nl_NL">Date</val>
     </key>
@@ -550,7 +550,7 @@
         <comment>History table column name. The person that made that commit.</comment>
         <val lang="en_US">Author</val>
         <val lang="de_DE">Autor</val>
-        <val lang="fr_FR">Author</val>
+        <val lang="fr_FR">Auteur</val>
         <val lang="ja_JP">Author</val>
         <val lang="nl_NL">Author</val>
     </key>
@@ -558,7 +558,7 @@
         <comment>History table label.</comment>
         <val lang="en_US">Parents</val>
         <val lang="de_DE">Übergeordnet</val>
-        <val lang="fr_FR">Parents</val>
+        <val lang="fr_FR" skipTranslation="true">Parents</val>
         <val lang="ja_JP">Parents</val>
         <val lang="nl_NL">Parents</val>
     </key>
@@ -566,7 +566,7 @@
         <comment>Message shown when pull (rebase) failed because of uncommitted files.</comment>
         <val lang="en_US">Cannot pull with rebase because of the following uncommitted files:</val>
         <val lang="de_DE">Pull mit Rebase nicht möglich wegen der folgenden nicht-committeten Dateien:</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">Impossible d'effectuer le pull avec rebase à cause des fichier hors commit suivants:</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -574,7 +574,7 @@
         <comment>Message shown when pull (rebase) failed because of conflicting paths.</comment>
         <val lang="en_US">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
         <val lang="de_DE">Pull mit Rebase nicht möglich, da die lokalen Änderungen der folgenden Dateien im Konflikt stehen mit den Remote-Änderungen:</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">Impossible d'effectuer le pull avec rebase parce que les modifications locales des fichiers suivants sont en conflit avec les modifications remote entrantes:</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -582,7 +582,7 @@
         <comment>Continue rebase</comment>
         <val lang="en_US">Continue rebase</val>
         <val lang="de_DE">Rebase fortsetzen</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">Continuer le rebase</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -590,7 +590,7 @@
         <comment>Abort rebase</comment>
         <val lang="en_US">Abort rebase</val>
         <val lang="de_DE">Rebase abbrechen</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">Abandonner le rebase</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -598,7 +598,7 @@
         <comment>Confirmation message for "Restart merge"</comment>
         <val lang="en_US">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
         <val lang="de_DE">Sind Sie sicher, dass Sie den Merge-Prozess neu starten möchten?\nDie nicht-committeten Änderungen aller Dateien werden dabei verworfen.</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir relancer le processus de fusion?\nLes modifications hors commit de tous les fichiers seront annulées.</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -606,7 +606,7 @@
         <comment>Mine</comment>
         <val lang="en_US">Mine</val>
         <val lang="de_DE">Meins</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">La mienne</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -614,7 +614,7 @@
         <comment>Theirs</comment>
         <val lang="en_US">Theirs</val>
         <val lang="de_DE">Ihres</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">La leur</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -622,7 +622,7 @@
         <comment>The working branch</comment>
         <val lang="en_US">the working branch</val>
         <val lang="de_DE">der lokale Branch</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">la branche de travail</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -630,7 +630,7 @@
         <comment>The upstream branch</comment>
         <val lang="en_US">the upstream branch</val>
         <val lang="de_DE">der Remote-Branch</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">la branche upstream</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -638,7 +638,7 @@
         <comment>Message shown when invoking "Resolve using Mine" or "Resolve using Theirs" for a conflict generated when trying to rebase.</comment>
         <val lang="en_US">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
         <val lang="de_DE">Sie lösen einen Rebase-Konflikt. In dieser Situation ist Git''s Definition von "Meins" und "Ihres" vertauscht.\nDer aktuelle lokale Branch wird zu "Ihres", während der Remote-Branch zu "Meins" wird.\n\nMöchten Sie "{0}" ({1}) zur Behebung des Konflikts auswählen?</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">Vous êtes sur le point de résoudre un conflit de rebase. Dans cette situation, les définitions de "La mienne" et "La leur" de Git sont inversées.\nL'ancienne branche de travail actuelle devient "La leur" tandis que la branche upstream devient "La mienne"..\n\nVoulez-vous continuer à résoudre le conflit en utilisant "{0}" ({1})?</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -646,7 +646,7 @@
         <comment>Message shown when rebasing cannot continue because of conflicts.</comment>
         <val lang="en_US">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
         <val lang="de_DE">Rebase kann nicht fortgesetzt werden. Es gibt noch ungelöste Konflikte im Arbeitsverzeichnis die behoben werden müssen.</val>
-        <val lang="fr_FR">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
+        <val lang="fr_FR">Impossible de continuer le rebase. Vous avez des conflits dans la copie de travail qui doivent être résolus.</val>
         <val lang="ja_JP">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
         <val lang="nl_NL">Cannot continue rebasing. You have conflicts in the working copy that need to be resolved.</val>
     </key>
@@ -654,7 +654,7 @@
         <comment>Interrupted rebase information.</comment>
         <val lang="en_US">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
         <val lang="de_DE">Es sieht so aus, als ob gerade ein Rebase-Prozess läuft, der durch einen Konflikt unterbrochen wurde. Sie sollten zuerst die Konflikte beheben. Wenn diese bereits behoben sind, wählen Sie ob der Rebase fortgesetzt oder abgebrochen werden soll.</val>
-        <val lang="fr_FR">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
+        <val lang="fr_FR">Il semble que vous ayez un rebase en cours qui a probablement été interrompue à cause d'un conflit. Vous devez d'abord résoudre les conflits. Si vous les avez déjà résolus, choisissez de continuer ou d'annuler le rebase.</val>
         <val lang="ja_JP">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
         <val lang="nl_NL">It seems you have a rebase in progress that was probably interrupted because of a conflict. You should first resolve the conflicts. If you have already resolved them, choose whether to continue or abort the rebase.</val>
     </key>
@@ -662,7 +662,7 @@
         <comment>Rebase in progress.</comment>
         <val lang="en_US">Rebase in progress</val>
         <val lang="de_DE">Rebase läuft...</val>
-        <val lang="fr_FR">Rebase in progress</val>
+        <val lang="fr_FR">Rebase en cours</val>
         <val lang="ja_JP">Rebase in progress</val>
         <val lang="nl_NL">Rebase in progress</val>
     </key>
@@ -670,7 +670,7 @@
         <comment>Pull (rebase)</comment>
         <val lang="en_US">Pull (rebase)</val>
         <val lang="de_DE">Pull (Rebase)</val>
-        <val lang="fr_FR">Pull (rebase)</val>
+        <val lang="fr_FR" skipTranslation="true">Pull (rebase)</val>
         <val lang="ja_JP">Pull (rebase)</val>
         <val lang="nl_NL">Pull (rebase)</val>
     </key>
@@ -678,7 +678,7 @@
         <comment>Pull (merge)</comment>
         <val lang="en_US">Pull (merge)</val>
         <val lang="de_DE">Pull (Merge)</val>
-        <val lang="fr_FR">Pull (merge)</val>
+        <val lang="fr_FR">Pull (fusion)</val>
         <val lang="ja_JP">Pull (merge)</val>
         <val lang="nl_NL">Pull (merge)</val>
     </key>
@@ -686,7 +686,7 @@
         <comment>Pull (rebase) from</comment>
         <val lang="en_US">Pull (rebase) from "{0}"</val>
         <val lang="de_DE">Pull (Rebase) von "{0}"</val>
-        <val lang="fr_FR">Pull (rebase) from "{0}"</val>
+        <val lang="fr_FR">Pull (rebase) depuis "{0}"</val>
         <val lang="ja_JP">Pull (rebase) from "{0}"</val>
         <val lang="nl_NL">Pull (rebase) from "{0}"</val>
     </key>
@@ -694,7 +694,7 @@
         <comment>Pull (merge) from</comment>
         <val lang="en_US">Pull (merge) from "{0}"</val>
         <val lang="de_DE">Pull (Merge) von "{0}"</val>
-        <val lang="fr_FR">Pull (merge) from "{0}"</val>
+        <val lang="fr_FR">Pull (fusion) depuis "{0}"</val>
         <val lang="ja_JP">Pull (merge) from "{0}"</val>
         <val lang="nl_NL">Pull (merge) from "{0}"</val>
     </key>
@@ -702,7 +702,7 @@
         <comment>Pull failed</comment>
         <val lang="en_US">Pull failed</val>
         <val lang="de_DE">Pull fehlgeschlagen</val>
-        <val lang="fr_FR">Pull failed</val>
+        <val lang="fr_FR">Échec du pull</val>
         <val lang="ja_JP">Pull failed</val>
         <val lang="nl_NL">Pull failed</val>
     </key>
@@ -710,7 +710,7 @@
         <comment>Push failed</comment>
         <val lang="en_US">Push failed</val>
         <val lang="de_DE">Push fehlgeschlagen</val>
-        <val lang="fr_FR">Push failed</val>
+        <val lang="fr_FR">Échec du push</val>
         <val lang="ja_JP">Push failed</val>
         <val lang="nl_NL">Push failed</val>
     </key>
@@ -718,7 +718,7 @@
         <comment>Message shown when invoking the diff on an unchanged file.</comment>
         <val lang="en_US">No changes.</val>
         <val lang="de_DE">Keine Unterschiede.</val>
-        <val lang="fr_FR"></val>
+        <val lang="fr_FR">Aucune modification.</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL"></val>
     </key>
@@ -726,7 +726,7 @@
         <comment>Contextual action in the staging panel to present Git blame.</comment>
         <val lang="en_US">Show blame</val>
         <val lang="de_DE">Blame anzeigen</val>
-        <val lang="fr_FR">Show blame</val>
+        <val lang="fr_FR">Afficher le blame Git</val>
         <val lang="ja_JP">Show blame</val>
         <val lang="nl_NL">Show blame</val>
     </key>
@@ -734,7 +734,7 @@
         <comment>Contextual action in the staging panel.</comment>
         <val lang="en_US">Show history</val>
         <val lang="de_DE">Historie anzeigen</val>
-        <val lang="fr_FR">Show history</val>
+        <val lang="fr_FR">Afficher l'historique</val>
         <val lang="ja_JP">Show history</val>
         <val lang="nl_NL">Show history</val>
     </key>
@@ -742,7 +742,7 @@
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
         <val lang="en_US">Compare {0} with working copy version</val>
         <val lang="de_DE">Vergleiche {0} mit der lokalen Version</val>
-        <val lang="fr_FR">Compare {0} with working copy version</val>
+        <val lang="fr_FR">Comparer {0} avec la version de travail</val>
         <val lang="ja_JP">Compare {0} with working copy version</val>
         <val lang="nl_NL">Compare {0} with working copy version</val>
     </key>
@@ -750,7 +750,7 @@
         <comment>Action name to compare a file with its previous version.</comment>
         <val lang="en_US">Compare {0} with previous version</val>
         <val lang="de_DE">Vergleiche {0} mit der Vorversion</val>
-        <val lang="fr_FR">Compare {0} with previous version</val>
+        <val lang="fr_FR">Comparer {0} avec la version précédente</val>
         <val lang="ja_JP">Compare {0} with previous version</val>
         <val lang="nl_NL">Compare {0} with previous version</val>
     </key>
@@ -758,7 +758,7 @@
         <comment>Open file action name.</comment>
         <val lang="en_US">Open {0}</val>
         <val lang="de_DE">Öffne {0}</val>
-        <val lang="fr_FR">Open {0}</val>
+        <val lang="fr_FR">Ouvrir {0}</val>
         <val lang="ja_JP">Open {0}</val>
         <val lang="nl_NL">Open {0}</val>
     </key>
@@ -766,7 +766,7 @@
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
         <val lang="en_US">Compare with working copy version</val>
         <val lang="de_DE">Vergleiche mit der lokalen Version</val>
-        <val lang="fr_FR">Compare with working copy version</val>
+        <val lang="fr_FR">Comparer avec la version de travail</val>
         <val lang="ja_JP">Compare with working copy version</val>
         <val lang="nl_NL">Compare with working copy version</val>
     </key>
@@ -774,7 +774,7 @@
         <comment>Action name to compare a file with its previous version.</comment>
         <val lang="en_US">Compare with previous version</val>
         <val lang="de_DE">Vergleiche mit der Vorversion</val>
-        <val lang="fr_FR">Compare with previous version</val>
+        <val lang="fr_FR">Comparer avec la version précédente</val>
         <val lang="ja_JP">Compare with previous version</val>
         <val lang="nl_NL">Compare with previous version</val>
     </key>
@@ -782,7 +782,7 @@
         <comment>Action in the history panel.</comment>
         <val lang="en_US">Refresh</val>
         <val lang="de_DE">Aktualisieren</val>
-        <val lang="fr_FR">Refresh</val>
+        <val lang="fr_FR">Actualiser</val>
         <val lang="ja_JP">Refresh</val>
         <val lang="nl_NL">Refresh</val>
     </key>
@@ -790,7 +790,7 @@
         <comment>Showing history for:</comment>
         <val lang="en_US">Branch history for {0}</val>
         <val lang="de_DE">Branch-Historie für {0}</val>
-        <val lang="fr_FR">Branch history for {0}</val>
+        <val lang="fr_FR">Historique de la branche pour {0}</val>
         <val lang="ja_JP">Branch history for {0}</val>
         <val lang="nl_NL">Branch history for {0}</val>
     </key>
@@ -798,7 +798,7 @@
         <comment>Push to</comment>
         <val lang="en_US">Push to "{0}"</val>
         <val lang="de_DE">Push an "{0}"</val>
-        <val lang="fr_FR">Push to "{0}"</val>
+        <val lang="fr_FR">Push vers "{0}"</val>
         <val lang="ja_JP">Push to "{0}"</val>
         <val lang="nl_NL">Push to "{0}"</val>
     </key>
@@ -806,7 +806,7 @@
         <comment>Pull from</comment>
         <val lang="en_US">Pull from "{0}"</val>
         <val lang="de_DE">Pull von "{0}"</val>
-        <val lang="fr_FR">Pull from "{0}"</val>
+        <val lang="fr_FR">Pull depuis "{0}"</val>
         <val lang="ja_JP">Pull from "{0}"</val>
         <val lang="nl_NL">Pull from "{0}"</val>
     </key>
@@ -814,7 +814,7 @@
         <comment>Remote</comment>
         <val lang="en_US">Remote</val>
         <val lang="de_DE">Remote</val>
-        <val lang="fr_FR">Remote</val>
+        <val lang="fr_FR" skipTranslation="true">Remote</val>
         <val lang="ja_JP">Remote</val>
         <val lang="nl_NL">Remote</val>
     </key>
@@ -822,7 +822,7 @@
         <comment>Message telling what may have caused the lock fail and how to address the problem.</comment>
         <val lang="en_US">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
         <val lang="de_DE">Es kann sein, dass bereits ein anderer Git-Prozess in diesem Repository aktiv ist. Bitte stellen Sie sicher, dass alle anderen Git-Prozesse beendet sind und versuchen Sie es erneut. Falls die Aktion immernoch fehlschlägt kann es sein, dass ein anderer Git-Prozess in diesem Repository abgestürzt ist. Entfernen Sie die Lock-Datei manuell um fortzufahren.</val>
-        <val lang="fr_FR">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
+        <val lang="fr_FR">Un autre processus git peut être en cours dans ce dépôt. Veuillez vous assurer que tous les processus sont terminés, puis réessayez. S'il échoue toujours, un processus git peut avoir planté dans ce dépôt plus tôt. Retirez le fichier de verrouillage manuellement pour continuer.</val>
         <val lang="ja_JP">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
         <val lang="nl_NL">Another git process may be running in this repository. Please make sure all processes are terminated and then try again. If it still fails, a git process may have crashed in this repository earlier. Remove the lock file manually to continue.</val>
     </key>
@@ -830,7 +830,7 @@
         <comment>Message telling that a file couldn't be created.</comment>
         <val lang="en_US">Unable to create "{0}".</val>
         <val lang="de_DE">Datei "{0}" kann nicht erstellt werden.</val>
-        <val lang="fr_FR">Unable to create "{0}".</val>
+        <val lang="fr_FR">Impossible de créer "{0}".</val>
         <val lang="ja_JP">Unable to create "{0}".</val>
         <val lang="nl_NL">Unable to create "{0}".</val>
     </key>
@@ -838,7 +838,7 @@
         <comment>Message telling that a file exists.</comment>
         <val lang="en_US">File exists.</val>
         <val lang="de_DE">Datei existiert bereits.</val>
-        <val lang="fr_FR">File exists.</val>
+        <val lang="fr_FR">Le fichier existe.</val>
         <val lang="ja_JP">File exists.</val>
         <val lang="nl_NL">File exists.</val>
     </key>
@@ -846,7 +846,7 @@
         <comment>Message shown when the client couldn't lock ref when trying to pull.</comment>
         <val lang="en_US">Cannot lock ref "{0}".</val>
         <val lang="de_DE">Sperre für Ref "{0}" nicht möglich.</val>
-        <val lang="fr_FR">Cannot lock ref "{0}".</val>
+        <val lang="fr_FR">Impossible de verrouiller la référence "{0}".</val>
         <val lang="ja_JP">Cannot lock ref "{0}".</val>
         <val lang="nl_NL">Cannot lock ref "{0}".</val>
     </key>
@@ -854,7 +854,7 @@
         <comment>Error</comment>
         <val lang="en_US">Error</val>
         <val lang="de_DE">Fehler</val>
-        <val lang="fr_FR">Error</val>
+        <val lang="fr_FR">Erreur</val>
         <val lang="ja_JP">Error</val>
         <val lang="nl_NL">Error</val>
     </key>
@@ -862,7 +862,7 @@
         <comment>Message shown when the lock failed while trying to update.</comment>
         <val lang="en_US">Lock failed</val>
         <val lang="de_DE">Sperre fehlgeschlagen</val>
-        <val lang="fr_FR">Lock failed</val>
+        <val lang="fr_FR">Echec du verrouillage</val>
         <val lang="ja_JP">Lock failed</val>
         <val lang="nl_NL">Lock failed</val>
     </key>
@@ -870,7 +870,7 @@
         <comment>Message shown when trying to clone from an invalid remote.</comment>
         <val lang="en_US">Submodule could not be loaded because of: {0}.</val>
         <val lang="de_DE">Submodule konnte nicht geklont werden: {0}.</val>
-        <val lang="fr_FR">Submodule could not be loaded because of: {0}.</val>
+        <val lang="fr_FR">Impossible de charger le sous-module à cause de: {0}.</val>
         <val lang="ja_JP">Submodule could not be loaded because of: {0}.</val>
         <val lang="nl_NL">Submodule could not be loaded because of: {0}.</val>
     </key>
@@ -878,7 +878,7 @@
         <comment>Message shown when trying to clone from an invalid remote.</comment>
         <val lang="en_US">Invalid remote</val>
         <val lang="de_DE">Remote ungültig</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Remote invalide</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -886,7 +886,7 @@
         <comment>The text displayed if the URL doesn't point to a remote repository</comment>
         <val lang="en_US">No remote repository found for the provided URL.</val>
         <val lang="de_DE">Unter dieser URL wurde kein Remote-Repository gefunden.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Aucun dépôt remote trouvé pour l'URL fournie.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -894,7 +894,7 @@
         <comment>"Checkout branch" label in the dialog shown when cloning a repository.</comment>
         <val lang="en_US">Checkout branch</val>
         <val lang="de_DE">Branch auschecken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Extraction de la branche</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -902,7 +902,7 @@
         <comment>"Yes"</comment>
         <val lang="en_US">Yes</val>
         <val lang="de_DE">Ja</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Oui</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -910,7 +910,7 @@
         <comment>"No"</comment>
         <val lang="en_US">No</val>
         <val lang="de_DE">Nein</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Non</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -918,7 +918,7 @@
         <comment>Message shown when a previous SSH passphrase was invalid.</comment>
         <val lang="en_US">The previous passphrase is invalid.</val>
         <val lang="de_DE">Der vorherige SSH-Passphrase ist ungültig.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le passphrase précédent est invalide.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -926,7 +926,7 @@
         <comment>Label.</comment>
         <val lang="en_US">Pull status</val>
         <val lang="de_DE">Pull-Status</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Statut du pull</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -934,7 +934,7 @@
         <comment>Message asking for the SSH passphrase.</comment>
         <val lang="en_US">Please enter your SSH passphrase</val>
         <val lang="de_DE">Bitte gib deinen SSH-Passphrase ein</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Veuillez entrer votre passphrase SSH</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -942,7 +942,7 @@
         <comment>Message displayed when a command is aborted.</comment>
         <val lang="en_US">Command aborted.</val>
         <val lang="de_DE">Aktion abgebrochen.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Commande abandonnée</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -950,7 +950,7 @@
         <comment>Label displayed on the left of the working copy combo box</comment>
         <val lang="en_US">Working copy: </val>
         <val lang="de_DE">Arbeitskopie: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Copie de travail: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -958,7 +958,7 @@
         <comment>The tooltip for the push button</comment>
         <val lang="en_US">Push</val>
         <val lang="de_DE">Push</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Push</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -966,7 +966,7 @@
         <comment>The tooltip for the pull button</comment>
         <val lang="en_US">Pull</val>
         <val lang="de_DE">Pull</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Pull</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -974,7 +974,7 @@
         <comment>The tooltip for the browse button</comment>
         <val lang="en_US">Browse File System</val>
         <val lang="de_DE">Im Dateisystem suchen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Parcourir le système de fichier</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -982,7 +982,7 @@
         <comment>The text displayed on the StageAll button</comment>
         <val lang="en_US">Stage All</val>
         <val lang="de_DE">Alle vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Tout réserver</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -990,7 +990,7 @@
         <comment>The text displayed on the UnstageAll button</comment>
         <val lang="en_US">Unstage All</val>
         <val lang="de_DE">Alle nicht mehr vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Tout libérer</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -998,7 +998,7 @@
         <comment>The text displayed on the Stage Selected button</comment>
         <val lang="en_US">Stage Selected</val>
         <val lang="de_DE">Auswahl vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Réserver la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1006,7 +1006,7 @@
         <comment>The text displayed on the Unstage Selected button</comment>
         <val lang="en_US">Unstage Selected</val>
         <val lang="de_DE">Auswahl nicht mehr vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Libérer la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1014,7 +1014,7 @@
         <comment>The tooltip for the ChangeView button</comment>
         <val lang="en_US">Change View</val>
         <val lang="de_DE">Ansicht ändern</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Changer de vue</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1022,7 +1022,7 @@
         <comment>The tooltip for the "+" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Created</val>
         <val lang="de_DE">Datei erstellt</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Fichier créé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1030,7 +1030,7 @@
         <comment>The tooltip for the "*" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Modified</val>
         <val lang="de_DE">Datei geändert</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Fichier modifié</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1038,7 +1038,7 @@
         <comment>The tooltip for the "-" icon that appears on the left side of the file</comment>
         <val lang="en_US">File Deleted</val>
         <val lang="de_DE">Datei gelöscht</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Fichier supprimé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1046,7 +1046,7 @@
         <comment>The tooltip for the "!" icon that appears on the left side of the file</comment>
         <val lang="en_US">Conflict</val>
         <val lang="de_DE">Konflikt</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Conflit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1054,7 +1054,7 @@
         <comment>The massage displayed above the previously committed messages combo box</comment>
         <val lang="en_US">Commit message: </val>
         <val lang="de_DE">Commit-Nachricht: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Message de commit: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1062,7 +1062,7 @@
         <comment>The massage displayed on the combo box containing the previouslt commited messages</comment>
         <val lang="en_US">Choose a previously used comment</val>
         <val lang="de_DE">Wähle eine vorherige Commit-Nachricht</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Choisir un commentaire déjà utilisé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1070,7 +1070,7 @@
         <comment>The massage displayed on the commit button</comment>
         <val lang="en_US">Commit</val>
         <val lang="de_DE">Commit</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR" skipTranslation="true">Commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1078,7 +1078,7 @@
         <comment>The massage displayed when a commit is successful</comment>
         <val lang="en_US">Commit successful</val>
         <val lang="de_DE">Commit erfolgreich</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Commit réussi</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1086,7 +1086,7 @@
         <comment>The massage displayed when you commit with conflicts conflicts</comment>
         <val lang="en_US">Cannot commit while having conflicts.</val>
         <val lang="de_DE">Commit nicht möglich während ungelöste Konflikte bestehen.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Impossible d'effectuer le commit en ayant des conflits.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1094,7 +1094,7 @@
         <comment>The massage displayed when you push with conflicts</comment>
         <val lang="en_US">Cannot push. Please resolve conflicts</val>
         <val lang="de_DE">Push nicht möglich. Bitte Konflikte lösen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push impossible. Veuillez résoudre les conflits</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1102,7 +1102,7 @@
         <comment>The massage displayed when you push but your repository is not up to date</comment>
         <val lang="en_US">Cannot push. Your current branch is behind. Pull first.</val>
         <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück. Bitte erst pullen.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push impossible. Votre branche courante est en retard. Effectuez d'abord un pull.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1110,7 +1110,7 @@
         <comment>The massage displayed when you push successful</comment>
         <val lang="en_US">Push successful</val>
         <val lang="de_DE">Push erfolgreich</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push réussi</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1118,7 +1118,7 @@
         <comment>The massage displayed when your push fails</comment>
         <val lang="en_US">Cannot push.</val>
         <val lang="de_DE">Push nicht möglich.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push impossible.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1126,7 +1126,7 @@
         <comment>The massage displayed when you push with no changes</comment>
         <val lang="en_US">There was nothing to push</val>
         <val lang="de_DE">Es wurde nichts gepusht</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Rien dans le push</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1134,7 +1134,7 @@
         <comment>The massage displayed when your push is in progress</comment>
         <val lang="en_US">Pushing...</val>
         <val lang="de_DE">Push läuft...</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Push en cours...</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1142,7 +1142,7 @@
         <comment>The massage displayed when you pull with uncommitted files</comment>
         <val lang="en_US">Cannot pull with uncommitted changes</val>
         <val lang="de_DE">Pull kann nicht ausgeführt werden solange es nicht-committete Änderungen gibt</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull impossible avec des modifications hors commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1151,7 +1151,7 @@
         <comment>The massage displayed when your repository is up to date</comment>
         <val lang="en_US">Repository is already up to date</val>
         <val lang="de_DE">Repository ist bereits auf dem aktuellen Stand</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le dépôt est déjà à jour</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1159,7 +1159,7 @@
         <comment>The massage displayed when your pull is successful</comment>
         <val lang="en_US">Pull successful. Repository up to date</val>
         <val lang="de_DE">Pull erfolgreich. Repository ist auf dem aktuellen Stand</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull réussi. Le dépôt est à jour</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1167,7 +1167,7 @@
         <comment>The massage displayed when your pull is in progress</comment>
         <val lang="en_US">Pulling...</val>
         <val lang="de_DE">Pull läuft...</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull en cours...</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1175,7 +1175,7 @@
         <comment>The massage displayed when you pull while having conflicts</comment>
         <val lang="en_US">Cannot pull. Please resolve conflicts</val>
         <val lang="de_DE">Pull nicht möglich. Bitte Konflikte lösen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull impossible. Veuillez résoudre les conflits</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1183,7 +1183,7 @@
         <comment>The massage displayed when your pull is successful but has conflicts</comment>
         <val lang="en_US">Pull successful with conflicts: </val>
         <val lang="de_DE">Beim Pullen sind Konflikte aufgetreten: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Pull réussi avec des conflits: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1191,7 +1191,7 @@
         <comment>The text displayed for the "Open in compare editor" contextual menu item </comment>
         <val lang="en_US">Open in compare editor</val>
         <val lang="de_DE">Änderungen anzeigen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ouvrir dans l'éditeur de comparaison</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1199,7 +1199,7 @@
         <comment>The text displayed for the "Open" contextual menu item</comment>
         <val lang="en_US">Open</val>
         <val lang="de_DE">Öffnen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ouvrir</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1207,7 +1207,7 @@
         <comment>The text displayed for the "Unstage" contextual menu item</comment>
         <val lang="en_US">Unstage</val>
         <val lang="de_DE">Nicht mehr vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Libérer</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1215,7 +1215,7 @@
         <comment>The text displayed for the "Stage" contextual menu item</comment>
         <val lang="en_US">Stage</val>
         <val lang="de_DE">Für Commit vormerken</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Réserver</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1223,7 +1223,7 @@
         <comment>The text displayed for "Resolve_Conflict".</comment>
         <val lang="en_US">Resolve Conflict</val>
         <val lang="de_DE">Konflikt lösen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Résoudre les conflits</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1231,7 +1231,7 @@
         <comment>The text displayed for the "Discard" contextual menu item</comment>
         <val lang="en_US">Discard</val>
         <val lang="de_DE">Änderung verwerfen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Abandonner</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1239,7 +1239,7 @@
         <comment>The text displayed when you click on the "Discard" contextual menu item</comment>
         <val lang="en_US">Are you sure you want to discard your changes?</val>
         <val lang="de_DE">Sind Sie sicher, dass Sie die Änderungen verwerfen wollen?</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir abandonner vos modifications?</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1247,7 +1247,7 @@
         <comment>The text displayed for " Resolve Using "Mine" ".</comment>
         <val lang="en_US">Resolve Using "Mine"</val>
         <val lang="de_DE">Konflikt lösen mit "Meins"</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Résoudre en utilisant "La mienne"</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1255,7 +1255,7 @@
         <comment>The text displayed for " Resolve Using "Theirs" ".</comment>
         <val lang="en_US">Resolve Using "Theirs"</val>
         <val lang="de_DE">Konflikt lösen mit "Ihres"</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Résoudre en utilisant "La leur"</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1263,7 +1263,7 @@
         <comment>The text displayed for the "Restart Merge " contextual menu item</comment>
         <val lang="en_US">Restart Merge</val>
         <val lang="de_DE">Merge erneut starten</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Relancer la fusion</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1271,7 +1271,7 @@
         <comment>The text displayed for the "Mark Resolved" contextual menu item</comment>
         <val lang="en_US">Mark Resolved</val>
         <val lang="de_DE">Als gelöst markieren</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Marquer comme résolu</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1279,7 +1279,7 @@
         <comment>The text displayed when the user selects a repository from the working copy selector and it doesn't exists anymore</comment>
         <val lang="en_US">The selected repository was not found</val>
         <val lang="de_DE">Das ausgewählte Repository wurde nicht gefunden</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le dépôt sélectionné n'a pas été trouvé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1287,7 +1287,7 @@
         <comment>The text displayed when the user selects a non git folder(It doesn't contain the ".git" folder)</comment>
         <val lang="en_US">Please select a git directory</val>
         <val lang="de_DE">Bitte wählen Sie ein Git-Repository aus</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Veuillez sélectionner un dépôt git</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1295,7 +1295,7 @@
         <comment>The text displayed when the application starts and the last selected repository doesn't exists</comment>
         <val lang="en_US">Last selected repository not found. It may have been deleted</val>
         <val lang="de_DE">Das zuletzt verwendete Repository wurde nicht gefunden. Eventuell wurde es gelöscht.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Le dernier dépôt sélectionné n'a pas été trouvé. Il peut avoir été supprimé</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1303,7 +1303,7 @@
         <comment>The text displayed after exiting the diff for a conflict file and you don't modify anithing</comment>
         <val lang="en_US">You have not modified the local version. Do you want to resolve the conflict by keeping your version?</val>
         <val lang="de_DE">Es wurden keine Änderungen angewandt. Soll der Konflikt gelöst werden indem Ihre Version beibehalten wird?</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Vous n'avez pas modifié la version locale. Voulez-vous résoudre le conflit en conservant votre version?</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1311,7 +1311,7 @@
         <comment>The text displayed in the title for the dialog that appears after exiting the diff for a conflict file and you don't modify anithing</comment>
         <val lang="en_US">Conflict Resolution</val>
         <val lang="de_DE">Konflikt-Lösung</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Résolution de conflits</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1319,7 +1319,7 @@
         <comment>The text displayed in the title for the dialog that appears when you select your current branch</comment>
         <val lang="en_US">Select Branch</val>
         <val lang="de_DE">Branch-Auswahl</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Sélectionner la branche</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1327,7 +1327,7 @@
         <comment>The text displayed in the dialog that appears near the combo box</comment>
         <val lang="en_US">Branch: </val>
         <val lang="de_DE">Branch: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Branche: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1335,7 +1335,7 @@
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">Please commit your changes before you switch branches.</val>
         <val lang="de_DE">Bitte committen Sie die Änderungen bevor Sie den Branch wechseln.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Veuillez effectuer un commit de vos modifications avant de changer de branche.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1343,7 +1343,7 @@
         <comment>The text displayed in the title for the dialog that appears when you push while having no remote set</comment>
         <val lang="en_US">Add Remote</val>
         <val lang="de_DE">Remote hinzufügen</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ajouter remote</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1351,7 +1351,7 @@
         <comment>The text displayed in the dialog that appears near the text field for remote name</comment>
         <val lang="en_US">Remote Name: </val>
         <val lang="de_DE">Remote-Name: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Nom du remote: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1359,7 +1359,7 @@
         <comment>The text displayed in the dialog that appears near the text field for remote repo</comment>
         <val lang="en_US">Remote repository URL: </val>
         <val lang="de_DE">Remote-URL: </val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">URL du dépôt remote: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
@@ -1367,7 +1367,7 @@
         <comment>The text displayed in the dialog that appears at the top of the dialog</comment>
         <val lang="en_US">This repository has no remotes. Please provide one.</val>
         <val lang="de_DE">Dieses Repository hat keine Remote-Verbindung. Bitte ergänzen Sie eine.</val>
-        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="fr_FR">Ce dépôt n'a pas de remote. Veuillez en fournir un.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
