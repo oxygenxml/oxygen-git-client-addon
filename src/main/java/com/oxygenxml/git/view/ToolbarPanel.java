@@ -17,7 +17,6 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
@@ -133,12 +132,6 @@ public class ToolbarPanel extends JPanel {
 	private JToolBar gitToolbar;
 
 	/**
-	 * Status presenting on which branch the user is and whether the repository is
-	 * up to date or not
-	 */
-	private JLabel remoteAndBranchInfoLabel;
-
-	/**
 	 * SplitMenuButton for selecting the local branch.
 	 */
 	private SplitMenuButton branchesSplitMenuButton;
@@ -215,7 +208,6 @@ public class ToolbarPanel extends JPanel {
 	    HistoryController historyController,
 	    BranchManagementViewPresenter branchManagementViewPresenter) {
 	  this.pushPullController = pushPullController;
-	  this.remoteAndBranchInfoLabel = new JLabel();
 	  this.refreshSupport = refreshSupport;
 	  this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
 
