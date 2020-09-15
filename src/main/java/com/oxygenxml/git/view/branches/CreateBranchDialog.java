@@ -82,6 +82,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }
+    setMinimumSize(new Dimension(300, 135));
     setVisible(true);
   }
 
