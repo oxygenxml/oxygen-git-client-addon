@@ -231,7 +231,7 @@ public class HistoryViewContextualMenuPresenter {
     if (filePath != null) {
       jPopupMenu.addSeparator();
     }
-    jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH)) {
+    jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> {
