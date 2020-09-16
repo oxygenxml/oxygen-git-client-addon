@@ -14,6 +14,26 @@ public class Tags {
     // Nothing.
   }
   /**
+   * The text displayed in a label when asking for the reset type.
+   */
+  public static final String CHOOSE_RESET_TYPE_LABEL = "Choose_reset_type_label";
+  /**
+   * The text displayed in a label when trying to reset a branch.
+   */
+  public static final String RESET_THE_BRANCH_LABEL = "Reset_the_branch_label";
+  /**
+   * The text displayed in a label when trying to reset to a specific commit.
+   */
+  public static final String TO_COMMIT_LABEL = "To_commit_label";
+  /**
+   * The message when trying to reset a branch to a specific commit.
+   */
+  public static final String RESET_TO_COMMIT_MESSAGE = "Reset_to_commit_message";
+  /**
+   * The text displayed on the reset button.
+   */
+  public static final String RESET_BUTTON_TEXT = "Reset_button_text";
+  /**
    * The warning message when trying to create a branch with the same name as another local branch.
    */
   public static final String LOCAL_BRANCH_ALREADY_EXISTS = "Local_branch_already_exists";

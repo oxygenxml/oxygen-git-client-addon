@@ -1735,6 +1735,20 @@ public class GitAccess {
 		}
 	}
 
+  /**
+   * Resets the current branch to a specified commit.
+   * 
+   * @param resetType The reset type of the branch.
+   * @param commitId  The commit id to which the reset is made.
+   */
+  public void resetToCommit(ResetType resetType, String commitId) {
+    try {
+      git.reset().setMode(resetType).setRef(commitId).call();
+    } catch (GitAPIException e) {
+      logger.error(e, e);
+    }
+  }
+
 	/**
 	 * Restores the last commit file content to the local file at the given path.
 	 * Both files must have the same path, otherwise it will not work.

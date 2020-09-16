@@ -4,6 +4,46 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value = "Choose_reset_type_label">
+		<comment>"The text displayed in a label when asking for the reset type."</comment>
+        <val lang="en_US">Choose reset type: </val>
+        <val lang="de_DE">Choose reset type: </val>
+        <val lang="fr_FR">Choose reset type: </val>
+        <val lang="ja_JP">Choose reset type: </val>
+        <val lang="nl_NL">Choose reset type: </val>
+    </key>
+    <key value = "Reset_the_branch_label">
+		<comment>"The text displayed in a label when trying to reset a branch."</comment>
+        <val lang="en_US">Reset the branch: </val>
+        <val lang="de_DE">Reset the branch: </val>
+        <val lang="fr_FR">Reset the branch: </val>
+        <val lang="ja_JP">Reset the branch: </val>
+        <val lang="nl_NL">Reset the branch: </val>
+    </key>
+    <key value = "To_commit_label">
+		<comment>"The text displayed in a label when trying to reset to a specific commit."</comment>
+        <val lang="en_US">To commit: </val>
+        <val lang="de_DE">To commit: </val>
+        <val lang="fr_FR">To commit: </val>
+        <val lang="ja_JP">To commit: </val>
+        <val lang="nl_NL">To commit: </val>
+    </key>
+    <key value = "Reset_to_commit_message">
+		<comment>"The message when trying to reset a branch to a specific commit."</comment>
+        <val lang="en_US">Reset to commit</val>
+        <val lang="de_DE">Reset to commit</val>
+        <val lang="fr_FR">Reset to commit</val>
+        <val lang="ja_JP">Reset to commit</val>
+        <val lang="nl_NL">Reset to commit</val>
+    </key>
+    <key value = "Reset_button_text">
+		<comment>"The text displayed on the reset button."</comment>
+        <val lang="en_US">Reset</val>
+        <val lang="de_DE">Reset</val>
+        <val lang="fr_FR">Reset</val>
+        <val lang="ja_JP">Reset</val>
+        <val lang="nl_NL">Reset</val>
+    </key>
     <key value = "Local_branch_already_exists">
 		<comment>"The warning message when trying to create a branch with the same name as another local branch."</comment>
         <val lang="en_US">The local branch already exists!</val>
