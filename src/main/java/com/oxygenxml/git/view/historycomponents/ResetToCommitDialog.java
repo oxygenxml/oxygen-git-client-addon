@@ -21,33 +21,28 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
- * Dialog used to reset the current branch to a specified commit given by its
- * ID.
+ * Dialog used to reset the current branch to a specified commit.
  * 
  * @author Bogdan Draghici
  *
  */
 public class ResetToCommitDialog extends OKCancelDialog {
   /**
-   * Soft reset option message.
+   * Soft reset option label.
    */
-  private final String SOFT_RESET = "Soft";
+  private static final String SOFT_RESET = "Soft";
   /**
-   * Mixed reset option message.
+   * Mixed reset option label.
    */
-  private final String MIXED_RESET = "Mixed";
+  private static final String MIXED_RESET = "Mixed";
   /**
-   * Hard reset option message.
+   * Hard reset option label.
    */
-  private final String HARD_RESET = "Hard";
+  private static final String HARD_RESET = "Hard";
   /**
    * The soft reset option button.
    */
   private JRadioButton softResetButton;
-  /**
-   * The mixed reset option button.
-   */
-  private JRadioButton mixedResetButton;
   /**
    * The hard reset option button.
    */
@@ -64,13 +59,13 @@ public class ResetToCommitDialog extends OKCancelDialog {
    * @param commitId   The commit id to which to reset the branch.
    */
   public ResetToCommitDialog(String branchName, String commitId) {
-    super(PluginWorkspaceProvider.getPluginWorkspace() != null
-        ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
-        : null, translator.getTranslation(Tags.RESET_TO_COMMIT_MESSAGE), true);
+    super(
+        PluginWorkspaceProvider.getPluginWorkspace() != null ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
+        translator.getTranslation(Tags.RESET_TO_COMMIT_MESSAGE),
+        true);
 
     // Create GUI
     JPanel panel = new JPanel(new GridBagLayout());
-
     createGUI(panel, branchName, commitId);
     getContentPane().add(panel);
     setResizable(true);
@@ -80,7 +75,6 @@ public class ResetToCommitDialog extends OKCancelDialog {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }
     setMinimumSize(new Dimension(300, 135));
-    setVisible(true);
   }
 
   /**
@@ -98,8 +92,11 @@ public class ResetToCommitDialog extends OKCancelDialog {
     gbc.weighty = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-        UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        UIConstants.COMPONENT_RIGHT_PADDING);
 
     // Reset branch label.
     JLabel resetBranchArea = new JLabel(translator.getTranslation(Tags.RESET_THE_BRANCH_LABEL) + branchName);
@@ -137,7 +134,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
     buttonGroup.add(softResetButton);
     panel.add(softResetButton, gbc);
 
-    mixedResetButton = new JRadioButton(MIXED_RESET);
+    JRadioButton mixedResetButton = new JRadioButton(MIXED_RESET);
     gbc.gridx++;
     buttonGroup.add(mixedResetButton);
     panel.add(mixedResetButton, gbc);
@@ -147,22 +144,21 @@ public class ResetToCommitDialog extends OKCancelDialog {
     buttonGroup.add(hardResetButton);
     panel.add(hardResetButton, gbc);
 
-    softResetButton.setSelected(true);
+    mixedResetButton.setSelected(true);
   }
 
   /**
    * Gets the reset type chosen.
    * 
-   * @return The reset type. Can be null if none of the options was chosen.
+   * @return The reset type. ResetType.MIXED by default.
    */
   public ResetType getResetType() {
+    ResetType resetType = ResetType.MIXED;
     if (softResetButton.isSelected()) {
-      return ResetType.SOFT;
-    } else if (mixedResetButton.isSelected()) {
-      return ResetType.MIXED;
+      resetType = ResetType.SOFT;
     } else if (hardResetButton.isSelected()) {
-      return ResetType.HARD;
+      resetType = ResetType.HARD;
     }
-    return null;
+    return resetType;
   }
 }

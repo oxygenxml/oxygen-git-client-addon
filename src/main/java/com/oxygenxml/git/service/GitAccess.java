@@ -1738,14 +1738,14 @@ public class GitAccess {
   /**
    * Resets the current branch to a specified commit.
    * 
-   * @param resetType The reset type of the branch.
-   * @param commitId  The commit id to which the reset is made.
+   * @param resetType The reset type to perform on the current branch.
+   * @param commitId  The commit id to which to reset.
    */
   public void resetToCommit(ResetType resetType, String commitId) {
     try {
       git.reset().setMode(resetType).setRef(commitId).call();
     } catch (GitAPIException e) {
-      logger.error(e, e);
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
   }
 

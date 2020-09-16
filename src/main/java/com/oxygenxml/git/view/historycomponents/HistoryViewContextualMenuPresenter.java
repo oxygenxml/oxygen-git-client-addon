@@ -262,6 +262,7 @@ public class HistoryViewContextualMenuPresenter {
         ResetToCommitDialog dialog = new ResetToCommitDialog(
             GitAccess.getInstance().getBranchInfo().getBranchName(),
             commitId);
+        dialog.setVisible(true);
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitId);
         }
