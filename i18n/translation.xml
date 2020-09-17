@@ -4,6 +4,14 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Branch">
+        <comment>"Branch" label.</comment>
+        <val lang="en_US">Branch</val>
+        <val lang="de_DE">Branch</val>
+        <val lang="fr_FR">Branche</val>
+        <val lang="ja_JP">Branch</val>
+        <val lang="nl_NL">Branch</val>
+    </key>
     <key value = "Delete">
 		<comment>"Displays the translation for "Delete"."</comment>
         <val lang="en_US">Delete</val>
@@ -254,7 +262,7 @@
         <val lang="nl_NL">Create branch</val>
     </key>
     <key value="Branch_name">
-        <comment>"Branch_name" label.</comment>
+        <comment>"Branch name" label.</comment>
         <val lang="en_US">Branch name</val>
         <val lang="de_DE">Name des Branch</val>
         <val lang="fr_FR">Nom de la branche</val>

@@ -98,12 +98,12 @@ public class ResetToCommitDialog extends OKCancelDialog {
     gbc.anchor = GridBagConstraints.WEST;
     gbc.insets = new Insets(
         0,
-        UIConstants.COMPONENT_LEFT_PADDING,
+        0,
         UIConstants.COMPONENT_BOTTOM_PADDING,
-        UIConstants.COMPONENT_RIGHT_PADDING);
+        0);
 
     // Branch
-    JLabel branchTagLabel = new JLabel(translator.getTranslation(Tags.BRANCH_NAME) + ": ");
+    JLabel branchTagLabel = new JLabel(translator.getTranslation(Tags.BRANCH) + ": ");
     panel.add(branchTagLabel, gbc);
     
     JLabel branchNameLabel = new JLabel(branchName);
@@ -120,7 +120,8 @@ public class ResetToCommitDialog extends OKCancelDialog {
     
     JTextArea commitMessageArea = UIUtil.createMessageArea(
         commitCharacteristics.getCommitAbbreviatedId() 
-        + " - " + commitCharacteristics.getCommitMessage());
+            + " - " 
+            + commitCharacteristics.getCommitMessage());
     commitMessageArea.setPreferredSize(new Dimension(360, computeHeight(commitMessageArea, 370, 500)));
     gbc.gridx++;
     gbc.weightx = 1;
