@@ -34,15 +34,15 @@ public class ResetToCommitDialog extends OKCancelDialog {
   /**
    * Soft reset option label.
    */
-  private static final String SOFT_RESET = "Soft - ";
+  private static final String SOFT_RESET = "Soft";
   /**
    * Mixed reset option label.
    */
-  private static final String MIXED_RESET = "Mixed - ";
+  private static final String MIXED_RESET = "Mixed";
   /**
    * Hard reset option label.
    */
-  private static final String HARD_RESET = "Hard - ";
+  private static final String HARD_RESET = "Hard";
   /**
    * The soft reset option button.
    */
@@ -156,17 +156,17 @@ public class ResetToCommitDialog extends OKCancelDialog {
     gbc.insets = new Insets(0, 0, 0, 0);
     gbc.gridwidth = 2;
     
-    softResetButton = new JRadioButton(SOFT_RESET + translator.getTranslation(Tags.SOFT_RESET_INFO));
+    softResetButton = new JRadioButton(SOFT_RESET + " - " + translator.getTranslation(Tags.SOFT_RESET_INFO));
     gbc.gridy++;
     buttonGroup.add(softResetButton);
     panel.add(softResetButton, gbc);
 
-    JRadioButton mixedResetButton = new JRadioButton(MIXED_RESET + translator.getTranslation(Tags.MIXED_RESET_INFO));
+    JRadioButton mixedResetButton = new JRadioButton(MIXED_RESET + " - " + translator.getTranslation(Tags.MIXED_RESET_INFO));
     gbc.gridy++;
     buttonGroup.add(mixedResetButton);
     panel.add(mixedResetButton, gbc);
 
-    hardResetButton = new JRadioButton(HARD_RESET + translator.getTranslation(Tags.HARD_RESET_INFO));
+    hardResetButton = new JRadioButton(HARD_RESET + " - " + translator.getTranslation(Tags.HARD_RESET_INFO));
     gbc.gridy++;
     buttonGroup.add(hardResetButton);
     panel.add(hardResetButton, gbc);
