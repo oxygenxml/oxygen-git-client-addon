@@ -51,8 +51,6 @@ public class ResetToCommitDialog extends OKCancelDialog {
    * The hard reset option button.
    */
   private JRadioButton hardResetButton;
-  
-  private JTextArea commitMessageArea;
   /**
    * The translator instance.
    */
@@ -122,7 +120,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
     panel.add(commitLabel, gbc);
     
     //Commit message area
-    commitMessageArea = UIUtil.createMessageArea(
+    JTextArea commitMessageArea = UIUtil.createMessageArea(
         commitCharacteristics.getCommitAbbreviatedId() 
         + " - " + commitCharacteristics.getCommitMessage());
     commitMessageArea.setPreferredSize(new Dimension(360, computeHeight(commitMessageArea, 370, 500)));
