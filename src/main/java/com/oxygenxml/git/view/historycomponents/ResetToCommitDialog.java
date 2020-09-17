@@ -11,12 +11,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.View;
 
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.UIUtil;
@@ -78,7 +75,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }
-    setMinimumSize(new Dimension(400, 240));
+    setMinimumSize(new Dimension(400, 215));
   }
 
   /**
@@ -96,11 +93,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
     gbc.weighty = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = new Insets(
-        0,
-        0,
-        UIConstants.COMPONENT_BOTTOM_PADDING,
-        0);
+    gbc.insets = new Insets(0, 0, 7, 0);
 
     // Branch
     JLabel branchTagLabel = new JLabel(translator.getTranslation(Tags.BRANCH) + ": ");
@@ -119,10 +112,9 @@ public class ResetToCommitDialog extends OKCancelDialog {
     panel.add(commitLabel, gbc);
     
     JTextArea commitMessageArea = UIUtil.createMessageArea(
-        commitCharacteristics.getCommitAbbreviatedId() 
-            + " - " 
+        "[" + commitCharacteristics.getCommitAbbreviatedId() + "] " 
             + commitCharacteristics.getCommitMessage());
-    commitMessageArea.setPreferredSize(new Dimension(360, computeHeight(commitMessageArea, 370, 500)));
+    commitMessageArea.setPreferredSize(new Dimension(365, UIUtil.computeHeight(commitMessageArea, 365, 300)));
     gbc.gridx++;
     gbc.weightx = 1;
     gbc.weighty = 1;
@@ -135,9 +127,10 @@ public class ResetToCommitDialog extends OKCancelDialog {
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.gridwidth = 2;
-    gbc.fill = GridBagConstraints.NONE;
     gbc.weightx = 0;
     gbc.weighty = 0;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.insets = new Insets(0, 0, 0, 0);
     panel.add(resetModeLabel, gbc);
 
     addRadioButtons(panel, gbc);
@@ -156,8 +149,6 @@ public class ResetToCommitDialog extends OKCancelDialog {
     
     softResetButton = new JRadioButton(SOFT_RESET + " - " + translator.getTranslation(Tags.SOFT_RESET_INFO));
     gbc.gridy++;
-    gbc.gridwidth = 2;
-    gbc.insets = new Insets(0, 0, 0, 0);
     buttonGroup.add(softResetButton);
     panel.add(softResetButton, gbc);
 
@@ -174,31 +165,6 @@ public class ResetToCommitDialog extends OKCancelDialog {
     mixedResetButton.setSelected(true);
   }
 
-  /**
-   * Compute necessary height for text area with <b>line wrap and wrap style word</b>
-   *  to display contained all rows.
-   *
-   * @param ta The text area.
-   * @param width The fixed width of the text area.
-   * @param maxHeight The maximum allowed height.
-   * @return The display height.
-   */
-  public static int computeHeight(JTextComponent ta, int width, int maxHeight) {
-    View view = ta.getUI().getRootView(ta);
-    view.setSize(width, 0);
-    int height = (int) view.getPreferredSpan(View.Y_AXIS);
-   
-    Insets insets = ta.getInsets();
-    if (insets != null) {
-      height += insets.top + insets.bottom;      
-    }
-   
-    if (maxHeight < height) {
-      return maxHeight;
-    }
-    return height;
-  }
-  
   /**
    * Gets the reset type chosen.
    * 
