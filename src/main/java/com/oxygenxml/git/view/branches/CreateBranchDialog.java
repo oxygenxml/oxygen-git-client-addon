@@ -95,7 +95,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
    */
   private void createGUI(JPanel panel, String sourceBranch) {
     // Branch name label.
-    JLabel label = new JLabel(TRANSLATOR.getTranslation(Tags.BRANCH_NAME));
+    JLabel label = new JLabel(TRANSLATOR.getTranslation(Tags.BRANCH_NAME) + ": ");
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;

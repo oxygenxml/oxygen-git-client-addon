@@ -14,25 +14,41 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Displays the message "Checkout".
+   */
+  public static final String CHECKOUT_MESSAGE = "Checkout_message";
+  /**
+   * Displays the message "Delete".
+   */
+  public static final String DELETE_MESSAGE = "Delete_message";
+  /**
+   * Displays information about what a soft reset of a branch does.
+   */
+  public static final String SOFT_RESET_INFO = "Soft_reset_info";
+  /**
+   * Displays information about what a mixed reset of a branch does.
+   */
+  public static final String MIXED_RESET_INFO = "Mixed_reset_info";
+  /**
+   * Displays information about what a hard reset of a branch does.
+   */
+  public static final String HARD_RESET_INFO = "Hard_reset_info";
+  /**
    * The text displayed in a label when asking for the reset type.
    */
-  public static final String CHOOSE_RESET_TYPE_LABEL = "Choose_reset_type_label";
-  /**
-   * The text displayed in a label when trying to reset a branch.
-   */
-  public static final String RESET_THE_BRANCH_LABEL = "Reset_the_branch_label";
-  /**
-   * The text displayed in a label when trying to reset to a specific commit.
-   */
-  public static final String TO_COMMIT_LABEL = "To_commit_label";
+  public static final String RESET_MODE = "Reset_mode";
   /**
    * The message when trying to reset a branch to a specific commit.
    */
-  public static final String RESET_TO_COMMIT_MESSAGE = "Reset_to_commit_message";
+  public static final String RESET_BRANCH_TO_COMMIT_MESSAGE = "Reset_branch_to_commit_message";
   /**
-   * The text displayed on the reset button.
+   * Displays the message "to this commit".
    */
-  public static final String RESET_BUTTON_TEXT = "Reset_button_text";
+  public static final String TO_THIS_COMMIT_MESSAGE = "To_this_commit_message";
+  /**
+   * The "reset" message.
+   */
+  public static final String RESET_MESSAGE = "Reset_message";
   /**
    * The warning message when trying to create a branch with the same name as another local branch.
    */

@@ -20,7 +20,12 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
-
+/**
+ * Test cases for the actions that can be done on a branch.
+ * 
+ * @author Bogdan Draghici
+ *
+ */
 public class BranchActionsTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/localRepository";
   private final static String REMOTE_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/remoteRepository";
@@ -87,7 +92,7 @@ public class BranchActionsTest extends GitTestBase {
     
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
-      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT_BRANCH))) {
+      if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT_MESSAGE))) {
         abstractAction.actionPerformed(null);
       }
     }
@@ -147,13 +152,13 @@ public class BranchActionsTest extends GitTestBase {
     
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
-      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH))) {
+      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
         SwingUtilities.invokeLater(() -> {
           abstractAction.actionPerformed(null);
         });
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
         JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
-            translator.getTranslation(Tags.BRANCH_NAME), JTextField.class);
+            translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
         branchNameTextField.setText(LOCAL_BRANCH_COPY_NAME);
         JButton okButton = findFirstButton(createBranchDialog, "OK");
         if (okButton != null) {
@@ -214,7 +219,7 @@ public class BranchActionsTest extends GitTestBase {
     
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
-      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.DELETE_BRANCH))) {
+      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.DELETE_MESSAGE) + "...")) {
         SwingUtilities.invokeLater(() -> {
           abstractAction.actionPerformed(null);
         });
@@ -239,6 +244,7 @@ public class BranchActionsTest extends GitTestBase {
   
   /**
    * Tests the action of checkout a remote branch.
+   * 
    * @throws Exception
    */
   @Test
@@ -284,7 +290,7 @@ public class BranchActionsTest extends GitTestBase {
       JDialog checkoutBranchDialog = findDialog(translator.getTranslation(Tags.CHECKOUT_BRANCH));
       if (checkoutBranchDialog != null) {
         JTextField branchNameTextField = findComponentNearJLabel(checkoutBranchDialog,
-            translator.getTranslation(Tags.BRANCH_NAME), JTextField.class);
+            translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
         branchNameTextField.setText(REMOTE_BRANCH_NAME2_COPY);
         JButton firstButtonFound = findFirstButton(checkoutBranchDialog, "OK");
         if (firstButtonFound != null) {
@@ -321,14 +327,14 @@ public class BranchActionsTest extends GitTestBase {
     
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(previousLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
-      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT_BRANCH))) {
+      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT_MESSAGE) + "...")) {
         SwingUtilities.invokeLater(() -> {
           abstractAction.actionPerformed(null);
         });
         JDialog checkoutDialog = findDialog(translator.getTranslation(Tags.CHECKOUT_BRANCH));
         if (checkoutDialog != null) {
           JTextField branchNameTextField = findComponentNearJLabel(checkoutDialog,
-              translator.getTranslation(Tags.BRANCH_NAME), JTextField.class);
+              translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
           branchNameTextField.setText(REMOTE_BRANCH_NAME1_COPY);
           JButton firstButtonFound = findFirstButton(checkoutDialog, "OK");
           if (firstButtonFound != null) {

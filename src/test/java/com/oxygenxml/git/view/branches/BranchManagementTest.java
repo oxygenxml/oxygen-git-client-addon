@@ -14,7 +14,12 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.GitTreeNode;
-
+/**
+ * Test cases for the structure of the branches tree.
+ * 
+ * @author Bogdan Draghici
+ *
+ */
 public class BranchManagementTest extends GitTestBase{
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/localRepository";
   private final static String REMOTE_TEST_REPOSITORY = "target/test-resources/GitAccessCheckoutNewBranch/remoteRepository";

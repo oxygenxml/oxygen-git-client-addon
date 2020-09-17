@@ -255,16 +255,17 @@ public class HistoryViewContextualMenuPresenter {
         });
       }
     });
-    jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.RESET_TO_COMMIT_MESSAGE) + "...") {
+    String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+    jPopupMenu.add(new AbstractAction(
+        Translator.getInstance().getTranslation(Tags.RESET_MESSAGE) +
+        " " + branchName + " " + 
+        Translator.getInstance().getTranslation(Tags.TO_THIS_COMMIT_MESSAGE) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String commitId = commitCharacteristics.getCommitId();
-        ResetToCommitDialog dialog = new ResetToCommitDialog(
-            GitAccess.getInstance().getBranchInfo().getBranchName(),
-            commitId);
+        ResetToCommitDialog dialog = new ResetToCommitDialog(branchName, commitCharacteristics);
         dialog.setVisible(true);
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-          GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitId);
+          GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitCharacteristics.getCommitId());
         }
       }
     });

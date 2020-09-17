@@ -5,7 +5,7 @@ public interface BranchManagementViewPresenter {
   /**
    * Presents the branch management options.
    */
-  void showBranchManagement();
+  void showGitBranchManager();
   
   /**
    * @return <code>true</code> if the branch management view is showing.
