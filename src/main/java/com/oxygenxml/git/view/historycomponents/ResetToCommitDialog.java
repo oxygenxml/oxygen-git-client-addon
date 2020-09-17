@@ -102,24 +102,22 @@ public class ResetToCommitDialog extends OKCancelDialog {
         UIConstants.COMPONENT_BOTTOM_PADDING,
         UIConstants.COMPONENT_RIGHT_PADDING);
 
-    // Reset branch tag label.
+    // Branch
     JLabel branchTagLabel = new JLabel(translator.getTranslation(Tags.BRANCH_NAME) + ": ");
     panel.add(branchTagLabel, gbc);
     
-    // Branch name label.
-    gbc.gridx++;
     JLabel branchNameLabel = new JLabel(branchName);
+    gbc.gridx++;
     panel.add(branchNameLabel, gbc);
 
     
-    //Commit label
+    // Commit 
     JLabel commitLabel = new JLabel(translator.getTranslation(Tags.COMMIT) + ": ");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.NORTHWEST;
     panel.add(commitLabel, gbc);
     
-    //Commit message area
     JTextArea commitMessageArea = UIUtil.createMessageArea(
         commitCharacteristics.getCommitAbbreviatedId() 
         + " - " + commitCharacteristics.getCommitMessage());
@@ -131,10 +129,11 @@ public class ResetToCommitDialog extends OKCancelDialog {
     gbc.anchor = GridBagConstraints.NORTHWEST;
     panel.add(commitMessageArea, gbc);
     
-    // Reset type label.
+    // Reset mode
     JLabel resetModeLabel = new JLabel(translator.getTranslation(Tags.RESET_MODE) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
+    gbc.gridwidth = 2;
     gbc.fill = GridBagConstraints.NONE;
     gbc.weightx = 0;
     gbc.weighty = 0;
@@ -153,11 +152,11 @@ public class ResetToCommitDialog extends OKCancelDialog {
    */
   private void addRadioButtons(JPanel panel, GridBagConstraints gbc) {
     ButtonGroup buttonGroup = new ButtonGroup();
-    gbc.insets = new Insets(0, 0, 0, 0);
-    gbc.gridwidth = 2;
     
     softResetButton = new JRadioButton(SOFT_RESET + " - " + translator.getTranslation(Tags.SOFT_RESET_INFO));
     gbc.gridy++;
+    gbc.gridwidth = 2;
+    gbc.insets = new Insets(0, 0, 0, 0);
     buttonGroup.add(softResetButton);
     panel.add(softResetButton, gbc);
 
