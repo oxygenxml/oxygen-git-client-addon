@@ -4,7 +4,7 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
-    <key value = "Delete_message">
+    <key value = "Delete">
 		<comment>"Displays the translation for "Delete"."</comment>
         <val lang="en_US">Delete</val>
         <val lang="de_DE">Delete</val>
@@ -12,7 +12,7 @@
         <val lang="ja_JP">Delete</val>
         <val lang="nl_NL">Delete</val>
     </key>
-    <key value = "Checkout_message">
+    <key value = "Checkout">
 		<comment>"Displays the translation for "Checkout"."</comment>
         <val lang="en_US">Checkout</val>
         <val lang="de_DE">Checkout</val>
@@ -44,13 +44,13 @@
         <val lang="ja_JP">discard all changes</val>
         <val lang="nl_NL">discard all changes</val>
     </key>
-    <key value = "To_this_commit_message">
-		<comment>"Displays the translation for "to this commit"."</comment>
-        <val lang="en_US">to this commit</val>
-        <val lang="de_DE">to this commit</val>
-        <val lang="fr_FR">to this commit</val>
-        <val lang="ja_JP">to this commit</val>
-        <val lang="nl_NL">to this commit</val>
+    <key value = "Reset">
+		<comment>"Reset"</comment>
+        <val lang="en_US">Reset</val>
+        <val lang="de_DE">Reset</val>
+        <val lang="fr_FR">Reset</val>
+        <val lang="ja_JP">Reset</val>
+        <val lang="nl_NL">Reset</val>
     </key>
     <key value = "Reset_mode">
 		<comment>"The text displayed in a label when asking for the reset type."</comment>
@@ -60,7 +60,7 @@
         <val lang="ja_JP">Reset mode</val>
         <val lang="nl_NL">Reset mode</val>
     </key>
-    <key value = "Reset_branch_to_commit_message">
+    <key value = "Reset_branch_to_commit">
 		<comment>"The message when trying to reset a branch to a specific commit."</comment>
         <val lang="en_US">Reset branch to commit</val>
         <val lang="de_DE">Reset branch to commit</val>
@@ -68,13 +68,13 @@
         <val lang="ja_JP">Reset branch to commit</val>
         <val lang="nl_NL">Reset branch to commit</val>
     </key>
-    <key value = "Reset_message">
-		<comment>"Displays the translation for "Reset"."</comment>
-        <val lang="en_US">Reset</val>
-        <val lang="de_DE">Reset</val>
-        <val lang="fr_FR">Reset</val>
-        <val lang="ja_JP">Reset</val>
-        <val lang="nl_NL">Reset</val>
+    <key value = "Reset_branch_to_this_commit">
+		<comment>Label for the "Reset to commit" action.</comment>
+        <val lang="en_US">Reset "{0}" to this commit</val>
+        <val lang="de_DE">Reset "{0}" to this commit</val>
+        <val lang="fr_FR">Reset "{0}" to this commit</val>
+        <val lang="ja_JP">Reset "{0}" to this commit</val>
+        <val lang="nl_NL">Reset "{0}" to this commit</val>
     </key>
     <key value = "Local_branch_already_exists">
 		<comment>"The warning message when trying to create a branch with the same name as another local branch."</comment>

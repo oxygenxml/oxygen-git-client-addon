@@ -16,11 +16,11 @@ public class Tags {
   /**
    * Displays the message "Checkout".
    */
-  public static final String CHECKOUT_MESSAGE = "Checkout_message";
+  public static final String CHECKOUT = "Checkout";
   /**
    * Displays the message "Delete".
    */
-  public static final String DELETE_MESSAGE = "Delete_message";
+  public static final String DELETE = "Delete";
   /**
    * Displays information about what a soft reset of a branch does.
    */
@@ -38,17 +38,17 @@ public class Tags {
    */
   public static final String RESET_MODE = "Reset_mode";
   /**
-   * The message when trying to reset a branch to a specific commit.
+   * Dialog title.
    */
-  public static final String RESET_BRANCH_TO_COMMIT_MESSAGE = "Reset_branch_to_commit_message";
+  public static final String RESET_BRANCH_TO_COMMIT = "Reset_branch_to_commit";
   /**
-   * Displays the message "to this commit".
+   * Action name in history.
    */
-  public static final String TO_THIS_COMMIT_MESSAGE = "To_this_commit_message";
+  public static final String RESET_BRANCH_TO_THIS_COMMIT = "Reset_branch_to_this_commit";
   /**
    * The "reset" message.
    */
-  public static final String RESET_MESSAGE = "Reset_message";
+  public static final String RESET = "Reset";
   /**
    * The warning message when trying to create a branch with the same name as another local branch.
    */

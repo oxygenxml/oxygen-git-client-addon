@@ -257,9 +257,9 @@ public class HistoryViewContextualMenuPresenter {
     });
     String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
     jPopupMenu.add(new AbstractAction(
-        Translator.getInstance().getTranslation(Tags.RESET_MESSAGE) +
-        " " + branchName + " " + 
-        Translator.getInstance().getTranslation(Tags.TO_THIS_COMMIT_MESSAGE) + "...") {
+        MessageFormat.format(
+            Translator.getInstance().getTranslation(Tags.RESET_BRANCH_TO_THIS_COMMIT),
+            branchName) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         ResetToCommitDialog dialog = new ResetToCommitDialog(branchName, commitCharacteristics);

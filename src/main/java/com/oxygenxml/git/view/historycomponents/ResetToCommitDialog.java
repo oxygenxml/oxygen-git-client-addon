@@ -67,7 +67,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
   public ResetToCommitDialog(String branchName, CommitCharacteristics commitCharacteristics) {
     super(
         PluginWorkspaceProvider.getPluginWorkspace() != null ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
-        translator.getTranslation(Tags.RESET_BRANCH_TO_COMMIT_MESSAGE),
+        translator.getTranslation(Tags.RESET_BRANCH_TO_COMMIT),
         true);
 
     // Create GUI
@@ -144,7 +144,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
 
     addRadioButtons(panel, gbc);
 
-    getOkButton().setText(translator.getTranslation(Tags.RESET_MESSAGE));
+    getOkButton().setText(translator.getTranslation(Tags.RESET));
   }
 
   /**
