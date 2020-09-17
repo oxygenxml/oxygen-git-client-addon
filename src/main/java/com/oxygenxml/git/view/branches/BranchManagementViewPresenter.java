@@ -10,5 +10,5 @@ public interface BranchManagementViewPresenter {
   /**
    * @return <code>true</code> if the branch management view is showing.
    */
-  boolean isBranchManagementShowing();
+  boolean isGitBranchManagerViewShowing();
 }
