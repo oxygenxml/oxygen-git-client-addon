@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.eclipse.jgit.api.ResetCommand.ResetType;
@@ -48,6 +49,8 @@ public class ResetToCommitDialog extends OKCancelDialog {
    * The hard reset option button.
    */
   private JRadioButton hardResetButton;
+  
+  private JScrollPane commitMessageScrollPane;
   /**
    * The translator instance.
    */
@@ -75,7 +78,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }
-    setMinimumSize(new Dimension(400, 215));
+    setMinimumSize(new Dimension(400, 240));
   }
 
   /**
@@ -114,13 +117,15 @@ public class ResetToCommitDialog extends OKCancelDialog {
     JTextArea commitMessageArea = UIUtil.createMessageArea(
         "[" + commitCharacteristics.getCommitAbbreviatedId() + "] " 
             + commitCharacteristics.getCommitMessage());
-    commitMessageArea.setPreferredSize(new Dimension(365, UIUtil.computeHeight(commitMessageArea, 365, 300)));
+    commitMessageScrollPane = new JScrollPane(commitMessageArea);
+    commitMessageScrollPane.setPreferredSize(new Dimension(300,40));
+    
     gbc.gridx++;
     gbc.weightx = 1;
     gbc.weighty = 1;
     gbc.fill = GridBagConstraints.BOTH;
     gbc.anchor = GridBagConstraints.NORTHWEST;
-    panel.add(commitMessageArea, gbc);
+    panel.add(commitMessageScrollPane, gbc);
     
     // Reset mode
     JLabel resetModeLabel = new JLabel(translator.getTranslation(Tags.RESET_MODE) + ":");
