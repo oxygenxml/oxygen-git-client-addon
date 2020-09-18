@@ -30,13 +30,14 @@ public class GitAccessResetToCommitTest extends GitTestBase {
   @Before
   public void setUp() throws Exception {
     super.setUp();
+    
     gitAccess = GitAccess.getInstance();
     
     // Create the local repository.
     createRepository(LOCAL_TEST_REPOSITORY);
     
     // Create first file make the first commit for the local repository.
-    firstFile= new File(LOCAL_TEST_REPOSITORY + LOCAL_FILE_NAME);
+    firstFile= new File(LOCAL_TEST_REPOSITORY, LOCAL_FILE_NAME);
     firstFile.createNewFile();
     setFileContent(firstFile, "new local content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, LOCAL_FILE_NAME));
@@ -49,7 +50,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
     gitAccess.commit("Modified a file");
     
     // Create a second file and make a third commit
-    secondFile = new File(LOCAL_TEST_REPOSITORY + LOCAL_FILE_NAME_2);
+    secondFile = new File(LOCAL_TEST_REPOSITORY, LOCAL_FILE_NAME_2);
     secondFile.createNewFile();
     setFileContent(secondFile, "second local file");
     gitAccess.add(new FileStatus(GitChangeType.ADD, LOCAL_FILE_NAME_2));
@@ -75,27 +76,70 @@ public class GitAccessResetToCommitTest extends GitTestBase {
   }
   
   /**
-   * Tests the mixed reset to a commit functionality.
-   * 
+   * <p><b>Description:</b> test the mixed reset. The mixed reset keeps the
+   * unstaged changes as they are and unstages the staged changes.</p>
+   * <p><b>Bug ID:</b> EXM-46227</p>
+   *
+   * @author bogdan_draghici, sorin_carbunaru
+   *
    * @throws Exception
    */
   @Test
   public void testMixedResetToCommit() throws Exception {
-    
+
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
-    
+
+    // Unstaged file
+    setFileContent(firstFile, "modified content AGAIN");
+    // Staged file
+    setFileContent(secondFile, "Huh");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, secondFile.getName()));
+
+    // Initial status
+    GitStatus status = gitAccess.getStatus();
+    assertEquals(
+        "[(changeType=MODIFIED, fileLocation=local.txt)]",
+        status.getUnstagedFiles().toString());
+    assertEquals(
+        "[(changeType=CHANGED, fileLocation=local_2.txt)]",
+        status.getStagedFiles().toString());
+
+    // The history at this moment
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
-    for (CommitCharacteristics commitCharacteristics : commitsCharacteristics) {
-      gitAccess.resetToCommit(ResetType.MIXED, commitCharacteristics.getCommitId());
-      gitAccess.fetch();
-      //TODO see why it does not unstage the files
-      assertEquals("modified content", getFileContent(LOCAL_TEST_REPOSITORY + LOCAL_FILE_NAME));
-      assertEquals("second local file", getFileContent(LOCAL_TEST_REPOSITORY + LOCAL_FILE_NAME_2));
-      List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-      for (FileStatus unstagedFile : unstagedFiles) {
-        System.out.println(unstagedFile.getFileLocation());
-      }
-    }
+    String expected = "[ Uncommitted changes , DATE , * , * , null , null ]\n" + 
+        "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+        "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+        "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
+        "";
+    String regex = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
+    assertEquals(
+        expected,
+        dumpHistory(commitsCharacteristics).replaceAll(regex, "DATE"));
+    
+    // <<< MIXED RESET >>>
+    gitAccess.resetToCommit(ResetType.MIXED, commitsCharacteristics.get(2).getCommitId());
+
+    // The unstaged file is kept, and the staged one is now unstaged
+    status = gitAccess.getStatus();
+    assertEquals(
+        "[(changeType=UNTRACKED, fileLocation=local_2.txt),"
+        + " (changeType=MODIFIED, fileLocation=local.txt)]",
+        status.getUnstagedFiles().toString());
+    assertEquals(
+        "[]",
+        status.getStagedFiles().toString());
+    
+    commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    expected = "[ Uncommitted changes , DATE , * , * , null , null ]\n" + 
+       // This commit is missing from the history, because we reset the branch to it
+       // "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+        "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+        "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
+        "";
+    assertEquals(
+        expected,
+        dumpHistory(commitsCharacteristics).replaceAll(regex, "DATE"));
+    
   }
   
   /**
