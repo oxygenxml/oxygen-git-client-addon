@@ -57,14 +57,16 @@ To open and work with a Git submodule, use the **Submodules** action from the to
 
 To show the history of the current branch, invoke the **Show current branch history** action from the toolbar of the Git Staging panel (look for the clock icon), or go to the **Window menu > Show view > Git History**. This will open the **Git History** view at the bottom of Oxygen.
 
+For each commit in the history table, the following actions are available:
+- **Create branch**: used to create a new branch starting from the selected commit.
+- **Reset "\[branch_name\]" to this commit**: used for undoing changes by moving the HEAD of the current branch to the selected commit.
+
 The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. For each resource, the following actions are available in the contextual menu:
 - **Open** (available for added and modifed resources): This action opens the selected resource.
 - **Open previous version** (available for deleted resources): This action opens the version of the selected resource from before its deletion.
 - **Compare with previous version** (available for modified resources): This action compares the selected version of the selected resource with the previous one using the **Oxygen Diff Files** tool.
 - **Compare with working copy version** (available for modified resources): This action compares the selected version of the selected resource with the current one using the **Oxygen Diff Files** tool.
 - **Compare with each other** (available when selecting 2 versions of a single file): This action compares the selected versions with each other using the **Oxygen Diff Files** tool.
-
-Moreover, new branches can be created from the History table using the **Create branch** action in the contextual menu.
 
 ## Blame
 
