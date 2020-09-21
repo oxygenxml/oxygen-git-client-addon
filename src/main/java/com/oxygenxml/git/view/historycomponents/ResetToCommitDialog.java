@@ -118,7 +118,8 @@ public class ResetToCommitDialog extends OKCancelDialog {
     JLabel commitMessageLabel = new JLabel ();
     String commitMessage = commitCharacteristics.getCommitMessage().replace("\n", " ");
     if(commitMessage.length() > 60) {
-      commitMessageLabel.setToolTipText(commitMessage);
+      commitMessageLabel.setToolTipText(
+              "<html>" + commitCharacteristics.getCommitMessage().replace("\n", "<br>") + "</html>");
       commitMessage = commitMessage.substring(0, 57) + "...";
     }
     commitMessageLabel.setText("[" + commitCharacteristics.getCommitAbbreviatedId() + "] " 
