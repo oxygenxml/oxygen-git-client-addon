@@ -21,6 +21,7 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 import com.oxygenxml.git.view.historycomponents.HistoryViewContextualMenuPresenter;
@@ -66,22 +67,16 @@ public class GitHistoryActionsTest extends GitTestBase {
 
       HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
 
-      final List<Action> actions = new ArrayList<>();
+      List<Action> actions = new ArrayList<>();
       JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
-      Mockito.when(jPopupMenu.add((Action) Mockito.anyObject())).thenAnswer(new Answer<Void>() {
-        @Override
-        public Void answer(InvocationOnMock invocation) throws Throwable {
-          actions.add((Action) invocation.getArguments()[0]);
-          return null;
-        }
-      });
       
       //////////////////////////
       //  Changes.
       //////////////////////////
       Iterator<CommitCharacteristics> iterator = commitsCharacteristics.iterator();
-      CommitCharacteristics t = iterator.next();
-      String dumpFS = dumpFS(RevCommitUtil.getChangedFiles(t.getCommitId()));
+      CommitCharacteristics commitCharacteristic = iterator.next();
+      List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
+      String dumpFS = dumpFS(changedFiles);
       assertEquals(
           "(changeType=CHANGED, fileLocation=file1.txt)\n" + 
           "(changeType=REMOVED, fileLocation=file2.txt)\n" + 
@@ -89,37 +84,40 @@ public class GitHistoryActionsTest extends GitTestBase {
 
       // Assert the available actions for the changed file.
       actions.clear();
-      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file1.txt", t);
+      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       assertEquals("["
           + "Compare_file_with_previous_version, "
           + "Compare_file_with_working_tree_version, "
-          + "Open_file, "
-          + "Create_branch]", dumpActions(actions));
+          + "Open_file]", dumpActions(actions));
       
       // A deleted file.
       actions.clear();
-      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", t);
-      assertEquals("[Open_previous_version, Create_branch]", dumpActions(actions));
+      actions = presenter.getContextualActions(changedFiles.get(1), commitCharacteristic, true);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
+      assertEquals("[Open_previous_version]", dumpActions(actions));
       
       // Next COMMIT / REVISION
-      t = iterator.next();
-      dumpFS = dumpFS(RevCommitUtil.getChangedFiles(t.getCommitId()));
+      commitCharacteristic = iterator.next();
+      changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
+      dumpFS = dumpFS(changedFiles);
       assertEquals(
           "(changeType=ADD, fileLocation=file2.txt)\n" + 
           "", dumpFS);
       actions.clear();
-      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", t);
-      assertEquals("[Open_file, Create_branch]", dumpActions(actions));
+      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
+      assertEquals("[Open_file]", dumpActions(actions));
       
       // Next COMMIT / REVISION
-      t = iterator.next();
-      dumpFS = dumpFS(RevCommitUtil.getChangedFiles(t.getCommitId()));
+      commitCharacteristic = iterator.next();
+      changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
+      dumpFS = dumpFS(changedFiles);
       assertEquals(
           "(changeType=ADD, fileLocation=file1.txt)\n" + 
           "", dumpFS);
       actions.clear();
-      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file1.txt", t);
-      assertEquals("[Open_file, Create_branch]", dumpActions(actions));
+      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
+      assertEquals("[Open_file]", dumpActions(actions));
 
     } finally {
       GitAccess.getInstance().closeRepo();
@@ -167,30 +165,25 @@ public class GitHistoryActionsTest extends GitTestBase {
   
       HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
   
-      final List<Action> actions = new ArrayList<>();
+      List<Action> actions = new ArrayList<>();
       JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
-      Mockito.when(jPopupMenu.add((Action) Mockito.anyObject())).thenAnswer(new Answer<Void>() {
-        @Override
-        public Void answer(InvocationOnMock invocation) throws Throwable {
-          actions.add((Action) invocation.getArguments()[0]);
-          return null;
-        }
-      });
       
       //////////////////////////
       //  Changes.
       //////////////////////////
       Iterator<CommitCharacteristics> iterator = commitsCharacteristics.iterator();
-      CommitCharacteristics t = iterator.next();
-      String dumpFS = dumpFS(RevCommitUtil.getChangedFiles(t.getCommitId()));
+      CommitCharacteristics commitCharacteristics = iterator.next();
+      List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
+      String dumpFS = dumpFS(changes);
       assertEquals(
           "(changeType=REMOVED, fileLocation=file2.txt)\n" + 
           "", dumpFS);
   
       // A deleted file.
       actions.clear();
-      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", t);
-      assertEquals("[Open_previous_version, Create_branch]", dumpActions(actions));
+      actions = presenter.getContextualActions(changes.get(0), commitCharacteristics, true);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristics);
+      assertEquals("[Open_previous_version]", dumpActions(actions));
       
       final StringBuilder b = new StringBuilder();
       Mockito.when(PluginWorkspaceProvider.getPluginWorkspace().open((URL)Mockito.anyObject())).thenAnswer(new Answer<Void>() {

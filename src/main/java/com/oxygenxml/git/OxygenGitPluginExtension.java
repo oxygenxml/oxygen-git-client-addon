@@ -344,13 +344,13 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	}
 	
 	@Override
-	public void showBranchManagement() {
+	public void showGitBranchManager() {
 	  pluginWorkspaceAccess.showView(com.oxygenxml.git.OxygenGitPluginExtension.GIT_BRANCH_VIEW, true);
 	  branchManagementPanel.showBranches();
 	}
 	
   @Override
-  public boolean isBranchManagementShowing() {
+  public boolean isGitBranchManagerViewShowing() {
     return pluginWorkspaceAccess.isViewShowing(com.oxygenxml.git.OxygenGitPluginExtension.GIT_BRANCH_VIEW);
   }
   

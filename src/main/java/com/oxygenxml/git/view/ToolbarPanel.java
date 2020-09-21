@@ -552,7 +552,7 @@ public class ToolbarPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-					  branchManagementViewPresenter.showBranchManagement();
+					  branchManagementViewPresenter.showGitBranchManager();
 					}
 				} catch (NoRepositorySelected e1) {
           if(logger.isDebugEnabled()) {

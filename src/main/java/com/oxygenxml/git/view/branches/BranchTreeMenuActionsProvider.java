@@ -116,7 +116,7 @@ public class BranchTreeMenuActionsProvider {
    * @return The action created.
    */
   private AbstractAction createCheckoutLocalBranchAction(String nodePath) {
-    return new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
+    return new AbstractAction(translator.getTranslation(Tags.CHECKOUT)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> {
@@ -142,7 +142,7 @@ public class BranchTreeMenuActionsProvider {
    * @return The action created.
    */
   private AbstractAction createCheckoutRemoteBranchAction(String nodePath) {
-    return new AbstractAction(translator.getTranslation(Tags.CHECKOUT_BRANCH)) {
+    return new AbstractAction(translator.getTranslation(Tags.CHECKOUT) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         String branchPath = BranchesUtil.createBranchPath(nodePath,
@@ -176,7 +176,7 @@ public class BranchTreeMenuActionsProvider {
    * @return The action created.
    */
   private AbstractAction createNewBranchAction(String nodePath) {
-    return new AbstractAction(translator.getTranslation(Tags.CREATE_BRANCH)) {
+    return new AbstractAction(translator.getTranslation(Tags.CREATE_BRANCH) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> {
@@ -206,7 +206,7 @@ public class BranchTreeMenuActionsProvider {
    * @return The action created.
    */
   private AbstractAction createDeleteLocalBranchAction(String nodePath) {
-    return new AbstractAction(translator.getTranslation(Tags.DELETE_BRANCH)) {
+    return new AbstractAction(translator.getTranslation(Tags.DELETE) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (FileStatusDialog.showQuestionMessage(

@@ -4,13 +4,93 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Branch">
+        <comment>"Branch" label.</comment>
+        <val lang="en_US">Branch</val>
+        <val lang="de_DE">Branch</val>
+        <val lang="fr_FR">Branche</val>
+        <val lang="ja_JP">Branch</val>
+        <val lang="nl_NL">Branch</val>
+    </key>
+    <key value = "Delete">
+		<comment>"Displays the translation for "Delete"."</comment>
+        <val lang="en_US">Delete</val>
+        <val lang="de_DE">Delete</val>
+        <val lang="fr_FR">Delete</val>
+        <val lang="ja_JP">Delete</val>
+        <val lang="nl_NL">Delete</val>
+    </key>
+    <key value = "Checkout">
+		<comment>"Displays the translation for "Checkout"."</comment>
+        <val lang="en_US">Checkout</val>
+        <val lang="de_DE">Checkout</val>
+        <val lang="fr_FR">Checkout</val>
+        <val lang="ja_JP">Checkout</val>
+        <val lang="nl_NL">Checkout</val>
+    </key>
+    <key value="Soft_reset_info">
+        <comment>"Displays information about what a soft reset of a branch does."</comment>
+        <val lang="en_US">keep all changes</val>
+        <val lang="de_DE">keep all changes</val>
+        <val lang="fr_FR">keep all changes</val>
+        <val lang="ja_JP">keep all changes</val>
+        <val lang="nl_NL">keep all changes</val>
+    </key>
+    <key value="Mixed_reset_info">
+        <comment>"Displays information about what a mixed reset of a branch does."</comment>
+        <val lang="en_US">keep working copy changes, but reset index</val>
+        <val lang="de_DE">keep working copy changes, but reset index</val>
+        <val lang="fr_FR">keep working copy changes, but reset index</val>
+        <val lang="ja_JP">keep working copy changes, but reset index</val>
+        <val lang="nl_NL">keep working copy changes, but reset index</val>
+    </key>
+    <key value="Hard_reset_info">
+        <comment>"Displays information about what a hard reset of a branch does."</comment>
+        <val lang="en_US">discard all changes</val>
+        <val lang="de_DE">discard all changes</val>
+        <val lang="fr_FR">discard all changes</val>
+        <val lang="ja_JP">discard all changes</val>
+        <val lang="nl_NL">discard all changes</val>
+    </key>
+    <key value = "Reset">
+		<comment>"Reset"</comment>
+        <val lang="en_US">Reset</val>
+        <val lang="de_DE">Reset</val>
+        <val lang="fr_FR">Reset</val>
+        <val lang="ja_JP">Reset</val>
+        <val lang="nl_NL">Reset</val>
+    </key>
+    <key value = "Reset_mode">
+		<comment>"The text displayed in a label when asking for the reset type."</comment>
+        <val lang="en_US">Reset mode</val>
+        <val lang="de_DE">Reset mode</val>
+        <val lang="fr_FR">Reset mode</val>
+        <val lang="ja_JP">Reset mode</val>
+        <val lang="nl_NL">Reset mode</val>
+    </key>
+    <key value = "Reset_branch_to_commit">
+		<comment>"The message when trying to reset a branch to a specific commit."</comment>
+        <val lang="en_US">Reset branch to commit</val>
+        <val lang="de_DE">Reset branch to commit</val>
+        <val lang="fr_FR">Reset branch to commit</val>
+        <val lang="ja_JP">Reset branch to commit</val>
+        <val lang="nl_NL">Reset branch to commit</val>
+    </key>
+    <key value = "Reset_branch_to_this_commit">
+		<comment>Label for the "Reset to commit" action.</comment>
+        <val lang="en_US">Reset "{0}" to this commit</val>
+        <val lang="de_DE">Reset "{0}" to this commit</val>
+        <val lang="fr_FR">Reset "{0}" to this commit</val>
+        <val lang="ja_JP">Reset "{0}" to this commit</val>
+        <val lang="nl_NL">Reset "{0}" to this commit</val>
+    </key>
     <key value = "Local_branch_already_exists">
 		<comment>"The warning message when trying to create a branch with the same name as another local branch."</comment>
-        <val lang="en_US">The local branch already exists!</val>
-        <val lang="de_DE">The local branch already exists!</val>
-        <val lang="fr_FR">La branche locale existe déjà!</val>
-        <val lang="ja_JP">The local branch already exists!</val>
-        <val lang="nl_NL">The local branch already exists!</val>
+        <val lang="en_US">The local branch already exists.</val>
+        <val lang="de_DE">The local branch already exists.</val>
+        <val lang="fr_FR">La branche locale existe déjà.</val>
+        <val lang="ja_JP">The local branch already exists.</val>
+        <val lang="nl_NL">The local branch already exists.</val>
     </key>
     <key value = "Confirmation_dialog_delete_branch">
 		<comment>"The confirmation message when trying to delete a branch."</comment>
@@ -30,11 +110,11 @@
     </key>
      <key value = "Branch_manager_button_tool_tip">
 		<comment>"The tool tip for the button that opens the branch manager side view."</comment>
-        <val lang="en_US">Show Branch Manager</val>
-        <val lang="de_DE">Show Branch Manager</val>
-        <val lang="fr_FR">Afficher le Gestionnaire de Branches</val>
-        <val lang="ja_JP">Show Branch Manager</val>
-        <val lang="nl_NL">Show Branch Manager</val>
+        <val lang="en_US">Show Git Branch Manager</val>
+        <val lang="de_DE">Show Git Branch Manager</val>
+        <val lang="fr_FR">Show Git Branch Manager</val>
+        <val lang="ja_JP">Show Git Branch Manager</val>
+        <val lang="nl_NL">Show Git Branch Manager</val>
     </key>
     <key value = "Search_bar_tool_tip">
 		<comment>"The tool tip for the filter of the braches tree."</comment>
@@ -182,12 +262,12 @@
         <val lang="nl_NL">Create branch</val>
     </key>
     <key value="Branch_name">
-        <comment>"Branch_name" label.</comment>
-        <val lang="en_US">Branch name:</val>
-        <val lang="de_DE">Name des Branch:</val>
-        <val lang="fr_FR">Nom de la branche:</val>
-        <val lang="ja_JP">Branch name:</val>
-        <val lang="nl_NL">Branch name:</val>
+        <comment>"Branch name" label.</comment>
+        <val lang="en_US">Branch name</val>
+        <val lang="de_DE">Name des Branch</val>
+        <val lang="fr_FR">Nom de la branche</val>
+        <val lang="ja_JP">Branch name</val>
+        <val lang="nl_NL">Branch name</val>
     </key>
     <key value="No_remote_branch">
         <comment>Message presented on a tooltip when the local branch is not connected to any upstream branch.</comment>

@@ -14,6 +14,42 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Displays the message "Checkout".
+   */
+  public static final String CHECKOUT = "Checkout";
+  /**
+   * Displays the message "Delete".
+   */
+  public static final String DELETE = "Delete";
+  /**
+   * Displays information about what a soft reset of a branch does.
+   */
+  public static final String SOFT_RESET_INFO = "Soft_reset_info";
+  /**
+   * Displays information about what a mixed reset of a branch does.
+   */
+  public static final String MIXED_RESET_INFO = "Mixed_reset_info";
+  /**
+   * Displays information about what a hard reset of a branch does.
+   */
+  public static final String HARD_RESET_INFO = "Hard_reset_info";
+  /**
+   * The text displayed in a label when asking for the reset type.
+   */
+  public static final String RESET_MODE = "Reset_mode";
+  /**
+   * Dialog title.
+   */
+  public static final String RESET_BRANCH_TO_COMMIT = "Reset_branch_to_commit";
+  /**
+   * Action name in history.
+   */
+  public static final String RESET_BRANCH_TO_THIS_COMMIT = "Reset_branch_to_this_commit";
+  /**
+   * The "reset" message.
+   */
+  public static final String RESET = "Reset";
+  /**
    * The warning message when trying to create a branch with the same name as another local branch.
    */
   public static final String LOCAL_BRANCH_ALREADY_EXISTS = "Local_branch_already_exists";
@@ -1042,4 +1078,8 @@ public class Tags {
    * A custom message for the Git "pre-receive hook declined" message.
    */
   public static final String PRE_RECEIVE_HOOK_DECLINED_CUSTOM_MESSAGE = "Pre_receive_hook_declined_custom_message";
+  /**
+   * "Branch"
+   */
+  public static final String BRANCH = "Branch";
 }

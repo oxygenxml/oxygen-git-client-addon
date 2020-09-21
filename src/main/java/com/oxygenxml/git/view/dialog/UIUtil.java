@@ -21,7 +21,6 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
@@ -264,10 +263,7 @@ public class UIUtil {
    * @return The message area.
    */
   public static JTextArea createMessageArea(String text) {
-    JTextArea msgArea = new JTextArea(text) {
-      /**
-       * @see javax.swing.JTextArea#getAccessibleContext()
-       */
+    JTextArea msgArea = new JTextArea(text) { // NOSONAR
       @Override
       public AccessibleContext getAccessibleContext() {
         return new JLabel(getText()).getAccessibleContext();
@@ -279,17 +275,14 @@ public class UIUtil {
     msgArea.setEditable(false);
     msgArea.setCaretPosition(0);
     msgArea.setHighlighter(null);
-    // Reject focus in the message area.
     msgArea.setFocusable(false);
+    msgArea.setOpaque(false);
+    msgArea.setBorder(BorderFactory.createEmptyBorder());
 
     Font font = UIManager.getFont("Label.font");
     if (font != null) {
       msgArea.setFont(font);
     }
-    msgArea.setOpaque(false);
-    
-    Border emptyBorder = BorderFactory.createEmptyBorder();
-    msgArea.setBorder(emptyBorder);
     
     return msgArea;
   }
