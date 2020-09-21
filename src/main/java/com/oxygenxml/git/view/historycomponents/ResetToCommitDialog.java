@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.historycomponents;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -10,14 +9,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -50,7 +46,6 @@ public class ResetToCommitDialog extends OKCancelDialog {
    */
   private JRadioButton hardResetButton;
   
-  private JScrollPane commitMessageScrollPane;
   /**
    * The translator instance.
    */
@@ -72,8 +67,6 @@ public class ResetToCommitDialog extends OKCancelDialog {
     JPanel panel = new JPanel(new GridBagLayout());
     createGUI(panel, branchName, commitCharacteristics);
     getContentPane().add(panel);
-    setMaximumSize(new Dimension(520,240));
-    setMinimumSize(new Dimension(380, 235));
     pack();
     setResizable(false);
 
