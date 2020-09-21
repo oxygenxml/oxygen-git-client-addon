@@ -72,13 +72,14 @@ public class ResetToCommitDialog extends OKCancelDialog {
     JPanel panel = new JPanel(new GridBagLayout());
     createGUI(panel, branchName, commitCharacteristics);
     getContentPane().add(panel);
-    setResizable(true);
+    setMaximumSize(new Dimension(520,240));
+    setMinimumSize(new Dimension(380, 235));
     pack();
+    setResizable(false);
 
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }
-    setMinimumSize(new Dimension(400, 240));
   }
 
   /**
@@ -108,32 +109,28 @@ public class ResetToCommitDialog extends OKCancelDialog {
 
     
     // Commit 
-    JLabel commitLabel = new JLabel(translator.getTranslation(Tags.COMMIT) + ": ");
+    JLabel commitTagLabel = new JLabel(translator.getTranslation(Tags.COMMIT) + ": ");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.NORTHWEST;
-    panel.add(commitLabel, gbc);
+    panel.add(commitTagLabel, gbc);
     
-    JTextArea commitMessageArea = UIUtil.createMessageArea(
-        "[" + commitCharacteristics.getCommitAbbreviatedId() + "] " 
-            + commitCharacteristics.getCommitMessage());
-    commitMessageScrollPane = new JScrollPane(commitMessageArea);
-    commitMessageScrollPane.setPreferredSize(new Dimension(300,40));
-    
+    JLabel commitMessageLabel = new JLabel ();
+    String commitMessage = commitCharacteristics.getCommitMessage().replace("\n", " ");
+    if(commitMessage.length() > 60) {
+      commitMessageLabel.setToolTipText(commitMessage);
+      commitMessage = commitMessage.substring(0, 57) + "...";
+    }
+    commitMessageLabel.setText("[" + commitCharacteristics.getCommitAbbreviatedId() + "] " 
+        + commitMessage);
     gbc.gridx++;
-    gbc.weightx = 1;
-    gbc.weighty = 1;
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.anchor = GridBagConstraints.NORTHWEST;
-    panel.add(commitMessageScrollPane, gbc);
+    panel.add(commitMessageLabel, gbc);
     
     // Reset mode
     JLabel resetModeLabel = new JLabel(translator.getTranslation(Tags.RESET_MODE) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.gridwidth = 2;
-    gbc.weightx = 0;
-    gbc.weighty = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.insets = new Insets(0, 0, 0, 0);
     panel.add(resetModeLabel, gbc);
