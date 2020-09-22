@@ -234,6 +234,13 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		
 		gitRefreshSupport = new PanelRefresh(watcher);
 	  
+    addGitEditorVariablesSupport();
+	}
+
+	/**
+	 * Add support for Git-related editor variables.
+	 */
+  private void addGitEditorVariablesSupport() {
     UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     utilAccess.addCustomEditorVariablesResolver(new EditorVariablesResolver() {
       @Override
@@ -269,7 +276,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
        return list;
      }
    });
-	}
+  }
 	
 	/**
 	 * Customize the Git Staging view.
@@ -314,7 +321,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           cursorTimer.stop();
           SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
         
-          if (cmd == GitCommand.CONTINUE_REBASE || cmd == GitCommand.RESET_COMMIT) {
+          if (cmd == GitCommand.CONTINUE_REBASE || cmd == GitCommand.RESET_TO_COMMIT) {
             gitRefreshSupport.call();
           }
         }

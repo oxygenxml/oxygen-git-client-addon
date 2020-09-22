@@ -31,7 +31,7 @@ public enum GitCommand {
   /**
    * Reset the branch to a given commit.
    */
-  RESET_COMMIT,
+  RESET_TO_COMMIT,
   /**
    * Restart the merge process.
    */

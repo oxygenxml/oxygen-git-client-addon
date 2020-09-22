@@ -211,7 +211,9 @@ public class HistoryPanel extends JPanel {
       
       @Override
       public void stateChanged(GitEvent changeEvent) {
-        GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+        if (isShowing()) {
+          GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+        }
       }
       
       @Override
