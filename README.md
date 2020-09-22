@@ -96,8 +96,8 @@ If the file has a conflict (has been modified both by you and another), [Oxygen'
 After staging the files, on the bottom of the view, you can provide a commit message and commit them to your local repository. For convenience, you can also select a previously provided message.
 
 In the toolbar above the _Commit message_ text area, there are a few toggle buttons that affect your commit if they are enabled:
-- **Amend last commit:** Enabling this option is a convenient way to modify the most recent commit. It lets you combine staged changes with the previous commit instead of creating an entirely new commit. It can also be used to simply edit the previous commit message without changing its snapshot.
-- **Automatically push changes to remote when committing:** If this option is enabled, when a commit is performed, the committed changes are also pushed to the remote repository.
+- **Amend last commit**: Enabling this option is a convenient way to modify the most recent commit. It lets you combine staged changes with the previous commit instead of creating an entirely new commit. It can also be used to simply edit the previous commit message without changing its snapshot.
+- **Automatically push changes to remote when committing**: If this option is enabled, when a commit is performed, the committed changes are also pushed to the remote repository.
 
 ## Push / Pull (with merge or rebase)
 
@@ -132,17 +132,17 @@ For resources from Git repositories, this add-on also contributes a variety of a
 
 ## Git Branch Manager
 
-To show all the local and remote branches, invoke the **Show Git Branch Manager** action from the toolbar of the Git Staging panel (look for the branches icon), or go to the **Window menu > Show view > Git Branch Manager**. By default the Git Branch Manager will be presented to the right of the editing area.
+To show all the local and remote branches, click the **Show Git Branch Manager** button on the toolbar of the Git Staging panel (look for the branches icon) or select **Git Branch Manager** from the **Window > Show view** menu. By default, the Git Branch Manager is presented to the right of the editing area.
 
-The Git Branch Manager side-view presents all the branches as a tree. The tree can be filtered by typing in the text field at the top of the panel and be reloaded by using the **Refresh** action.
+The Git Branch Manager side-view displays all the branches as a tree. The tree can be filtered using the text field at the top of the panel and you can reload the information by using the **Refresh** action.
 
 The following actions are available in the contextual menu for each local branch:
-- **Checkout branch**: checks out the selected branch - it switches the local repository to the selected branch.
-- **Create branch**: creates a new branch using the selected one as the starting point.
-- **Delete branch**: deletes the selected branch.
+- **Checkout branch**: Checks out the selected branch and switches the local repository to the selected branch.
+- **Create branch**: Creates a new branch using the selected branch as the starting point.
+- **Delete branch**: Deletes the selected branch.
 
 For the remote branches, the following action is available in the contextual menu:
-- **Checkout branch**: checks out the selected branch - it creates a local branch from the selected remote one.
+- **Checkout branch**: Checks out the selected branch and creates a local branch from the selected remote branch.
 
 ## Preferences
 
