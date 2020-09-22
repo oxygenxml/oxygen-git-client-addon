@@ -57,14 +57,16 @@ To open and work with a Git submodule, use the **Submodules** action from the to
 
 To show the history of the current branch, invoke the **Show current branch history** action from the toolbar of the Git Staging panel (look for the clock icon), or go to the **Window menu > Show view > Git History**. This will open the **Git History** view at the bottom of Oxygen.
 
+For each commit in the history table, the following actions are available:
+- **Create branch**: used to create a new branch starting from the selected commit.
+- **Reset "\[branch_name\]" to this commit**: used to undo changes by moving the HEAD of the current branch to the selected commit.
+
 The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. For each resource, the following actions are available in the contextual menu:
 - **Open** (available for added and modifed resources): This action opens the selected resource.
 - **Open previous version** (available for deleted resources): This action opens the version of the selected resource from before its deletion.
 - **Compare with previous version** (available for modified resources): This action compares the selected version of the selected resource with the previous one using the **Oxygen Diff Files** tool.
 - **Compare with working copy version** (available for modified resources): This action compares the selected version of the selected resource with the current one using the **Oxygen Diff Files** tool.
 - **Compare with each other** (available when selecting 2 versions of a single file): This action compares the selected versions with each other using the **Oxygen Diff Files** tool.
-
-Moreover, new branches can be created from the History table using the **Create branch** action in the contextual menu.
 
 ## Blame
 
@@ -130,9 +132,9 @@ For resources from Git repositories, this add-on also contributes a variety of a
 
 ## Git Branch Manager
 
-To show all the local and remote branches, invoke the **Show Branch Manager** action from the toolbar of the Git Staging panel (look for the branches icon), or go to the **Window menu > Show view > Git Branch Manager**. By default the Git Branch Manager will be presented to the right of the editing area.
+To show all the local and remote branches, invoke the **Show Git Branch Manager** action from the toolbar of the Git Staging panel (look for the branches icon), or go to the **Window menu > Show view > Git Branch Manager**. By default the Git Branch Manager will be presented to the right of the editing area.
 
-The Git Branch Manager side-view presents all the branches as a tree. The tree can be filtered by typing in the text field at the top of the panel or reloaded by using the **Refresh** action.
+The Git Branch Manager side-view presents all the branches as a tree. The tree can be filtered by typing in the text field at the top of the panel and be reloaded by using the **Refresh** action.
 
 The following actions are available in the contextual menu for each local branch:
 - **Checkout branch**: checks out the selected branch - it switches the local repository to the selected branch.
