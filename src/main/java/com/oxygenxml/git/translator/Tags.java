@@ -14,6 +14,14 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Displays the message "File".
+   */
+  public static final String FILE = "File";
+  /**
+   * Displays the message "Repository".
+   */
+  public static final String REPOSITORY = "Repository";
+  /**
    * Displays the message "Checkout".
    */
   public static final String CHECKOUT = "Checkout";
@@ -416,11 +424,6 @@ public class Tags {
 	 * your current branch
 	 */
 	public static final String BRANCH_SELECTION_DIALOG_TITLE = "Branch_Selection_Dialog_Title";
-
-	/**
-	 * The text displayed in the dialog that appears near the combo box
-	 */
-	public static final String BRANCH_DIALOG_BRANCH_SELECTION_LABEL = "Branch_Dialog_Branch_Selection_Label";
 
 	/**
 	 * The the message displayed when branch selection fails
@@ -870,11 +873,6 @@ public class Tags {
    * Git Staging.
    */
   public static final String GIT_STAGING = "Git_staging";
-  
-  /**
-   * Label inside the history view.
-   */
-  public static final String SHOWING_HISTORY_FOR = "Showing_history_for";
   
   /**
    * Action in the history panel.

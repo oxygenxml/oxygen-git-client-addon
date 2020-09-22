@@ -136,7 +136,7 @@ public class BranchSelectDialog extends OKCancelDialog {
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		JLabel label = new JLabel(translator.getTranslation(Tags.BRANCH_DIALOG_BRANCH_SELECTION_LABEL));
+		JLabel label = new JLabel(translator.getTranslation(Tags.BRANCH) + ": ");
 		getContentPane().add(label, gbc);
 	}
 

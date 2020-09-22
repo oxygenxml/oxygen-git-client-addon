@@ -474,13 +474,13 @@ public class HistoryPanel extends JPanel {
         tryFetch();
 
         File directory = gitAccess.getWorkingCopy();
+        String historyLabelMessage = translator.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
+            + translator.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ". ";
         if (filePath != null) {
           directory = new File(directory, filePath);
+          historyLabelMessage += translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
-
-        showingHistoryForRepoLabel.setText(
-        MessageFormat.format(translator.getTranslation(Tags.SHOWING_HISTORY_FOR), directory.getName()));
-        
+        showingHistoryForRepoLabel.setText(historyLabelMessage);
         showingHistoryForRepoLabel.setToolTipText(directory.getAbsolutePath());
         showingHistoryForRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
 

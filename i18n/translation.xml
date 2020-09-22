@@ -4,6 +4,22 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="File">
+        <comment>"Displays the translation for "File"."</comment>
+        <val lang="en_US">File</val>
+        <val lang="de_DE">File</val>
+        <val lang="fr_FR">File</val>
+        <val lang="ja_JP">File</val>
+        <val lang="nl_NL">File</val>
+    </key>
+     <key value="Repository">
+        <comment>"Displays the translation for "Repository"."</comment>
+        <val lang="en_US">Repository</val>
+        <val lang="de_DE">Repository</val>
+        <val lang="fr_FR">Repository</val>
+        <val lang="ja_JP">Repository</val>
+        <val lang="nl_NL">Repository</val>
+    </key>
     <key value="Branch">
         <comment>"Branch" label.</comment>
         <val lang="en_US">Branch</val>
@@ -866,14 +882,6 @@
         <val lang="ja_JP">Refresh</val>
         <val lang="nl_NL">Refresh</val>
     </key>
-    <key value="Showing_history_for">
-        <comment>Showing history for:</comment>
-        <val lang="en_US">Branch history for {0}</val>
-        <val lang="de_DE">Branch-Historie für {0}</val>
-        <val lang="fr_FR">Historique de la branche pour {0}</val>
-        <val lang="ja_JP">Branch history for {0}</val>
-        <val lang="nl_NL">Branch history for {0}</val>
-    </key>
     <key value="Push_to">
         <comment>Push to</comment>
         <val lang="en_US">Push to "{0}"</val>
@@ -1400,14 +1408,6 @@
         <val lang="en_US">Select Branch</val>
         <val lang="de_DE">Branch-Auswahl</val>
         <val lang="fr_FR">Sélectionner la branche</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="Branch_Dialog_Branch_Selection_Label">
-        <comment>The text displayed in the dialog that appears near the combo box</comment>
-        <val lang="en_US">Branch: </val>
-        <val lang="de_DE">Branch: </val>
-        <val lang="fr_FR">Branche: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>

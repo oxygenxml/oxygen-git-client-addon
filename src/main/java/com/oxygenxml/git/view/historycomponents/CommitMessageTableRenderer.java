@@ -173,8 +173,12 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 			constr.insets = new Insets(0, 0, 0, 0);
 			int lineSize = 1;
 			int cornerSize = 6;
+			String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
 			for (String name : nameForLabelList) {
 				JLabel label = new JLabel(name);
+        if (name.equals(currentBranchName)) {
+          label.setFont(label.getFont().deriveFont(Font.BOLD));
+        }
 				label.setForeground(foregroundColor);
 				label.setBorder(new RoundedLineBorder(foregroundColor, lineSize, cornerSize, true));
 				constr.gridx ++;
