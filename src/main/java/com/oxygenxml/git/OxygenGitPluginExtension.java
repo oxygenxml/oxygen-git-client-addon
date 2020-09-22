@@ -7,7 +7,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -46,10 +48,14 @@ import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
 
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
 import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
+import ro.sync.exml.workspace.api.util.EditorVariableDescription;
+import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Plugin extension - workspace access extension.
@@ -227,6 +233,42 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		RepositoryChangeWatcher watcher = RepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, pushPullController);
 		
 		gitRefreshSupport = new PanelRefresh(watcher);
+	  
+    UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+    utilAccess.addCustomEditorVariablesResolver(new EditorVariablesResolver() {
+      @Override
+      public String resolveEditorVariables(String contentWithEditorVariables, String currentEditedFileURL) {
+        contentWithEditorVariables = contentWithEditorVariables.replace("${git(short_branch_name)}",
+            GitAccess.getInstance().getBranchInfo().getBranchName());
+        try {
+          File workingCopy = GitAccess.getInstance().getWorkingCopy();
+          contentWithEditorVariables = contentWithEditorVariables.replace("${git(full_branch_name)}",
+              GitAccess.getInstance().getRepository().getFullBranch());
+          contentWithEditorVariables = contentWithEditorVariables.replace("${git(working_copy_name)}",
+              workingCopy.getName());
+          contentWithEditorVariables = contentWithEditorVariables.replace("${git(working_copy_path)}",
+              workingCopy.getAbsolutePath());
+        } catch (NoRepositorySelected e) {
+          if (contentWithEditorVariables.contains("${git(working_copy_name)}")
+              || contentWithEditorVariables.contains("${git(working_copy_path)}")) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
+          }
+        } catch (IOException e) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
+        }
+        return contentWithEditorVariables;
+      }
+
+     @Override
+     public List<EditorVariableDescription> getCustomResolverEditorVariableDescriptions() {
+         List<EditorVariableDescription> list = new ArrayList<>();
+         list.add(new EditorVariableDescription("${git(short_branch_name)}", Translator.getInstance().getTranslation(Tags.SHORT_BRANCH_NAME_DESCRIPTION)));
+         list.add(new EditorVariableDescription("${git(full_branch_name)}", Translator.getInstance().getTranslation(Tags.FULL_BRANCH_NAME_DESCRIPTION)));
+         list.add(new EditorVariableDescription("${git(working_copy_name)}", Translator.getInstance().getTranslation(Tags.WORKING_COPY_NAME_DESCRIPTION)));
+         list.add(new EditorVariableDescription("${git(working_copy_path)}", Translator.getInstance().getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
+       return list;
+     }
+   });
 	}
 	
 	/**
@@ -272,7 +314,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           cursorTimer.stop();
           SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
         
-          if (cmd == GitCommand.CONTINUE_REBASE) {
+          if (cmd == GitCommand.CONTINUE_REBASE || cmd == GitCommand.RESET_COMMIT) {
             gitRefreshSupport.call();
           }
         }

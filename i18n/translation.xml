@@ -4,6 +4,38 @@
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
     </languageList>
+    <key value="Short_branch_name_description">
+        <comment>"Description for the short_branch_name editor variable."</comment>
+        <val lang="en_US">The current branch name of the local repository.</val>
+        <val lang="de_DE">The current branch name of the local repository.</val>
+        <val lang="fr_FR">The current branch name of the local repository.</val>
+        <val lang="ja_JP">The current branch name of the local repository.</val>
+        <val lang="nl_NL">The current branch name of the local repository.</val>
+    </key>
+    <key value="Full_branch_name_description">
+        <comment>"Description for the full_branch_name editor variable."</comment>
+        <val lang="en_US">The current branch path of the local repository.</val>
+        <val lang="de_DE">The current branch path of the local repository.</val>
+        <val lang="fr_FR">The current branch path of the local repository.</val>
+        <val lang="ja_JP">The current branch path of the local repository.</val>
+        <val lang="nl_NL">The current branch path of the local repository.</val>
+    </key>
+    <key value="Working_copy_name_description">
+        <comment>"Description for the working_copy_name editor variable."</comment>
+        <val lang="en_US">The name of the current working copy.</val>
+        <val lang="de_DE">The name of the current working copy.</val>
+        <val lang="fr_FR">The name of the current working copy.</val>
+        <val lang="ja_JP">The name of the current working copy.</val>
+        <val lang="nl_NL">The name of the current working copy.</val>
+    </key>
+    <key value="Working_copy_path_description">
+        <comment>"Description for the working_copy_path editor variable."</comment>
+        <val lang="en_US">The path of the current working copy.</val>
+        <val lang="de_DE">The path of the current working copy.</val>
+        <val lang="fr_FR">The path of the current working copy.</val>
+        <val lang="ja_JP">The path of the current working copy.</val>
+        <val lang="nl_NL">The path of the current working copy.</val>
+    </key>
     <key value="File">
         <comment>"Displays the translation for "File"."</comment>
         <val lang="en_US">File</val>

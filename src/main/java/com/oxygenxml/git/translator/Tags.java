@@ -14,6 +14,22 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Description for the short_branch_name editor variable.
+   */
+  public static final String SHORT_BRANCH_NAME_DESCRIPTION = "Short_branch_name_description";
+  /**
+   * Description for the full_branch_name editor variable.
+   */
+  public static final String FULL_BRANCH_NAME_DESCRIPTION = "Full_branch_name_description";
+  /**
+   * Description for the working_copy_name editor variable.
+   */
+  public static final String WORKING_COPY_NAME_DESCRIPTION = "Working_copy_name_description";
+  /**
+   * Description for the working_copy_path editor variable.
+   */
+  public static final String WORKING_COPY_PATH_DESCRIPTION = "Working_copy_path_description";
+  /**
    * Displays the message "File".
    */
   public static final String FILE = "File";
