@@ -260,7 +260,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
               GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
               GitAccess.getInstance().getRepository().getFullBranch());
         } catch (NoRepositorySelected | IOException e) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
+          logger.error(e.getMessage(), e);
         }
         
         // Working-copy-related vars 
@@ -273,7 +273,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
               GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR,
               workingCopy.getAbsolutePath());
         } catch (NoRepositorySelected e) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
+          logger.error(e.getMessage(), e);
         }
         return contentWithEditorVariables;
       }
