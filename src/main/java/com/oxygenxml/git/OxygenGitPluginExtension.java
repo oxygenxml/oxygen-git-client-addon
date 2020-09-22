@@ -64,7 +64,12 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
  */
 public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension, HistoryController, BranchManagementViewPresenter {
 
-	/**
+  /**
+   * i18n
+   */
+  private static final Translator translator = Translator.getInstance();
+
+  /**
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(OxygenGitPluginExtension.class);
@@ -245,22 +250,29 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     utilAccess.addCustomEditorVariablesResolver(new EditorVariablesResolver() {
       @Override
       public String resolveEditorVariables(String contentWithEditorVariables, String currentEditedFileURL) {
-        contentWithEditorVariables = contentWithEditorVariables.replace("${git(short_branch_name)}",
+        // Local branch short name / full name vars
+        contentWithEditorVariables = contentWithEditorVariables.replace(
+            GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR,
             GitAccess.getInstance().getBranchInfo().getBranchName());
+        
+        try {
+          contentWithEditorVariables = contentWithEditorVariables.replace(
+              GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
+              GitAccess.getInstance().getRepository().getFullBranch());
+        } catch (NoRepositorySelected | IOException e) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
+        }
+        
+        // Working-copy-related vars 
         try {
           File workingCopy = GitAccess.getInstance().getWorkingCopy();
-          contentWithEditorVariables = contentWithEditorVariables.replace("${git(full_branch_name)}",
-              GitAccess.getInstance().getRepository().getFullBranch());
-          contentWithEditorVariables = contentWithEditorVariables.replace("${git(working_copy_name)}",
+          contentWithEditorVariables = contentWithEditorVariables.replace(
+              GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
               workingCopy.getName());
-          contentWithEditorVariables = contentWithEditorVariables.replace("${git(working_copy_path)}",
+          contentWithEditorVariables = contentWithEditorVariables.replace(
+              GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR,
               workingCopy.getAbsolutePath());
         } catch (NoRepositorySelected e) {
-          if (contentWithEditorVariables.contains("${git(working_copy_name)}")
-              || contentWithEditorVariables.contains("${git(working_copy_path)}")) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
-          }
-        } catch (IOException e) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
         }
         return contentWithEditorVariables;
@@ -269,10 +281,18 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
      @Override
      public List<EditorVariableDescription> getCustomResolverEditorVariableDescriptions() {
          List<EditorVariableDescription> list = new ArrayList<>();
-         list.add(new EditorVariableDescription("${git(short_branch_name)}", Translator.getInstance().getTranslation(Tags.SHORT_BRANCH_NAME_DESCRIPTION)));
-         list.add(new EditorVariableDescription("${git(full_branch_name)}", Translator.getInstance().getTranslation(Tags.FULL_BRANCH_NAME_DESCRIPTION)));
-         list.add(new EditorVariableDescription("${git(working_copy_name)}", Translator.getInstance().getTranslation(Tags.WORKING_COPY_NAME_DESCRIPTION)));
-         list.add(new EditorVariableDescription("${git(working_copy_path)}", Translator.getInstance().getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
+         list.add(new EditorVariableDescription(
+             GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR,
+             translator.getTranslation(Tags.SHORT_BRANCH_NAME_DESCRIPTION)));
+         list.add(new EditorVariableDescription(
+             GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
+             translator.getTranslation(Tags.FULL_BRANCH_NAME_DESCRIPTION)));
+         list.add(new EditorVariableDescription(
+             GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
+             translator.getTranslation(Tags.WORKING_COPY_NAME_DESCRIPTION)));
+         list.add(new EditorVariableDescription(
+             GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR,
+             translator.getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
        return list;
      }
    });
@@ -341,7 +361,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     gitRefreshSupport.call();
     
     viewInfo.setIcon(Icons.getIcon(Icons.GIT_ICON));
-    viewInfo.setTitle(Translator.getInstance().getTranslation(Tags.GIT_STAGING));
+    viewInfo.setTitle(translator.getTranslation(Tags.GIT_STAGING));
   }
 	
 	/**
@@ -357,7 +377,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     viewInfo.setComponent(historyView);
     
     viewInfo.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
-    viewInfo.setTitle(Translator.getInstance().getTranslation(Tags.GIT_HISTORY));
+    viewInfo.setTitle(translator.getTranslation(Tags.GIT_HISTORY));
   }
   
   /**
@@ -373,7 +393,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     
     viewInfo.setComponent(branchManagementPanel);
     viewInfo.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
-    viewInfo.setTitle(Translator.getInstance().getTranslation((Tags.BRANCH_MANAGER_TITLE)));
+    viewInfo.setTitle(translator.getTranslation((Tags.BRANCH_MANAGER_TITLE)));
   }
 
 	/**
