@@ -12,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -89,9 +88,9 @@ public class HistoryPanel extends JPanel {
    */
   private JEditorPane commitDescriptionPane;
   /**
-   * The label that shows the resource for which we present the history.
+   * The label that shows information about the history we present.
    */
-  private JLabel showingHistoryForRepoLabel;
+  private JLabel historyInfoLabel;
   /**
    * Intercepts clicks in the commit details area.
    */
@@ -175,8 +174,8 @@ public class HistoryPanel extends JPanel {
     //----------
     
     JPanel topPanel = new JPanel(new BorderLayout());
-    showingHistoryForRepoLabel = new JLabel();
-    topPanel.add(showingHistoryForRepoLabel, BorderLayout.WEST);
+    historyInfoLabel = new JLabel();
+    topPanel.add(historyInfoLabel, BorderLayout.WEST);
     createAndAddToolbarToTopPanel(topPanel);
 
     JPanel infoBoxesSplitPane = createSplitPane(
@@ -475,14 +474,13 @@ public class HistoryPanel extends JPanel {
 
         File directory = gitAccess.getWorkingCopy();
         String historyLabelMessage = translator.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
-            + translator.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ". ";
+            + translator.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
         if (filePath != null) {
           directory = new File(directory, filePath);
-          historyLabelMessage += translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
+          historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
-        showingHistoryForRepoLabel.setText(historyLabelMessage);
-        showingHistoryForRepoLabel.setToolTipText(directory.getAbsolutePath());
-        showingHistoryForRepoLabel.setBorder(BorderFactory.createEmptyBorder(0,2,5,0));
+        historyInfoLabel.setText(historyLabelMessage);
+        historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 0));
 
         // Install selection listener.
         if (revisionDataUpdater != null) {
