@@ -1742,9 +1742,12 @@ public class GitAccess {
    * @param commitId  The commit id to which to reset.
    */
   public void resetToCommit(ResetType resetType, String commitId) {
+    fireStateChanged(new GitEvent(GitCommand.RESET_COMMIT, GitCommandState.STARTED));
     try {
       git.reset().setMode(resetType).setRef(commitId).call();
+      fireStateChanged(new GitEvent(GitCommand.RESET_COMMIT, GitCommandState.SUCCESSFULLY_ENDED));
     } catch (GitAPIException e) {
+      fireStateChanged(new GitEvent(GitCommand.RESET_COMMIT, GitCommandState.FAILED));
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
   }

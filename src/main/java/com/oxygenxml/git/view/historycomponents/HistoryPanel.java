@@ -12,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -64,6 +63,7 @@ import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -207,6 +207,11 @@ public class HistoryPanel extends JPanel {
           GitOperationScheduler.getInstance().schedule(HistoryPanel.this::showRepositoryHistory);
         }
         
+      }
+      
+      @Override
+      public void stateChanged(GitEvent changeEvent) {
+        GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
       }
       
       @Override

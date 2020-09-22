@@ -29,6 +29,10 @@ public enum GitCommand {
    */
   COMMIT,
   /**
+   * Reset the branch to a given commit.
+   */
+  RESET_COMMIT,
+  /**
    * Restart the merge process.
    */
   MERGE_RESTART,
