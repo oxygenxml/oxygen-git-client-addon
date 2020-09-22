@@ -132,7 +132,7 @@ For resources from Git repositories, this add-on also contributes a variety of a
 
 ## Git Branch Manager
 
-To show all the local and remote branches, invoke the **Show Branch Manager** action from the toolbar of the Git Staging panel (look for the branches icon), or go to the **Window menu > Show view > Git Branch Manager**. By default the Git Branch Manager will be presented to the right of the editing area.
+To show all the local and remote branches, invoke the **Show Git Branch Manager** action from the toolbar of the Git Staging panel (look for the branches icon), or go to the **Window menu > Show view > Git Branch Manager**. By default the Git Branch Manager will be presented to the right of the editing area.
 
 The Git Branch Manager side-view presents all the branches as a tree. The tree can be filtered by typing in the text field at the top of the panel or reloaded by using the **Refresh** action.
 
