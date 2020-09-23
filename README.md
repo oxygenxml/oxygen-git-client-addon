@@ -149,6 +149,13 @@ For the remote branches, the following action is available in the contextual men
 The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (Options menu -> Preferences) and go to **Plugins > Git Client**. This preferences page includes the following option:
 - **Notify me about new commits in the remote repository** - When this option is selected, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.
 
+## Editor variables
+The Git Client contributes the following editor variables to Oxygen:
+- **${git(working_copy_name)}**: The name of the working copy directory.
+- **${git(working_copy_path)}**: The absolute file path of the working copy directory.
+- **${git(short_branch_name)}**: The short name of the current branch (e.g. "dev").
+- **${git(full_branch_name)}**: The full name of the current branch (e.g. "refs/heads/dev").
+
 Copyright and License
 ---------------------
 Copyright 2018 Syncro Soft SRL.
