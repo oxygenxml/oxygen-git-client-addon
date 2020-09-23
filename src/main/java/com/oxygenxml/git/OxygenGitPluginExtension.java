@@ -233,20 +233,12 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		}
 		
 		RepositoryChangeWatcher watcher = RepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, pushPullController);
-		
 		gitRefreshSupport = new PanelRefresh(watcher);
 	  
-    addGitEditorVariablesSupport();
+		UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
+    utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver());
 	}
 
-	/**
-	 * Add support for Git-related editor variables.
-	 */
-  private void addGitEditorVariablesSupport() {
-    UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
-    utilAccess.addCustomEditorVariablesResolver(GitEditorVariablesResolver.createEditorVariablesResolver());
-  }
-	
 	/**
 	 * Customize the Git Staging view.
 	 * 

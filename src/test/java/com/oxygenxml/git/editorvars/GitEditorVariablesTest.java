@@ -1,10 +1,6 @@
 package com.oxygenxml.git.editorvars;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,29 +20,16 @@ import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
  */
 public class GitEditorVariablesTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/EditorVariablesTest";
-  private final static String LOCAL_FILE_NAME = "local.txt";
-  private File fileWithEditorVariables;
-  private EditorVariablesResolver editorVariablesResolver;
-  private GitAccess gitAccess;
+  private EditorVariablesResolver editorVariablesResolver = new GitEditorVariablesResolver();
 
-  /**
-   * Creates the file for editor variables, the EditorVariablesResolver and a
-   * local repository, then sets the repository.
-   */
   @Before
   public void setUp() throws Exception {
     super.setUp();
 
-    gitAccess = GitAccess.getInstance();
-
-    // Create first file make the first commit for the local repository.
-    fileWithEditorVariables = new File(LOCAL_TEST_REPOSITORY, LOCAL_FILE_NAME);
-
     // Create the local repository.
     createRepository(LOCAL_TEST_REPOSITORY);
-    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
+    GitAccess.getInstance().setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
 
-    editorVariablesResolver = GitEditorVariablesResolver.createEditorVariablesResolver();
   }
 
   /**
@@ -56,12 +39,10 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testShortBranchNameEditorVariable() throws Exception {
-    setFileContent(fileWithEditorVariables,
-        "the current branch name is: " + GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR);
-    String actual = editorVariablesResolver.resolveEditorVariables(getFileContent(),
-        LOCAL_TEST_REPOSITORY + "/" + LOCAL_FILE_NAME);
-    String expected = "the current branch name is: master";
-    assertEquals(expected, actual);
+    String actual = editorVariablesResolver.resolveEditorVariables(
+        "- " + GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR + " -",
+        null);
+    assertEquals("- master -", actual);
   }
 
   /**
@@ -72,12 +53,10 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testFullBranchNameEditorVariable() throws Exception {
-    setFileContent(fileWithEditorVariables,
-        "the current branch path is: " + GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
-    String actual = editorVariablesResolver.resolveEditorVariables(getFileContent(),
-        LOCAL_TEST_REPOSITORY + "/" + LOCAL_FILE_NAME);
-    String expected = "the current branch path is: refs/heads/master";
-    assertEquals(expected, actual);
+    String actual = editorVariablesResolver.resolveEditorVariables(
+        "- " + GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR + " -",
+        null);
+    assertEquals("- refs/heads/master -", actual);
   }
 
   /**
@@ -87,12 +66,10 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testWorkingCopyNameEditorVariable() throws Exception {
-    setFileContent(fileWithEditorVariables,
-        "the working copy name is: " + GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR);
-    String actual = editorVariablesResolver.resolveEditorVariables(getFileContent(),
-        LOCAL_TEST_REPOSITORY + "/" + LOCAL_FILE_NAME);
-    String expected = "the working copy name is: EditorVariablesTest";
-    assertEquals(expected, actual);
+    String actual = editorVariablesResolver.resolveEditorVariables(
+        "- " +  GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR + " -",
+        null);
+    assertEquals("- EditorVariablesTest -", actual);
   }
 
   /**
@@ -102,33 +79,10 @@ public class GitEditorVariablesTest extends GitTestBase {
    */
   @Test
   public void testWorkingCopyPathEditorVariable() throws Exception {
-    setFileContent(fileWithEditorVariables,
-        "the working copy path is: " + GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR);
-    String actual = editorVariablesResolver.resolveEditorVariables(getFileContent(),
-        LOCAL_TEST_REPOSITORY + "/" + LOCAL_FILE_NAME);
-    String expected = "the working copy path is: " + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath();
-    assertEquals(expected, actual);
+    String actual = editorVariablesResolver.resolveEditorVariables(
+        "- " + GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR + " -",
+        null);
+    assertEquals("- " + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath() + " -", actual);
   }
 
-  /**
-   * Gets the content of the file that contains the editor variables.
-   * 
-   * @return The file content.
-   * 
-   * @throws FileNotFoundException
-   * @throws IOException
-   */
-  private String getFileContent() throws FileNotFoundException, IOException {
-    FileReader fr = new FileReader(LOCAL_TEST_REPOSITORY + "/" + LOCAL_FILE_NAME);
-    BufferedReader br = new BufferedReader(fr);
-
-    String sCurrentLine;
-    String content = "";
-    while ((sCurrentLine = br.readLine()) != null) {
-      content += sCurrentLine;
-    }
-    br.close();
-    fr.close();
-    return content;
-  }
 }
