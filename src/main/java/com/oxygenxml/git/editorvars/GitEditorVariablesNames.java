@@ -1,4 +1,4 @@
-package com.oxygenxml.git;
+package com.oxygenxml.git.editorvars;
 
 /**
  * The names of all the Git editor variables.

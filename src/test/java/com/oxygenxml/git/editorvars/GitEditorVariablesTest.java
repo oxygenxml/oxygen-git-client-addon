@@ -5,7 +5,6 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.oxygenxml.git.GitEditorVariablesNames;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
 
