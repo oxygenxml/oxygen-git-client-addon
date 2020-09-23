@@ -7,9 +7,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -24,6 +22,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.editorvars.GitEditorVariablesResolver;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
@@ -53,8 +52,6 @@ import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
 import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
-import ro.sync.exml.workspace.api.util.EditorVariableDescription;
-import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
@@ -247,59 +244,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 */
   private void addGitEditorVariablesSupport() {
     UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
-    utilAccess.addCustomEditorVariablesResolver(new EditorVariablesResolver() {
-      @Override
-      public String resolveEditorVariables(String contentWithEditorVariables, String currentEditedFileURL) {
-        // Local branch short name / full name vars
-        contentWithEditorVariables = contentWithEditorVariables.replace(
-            GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR,
-            GitAccess.getInstance().getBranchInfo().getBranchName());
-        
-        try {
-          contentWithEditorVariables = contentWithEditorVariables.replace(
-              GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
-              GitAccess.getInstance().getRepository().getFullBranch());
-        } catch (NoRepositorySelected | IOException e) {
-          if (logger.isDebugEnabled()) {
-            logger.error(e.getMessage(), e);
-          }
-        }
-        
-        // Working-copy-related vars 
-        try {
-          File workingCopy = GitAccess.getInstance().getWorkingCopy();
-          contentWithEditorVariables = contentWithEditorVariables.replace(
-              GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
-              workingCopy.getName());
-          contentWithEditorVariables = contentWithEditorVariables.replace(
-              GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR,
-              workingCopy.getAbsolutePath());
-        } catch (NoRepositorySelected e) {
-          if (logger.isDebugEnabled()) {
-            logger.error(e.getMessage(), e);
-          }
-        }
-        return contentWithEditorVariables;
-      }
-
-     @Override
-     public List<EditorVariableDescription> getCustomResolverEditorVariableDescriptions() {
-         List<EditorVariableDescription> list = new ArrayList<>();
-         list.add(new EditorVariableDescription(
-             GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR,
-             translator.getTranslation(Tags.SHORT_BRANCH_NAME_DESCRIPTION)));
-         list.add(new EditorVariableDescription(
-             GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
-             translator.getTranslation(Tags.FULL_BRANCH_NAME_DESCRIPTION)));
-         list.add(new EditorVariableDescription(
-             GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
-             translator.getTranslation(Tags.WORKING_COPY_NAME_DESCRIPTION)));
-         list.add(new EditorVariableDescription(
-             GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR,
-             translator.getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
-       return list;
-     }
-   });
+    utilAccess.addCustomEditorVariablesResolver(GitEditorVariablesResolver.createEditorVariablesResolver());
   }
 	
 	/**
