@@ -244,7 +244,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
       }
     });
     
- // Listens on the save event in the Oxygen editor and updates the history table
+    // Listens on the save event in the Oxygen editor and updates the history table
     pluginWS.addEditorChangeListener(
         new WSEditorChangeListener() {
           @Override
@@ -280,23 +280,20 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
    * @param editorLocation Editor URL.
    */
   private void treatEditorSavedEvent(final URL editorLocation) {
-    File locateFile = null;
+    File localFile = null;
     if ("file".equals(editorLocation.getProtocol())) {
-      locateFile = pluginWS.getUtilAccess().locateFile(editorLocation);
-      if (locateFile != null) {
-        String fileInWorkPath = locateFile.toString();
+      localFile = pluginWS.getUtilAccess().locateFile(editorLocation);
+      if (localFile != null) {
+        String fileInWorkPath = localFile.toString();
         fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
 
         try {
           String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
           selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
 
-          if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-            if (logger.isDebugEnabled()) {
-              logger.debug("Notify " + fileInWorkPath);
-              logger.debug("WC " + selectedRepositoryPath);
-            }
-            GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));          }
+          if (isShowing() && fileInWorkPath.startsWith(selectedRepositoryPath)) {
+            GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));          
+          }
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
         }
@@ -822,9 +819,12 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
     });
   }
   
+  /**
+   * Acts as an observer and listens for changes.
+   */
   @Override
   public void stateChanged(PushPullEvent pushPullEvent) {
-    if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
+    if (isShowing() && pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
       GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
     }
   }
