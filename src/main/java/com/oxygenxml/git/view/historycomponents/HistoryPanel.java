@@ -64,6 +64,7 @@ import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
+import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEvent;
 import com.oxygenxml.git.view.event.Observer;
@@ -823,6 +824,8 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
   
   @Override
   public void stateChanged(PushPullEvent pushPullEvent) {
-    GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+    if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
+      GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+    }
   }
 }
