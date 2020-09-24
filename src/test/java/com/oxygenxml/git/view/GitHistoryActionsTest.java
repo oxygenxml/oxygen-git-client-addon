@@ -125,7 +125,50 @@ public class GitHistoryActionsTest extends GitTestBase {
       FileUtils.deleteDirectory(wcTree);
     }
   }
+  
+  /**
+   * Tests the uncommitted changes to see if they have any contextual actions.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testHistoryUncommittedChangesActions() throws Exception {
+    URL script = getClass().getClassLoader().getResource("scripts/history_script_actions.txt");
 
+    File wcTree = new File("target/gen/GitHistoryActionsTest_testHistoryUncommitedChangesActions");
+    RepoGenerationScript.generateRepository(script, wcTree);
+    
+    File file = new File(wcTree,"file.txt");
+    file.createNewFile();
+    setFileContent(file, "modified content");
+
+    try {
+      GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
+      
+      HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
+
+      //////////////////////////
+      //  Changes.
+      //////////////////////////
+      CommitCharacteristics commitCharacteristic = GitAccess.UNCOMMITED_CHANGES;
+      List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
+      String dumpFS = dumpFS(changedFiles);
+      assertEquals(
+          "(changeType=UNTRACKED, fileLocation=file.txt)\n" + 
+          "", dumpFS);
+
+      // Assert the available actions for the changed file.
+      JPopupMenu jPopupMenu = new JPopupMenu();
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, null,  GitAccess.UNCOMMITED_CHANGES);
+      assertEquals(0, jPopupMenu.getComponentCount());
+
+    } finally {
+      GitAccess.getInstance().closeRepo();
+
+      FileUtils.deleteDirectory(wcTree);
+    }
+  }
+  
   private String dumpActions(List<Action> actions) {
     return actions.stream().map(action -> action.getValue(Action.NAME)).collect(Collectors.toList()).toString();
   }

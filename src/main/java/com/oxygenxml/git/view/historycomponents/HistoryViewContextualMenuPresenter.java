@@ -231,44 +231,42 @@ public class HistoryViewContextualMenuPresenter {
     if (filePath != null) {
       jPopupMenu.addSeparator();
     }
-    jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH) + "...") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        GitOperationScheduler.getInstance().schedule(() -> {
-          try {
-            CreateBranchDialog dialog = new CreateBranchDialog(
-                Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
-                null,
-                BranchesUtil.getLocalBranches());
-            if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-              GitAccess.getInstance().checkoutCommitAndCreateBranch(
-                  dialog.getBranchName(),
-                  commitCharacteristics.getCommitId());
+    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
+      jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH) + "...") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          GitOperationScheduler.getInstance().schedule(() -> {
+            try {
+              CreateBranchDialog dialog = new CreateBranchDialog(
+                  Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), null, BranchesUtil.getLocalBranches());
+              if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+                GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(),
+                    commitCharacteristics.getCommitId());
+              }
+            } catch (CheckoutConflictException e1) {
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+                  Translator.getInstance().getTranslation(Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS));
+            } catch (HeadlessException | GitAPIException | NoRepositorySelected e1) {
+              LOGGER.debug(e1);
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
             }
-          } catch (CheckoutConflictException e1) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-                Translator.getInstance().getTranslation(Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS));
-          } catch (HeadlessException | GitAPIException |  NoRepositorySelected e1) {
-            LOGGER.debug(e1);
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
-          }
-        });
-      }
-    });
-    String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-    jPopupMenu.add(new AbstractAction(
-        MessageFormat.format(
-            Translator.getInstance().getTranslation(Tags.RESET_BRANCH_TO_THIS_COMMIT),
-            branchName) + "...") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ResetToCommitDialog dialog = new ResetToCommitDialog(branchName, commitCharacteristics);
-        dialog.setVisible(true);
-        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-          GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitCharacteristics.getCommitId());
+          });
         }
-      }
-    });
+      });
+      String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+      jPopupMenu.add(new AbstractAction(
+          MessageFormat.format(Translator.getInstance().getTranslation(Tags.RESET_BRANCH_TO_THIS_COMMIT), branchName)
+              + "...") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          ResetToCommitDialog dialog = new ResetToCommitDialog(branchName, commitCharacteristics);
+          dialog.setVisible(true);
+          if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+            GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitCharacteristics.getCommitId());
+          }
+        }
+      });
+    }
   }
 
   /**
