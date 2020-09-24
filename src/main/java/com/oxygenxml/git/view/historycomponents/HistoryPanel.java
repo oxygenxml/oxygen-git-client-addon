@@ -12,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -58,6 +59,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
@@ -68,7 +70,12 @@ import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
+import ro.sync.exml.workspace.api.listeners.WSEditorListener;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -116,6 +123,14 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
    * Presents the contextual menu.
    */
   private HistoryViewContextualMenuPresenter contextualMenuPresenter;
+  /**
+  * Plugin workspace access.
+  */
+  private StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+  /**
+   * Logger for logging.
+   */
+  private Logger logger = Logger.getLogger(HistoryPanel.class);
   
   /**
    * Constructor.
@@ -227,8 +242,65 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
         }
       }
     });
+    
+ // Listens on the save event in the Oxygen editor and updates the history table
+    pluginWS.addEditorChangeListener(
+        new WSEditorChangeListener() {
+          @Override
+          public void editorOpened(final URL editorLocation) {
+            addEditorSaveHook(editorLocation);
+          }
+        },
+        PluginWorkspace.MAIN_EDITING_AREA);
 
     add(centerSplitPane, BorderLayout.CENTER);
+  }
+  
+  /**
+   * Adds a hook to refresh the models if the editor is part of the Git working copy.
+   * 
+   * @param editorLocation Editor to check.
+   */
+  private void addEditorSaveHook(final URL editorLocation) {
+    WSEditor editorAccess = pluginWS.getEditorAccess(editorLocation, PluginWorkspace.MAIN_EDITING_AREA);
+    if (editorAccess != null) {
+      editorAccess.addEditorListener(new WSEditorListener() {
+        @Override
+        public void editorSaved(int operationType) {
+          GitOperationScheduler.getInstance().schedule(() -> treatEditorSavedEvent(editorLocation));
+        }
+      });
+    }
+  }
+  
+  /**
+   * Treat editor saved event.
+   * 
+   * @param editorLocation Editor URL.
+   */
+  private void treatEditorSavedEvent(final URL editorLocation) {
+    File locateFile = null;
+    if ("file".equals(editorLocation.getProtocol())) {
+      locateFile = pluginWS.getUtilAccess().locateFile(editorLocation);
+      if (locateFile != null) {
+        String fileInWorkPath = locateFile.toString();
+        fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
+
+        try {
+          String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+          selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+
+          if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
+            if (logger.isDebugEnabled()) {
+              logger.debug("Notify " + fileInWorkPath);
+              logger.debug("WC " + selectedRepositoryPath);
+            }
+            GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));          }
+        } catch (NoRepositorySelected e) {
+          logger.debug(e, e);
+        }
+      }
+    }
   }
   
   /**
