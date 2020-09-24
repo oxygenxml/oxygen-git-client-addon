@@ -20,6 +20,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.PushPullController;
 
 /**
  * UI level tests for history.
@@ -40,7 +41,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
 
   private void setUpHistoryPanel() {
     // Initialize history panel.
-    historyPanel = new HistoryPanel(new GitController()) {
+    historyPanel = new HistoryPanel(new GitController(), new PushPullController()) {
       @Override
       protected int getUpdateDelay() {
         return 0;

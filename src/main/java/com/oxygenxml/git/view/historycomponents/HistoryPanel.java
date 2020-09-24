@@ -64,6 +64,9 @@ import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.Observer;
+import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -71,7 +74,7 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 /**
  * Presents the commits for a given resource. 
  */
-public class HistoryPanel extends JPanel {
+public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
   /**
    * Logger for logging.
    */
@@ -119,7 +122,8 @@ public class HistoryPanel extends JPanel {
    * 
    * @param stageController Executes a set of Git commands.
    */
-  public HistoryPanel(GitController stageController) {
+  public HistoryPanel(GitController stageController, PushPullController pushPullController) {
+    pushPullController.addObserver(this);
     setLayout(new BorderLayout());
     
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(stageController);
@@ -743,5 +747,10 @@ public class HistoryPanel extends JPanel {
         }
       }
     });
+  }
+  
+  @Override
+  public void stateChanged(PushPullEvent pushPullEvent) {
+    GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
   }
 }
