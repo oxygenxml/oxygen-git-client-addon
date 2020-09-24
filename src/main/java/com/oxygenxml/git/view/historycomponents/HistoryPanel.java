@@ -399,7 +399,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
       CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits().get(historyTable.getSelectedRow());
       
       JPopupMenu jPopupMenu = new JPopupMenu();
-      contextualMenuPresenter.populateContextualActions(jPopupMenu, file, commitCharacteristics, false);
+      contextualMenuPresenter.populateContextActionsForFile(jPopupMenu, file, commitCharacteristics, false);
       jPopupMenu.show(affectedFilesTable, point.x, point.y);
     }
   }
