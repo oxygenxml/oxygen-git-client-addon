@@ -35,4 +35,14 @@ public class GitEventAdapter implements GitEventListener {
   public void branchChanged(String oldBranch, String newBranch) {
     // Auto-generated method stub
   }
+  
+  @Override
+  public void branchCreated(String newBranch) {
+    // Auto-generated method stub
+  }
+  
+  @Override
+  public void branchDeleted(String deletedBranch) {
+    // Auto-generated method stub
+  }
 }

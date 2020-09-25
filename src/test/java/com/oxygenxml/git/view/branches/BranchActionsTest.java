@@ -78,8 +78,7 @@ public class BranchActionsTest extends GitTestBase {
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(
-        branchManagementPanel::refreshBranches);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
    
     //------------- Checkout the first branch in the tree: LOCAL_BRANCH_NAME1 -------------
@@ -139,8 +138,7 @@ public class BranchActionsTest extends GitTestBase {
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(
-        branchManagementPanel::refreshBranches);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
     //------------- Create branch LOCAL_BRANCH_COPY_NAME from first branch in the tree: LOCAL_BRANCH_NAME1 -------------
@@ -205,8 +203,7 @@ public class BranchActionsTest extends GitTestBase {
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(
-        branchManagementPanel::refreshBranches);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
     //------------- Delete first branch in the tree: LOCAL_BRANCH_NAME1 -------------
@@ -270,8 +267,7 @@ public class BranchActionsTest extends GitTestBase {
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(
-        branchManagementPanel::refreshBranches);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
     //------------- Checkout the last branch in the tree: REMOTE_BRANCH_NAME2, with the name REMOTE_BRANCH_NAME2_COPY-------------

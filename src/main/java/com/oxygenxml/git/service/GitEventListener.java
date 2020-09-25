@@ -51,4 +51,18 @@ public interface GitEventListener {
    * @param newBranch New branch qualified name.
    */
   void branchChanged(String oldBranch, String newBranch);
+  
+  /**
+   * A branch was created.
+   * 
+   * @param newBranch The branch created.
+   */
+  void branchCreated(String newBranch);
+
+  /**
+   * A branch was deleted.
+   * 
+   * @param deletedBranch The branch deleted.
+   */
+  void branchDeleted(String deletedBranch);
 }

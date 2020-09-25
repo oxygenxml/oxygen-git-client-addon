@@ -118,10 +118,18 @@ public class BranchManagementPanel extends JPanel {
       public void branchChanged(String oldBranch, String newBranch) {
         SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
       }
+      @Override
+      public void branchCreated(String newBranch) {
+        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
+      }
+      @Override
+      public void branchDeleted(String deletedBranch) {
+        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
+      }
     });
     addTreeListeners();
     
-    branchesTreeActionProvider = new BranchTreeMenuActionsProvider(this::refreshBranches);
+    branchesTreeActionProvider = new BranchTreeMenuActionsProvider();
   }
   
   /**

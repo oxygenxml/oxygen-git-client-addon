@@ -379,6 +379,34 @@ public class GitAccess {
   }
   
   /**
+   * A new branch was created.
+   * 
+   * @param newBranch The new branch.
+   */
+  private void fireBranchCreated(String newBranch) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Fire branch created "+ newBranch);
+    }
+    for (GitEventListener gitEventListener : listeners) {
+      gitEventListener.branchCreated(newBranch);
+    }
+  }
+  
+  /**
+   * A branch was deleted.
+   * 
+   * @param deletedBranch The branch deleted.
+   */
+  private void fireBranchDeleted(String deletedBranch) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Fire branch deleted "+ deletedBranch);
+    }
+    for (GitEventListener gitEventListener : listeners) {
+      gitEventListener.branchDeleted(deletedBranch);
+    }
+  }
+  
+  /**
    * The active branch changed.
    * 
    * @param oldBranch Previous branch.
@@ -965,11 +993,9 @@ public class GitAccess {
 	 */
 	public void createBranch(String branchName) {
 		try {
-		  BranchInfo branchInfo = getBranchInfo();
-		  
 			git.branchCreate().setName(branchName).call();
 			
-			fireBranchChanged(branchInfo.getBranchName(), branchName);
+			fireBranchCreated(branchName);
 		} catch (GitAPIException e) {
 		  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 		}
@@ -987,6 +1013,7 @@ public class GitAccess {
         .setName(newBranchName)
         .setStartPoint(sourceBranch)
         .call();
+        fireBranchCreated(newBranchName);
     } catch (GitAPIException e) {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
@@ -1002,6 +1029,7 @@ public class GitAccess {
 	  command.setForce(true);
 	  try {
 	      command.call();
+	      fireBranchDeleted(branchName);
 	  } catch(GitAPIException e) {
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 	  }

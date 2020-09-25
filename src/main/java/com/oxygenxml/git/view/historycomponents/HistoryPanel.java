@@ -242,6 +242,20 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
           GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
         }
       }
+      
+      @Override
+      public void branchCreated(String newBranch) {
+        if (isShowing()) {
+          GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+        }
+      }
+      
+      @Override
+      public void branchDeleted(String deletedBranch) {
+        if (isShowing()) {
+          GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+        }
+      }
     });
     
     // Listens on the save event in the Oxygen editor and updates the history table

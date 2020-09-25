@@ -41,20 +41,6 @@ public class BranchTreeMenuActionsProvider {
   private List<AbstractAction> nodeActions;
   
   /**
-   * A branch tree refresher.
-   */
-  private BranchTreeRefresher branchTreeRefresher;
-  
-  /**
-   * Constructor.
-   * 
-   * @param branchesTree The tree used for creating actions.
-   */
-  public BranchTreeMenuActionsProvider(BranchTreeRefresher branchTreeRefresher) {
-    this.branchTreeRefresher = branchTreeRefresher;
-  }
-  
-  /**
    * Creates the actions for a specific node in the tree and stores them.
    * 
    * @param node The node for which to create actions.
@@ -187,7 +173,6 @@ public class BranchTreeMenuActionsProvider {
                 BranchesUtil.getLocalBranches());
             if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
               gitAccess.createBranchFromLocalBranch(dialog.getBranchName(), nodePath);
-              branchTreeRefresher.refreshBranchesTree();
             }
           } catch (NoRepositorySelected ex) {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
@@ -218,7 +203,6 @@ public class BranchTreeMenuActionsProvider {
             try {
               String branch = BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
               gitAccess.deleteBranch(branch);
-              branchTreeRefresher.refreshBranchesTree();
             } catch (JGitInternalException ex) {
               PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
             }
