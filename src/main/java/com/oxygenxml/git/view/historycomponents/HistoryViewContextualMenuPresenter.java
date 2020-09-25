@@ -224,7 +224,7 @@ public class HistoryViewContextualMenuPresenter {
     if (filePath != null) {
       Optional<FileStatus> fileStatusOptional = getFileStatus(filePath, commitCharacteristics);
       if (fileStatusOptional.isPresent()) {
-        populateContextualActions(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
+        populateContextActionsForFile(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
       }
     }
 
@@ -232,6 +232,7 @@ public class HistoryViewContextualMenuPresenter {
       jPopupMenu.addSeparator();
     }
     if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
+      // Create branch
       jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH) + "...") {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -253,6 +254,8 @@ public class HistoryViewContextualMenuPresenter {
           });
         }
       });
+      
+      // Reset branch to this commit
       String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
       jPopupMenu.add(new AbstractAction(
           MessageFormat.format(Translator.getInstance().getTranslation(Tags.RESET_BRANCH_TO_THIS_COMMIT), branchName)
@@ -309,17 +312,13 @@ public class HistoryViewContextualMenuPresenter {
    * @param commitCharacteristics Current commit data.
    * @param addFileName           <code>true</code> to add the name of the file to the action's name.
    */
-  void populateContextualActions(
+  void populateContextActionsForFile(
       JPopupMenu jPopupMenu,  
       FileStatus fileStatus,
       CommitCharacteristics commitCharacteristics,
       boolean addFileName) {
-    
     List<Action> contextualActions = getContextualActions(fileStatus, commitCharacteristics, addFileName);
-    
-    for (Action action : contextualActions) {
-      jPopupMenu.add(action);
-    }
+    contextualActions.forEach(jPopupMenu::add);
   }
 
   /**

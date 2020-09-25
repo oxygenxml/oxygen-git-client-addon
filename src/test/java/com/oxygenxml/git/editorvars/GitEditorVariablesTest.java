@@ -79,7 +79,7 @@ public class GitEditorVariablesTest extends GitTestBase {
   @Test
   public void testWorkingCopyPathEditorVariable() throws Exception {
     String actual = editorVariablesResolver.resolveEditorVariables(
-        "- " + GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR + " -",
+        "- " + GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR + " -",
         null);
     assertEquals("- " + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath() + " -", actual);
   }

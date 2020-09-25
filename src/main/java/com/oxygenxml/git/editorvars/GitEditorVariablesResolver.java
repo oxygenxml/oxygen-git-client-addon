@@ -62,7 +62,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
           GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
           workingCopy.getName());
       contentWithEditorVariables = contentWithEditorVariables.replace(
-          GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR,
+          GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
           workingCopy.getAbsolutePath());
     } catch (NoRepositorySelected e) {
       if (logger.isDebugEnabled()) {
@@ -92,7 +92,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
             translator.getTranslation(Tags.WORKING_COPY_NAME_DESCRIPTION)));
     list.add(
         new EditorVariableDescription(
-            GitEditorVariablesNames.WORKING_COPY_FILE_PATH_EDITOR_VAR,
+            GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
             translator.getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
     return list;
   }
