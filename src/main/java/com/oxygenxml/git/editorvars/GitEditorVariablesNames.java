@@ -8,9 +8,9 @@ public class GitEditorVariablesNames {
   private GitEditorVariablesNames() {}
   
   /**
-   * The file path to the working copy directory.
+   * The path to the working copy directory.
    */
-  public static final String WORKING_COPY_FILE_PATH_EDITOR_VAR = "${git(working_copy_path)}";
+  public static final String WORKING_COPY_PATH_EDITOR_VAR = "${git(working_copy_path)}";
 
   /**
    * The name of the working copy directory.
