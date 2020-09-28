@@ -115,7 +115,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 */
 	private void notifyObservers(PushPullEvent pushPullEvent) {
 	  if (!observers.isEmpty()) {
-	    observers.forEach((observer)-> observer.stateChanged(pushPullEvent));
+	    observers.forEach((Observer<PushPullEvent> observer)-> observer.stateChanged(pushPullEvent));
 	  }
 	}
 

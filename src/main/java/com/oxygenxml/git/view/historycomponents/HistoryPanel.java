@@ -128,10 +128,6 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
   * Plugin workspace access.
   */
   private StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-  /**
-   * Logger for logging.
-   */
-  private Logger logger = Logger.getLogger(HistoryPanel.class);
   
   /**
    * Constructor.
@@ -309,7 +305,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
             GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));          
           }
         } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
+          LOGGER.debug(e, e);
         }
       }
     }

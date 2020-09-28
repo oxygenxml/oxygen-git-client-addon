@@ -141,7 +141,7 @@ public class RepositoryChangeWatcher {
     try {
       repository = GitAccess.getInstance().getRepository();
       List<RevCommit> commitsBehind = checkForRemoteCommits(false);
-      if (commitsBehind.size() != 0) {
+      if (!commitsBehind.isEmpty()) {
         optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
       }
     } catch (NoRepositorySelected e) {
