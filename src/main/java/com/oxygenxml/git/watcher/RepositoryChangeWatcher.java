@@ -54,14 +54,9 @@ public class RepositoryChangeWatcher {
   private PushPullController pushPullController;
   
   /**
-   * Stores the current working repository.
-   */
-  private Repository repository;
-
-  /**
    * The Option Manager instance.
    */
-  private OptionsManager optionsManager = OptionsManager.getInstance();
+  private static OptionsManager optionsManager = OptionsManager.getInstance();
   
   /**
    * The Translator instance.
@@ -138,6 +133,23 @@ public class RepositoryChangeWatcher {
   }
   
   /**
+   * Marks the user as already notified after a reset to a specific commit has
+   * happened.
+   */
+  public static void markAsNotified() {
+    Repository repository;
+    try {
+      repository = GitAccess.getInstance().getRepository();
+      List<RevCommit> commitsBehind = checkForRemoteCommits(false);
+      if (commitsBehind.size() != 0) {
+        optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
+      }
+    } catch (NoRepositorySelected e) {
+      logger.debug(e, e);
+    }
+  }
+  
+  /**
    * Notifies the user about new commits in the remote repository and asks to pull
    * the changes
    * 
@@ -145,8 +157,13 @@ public class RepositoryChangeWatcher {
    */
   private void notifyUserAboutNewCommits(List<RevCommit> commitsBehind) {
     // Remember that we warn the user about this particular commit.
-    optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
-
+    Repository repository;
+    try {
+      repository = GitAccess.getInstance().getRepository();
+      optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
+    } catch (NoRepositorySelected e) {
+      logger.debug(e, e);
+    }
     // Notify new commit in remote.
     showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM) + " "
         + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
@@ -181,8 +198,14 @@ public class RepositoryChangeWatcher {
    */
   private boolean shouldNotifyUser(RevCommit topRevCommit) {
     String commitId = topRevCommit.getId().getName();
-    
-    return !commitId.contentEquals(optionsManager.getWarnOnChangeCommitId(repository.getIdentifier()));
+    Repository repository;
+    try {
+      repository = GitAccess.getInstance().getRepository();
+      return !commitId.contentEquals(optionsManager.getWarnOnChangeCommitId(repository.getIdentifier()));
+    } catch (NoRepositorySelected e) {
+      logger.debug(e, e);
+    }
+    return false;
   }
   
   /**
@@ -191,14 +214,14 @@ public class RepositoryChangeWatcher {
    * 
    * @return <code>commitsAhead</code> a list with all new commits
    */
-  private List<RevCommit> checkForRemoteCommits(boolean fetch) {
+  private static List<RevCommit> checkForRemoteCommits(boolean fetch) {
     List<RevCommit> commitsBehind = Collections.emptyList();
     try {
       GitAccess gitAccess = GitAccess.getInstance();
       if (fetch) {
         gitAccess.fetch();
       }
-      repository = gitAccess.getRepository();
+      Repository repository = gitAccess.getRepository();
       CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repository, repository.getFullBranch());
       if (commitsAheadAndBehind != null) {
         commitsBehind = commitsAheadAndBehind.getCommitsBehind();

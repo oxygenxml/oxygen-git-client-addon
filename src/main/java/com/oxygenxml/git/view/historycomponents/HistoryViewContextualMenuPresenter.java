@@ -37,6 +37,7 @@ import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.branches.CreateBranchDialog;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -266,6 +267,7 @@ public class HistoryViewContextualMenuPresenter {
           dialog.setVisible(true);
           if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
             GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitCharacteristics.getCommitId());
+            RepositoryChangeWatcher.markAsNotified();
           }
         }
       });
