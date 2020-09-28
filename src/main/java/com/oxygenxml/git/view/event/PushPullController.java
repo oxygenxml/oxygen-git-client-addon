@@ -65,7 +65,7 @@ public class PushPullController implements Subject<PushPullEvent> {
    * Public constructor
    */
   public PushPullController() {
-    observers = new HashSet<Observer<PushPullEvent>>();
+    observers = new HashSet<>();
   }
   
 	/**
@@ -121,10 +121,10 @@ public class PushPullController implements Subject<PushPullEvent> {
 
 	@Override
   public void addObserver(Observer<PushPullEvent> observer) {
-		if (observer == null)
+		if (observer == null) {
 			throw new NullPointerException("Null Observer");
-
-		this.observers.add(observer);
+		}
+		observers.add(observer);
 	}
 
 	@Override
