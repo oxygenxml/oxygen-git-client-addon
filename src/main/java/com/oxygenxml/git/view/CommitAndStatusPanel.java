@@ -15,7 +15,9 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -214,7 +216,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         }
         
         PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
-        observer.stateChanged(pushPullEvent);
+        observers.forEach((observer) -> observer.stateChanged(pushPullEvent));
 
         SwingUtilities.invokeLater(() -> {
           setStatusMessage(amendLastCommitToggle.isSelected() ? translator.getTranslation(Tags.AMENDED_SUCCESSFULLY)
@@ -272,7 +274,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
   /**
 	 * Will be notified after the commit.
 	 */
-	private Observer<PushPullEvent> observer;
+	private Collection<Observer<PushPullEvent>> observers;
 	/**
 	 * Translation support.
 	 */
@@ -309,6 +311,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 */
 	public CommitAndStatusPanel(PushPullController pushPullController) {
 	  this.pushPullController = pushPullController;
+	  this.observers = new HashSet<Observer<PushPullEvent>>();
 	  
 	  // By default a swing timer is on repeat.
 	  commitButtonAndMessageUpdateTaskTimer.setRepeats(false);
@@ -677,12 +680,12 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 		if (observer == null)
 			throw new NullPointerException("Null Observer");
 
-		this.observer = observer;
+		this.observers.add(observer);
 	}
 
 	@Override
   public void removeObserver(Observer<PushPullEvent> obj) {
-		observer = null;
+		observers.remove(obj);
 	}
 
 	/**

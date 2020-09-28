@@ -2,6 +2,8 @@ package com.oxygenxml.git.view.event;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -47,7 +49,7 @@ public class PushPullController implements Subject<PushPullEvent> {
 	/**
 	 * After a pull or push this will chage it's state
 	 */
-	private Observer<PushPullEvent> observer;
+	private Collection<Observer<PushPullEvent>> observers;
 
 	/**
 	 * The Git API
@@ -59,6 +61,13 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 */
 	private Translator translator = Translator.getInstance();
 	
+  /**
+   * Public constructor
+   */
+  public PushPullController() {
+    observers = new HashSet<Observer<PushPullEvent>>();
+  }
+  
 	/**
 	 * Execute an push or pull action, depending on the given command.
 	 * 
@@ -105,8 +114,8 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 *          - the Event fired
 	 */
 	private void notifyObservers(PushPullEvent pushPullEvent) {
-	  if (observer != null) {
-	    observer.stateChanged(pushPullEvent);
+	  if (!observers.isEmpty()) {
+	    observers.forEach((observer)-> observer.stateChanged(pushPullEvent));
 	  }
 	}
 
@@ -115,12 +124,12 @@ public class PushPullController implements Subject<PushPullEvent> {
 		if (observer == null)
 			throw new NullPointerException("Null Observer");
 
-		this.observer = observer;
+		this.observers.add(observer);
 	}
 
 	@Override
   public void removeObserver(Observer<PushPullEvent> obj) {
-		observer = null;
+		observers.remove(obj);
 	}
 	
 	/**
