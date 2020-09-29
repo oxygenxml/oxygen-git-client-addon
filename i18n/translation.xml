@@ -8,7 +8,7 @@
         <comment>"Description for the short_branch_name editor variable."</comment>
         <val lang="en_US">The short name of the current branch (e.g. "dev").</val>
         <val lang="de_DE">The short name of the current branch (e.g. "dev").</val>
-        <val lang="fr_FR">The short name of the current branch (e.g. "dev").</val>
+        <val lang="fr_FR">Le nom court de la branche actuelle (par exemple "dev").</val>
         <val lang="ja_JP">The short name of the current branch (e.g. "dev").</val>
         <val lang="nl_NL">The short name of the current branch (e.g. "dev").</val>
     </key>
@@ -16,7 +16,7 @@
         <comment>"Description for the full_branch_name editor variable."</comment>
         <val lang="en_US">The full name of the current branch (e.g. "refs/heads/dev").</val>
         <val lang="de_DE">The full name of the current branch (e.g. "refs/heads/dev").</val>
-        <val lang="fr_FR">The full name of the current branch (e.g. "refs/heads/dev").</val>
+        <val lang="fr_FR">Le nom complet de la branche actuelle (par exemple "refs/heads/dev").</val>
         <val lang="ja_JP">The full name of the current branch (e.g. "refs/heads/dev").</val>
         <val lang="nl_NL">The full name of the current branch (e.g. "refs/heads/dev").</val>
     </key>
@@ -24,7 +24,7 @@
         <comment>"Description for the working_copy_name editor variable."</comment>
         <val lang="en_US">The name of the current working copy directory.</val>
         <val lang="de_DE">The name of the current working copy directory.</val>
-        <val lang="fr_FR">The name of the current working copy directory.</val>
+        <val lang="fr_FR">Le nom du répertoire de la copie de travail actuelle.</val>
         <val lang="ja_JP">The name of the current working copy directory.</val>
         <val lang="nl_NL">The name of the current working copy directory.</val>
     </key>
@@ -32,7 +32,7 @@
         <comment>"Description for the working_copy_path editor variable."</comment>
         <val lang="en_US">The path of the current working copy directory.</val>
         <val lang="de_DE">The path of the current working copy directory.</val>
-        <val lang="fr_FR">The path of the current working copy directory.</val>
+        <val lang="fr_FR">Le chemin du répertoire de la copie de travail actuelle.</val>
         <val lang="ja_JP">The path of the current working copy directory.</val>
         <val lang="nl_NL">The path of the current working copy directory.</val>
     </key>
@@ -40,7 +40,7 @@
         <comment>"Displays the translation for "File"."</comment>
         <val lang="en_US">File</val>
         <val lang="de_DE">File</val>
-        <val lang="fr_FR">File</val>
+        <val lang="fr_FR">Fichier</val>
         <val lang="ja_JP">File</val>
         <val lang="nl_NL">File</val>
     </key>
@@ -48,7 +48,7 @@
         <comment>"Displays the translation for "Repository"."</comment>
         <val lang="en_US">Repository</val>
         <val lang="de_DE">Repository</val>
-        <val lang="fr_FR">Repository</val>
+        <val lang="fr_FR">Dépôt</val>
         <val lang="ja_JP">Repository</val>
         <val lang="nl_NL">Repository</val>
     </key>
@@ -64,7 +64,7 @@
 		<comment>"Displays the translation for "Delete"."</comment>
         <val lang="en_US">Delete</val>
         <val lang="de_DE">Delete</val>
-        <val lang="fr_FR">Delete</val>
+        <val lang="fr_FR">Supprimer</val>
         <val lang="ja_JP">Delete</val>
         <val lang="nl_NL">Delete</val>
     </key>
@@ -72,7 +72,7 @@
 		<comment>"Displays the translation for "Checkout"."</comment>
         <val lang="en_US">Checkout</val>
         <val lang="de_DE">Checkout</val>
-        <val lang="fr_FR">Checkout</val>
+        <val lang="fr_FR">Extraire</val>
         <val lang="ja_JP">Checkout</val>
         <val lang="nl_NL">Checkout</val>
     </key>
@@ -80,7 +80,7 @@
         <comment>"Displays information about what a soft reset of a branch does."</comment>
         <val lang="en_US">keep all changes</val>
         <val lang="de_DE">keep all changes</val>
-        <val lang="fr_FR">keep all changes</val>
+        <val lang="fr_FR">conserver toutes les modifications</val>
         <val lang="ja_JP">keep all changes</val>
         <val lang="nl_NL">keep all changes</val>
     </key>
@@ -88,7 +88,7 @@
         <comment>"Displays information about what a mixed reset of a branch does."</comment>
         <val lang="en_US">keep working copy changes, but reset index</val>
         <val lang="de_DE">keep working copy changes, but reset index</val>
-        <val lang="fr_FR">keep working copy changes, but reset index</val>
+        <val lang="fr_FR">conserver les modifications de la copie de travail, mais réinitialiser l'index</val>
         <val lang="ja_JP">keep working copy changes, but reset index</val>
         <val lang="nl_NL">keep working copy changes, but reset index</val>
     </key>
@@ -96,7 +96,7 @@
         <comment>"Displays information about what a hard reset of a branch does."</comment>
         <val lang="en_US">discard all changes</val>
         <val lang="de_DE">discard all changes</val>
-        <val lang="fr_FR">discard all changes</val>
+        <val lang="fr_FR">annuler tous les changements</val>
         <val lang="ja_JP">discard all changes</val>
         <val lang="nl_NL">discard all changes</val>
     </key>
@@ -104,7 +104,7 @@
 		<comment>"Reset"</comment>
         <val lang="en_US">Reset</val>
         <val lang="de_DE">Reset</val>
-        <val lang="fr_FR">Reset</val>
+        <val lang="fr_FR">Réinitialiser</val>
         <val lang="ja_JP">Reset</val>
         <val lang="nl_NL">Reset</val>
     </key>
@@ -112,7 +112,7 @@
 		<comment>"The text displayed in a label when asking for the reset type."</comment>
         <val lang="en_US">Reset mode</val>
         <val lang="de_DE">Reset mode</val>
-        <val lang="fr_FR">Reset mode</val>
+        <val lang="fr_FR">Mode de réinitialisation</val>
         <val lang="ja_JP">Reset mode</val>
         <val lang="nl_NL">Reset mode</val>
     </key>
@@ -120,7 +120,7 @@
 		<comment>"The message when trying to reset a branch to a specific commit."</comment>
         <val lang="en_US">Reset branch to commit</val>
         <val lang="de_DE">Reset branch to commit</val>
-        <val lang="fr_FR">Reset branch to commit</val>
+        <val lang="fr_FR">Réinitialiser la branche au commit</val>
         <val lang="ja_JP">Reset branch to commit</val>
         <val lang="nl_NL">Reset branch to commit</val>
     </key>
@@ -128,7 +128,7 @@
 		<comment>Label for the "Reset to commit" action.</comment>
         <val lang="en_US">Reset "{0}" to this commit</val>
         <val lang="de_DE">Reset "{0}" to this commit</val>
-        <val lang="fr_FR">Reset "{0}" to this commit</val>
+        <val lang="fr_FR">Réinitialiser "{0}" à ce commit</val>
         <val lang="ja_JP">Reset "{0}" to this commit</val>
         <val lang="nl_NL">Reset "{0}" to this commit</val>
     </key>
@@ -160,7 +160,7 @@
 		<comment>"The tool tip for the button that opens the branch manager side view."</comment>
         <val lang="en_US">Show Git Branch Manager</val>
         <val lang="de_DE">Show Git Branch Manager</val>
-        <val lang="fr_FR">Show Git Branch Manager</val>
+        <val lang="fr_FR">Afficher le gestionnaire de branche Git</val>
         <val lang="ja_JP">Show Git Branch Manager</val>
         <val lang="nl_NL">Show Git Branch Manager</val>
     </key>
@@ -578,7 +578,7 @@
             Do you want to set it as the current working copy?</val>
         <val lang="de_DE">Das Verzeichnis "{0}" wurde als lokales Git-Repository erkannt.
             Soll es als aktuelles Arbeitsverzeichnis verwendet werden?</val>
-        <val lang="fr_FR">Le répertoire "{0}" a été détecté comme un dépôt Git local.
+        <val lang="fr_FR">Le dépôt "{0}" a été détecté comme un dépôt Git local.
             Voulez-vous le définir comme la copie de travail actuelle?</val>
         <val lang="ja_JP">The "{0}" directory was detected as being a local Git repository.
             Do you want to set it as the current working copy?</val>
@@ -638,7 +638,7 @@
         <comment>Show current branch history</comment>
         <val lang="en_US">Show current branch history</val>
         <val lang="de_DE">Zeige die Historie des aktuellen Branch</val>
-        <val lang="fr_FR">Afficher l'historique de la branche courante</val>
+        <val lang="fr_FR">Afficher l'historique de la branche actuelle</val>
         <val lang="ja_JP">Show current branch history</val>
         <val lang="nl_NL">Show current branch history</val>
     </key>
@@ -1222,7 +1222,7 @@
         <comment>The massage displayed when you push but your repository is not up to date</comment>
         <val lang="en_US">Cannot push. Your current branch is behind. Pull first.</val>
         <val lang="de_DE">Push nicht möglich. Der aktuelle Branch liegt zurück. Bitte erst pullen.</val>
-        <val lang="fr_FR">Push impossible. Votre branche courante est en retard. Effectuez d'abord un pull.</val>
+        <val lang="fr_FR">Push impossible. Votre branche actuelle est en retard. Effectuez d'abord un pull.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
