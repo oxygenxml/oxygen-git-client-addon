@@ -24,7 +24,7 @@
         <comment>"Description for the working_copy_name editor variable."</comment>
         <val lang="en_US">The name of the current working copy directory.</val>
         <val lang="de_DE">The name of the current working copy directory.</val>
-        <val lang="fr_FR">Le nom du répertoire de la copie de travail actuelle.</val>
+        <val lang="fr_FR">Le nom du dépôt de la copie de travail actuelle.</val>
         <val lang="ja_JP">The name of the current working copy directory.</val>
         <val lang="nl_NL">The name of the current working copy directory.</val>
     </key>
@@ -32,7 +32,7 @@
         <comment>"Description for the working_copy_path editor variable."</comment>
         <val lang="en_US">The path of the current working copy directory.</val>
         <val lang="de_DE">The path of the current working copy directory.</val>
-        <val lang="fr_FR">Le chemin du répertoire de la copie de travail actuelle.</val>
+        <val lang="fr_FR">Le chemin du dépôt de la copie de travail actuelle.</val>
         <val lang="ja_JP">The path of the current working copy directory.</val>
         <val lang="nl_NL">The path of the current working copy directory.</val>
     </key>
