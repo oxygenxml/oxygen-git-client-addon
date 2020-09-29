@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
@@ -30,6 +31,7 @@ import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
+import com.oxygenxml.git.view.historycomponents.HistoryPanel;
 import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -96,6 +98,10 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * Branch management panel.
 	 */
   private BranchManagementPanel branchesPanel;
+  /**
+   * History panel.
+   */
+  private HistoryPanel historyPanel;
 	/**
 	 * Refresh task.
 	 */
@@ -107,27 +113,32 @@ public class PanelRefresh implements GitRefreshSupport {
 	  boolean repoChanged = loadRepositoryFromOxygenProject();
 	  if (!repoChanged || isAfterRestart) {
 	    try {
-	      if (gitAccess.getRepository() != null && stagingPanel != null) {
-	        stagingPanel.updateRebasePanelVisibilityBasedOnRepoState();
-	        GitStatus status = GitAccess.getInstance().getStatus();
-	        updateFiles(
-	            stagingPanel.getUnstagedChangesPanel(), 
-	            status.getUnstagedFiles());
-	        updateFiles(
-	            stagingPanel.getStagedChangesPanel(), 
-	            status.getStagedFiles());
-	        
-	        RepositoryStatus rstatus = fetch();
-	        
-	        updateCounters(rstatus);
-	        
-	        if (OptionsManager.getInstance().getNotifyAboutNewRemoteCommits()) {
-	          // Make the check more frequently.
-	          watcher.checkRemoteRepository(false);
+	      Repository repository = gitAccess.getRepository();
+	      if (repository != null) {
+	        if (stagingPanel != null) {
+	          stagingPanel.updateRebasePanelVisibilityBasedOnRepoState();
+	          GitStatus status = GitAccess.getInstance().getStatus();
+	          updateFiles(
+	              stagingPanel.getUnstagedChangesPanel(), 
+	              status.getUnstagedFiles());
+	          updateFiles(
+	              stagingPanel.getStagedChangesPanel(), 
+	              status.getStagedFiles());
+
+	          RepositoryStatus rstatus = fetch();
+	          updateCounters(rstatus);
+
+	          if (OptionsManager.getInstance().getNotifyAboutNewRemoteCommits()) {
+	            // Make the check more frequently.
+	            watcher.checkRemoteRepository(false);
+	          }
 	        }
-	      }
-	      if(gitAccess.getRepository() != null && branchesPanel != null) {
-	        branchesPanel.refreshBranches();
+	        if(branchesPanel != null && branchesPanel.isShowing()) {
+	          branchesPanel.refreshBranches();
+	        }
+	        if (historyPanel != null && historyPanel.isShowing()) {
+	          historyPanel.refresh();
+	        }
 	      }
 	    } catch (NoRepositorySelected e) {
 	      logger.debug(e, e);
@@ -188,24 +199,36 @@ public class PanelRefresh implements GitRefreshSupport {
         if (detectedRepo == null) {
           repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
         } else {
-          // A Git repository was detected.
-          try {
-            File currentRepo = null;
-            if (gitAccess.isRepoInitialized()) {
-              currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
-            }
-            if (currentRepo == null || !same(currentRepo, detectedRepo)) {
-              JComboBox<String> wcComboBox = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
-              if (wcComboBox.isPopupVisible()) {
-                wcComboBox.setPopupVisible(false);
-              }
-              repoChanged = switchToProjectRepoIfUserAgrees(getCanonicalPath(detectedRepo));
-            }
-          } catch (NoRepositorySelected e) {
-            logger.warn(e, e);
-          }
+          repoChanged = tryToSwitchToRepo(detectedRepo);
         }
       }
+    }
+    return repoChanged;
+  }
+
+  /**
+   * Try to switch to repo, if the user will agree.
+   * 
+   * @param repoDir Repository directory.
+   * 
+   * @return <code>true</code> if repo changed.
+   */
+  private boolean tryToSwitchToRepo(File repoDir) {
+    boolean repoChanged = false;
+    try {
+      File currentRepo = null;
+      if (gitAccess.isRepoInitialized()) {
+        currentRepo = gitAccess.getRepository().getDirectory().getParentFile();
+      }
+      if (currentRepo == null || !same(currentRepo, repoDir)) {
+        JComboBox<String> wcComboBox = stagingPanel.getWorkingCopySelectionPanel().getWorkingCopyCombo();
+        if (wcComboBox.isPopupVisible()) {
+          wcComboBox.setPopupVisible(false);
+        }
+        repoChanged = switchToProjectRepoIfUserAgrees(getCanonicalPath(repoDir));
+      }
+    } catch (NoRepositorySelected e) {
+      logger.warn(e, e);
     }
     return repoChanged;
   }
@@ -410,8 +433,22 @@ public class PanelRefresh implements GitRefreshSupport {
 		this.stagingPanel = stagingPanel;
 	}
   
+  /**
+   * Links the refresh support with branch manager view.
+   * 
+   * @param branchesPanel The branch manager panel.
+   */
   public void setBranchPanel(BranchManagementPanel branchesPanel) {
     this.branchesPanel = branchesPanel;
+  }
+  
+  /**
+   * Links the refresh support with teh history view.
+   * 
+   * @param historyPanel The history panel.
+   */
+  public void setHistoryPanel(HistoryPanel historyPanel) {
+    this.historyPanel = historyPanel;
   }
 
   /**
@@ -428,7 +465,7 @@ public class PanelRefresh implements GitRefreshSupport {
   /**
    * @return The last scheduled task for refresing the Git status.
    */
-  public ScheduledFuture<?> getScheduledTaskForTests() {
+  public ScheduledFuture<?> getScheduledTaskForTests() { // NOSONAR
     return refreshFuture;
   }
 

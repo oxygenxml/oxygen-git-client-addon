@@ -314,6 +314,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
   private void customizeHistoryView(GitController gitCtrl, ViewInfo viewInfo) {
     if (historyView == null) {
       historyView = new HistoryPanel(gitCtrl, pushPullController);
+      gitRefreshSupport.setHistoryPanel(historyView);
     }
     viewInfo.setComponent(historyView);
     

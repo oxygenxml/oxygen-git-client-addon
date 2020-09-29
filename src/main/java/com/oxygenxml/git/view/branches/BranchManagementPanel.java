@@ -77,7 +77,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * Translator for translation.
    */
-  private Translator translator = Translator.getInstance();
+  private static final Translator translator = Translator.getInstance();
 
   /**
    * The tree in which the branches will be presented.

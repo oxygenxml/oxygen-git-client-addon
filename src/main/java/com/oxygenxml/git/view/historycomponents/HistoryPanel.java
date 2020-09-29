@@ -222,34 +222,29 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
         if (isShowing()) {
           GitOperationScheduler.getInstance().schedule(HistoryPanel.this::showRepositoryHistory);
         }
-        
       }
-      
       @Override
       public void stateChanged(GitEvent changeEvent) {
         if (isShowing()) {
-          GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+          refresh();
         }
       }
-      
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
         if (isShowing()) {
-          GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+          refresh();
         }
       }
-      
       @Override
       public void branchCreated(String newBranch) {
         if (isShowing()) {
-          GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+          refresh();
         }
       }
-      
       @Override
       public void branchDeleted(String deletedBranch) {
         if (isShowing()) {
-          GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+          refresh();
         }
       }
     });
@@ -302,7 +297,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
           selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
 
           if (isShowing() && fileInWorkPath.startsWith(selectedRepositoryPath)) {
-            GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));          
+            refresh();
           }
         } catch (NoRepositorySelected e) {
           LOGGER.debug(e, e);
@@ -516,7 +511,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
     Action refreshAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        showHistory(activeFilePath, true);
+        refresh();
       }
     };
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
@@ -535,12 +530,19 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
   }
   
   /**
-   * Shows the commit history for the entire repository.
+   * Shows the commit history for the given file.
    * 
    * @param filePath File for which to present the commit that changed him.
    */
   public void showHistory(String filePath) {
     showHistory(filePath, false);
+  }
+  
+  /**
+   * Refresh.
+   */
+  public void refresh() {
+    GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
   }
 
   /**
@@ -552,12 +554,13 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
    *                      for the given resource.
    */
   private void showHistory(String filePath, boolean force) {
-    // Check if we don't already present the history for this path!!!!
     Translator translator = Translator.getInstance();
     
     updateSelectionMode(filePath);
     
-    if (force || !Equaler.verifyEquals(filePath, activeFilePath)) {
+    if (force
+        // Check if we don't already present the history for this path!!!!
+        || !Equaler.verifyEquals(filePath, activeFilePath)) {
       this.activeFilePath = filePath;
 
       try {
@@ -835,7 +838,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
   @Override
   public void stateChanged(PushPullEvent pushPullEvent) {
     if (isShowing() && pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
-      GitOperationScheduler.getInstance().schedule(() -> showHistory(activeFilePath, true));
+      refresh();
     }
   }
 }
