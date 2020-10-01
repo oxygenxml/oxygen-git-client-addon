@@ -2,15 +2,12 @@ package com.oxygenxml.git;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-
-import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -28,11 +25,6 @@ import ro.sync.exml.workspace.api.standalone.ViewInfo;
  * @author sorin_carbunaru
  */
 public class EditorPageMenuGitActionsProvider {
-  
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(EditorPageMenuGitActionsProvider.class.getName());
   
   /**
    * Translator.
@@ -68,50 +60,46 @@ public class EditorPageMenuGitActionsProvider {
    * @return the Git-specific action for the current editor page.
    */
   public List<AbstractAction> getActionsForCurrentEditorPage(URL editorURL) {
-    List<AbstractAction> actions = new ArrayList<>();
+	  List<AbstractAction> actions = new ArrayList<>();
+	  File file = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().locateFile(editorURL);
 
-    if (!"file".equalsIgnoreCase(editorURL.getProtocol())) {
-      return Collections.emptyList();
-    }
-    
-    try {
-      File file = new File(editorURL.toURI());
-      boolean isFromGitRepo = FileHelper.isFromGitRepo(file);
-      if (isFromGitRepo) {
+	  if (file == null) {
+		  return Collections.emptyList();
+	  }
 
-        GitOperationScheduler gitOpScheduler = GitOperationScheduler.getInstance();
-        AbstractAction showHistoryAction = new AbstractAction(translator.getTranslation(Tags.SHOW_HISTORY)) {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            gitOpScheduler.schedule(
-                () -> ProjectAndEditorPageMenuActionsUtil.showHistory(
-                    file,
-                    historyCtrl,
-                    getViewsToSetCursorOn()));
-          }
-        };
-        AbstractAction showBlameAction = new AbstractAction(translator.getTranslation(Tags.SHOW_BLAME)) {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            gitOpScheduler.schedule(
-                () -> ProjectAndEditorPageMenuActionsUtil.showBlame(
-                    file,
-                    historyCtrl,
-                    getViewsToSetCursorOn()));
-          }
-        };
+	  boolean isFromGitRepo = FileHelper.isFromGitRepo(file);
+	  if (isFromGitRepo) {
 
-        showBlameAction.setEnabled(true);
-        showHistoryAction.setEnabled(true);
+		  GitOperationScheduler gitOpScheduler = GitOperationScheduler.getInstance();
+		  AbstractAction showHistoryAction = new AbstractAction(translator.getTranslation(Tags.SHOW_HISTORY)) {
+			  @Override
+			  public void actionPerformed(ActionEvent e) {
+				  gitOpScheduler.schedule(
+						  () -> ProjectAndEditorPageMenuActionsUtil.showHistory(
+								  file,
+								  historyCtrl,
+								  getViewsToSetCursorOn()));
+			  }
+		  };
+		  AbstractAction showBlameAction = new AbstractAction(translator.getTranslation(Tags.SHOW_BLAME)) {
+			  @Override
+			  public void actionPerformed(ActionEvent e) {
+				  gitOpScheduler.schedule(
+						  () -> ProjectAndEditorPageMenuActionsUtil.showBlame(
+								  file,
+								  historyCtrl,
+								  getViewsToSetCursorOn()));
+			  }
+		  };
 
-        actions.add(showHistoryAction);
-        actions.add(showBlameAction);
-      }
-    } catch (URISyntaxException e) {
-      logger.error(e, e);
-    }
+		  showBlameAction.setEnabled(true);
+		  showHistoryAction.setEnabled(true);
 
-    return actions;
+		  actions.add(showHistoryAction);
+		  actions.add(showBlameAction);
+	  }
+
+	  return actions;
   }
   
   /**

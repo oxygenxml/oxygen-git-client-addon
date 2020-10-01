@@ -3,6 +3,9 @@ package com.oxygenxml.git.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -163,7 +166,11 @@ public class RepoUtil {
       for (String path : referedProjectPaths) {
         File file = null;
         if (FileHelper.isURL(path)) {
-          file = new File(path);
+	          try {
+				file = new File(new URL(path).toURI());
+			} catch (MalformedURLException | URISyntaxException e) {
+				logger.error(e, e);
+			}
         } else  if (".".equals(path)) {
           file = projectDir;
         } else {
