@@ -25,6 +25,29 @@
                             and more. It also includes a built-in tool for comparing and merging
                             changes.</p>
                     </div>
+			<div>
+                        <h3>What's new in version 2.3.0</h3>
+                        <ol>
+                          <li>The Git Client now contributes a new side-view, called the <b>Git Branch Manager</b>, which presents all the local and remote branches as a tree. Actions were added to the tree's contextual menu to make it very easy to check out branches, and to create or delete branches.</li>
+			  <li>You can now easily switch between local branches using a drop-down menu in the top-right corner of the Git Staging view or by using the Git Branch Manager.</li>
+			  <li>A new action (<b>Reset "[branch_name]" to this commit</b>) was added in the history table that can be used to undo changes by moving the HEAD of the current branch to the selected commit.</li>
+			  <li>Some editor variables are now supported, including:
+				  <ul>
+					  <li>${git(working_copy_name)}</li>
+					  <li>${git(working_copy_path)}</li>
+					  <li>${git(short_branch_name)}</li>
+					  <li>${git(full_branch_name)}</li>
+				  </ul>
+			  </li>
+			  <li>The Git History view now has better automatic refresh support.</li>
+			  <li>A confirmation dialog box has been added for instances when you try to commit without a message.</li>
+			  <li>The add-on now contributes a preferences page (Options > Preferences > Plugins > Git Client) that contains a "Notify me about new commits in the remote repository" option. When this option is selected, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.</li>
+			  <li>Support for French localization was added.</li>
+			  <li>The JGit component included in the Git Client was updated to version 5.9.0.</li>
+			  <li>Various other minor improvements and bug fixes were implemented.</li>
+                        </ol>
+                        <p>For more information about the add-on's features, see <a href="https://github.com/oxygenxml/oxygen-git-plugin/blob/master/README.md">the README document</a>.</p>
+                    </div>
                     <div>
                         <h3>What's new in version 2.2.0</h3>
                         <ol>
