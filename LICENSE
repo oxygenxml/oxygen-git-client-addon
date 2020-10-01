@@ -19,31 +19,31 @@ commons-codec-1.6
 Site: http://commons.apache.org/codec/
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
-commons-logging-1.1.3
+commons-logging-1.2
 Site: http://commons.apache.org/proper/commons-logging/
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
-httpclient-4.3.6
+httpclient-4.5.1
 Site: http://hc.apache.org/httpcomponents-client     
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
-httpcore-4.3.3
+httpcore-4.4.3
 Site: http://hc.apache.org/httpcomponents-core-ga
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
-log4j-1.2.14
+log4j-1.2.17
 Site: http://logging.apache.org/log4j/docs/
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
-JavaEWAH-1.1.6
+JavaEWAH-1.1.7
 Site: https://github.com/lemire/javaewah
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
-sshd-core-2.0.0
+sshd-core-2.4.0
 Site: https://mina.apache.org/
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
-sshd-sftp-2.0.0
+sshd-sftp-2.4.0
 Site: https://mina.apache.org/
 License: Apache License 2.0 ( http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -51,22 +51,17 @@ eddsa-0.3.0
 Site: https://github.com/str4d/ed25519-java 
 License: CC0 1.0 Universal (https://github.com/str4d/ed25519-java/blob/master/LICENSE.txt)
 
-bcpg-jdk15on-1.60,
-bcpkix-jdk15on-1.60,
-bcprov-jdk15on-1.60
-Site: https://www.bouncycastle.org
-License: https://www.bouncycastle.org/licence.html
-
 jzlib-1.1.1
 Site: http://www.jcraft.com/jzlib
 License: BSD-style license (http://www.jcraft.com/jzlib/LICENSE.txt)
 
-jsch-0.1.54
+jsch-0.1.55
 Site: http://www.jcraft.com/jsch
 License: BSD-style license (http://www.jcraft.com/jsch/LICENSE.txt)
 
-org.eclipse.jgit-5.3.1.201904271842-r,
-org.eclipse.jgit.ssh.apache-5.3.1.201904271842-r,
+org.eclipse.jgit-5.9.0.202009080501-r
+org.eclipse.jgit.ssh.apache-5.9.0.202009080501-r,
+org.eclipse.jgit.ssh.jsch-5.9.0.202009080501-r
 Site: https://www.eclipse.org/jgit/
 License:
 Eclipse Distribution License - v 1.0
