@@ -291,6 +291,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
       @Override
       public void branchChanged(String oldBranch, String newBranch) {
         gitRefreshSupport.call();
+        
+        cursorTimer.stop();
+        SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
         try {
           FileHelper.refreshProjectView();
         } catch (NoRepositorySelected e) {

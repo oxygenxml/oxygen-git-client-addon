@@ -43,5 +43,9 @@ public enum GitCommand {
   /**
    * Continue rebase
    */
-  CONTINUE_REBASE;
+  CONTINUE_REBASE,
+  /**
+   * Checkout.
+   */
+  CHECKOUT
 }

@@ -1994,9 +1994,14 @@ public class GitAccess {
 	public void setBranch(String selectedBranch) throws GitAPIException {
 	  String oldBranchName = getBranchInfo().getBranchName();
 		
-	  git.checkout().setName(selectedBranch).call();
-		
-		fireBranchChanged(oldBranchName, selectedBranch);
+	  fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.STARTED));
+	  try {
+	    git.checkout().setName(selectedBranch).call();
+	    fireBranchChanged(oldBranchName, selectedBranch);
+	  } catch (GitAPIException e) {
+	    fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.FAILED));
+	    throw e;
+	  }
 	}
 	
 	/**
@@ -2006,17 +2011,22 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException 
 	 */
-	public void checkoutRemoteBranch(String remoteBranchName) throws GitAPIException{
+	public void checkoutRemoteBranch(String remoteBranchName) throws GitAPIException {
 	  String oldBranchName = getBranchInfo().getBranchName();
 
-	  git.checkout()
-	      .setCreateBranch(true)
-	      .setName(remoteBranchName)
-	      .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-	      .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
-	      .call();
-	  
-	  fireBranchChanged(oldBranchName, remoteBranchName);
+	  fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.STARTED));
+    try {
+  	  git.checkout()
+  	      .setCreateBranch(true)
+  	      .setName(remoteBranchName)
+  	      .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+  	      .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
+  	      .call();
+	    fireBranchChanged(oldBranchName, remoteBranchName);
+    } catch (GitAPIException e) {
+      fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.FAILED));
+      throw e;
+    }
 	}
 	
 	/**
@@ -2029,14 +2039,19 @@ public class GitAccess {
   public void checkoutRemoteBranchWithNewName(String newBranchName, String remoteBranchName) throws GitAPIException{
     String oldBranchName = getBranchInfo().getBranchName();
 
-    git.checkout()
-        .setCreateBranch(true)
-        .setName(newBranchName)
-        .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-        .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
-        .call();
-    
-    fireBranchChanged(oldBranchName, newBranchName);
+    fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.STARTED));
+    try {
+      git.checkout()
+          .setCreateBranch(true)
+          .setName(newBranchName)
+          .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+          .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
+          .call();
+      fireBranchChanged(oldBranchName, newBranchName);
+    } catch (GitAPIException e) {
+      fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.FAILED));
+      throw e;
+    }
   }
 	
 	/**
@@ -2049,12 +2064,18 @@ public class GitAccess {
 	 */
 	public void checkoutCommitAndCreateBranch(String branchName, String commitID) throws GitAPIException {
 	  String oldBranch = getBranchInfo().getBranchName();
-	  git.checkout()
-	      .setCreateBranch(true)
-	      .setName(branchName)
-	      .setStartPoint(commitID)
-	      .call();
-	  fireBranchChanged(oldBranch, branchName);
+	  fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.STARTED));
+    try {
+  	  git.checkout()
+  	      .setCreateBranch(true)
+  	      .setName(branchName)
+  	      .setStartPoint(commitID)
+  	      .call();
+  	  fireBranchChanged(oldBranch, branchName);
+    } catch (GitAPIException e) {
+      fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.FAILED));
+      throw e;
+    }
 	}
 
 	/**
