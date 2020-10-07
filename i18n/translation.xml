@@ -3,6 +3,7 @@
     <languageList>
         <language description="English" lang="en_US" />
         <language description="German" lang="de_DE" />
+        <language description="French" lang="fr_FR" />
     </languageList>
     <key value="Short_branch_name_description">
         <comment>"Description for the short_branch_name editor variable."</comment>
