@@ -261,6 +261,7 @@ public class BranchManagementPanel extends JPanel {
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
     branchesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+    branchesTree.setLargeModel(true);
     branchesTree.setVisible(false);
     
     ToolTipManager.sharedInstance().registerComponent(branchesTree);
