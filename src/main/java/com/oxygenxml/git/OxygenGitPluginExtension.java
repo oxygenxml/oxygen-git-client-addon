@@ -236,7 +236,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		gitRefreshSupport = new PanelRefresh(watcher);
 	  
 		UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
-    utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver());
+    utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(GitAccess.getInstance()));
 	}
 
 	/**

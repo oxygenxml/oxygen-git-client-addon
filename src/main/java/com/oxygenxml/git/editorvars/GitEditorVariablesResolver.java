@@ -32,7 +32,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * GitAccess instance.
    */
-  private static final GitAccess gitAccess = GitAccess.getInstance();
+  private GitAccess gitAccess = GitAccess.getInstance();
   /**
    * Logger for logging.
    */
@@ -43,20 +43,26 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   private final Map<String, String> editorVarsCache = new HashMap<>();
   
   /**
+   * Git event listener.
+   */
+  private GitEventAdapter gitEventListener = new GitEventAdapter() {
+    @Override
+    public void branchChanged(String oldBranch, String newBranch) {
+      editorVarsCache.remove(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR);
+      editorVarsCache.remove(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
+    }
+    @Override
+    public void repositoryChanged() {
+      editorVarsCache.clear();
+    }
+  };
+  
+  /**
    * Constructor.
    */
-  public GitEditorVariablesResolver() {
-    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
-      @Override
-      public void branchChanged(String oldBranch, String newBranch) {
-        editorVarsCache.remove(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR);
-        editorVarsCache.remove(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
-      }
-      @Override
-      public void repositoryChanged() {
-        editorVarsCache.clear();
-      }
-    });
+  public GitEditorVariablesResolver(GitAccess gitAccess) {
+    this.gitAccess = gitAccess;
+    this.gitAccess.addGitListener(gitEventListener);
   }
   
   /**
@@ -176,5 +182,13 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
             GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
             translator.getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
     return list;
+  }
+  
+  public Map<String, String> getEditorVarsCacheFromTests() {
+    return editorVarsCache;
+  }
+  
+  public GitEventAdapter getGitEventListenerFromTests() {
+    return gitEventListener;
   }
 }
