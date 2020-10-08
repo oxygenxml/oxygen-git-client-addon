@@ -95,7 +95,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
             if (workingCopy == null) {
               workingCopy = gitAccess.getWorkingCopy();
             }
-            wcPath = workingCopy.getName();
+            wcPath = workingCopy.getAbsolutePath();
             editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR, wcPath);
           }
           contentWithEditorVariables = contentWithEditorVariables.replace(
