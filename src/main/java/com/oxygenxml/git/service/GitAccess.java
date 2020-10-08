@@ -1877,8 +1877,12 @@ public class GitAccess {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
 			if (sections.contains(ConfigConstants.CONFIG_KEY_REMOTE)) {
-        git.fetch().setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*")).setCheckFetchedObjects(true)
-						.setCredentialsProvider(credentialsProvider).call();
+        git.fetch()
+            .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
+            .setCheckFetchedObjects(true)
+            .setRemoveDeletedRefs(true)
+						.setCredentialsProvider(credentialsProvider)
+						.call();
 			}
 		} catch (TransportException e) {
 		  logger.debug(e, e);
