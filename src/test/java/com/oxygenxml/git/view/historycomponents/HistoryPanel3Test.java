@@ -8,15 +8,52 @@ import java.util.List;
 import javax.swing.JTable;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
+import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.PushPullController;
 
 /**
  * UI level tests for history.
  */
 public class HistoryPanel3Test extends HistoryPanelTestBase {
+  
+  private static final PushPullController PUSH_PULL_CONTROLLER = new PushPullController();
+  
+  int noOfRefreshes;
+  
+  @Override
+  protected void setUpHistoryPanel() {
+    noOfRefreshes = 0;
+    
+    // Initialize history panel.
+    historyPanel = new HistoryPanel(new GitController(), PUSH_PULL_CONTROLLER) {
+      @Override
+      protected int getUpdateDelay() {
+        return 0;
+      }
+
+      @Override
+      public boolean isShowing() {
+        // Branch related refresh is done only if the view is displayed.
+        return true;
+      }
+      
+      @Override
+      public void refresh() {
+        super.refresh();
+        noOfRefreshes++;
+      }
+    };
+  }
 
   /**
    * <p><b>Description:</b> create new branch starting from a commit from the history table.</p>
@@ -77,6 +114,66 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       GitAccess.getInstance().closeRepo();
       FileUtils.deleteDirectory(wcTree);
     }
-
   }
+  
+  /**
+   * <p><b>Description:</b> test automatic refresh on various actions.</p>
+   * <p><b>Bug ID:</b> EXM-44998</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testAutomaticRefreshOnVariousActions() throws Exception {
+    Repository localRepo = createRepository("target/gen/HistoryPanelTest/testAffectedFiles_local");
+    Repository remoteRepo = createRepository("target/gen/HistoryPanelTest/testAffectedFiles_remote");
+    bindLocalToRemote(GitAccess.getInstance().getRepository(), remoteRepo);
+    File repoDir = localRepo.getDirectory();
+    try {
+      
+      GitAccess.getInstance().setRepositorySynchronously(repoDir.getParent());
+
+      int initialNoOfRefreshes = 0;
+      assertEquals(initialNoOfRefreshes, noOfRefreshes);
+      
+      File file = new File(repoDir, "textFile.txt");
+      setFileContent(file, "BLA");
+      assertEquals(initialNoOfRefreshes + 1, noOfRefreshes);
+      
+      GitAccess.getInstance().add(new FileStatus(GitChangeType.ADD, "textFile.txt"));
+      assertEquals(initialNoOfRefreshes + 2, noOfRefreshes);
+      
+      GitAccess.getInstance().commit("Another commit");
+      assertEquals(initialNoOfRefreshes + 3, noOfRefreshes);
+      
+      refreshSupport.setHistoryPanel(historyPanel);
+      refreshSupport.call();
+      sleep(1000);
+      assertEquals(initialNoOfRefreshes + 4, noOfRefreshes);
+      
+      GitAccess.getInstance().createBranch("new_branch");
+      assertEquals(initialNoOfRefreshes + 5, noOfRefreshes);
+      
+      GitAccess.getInstance().deleteBranch("new_branch");
+      assertEquals(initialNoOfRefreshes + 6, noOfRefreshes);
+      
+      final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
+      RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
+      URIish uri = new URIish(remoteRepo.getDirectory().toURI().toURL());
+      remoteConfig.addURI(uri);
+      remoteConfig.update(config);
+      config.save();
+      
+      PUSH_PULL_CONTROLLER.push();
+      sleep(700);
+      assertEquals(initialNoOfRefreshes + 7, noOfRefreshes);
+      
+    } finally {
+      GitAccess.getInstance().closeRepo();
+      sleep(1000);
+      FileUtils.deleteDirectory(repoDir);
+    }
+  }
+  
 }

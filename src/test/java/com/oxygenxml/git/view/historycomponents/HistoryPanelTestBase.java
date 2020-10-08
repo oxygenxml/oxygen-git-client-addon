@@ -39,7 +39,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     setUpHistoryPanel();
   }
 
-  private void setUpHistoryPanel() {
+  protected void setUpHistoryPanel() {
     // Initialize history panel.
     historyPanel = new HistoryPanel(new GitController(), new PushPullController()) {
       @Override
