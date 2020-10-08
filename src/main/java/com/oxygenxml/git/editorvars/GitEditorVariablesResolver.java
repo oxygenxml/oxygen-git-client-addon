@@ -32,7 +32,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * GitAccess instance.
    */
-  private GitAccess gitAccess = GitAccess.getInstance();
+  private GitAccess gitAccess;
   /**
    * Logger for logging.
    */
