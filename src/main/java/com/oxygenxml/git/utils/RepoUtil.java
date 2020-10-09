@@ -166,17 +166,17 @@ public class RepoUtil {
       for (String path : referedProjectPaths) {
         File file = null;
         if (FileHelper.isURL(path)) {
-	          try {
-				file = new File(new URL(path).toURI());
-			} catch (MalformedURLException | URISyntaxException e) {
-				logger.error(e, e);
-			}
+          try {
+            file = new File(new URL(path).toURI());
+          } catch (MalformedURLException | URISyntaxException e) {
+            logger.error(e, e);
+          }
         } else  if (".".equals(path)) {
           file = projectDir;
         } else {
           file = new File(projectDir, path);
         }
-        
+
         repoDir = detectRepositoryDownwards(file);
 
         if (repoDir != null) {
@@ -184,7 +184,7 @@ public class RepoUtil {
         }
       }
     }
-    
+
     return repoDir;
   }
 
@@ -198,14 +198,16 @@ public class RepoUtil {
    */
   private static File detectRepositoryDownwards(File file) {
     File repoDir = null;
-    if (FileHelper.isGitRepository(file)) {
-      repoDir = file;
-    } else if (file.isDirectory()) {
-      File[] listFiles = file.listFiles();
-      for (int i = 0; i < listFiles.length; i++) {
-        repoDir = detectRepositoryDownwards(listFiles[i]);
-        if (repoDir != null) {
-          break;
+    if (file != null) {
+      if (FileHelper.isGitRepository(file)) {
+        repoDir = file;
+      } else if (file.isDirectory()) {
+        File[] listFiles = file.listFiles();
+        for (int i = 0; i < listFiles.length; i++) {
+          repoDir = detectRepositoryDownwards(listFiles[i]);
+          if (repoDir != null) {
+            break;
+          }
         }
       }
     }

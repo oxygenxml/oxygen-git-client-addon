@@ -1741,11 +1741,7 @@ public class GitAccess {
 		InputStream toReturn = null;
 		if (commitID != null) {
 			ObjectLoader loader = git.getRepository().open(commitID);
-			if (loader == null) {
-			  throw new IOException("Cannot obtain an object loader for the commit ID: " + commitID);
-			} else {
-				toReturn = loader.openStream();
-			}
+			toReturn = loader.openStream();
 		} else {
 			throw new IOException("The commit ID can't be null");
 		}
