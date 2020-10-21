@@ -5,6 +5,23 @@
 	<artifactId>git.support</artifactId>
 	<version>1.0.0</version>
 	
+    <developers>
+      <developer>
+        <name>Alex Jitianu</name>
+        <email>alex_jitianu@sync.ro</email>
+        <roles>
+          <role>manager</role>
+        </roles>
+      </developer>
+      <developer>
+        <name>Sorin Carbunaru</name>
+        <email>sorin_carbunaru@sync.ro</email>
+        <roles>
+          <role>co-manager</role>
+        </roles>
+      </developer>
+    </developers>
+
 	<properties>
     	<maven.compiler.source>1.8</maven.compiler.source>
     	<maven.compiler.target>1.8</maven.compiler.target>
