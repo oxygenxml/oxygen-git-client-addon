@@ -85,7 +85,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
     
     // The history at this moment
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
-    String expected = "[ Uncommitted changes , DATE , * , * , null , null ]\n" + 
+    String expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
         "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
@@ -110,7 +110,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
         status.getStagedFiles().toString());
     
     commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
-    expected = "[ Uncommitted changes , DATE , * , * , null , null ]\n" + 
+    expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         // Those commits are missing from the history, because we soft reset the branch
         // "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         // "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
@@ -145,7 +145,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
 
     // The history at this moment
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
-    String expected = "[ Uncommitted changes , DATE , * , * , null , null ]\n" + 
+    String expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
         "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
@@ -169,7 +169,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
         status.getStagedFiles().toString());
     
     commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
-    expected = "[ Uncommitted changes , DATE , * , * , null , null ]\n" + 
+    expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
        // This commit is missing from the history, because we reset the branch to it
        // "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
@@ -206,7 +206,7 @@ public class GitAccessResetToCommitTest extends GitTestBase {
     
     // The history at this moment
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
-    String expected = "[ Uncommitted changes , DATE , * , * , null , null ]\n" + 
+    String expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
         "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 

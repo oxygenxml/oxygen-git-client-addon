@@ -1153,6 +1153,7 @@ public class ChangesPanel extends JPanel {
 	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(stageController, null, forStagedResources, null));
 	  t.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+//	  t.setLargeModel(true);
 	  
     return t;
   }
