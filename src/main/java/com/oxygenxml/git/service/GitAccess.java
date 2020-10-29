@@ -44,8 +44,6 @@ import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
-import org.eclipse.jgit.api.SubmoduleAddCommand;
-import org.eclipse.jgit.api.SubmoduleStatusCommand;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
@@ -473,19 +471,6 @@ public class GitAccess {
 	  clone.add(listener);
 	  
 	  listeners = clone;
-  }
-	
-  /**
-   * Add a listener that gets notified about file or repository changes.
-   * 
-   * @param listener The listener to add.
-   */
-  @SuppressWarnings("unchecked")
-  public void removeGitListener(GitEventListener listener) {
-    HashSet<GitEventListener> clone = (HashSet<GitEventListener>) listeners.clone();
-    clone.remove(listener);
-    
-    listeners = clone;
   }
 	
   /**
@@ -1559,25 +1544,6 @@ public class GitAccess {
 	}
 
 	/**
-	 * Reset a single file from the staging area.
-	 * 
-	 * @param fileName - the file to be removed from the staging area
-	 */
-	public void reset(FileStatus file) {
-	  Collection<String> filePaths = getFilePaths(Arrays.asList(file));
-		try {
-		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.STARTED, filePaths));
-			ResetCommand reset = git.reset();
-			reset.addPath(file.getFileLocation());
-			reset.call();
-			fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
-		} catch (GitAPIException e) {
-		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.FAILED, filePaths));
-		  logger.error(e, e);
-		}
-	}
-
-	/**
 	 * Reset all the specified files from the staging area.
 	 * 
 	 * @param fileNames - the list of file to be removed
@@ -1643,23 +1609,6 @@ public class GitAccess {
 		  logger.error(e, e);
 		}
 		return null;
-	}
-
-	/**
-	 * Finds the last remote commit from the remote repository
-	 * 
-	 * @return the last remote commit
-	 */
-	public ObjectId getRemoteCommit(BranchInfo branchInfo) {
-		Repository repo = git.getRepository();
-		ObjectId remoteCommit = null;
-		try {
-			remoteCommit = repo.resolve(Constants.DEFAULT_REMOTE_NAME + "/" + branchInfo.getBranchName() + "^{commit}");
-			return remoteCommit;
-		} catch (IOException e) {
-		  logger.error(e, e);
-		}
-		return remoteCommit;
 	}
 
 	/**
@@ -1746,17 +1695,6 @@ public class GitAccess {
 			throw new IOException("The commit ID can't be null");
 		}
 		return toReturn;
-	}
-
-	/**
-	 * Performs a git reset. The equivalent of the "git reset" command
-	 */
-	public void reset() {
-		try {
-			git.reset().call();
-		} catch (GitAPIException e) {
-		  logger.error(e, e);
-		}
 	}
 
   /**
@@ -2005,31 +1943,6 @@ public class GitAccess {
 	}
 	
 	/**
-	 * Creates a local branch for a remote branch (which it starts tracking), and sets it as the current branch.
-	 * 
-	 * @param remoteBranchName The branch to checkout (short name).
-	 * 
-	 * @throws GitAPIException 
-	 */
-	public void checkoutRemoteBranch(String remoteBranchName) throws GitAPIException {
-	  String oldBranchName = getBranchInfo().getBranchName();
-
-	  fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.STARTED));
-    try {
-  	  git.checkout()
-  	      .setCreateBranch(true)
-  	      .setName(remoteBranchName)
-  	      .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-  	      .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
-  	      .call();
-	    fireBranchChanged(oldBranchName, remoteBranchName);
-    } catch (GitAPIException e) {
-      fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.FAILED));
-      throw e;
-    }
-	}
-	
-	/**
    * Creates a local branch for a remote branch (which it starts tracking), and sets it as the current branch.
    * 
    * @param newBranchName The name of the new branch created at checkout.
@@ -2169,47 +2082,41 @@ public class GitAccess {
 	  ObjectId toReturn = null;
 		try {
 		  List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
-			boolean isTwoWayDiff = false;
-			if (entries.size() < 3) {
-				isTwoWayDiff = true;
-			}
+			boolean isTwoWayDiff = entries.size() < 3;
 			int index = 0;
-			if (commit == Commit.MINE) {
-				if (isTwoWayDiff) {
-					index = 0;
-				} else {
-					index = 1;
-				}
-				if (index >= entries.size()) {
-					throw new IOException("No diff info available for path: '" + path + "' and commit: '" + commit + "'");
-				}
-				toReturn =  entries.get(index).getOldId().toObjectId();
-			} else if (commit == Commit.THEIRS) {
-				if (isTwoWayDiff) {
-					index = 1;
-				} else {
-					index = 2;
-				}
-				if (index >= entries.size()) {
-					throw new IOException("No diff info available for path: '" + path + "' and commit: '" + commit + "'");
-        }
-				toReturn =  entries.get(index).getOldId().toObjectId();
-			} else if (commit == Commit.BASE) {
-			  toReturn = entries.get(index).getOldId().toObjectId();
-			} else if (commit == Commit.LOCAL) {
-				ObjectId lastLocalCommit = getLastLocalCommit();
-				RevWalk revWalk = new RevWalk(git.getRepository());
-				RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
-				RevTree tree = revCommit.getTree();
-				TreeWalk treeWalk = new TreeWalk(git.getRepository());
-				treeWalk.addTree(tree);
-				treeWalk.setRecursive(true);
-				treeWalk.setFilter(PathFilter.create(path));
-				if (treeWalk.next()) {
-				  toReturn = treeWalk.getObjectId(0);
-				}
-				treeWalk.close();
-				revWalk.close();
+			switch (commit) {
+			  case MINE:
+			    index = isTwoWayDiff ? 0 : 1;
+	        if (index >= entries.size()) {
+	          throw new IOException("No diff info available for path: '" + path + "' and commit: '" + commit + "'");
+	        }
+	        toReturn =  entries.get(index).getOldId().toObjectId();
+			    break;
+			  case THEIRS:
+			    index = isTwoWayDiff ? 1 : 2;
+	        if (index >= entries.size()) {
+	          throw new IOException("No diff info available for path: '" + path + "' and commit: '" + commit + "'");
+	        }
+	        toReturn =  entries.get(index).getOldId().toObjectId();
+			    break;
+			  case BASE:
+			    toReturn = entries.get(index).getOldId().toObjectId();
+			    break;
+			  case LOCAL:
+	        ObjectId lastLocalCommit = getLastLocalCommit();
+	        RevWalk revWalk = new RevWalk(git.getRepository());
+	        RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
+	        RevTree tree = revCommit.getTree();
+	        TreeWalk treeWalk = new TreeWalk(git.getRepository());
+	        treeWalk.addTree(tree);
+	        treeWalk.setRecursive(true);
+	        treeWalk.setFilter(PathFilter.create(path));
+	        if (treeWalk.next()) {
+	          toReturn = treeWalk.getObjectId(0);
+	        }
+	        treeWalk.close();
+	        revWalk.close();
+			    break;
 			}
 		} catch (GitAPIException | IOException e) {
 		  logger.error(e, e);
@@ -2224,24 +2131,6 @@ public class GitAccess {
     listeners.clear();
     closeRepo();
   }
-	
-	/**
-	 * Submodule add command.
-	 * 
-	 * @return the command to call.
-	 */
-	public SubmoduleAddCommand submoduleAdd() {
-	  return git.submoduleAdd();
-	}
-	
-	/**
-	 * Submodule status command.
-	 * 
-	 * @return the command to call.
-	 */
-	public SubmoduleStatusCommand submoduleStatus() {
-	  return git.submoduleStatus();
-	}
 	
 	/**
 	 * Get the {@link Git} object through which to interact with the repository.

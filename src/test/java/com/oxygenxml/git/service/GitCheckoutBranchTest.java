@@ -52,24 +52,4 @@ public class GitCheckoutBranchTest extends GitTestBase {
     gitAccess.createBranch(LOCAL_BRANCH_NAME);
   }
   
-  /**
-   * <p><b>Description:</b> checkout remote branch.</p>
-   * <p><b>Bug ID:</b> EXM-41701</p>
-   *
-   * @author sorin_carbunaru
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testCheckoutRemoteBranch() throws Exception {
-    // Bind the local repository to the remote one.
-    bindLocalToRemote(localRepository , remoteRepository);
-    
-    gitAccess.fetch();
-    gitAccess.checkoutRemoteBranch(REMOTE_BRANCH_NAME);
-    
-    Repository currentRepository = gitAccess.getRepository();
-    assertEquals(localRepository, currentRepository);
-    assertEquals(REMOTE_BRANCH_NAME, currentRepository.getBranch());
-  }
 }

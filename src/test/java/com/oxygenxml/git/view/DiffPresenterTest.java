@@ -1,22 +1,13 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 import javax.swing.JFrame;
 
 import org.eclipse.jgit.api.SubmoduleAddCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleStatusType;
@@ -28,7 +19,6 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -288,7 +278,7 @@ public class DiffPresenterTest extends GitTestBase {
     gitAccess.setRepositorySynchronously(localTestRepositoryP);
     
     // Add SUBMODULE
-    SubmoduleAddCommand addCommand = gitAccess.submoduleAdd();
+    SubmoduleAddCommand addCommand = gitAccess.getGit().submoduleAdd();
     addCommand.setURI(remoteRepoSubModule.getDirectory().toURI().toString());
     addCommand.setPath("modules/submodule");
     Repository subRepo = addCommand.call();
@@ -299,7 +289,7 @@ public class DiffPresenterTest extends GitTestBase {
     assertTrue( new File( parentWorkDir, ".gitmodules" ).isFile() );
 
     // Check the SUBMODULE
-    Map<String,SubmoduleStatus> submodules = gitAccess.submoduleStatus().call();
+    Map<String,SubmoduleStatus> submodules = gitAccess.getGit().submoduleStatus().call();
     assertEquals(1, submodules.size());
     SubmoduleStatus status = submodules.get("modules/submodule");
     assertNotNull(status);

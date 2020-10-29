@@ -17,7 +17,7 @@ import org.junit.Test;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
-import ro.sync.io.FileSystemUtil;
+import ro.sync.basic.io.FileSystemUtil;
 
 /**
  * Test cases for Git cloning.
@@ -159,7 +159,7 @@ public class GitCloneTest extends GitTestBase {
     // Link the submodule in the main repository.
     gitAccess.setRepositorySynchronously(localTestRepositoryP);
     // Add SUBMODULE
-    SubmoduleAddCommand addCommand = gitAccess.submoduleAdd();
+    SubmoduleAddCommand addCommand = gitAccess.getGit().submoduleAdd();
     addCommand.setURI(remoteRepoSubModule.getDirectory().toURI().toString());
     addCommand.setPath("modules/submodule");
     Repository subRepo = addCommand.call();
