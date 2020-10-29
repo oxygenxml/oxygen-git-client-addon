@@ -30,6 +30,10 @@ public class Tags {
    */
   public static final String WORKING_COPY_PATH_DESCRIPTION = "Working_copy_path_description";
   /**
+   * Uncommitted changes.
+   */
+  public static final String UNCOMMITTED_CHANGES = "Uncommitted_changes";
+  /**
    * Displays the message "File".
    */
   public static final String FILE = "File";

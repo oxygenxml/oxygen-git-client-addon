@@ -24,6 +24,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 
 import sun.swing.DefaultLookup;
 
@@ -122,8 +124,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 			}
 			
 			// bold the text for uncommitted changes
-			if (toRender.equals(GitAccess.UNCOMMITTED_CHANGES)) {
-				toRender = "<html><body><b>" + GitAccess.UNCOMMITTED_CHANGES + "</b></body></html>";
+			String uncommittedChangesMessage = Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES);
+			if (toRender.equals(uncommittedChangesMessage)) {
+				toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
 			} else if (repository != null) {
 				// add labels in historyTable for tags and branch names from corresponding maps
 				try {

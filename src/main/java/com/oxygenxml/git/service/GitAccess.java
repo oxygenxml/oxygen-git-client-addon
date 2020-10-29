@@ -124,21 +124,14 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class GitAccess {
   /**
-   * Uncommitted changes.
-   */
-	public static final String UNCOMMITTED_CHANGES = "Uncommitted changes";
-  /**
 	 * A synthetic object representing the uncommitted changes.
 	 */
-  public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(UNCOMMITTED_CHANGES, null, "*", "*", "*", null, null);
-	/**
-   * "End fetch" debug message.
-   */
-	private static final String END_FETCH_DEBUG_MESSAGE = "End fetch";
+  public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(
+      Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES), null, "*", "*", "*", null, null);
   /**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(GitAccess.class);
+	private static final Logger logger = Logger.getLogger(GitAccess.class);
 	/**
 	 * The GIT repository.
 	 */
@@ -150,11 +143,11 @@ public class GitAccess {
 	/**
 	 * Translation support.
 	 */
-	private Translator translator = Translator.getInstance();
+	private static final Translator translator = Translator.getInstance();
 	/**
 	 * Receive notifications when things change.
 	 */
-	private HashSet<GitEventListener> listeners = new LinkedHashSet<>();
+	private HashSet<GitEventListener> gitEventListeners = new LinkedHashSet<>();
 
 	 /**
    * Singleton instance.
@@ -385,7 +378,7 @@ public class GitAccess {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire branch created "+ newBranch);
     }
-    for (GitEventListener gitEventListener : listeners) {
+    for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.branchCreated(newBranch);
     }
   }
@@ -399,7 +392,7 @@ public class GitAccess {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire branch deleted "+ deletedBranch);
     }
-    for (GitEventListener gitEventListener : listeners) {
+    for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.branchDeleted(deletedBranch);
     }
   }
@@ -414,7 +407,7 @@ public class GitAccess {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire branch changed, old " + oldBranch + " new " + newBranch);
     }
-    for (GitEventListener gitEventListener : listeners) {
+    for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.branchChanged(oldBranch, newBranch);
     }
   }
@@ -424,7 +417,7 @@ public class GitAccess {
 	 */
 	private void fireRepositoryChanged() {
 	  logger.debug("FIRE REPO CHANGED");
-	  for (GitEventListener gitEventListener : listeners) {
+	  for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.repositoryChanged();
     }
   }
@@ -434,7 +427,7 @@ public class GitAccess {
    */
   private void fireRepositoryIsAboutToOpen(File repo) {
     logger.debug("FIRE REPO ABOUT TO OPEN");
-    for (GitEventListener gitEventListener : listeners) {
+    for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.repositoryIsAboutToOpen(repo);
     }
   }
@@ -444,7 +437,7 @@ public class GitAccess {
    */
   private void fireRepositoryOpenFailed(File repo, Throwable ex) {
     logger.debug("FIRE REPO OPENING FAILED");
-    for (GitEventListener gitEventListener : listeners) {
+    for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.repositoryOpeningFailed(repo, ex);
     }
   }
@@ -455,7 +448,7 @@ public class GitAccess {
    */
   private void fireStateChanged(GitEvent changeEvent) {
     logger.debug("FIRE STATE CHANGED: " + changeEvent);
-    for (GitEventListener gitEventListener : listeners) {
+    for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.stateChanged(changeEvent);
     }
   }
@@ -467,10 +460,10 @@ public class GitAccess {
    */
   @SuppressWarnings("unchecked")
 	public void addGitListener(GitEventListener listener) {
-	  HashSet<GitEventListener> clone = (HashSet<GitEventListener>) listeners.clone();
+	  HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventListeners.clone();
 	  clone.add(listener);
 	  
-	  listeners = clone;
+	  gitEventListeners = clone;
   }
 	
   /**
@@ -1840,7 +1833,7 @@ public class GitAccess {
 		} catch (GitAPIException | RevisionSyntaxException e) {
 		  logger.error(e, e);
     } 
-		logger.debug(END_FETCH_DEBUG_MESSAGE);
+		logger.debug("End fetch");
 	}
 
 	/**
@@ -2128,7 +2121,7 @@ public class GitAccess {
    * Clean up.
    */
   public void cleanUp() {
-    listeners.clear();
+    gitEventListeners.clear();
     closeRepo();
   }
 	

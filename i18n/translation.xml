@@ -5,6 +5,14 @@
         <language description="German" lang="de_DE" />
         <language description="French" lang="fr_FR" />
     </languageList>
+    <key value="Uncommitted_changes">
+        <comment>"Uncommitted changes" message.</comment>
+        <val lang="en_US">Uncommitted changes</val>
+        <val lang="de_DE">Uncommitted changes</val>
+        <val lang="fr_FR">Uncommitted changes</val>
+        <val lang="ja_JP">Uncommitted changes</val>
+        <val lang="nl_NL">Uncommitted changes</val>
+    </key>
     <key value="Short_branch_name_description">
         <comment>"Description for the short_branch_name editor variable."</comment>
         <val lang="en_US">The short name of the current branch (e.g. "dev").</val>
