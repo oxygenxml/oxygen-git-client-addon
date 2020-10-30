@@ -20,6 +20,10 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
  */
 public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtension{
   /**
+   * Page key.
+   */
+  public static final String KEY = "Git_client_plugin_preferences_page";
+  /**
    * CheckBox for the option to notify the user about new commits in the remote.
    */
   private JCheckBox notifyAboutRemoteCommitsCheckBox;
@@ -57,7 +61,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   @Override
   public String getTitle() {
-    return "Git Client";
+    return translator.getTranslation(Tags.GIT_CLIENT);
   }
   
   /**
@@ -91,5 +95,10 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     notifyAboutRemoteCommitsCheckBox.setSelected(notifyOnNewRemoteCommits);
     
     return panel;
+  }
+  
+  @Override
+  public String getKey() {
+    return KEY;
   }
 }

@@ -1100,4 +1100,12 @@ public class Tags {
    * "Branch"
    */
   public static final String BRANCH = "Branch";
+  /**
+   * Preferences. Translation loaded from Oxygen.
+   */
+  public static final String PREFERENCES = "Preferences";
+  /**
+   * Git Client. Translation loaded from Oxygen.
+   */
+  public static final String GIT_CLIENT = "Git_client";
 }

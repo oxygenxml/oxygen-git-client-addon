@@ -32,6 +32,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.util.StringUtils;
 
+import com.oxygenxml.git.OxygenGitOptionPagePluginExtension;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -468,6 +469,17 @@ public class ToolbarPanel extends JPanel {
             }
           }
         }, false);
+    
+    settingsMenuButton.addSeparator();
+    settingsMenuButton.addActionToMenu(new AbstractAction(translator.getTranslation(Tags.PREFERENCES)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        PluginWorkspaceProvider.getPluginWorkspace().showPreferencesPages(
+            new String[] {OxygenGitOptionPagePluginExtension.KEY},
+            OxygenGitOptionPagePluginExtension.KEY,
+            true);
+      }
+    }, false);
 
     gitToolbar.add(settingsMenuButton);
   }
@@ -991,5 +1003,9 @@ public class ToolbarPanel extends JPanel {
 	
 	public SplitMenuButton getBranchSplitMenuButton() {
     return branchesSplitMenuButton;
+  }
+	
+	public SplitMenuButton getSettingsMenuButton() {
+    return settingsMenuButton;
   }
 }

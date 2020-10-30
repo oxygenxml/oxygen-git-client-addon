@@ -1,5 +1,9 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Component;
+
+import javax.swing.JPopupMenu.Separator;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
@@ -7,6 +11,8 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+
+import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
 /**
  * Test cases.
@@ -137,6 +143,33 @@ public class FlatView7Test extends FlatViewTestBase {
         "<html>Local_branch <b>master</b>.<br>Upstream_branch <b>origin/master</b>.<br>"
         + "Commits_behind<br>Commits_ahead</html>",
         toolbarPanel.getBranchSplitMenuButton().getToolTipText());
+  }
+  
+  /**
+   * <p><b>Description:</b> list the Settings menu actions.</p>
+   * <p><b>Bug ID:</b> EXM-46442</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testSettingsMenu() throws Exception {
+    // Set toolbar panel
+    stagingPanel.setToolbarPanelFromTests(
+        new ToolbarPanel(
+            stagingPanel.getPushPullController(),
+            refreshSupport,
+            null,
+            null));
+    
+    ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+    SplitMenuButton settingsMenuButton = toolbarPanel.getSettingsMenuButton();
+    Component[] menuComponents = settingsMenuButton.getMenuComponents();
+    assertEquals(3, menuComponents.length);
+    assertTrue(menuComponents[0].toString().contains("Reset_all_credentials"));
+    assertTrue(menuComponents[1] instanceof Separator);
+    assertTrue(menuComponents[2].toString().contains("Preferences"));
   }
   
 }
