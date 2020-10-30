@@ -31,6 +31,7 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 import javax.swing.event.PopupMenuEvent;
@@ -252,7 +253,12 @@ public class ChangesPanel extends JPanel {
       @Override
       public void stateChanged(GitEvent changeEvent) {
         // Update the table.
-        ChangesPanel.this.stateChanged(changeEvent);
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            ChangesPanel.this.stateChanged(changeEvent);
+          }
+        });
       }
     });
 	}
