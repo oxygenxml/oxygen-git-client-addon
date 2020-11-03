@@ -35,6 +35,7 @@ public class FileStatusDialog extends OKCancelDialog {
   /**
    * Constructor.
    * 
+   * @param iconPath         Icont path.
    * @param title            Dialog title.
    * @param targetFiles      Files that relate to the message. May be <code>null</code>.
    * @param message          An information message. May be <code>null</code>.

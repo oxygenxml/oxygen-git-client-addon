@@ -2051,7 +2051,7 @@ public class GitAccess {
    * 
    * @param localBranchShortName The short branch name.
    * 
-   * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
+   * @return The short remote-tracking branch name or null is the local branch is not tracking a remote branch.
    */
 	public String getUpstreamBranchShortNameFromConfig(String localBranchShortName) {
 	  String remoteTrackingBranch = getUpstreamBranchNameFromConfig(localBranchShortName);
