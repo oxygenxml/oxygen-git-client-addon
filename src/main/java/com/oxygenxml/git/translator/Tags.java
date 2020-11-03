@@ -119,6 +119,10 @@ public class Tags {
    */
   public static final String REMOTE_CHANGES_LABEL = "Remote_changes_label";
   /**
+   * Recommendation to pull remote changes.
+   */
+  public static final String PULL_REMOTE_CHANGED_RECOMMENDATION = "Pull_remote_changed_recommendation";
+  /**
    * The message when the user has the choice to pull new commits.
    */
   public static final String WANT_TO_PULL_QUESTION = "Want_to_pull_question";

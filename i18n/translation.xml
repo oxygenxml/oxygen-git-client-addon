@@ -13,6 +13,27 @@
         <val lang="ja_JP">Uncommitted changes</val>
         <val lang="nl_NL">Uncommitted changes</val>
     </key>
+    <key value = "Want_to_pull_question">
+		<comment>The message when the user has the choice to pull new commits.</comment>
+        <val lang="en_US">Do you want to pull the remote changes into the local repository?</val>
+        <val lang="de_DE">Do you want to pull the remote changes into the local repository?</val>
+        <val lang="fr_FR">Voulez-vous effectuer un pull les modifications remote dans le dépôt local?</val>
+        <val lang="ja_JP">Do you want to pull the remote changes into the local repository?</val>
+        <val lang="nl_NL">Do you want to pull the remote changes into the local repository?</val>
+    </key>
+        <key value = "Pull_remote_changed_recommendation">
+		<comment> The message when the user has the choice to pull new commits.</comment>
+        <val lang="en_US">It is recommended to pull these changes into the local repository to avoid 
+        	future conflicts.</val>
+        <val lang="de_DE">It is recommended to pull these changes into the local repository to avoid 
+        	future conflicts.</val>
+        <val lang="fr_FR">Il est recommandé d'enregistrer ces modifications dans le dépôt local afin 
+            d'éviter de futurs conflits.</val>
+        <val lang="ja_JP">It is recommended to pull these changes into the local repository to avoid 
+        	future conflicts.</val>
+        <val lang="nl_NL">It is recommended to pull these changes into the local repository to avoid 
+        	future conflicts.</val>
+    </key>
     <key value="Short_branch_name_description">
         <comment>"Description for the short_branch_name editor variable."</comment>
         <val lang="en_US">The short name of the current branch (e.g. "dev").</val>
@@ -238,19 +259,6 @@
         <val lang="fr_FR">Modifications remote détectées</val>
         <val lang="ja_JP">Remote changes detected</val>
         <val lang="nl_NL">Remote changes detected</val>
-    </key>
-    <key value = "Want_to_pull_question">
-		<comment> The message when the user has the choice to pull new commits.</comment>
-        <val lang="en_US">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
-        <val lang="de_DE">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
-        <val lang="fr_FR">Il est recommandé d'enregistrer ces modifications dans le dépôt local afin 
-            d'éviter de futurs conflits.\n\nVoulez-vous effectuer un pull les modifications remote dans le dépôt local?</val>
-        <val lang="ja_JP">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
-        <val lang="nl_NL">It is recommended to pull these changes into the local repository to avoid 
-        	future conflicts.\n\nDo you want to pull the remote changes into the local repository?</val>
     </key>
     <key value = "Notify_on_new_commits">
 		<comment> Option text for notifying when there are new commits upstream.</comment>

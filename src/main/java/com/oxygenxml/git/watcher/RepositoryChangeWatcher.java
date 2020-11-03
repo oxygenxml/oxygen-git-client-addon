@@ -165,8 +165,12 @@ public class RepositoryChangeWatcher {
       logger.debug(e, e);
     }
     // Notify new commit in remote.
-    showNewCommitsInRemoteMessage(translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM) + " "
-        + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
+    showNewCommitsInRemoteMessage(
+        translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
+            + "\n"
+            + translator.getTranslation(Tags.PULL_REMOTE_CHANGED_RECOMMENDATION)
+            + "\n\n"
+            + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
   }
   
   /**
