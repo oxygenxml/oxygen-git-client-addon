@@ -221,19 +221,19 @@
     <key value="Keep_resolved_version_for_rebase_conflict">
         <comment>The text displayed after exiting the diff for a rebase conflict file and you didn't modify anything.</comment>
         <val lang="en_US">No changes have been made to the version that will be used to resolve the conflict (left side).
-         Are you sure you want to resolve the conflict by keeping this version as it is?
+         \nAre you sure you want to resolve the conflict by keeping this version as it is?
         \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
         <val lang="de_DE">No changes have been made to the version that will be used to resolve the conflict (left side).
-         Are you sure you want to resolve the conflict by keeping this version as it is?
+         \nAre you sure you want to resolve the conflict by keeping this version as it is?
         \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
         <val lang="fr_FR">Aucune modification n'a été apportée à la version qui sera utilisée pour résoudre le conflit (côté gauche).
-         Êtes-vous sûr de vouloir résoudre le conflit en gardant cette version telle quelle?
+         \nÊtes-vous sûr de vouloir résoudre le conflit en gardant cette version telle quelle?
         \n\nVous perdrez vos modifications (côté droit) en ne les fusionnant pas dans la version finale.</val>
         <val lang="ja_JP">No changes have been made to the version that will be used to resolve the conflict (left side).
-         Are you sure you want to resolve the conflict by keeping this version as it is?
+         \nAre you sure you want to resolve the conflict by keeping this version as it is?
         \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
         <val lang="nl_NL">No changes have been made to the version that will be used to resolve the conflict (left side).
-         Are you sure you want to resolve the conflict by keeping this version as it is?
+         \nAre you sure you want to resolve the conflict by keeping this version as it is?
         \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
     </key>
     <key value = "Pre_receive_hook_declined_custom_message">

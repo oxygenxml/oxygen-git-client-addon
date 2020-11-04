@@ -16,6 +16,9 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -31,6 +34,35 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class FileStatusDialog extends OKCancelDialog {
+  
+  /**
+   * Document with custom wrapping.
+   */
+  private static class CustomWrapDocument extends DefaultStyledDocument {
+    @Override
+    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+      StringBuilder sb = new StringBuilder();
+      int charsSinceLastNewline = 0;
+      char[] charArray = str.toCharArray();
+      for (char ch : charArray) {
+        if (charsSinceLastNewline >= 100) {
+          if (Character.isWhitespace(ch)) {
+            sb.append('\n');
+            charsSinceLastNewline = 0;
+          } else {
+            sb.append(ch);
+          }
+        } else {
+          if (ch == '\n') {
+            charsSinceLastNewline = 0;
+          }
+          sb.append(ch);
+        }
+        charsSinceLastNewline++;
+      }
+      super.insertString(offs, sb.toString(), a);
+    }
+  }
   
   /**
    * Constructor.
@@ -83,15 +115,17 @@ public class FileStatusDialog extends OKCancelDialog {
 		panel.add(iconLabel, gbc);
 		
     if (message != null) {
-      JTextArea label = UIUtil.createMessageArea(message);
-      label.setPreferredSize(new Dimension(300,UIUtil.computeHeight(label, 300, 800)));
+      JTextArea textArea = UIUtil.createMessageArea("");
+      textArea.setDocument(new CustomWrapDocument());
+      textArea.setLineWrap(false);
+      textArea.setText(message);
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.weightx = 1;
       gbc.weighty = 1;
       gbc.gridx = 1;
       gbc.gridheight = 1;
-      panel.add(label, gbc);
+      panel.add(textArea, gbc);
       gbc.gridy++;
     }
     
@@ -103,8 +137,8 @@ public class FileStatusDialog extends OKCancelDialog {
         model.addElement(listElement);
       }
       JList<String> filesInConflictList = new JList<>(model);
+      filesInConflictList.setPreferredSize(new Dimension(250, 50));
       JScrollPane scollPane = new JScrollPane(filesInConflictList);
-      scollPane.setPreferredSize(new Dimension(scollPane.getPreferredSize().width, 50));
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.BOTH;
       gbc.weightx = 1;
@@ -112,6 +146,7 @@ public class FileStatusDialog extends OKCancelDialog {
       gbc.gridx = 1;
       gbc.gridheight = 1;
       panel.add(scollPane, gbc);
+      
       gbc.gridy++;
     }
     
@@ -119,31 +154,31 @@ public class FileStatusDialog extends OKCancelDialog {
       // No question message. Hide Cancel button.
       getCancelButton().setVisible(false);
     } else {
-      JTextArea questionLabel = UIUtil.createMessageArea(questionMessage);
-      questionLabel.setPreferredSize(new Dimension(300,UIUtil.computeHeight(questionLabel, 300, 800)));
+      JTextArea textArea = UIUtil.createMessageArea("");
+      textArea.setDocument(new CustomWrapDocument());
+      textArea.setLineWrap(false);
+      textArea.setText(questionMessage);
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.weightx = 1;
       gbc.weighty = 1;
       gbc.gridx = 1;
       gbc.gridheight = 1;
-      panel.add(questionLabel, gbc);
+      panel.add(textArea, gbc);
       
       setOkButtonText(okButtonName);
       setCancelButtonText(cancelButtonName);
     }
     
     getContentPane().add(panel);
-		setResizable(true);
-		setMinimumSize(new Dimension(250, 125));
-		pack();
+    pack();
+		setResizable(false);
 		
 		if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
 		  setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		}
 	}
-
-
+  
   /**
    * Presents a warning to the user about the files' status.
    * 

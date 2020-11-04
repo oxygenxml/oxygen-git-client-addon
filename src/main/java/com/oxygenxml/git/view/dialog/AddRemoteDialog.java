@@ -138,7 +138,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		JLabel label = new JLabel(translator.getTranslation(Tags.ADD_REMOTE_DIALOG_ADD_REMOTE_REPO_LABEL));
+		JLabel label = new JLabel(translator.getTranslation(Tags.REMOTE_REPO_URL));
 		getContentPane().add(label, gbc);
 	}
 

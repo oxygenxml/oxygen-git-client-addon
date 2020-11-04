@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -24,10 +26,10 @@ import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
 
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Tracks changes in the remote repository and notifies the user.
@@ -157,19 +159,33 @@ public class RepositoryChangeWatcher {
    */
   private void notifyUserAboutNewCommits(List<RevCommit> commitsBehind) {
     // Remember that we warn the user about this particular commit.
-    Repository repository;
+    Repository repository = null;
     try {
       repository = GitAccess.getInstance().getRepository();
       optionsManager.setWarnOnChangeCommitId(repository.getIdentifier(), commitsBehind.get(0).name());
     } catch (NoRepositorySelected e) {
       logger.debug(e, e);
     }
-    // Notify new commit in remote.
+    String workTree = repository != null ? repository.getWorkTree().getAbsolutePath() : "";
+    String remoteRepoUrl = repository != null ? repository.getConfig().getString(
+        ConfigConstants.CONFIG_KEY_REMOTE, Constants.DEFAULT_REMOTE_NAME, "url") : "";
+    String branch = "";
+    try {
+      branch = repository != null ? repository.getBranch() : "";
+    } catch (IOException e) {
+      logger.error(e, e);
+    }
+    String remoteBranch = GitAccess.getInstance().getUpstreamBranchShortNameFromConfig(branch);
+    
     showNewCommitsInRemoteMessage(
         translator.getTranslation(Tags.NEW_COMMIT_UPSTREAM)
             + "\n"
             + translator.getTranslation(Tags.PULL_REMOTE_CHANGED_RECOMMENDATION)
             + "\n\n"
+            + translator.getTranslation(Tags.REMOTE_REPO_URL) + " " + remoteRepoUrl + "\n"
+            + translator.getTranslation(Tags.REMOTE_BRANCH) + " " + remoteBranch + "\n\n"
+            + translator.getTranslation(Tags.WORKING_COPY_LABEL) + " " + workTree + "\n"
+            + translator.getTranslation(Tags.LOCAL_BRANCH) + " " + branch + "\n\n"
             + translator.getTranslation(Tags.WANT_TO_PULL_QUESTION));
   }
   

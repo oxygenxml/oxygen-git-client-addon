@@ -470,7 +470,7 @@ public class Tags {
 	 * The text displayed in the dialog that appears near the text field for
 	 * remote repo
 	 */
-	public static final String ADD_REMOTE_DIALOG_ADD_REMOTE_REPO_LABEL = "Add_Remote_Dialog_Add_Remote_Repo_Label";
+	public static final String REMOTE_REPO_URL = "Add_Remote_Dialog_Add_Remote_Repo_Label";
 
 	/**
 	 * The text displayed in the dialog that appears at the top of the dialog

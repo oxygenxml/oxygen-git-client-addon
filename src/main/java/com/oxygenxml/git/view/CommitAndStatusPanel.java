@@ -122,7 +122,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
               translator.getTranslation(Tags.COMMIT_WITH_CONFLICTS));
         } else {
           if (commitMessageArea.getText().trim().isEmpty()) {
-            int userAnswer = FileStatusDialog.showQuestionMessage(
+            int userAnswer = FileStatusDialog.showWarningMessageWithConfirmation(
                 translator.getTranslation(Tags.NO_COMMIT_MESSAGE_TITLE),
                 translator.getTranslation(Tags.NO_COMMIT_MESSAGE_DIALOG), 
                 translator.getTranslation(Tags.COMMIT_ANYWAY),
