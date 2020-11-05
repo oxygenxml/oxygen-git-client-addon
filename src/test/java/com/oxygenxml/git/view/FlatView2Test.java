@@ -23,7 +23,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -339,13 +339,13 @@ public class FlatView2Test extends FlatViewTestBase {
     
     GitController sc = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
-        return cmd == GitCommand.RESOLVE_USING_MINE;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
+        return cmd == GitOperation.RESOLVE_USING_MINE;
       }
     };
     sc.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitCommand.RESOLVE_USING_MINE);
+        GitOperation.RESOLVE_USING_MINE);
     waitForScheduler();
     flushAWT();
 
@@ -664,13 +664,13 @@ public class FlatView2Test extends FlatViewTestBase {
       // Resolve conflict
       GitController sc = new GitController() {
         @Override
-        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitCommand cmd) {
-          return cmd == GitCommand.RESOLVE_USING_MINE;
+        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
+          return cmd == GitOperation.RESOLVE_USING_MINE;
         }
       };
       sc.doGitCommand(
           Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-          GitCommand.RESOLVE_USING_MINE);
+          GitOperation.RESOLVE_USING_MINE);
       flushAWT();
       
       // Pull again.

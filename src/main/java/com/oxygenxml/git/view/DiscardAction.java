@@ -21,7 +21,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -109,7 +109,7 @@ public class DiscardAction extends AbstractAction {
       }
       
       // Execute Git command
-      stageController.doGitCommand(allSelectedResources, GitCommand.DISCARD);
+      stageController.doGitCommand(allSelectedResources, GitOperation.DISCARD);
       
       // Refresh the Project view
       wsAccess.getProjectManager().refreshFolders(foldersToRefresh.toArray(new File[0]));

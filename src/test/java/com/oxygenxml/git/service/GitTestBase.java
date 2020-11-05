@@ -71,6 +71,8 @@ import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 
 import junit.extensions.jfcunit.JFCTestCase;
@@ -513,23 +515,29 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
       private Repository oldRepository;
 
       @Override
-      public void repositoryIsAboutToOpen(File repo) {
-        try {
-          oldRepository = gitAccess.getRepository();
-        } catch (NoRepositorySelected e) {}
-      }
-      
-      @Override
-      public void repositoryChanged() {
-        if (oldRepository != null) {
-          loadedRepos.remove(oldRepository);
+      public void operationAboutToStart(GitEventInfo info) {
+        if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+          try {
+            oldRepository = gitAccess.getRepository();
+          } catch (NoRepositorySelected e) {
+            // Ignore
+          }
         }
-        oldRepository = null;
       }
-      
       @Override
-      public void repositoryOpeningFailed(File repo, Throwable ex) {
-        oldRepository = null;
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+          if (oldRepository != null) {
+            loadedRepos.remove(oldRepository);
+          }
+          oldRepository = null;
+        }
+      }
+      @Override
+      public void operationFailed(GitEventInfo info, Throwable t) {
+        if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+          oldRepository = null;
+        }
       }
     });
   }

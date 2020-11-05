@@ -15,9 +15,8 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 
@@ -43,23 +42,28 @@ public class RebasePanel extends JPanel {
     createGUI();
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
-      public void repositoryChanged() {
-        updateVisibilityBasedOnRepoState();
+      public void operationAboutToStart(GitEventInfo info) {
+        GitOperation operation = info.getGitOperation();
+        if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE) {
+          RebasePanel.this.setEnabled(false);
+        }
       }
-
       @Override
-      public void stateChanged(GitEvent changeEvent) {
-        GitCommand cmd = changeEvent.getGitCommand();
-        if (cmd == GitCommand.ABORT_REBASE || cmd == GitCommand.CONTINUE_REBASE) {
-          GitCommandState gitComandState = changeEvent.getGitComandState();
-          if (gitComandState == GitCommandState.SUCCESSFULLY_ENDED) {
-            RebasePanel.this.setEnabled(true);
-            RebasePanel.this.setVisible(false);
-          } else if (gitComandState == GitCommandState.FAILED) {
-            RebasePanel.this.setEnabled(true);
-          } else if (gitComandState == GitCommandState.STARTED) {
-            RebasePanel.this.setEnabled(false);
-          }
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        GitOperation operation = info.getGitOperation();
+        if (operation == GitOperation.OPEN_WORKING_COPY) {
+          updateVisibilityBasedOnRepoState();
+        } else if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE) {
+          RebasePanel.this.setEnabled(true);
+          RebasePanel.this.setVisible(false);
+        }
+      }
+      
+      @Override
+      public void operationFailed(GitEventInfo info, Throwable t) {
+        GitOperation operation = info.getGitOperation();
+        if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE) {
+          RebasePanel.this.setEnabled(true);
         }
       }
     });

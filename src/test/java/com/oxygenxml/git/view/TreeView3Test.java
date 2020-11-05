@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
-import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JTree;
@@ -11,12 +10,10 @@ import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
-import com.oxygenxml.git.view.event.GitCommand;
 
 /**
 * Test cases related to the actions performed

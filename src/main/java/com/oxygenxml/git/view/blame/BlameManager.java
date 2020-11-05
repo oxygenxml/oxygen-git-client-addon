@@ -14,6 +14,8 @@ import com.google.common.io.Files;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
 import ro.sync.exml.editor.EditorPageConstants;
@@ -52,14 +54,16 @@ public class BlameManager {
     
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
-      public void repositoryChanged() {
-        // Dispose all blames from the previous repository.
-        Iterator<String> iterator = activeBlames.keySet().iterator();
-        while (iterator.hasNext()) {
-          String url = iterator.next();
-          BlamePerformer remove = activeBlames.remove(url);
-          if (remove != null) {
-            remove.dispose();
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+          // Dispose all blames from the previous repository.
+          Iterator<String> iterator = activeBlames.keySet().iterator();
+          while (iterator.hasNext()) {
+            String url = iterator.next();
+            BlamePerformer remove = activeBlames.remove(url);
+            if (remove != null) {
+              remove.dispose();
+            }
           }
         }
       }

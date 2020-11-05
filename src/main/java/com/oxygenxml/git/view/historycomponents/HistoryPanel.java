@@ -65,9 +65,9 @@ import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.ActionStatus;
-import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
@@ -219,36 +219,28 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
     
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
-      public void repositoryChanged() {
+      public void operationSuccessfullyEnded(GitEventInfo info) {
         if (isShowing()) {
-          GitOperationScheduler.getInstance().schedule(HistoryPanel.this::showRepositoryHistory);
-        }
-      }
-      @Override
-      public void stateChanged(GitEvent changeEvent) {
-        if (isShowing()) {
-          GitCommandState gitComandState = changeEvent.getGitComandState();
-          if (gitComandState == GitCommandState.SUCCESSFULLY_ENDED) {
-            refresh();
+          GitOperation operation = info.getGitOperation();
+          switch (operation) {
+            case OPEN_WORKING_COPY:
+              GitOperationScheduler.getInstance().schedule(HistoryPanel.this::showRepositoryHistory);
+              break;
+            case CREATE_BRANCH:
+            case CHECKOUT:
+            case DELETE_BRANCH:
+            case STAGE:
+            case UNSTAGE:
+            case COMMIT:
+            case DISCARD:
+            case MERGE_RESTART:
+            case ABORT_REBASE:
+            case CONTINUE_REBASE:
+              refresh();
+              break;
+            default:
+              break;
           }
-        }
-      }
-      @Override
-      public void branchChanged(String oldBranch, String newBranch) {
-        if (isShowing()) {
-          refresh();
-        }
-      }
-      @Override
-      public void branchCreated(String newBranch) {
-        if (isShowing()) {
-          refresh();
-        }
-      }
-      @Override
-      public void branchDeleted(String deletedBranch) {
-        if (isShowing()) {
-          refresh();
         }
       }
     });

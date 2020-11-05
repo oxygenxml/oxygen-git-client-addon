@@ -14,6 +14,8 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 
 import ro.sync.exml.workspace.api.util.EditorVariableDescription;
 import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
@@ -47,13 +49,13 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    */
   private GitEventAdapter gitEventListener = new GitEventAdapter() {
     @Override
-    public void branchChanged(String oldBranch, String newBranch) {
-      editorVarsCache.remove(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR);
-      editorVarsCache.remove(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
-    }
-    @Override
-    public void repositoryChanged() {
-      editorVarsCache.clear();
+    public void operationSuccessfullyEnded(GitEventInfo info) {
+      if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+        editorVarsCache.clear();
+      } else if (info.getGitOperation() == GitOperation.CHECKOUT) {
+        editorVarsCache.remove(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR);
+        editorVarsCache.remove(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
+      }
     }
   };
   

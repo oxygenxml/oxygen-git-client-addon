@@ -48,6 +48,8 @@ import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.UIUtil;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -111,20 +113,14 @@ public class BranchManagementPanel extends JPanel {
     createGUI();
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
-      public void repositoryChanged() {
-        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
-      }
-      @Override
-      public void branchChanged(String oldBranch, String newBranch) {
-        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
-      }
-      @Override
-      public void branchCreated(String newBranch) {
-        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
-      }
-      @Override
-      public void branchDeleted(String deletedBranch) {
-        SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        GitOperation operation = info.getGitOperation();
+        if (operation == GitOperation.OPEN_WORKING_COPY
+            || operation == GitOperation.CREATE_BRANCH
+            || operation == GitOperation.CHECKOUT
+            || operation == GitOperation.DELETE_BRANCH) {
+          SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
+        }
       }
     });
     addTreeListeners();

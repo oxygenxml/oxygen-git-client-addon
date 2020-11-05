@@ -107,10 +107,12 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
-import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.BranchGitEventInfo;
+import com.oxygenxml.git.view.event.FileGitEventInfo;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -123,6 +125,10 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author Beniamin Savu
  */
 public class GitAccess {
+  /**
+   * Logging message.
+   */
+  private static final String FIRE_BRANCH_CHECKED_OUT_LOG_MESSAGE = "Fire branch checked out: ";
   /**
 	 * A synthetic object representing the uncommitted changes.
 	 */
@@ -252,7 +258,7 @@ public class GitAccess {
 		  git = cloneCommand.call();
 		}
 		
-		fireRepositoryChanged();
+		fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
 	}
 	
 	/**
@@ -304,17 +310,14 @@ public class GitAccess {
   private void openRepository(String path) throws IOException {
     final File repo = new File(path + "/.git");
     if (!isCurrentRepo(repo) ) {
-      fireRepositoryIsAboutToOpen(repo);
-      
+      File workingCopy = repo.getParentFile();
+      fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, workingCopy));
       closeRepo();
-
       try {
         git = Git.open(repo);
-        
-        repositoryOpened();
+        repositoryOpened(workingCopy);
       } catch (IOException e) {
-        fireRepositoryOpenFailed(repo, e);
-        
+        fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, workingCopy), e);
         throw e;
       }
     }
@@ -322,8 +325,10 @@ public class GitAccess {
 
   /**
    * Actions to do after a repository was opened.
+   * 
+   * @param workingCopy The WC.
    */
-  private void repositoryOpened() {
+  private void repositoryOpened(File workingCopy) {
     // Start intercepting authentication requests.
     AuthenticationInterceptor.bind(getHostName());
 
@@ -331,7 +336,7 @@ public class GitAccess {
       logSshKeyLoadingData();
     }
 
-    fireRepositoryChanged();
+    fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, workingCopy));
   }
 
 	/**
@@ -370,89 +375,48 @@ public class GitAccess {
   }
   
   /**
-   * A new branch was created.
+   * Fire operation about to start.
    * 
-   * @param newBranch The new branch.
+   * @param info event info.
    */
-  private void fireBranchCreated(String newBranch) {
+  private void fireOperationAboutToStart(GitEventInfo info) {
     if (logger.isDebugEnabled()) {
-      logger.debug("Fire branch created "+ newBranch);
+      logger.debug("Fire operation about to start: " + info);
     }
     for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.branchCreated(newBranch);
+      gitEventListener.operationAboutToStart(info);
     }
   }
   
   /**
-   * A branch was deleted.
+   * Fire operation successfully ended.
    * 
-   * @param deletedBranch The branch deleted.
+   * @param info event info.
    */
-  private void fireBranchDeleted(String deletedBranch) {
+  private void fireOperationSuccessfullyEnded(GitEventInfo info) {
     if (logger.isDebugEnabled()) {
-      logger.debug("Fire branch deleted "+ deletedBranch);
+      logger.debug("Fire operation successfully ended: " + info);
     }
     for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.branchDeleted(deletedBranch);
+      gitEventListener.operationSuccessfullyEnded(info);
     }
   }
   
   /**
-   * The active branch changed.
+   * Fire operation failed.
    * 
-   * @param oldBranch Previous branch.
-   * @param newBranch New branch.
+   * @param info event info.
+   * @param t related exception/error. May be <code>null</code>.
    */
-  private void fireBranchChanged(String oldBranch, String newBranch) {
+  private void fireOperationFailed(GitEventInfo info, Throwable t) {
     if (logger.isDebugEnabled()) {
-      logger.debug("Fire branch changed, old " + oldBranch + " new " + newBranch);
+      logger.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
     }
     for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.branchChanged(oldBranch, newBranch);
-    }
-  }
-
-	/**
-	 * Notify that the loaded repository changed.
-	 */
-	private void fireRepositoryChanged() {
-	  logger.debug("FIRE REPO CHANGED");
-	  for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.repositoryChanged();
-    }
-  }
-	
-	/**
-   * Notify the listeners about the fact that a repository is about to be open.
-   */
-  private void fireRepositoryIsAboutToOpen(File repo) {
-    logger.debug("FIRE REPO ABOUT TO OPEN");
-    for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.repositoryIsAboutToOpen(repo);
+      gitEventListener.operationFailed(info, t);
     }
   }
   
-  /**
-   * Notify the listeners about the fact that the opening of a repository has failed.
-   */
-  private void fireRepositoryOpenFailed(File repo, Throwable ex) {
-    logger.debug("FIRE REPO OPENING FAILED");
-    for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.repositoryOpeningFailed(repo, ex);
-    }
-  }
-  
-	
-  /**
-   * Notify the some files changed their state.
-   */
-  private void fireStateChanged(GitEvent changeEvent) {
-    logger.debug("FIRE STATE CHANGED: " + changeEvent);
-    for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.stateChanged(changeEvent);
-    }
-  }
-	
   /**
    * Add a listener that gets notified about file or repository changes.
    * 
@@ -497,17 +461,14 @@ public class GitAccess {
 	 * @param path - A string that specifies the git Repository folder
 	 */
 	public void createNewRepository(String path) throws GitAPIException {
-	  fireRepositoryIsAboutToOpen(new File(path));
-	  
+	  File wc = new File(path);
+	  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     closeRepo();
-    
     try {
-      git = Git.init().setBare(false).setDirectory(new File(path)).call();
-		
-      fireRepositoryChanged();
+      git = Git.init().setBare(false).setDirectory(wc).call();
+      fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     } catch (GitAPIException e) {
-      fireRepositoryOpenFailed(new File(path), e);
-      
+      fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc), e);
       throw e;
     }
 	}
@@ -756,7 +717,7 @@ public class GitAccess {
 		
 		git = Git.wrap(submoduleRepository);
 		
-		fireRepositoryChanged();
+		fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleRepository.getDirectory()));
 	}
 	
 	 /**
@@ -813,13 +774,12 @@ public class GitAccess {
 	  List<FileStatus> files = getStagedFiles();
 	  Collection<String> filePaths = getFilePaths(files);
 		try {
-		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.STARTED, filePaths));
+		  fireOperationAboutToStart(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
 		  git.commit().setMessage(message).setAmend(isAmendLastCommit).call();
-		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
+		  fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
 		} catch (GitAPIException e) {
-		  fireStateChanged(new GitEvent(GitCommand.COMMIT, GitCommandState.FAILED, filePaths));
+		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
 		  logger.error(e, e);
-		  
 		  // Re throw the exception so that the user sees a proper error message, depending on its type.
 		  throw e;
 		}
@@ -971,10 +931,11 @@ public class GitAccess {
 	 */
 	public void createBranch(String branchName) {
 		try {
+		  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
 			git.branchCreate().setName(branchName).call();
-			
-			fireBranchCreated(branchName);
+			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName));
 		} catch (GitAPIException e) {
+		  fireOperationFailed(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, branchName), e);
 		  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 		}
 
@@ -986,13 +947,15 @@ public class GitAccess {
 	 * @param sourceBranch The full path for the local branch from which to create the new branch.
 	 */
 	public void createBranchFromLocalBranch(String newBranchName, String sourceBranch) {
+	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
 	  try {
       git.branchCreate()
         .setName(newBranchName)
         .setStartPoint(sourceBranch)
         .call();
-        fireBranchCreated(newBranchName);
+      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
     } catch (GitAPIException e) {
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName), e);
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
 	}
@@ -1006,9 +969,11 @@ public class GitAccess {
 	  command.setBranchNames(branchName);
 	  command.setForce(true);
 	  try {
+	    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName));
 	      command.call();
-	      fireBranchDeleted(branchName);
+	      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName));
 	  } catch(GitAPIException e) {
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.DELETE_BRANCH, branchName), e);
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
 	  }
 	}
@@ -1389,15 +1354,15 @@ public class GitAccess {
 	public void add(FileStatus file) {
 	  Collection<String> filePaths = getFilePaths(Arrays.asList(file));
 	  try {
-	    fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.STARTED, filePaths));
+	    fireOperationAboutToStart(new FileGitEventInfo(GitOperation.STAGE, filePaths));
 	    if (file.getChangeType().equals(GitChangeType.REMOVED)) {
 	      git.rm().addFilepattern(file.getFileLocation()).call();
 	    } else {
 	      git.add().addFilepattern(file.getFileLocation()).call();
 	    }
-	    fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
+	    fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.STAGE, filePaths));
 	  } catch (GitAPIException e) {
-	    fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.FAILED, filePaths));
+	    fireOperationFailed(new FileGitEventInfo(GitOperation.STAGE, filePaths), e);
 	    logger.error(e, e);
 		}
 	}
@@ -1410,7 +1375,7 @@ public class GitAccess {
 	public void addAll(List<FileStatus> files) {
 	  Collection<String> filePaths = getFilePaths(files);
 		try {
-		  fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.STARTED, filePaths));
+		  fireOperationAboutToStart(new FileGitEventInfo(GitOperation.STAGE, filePaths));
 		  
 		  RmCommand removeCmd = null;
 		  AddCommand addCmd = null;
@@ -1437,9 +1402,9 @@ public class GitAccess {
 			  removeCmd.call();
 			}
 			
-			fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
+			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.STAGE, filePaths));
 		} catch (GitAPIException e) {
-		  fireStateChanged(new GitEvent(GitCommand.STAGE, GitCommandState.FAILED, filePaths));
+		  fireOperationFailed(new FileGitEventInfo(GitOperation.STAGE, filePaths), e);
 		  logger.error(e, e);
 		}
 	}
@@ -1544,7 +1509,7 @@ public class GitAccess {
 	public void resetAll(List<FileStatus> files) {
 	  Collection<String> filePaths = getFilePaths(files);
 		try {
-		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.STARTED, filePaths));
+		  fireOperationAboutToStart(new FileGitEventInfo(GitOperation.UNSTAGE, filePaths));
 			if (!files.isEmpty()) {
 				ResetCommand reset = git.reset();
 				for (FileStatus file : files) {
@@ -1552,9 +1517,9 @@ public class GitAccess {
 				}
 				reset.call();
 			}
-			fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.SUCCESSFULLY_ENDED, filePaths));
+			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.UNSTAGE, filePaths));
 		} catch (GitAPIException e) {
-		  fireStateChanged(new GitEvent(GitCommand.UNSTAGE, GitCommandState.FAILED, filePaths));
+		  fireOperationFailed(new FileGitEventInfo(GitOperation.UNSTAGE, filePaths), e);
 		  logger.error(e, e);
 		}
 	}
@@ -1697,12 +1662,12 @@ public class GitAccess {
    * @param commitId  The commit id to which to reset.
    */
   public void resetToCommit(ResetType resetType, String commitId) {
-    fireStateChanged(new GitEvent(GitCommand.RESET_TO_COMMIT, GitCommandState.STARTED));
+    fireOperationAboutToStart(new GitEventInfo(GitOperation.RESET_TO_COMMIT));
     try {
       git.reset().setMode(resetType).setRef(commitId).call();
-      fireStateChanged(new GitEvent(GitCommand.RESET_TO_COMMIT, GitCommandState.SUCCESSFULLY_ENDED));
+      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.RESET_TO_COMMIT));
     } catch (GitAPIException e) {
-      fireStateChanged(new GitEvent(GitCommand.RESET_TO_COMMIT, GitCommandState.FAILED));
+      fireOperationFailed(new GitEventInfo(GitOperation.RESET_TO_COMMIT), e);
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
   }
@@ -1715,13 +1680,13 @@ public class GitAccess {
 	 */
 	public void restoreLastCommitFile(List<String> paths) {
 		try {
-		  fireStateChanged(new GitEvent(GitCommand.DISCARD, GitCommandState.STARTED, paths));
+		  fireOperationAboutToStart(new FileGitEventInfo(GitOperation.DISCARD, paths));
 		  CheckoutCommand checkoutCmd = git.checkout();
 		  checkoutCmd.addPaths(paths);
 			checkoutCmd.call();
-			fireStateChanged(new GitEvent(GitCommand.DISCARD, GitCommandState.SUCCESSFULLY_ENDED, paths));
+			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.DISCARD, paths));
 		} catch (GitAPIException e) {
-		  fireStateChanged(new GitEvent(GitCommand.DISCARD, GitCommandState.FAILED, paths));
+      fireOperationFailed(new FileGitEventInfo(GitOperation.DISCARD, paths), e);
 		  logger.error(e, e);
 		}
 	}
@@ -1856,7 +1821,7 @@ public class GitAccess {
 	 * @return The restart merge task.
 	 */
 	public ScheduledFuture<?> restartMerge() {
-	  fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.STARTED));
+    fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
 	  return GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
 	      RepositoryState repositoryState = getRepository().getRepositoryState();
@@ -1872,9 +1837,9 @@ public class GitAccess {
 	        git.reset().setMode(ResetType.HARD).call();
 	        git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
 	      }
-	      fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.SUCCESSFULLY_ENDED));
+	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.MERGE_RESTART));
 	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
-	      fireStateChanged(new GitEvent(GitCommand.MERGE_RESTART, GitCommandState.FAILED));
+	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
 	      logger.error(e, e);
 	    }
 	  });
@@ -1918,19 +1883,17 @@ public class GitAccess {
 	/**
 	 * Sets the given branch as the current branch
 	 * 
-	 * @param selectedBranch The short name of the branch to set.
+	 * @param branch The short name of the branch to set.
 	 * 
 	 * @throws GitAPIException
 	 */
-	public void setBranch(String selectedBranch) throws GitAPIException {
-	  String oldBranchName = getBranchInfo().getBranchName();
-		
-	  fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.STARTED));
+	public void setBranch(String branch) throws GitAPIException {
+	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  try {
-	    git.checkout().setName(selectedBranch).call();
-	    fireBranchChanged(oldBranchName, selectedBranch);
+	    git.checkout().setName(branch).call();
+	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branch));
 	  } catch (GitAPIException e) {
-	    fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.FAILED));
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branch), e);
 	    throw e;
 	  }
 	}
@@ -1943,9 +1906,7 @@ public class GitAccess {
    * @throws GitAPIException 
    */
   public void checkoutRemoteBranchWithNewName(String newBranchName, String remoteBranchName) throws GitAPIException{
-    String oldBranchName = getBranchInfo().getBranchName();
-
-    fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.STARTED));
+    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName));
     try {
       git.checkout()
           .setCreateBranch(true)
@@ -1953,9 +1914,9 @@ public class GitAccess {
           .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
           .setStartPoint(Constants.DEFAULT_REMOTE_NAME + "/" + remoteBranchName)
           .call();
-      fireBranchChanged(oldBranchName, newBranchName);
+      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName));
     } catch (GitAPIException e) {
-      fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.FAILED));
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, newBranchName), e);
       throw e;
     }
   }
@@ -1969,17 +1930,16 @@ public class GitAccess {
 	 * @throws GitAPIException 
 	 */
 	public void checkoutCommitAndCreateBranch(String branchName, String commitID) throws GitAPIException {
-	  String oldBranch = getBranchInfo().getBranchName();
-	  fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.STARTED));
+	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName));
     try {
   	  git.checkout()
   	      .setCreateBranch(true)
   	      .setName(branchName)
   	      .setStartPoint(commitID)
   	      .call();
-  	  fireBranchChanged(oldBranch, branchName);
+  	  fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName));
     } catch (GitAPIException e) {
-      fireStateChanged(new GitEvent(GitCommand.CHECKOUT, GitCommandState.FAILED));
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.CHECKOUT, branchName), e);
       throw e;
     }
 	}
@@ -2155,13 +2115,13 @@ public class GitAccess {
    * Aborts and resets the current rebase
    */
   public void abortRebase() {
-    fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.STARTED));
+    fireOperationAboutToStart(new GitEventInfo(GitOperation.ABORT_REBASE));
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
         git.rebase().setOperation(Operation.ABORT).call();
-        fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.SUCCESSFULLY_ENDED));
+        fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.ABORT_REBASE));
       } catch (GitAPIException e) {
-        fireStateChanged(new GitEvent(GitCommand.ABORT_REBASE, GitCommandState.FAILED));
+        fireOperationFailed(new GitEventInfo(GitOperation.ABORT_REBASE), e);
         logger.error(e, e);
       }
     });
@@ -2171,35 +2131,24 @@ public class GitAccess {
    * Continue rebase after a conflict resolution.
    */
   public void continueRebase() {
-    fireStateChanged(new GitEvent(GitCommand.CONTINUE_REBASE, GitCommandState.STARTED));
+    fireOperationAboutToStart(new GitEventInfo(GitOperation.CONTINUE_REBASE));
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        
         RebaseResult result = git.rebase().setOperation(Operation.CONTINUE).call();
         if (result.getStatus() == RebaseResult.Status.NOTHING_TO_COMMIT) {
           skipCommit();
         }
-        
-        fireStateChanged(
-            new GitEvent(
-                GitCommand.CONTINUE_REBASE,
-                GitCommandState.SUCCESSFULLY_ENDED));
+        fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CONTINUE_REBASE));
       } catch (UnmergedPathsException e) {
-        fireStateChanged(
-            new GitEvent(
-                GitCommand.CONTINUE_REBASE,
-                GitCommandState.FAILED));
-        
+        fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         logger.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
-        fireStateChanged(
-            new GitEvent(
-                GitCommand.CONTINUE_REBASE,
-                GitCommandState.FAILED));
-        
-        logger.error(e, e);
+        fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
+        logger.debug(e, e);
+        ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+        .showErrorMessage(e.getMessage());
       }
     });
   }

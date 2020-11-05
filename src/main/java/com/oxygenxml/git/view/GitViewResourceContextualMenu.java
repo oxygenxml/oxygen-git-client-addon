@@ -15,7 +15,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 
@@ -116,7 +116,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        gitCtrl.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_MINE);
+	        gitCtrl.doGitCommand(allSelectedResources, GitOperation.RESOLVE_USING_MINE);
 	      }
 	    };
 
@@ -125,7 +125,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        gitCtrl.doGitCommand(allSelectedResources, GitCommand.RESOLVE_USING_THEIRS);
+	        gitCtrl.doGitCommand(allSelectedResources, GitOperation.RESOLVE_USING_THEIRS);
 	      }
 	    };
 
@@ -134,7 +134,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.MARK_RESOLVED)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        gitCtrl.doGitCommand(allSelectedResources, GitCommand.STAGE);
+	        gitCtrl.doGitCommand(allSelectedResources, GitOperation.STAGE);
 	      }
 	    };
 

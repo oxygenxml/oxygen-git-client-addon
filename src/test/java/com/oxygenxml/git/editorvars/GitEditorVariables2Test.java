@@ -12,6 +12,9 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.view.event.BranchGitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 
 /**
  * Git editor variables test.
@@ -141,7 +144,8 @@ public class GitEditorVariables2Test extends GitTestBase {
     assertEquals(1, noOfWCCalls);
     
     // Simulate branch switch
-    editorVariablesResolver.getGitEventListenerFromTests().branchChanged("", "");
+    editorVariablesResolver.getGitEventListenerFromTests().operationSuccessfullyEnded(
+        new BranchGitEventInfo(GitOperation.CHECKOUT, ""));
     assertEquals(2, cache.size());
     assertTrue(cache.toString().contains("${git(working_copy_name)}=EditorVariablesTest"));
     assertTrue(cache.toString().contains("${git(working_copy_path)}=" + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath()));
@@ -160,7 +164,8 @@ public class GitEditorVariables2Test extends GitTestBase {
     assertEquals(2, noOfFullBranchCalls);
     
     // Simulate repo switch
-    editorVariablesResolver.getGitEventListenerFromTests().repositoryChanged();
+    editorVariablesResolver.getGitEventListenerFromTests().operationSuccessfullyEnded(
+        new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, new File(".")));
     assertTrue(cache.isEmpty());
   }
 

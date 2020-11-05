@@ -57,9 +57,8 @@ import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.ActionStatus;
-import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
@@ -320,33 +319,26 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	  
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
-      public void repositoryChanged() {
-        Repository repository;
-        try {
-          repository = gitAccess.getRepository();
-          if (repository != null) {
-            // When a new working copy is selected clear the commit text area
-            reset();
-
-            // checks what buttons to keep active and what buttons to deactivate
-            toggleCommitButtonAndUpdateMessageArea(false);
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        GitOperation gitOperation = info.getGitOperation();
+        if (gitOperation == GitOperation.OPEN_WORKING_COPY) {
+          Repository repository;
+          try {
+            repository = gitAccess.getRepository();
+            if (repository != null) {
+              // When a new working copy is selected clear the commit text area
+              reset();
+              // checks what buttons to keep active and what buttons to deactivate
+              toggleCommitButtonAndUpdateMessageArea(false);
+            }
+          } catch (NoRepositorySelected e) {
+            logger.debug(e, e);
           }
-        } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
+        } else if (gitOperation == GitOperation.CHECKOUT) {
+          reset();
+        } else {
+          toggleCommitButtonAndUpdateMessageArea(gitOperation == GitOperation.STAGE);
         }
-      }
-      
-      @Override
-      public void branchChanged(String oldBranch, String newBranch) {
-        reset();
-      }
-      
-      @Override
-      public void stateChanged(GitEvent changeEvent) {
-        GitCommand cmd = changeEvent.getGitCommand();
-        GitCommandState cmdState = changeEvent.getGitComandState();
-        toggleCommitButtonAndUpdateMessageArea(
-            cmd == GitCommand.STAGE && cmdState == GitCommandState.SUCCESSFULLY_ENDED);
       }
     });
   }
