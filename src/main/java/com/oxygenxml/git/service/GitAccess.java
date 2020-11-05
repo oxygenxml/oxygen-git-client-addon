@@ -2249,12 +2249,15 @@ public class GitAccess {
 		
 		for (Ref ref : localBranchList) {
       // refresh and populate local branch list for each commit
-      int refIdx = ref.getName().indexOf(prefix) + prefix.length();
-      String branchName = ref.getName().substring(refIdx);
-      
-      String commit = ref.getObjectId().getName().substring(0, 7);
-      List<String> values = branchMap.computeIfAbsent(commit, t -> new ArrayList<>());
-      values.add(branchName);
+      int indexOfPrefix = ref.getName().indexOf(prefix);
+      if (indexOfPrefix != -1) {
+        int refIdx = indexOfPrefix + prefix.length();
+        String branchName = ref.getName().substring(refIdx);
+        
+        String commit = ref.getObjectId().getName().substring(0, 7);
+        List<String> values = branchMap.computeIfAbsent(commit, t -> new ArrayList<>());
+        values.add(branchName);
+      }
     }
 
 		return branchMap;
