@@ -552,10 +552,10 @@ public class ChangesPanel extends JPanel {
 	          StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 	          GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
 
-	          if (!node.isRoot() 
-	              || node.children().hasMoreElements()
-	              || isMergingResolved()) {
-
+	          if (node != null 
+	              && (!node.isRoot() 
+	                  || node.children().hasMoreElements()
+	                  || isMergingResolved())) {
 	            showContextualMenuForTree(e.getX(), e.getY(), model);
 	          }
 	        }
