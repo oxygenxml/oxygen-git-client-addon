@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
@@ -246,13 +247,37 @@ public class HistoryViewContextualMenuPresenter {
                     commitCharacteristics.getCommitId());
               }
             } catch (CheckoutConflictException e1) {
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-                  Translator.getInstance().getTranslation(Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS));
+              showCannotCheckoutBranchMessage();
             } catch (HeadlessException | GitAPIException | NoRepositorySelected e1) {
               LOGGER.debug(e1);
               PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
             }
           });
+        }
+
+        private void showCannotCheckoutBranchMessage() {
+          RepositoryState state = null;
+          try {
+            state = GitAccess.getInstance().getRepository().getRepositoryState();
+          } catch (NoRepositorySelected e2) {
+            LOGGER.debug(e2, e2);
+          }
+
+          if (state != null) {
+            String messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH;
+            switch (state) {
+              case SAFE:
+                messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_BECAUSE_UNCOMMITTED_CHANGES;
+                break;
+              case MERGING:
+                messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS;
+                break;
+              default:
+                break;
+            }
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+                Translator.getInstance().getTranslation(messageTag));
+          }
         }
       });
       
