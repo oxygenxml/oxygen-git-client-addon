@@ -126,10 +126,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class GitAccess {
   /**
-   * Logging message.
-   */
-  private static final String FIRE_BRANCH_CHECKED_OUT_LOG_MESSAGE = "Fire branch checked out: ";
-  /**
 	 * A synthetic object representing the uncommitted changes.
 	 */
   public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(
