@@ -194,6 +194,27 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 			pluginWorkspaceAccess.addViewComponentCustomizer(
 			    viewInfo -> {
+			      GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+			        private Timer cursorTimer = new Timer(
+			            1000,
+			            e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
+			        
+			        @Override
+			        public void operationAboutToStart(GitEventInfo info) {
+			          cursorTimer.restart();
+			        }
+			        @Override
+			        public void operationSuccessfullyEnded(GitEventInfo info) {
+			          cursorTimer.stop();
+			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+			        }
+			        @Override
+			        public void operationFailed(GitEventInfo info, Throwable t) {
+			          cursorTimer.stop();
+			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+			        }
+			      });
+			      
             // The constants' values are defined in plugin.xml
             if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
               customizeGitStagingView(gitCtrl, viewInfo);
@@ -253,14 +274,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     viewInfo.setComponent(stagingPanel);
     
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
-      private Timer cursorTimer = new Timer(
-          1000,
-          e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
-      
-      @Override
-      public void operationAboutToStart(GitEventInfo info) {
-        cursorTimer.restart();
-      }
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
@@ -277,9 +290,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
             }
           }
         }
-        
-        cursorTimer.stop();
-        SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
       }
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
@@ -287,9 +297,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
         if (operation == GitOperation.CONTINUE_REBASE || operation == GitOperation.RESET_TO_COMMIT) {
           gitRefreshSupport.call();
         }
-        
-        cursorTimer.stop();
-        SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
       }
     });
     
