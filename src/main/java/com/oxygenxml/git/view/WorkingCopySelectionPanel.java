@@ -428,7 +428,7 @@ public class WorkingCopySelectionPanel extends JPanel {
      * @param wc Working-copy.
      */
     private void removeInexistentRepo(File wc) {
-      String wcDir = wc.getParentFile().getAbsolutePath();
+      String wcDir = wc.getAbsolutePath();
       OptionsManager.getInstance().removeRepositoryLocation(wcDir);
       if (workingCopyCombo.getItemCount() > 0) {
         // Fallback to the previously loaded WC. We assume its the topmost in the list. Not to elegant...
