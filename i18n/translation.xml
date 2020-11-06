@@ -9,7 +9,7 @@
         <comment>"Uncommitted changes" message.</comment>
         <val lang="en_US">Uncommitted changes</val>
         <val lang="de_DE">Uncommitted changes</val>
-        <val lang="fr_FR">Uncommitted changes</val>
+        <val lang="fr_FR">Modifications hors commit</val>
         <val lang="ja_JP">Uncommitted changes</val>
         <val lang="nl_NL">Uncommitted changes</val>
     </key>
@@ -27,8 +27,8 @@
         	because of uncommitted changes that are in conflict with the changes from the selected commit.</val>
         <val lang="de_DE">The new branch was created, but it could not be checked out
         	because of uncommitted changes that are in conflict with the changes from the selected commit.</val>
-        <val lang="fr_FR">The new branch was created, but it could not be checked out
-        	because of uncommitted changes that are in conflict with the changes from the selected commit.</val>
+        <val lang="fr_FR">La nouvelle branche a été créée, mais elle n'a pas pu être extraite
+            en raison de modifications hors commit en conflit avec des modifications du commit sélectionné.</val>
         <val lang="ja_JP">The new branch was created, but it could not be checked out
         	because of uncommitted changes that are in conflict with the changes from the selected commit.</val>
         <val lang="nl_NL">The new branch was created, but it could not be checked out
@@ -38,7 +38,7 @@
         <comment>Message shown when cannot checkout newly created branch for an uknown reason.</comment>
         <val lang="en_US">The new branch was created, but it could not be checked out.</val>
         <val lang="de_DE">The new branch was created, but it could not be checked out.</val>
-        <val lang="fr_FR">The new branch was created, but it could not be checked out.</val>
+        <val lang="fr_FR">La nouvelle branche a été créée, mais elle n'a pas pu être extraite.</val>
         <val lang="ja_JP">The new branch was created, but it could not be checked out.</val>
         <val lang="nl_NL">The new branch was created, but it could not be checked out.</val>
     </key>
