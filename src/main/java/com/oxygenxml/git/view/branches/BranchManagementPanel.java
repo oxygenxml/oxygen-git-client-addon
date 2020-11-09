@@ -119,7 +119,7 @@ public class BranchManagementPanel extends JPanel {
             || operation == GitOperation.CREATE_BRANCH
             || operation == GitOperation.CHECKOUT
             || operation == GitOperation.DELETE_BRANCH) {
-          SwingUtilities.invokeLater(BranchManagementPanel.this::refreshBranches);
+          BranchManagementPanel.this.refreshBranches();
         }
       }
     });
@@ -323,14 +323,14 @@ public class BranchManagementPanel extends JPanel {
   private void updateTreeView(List<String> branchList) {
     if (branchesTree != null) {
       Enumeration<TreePath> expandedPaths = TreeUtil.getLastExpandedPaths(branchesTree);
-      TreePath[] selectionPaths = branchesTree.getSelectionPaths();
+      TreePath selectionPath = branchesTree.getSelectionPath();
 
       // Create the tree with the new model
       branchesTree.setModel(new BranchManagementTreeModel(GitAccess.getInstance().getWorkingCopyName(), branchList));
 
       // restore last expanded paths after refresh
       TreeUtil.restoreLastExpandedPaths(expandedPaths, branchesTree);
-      branchesTree.setSelectionPaths(selectionPaths);
+      branchesTree.setSelectionPath(selectionPath);
     }
   }
 
@@ -387,8 +387,10 @@ public class BranchManagementPanel extends JPanel {
           remainingBranches.add(branch);
       }
     }
-    updateTreeView(remainingBranches);
-    TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+    SwingUtilities.invokeLater(() -> {
+      updateTreeView(remainingBranches);
+      TreeUtil.expandAllNodes(branchesTree, 0, branchesTree.getRowCount());
+    });
   }
 
   /**
