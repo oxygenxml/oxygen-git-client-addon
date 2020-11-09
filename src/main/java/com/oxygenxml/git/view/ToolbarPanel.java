@@ -320,14 +320,7 @@ public class ToolbarPanel extends JPanel {
 		gitToolbar.setOpaque(false);
 		gitToolbar.setFloatable(false);
 		this.setLayout(new GridBagLayout());
-		try {
-      this.pushesAhead = GitAccess.getInstance().getPushesAhead();
-    } catch (RepoNotInitializedException e) {
-      this.pushesAhead = -1;
-      logger.debug(e, e);
-    }
-		this.pullsBehind = GitAccess.getInstance().getPullsBehind();
-
+		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.anchor = GridBagConstraints.WEST;
