@@ -12,7 +12,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -59,7 +58,8 @@ import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
 
@@ -194,71 +194,75 @@ public class ChangesPanel extends JPanel {
 		    : OptionsManager.getInstance().getUntagedResViewMode();
 		
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
-      
       @Override
-      public void repositoryIsAboutToOpen(File repo) {
-        // TODO Disable widgets to avoid unwanted actions.
-      }
-      
-      @Override
-      public void repositoryOpeningFailed(File repo, Throwable ex) {
-        // TODO Enable widgets.
-      }
-      
-      @Override
-      public void repositoryChanged() {
-        // TODO Enable widgets.
-        
-        if (filesTable != null) {
-          // The event might come too early.
-          GitAccess gitAccess = GitAccess.getInstance();
-          try {
-            Repository repository = gitAccess.getRepository();
-            if (repository != null) {
-              Runnable updateTask = new SwingWorker<List<FileStatus>, Void>() {
-                @Override
-                protected List<FileStatus> doInBackground() throws Exception {
-                  if (forStagedResources) {
-                    return gitAccess.getStagedFiles();
-                  } else {
-                    return gitAccess.getUnstagedFiles();
-                  }
-                }
-                @Override
-                protected void done() {
-                  List<FileStatus> files = Collections.emptyList();
-                  try {
-                    files = get();
-                  } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    logger.error(e, e);
-                  } catch (ExecutionException e) {
-                    logger.error(e, e);
-                  }
-                  ChangesPanel.this.repositoryChanged(files);
-                  toggleSelectedButton();
-                }
-              };
-              
-              GitOperationScheduler.getInstance().schedule(updateTask);
-            }
-          } catch (NoRepositorySelected ex) {
-            logger.debug(ex, ex);
-
-            ChangesPanel.this.repositoryChanged(Collections.emptyList());
-          }
+      public void operationAboutToStart(GitEventInfo info) {
+        if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+          // TODO Disable widgets to avoid unwanted actions.
         }
       }
-      
       @Override
-      public void stateChanged(GitEvent changeEvent) {
-        // Update the table.
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            ChangesPanel.this.stateChanged(changeEvent);
-          }
-        });
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        GitOperation operation = info.getGitOperation();
+        switch (operation) {
+          case OPEN_WORKING_COPY:
+            // TODO Enable widgets.
+
+            // The event might come too early.
+            GitAccess gitAccess = GitAccess.getInstance();
+            try {
+              Repository repository = gitAccess.getRepository();
+              if (repository != null) {
+                Runnable updateTask = new SwingWorker<List<FileStatus>, Void>() {
+                  @Override
+                  protected List<FileStatus> doInBackground() throws Exception {
+                    if (forStagedResources) {
+                      return gitAccess.getStagedFiles();
+                    } else {
+                      return gitAccess.getUnstagedFiles();
+                    }
+                  }
+                  @Override
+                  protected void done() {
+                    List<FileStatus> files = Collections.emptyList();
+                    try {
+                      files = get();
+                    } catch (InterruptedException e) {
+                      Thread.currentThread().interrupt();
+                      logger.error(e, e);
+                    } catch (ExecutionException e) {
+                      logger.error(e, e);
+                    }
+                    ChangesPanel.this.repositoryChanged(files);
+                    toggleSelectedButton();
+                  }
+                };
+
+                GitOperationScheduler.getInstance().schedule(updateTask);
+              }
+            } catch (NoRepositorySelected ex) {
+              logger.debug(ex, ex);
+              ChangesPanel.this.repositoryChanged(Collections.emptyList());
+            }
+          
+            break;
+          case STAGE:
+          case UNSTAGE:
+          case COMMIT:
+          case DISCARD:
+          case MERGE_RESTART:
+          case ABORT_REBASE:
+          case CONTINUE_REBASE:
+            SwingUtilities.invokeLater(() -> ChangesPanel.this.fileStatesChanged(info));
+            break;
+          default:
+            break;
+        }
+      }
+      @Override
+      public void operationFailed(GitEventInfo info, Throwable t) {
+        if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+          // TODO Enable widgets
+        }
       }
     });
 	}
@@ -352,7 +356,7 @@ public class ChangesPanel extends JPanel {
 	 * 
 	 * @param changeEvent Change event.
 	 */
-	public void stateChanged(GitEvent changeEvent) {
+	void fileStatesChanged(GitEventInfo changeEvent) {
 	  if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
 	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
 	    modelTable.stateChanged(changeEvent);
@@ -361,7 +365,7 @@ public class ChangesPanel extends JPanel {
 	    TreePath[] selectionPaths = tree.getSelectionPaths();
 
 	    StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-	    treeModel.stateChanged(changeEvent);
+	    treeModel.fileStatesChanged(changeEvent);
 
 	    // Restore last expanded paths after refresh
 	    TreeUtil.restoreLastExpandedPaths(expandedPaths, tree);
@@ -548,10 +552,10 @@ public class ChangesPanel extends JPanel {
 	          StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
 	          GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
 
-	          if (!node.isRoot() 
-	              || node.children().hasMoreElements()
-	              || isMergingResolved()) {
-
+	          if (node != null 
+	              && (!node.isRoot() 
+	                  || node.children().hasMoreElements()
+	                  || isMergingResolved())) {
 	            showContextualMenuForTree(e.getX(), e.getY(), model);
 	          }
 	        }

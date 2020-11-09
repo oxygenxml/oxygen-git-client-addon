@@ -39,6 +39,9 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -141,9 +144,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	          // get and save the selected Option so that at restart the same
 	          // repository will be selected
 	          String selectedEntry = (String) workingCopyCombo.getSelectedItem();
-	          if (logger.isDebugEnabled()) {
-	            logger.debug("Selected working copy: " + selectedEntry);
-	          }
+	          logger.debug("Selected working copy: " + selectedEntry);
 	          if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
 	            SwingUtilities.invokeLater(() -> 
 	            {
@@ -366,22 +367,25 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * Listens on Git events and updates the GUI accordingly.
 	 */
 	private class GitEventUpdater extends GitEventAdapter {
+    @Override
+    public void operationAboutToStart(GitEventInfo info) {
+      if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+        setWCSelectorsEnabled(false);
+      }
+    }
 
     @Override
-    public void repositoryIsAboutToOpen(File repo) {
-      setWCSelectorsEnabled(false);
-    }
-    @Override
-    public void repositoryChanged() {
-      Runnable r = () -> {
-        setWCSelectorsEnabled(true);
-        updateComboboxModelAfterRepositoryChanged();
-      };
-      
-      if (!SwingUtilities.isEventDispatchThread()) {
-        SwingUtilities.invokeLater(r);
-      } else {
-        r.run();
+    public void operationSuccessfullyEnded(GitEventInfo info) {
+      if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+        Runnable r = () -> {
+          setWCSelectorsEnabled(true);
+          updateComboboxModelAfterRepositoryChanged();
+        };
+        if (!SwingUtilities.isEventDispatchThread()) {
+          SwingUtilities.invokeLater(r);
+        } else {
+          r.run();
+        }
       }
     }
     
@@ -393,40 +397,47 @@ public class WorkingCopySelectionPanel extends JPanel {
         browseButton.setEnabled(isEnabled);
       }
     }
+    
     @Override
-    public void repositoryOpeningFailed(File repo, Throwable ex) {
-      if (workingCopyCombo != null) {
-        if (ex instanceof RepositoryNotFoundException) {
-          // We are here if the selected Repository doesn't exists anymore
-          // The repo file is the .git directory. The combo model contains WC paths.
-          String wcDir = repo.getParentFile().getAbsolutePath();
-          
-          OptionsManager.getInstance().removeRepositoryLocation(wcDir);
+    public void operationFailed(GitEventInfo info, Throwable t) {
+      if (info instanceof WorkingCopyGitEventInfo) {
+        WorkingCopyGitEventInfo wcInfo = (WorkingCopyGitEventInfo) info;
+        if (wcInfo.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+          if (workingCopyCombo != null) {
+            if (t instanceof RepositoryNotFoundException) {
+              removeInexistentRepo(wcInfo.getWorkingCopy());
 
-
-          if (workingCopyCombo.getItemCount() > 0) {
-            // Fallback to the previously loaded WC. We assume its the topmost in the list. Not to elegant...
-            workingCopyCombo.setSelectedIndex(0);
-          } else {
-            workingCopyCombo.setSelectedItem(null);
-            gitAccess.closeRepo();
+              SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
+                  .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND)));
+            } else if (t instanceof IOException) {
+              SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
+                  .showErrorMessage("Could not load the repository. " + t.getMessage()));
+            }
+            workingCopyCombo.setEnabled(true);
           }
-
-
-          workingCopyCombo.removeItem(wcDir);
-
-
-          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
-              .showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_REPOSITORY_NOT_FOUND)));
-        } else if (ex instanceof IOException) {
-          SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace()
-              .showErrorMessage("Could not load the repository. " + ex.getMessage()));
+          if (browseButton != null) {
+            browseButton.setEnabled(true);
+          }
         }
-        workingCopyCombo.setEnabled(true);
       }
-      if (browseButton != null) {
-        browseButton.setEnabled(true);
+    }
+
+    /**
+     * Remove inexistent repo (actually working-copy).
+     * 
+     * @param wc Working-copy.
+     */
+    private void removeInexistentRepo(File wc) {
+      String wcDir = wc.getAbsolutePath();
+      OptionsManager.getInstance().removeRepositoryLocation(wcDir);
+      if (workingCopyCombo.getItemCount() > 0) {
+        // Fallback to the previously loaded WC. We assume its the topmost in the list. Not to elegant...
+        workingCopyCombo.setSelectedIndex(0);
+      } else {
+        workingCopyCombo.setSelectedItem(null);
+        gitAccess.closeRepo();
       }
+      workingCopyCombo.removeItem(wcDir);
     }
     
     /**

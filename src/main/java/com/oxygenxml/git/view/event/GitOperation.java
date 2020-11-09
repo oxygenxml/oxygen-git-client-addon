@@ -3,7 +3,7 @@ package com.oxygenxml.git.view.event;
 /**
  * Git commands: stage, unstage, discard, commit, resolve conflict, etc.
  */
-public enum GitCommand {
+public enum GitOperation {
   /**
    * Stage the given files.
    */
@@ -45,7 +45,19 @@ public enum GitCommand {
    */
   CONTINUE_REBASE,
   /**
+   * Create branch.
+   */
+  CREATE_BRANCH,
+  /**
    * Checkout.
    */
-  CHECKOUT
+  CHECKOUT,
+  /**
+   * Delete branch.
+   */
+  DELETE_BRANCH,
+  /**
+   * Open working copy.
+   */
+  OPEN_WORKING_COPY
 }

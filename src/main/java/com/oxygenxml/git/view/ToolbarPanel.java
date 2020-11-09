@@ -55,9 +55,8 @@ import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
-import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.GitCommandState;
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
@@ -216,31 +215,27 @@ public class ToolbarPanel extends JPanel {
 
 	  GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
-      public void repositoryChanged() {
-	      // Repository changed. Update the toolbar buttons.
-	      submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
-	      
-	      // Update the toobars.
-	      // calculate how many pushes ahead and pulls behind the current
-	      // selected working copy is from the base. It is on thread because
-	      // the fetch command takes a longer time
-	      // TODO This might stay well in the Refresh support... When a new repository is 
-	      // selected this is triggered.
-	      // TODO Maybe the change of repository should triggered a fetch and a notification should
-	      // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
-	      new Thread(() -> {
-          fetch(true);
-          // After the fetch is done, update the toolbar icons.
-          updateStatus();
-        }).start();
-	    }
-      
-      @Override
-      public void stateChanged(GitEvent changeEvent) {
-        GitCommand cmd = changeEvent.getGitCommand();
-        if ((cmd == GitCommand.ABORT_REBASE || cmd == GitCommand.CONTINUE_REBASE)
-            && changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED) {
-          updateStatus();
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        GitOperation operation = info.getGitOperation();
+        if (operation == GitOperation.OPEN_WORKING_COPY) {
+          // Repository changed. Update the toolbar buttons.
+          submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
+
+          // Update the toobars.
+          // calculate how many pushes ahead and pulls behind the current
+          // selected working copy is from the base. It is on thread because
+          // the fetch command takes a longer time
+          // TODO This might stay well in the Refresh support... When a new repository is 
+          // selected this is triggered.
+          // TODO Maybe the change of repository should triggered a fetch and a notification should
+          // be fired when the fetch information is brought. It might make sense to use a coalescing for the fetch.
+          new Thread(() -> {
+            fetch(true);
+            // After the fetch is done, update the toolbar icons.
+            updateStatus();
+          }).start();
+        } else if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE) {
+	        updateStatus();
         }
       }
 	  });

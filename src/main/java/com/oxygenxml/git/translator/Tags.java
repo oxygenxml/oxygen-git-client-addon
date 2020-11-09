@@ -1076,10 +1076,21 @@ public class Tags {
   public static final String BRANCH_NAME = "Branch_name";
   
   /**
+   * Message shown when cannot checkout newly created branch because of uncommitted changes.
+   */
+  public static final String CANNOT_CHECKOUT_NEW_BRANCH_BECAUSE_UNCOMMITTED_CHANGES = 
+      "Cannot_checkout_new_branch_because_uncommitted_changes";
+  
+  /**
    * Message shown when cannot checkout newly created branch because of conflicts.
    */
   public static final String CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS = 
       "Cannot_checkout_new_branch_when_having_conflicts";
+  
+  /**
+   * Message shown when cannot checkout newly created branch for an uknown reason.
+   */
+  public static final String CANNOT_CHECKOUT_NEW_BRANCH = "Cannot_checkout_new_branch";
   
   /**
    * Commit anyway.

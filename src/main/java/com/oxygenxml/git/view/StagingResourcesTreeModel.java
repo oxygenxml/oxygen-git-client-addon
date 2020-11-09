@@ -12,16 +12,15 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeUtil;
-import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 
 /**
- * Custom tree model
+ * Tree model for staged or unstaged resources.
  * 
  * @author Beniamin Savu
- *
  */
 public class StagingResourcesTreeModel extends DefaultTreeModel {
   /**
@@ -61,61 +60,60 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
     setFilesStatus(filesStatus);
 	}
 
-	public void stateChanged(GitEvent changeEvent) {
+	/**
+	 * File states changed.
+	 * 
+	 * @param eventInfo Event information.
+	 */
+	public void fileStatesChanged(GitEventInfo eventInfo) {
 	  if (logger.isDebugEnabled()) {
-      logger.debug("Tree model for index: " + inIndex + " event " + changeEvent);
-    }
-	  
-  	if (changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED) {
-  		List<FileStatus> oldStates = changeEvent.getOldAffectedFiles();
-      List<FileStatus> newStates = 
-          inIndex ? GitAccess.getInstance().getStagedFile(changeEvent.getAffectedFiles()) 
-              : GitAccess.getInstance().getUnstagedFiles(changeEvent.getAffectedFiles());
-              
-      switch (changeEvent.getGitCommand()) {
-        case STAGE:
-          if (inIndex) {
-            insertNodes(newStates);
-          } else {
-            deleteNodes(oldStates);
-          }
-          break;
-        case UNSTAGE:
-          if (inIndex) {
-            deleteNodes(oldStates);
-          } else {
-             // Things were taken out of the index / "staged" area. 
-            // The same resource might be present in the Unstaged and Staged. Remove old states.
-            deleteNodes(oldStates);
-            insertNodes(newStates);
-          }
-          break;
-        case COMMIT:
-          if (inIndex) {
-            deleteNodes(filesStatuses);
-            filesStatuses.clear();
-          }
-          break;
-        case DISCARD:
-          deleteNodes(oldStates);
-          break;
-        case MERGE_RESTART:
-          filesStatuses.clear();
-          List<FileStatus> fileStatuses = inIndex ? GitAccess.getInstance().getStagedFiles() 
-              : GitAccess.getInstance().getUnstagedFiles();
-          insertNodes(fileStatuses);
-          break;
-        case ABORT_REBASE:
-        case CONTINUE_REBASE:
-          filesStatuses.clear();
-          break;
-        default:
-          // Nothing
-          break;
-      }
-  
-  		fireTreeStructureChanged(this, null, null, null);
-  	}
+	    logger.debug("Tree model for index: " + inIndex + " event " + eventInfo);
+	  }
+
+	  GitAccess gitAccess = GitAccess.getInstance();
+	  switch (eventInfo.getGitOperation()) {
+	    case STAGE:
+	      if (inIndex) {
+	        insertNodes(gitAccess.getStagedFile(((FileGitEventInfo) eventInfo).getAffectedFilePaths()));
+	      } else {
+	        deleteNodes(((FileGitEventInfo) eventInfo).getAffectedFileStatuses());
+	      }
+	      break;
+	    case UNSTAGE:
+	      if (inIndex) {
+	        deleteNodes(((FileGitEventInfo) eventInfo).getAffectedFileStatuses());
+	      } else {
+	        // Things were taken out of the index / "staged" area. 
+	        // The same resource might be present in the Unstaged and Staged. Remove old states.
+	        deleteNodes(((FileGitEventInfo) eventInfo).getAffectedFileStatuses());
+	        insertNodes(gitAccess.getUnstagedFiles(((FileGitEventInfo) eventInfo).getAffectedFilePaths()));
+	      }
+	      break;
+	    case COMMIT:
+	      if (inIndex) {
+	        deleteNodes(filesStatuses);
+	        filesStatuses.clear();
+	      }
+	      break;
+	    case DISCARD:
+	      deleteNodes(((FileGitEventInfo) eventInfo).getAffectedFileStatuses());
+	      break;
+	    case MERGE_RESTART:
+	      filesStatuses.clear();
+	      List<FileStatus> fileStatuses = inIndex ? gitAccess.getStagedFiles() 
+	          : gitAccess.getUnstagedFiles();
+	      insertNodes(fileStatuses);
+	      break;
+	    case ABORT_REBASE:
+	    case CONTINUE_REBASE:
+	      filesStatuses.clear();
+	      break;
+	    default:
+	      // Nothing
+	      break;
+	  }
+
+	  fireTreeStructureChanged(this, null, null, null);
 	}
 
 	/**
@@ -127,7 +125,6 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * TODO EXM-41133 Sorin Return the added TreePaths.
 	 */
 	private void insertNodes(List<FileStatus> fileToBeUpdated) {
-
 		for (FileStatus fileStatus : fileToBeUpdated) {
 			TreeUtil.buildTreeFromString(this, fileStatus.getFileLocation());
 		}
@@ -265,9 +262,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
       }
     }
     
-    GitCommand action = GitCommand.UNSTAGE;
+    GitOperation action = GitOperation.UNSTAGE;
     if (!inIndex) {
-      action = GitCommand.STAGE;
+      action = GitOperation.STAGE;
     }
     
     stageController.doGitCommand(filesToBeUpdated, action);

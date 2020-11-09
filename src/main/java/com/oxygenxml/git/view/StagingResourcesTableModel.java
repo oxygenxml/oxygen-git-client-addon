@@ -15,10 +15,10 @@ import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.GitCommandState;
+import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 
 /**
  * Custom table model
@@ -181,9 +181,9 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		  }
 		}
 
-		GitCommand action = GitCommand.UNSTAGE;
+		GitOperation action = GitOperation.UNSTAGE;
 		if (!inIndex) {
-		  action = GitCommand.STAGE;
+		  action = GitOperation.STAGE;
 		}
 		
     gitController.doGitCommand(filesToBeUpdated, action);
@@ -194,17 +194,15 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * 
 	 * @param changeEvent Change information.
 	 */
-	public void stateChanged(GitEvent changeEvent) {
+	void stateChanged(GitEventInfo changeEvent) {
 	  if (logger.isDebugEnabled()) {
 	    logger.debug("Change event in the " + (inIndex ? "'unstaged'" : "'staged'") + " area: " + changeEvent);
 	  }
-	  
-    if (changeEvent.getGitComandState() == GitCommandState.SUCCESSFULLY_ENDED) {
-      updateTableModel(changeEvent);
-      removeDuplicates();
-      Collections.sort(filesStatuses, fileStatusComparator);
-      fireTableDataChanged();
-    }
+
+	  updateTableModel(changeEvent);
+	  removeDuplicates();
+	  Collections.sort(filesStatuses, fileStatusComparator);
+	  fireTableDataChanged();
 	}
 
 	/**
@@ -212,23 +210,23 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	 * 
 	 * @param changeEvent Event.
 	 */
-  private void updateTableModel(GitEvent changeEvent) {
-    switch (changeEvent.getGitCommand()) {
+  private void updateTableModel(GitEventInfo changeEvent) {
+    switch (changeEvent.getGitOperation()) {
       case STAGE:
         if (inIndex) {
-          insertRows(GitAccess.getInstance().getStagedFile(changeEvent.getAffectedFiles()));
+          insertRows(GitAccess.getInstance().getStagedFile(((FileGitEventInfo) changeEvent).getAffectedFilePaths()));
         } else {
-          deleteRows(changeEvent.getOldAffectedFiles());
+          deleteRows(((FileGitEventInfo) changeEvent).getAffectedFileStatuses());
         }
         break;
       case UNSTAGE:
         if (inIndex) {
-          deleteRows(changeEvent.getOldAffectedFiles());
+          deleteRows(((FileGitEventInfo) changeEvent).getAffectedFileStatuses());
         } else {
           // Things were taken out of the INDEX. 
           // The same resource might be present in the UnStaged and INDEX. Remove old states.
-          deleteRows(changeEvent.getOldAffectedFiles());
-          insertRows(GitAccess.getInstance().getUnstagedFiles(changeEvent.getAffectedFiles()));
+          deleteRows(((FileGitEventInfo) changeEvent).getAffectedFileStatuses());
+          insertRows(GitAccess.getInstance().getUnstagedFiles(((FileGitEventInfo) changeEvent).getAffectedFilePaths()));
         }
         break;
       case COMMIT:
@@ -238,7 +236,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
         }
         break;
       case DISCARD:
-        deleteRows(changeEvent.getOldAffectedFiles());
+        deleteRows(((FileGitEventInfo) changeEvent).getAffectedFileStatuses());
         break;
       case MERGE_RESTART:
         filesStatuses.clear();

@@ -1,48 +1,23 @@
 package com.oxygenxml.git.service;
 
-import java.io.File;
-
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
 
 /**
  * An adapter.
- *  
- * @author alex_jitianu
  */
 public class GitEventAdapter implements GitEventListener {
-
   @Override
-  public void repositoryChanged() {
-    // Adapter. Empty implementation.
-  }
-
-  @Override
-  public void stateChanged(GitEvent changeEvent) {
-    // Adapter. Empty implementation.
-  }
-
-  @Override
-  public void repositoryIsAboutToOpen(File repo) {
+  public void operationAboutToStart(GitEventInfo info) {
     // Auto-generated method stub
   }
 
   @Override
-  public void repositoryOpeningFailed(File repo, Throwable ex) {
+  public void operationSuccessfullyEnded(GitEventInfo info) {
     // Auto-generated method stub
   }
 
   @Override
-  public void branchChanged(String oldBranch, String newBranch) {
-    // Auto-generated method stub
-  }
-  
-  @Override
-  public void branchCreated(String newBranch) {
-    // Auto-generated method stub
-  }
-  
-  @Override
-  public void branchDeleted(String deletedBranch) {
+  public void operationFailed(GitEventInfo info, Throwable t) {
     // Auto-generated method stub
   }
 }

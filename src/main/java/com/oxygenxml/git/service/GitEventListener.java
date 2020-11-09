@@ -1,68 +1,28 @@
 package com.oxygenxml.git.service;
 
-import java.io.File;
-
-import com.oxygenxml.git.view.event.GitEvent;
+import com.oxygenxml.git.view.event.GitEventInfo;
 
 /**
  * Receives notifications when the state of the Git repository changes.
- * 
- * @author alex_jitianu
- * 
- * 
- * TODO We need a number of notifications:
- * 
- * - push/pull
  */
 public interface GitEventListener {
   /**
-   * A repository is about to be opened.
+   * Operation about to start.
    * 
-   * @param repo The repository.
+   * @param info Extra information about the current event.
    */
-  void repositoryIsAboutToOpen(File repo);
-  
+  void operationAboutToStart(GitEventInfo info);
   /**
-   * A new repository was loaded.
+   * Operation successfully ended.
    * 
-   * @param repository The path of the new repository.
+   * @param info Extra information about the current event.
    */
-  void repositoryChanged();
-  
+  void operationSuccessfullyEnded(GitEventInfo info);
   /**
-   * A repository could not be opened.
+   * Operation failed.
    * 
-   * @param repo The repository.
-   * @param ex   The exception that broke the opening. May be <code>null</code>.
+   * @param info Extra information about the current event.
+   * @param t    Exception/error related to the failure. May be <code>null</code>.
    */
-  void repositoryOpeningFailed(File repo, Throwable ex);
-  
-  /**
-   * The state of some files changed because of a specific command.
-   * 
-   * @param changeEvent Details about the change.
-   */
-  void stateChanged(GitEvent changeEvent);
-  
-  /**
-   * The active branch changed.
-   * 
-   * @param oldBranch Previous branch qualified name.
-   * @param newBranch New branch qualified name.
-   */
-  void branchChanged(String oldBranch, String newBranch);
-  
-  /**
-   * A branch was created.
-   * 
-   * @param newBranch The branch created.
-   */
-  void branchCreated(String newBranch);
-
-  /**
-   * A branch was deleted.
-   * 
-   * @param deletedBranch The branch deleted.
-   */
-  void branchDeleted(String deletedBranch);
+  void operationFailed(GitEventInfo info, Throwable t);
 }

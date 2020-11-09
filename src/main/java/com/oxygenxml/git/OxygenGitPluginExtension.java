@@ -6,7 +6,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 
@@ -37,9 +36,9 @@ import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.event.GitCommand;
-import com.oxygenxml.git.view.event.GitCommandState;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.historycomponents.HistoryController;
 import com.oxygenxml.git.view.historycomponents.HistoryPanel;
@@ -195,6 +194,27 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 			pluginWorkspaceAccess.addViewComponentCustomizer(
 			    viewInfo -> {
+			      GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+			        private Timer cursorTimer = new Timer(
+			            1000,
+			            e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
+			        
+			        @Override
+			        public void operationAboutToStart(GitEventInfo info) {
+			          cursorTimer.restart();
+			        }
+			        @Override
+			        public void operationSuccessfullyEnded(GitEventInfo info) {
+			          cursorTimer.stop();
+			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+			        }
+			        @Override
+			        public void operationFailed(GitEventInfo info, Throwable t) {
+			          cursorTimer.stop();
+			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+			        }
+			      });
+			      
             // The constants' values are defined in plugin.xml
             if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
               customizeGitStagingView(gitCtrl, viewInfo);
@@ -255,49 +275,27 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     
     GitAccess.getInstance().addGitListener(new GitEventAdapter() {
       @Override
-      public void repositoryIsAboutToOpen(File repo) {
-        SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
-      }
-      
-      @Override
-      public void repositoryChanged() {
-        SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-      }
-      
-      @Override
-      public void repositoryOpeningFailed(File repo, Throwable ex) {
-        SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-      }
-     
-      private Timer cursorTimer = new Timer(
-          1000,
-          e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
-      @Override
-      public void stateChanged(com.oxygenxml.git.view.event.GitEvent changeEvent) {
-        GitCommand cmd = changeEvent.getGitCommand();
-        GitCommandState cmdState = changeEvent.getGitComandState();
-        if (cmdState == GitCommandState.STARTED) {
-          cursorTimer.restart();
-        } else if (cmdState == GitCommandState.SUCCESSFULLY_ENDED || cmdState == GitCommandState.FAILED) {
-          cursorTimer.stop();
-          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-        
-          if (cmd == GitCommand.CONTINUE_REBASE || cmd == GitCommand.RESET_TO_COMMIT) {
-            gitRefreshSupport.call();
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        GitOperation operation = info.getGitOperation();
+        if (operation == GitOperation.CHECKOUT
+            || operation == GitOperation.CONTINUE_REBASE 
+            || operation == GitOperation.RESET_TO_COMMIT) {
+          gitRefreshSupport.call();
+          
+          if (operation == GitOperation.CHECKOUT) {
+            try {
+              FileHelper.refreshProjectView();
+            } catch (NoRepositorySelected e) {
+              logger.debug(e, e);
+            }
           }
         }
       }
-      
       @Override
-      public void branchChanged(String oldBranch, String newBranch) {
-        gitRefreshSupport.call();
-        
-        cursorTimer.stop();
-        SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-        try {
-          FileHelper.refreshProjectView();
-        } catch (NoRepositorySelected e) {
-          logger.debug(e, e);
+      public void operationFailed(GitEventInfo info, Throwable t) {
+        GitOperation operation = info.getGitOperation();
+        if (operation == GitOperation.CONTINUE_REBASE || operation == GitOperation.RESET_TO_COMMIT) {
+          gitRefreshSupport.call();
         }
       }
     });

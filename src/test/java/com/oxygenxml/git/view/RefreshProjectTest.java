@@ -18,7 +18,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.event.GitCommand;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.GitController;
 
 import junit.framework.TestCase;
@@ -101,7 +101,7 @@ public class RefreshProjectTest extends TestCase {
           },
           new GitController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
               // Do nothing
             }
           });
@@ -151,7 +151,7 @@ public class RefreshProjectTest extends TestCase {
           },
           new GitController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
               // Do nothing
             }
           });
@@ -199,7 +199,7 @@ public class RefreshProjectTest extends TestCase {
           },
           new GitController() {
             @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitCommand action) {
+            public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
               // Do nothing
             }
           });
