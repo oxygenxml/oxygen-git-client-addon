@@ -78,6 +78,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
         updateUI(branchNameField.getText());
       }
     });
+    branchNameField.requestFocus();
 
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
