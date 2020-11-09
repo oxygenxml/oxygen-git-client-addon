@@ -197,7 +197,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			      GitAccess.getInstance().addGitListener(new GitEventAdapter() {
 			        private Timer cursorTimer = new Timer(
 			            1000,
-			            e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
+			            e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(
+			                Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
 			        
 			        @Override
 			        public void operationAboutToStart(GitEventInfo info) {
