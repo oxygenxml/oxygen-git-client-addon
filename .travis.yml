@@ -6,7 +6,7 @@ addons:
     token: "${SONAR_CLOUD_TOKEN}"
 dist: trusty
 jdk:
- - openjdk14
+ - openjdk11
 matrix:
   fast_finish: true
 install: true
