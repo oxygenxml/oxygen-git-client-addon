@@ -74,7 +74,7 @@ public class RebasePanel extends JPanel {
    */
   private void createGUI() {
     setLayout(new FlowLayout(
-        FlowLayout.LEFT,
+        FlowLayout.CENTER,
         2 *  UIConstants.COMPONENT_LEFT_PADDING,
         0));
 

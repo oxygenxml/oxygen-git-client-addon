@@ -315,7 +315,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
     gbc.gridx = 0;
 		gbc.gridy ++;
 		gbc.insets = new Insets(10, 2, 10, 0);
-    gbc.anchor = GridBagConstraints.WEST;
+    gbc.anchor = GridBagConstraints.CENTER;
     gbc.fill = GridBagConstraints.NONE;
     gbc.weightx = 1;
     gbc.weighty = 0;
