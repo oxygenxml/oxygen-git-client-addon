@@ -9,6 +9,7 @@ import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.eclipse.jgit.lib.Constants;
@@ -120,12 +121,12 @@ public class TreeUtil {
 	 * @return The index
 	 */
 	public static int childIndex(final GitTreeNode node, final String childValue) {
-		Enumeration<GitTreeNode> children = node.children();
+		Enumeration<TreeNode> children = node.children();
 		GitTreeNode child = null;
 		int index = -1;
 
 		while (children.hasMoreElements() && index < 0) {
-			child = children.nextElement();
+			child = (GitTreeNode) children.nextElement();
 
 			if (child.getUserObject() != null && childValue.equals(child.getUserObject())) {
 				index = node.getIndex(child);
