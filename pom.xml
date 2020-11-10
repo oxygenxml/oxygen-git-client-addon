@@ -101,13 +101,11 @@
 		    <groupId>com.sun.xml.bind</groupId>
 		    <artifactId>jaxb-core</artifactId>
 		    <version>3.0.0-M5</version>
-		    <scope>provided</scope>
 		</dependency>
 		<dependency>
 		    <groupId>com.sun.xml.bind</groupId>
 		    <artifactId>jaxb-impl</artifactId>
 		    <version>3.0.0-M5</version>
-		    <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.oxygenxml</groupId>
