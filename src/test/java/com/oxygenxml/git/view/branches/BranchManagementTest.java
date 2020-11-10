@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Enumeration;
 
 import javax.swing.JTree;
+import javax.swing.tree.TreeNode;
 
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
@@ -59,9 +60,9 @@ public class BranchManagementTest extends GitTestBase{
     stringTree.append( currentNode.getUserObject());
     stringTree.append("\n");
     if (!currentNode.isLeaf()) {
-      Enumeration<GitTreeNode> children = currentNode.children();
+      Enumeration<TreeNode> children = currentNode.children();
       while (children.hasMoreElements()) {
-        serializeTree(stringTree, children.nextElement());
+        serializeTree(stringTree, (GitTreeNode) children.nextElement());
       }
     }
   }
