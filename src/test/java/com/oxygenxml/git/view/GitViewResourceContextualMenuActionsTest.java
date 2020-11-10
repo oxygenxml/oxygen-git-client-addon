@@ -1,7 +1,5 @@
 package com.oxygenxml.git.view;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +23,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
   /**
    * Staging controller.
    */
-  private GitController stagingCtrl = new GitController();
+  private GitController stagingCtrl = new GitController(() -> refreshSupport);
   
   /**
    * <p><b>Description:</b> test the enabling state of the actions

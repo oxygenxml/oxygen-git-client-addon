@@ -17,6 +17,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.GitController;
@@ -32,6 +33,14 @@ import ro.sync.exml.workspace.api.standalone.project.ProjectController;
  * @author sorin_carbunaru
  */
 public class RefreshProjectTest extends TestCase {
+  
+  PanelRefresh refreshSupport = new PanelRefresh(null) {
+    @Override
+    protected int getScheduleDelay() {
+      // Execute refresh events immediately from tests.
+      return 1;
+    }
+  };
   
   private File refreshedFolder;
   
@@ -99,7 +108,7 @@ public class RefreshProjectTest extends TestCase {
               return Arrays.asList(new FileStatus(GitChangeType.ADD, "test.txt"));
             }
           },
-          new GitController() {
+          new GitController(() -> refreshSupport) {
             @Override
             public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
               // Do nothing
@@ -149,7 +158,7 @@ public class RefreshProjectTest extends TestCase {
                   new FileStatus(GitChangeType.UNTRACKED, "subFolder/test2.txt"));
             }
           },
-          new GitController() {
+          new GitController(() -> refreshSupport) {
             @Override
             public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
               // Do nothing
@@ -197,7 +206,7 @@ public class RefreshProjectTest extends TestCase {
               return Arrays.asList(new FileStatus(GitChangeType.SUBMODULE, "subModule"));
             }
           },
-          new GitController() {
+          new GitController(() -> refreshSupport) {
             @Override
             public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
               // Do nothing

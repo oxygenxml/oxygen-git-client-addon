@@ -159,7 +159,7 @@ public class FlatView2Test extends FlatViewTestBase {
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
-    RebasePanel rebasePanel = stagingPanel.getRebasePanel();
+    ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
@@ -238,7 +238,7 @@ public class FlatView2Test extends FlatViewTestBase {
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
-    RebasePanel rebasePanel = stagingPanel.getRebasePanel();
+    ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
@@ -327,7 +327,7 @@ public class FlatView2Test extends FlatViewTestBase {
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
-    RebasePanel rebasePanel = stagingPanel.getRebasePanel();
+    ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
@@ -337,7 +337,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    GitController sc = new GitController() {
+    GitController sc = new GitController(() -> refreshSupport) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
         return cmd == GitOperation.RESOLVE_USING_MINE;
@@ -420,7 +420,7 @@ public class FlatView2Test extends FlatViewTestBase {
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
-    RebasePanel rebasePanel = stagingPanel.getRebasePanel();
+    ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
@@ -523,7 +523,7 @@ public class FlatView2Test extends FlatViewTestBase {
     gitAccess.commit("Third commit.");
     
     // Now pull to generate conflict
-    RebasePanel rebasePanel = stagingPanel.getRebasePanel();
+    ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
@@ -619,7 +619,7 @@ public class FlatView2Test extends FlatViewTestBase {
       gitAccess.commit("Third commit.");
 
       // Now pull to generate conflict
-      RebasePanel rebasePanel = stagingPanel.getRebasePanel();
+      ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
       assertFalse(rebasePanel.isShowing());
       flushAWT();
       PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
@@ -662,7 +662,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertEquals("Cannot_continue_rebase_because_of_conflicts", warnMessage[0]);
 
       // Resolve conflict
-      GitController sc = new GitController() {
+      GitController sc = new GitController(() -> refreshSupport) {
         @Override
         protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
           return cmd == GitOperation.RESOLVE_USING_MINE;

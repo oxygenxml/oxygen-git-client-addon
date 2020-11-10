@@ -2106,7 +2106,31 @@ public class GitAccess {
     }
     return rootFolder;
   }
-
+  
+  /**
+   * Abort merge.
+   */
+  public void abortMerge() {
+    Set<String> conflictingFiles = getConflictingFiles();
+    fireOperationAboutToStart(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles));
+    GitOperationScheduler.getInstance().schedule(() -> {
+      try {
+        // Clear the merge state
+        Repository repository = getRepository();
+        repository.writeMergeCommitMsg(null);
+        repository.writeMergeHeads(null);
+        
+        // Reset the index and work directory to HEAD
+        git.reset().setMode(ResetType.HARD).call();
+        
+        fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles));
+      } catch (GitAPIException | IOException | NoRepositorySelected e) {
+        fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
+        logger.error(e, e);
+      }
+    });
+  }
+  
 	/**
    * Aborts and resets the current rebase
    */

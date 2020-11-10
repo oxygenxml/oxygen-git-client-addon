@@ -197,6 +197,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	void stateChanged(GitEventInfo changeEvent) {
 	  if (logger.isDebugEnabled()) {
 	    logger.debug("Change event in the " + (inIndex ? "'unstaged'" : "'staged'") + " area: " + changeEvent);
+	    
 	  }
 
 	  updateTableModel(changeEvent);
@@ -247,6 +248,9 @@ public class StagingResourcesTableModel extends AbstractTableModel {
       case ABORT_REBASE:
       case CONTINUE_REBASE:
         filesStatuses.clear();
+        break;
+      case ABORT_MERGE:
+        deleteRows(((FileGitEventInfo) changeEvent).getAffectedFileStatuses());
         break;
       default:
         break;

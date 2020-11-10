@@ -337,6 +337,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         } else if (gitOperation == GitOperation.CHECKOUT) {
           reset();
         } else {
+          if (gitOperation == GitOperation.MERGE_RESTART) {
+            commitMessageArea.setText(null);
+          }
           toggleCommitButtonAndUpdateMessageArea(gitOperation == GitOperation.STAGE);
         }
       }

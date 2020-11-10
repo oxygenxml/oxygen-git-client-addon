@@ -864,6 +864,11 @@ public class Tags {
   public static final String RESTART_MERGE_CONFIRMATION = "Restart_merge_confirmation";
   
   /**
+   * Abort merge
+   */
+  public static final String ABORT_MERGE = "Abort_merge";
+  
+  /**
    * Abort rebase.
    */
   public static final String ABORT_REBASE = "Abort_rebase";

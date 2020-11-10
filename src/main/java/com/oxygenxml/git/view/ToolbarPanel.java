@@ -235,6 +235,7 @@ public class ToolbarPanel extends JPanel {
             updateStatus();
           }).start();
         } else if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE) {
+          // Update status because we are coming from a detached HEAD
 	        updateStatus();
         }
       }

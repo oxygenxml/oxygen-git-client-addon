@@ -54,7 +54,7 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
 
     stagingPanel = new StagingPanel(
         refreshSupport,
-        new GitController(),
+        new GitController(() -> refreshSupport),
         null, 
         null, 
         new PushPullController() {

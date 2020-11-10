@@ -35,7 +35,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
     noOfRefreshes = 0;
     
     // Initialize history panel.
-    historyPanel = new HistoryPanel(new GitController(), PUSH_PULL_CONTROLLER) {
+    historyPanel = new HistoryPanel(new GitController(() -> refreshSupport), PUSH_PULL_CONTROLLER) {
       @Override
       protected int getUpdateDelay() {
         return 0;

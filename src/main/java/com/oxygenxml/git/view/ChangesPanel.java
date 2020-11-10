@@ -250,6 +250,7 @@ public class ChangesPanel extends JPanel {
           case COMMIT:
           case DISCARD:
           case MERGE_RESTART:
+          case ABORT_MERGE:
           case ABORT_REBASE:
           case CONTINUE_REBASE:
             SwingUtilities.invokeLater(() -> ChangesPanel.this.fileStatesChanged(info));

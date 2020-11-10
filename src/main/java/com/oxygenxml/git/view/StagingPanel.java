@@ -90,9 +90,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	private ChangesPanel stagedChangesPanel;
 	
 	/**
-	 * Rebase panel (continue, abort rebase buttons).
+	 * Conflict buttons panel (continue rebase, abort rebase, abort merge, etc).
 	 */
-	private RebasePanel rebasePanel;
+	private ConflictButtonsPanel conflictButtonsPanel;
 
 	/**
 	 * The commit panel
@@ -170,7 +170,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		workingCopySelectionPanel = new WorkingCopySelectionPanel();
 		commitPanel = new CommitAndStatusPanel(pushPullController);
 		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
-		rebasePanel = new RebasePanel();
+		conflictButtonsPanel = new ConflictButtonsPanel();
 		
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
@@ -319,7 +319,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
     gbc.fill = GridBagConstraints.NONE;
     gbc.weightx = 1;
     gbc.weighty = 0;
-		add(rebasePanel, gbc);
+		add(conflictButtonsPanel, gbc);
   }
 
 	/**
@@ -415,47 +415,73 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	 * State changed. React.
 	 */
 	@Override
-  public void stateChanged(PushPullEvent pushPullEvent) {
-	  SwingUtilities.invokeLater(
-	      new Runnable() { // NOSONAR
-      @Override
-      public void run() {
-        if (pushPullEvent.getActionStatus() == ActionStatus.STARTED) {
-          commitPanel.setStatusMessage(pushPullEvent.getMessage());
-          commitPanel.reset();
-          workingCopySelectionPanel.getBrowseButton().setEnabled(false);
-          workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
-          
-          if (toolbarPanel != null) {
-            toolbarPanel.updateButtonState(false);
-          }
+	public void stateChanged(PushPullEvent pushPullEvent) {
+	  SwingUtilities.invokeLater(new Runnable() {
+	    @Override
+	    public void run() {
+	      ActionStatus pushPullActionStatus = pushPullEvent.getActionStatus();
+	      switch (pushPullActionStatus) {
+	        case STARTED:
+	          treatPushPullStarted(pushPullEvent);
+	          break;
+	        case FINISHED:
+	          treatPushPullFinished(pushPullEvent);
+	          break;
+	        case UPDATE_COUNT:
+	          if (toolbarPanel != null) {
+	            toolbarPanel.updateStatus();
+	          }
+	          break;
+	        case PULL_MERGE_CONFLICT_GENERATED:
+	        case PULL_REBASE_CONFLICT_GENERATED:
+	          conflictButtonsPanel.setVisible(true);
+	          break;
+	        default:
+	          break;
+	      }
+	    }
 
-          commitPanel.getCommitButton().setEnabled(false);
-        } else if (pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
-          commitPanel.setStatusMessage(pushPullEvent.getMessage());
-          commitPanel.reset();
-          commitPanel.toggleCommitButtonAndUpdateMessageArea(false);
-          workingCopySelectionPanel.getBrowseButton().setEnabled(true);
-          workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
-          
-          // Update models.
-          GitStatus status = GitAccess.getInstance().getStatus();
-          unstagedChangesPanel.update(status.getUnstagedFiles());
-          stagedChangesPanel.update(status.getStagedFiles());
-          
-          if (toolbarPanel != null) {
-            toolbarPanel.updateButtonState(true);
-            toolbarPanel.updateStatus();
-          }
-        } else if (pushPullEvent.getActionStatus() == ActionStatus.UPDATE_COUNT) {
-          if (toolbarPanel != null) {
-            toolbarPanel.updateStatus();
-          }
-        } else if (pushPullEvent.getActionStatus() == ActionStatus.PULL_REBASE_CONFLICT_GENERATED) {
-          rebasePanel.setVisible(true);
-        }
-      }
-    });
+	    /**
+	     * Push/pull finished. Treat the event.
+	     * 
+	     * @param pushPullEventThe event.
+	     */
+	    private void treatPushPullFinished(PushPullEvent pushPullEvent) {
+	      commitPanel.setStatusMessage(pushPullEvent.getMessage());
+	      commitPanel.reset();
+	      commitPanel.toggleCommitButtonAndUpdateMessageArea(false);
+	      workingCopySelectionPanel.getBrowseButton().setEnabled(true);
+	      workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(true);
+
+	      // Update models.
+	      GitStatus status = GitAccess.getInstance().getStatus();
+	      unstagedChangesPanel.update(status.getUnstagedFiles());
+	      stagedChangesPanel.update(status.getStagedFiles());
+
+	      if (toolbarPanel != null) {
+	        toolbarPanel.updateButtonState(true);
+	        toolbarPanel.updateStatus();
+	      }
+	    }
+
+	    /**
+	     * Push/pull started. Treat the event.
+	     * 
+	     * @param pushPullEventThe event.
+	     */
+	    private void treatPushPullStarted(PushPullEvent pushPullEvent) {
+	      commitPanel.setStatusMessage(pushPullEvent.getMessage());
+	      commitPanel.reset();
+	      workingCopySelectionPanel.getBrowseButton().setEnabled(false);
+	      workingCopySelectionPanel.getWorkingCopyCombo().setEnabled(false);
+
+	      if (toolbarPanel != null) {
+	        toolbarPanel.updateButtonState(false);
+	      }
+
+	      commitPanel.getCommitButton().setEnabled(false);
+	    }
+	  });
 	}
 
 	/**
@@ -494,8 +520,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   /**
    * Update rebase panel visibility based on repo state.
    */
-  public void updateRebasePanelVisibilityBasedOnRepoState() {
-    rebasePanel.updateVisibilityBasedOnRepoState();
+  public void updateConflictButtonsPanelBasedOnRepoState() {
+    conflictButtonsPanel.updateBasedOnRepoState();
   }
   
 
@@ -538,9 +564,9 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   /**
    * !!!!!!! FOR TESTS !!!!!!
    * 
-   * @return The rebase panel.
+   * @return The conflict buttons panel.
    */
-  public RebasePanel getRebasePanel() {
-    return rebasePanel;
+  public ConflictButtonsPanel getConflictButtonsPanel() {
+    return conflictButtonsPanel;
   }
 }

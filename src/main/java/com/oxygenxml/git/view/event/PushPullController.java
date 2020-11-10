@@ -357,16 +357,20 @@ public class PushPullController implements Subject<PushPullEvent> {
     				  userCredentials.getUsername(),
     				  userCredentials.getPassword(),
     				  pullType);
-    		  switch (response.getStatus()) {
+          switch (response.getStatus()) {
     		  case OK:
     			  message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
     			  break;
     		  case CONFLICTS:
     			  showPullSuccessfulWithConflicts(response);
+    			  PushPullEvent pushPullEvent = null;
     			  if (pullType == PullType.REBASE) {
-    				  PushPullEvent pushPullEvent = new PushPullEvent(
-    						  ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
-    				  notifyObservers(pushPullEvent);
+    				  pushPullEvent = new PushPullEvent(ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
+    			  } else if (pullType == PullType.MERGE_FF) {
+    			    pushPullEvent = new PushPullEvent(ActionStatus.PULL_MERGE_CONFLICT_GENERATED, "");
+    			  }
+    			  if (pushPullEvent != null) {
+    			    notifyObservers(pushPullEvent);
     			  }
     			  break;
     		  case REPOSITORY_HAS_CONFLICTS:

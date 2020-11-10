@@ -37,6 +37,10 @@ public enum GitOperation {
    */
   MERGE_RESTART,
   /**
+   * Abort merge.
+   */
+  ABORT_MERGE,
+  /**
    * Abort rebase.
    */
   ABORT_REBASE,
