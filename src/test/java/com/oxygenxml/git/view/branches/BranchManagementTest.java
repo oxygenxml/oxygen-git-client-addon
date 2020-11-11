@@ -103,6 +103,7 @@ public class BranchManagementTest extends GitTestBase{
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
+    flushAWT();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
     
@@ -147,7 +148,7 @@ public class BranchManagementTest extends GitTestBase{
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
-    branchManagementPanel.refreshBranches();
+    flushAWT();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
     
@@ -192,6 +193,7 @@ public class BranchManagementTest extends GitTestBase{
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
+    flushAWT();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
     
@@ -232,6 +234,7 @@ public class BranchManagementTest extends GitTestBase{
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
+    flushAWT();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)tree.getModel().getRoot();
     
@@ -270,7 +273,9 @@ public class BranchManagementTest extends GitTestBase{
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
-    branchManagementPanel.filterTree("heads");
+    flushAWT();
+    branchManagementPanel.filterTree("hedz");
+    flushAWT();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -279,6 +284,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("Local");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -290,6 +296,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("as");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -300,6 +307,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("h2");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -338,7 +346,9 @@ public class BranchManagementTest extends GitTestBase{
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
-    branchManagementPanel.filterTree("remotes");
+    flushAWT();
+    branchManagementPanel.filterTree("rimotz");
+    flushAWT();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -347,6 +357,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("mote");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -359,6 +370,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("ter");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -370,6 +382,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("ch2");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -381,6 +394,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("te");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -430,7 +444,9 @@ public class BranchManagementTest extends GitTestBase{
 
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
+    flushAWT();
     branchManagementPanel.filterTree("ewu82m");
+    flushAWT();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     StringBuilder actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -439,6 +455,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("as");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -452,6 +469,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("Branch");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -467,6 +485,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("2");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -481,6 +500,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("al");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -493,6 +513,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("Rem");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -506,6 +527,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("te");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);
@@ -522,6 +544,7 @@ public class BranchManagementTest extends GitTestBase{
         actualTree.toString());
     
     branchManagementPanel.filterTree("a");
+    flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
     serializeTree(actualTree, root);

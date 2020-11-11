@@ -78,6 +78,7 @@ public class BranchActionsTest extends GitTestBase {
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
+    flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
    
@@ -138,6 +139,7 @@ public class BranchActionsTest extends GitTestBase {
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
+    flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
@@ -203,6 +205,7 @@ public class BranchActionsTest extends GitTestBase {
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
+    flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
@@ -267,6 +270,7 @@ public class BranchActionsTest extends GitTestBase {
     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
     branchManagementPanel.refreshBranches();
+    flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     

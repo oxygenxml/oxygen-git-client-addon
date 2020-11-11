@@ -244,21 +244,12 @@ public class FlatView2Test extends FlatViewTestBase {
     PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
     refreshSupport.call();
     waitForScheduler();
+    sleep(1000);
     
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
 
-    JButton abortButton = null;
-    Component[] components = rebasePanel.getComponents();
-    for (Component component : components) {
-      if (component instanceof JButton) {
-        JButton button = (JButton) component;
-        if (button.getText().equals("Abort_rebase")) {
-          abortButton = button;
-          break;
-        }
-      }
-    }
+    JButton abortButton = findFirstButton(rebasePanel, "Abort_rebase");
     assertNotNull(abortButton);
     
     abortButton.doClick();
