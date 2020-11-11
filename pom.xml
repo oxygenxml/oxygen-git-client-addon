@@ -42,30 +42,27 @@
 	</repositories>
 
 	<dependencies>
-	    <dependency>
-            <groupId>net.sf.jfcunit</groupId>
-            <artifactId>jfcunit</artifactId>
-            <version>2.08</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- Mockito and PowerMock -->
 		<dependency>
 		    <groupId>org.mockito</groupId>
-		    <artifactId>mockito-all</artifactId>
-		    <version>1.10.19</version>
+		    <artifactId>mockito-core</artifactId>
+		    <version>3.6.0</version>
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
-	    	<groupId>org.powermock</groupId>
-	        <artifactId>powermock-api-mockito</artifactId>
-	        <version>1.6.2</version>
-	        <scope>test</scope>
-	    </dependency>
+		    <groupId>org.powermock</groupId>
+		    <artifactId>powermock-api-mockito2</artifactId>
+		    <version>2.0.9</version>
+		    <scope>test</scope>
+		</dependency>
 	    <dependency>
-	    	<groupId>org.powermock</groupId>
-	        <artifactId>powermock-module-junit4</artifactId>
-	        <version>1.6.2</version>
+			<groupId>org.powermock</groupId>
+  			<artifactId>powermock-module-junit4</artifactId>
+ 			<version>2.0.9</version>
 	        <scope>test</scope>
 	    </dependency>
+	    
+	    <!-- JGit -->
 	    <dependency>
 		    <groupId>org.eclipse.jgit</groupId>
 		    <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
@@ -83,6 +80,7 @@
 		    <scope>test</scope>
 		</dependency>
 		
+		<!-- JAXB -->
 		<dependency>
 		    <groupId>javax.annotation</groupId>
 		    <artifactId>javax.annotation-api</artifactId>
@@ -114,24 +112,34 @@
 		    <version>2.3.3</version>
 		</dependency>
 		
+		<!-- Oxygen SDK -->
 		<dependency>
 			<groupId>com.oxygenxml</groupId>
 			<artifactId>oxygen-sdk</artifactId>
 			<version>20.1.0.3</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+            <groupId>net.sf.jfcunit</groupId>
+            <artifactId>jfcunit</artifactId>
+            <version>2.08</version>
+            <scope>test</scope>
+        </dependency>
+        
 		<!-- JGIT uses slf4j. We will distribute an implementation to avoid class 
 			loader issues. -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.30</version>
 			<exclusions>
 				<exclusion>
 					<groupId>log4j</groupId>
