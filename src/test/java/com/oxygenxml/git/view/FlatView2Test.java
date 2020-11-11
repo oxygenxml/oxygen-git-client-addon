@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Component;
 import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.Future;
@@ -23,8 +22,8 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 

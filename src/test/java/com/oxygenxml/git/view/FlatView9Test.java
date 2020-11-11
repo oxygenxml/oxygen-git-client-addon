@@ -1,19 +1,12 @@
 package com.oxygenxml.git.view;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevTree;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.treewalk.AbstractTreeIterator;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;

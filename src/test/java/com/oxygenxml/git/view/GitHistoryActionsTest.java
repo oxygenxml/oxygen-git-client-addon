@@ -229,7 +229,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       assertEquals("[Open_previous_version]", dumpActions(actions));
       
       final StringBuilder b = new StringBuilder();
-      Mockito.when(PluginWorkspaceProvider.getPluginWorkspace().open((URL)Mockito.anyObject())).thenAnswer(new Answer<Void>() {
+      Mockito.when(PluginWorkspaceProvider.getPluginWorkspace().open((URL)Mockito.any())).thenAnswer(new Answer<Void>() {
         @Override
         public Void answer(InvocationOnMock invocation) throws Throwable {
           b.append(invocation.getArguments()[0].toString());
