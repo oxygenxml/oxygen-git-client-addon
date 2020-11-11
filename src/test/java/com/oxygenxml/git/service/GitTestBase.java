@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -676,6 +677,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     FileSystemUtil.deleteRecursivelly(tmp);
     
     FileSystemUtil.deleteRecursivelly(new File("target/test-resources"));
+    
+    new File("src/test/resources/Options.xml").delete();
   }
 
   /**
