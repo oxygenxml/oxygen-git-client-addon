@@ -634,7 +634,10 @@ public class FlatView2Test extends FlatViewTestBase {
       Mockito.doAnswer(new Answer<Void>() {
         @Override
         public Void answer(InvocationOnMock invocation) throws Throwable {
-          warnMessage[0] = invocation.getArguments()[0].toString();
+          Object[] arguments = invocation.getArguments();
+          if (arguments != null && arguments.length == 1) {
+            warnMessage[0] = arguments[0].toString();
+          }
           return null;
         }
       }).when(mockedPluginWS).showWarningMessage(Mockito.anyString());
