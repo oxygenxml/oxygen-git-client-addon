@@ -82,25 +82,6 @@ public class GitAccessPullTest extends GitTestBase{
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
     config.save();
-    
-    StandalonePluginWorkspace pluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspaceMock);
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(pluginWorkspaceMock).showWarningMessage(Mockito.anyString());
-    
-    ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
-    Mockito.when(pluginWorkspaceMock.getProjectManager()).thenReturn(projectCtrlMock);
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(projectCtrlMock).refreshFolders(Mockito.any());
-
 	}
 
 	@Test

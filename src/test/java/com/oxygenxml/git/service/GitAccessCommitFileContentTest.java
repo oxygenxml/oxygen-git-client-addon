@@ -13,7 +13,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
@@ -33,8 +32,10 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 public class GitAccessCommitFileContentTest {
 	protected final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitFileContentTest/local";
@@ -44,6 +45,56 @@ public class GitAccessCommitFileContentTest {
 	private Repository localRepo2;
 	private Repository remoteRepo;
 	protected GitAccess gitAccess;
+	
+	
+	public GitAccessCommitFileContentTest() {
+	  StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
+    WSOptionsStorage mockedWsOptionsStorage = Mockito.mock(WSOptionsStorage.class);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(mockedWsOptionsStorage).setOption(Mockito.anyString(), Mockito.any());
+    Mockito.doAnswer(new Answer<WSOptionsStorage>() {
+      @Override
+      public WSOptionsStorage answer(InvocationOnMock invocation) throws Throwable {
+        return mockedWsOptionsStorage;
+      }
+    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getOptionsStorage();
+    
+    XMLUtilAccess xmlUtilAccess = Mockito.mock(XMLUtilAccess.class);
+    Mockito.when(xmlUtilAccess.escapeTextValue(Mockito.anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        return (String) invocation.getArguments()[0];
+      }
+    });
+    Mockito.doAnswer(new Answer<XMLUtilAccess>() {
+      @Override
+      public XMLUtilAccess answer(InvocationOnMock invocation) throws Throwable {
+        return xmlUtilAccess;
+      }
+    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getXMLUtilAccess();
+
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(pluginWSMock).showWarningMessage(Mockito.anyString());
+    
+    ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
+    Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(projectCtrlMock).refreshFolders(Mockito.any());
+  }
 
 	@Before
 	public void init() throws URISyntaxException, IOException, InvalidRemoteException, TransportException,
@@ -76,25 +127,6 @@ public class GitAccessCommitFileContentTest {
 		remoteConfig.addFetchRefSpec(spec);
 		remoteConfig.update(config);
 		config.save();
-		
-    StandalonePluginWorkspace pluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspaceMock);
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(pluginWorkspaceMock).showWarningMessage(Mockito.anyString());
-    
-    ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
-    Mockito.when(pluginWorkspaceMock.getProjectManager()).thenReturn(projectCtrlMock);
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(projectCtrlMock).refreshFolders(Mockito.any());
-
 	}
 
 	@Test

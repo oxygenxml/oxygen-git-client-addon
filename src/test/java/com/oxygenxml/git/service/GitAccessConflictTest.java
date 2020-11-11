@@ -34,16 +34,18 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 public class GitAccessConflictTest {
   PanelRefresh refreshSupport = new PanelRefresh(null) {
@@ -106,10 +108,55 @@ public class GitAccessConflictTest {
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
     config.save();
 
+
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
+    WSOptionsStorage mockedWsOptionsStorage = Mockito.mock(WSOptionsStorage.class);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(mockedWsOptionsStorage).setOption(Mockito.anyString(), Mockito.any());
+    Mockito.doAnswer(new Answer<WSOptionsStorage>() {
+      @Override
+      public WSOptionsStorage answer(InvocationOnMock invocation) throws Throwable {
+        return mockedWsOptionsStorage;
+      }
+    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getOptionsStorage();
+    
+    XMLUtilAccess xmlUtilAccess = Mockito.mock(XMLUtilAccess.class);
+    Mockito.when(xmlUtilAccess.escapeTextValue(Mockito.anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        return (String) invocation.getArguments()[0];
+      }
+    });
+    Mockito.doAnswer(new Answer<XMLUtilAccess>() {
+      @Override
+      public XMLUtilAccess answer(InvocationOnMock invocation) throws Throwable {
+        return xmlUtilAccess;
+      }
+    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getXMLUtilAccess();
+
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(pluginWSMock).showWarningMessage(Mockito.anyString());
+    
+    ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
+    Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(projectCtrlMock).refreshFolders(Mockito.any());
   
     
-    StandalonePluginWorkspace pluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspaceMock);
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -117,16 +164,7 @@ public class GitAccessConflictTest {
         shownWarningMess[0] = message;
         return null;
       }
-    }).when(pluginWorkspaceMock).showWarningMessage(Mockito.anyString());
-    
-    ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
-    Mockito.when(pluginWorkspaceMock.getProjectManager()).thenReturn(projectCtrlMock);
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(projectCtrlMock).refreshFolders(Mockito.any());
+    }).when(pluginWSMock).showWarningMessage(Mockito.anyString());
     
     shownWarningMess[0] = "";
   }

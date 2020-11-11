@@ -15,15 +15,53 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.XMLUtilAccess;
+
 public class GitAccessRestoreLastCommitTest {
 
 	private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessRestoreLastCommitTest";
 	private GitAccess gitAccess;
+	
+	public GitAccessRestoreLastCommitTest() {
+	  StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+    
+    WSOptionsStorage mockedWsOptionsStorage = Mockito.mock(WSOptionsStorage.class);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(mockedWsOptionsStorage).setOption(Mockito.anyString(), Mockito.any());
+    
+    Mockito.doAnswer(new Answer<WSOptionsStorage>() {
+      @Override
+      public WSOptionsStorage answer(InvocationOnMock invocation) throws Throwable {
+        return mockedWsOptionsStorage;
+      }
+    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getOptionsStorage();
+    
+    XMLUtilAccess xmlUtilAccess = Mockito.mock(XMLUtilAccess.class);
+    Mockito.when(pluginWSMock.getXMLUtilAccess()).thenReturn(xmlUtilAccess);
+
+    Mockito.when(xmlUtilAccess.escapeTextValue(Mockito.anyString())).thenAnswer(new Answer<String>() {
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        return (String) invocation.getArguments()[0];
+      }
+    });
+  }
 
 	@Before
 	public void init() throws IllegalStateException, GitAPIException {

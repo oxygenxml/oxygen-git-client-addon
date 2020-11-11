@@ -84,6 +84,7 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.util.UtilAccess;
@@ -403,6 +404,21 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         return null;
       }
     }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(Mockito.any(), Mockito.any());
+    
+    WSOptionsStorage mockedWsOptionsStorage = Mockito.mock(WSOptionsStorage.class);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        return null;
+      }
+    }).when(mockedWsOptionsStorage).setOption(Mockito.anyString(), Mockito.any());
+    
+    Mockito.doAnswer(new Answer<WSOptionsStorage>() {
+      @Override
+      public WSOptionsStorage answer(InvocationOnMock invocation) throws Throwable {
+        return mockedWsOptionsStorage;
+      }
+    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getOptionsStorage();
     
     Mockito.doAnswer(new Answer<Void>() {
       @Override
