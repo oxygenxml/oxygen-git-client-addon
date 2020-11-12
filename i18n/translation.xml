@@ -13,6 +13,14 @@
         <val lang="ja_JP">Uncommitted changes</val>
         <val lang="nl_NL">Uncommitted changes</val>
     </key>
+    <key value="Abort_merge">
+        <comment>"Abort merge" message.</comment>
+        <val lang="en_US">Abort merge</val>
+        <val lang="de_DE">Abort merge</val>
+        <val lang="fr_FR">Abort merge</val>
+        <val lang="ja_JP">Abort merge</val>
+        <val lang="nl_NL">Abort merge</val>
+    </key>
     <key value = "Want_to_pull_question">
 		<comment>The message when the user has the choice to pull new commits.</comment>
         <val lang="en_US">Do you want to pull the remote changes into the local repository?</val>
