@@ -396,9 +396,9 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
-    Mockito.doAnswer(new Answer<Void>() {
+    Mockito.doAnswer(new Answer<Object>() {
       @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
+      public Object answer(InvocationOnMock invocation) throws Throwable {
         urls2compare.add((URL) invocation.getArguments()[0]);
         urls2compare.add((URL) invocation.getArguments()[1]);
         return null;
