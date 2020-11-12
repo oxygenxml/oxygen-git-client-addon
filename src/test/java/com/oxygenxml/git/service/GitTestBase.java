@@ -399,8 +399,11 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     Mockito.doAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        urls2compare.add((URL) invocation.getArguments()[0]);
-        urls2compare.add((URL) invocation.getArguments()[1]);
+        Object[] arguments = invocation.getArguments();
+        if (arguments.length == 2) {
+          urls2compare.add((URL) arguments[0]);
+          urls2compare.add((URL) arguments[1]);
+        }
         return null;
       }
     }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).openDiffFilesApplication(Mockito.any(), Mockito.any());
