@@ -297,7 +297,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
             Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
             FileGitEventInfo changeEvent = new FileGitEventInfo(GitOperation.UNSTAGE, affectedFiles);
-            unstagedChangesPanel.fileStatesChanged(changeEvent);
+            SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
           }
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
