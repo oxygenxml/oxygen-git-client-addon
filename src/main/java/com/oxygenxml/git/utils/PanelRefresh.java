@@ -342,15 +342,13 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Update the counters presented on the Pull/Push toolbar action.
 	 */
-	private void updateCounters(RepositoryStatus status) {
+  private void updateCounters(RepositoryStatus status) {
     final RepositoryStatus fStatus = status;
-	  SwingUtilities.invokeLater(() -> {
-      stagingPanel.getCommitPanel().setRepoStatus(fStatus);
-      if (stagingPanel.getToolbarPanel() != null) {
-        stagingPanel.getToolbarPanel().updateStatus();
-      }
-    });
-	}
+    stagingPanel.getCommitPanel().setRepoStatus(fStatus);
+    if (stagingPanel.getToolbarPanel() != null) {
+      stagingPanel.getToolbarPanel().updateStatus();
+    }
+  }
 
 	/**
 	 * Fetch the latest changes from the remote repository.
