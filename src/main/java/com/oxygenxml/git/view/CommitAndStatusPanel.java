@@ -689,13 +689,15 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 * @param the current status.
 	 */
 	public void setRepoStatus(final RepositoryStatus status) {
-		if (RepositoryStatus.UNAVAILABLE == status) {
-			statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
-		  statusLabel.setIcon(Icons.getIcon(Icons.VALIDATION_ERROR));
-		} else if (RepositoryStatus.AVAILABLE == status) {
-		  statusLabel.setText(null);
-		  statusLabel.setIcon(null);
-		}
+	  SwingUtilities.invokeLater(() -> {
+	    if (RepositoryStatus.UNAVAILABLE == status) {
+	      statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
+	      statusLabel.setIcon(Icons.getIcon(Icons.VALIDATION_ERROR));
+	    } else if (RepositoryStatus.AVAILABLE == status) {
+	      statusLabel.setText(null);
+	      statusLabel.setIcon(null);
+	    }
+	  });
 	}
 	
 	/**

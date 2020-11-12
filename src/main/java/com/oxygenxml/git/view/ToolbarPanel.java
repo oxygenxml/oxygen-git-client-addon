@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -354,7 +355,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Updates the local branches in the split menu button where you can checkout them.
 	 */
-  private void updateBranches() {
+  private void updateBranchesMenu() {
     boolean isVisible = branchesSplitMenuButton.isPopupMenuVisible();
     branchesSplitMenuButton.setPopupMenuVisible(false);
     
@@ -576,18 +577,20 @@ public class ToolbarPanel extends JPanel {
 	 */
 	public void updateStatus() {
     GitAccess gitAccess = GitAccess.getInstance();
-    updateBranches();
     
     this.pullsBehind = gitAccess.getPullsBehind();
-    pullMenuButton.repaint();
-    
     try {
       this.pushesAhead = gitAccess.getPushesAhead();
     } catch (RepoNotInitializedException e) {
       this.pushesAhead = -1;
       logger.debug(e, e);
     }
-    pushButton.repaint();
+    
+    SwingUtilities.invokeLater(() -> {
+      updateBranchesMenu();
+      pullMenuButton.repaint();
+      pushButton.repaint();
+    });
     
     Repository repo = null;
     try {
@@ -609,9 +612,12 @@ public class ToolbarPanel extends JPanel {
 		    tooltipText += "<br>" + translator.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
 		  }
 		  tooltipText += "</html>";
-		  branchesSplitMenuButton.setToolTipText(tooltipText);
-		  pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
-		  pullMenuButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
+		  String finalText = tooltipText;
+		  SwingUtilities.invokeLater(() -> {
+		    branchesSplitMenuButton.setToolTipText(finalText);
+		    pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
+		    pullMenuButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
+		  });
 		} else {
 			String branchTooltip = null;
 			if (currentBranchName != null && !currentBranchName.isEmpty()) {
@@ -696,7 +702,8 @@ public class ToolbarPanel extends JPanel {
 				        currentBranchName);
 				  }
 				}
-				pushButton.setToolTipText(pushButtonTooltip);
+				String pushButtonTooltipFinal = pushButtonTooltip;
+				SwingUtilities.invokeLater(() -> pushButton.setToolTipText(pushButtonTooltipFinal));
 
 				//  ===================== Pull button tooltip =====================
 				String pullButtonTooltip = "";
@@ -733,14 +740,15 @@ public class ToolbarPanel extends JPanel {
 				        + ".";
 				  }
 				}
-				pullMenuButton.setToolTipText(pullButtonTooltip);
+				String pullButtonTooltipFinal = pullButtonTooltip;
+				SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
         
 			}
-			
-			branchesSplitMenuButton.setToolTipText(branchTooltip);
+			String branchTooltipFinal = branchTooltip;
+			SwingUtilities.invokeLater(() ->branchesSplitMenuButton.setToolTipText(branchTooltipFinal));
 		}
-		
-		branchesSplitMenuButton.setText(branchInfoText);
+		String branchInfoTextFinal = branchInfoText;
+		SwingUtilities.invokeLater(() ->branchesSplitMenuButton.setText(branchInfoTextFinal));
 	}
 
 	/**
