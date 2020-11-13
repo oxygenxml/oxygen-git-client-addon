@@ -2061,8 +2061,11 @@ public class GitAccess {
 			  case BASE:
 			    if (!entries.isEmpty()) {
 			      toReturn = entries.get(0).getOldId().toObjectId();
-			    } else if (logger.isDebugEnabled()) {
-			      logger.debug("No BASE commit for: '" + path + "'");
+			    } else { 
+			      if (logger.isDebugEnabled()) {
+			        logger.debug("No BASE commit for: '" + path + "'");
+			      }
+			      toReturn = getLastLocalCommitForPath(path);
 			    }
 			    break;
 			  case LOCAL:
