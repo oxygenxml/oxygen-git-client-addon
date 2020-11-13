@@ -1,18 +1,9 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
@@ -20,8 +11,6 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -31,13 +20,14 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
+import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
-public class GitAccessCommitFileContentTest {
+public class GitAccessCommitFileContentTest extends TestCase {
 	protected final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitFileContentTest/local";
 	protected final static String SECOND_LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessCommitFileContentTest/local2";
 	private final static String REMOTE_TEST_REPOSITPRY = "target/test-resources/GitAccessCommitFileContentTest/remote";
@@ -96,9 +86,10 @@ public class GitAccessCommitFileContentTest {
     }).when(projectCtrlMock).refreshFolders(Mockito.any());
   }
 
-	@Before
-	public void init() throws URISyntaxException, IOException, InvalidRemoteException, TransportException,
-			GitAPIException, NoRepositorySelected {
+	@Override
+	protected void setUp() throws Exception {
+	  super.setUp();
+	  
 		gitAccess = GitAccess.getInstance();
 		gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
 		localRepo1 = gitAccess.getRepository();
@@ -130,8 +121,7 @@ public class GitAccessCommitFileContentTest {
 	}
 
 	@Test
-	public void testMineCommitFile() throws RepositoryNotFoundException, FileNotFoundException, InvalidRemoteException,
-			TransportException, IOException, GitAPIException, NoRepositorySelected, InterruptedException {
+	public void testMineCommitFile() throws Exception {
 		pushOneFileToRemote("hellllo");
 
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
@@ -154,8 +144,7 @@ public class GitAccessCommitFileContentTest {
 	}
 
 	@Test
-	public void testBaseCommitFile() throws RepositoryNotFoundException, FileNotFoundException, InvalidRemoteException,
-			TransportException, IOException, GitAPIException, NoRepositorySelected, InterruptedException {
+	public void testBaseCommitFile() throws Exception {
 
 		pushOneFileToRemote("test 1");
 		
@@ -200,8 +189,7 @@ public class GitAccessCommitFileContentTest {
 	}
 
 	@Test
-	public void testTheirsCommitFile() throws RepositoryNotFoundException, FileNotFoundException, InvalidRemoteException,
-			TransportException, IOException, GitAPIException, NoRepositorySelected, InterruptedException {
+	public void testTheirsCommitFile() throws Exception {
 		pushOneFileToRemote("hellllo");
 
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
@@ -223,9 +211,76 @@ public class GitAccessCommitFileContentTest {
 		
 		assertEquals(expected, actual);
 	}
+	
+	/**
+   * <p><b>Description:</b> for file that are not in conflict but are referenced from
+   * files that are, when asking for MINE we actually return LAST COMMIt for that file.</p>
+   * <p><b>Bug ID:</b> EXM-46176</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+	@Test
+	public void testMineCommitForFileNotInConflict() throws Exception {
+	  pushOneFileToRemote("hellllo");
 
-	protected void pushOneFileToRemote(String message) throws IOException, RepositoryNotFoundException,
-			FileNotFoundException, InvalidRemoteException, TransportException, GitAPIException, InterruptedException {
+	  ObjectId mine = gitAccess.getCommit(Commit.MINE, "test.txt");
+    assertNotNull(mine);
+    
+	  ObjectId local = gitAccess.getCommit(Commit.LOCAL, "test.txt");
+    assertNotNull(local);
+    
+	  assertEquals(mine, local);
+	}
+	
+	 /**
+   * <p><b>Description:</b> for file that are not in conflict but are referenced from
+   * files that are, when asking for THEIRS we actually return LAST COMMIt for that file.</p>
+   * <p><b>Bug ID:</b> EXM-46176</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testTheirsCommitForFileNotInConflict() throws Exception {
+    pushOneFileToRemote("hellllo");
+
+    ObjectId theirs = gitAccess.getCommit(Commit.THEIRS, "test.txt");
+    assertNotNull(theirs);
+    
+    ObjectId local = gitAccess.getCommit(Commit.LOCAL, "test.txt");
+    assertNotNull(local);
+    
+    assertEquals(theirs, local);
+  }
+  
+  /**
+  * <p><b>Description:</b> for file that are not in conflict but are referenced from
+  * files that are, when asking for BASE we return <code>null</code>.</p>
+  * <p><b>Bug ID:</b> EXM-46176</p>
+  *
+  * @author sorin_carbunaru
+  *
+  * @throws Exception
+  */
+ @Test
+ public void testBaseCommitForFileNotInConflict() throws Exception {
+   pushOneFileToRemote("hellllo");
+
+   assertNull(gitAccess.getCommit(Commit.BASE, "test.txt"));
+ }
+   
+
+	/**
+	 * Push one file to remote.
+	 * 
+	 * @param message The commit message.
+	 * 
+	 * @throws Exception
+	 */
+	protected void pushOneFileToRemote(String message) throws Exception {
 		gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
 		OptionsManager.getInstance().saveSelectedRepository(LOCAL_TEST_REPOSITPRY);
 
@@ -237,8 +292,8 @@ public class GitAccessCommitFileContentTest {
 		gitAccess.push("", "");
 	}
 
-	@After
-	public void freeResources() throws Exception {
+	@Override
+	protected void tearDown() throws Exception {
 	  // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
 	  System.gc();
@@ -253,5 +308,7 @@ public class GitAccessCommitFileContentTest {
 		FileUtils.deleteDirectory(dirToDelete);
 		dirToDelete = new File(SECOND_LOCAL_TEST_REPOSITORY);
 		FileUtils.deleteDirectory(dirToDelete);
+		
+		super.tearDown();
 	}
 }

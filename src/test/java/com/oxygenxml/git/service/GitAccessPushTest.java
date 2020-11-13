@@ -73,7 +73,7 @@ public class GitAccessPushTest extends GitTestBase {
 
 		// throws missingObjectException
 		try {
-		  remoteRepo.resolve(gitAccess.getLastLocalCommit().getName() + "^{commit}");
+		  remoteRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}");
 		  
 		  fail("A MissingObjectException is failed.");
 		} catch (MissingObjectException ex) {
@@ -97,8 +97,8 @@ public class GitAccessPushTest extends GitTestBase {
 
 		gitAccess.push("", "");
 
-		assertEquals(firstLocalRepo.resolve(gitAccess.getLastLocalCommit().getName() + "^{commit}"),
-				remoteRepo.resolve(gitAccess.getLastLocalCommit().getName() + "^{commit}"));
+		assertEquals(firstLocalRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"),
+				remoteRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"));
 
 	}
 	

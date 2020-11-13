@@ -1555,7 +1555,7 @@ public class GitAccess {
 	 * 
 	 * @return the last local commit
 	 */
-	public ObjectId getLastLocalCommit() {
+	public ObjectId getLastLocalCommitInRepo() {
 		Repository repo = git.getRepository();
 		try {
 			return repo.resolve("HEAD^{commit}");
@@ -2031,40 +2031,42 @@ public class GitAccess {
 	  ObjectId toReturn = null;
 		try {
 		  List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
-			boolean isTwoWayDiff = entries.size() < 3;
-			int index = 0;
+			int noOfDiffEntries = entries.size();
+      boolean isTwoWayDiff = noOfDiffEntries < 3;
 			switch (commit) {
 			  case MINE:
-			    index = isTwoWayDiff ? 0 : 1;
-	        if (index >= entries.size()) {
-	          throw new IOException("No diff info available for path: '" + path + "' and commit: '" + commit + "'");
-	        }
-	        toReturn =  entries.get(index).getOldId().toObjectId();
+			    int indexOfMine = isTwoWayDiff ? 0 : 1;
+			    if (indexOfMine < noOfDiffEntries) {
+			      toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
+			    } else {
+			      if (logger.isDebugEnabled()) {
+			        logger.debug("No MINE commit available for: '" + path + "'."
+			            + " Falling back to the last commit for this path.");
+			      }
+			      toReturn = getLastLocalCommitForPath(path);
+			    }
 			    break;
 			  case THEIRS:
-			    index = isTwoWayDiff ? 1 : 2;
-	        if (index >= entries.size()) {
-	          throw new IOException("No diff info available for path: '" + path + "' and commit: '" + commit + "'");
+			    int indexOfTheirs = isTwoWayDiff ? 1 : 2;
+	        if (indexOfTheirs < noOfDiffEntries) {
+	          toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
+	        } else {
+	          if (logger.isDebugEnabled()) {
+	            logger.debug("No THEIRS commit available for: '" + path + "'. "
+	                + "Falling back to the last commit for this path.");
+            }
+	          toReturn = getLastLocalCommitForPath(path);
 	        }
-	        toReturn =  entries.get(index).getOldId().toObjectId();
 			    break;
 			  case BASE:
-			    toReturn = entries.get(index).getOldId().toObjectId();
+			    if (!entries.isEmpty()) {
+			      toReturn = entries.get(0).getOldId().toObjectId();
+			    } else if (logger.isDebugEnabled()) {
+			      logger.debug("No BASE commit for: '" + path + "'");
+			    }
 			    break;
 			  case LOCAL:
-	        ObjectId lastLocalCommit = getLastLocalCommit();
-	        RevWalk revWalk = new RevWalk(git.getRepository());
-	        RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
-	        RevTree tree = revCommit.getTree();
-	        TreeWalk treeWalk = new TreeWalk(git.getRepository());
-	        treeWalk.addTree(tree);
-	        treeWalk.setRecursive(true);
-	        treeWalk.setFilter(PathFilter.create(path));
-	        if (treeWalk.next()) {
-	          toReturn = treeWalk.getObjectId(0);
-	        }
-	        treeWalk.close();
-	        revWalk.close();
+	        toReturn = getLastLocalCommitForPath(path);
 			    break;
 			}
 		} catch (GitAPIException | IOException e) {
@@ -2072,6 +2074,35 @@ public class GitAccess {
 		}
 		return toReturn;
 	}
+
+	/**
+	 * Get last local commit for resource path.
+	 * 
+	 * @param path The path.
+	 * 
+	 * @return the last local commit. Can be <code>null</code>.
+	 * 
+	 * @throws IOException
+	 */
+  private ObjectId getLastLocalCommitForPath(String path) throws IOException {
+    ObjectId toReturn = null;
+    
+    ObjectId lastLocalCommit = getLastLocalCommitInRepo();
+    RevWalk revWalk = new RevWalk(git.getRepository());
+    RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
+    RevTree tree = revCommit.getTree();
+    TreeWalk treeWalk = new TreeWalk(git.getRepository());
+    treeWalk.addTree(tree);
+    treeWalk.setRecursive(true);
+    treeWalk.setFilter(PathFilter.create(path));
+    if (treeWalk.next()) {
+      toReturn = treeWalk.getObjectId(0);
+    }
+    treeWalk.close();
+    revWalk.close();
+    
+    return toReturn;
+  }
 	
 	 /**
    * Clean up.

@@ -77,7 +77,7 @@ public class FlatView2Test extends FlatViewTestBase {
       File lockFile = new File(repoDir, ref.getName() + ".lock");
       boolean createNewFile = lockFile.createNewFile();
       assertTrue("Unnable to create lock file " + lockFile.getAbsolutePath(), createNewFile);
-      setFileContent(lockFile, gitAccess.getLastLocalCommit().getName());
+      setFileContent(lockFile, gitAccess.getLastLocalCommitInRepo().getName());
 
       // Commit a new version of the file.
       setFileContent(file, "modified");
