@@ -13,6 +13,38 @@
         <val lang="ja_JP">Uncommitted changes</val>
         <val lang="nl_NL">Uncommitted changes</val>
     </key>
+    <key value="When_detecting_repo_in_project">
+        <comment>Label in Git Client preferences page.</comment>
+        <val lang="en_US">When detecting a Git repository inside a newly opened project:</val>
+        <val lang="de_DE">When detecting a Git repository inside a newly opened project:</val>
+        <val lang="fr_FR">When detecting a Git repository inside a newly opened project:</val>
+        <val lang="ja_JP">When detecting a Git repository inside a newly opened project:</val>
+        <val lang="nl_NL">When detecting a Git repository inside a newly opened project:</val>
+    </key>
+    <key value="Auto_switch_to_detected_working_copy">
+        <comment>Option label.</comment>
+        <val lang="en_US">Automatically switch to the new working copy</val>
+        <val lang="de_DE">Automatically switch to the new working copy</val>
+        <val lang="fr_FR">Automatically switch to the new working copy</val>
+        <val lang="ja_JP">Automatically switch to the new working copy</val>
+        <val lang="nl_NL">Automatically switch to the new working copy</val>
+    </key>
+    <key value="Ask_switch_to_detected_working_copy">
+        <comment>Option label.</comment>
+        <val lang="en_US">Ask if Oxygen should switch to the new working copy</val>
+        <val lang="de_DE">Ask if Oxygen should switch to the new working copy</val>
+        <val lang="fr_FR">Ask if Oxygen should switch to the new working copy</val>
+        <val lang="ja_JP">Ask if Oxygen should switch to the new working copy</val>
+        <val lang="nl_NL">Ask if Oxygen should switch to the new working copy</val>
+    </key>
+    <key value="Do_nothing">
+        <comment>"Do nothing" message.</comment>
+        <val lang="en_US">Do nothing</val>
+        <val lang="de_DE">Do nothing</val>
+        <val lang="fr_FR">Do nothing</val>
+        <val lang="ja_JP">Do nothing</val>
+        <val lang="nl_NL">Do nothing</val>
+    </key>
     <key value="Abort_merge">
         <comment>"Abort merge" message.</comment>
         <val lang="en_US">Abort merge</val>

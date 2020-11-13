@@ -16,6 +16,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.OxygenGitPlugin;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
@@ -543,4 +544,21 @@ public class OptionsManager {
  public void setWarnOnChangeCommitId(String repositoryId, String commitId) {
    getOptions().setWarnOnChangeCommitId(repositoryId, commitId);
  }
+
+ /**
+  * Set what to do when a repository is detected when opening an Oxygen project.
+  *  
+  * @param whatToDo What to do.
+  */
+ public void setWhenRepoDetectedInProject(WhenRepoDetectedInProject whatToDo) {
+   getOptions().setWhenRepoDetectedInProject(whatToDo);
+ }
+
+ /**
+  * @return what to do when a repo is detected inside an Oxygen project.
+  */
+ public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
+   return getOptions().getWhenRepoDetectedInProject();
+ }
+ 
 }

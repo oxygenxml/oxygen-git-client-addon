@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
@@ -99,6 +100,12 @@ public class Options {
    */
 	@XmlElement(name = "unstagedResViewMode")
   private ResourcesViewMode unstagedResViewMode = ResourcesViewMode.FLAT_VIEW;
+	
+	/**
+	 * Option about what to do when opening a prject in Oxygen and detecting a Git repository.
+	 */
+	@XmlElement(name = "whenRepoDetectedInProject")
+	private WhenRepoDetectedInProject whenRepoDetectedInProject = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
   
 	/**
 	 * <code>true</code> to automatically push to remote when committing.
@@ -264,6 +271,22 @@ public class Options {
 	public Map<String, Boolean> getSshPromptAnswers() {
     return sshPromptAnswers;
   }
+
+	/**
+	 * Set what to do when a repository is detected when opening an Oxygen project.
+	 *  
+	 * @param whatToDo What to do.
+	 */
+	public void setWhenRepoDetectedInProject(WhenRepoDetectedInProject whatToDo) {
+	  this.whenRepoDetectedInProject = whatToDo;
+	}
+
+	/**
+	 * @return what to do when a repo is detected inside an Oxygen project.
+	 */
+	public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
+	  return whenRepoDetectedInProject;
+	}
 
 	@Override
 	public int hashCode() {

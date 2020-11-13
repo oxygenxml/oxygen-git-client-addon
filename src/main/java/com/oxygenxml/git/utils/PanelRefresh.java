@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 
+import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
@@ -225,7 +226,15 @@ public class PanelRefresh implements GitRefreshSupport {
         if (wcComboBox.isPopupVisible()) {
           wcComboBox.setPopupVisible(false);
         }
-        repoChanged = switchToProjectRepoIfUserAgrees(getCanonicalPath(repoDir));
+        
+        WhenRepoDetectedInProject whatToDo = OptionsManager.getInstance().getWhenRepoDetectedInProject();
+        String projectDirPath = getCanonicalPath(repoDir);
+        if (whatToDo == WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC) {
+          repoChanged = switchToProjectRepoIfUserAgrees(projectDirPath);
+        } else if (whatToDo == WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC) {
+          GitAccess.getInstance().setRepositoryAsync(projectDirPath);
+          repoChanged = true;
+        }
       }
     } catch (NoRepositorySelected e) {
       logger.warn(e, e);

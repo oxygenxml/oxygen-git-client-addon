@@ -1125,6 +1125,22 @@ public class Tags {
    */
   public static final String PREFERENCES = "Preferences";
   /**
+   * Label in preferences.
+   */
+  public static final String WHEN_DETECTING_REPO_IN_PROJECT = "When_detecting_repo_in_project";
+  /**
+   * Label in preferences.
+   */
+  public static final String AUTO_SWITCH_TO_DETECTED_WORKING_COPY = "Auto_switch_to_detected_working_copy";
+  /**
+   * Label in preferences.
+   */
+  public static final String ASK_SWITCH_TO_DETECTED_WORKING_COPY = "Ask_switch_to_detected_working_copy";
+  /**
+   * Label in preferences.
+   */
+  public static final String DO_NOTHING = "Do_nothing";
+  /**
    * Git Client. Translation loaded from Oxygen.
    */
   public static final String GIT_CLIENT = "Git_client";
