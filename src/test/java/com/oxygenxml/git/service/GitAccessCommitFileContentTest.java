@@ -269,7 +269,13 @@ public class GitAccessCommitFileContentTest extends TestCase {
  public void testBaseCommitForFileNotInConflict() throws Exception {
    pushOneFileToRemote("hellllo");
 
-   assertNull(gitAccess.getCommit(Commit.BASE, "test.txt"));
+   ObjectId theirs = gitAccess.getCommit(Commit.BASE, "test.txt");
+   assertNotNull(theirs);
+   
+   ObjectId local = gitAccess.getCommit(Commit.LOCAL, "test.txt");
+   assertNotNull(local);
+   
+   assertEquals(theirs, local);
  }
    
 
