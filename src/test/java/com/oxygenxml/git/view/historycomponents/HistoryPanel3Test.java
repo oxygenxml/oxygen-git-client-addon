@@ -90,7 +90,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       flushAWT();
 
-      JTable historyTable = historyPanel.getAffectedFilesTable();
+      JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       dump = dumpHistory(model.getAllCommits());
       assertEquals(expected, dump);

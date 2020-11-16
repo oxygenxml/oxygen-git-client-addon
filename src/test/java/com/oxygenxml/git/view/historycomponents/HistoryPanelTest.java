@@ -59,7 +59,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       flushAWT();
 
-      JTable historyTable = historyPanel.getAffectedFilesTable();
+      JTable historyTable = historyPanel.getHistoryTable();
 
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
 
@@ -158,7 +158,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     historyPanel.showRepositoryHistory();
     flushAWT();
 
-    JTable historyTable = historyPanel.getAffectedFilesTable();
+    JTable historyTable = historyPanel.getHistoryTable();
 
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
 

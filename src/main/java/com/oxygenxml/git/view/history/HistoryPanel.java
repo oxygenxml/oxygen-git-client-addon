@@ -844,4 +844,11 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
   public JTable getAffectedFilesTable() {
     return affectedFilesTable;
   }
+  
+  /**
+   * @return the history table.
+   */
+  public JTable getHistoryTable() {
+    return historyTable;
+  }
 }
