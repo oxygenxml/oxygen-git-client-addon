@@ -104,7 +104,7 @@ public class FlatView10Test extends FlatViewTestBase {
     assertNotNull(abortMergeBtn);
     
     // Resolve using mine
-    GitController gitCtrl = new GitController(() -> refreshSupport) {
+    GitController gitCtrl = new GitController() {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
         return cmd == GitOperation.RESOLVE_USING_MINE;
@@ -114,6 +114,7 @@ public class FlatView10Test extends FlatViewTestBase {
     gitCtrl.doGitCommand(
         Arrays.asList(testFileStatus),
         GitOperation.RESOLVE_USING_MINE);
+    refreshSupport.call();
     waitForScheduler();
     flushAWT();
 

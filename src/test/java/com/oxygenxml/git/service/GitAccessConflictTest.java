@@ -215,7 +215,7 @@ public class GitAccessConflictTest {
 		gitAccess.commit("conflict");
 		gitAccess.pull("", "");
 		
-		GitController stageCtrl = new GitController(() -> refreshSupport);
+		GitController stageCtrl = new GitController();
     stageCtrl.doGitCommand(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
         GitOperation.RESOLVE_USING_THEIRS);
@@ -360,7 +360,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(() -> refreshSupport) {
+    GitController stageCtrl = new GitController() {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
         return cmd == GitOperation.RESOLVE_USING_MINE;
@@ -484,7 +484,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(() -> refreshSupport) {
+    GitController stageCtrl = new GitController() {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
         return cmd == GitOperation.RESOLVE_USING_MINE;
@@ -609,7 +609,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(() -> refreshSupport) {
+    GitController stageCtrl = new GitController() {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
         return cmd == GitOperation.RESOLVE_USING_THEIRS;
@@ -736,7 +736,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(() -> refreshSupport) {
+    GitController stageCtrl = new GitController() {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
         return cmd == GitOperation.RESOLVE_USING_THEIRS;
@@ -864,7 +864,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(() -> refreshSupport) {
+    GitController stageCtrl = new GitController() {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
         return cmd == GitOperation.RESOLVE_USING_THEIRS;

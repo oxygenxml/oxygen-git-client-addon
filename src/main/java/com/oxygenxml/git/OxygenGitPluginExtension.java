@@ -161,7 +161,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		  
 		  AuthenticationInterceptor.install();
 
-			GitController gitCtrl = new GitController(() -> gitRefreshSupport);
+			GitController gitCtrl = new GitController();
 			
 			// Add Git actions to the contextual menu of the Project view
 			ProjectMenuGitActionsProvider projectMenuGitActionsProvider = new ProjectMenuGitActionsProvider(

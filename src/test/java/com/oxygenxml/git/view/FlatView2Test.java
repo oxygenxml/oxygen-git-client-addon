@@ -327,7 +327,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    GitController sc = new GitController(() -> refreshSupport) {
+    GitController sc = new GitController() {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
         return cmd == GitOperation.RESOLVE_USING_MINE;
@@ -655,7 +655,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertEquals("Cannot_continue_rebase_because_of_conflicts", warnMessage[0]);
 
       // Resolve conflict
-      GitController sc = new GitController(() -> refreshSupport) {
+      GitController sc = new GitController() {
         @Override
         protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
           return cmd == GitOperation.RESOLVE_USING_MINE;

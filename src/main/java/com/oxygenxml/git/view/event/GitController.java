@@ -3,7 +3,6 @@ package com.oxygenxml.git.view.event;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -15,7 +14,6 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
-import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -39,19 +37,6 @@ public class GitController {
 	 * Access to the Git API.
 	 */
 	private GitAccess gitAccess = GitAccess.getInstance();
-	/**
-	 * Refresh support.
-	 */
-  private Supplier<GitRefreshSupport> gitRefreshSupportSupplier;
-
-  /**
-   * Constructor.
-   * 
-   * @param gitRefreshSupport Refresh support.
-   */
-	public GitController(Supplier<GitRefreshSupport> gitRefreshSupportSupplier) {
-    this.gitRefreshSupportSupplier = gitRefreshSupportSupplier;
-  }
 
   /**
 	 * Executes the given action on the given files.
@@ -79,13 +64,11 @@ public class GitController {
 	      case RESOLVE_USING_MINE:
 	        if (shouldContinueResolvingConflictUsingMineOrTheirs(GitOperation.RESOLVE_USING_MINE)) {
 	          resolveUsingMine(filesStatuses);
-	          gitRefreshSupportSupplier.get().call();
 	        }
 	        break;
 	      case RESOLVE_USING_THEIRS:
 	        if (shouldContinueResolvingConflictUsingMineOrTheirs(GitOperation.RESOLVE_USING_THEIRS)) {
 	          resolveUsingTheirs(filesStatuses);
-	          gitRefreshSupportSupplier.get().call();
 	        }
 	        break;
 	      default:
