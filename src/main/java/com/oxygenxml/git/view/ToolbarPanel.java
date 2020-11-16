@@ -233,11 +233,11 @@ public class ToolbarPanel extends JPanel {
           new Thread(() -> {
             fetch(true);
             // After the fetch is done, update the toolbar icons.
-            updateStatus();
+            refresh();
           }).start();
         } else if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE) {
           // Update status because we are coming from a detached HEAD
-	        updateStatus();
+	        refresh();
         }
       }
 	  });
@@ -575,7 +575,7 @@ public class ToolbarPanel extends JPanel {
 	 * Updates the presented information, like the Pull-behind, Pushes-ahead
 	 * and branch status.
 	 */
-	public void updateStatus() {
+	public void refresh() {
     GitAccess gitAccess = GitAccess.getInstance();
     
     this.pullsBehind = gitAccess.getPullsBehind();

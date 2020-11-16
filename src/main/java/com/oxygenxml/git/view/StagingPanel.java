@@ -429,7 +429,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	          break;
 	        case UPDATE_COUNT:
 	          if (toolbarPanel != null) {
-	            toolbarPanel.updateStatus();
+	            toolbarPanel.refresh();
 	          }
 	          break;
 	        case PULL_MERGE_CONFLICT_GENERATED:
@@ -460,7 +460,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 
 	      if (toolbarPanel != null) {
 	        toolbarPanel.updateButtonState(true);
-	        toolbarPanel.updateStatus();
+	        toolbarPanel.refresh();
 	      }
 	    }
 

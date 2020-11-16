@@ -355,7 +355,7 @@ public class PanelRefresh implements GitRefreshSupport {
     final RepositoryStatus fStatus = status;
     stagingPanel.getCommitPanel().setRepoStatus(fStatus);
     if (stagingPanel.getToolbarPanel() != null) {
-      stagingPanel.getToolbarPanel().updateStatus();
+      stagingPanel.getToolbarPanel().refresh();
     }
   }
 

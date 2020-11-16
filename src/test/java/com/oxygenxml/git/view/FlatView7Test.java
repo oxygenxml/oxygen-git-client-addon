@@ -62,7 +62,7 @@ public class FlatView7Test extends FlatViewTestBase {
     GitAccess.getInstance().setBranch("new_branch");
     
     ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
-    toolbarPanel.updateStatus();
+    toolbarPanel.refresh();
     
     assertEquals(
         "Cannot_pull\nNo_remote_branch.",
@@ -78,7 +78,7 @@ public class FlatView7Test extends FlatViewTestBase {
     stagingPanel.getPushPullController().push();
     waitForScheluerBetter();
     
-    toolbarPanel.updateStatus();
+    toolbarPanel.refresh();
     
     // Tooltip texts changed
     assertEquals(
@@ -105,7 +105,7 @@ public class FlatView7Test extends FlatViewTestBase {
     
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
     flushAWT();
-    toolbarPanel.updateStatus();
+    toolbarPanel.refresh();
     flushAWT();
     
     // Tooltip texts changed again
@@ -129,7 +129,7 @@ public class FlatView7Test extends FlatViewTestBase {
     waitForScheluerBetter();
     
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.updateStatus();
+    toolbarPanel.refresh();
     flushAWT();
     
     // Tooltip texts changed again
