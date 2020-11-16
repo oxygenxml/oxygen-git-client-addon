@@ -22,7 +22,7 @@ import org.junit.Test;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
-import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.historycomponents.HistoryPanelTestBase;
 
 /**

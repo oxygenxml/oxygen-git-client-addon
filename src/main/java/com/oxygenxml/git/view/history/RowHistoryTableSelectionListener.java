@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.historycomponents;
+package com.oxygenxml.git.view.history;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

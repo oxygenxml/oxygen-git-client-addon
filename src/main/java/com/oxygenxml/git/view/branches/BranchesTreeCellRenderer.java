@@ -17,7 +17,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.view.historycomponents.RoundedLineBorder;
+import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.renderer.RendererUtil;
 import com.oxygenxml.git.view.renderer.RenderingInfo;
 

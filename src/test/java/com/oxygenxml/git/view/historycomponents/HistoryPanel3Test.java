@@ -20,6 +20,9 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryCommitTableModel;
+import com.oxygenxml.git.view.history.HistoryPanel;
 
 /**
  * UI level tests for history.
@@ -87,7 +90,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       flushAWT();
 
-      JTable historyTable = historyPanel.historyTable;
+      JTable historyTable = historyPanel.getAffectedFilesTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       dump = dumpHistory(model.getAllCommits());
       assertEquals(expected, dump);

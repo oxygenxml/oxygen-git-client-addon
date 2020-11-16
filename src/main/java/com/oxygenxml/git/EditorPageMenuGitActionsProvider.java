@@ -13,7 +13,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitOperationScheduler;
-import com.oxygenxml.git.view.historycomponents.HistoryController;
+import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;

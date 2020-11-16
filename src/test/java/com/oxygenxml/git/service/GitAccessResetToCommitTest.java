@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
 
 public class GitAccessResetToCommitTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessRestoreLastCommitTest";

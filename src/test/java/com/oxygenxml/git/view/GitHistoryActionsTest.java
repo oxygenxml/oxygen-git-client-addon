@@ -23,8 +23,8 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
-import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
-import com.oxygenxml.git.view.historycomponents.HistoryViewContextualMenuPresenter;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 

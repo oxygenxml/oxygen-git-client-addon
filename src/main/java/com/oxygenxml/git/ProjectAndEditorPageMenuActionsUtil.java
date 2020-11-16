@@ -15,7 +15,7 @@ import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.historycomponents.HistoryController;
+import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

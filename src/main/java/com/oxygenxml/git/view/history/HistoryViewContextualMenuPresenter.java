@@ -1,6 +1,5 @@
-package com.oxygenxml.git.view.historycomponents;
+package com.oxygenxml.git.view.history;
 
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -16,10 +15,8 @@ import javax.swing.Action;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
@@ -33,15 +30,12 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.DiffPresenter;
-import com.oxygenxml.git.view.branches.BranchesUtil;
-import com.oxygenxml.git.view.branches.CreateBranchDialog;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
+import com.oxygenxml.git.view.history.actions.CreateBranchFromCommitAction;
+import com.oxygenxml.git.view.history.actions.ResetBranchToCommitAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Presents contextual actions over a resource in the history view.
@@ -233,69 +227,10 @@ public class HistoryViewContextualMenuPresenter {
     if (filePath != null) {
       jPopupMenu.addSeparator();
     }
-    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
-      // Create branch
-      jPopupMenu.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.CREATE_BRANCH) + "...") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          GitOperationScheduler.getInstance().schedule(() -> {
-            try {
-              CreateBranchDialog dialog = new CreateBranchDialog(
-                  Translator.getInstance().getTranslation(Tags.CREATE_BRANCH), null, BranchesUtil.getLocalBranches());
-              if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-                GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(),
-                    commitCharacteristics.getCommitId());
-              }
-            } catch (CheckoutConflictException e1) {
-              showCannotCheckoutBranchMessage();
-            } catch (HeadlessException | GitAPIException | NoRepositorySelected e1) {
-              LOGGER.debug(e1);
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
-            }
-          });
-        }
-
-        private void showCannotCheckoutBranchMessage() {
-          RepositoryState state = null;
-          try {
-            state = GitAccess.getInstance().getRepository().getRepositoryState();
-          } catch (NoRepositorySelected e2) {
-            LOGGER.debug(e2, e2);
-          }
-
-          if (state != null) {
-            String messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH;
-            switch (state) {
-              case SAFE:
-                messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_BECAUSE_UNCOMMITTED_CHANGES;
-                break;
-              case MERGING:
-                messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS;
-                break;
-              default:
-                break;
-            }
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-                Translator.getInstance().getTranslation(messageTag));
-          }
-        }
-      });
-      
-      // Reset branch to this commit
-      String branchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-      jPopupMenu.add(new AbstractAction(
-          MessageFormat.format(Translator.getInstance().getTranslation(Tags.RESET_BRANCH_TO_THIS_COMMIT), branchName)
-              + "...") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          ResetToCommitDialog dialog = new ResetToCommitDialog(branchName, commitCharacteristics);
-          dialog.setVisible(true);
-          if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-            GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitCharacteristics.getCommitId());
-            RepositoryChangeWatcher.markAsNotified();
-          }
-        }
-      });
+    String commitId = commitCharacteristics.getCommitId();
+    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitId)) {
+      jPopupMenu.add(new CreateBranchFromCommitAction(commitId));
+      jPopupMenu.add(new ResetBranchToCommitAction(commitCharacteristics));
     }
   }
 

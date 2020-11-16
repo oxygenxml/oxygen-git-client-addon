@@ -28,7 +28,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
-import com.oxygenxml.git.view.historycomponents.HistoryController;
+import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.editor.EditorPageConstants;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

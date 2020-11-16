@@ -60,7 +60,7 @@ import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.historycomponents.HistoryController;
+import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
 
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;

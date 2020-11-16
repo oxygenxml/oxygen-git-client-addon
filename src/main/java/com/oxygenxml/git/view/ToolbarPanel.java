@@ -60,7 +60,7 @@ import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.historycomponents.HistoryController;
+import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;

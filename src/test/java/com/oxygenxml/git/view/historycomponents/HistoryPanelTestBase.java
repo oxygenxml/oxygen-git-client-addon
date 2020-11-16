@@ -21,6 +21,10 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryCommitTableModel;
+import com.oxygenxml.git.view.history.HistoryPanel;
+import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
 
 /**
  * UI level tests for history.
@@ -63,7 +67,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
    * @param expected The expected content.
    */
   protected void assertAffectedFiles(HistoryPanel historyPanel, String expected) {
-    JTable affectedFilesTable = historyPanel.affectedFilesTable;
+    JTable affectedFilesTable = historyPanel.getAffectedFilesTable();
     StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
     String dumpFS = dumpFS(affectedFilesModel.getFilesStatuses());
 

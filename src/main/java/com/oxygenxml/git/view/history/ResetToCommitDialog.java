@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.historycomponents;
+package com.oxygenxml.git.view.history;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

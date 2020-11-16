@@ -73,7 +73,7 @@ import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.WindowMonitor;

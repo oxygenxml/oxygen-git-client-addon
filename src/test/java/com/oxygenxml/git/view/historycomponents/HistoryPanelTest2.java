@@ -14,6 +14,8 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 
 /**
  * UI level tests for history.
@@ -46,7 +48,7 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
   
       historyPanel.showRepositoryHistory();
   
-      JTable historyTable = historyPanel.historyTable;
+      JTable historyTable = historyPanel.getAffectedFilesTable();
   
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
   
@@ -71,7 +73,7 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
       // Invoke the Diff action to see if the built URLs are O.K.
       //---------------
       
-      StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) historyPanel.affectedFilesTable.getModel();
+      StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) historyPanel.getAffectedFilesTable().getModel();
       FileStatus fileStatus = affectedFilesModel.getFilesStatuses().get(0);
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
@@ -113,7 +115,7 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
   
       historyPanel.showRepositoryHistory();
   
-      JTable historyTable = historyPanel.historyTable;
+      JTable historyTable = historyPanel.getAffectedFilesTable();
   
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
   
@@ -139,7 +141,7 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
       // Invoke the Diff action to see if the built URLs are O.K.
       //---------------
       
-      StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) historyPanel.affectedFilesTable.getModel();
+      StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) historyPanel.getAffectedFilesTable().getModel();
       FileStatus fileStatus = affectedFilesModel.getFilesStatuses().get(0);
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
@@ -184,7 +186,7 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
 
     historyPanel.showRepositoryHistory();
 
-    JTable historyTable = historyPanel.historyTable;
+    JTable historyTable = historyPanel.getAffectedFilesTable();
 
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
 
@@ -233,7 +235,7 @@ public class HistoryPanelTest2 extends HistoryPanelTestBase {
 
     historyPanel.showRepositoryHistory();
 
-    JTable historyTable = historyPanel.historyTable;
+    JTable historyTable = historyPanel.getAffectedFilesTable();
 
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
 

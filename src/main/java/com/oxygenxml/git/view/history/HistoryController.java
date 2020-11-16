@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.historycomponents;
+package com.oxygenxml.git.view.history;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 

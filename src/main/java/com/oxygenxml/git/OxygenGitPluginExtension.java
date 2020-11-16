@@ -40,8 +40,8 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.historycomponents.HistoryController;
-import com.oxygenxml.git.view.historycomponents.HistoryPanel;
+import com.oxygenxml.git.view.history.HistoryController;
+import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
 
 import ro.sync.ecss.extensions.api.AuthorAccess;

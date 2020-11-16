@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.historycomponents;
+package com.oxygenxml.git.view.history;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -115,7 +115,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
   /**
    * The changed files from a commit.
    */
-  JTable affectedFilesTable;
+  private JTable affectedFilesTable;
   /**
    * The file path of the resource for which we are currently presenting the history. If <code>null</code>, we 
    * present the history for the entire repository.
@@ -836,5 +836,12 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
     if (isShowing() && pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
       refresh();
     }
+  }
+  
+  /**
+   * @return the table with the affected files.
+   */
+  public JTable getAffectedFilesTable() {
+    return affectedFilesTable;
   }
 }

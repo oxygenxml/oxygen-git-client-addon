@@ -14,7 +14,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
-import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
 
 /**
  * Tests for obtaining different versions of a file ({@link VersionIdentifier}) through a protocol.

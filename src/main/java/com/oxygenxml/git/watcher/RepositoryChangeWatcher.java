@@ -24,7 +24,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
+import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;

@@ -40,8 +40,8 @@ import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
-import com.oxygenxml.git.view.historycomponents.CommitCharacteristics;
-import com.oxygenxml.git.view.historycomponents.CommitsAheadAndBehind;
+import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 
 /**
  * Utility methods for working with commits.

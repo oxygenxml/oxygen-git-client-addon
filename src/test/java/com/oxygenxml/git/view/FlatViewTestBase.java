@@ -21,7 +21,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.historycomponents.HistoryController;
+import com.oxygenxml.git.view.history.HistoryController;
 
 /**
 * Base for the test classes related to the actions performed

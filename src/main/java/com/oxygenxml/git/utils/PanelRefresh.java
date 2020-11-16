@@ -32,7 +32,7 @@ import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
-import com.oxygenxml.git.view.historycomponents.HistoryPanel;
+import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
