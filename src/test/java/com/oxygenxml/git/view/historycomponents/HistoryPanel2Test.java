@@ -22,7 +22,7 @@ import com.oxygenxml.git.view.history.HistoryCommitTableModel;
  *  
  * @author alex_jitianu
  */
-public class HistoryPanelTest2 extends HistoryPanelTestBase {
+public class HistoryPanel2Test extends HistoryPanelTestBase {
 
   /**
    * Tests the affected files presented when a revision is selected inside the history panel.
