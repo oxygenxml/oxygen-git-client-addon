@@ -37,6 +37,41 @@ public class GitController {
 	 * Access to the Git API.
 	 */
 	private GitAccess gitAccess = GitAccess.getInstance();
+	
+	/**
+	 * Resolves the conflict state for the files by keeping the local version.
+	 * 
+	 * @param conflictFiles Conflict files.
+	 */
+	public void asyncResolveUsingMine(List<FileStatus> conflictFiles) {
+	  async(() ->  {
+	    if (shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution.RESOLVE_USING_MINE)) {
+        resolveUsingMine(conflictFiles);
+      }
+	  });
+	}
+	
+	 /**
+   * Resolves the conflict state for the files by keeping the remote version.
+   * 
+   * @param conflictFiles Conflict files.
+   */
+	 public void asyncResolveUsingTheirs(List<FileStatus> conflictFiles) {
+	    async(() ->  {
+	      if (shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution.RESOLVE_USING_THEIRS)) {
+          resolveUsingTheirs(conflictFiles);
+        }
+	    });
+	  }
+	
+	 /**
+	  * Runs a task on the Git operation thread.
+	  * 
+	  * @param r Git Task.
+	  */
+	private void async(Runnable r) {
+	  GitOperationScheduler.getInstance().schedule(r);
+	}
 
   /**
 	 * Executes the given action on the given files.
@@ -61,16 +96,6 @@ public class GitController {
 	      case DISCARD:
 	        discard(filesStatuses);
 	        break;
-	      case RESOLVE_USING_MINE:
-	        if (shouldContinueResolvingConflictUsingMineOrTheirs(GitOperation.RESOLVE_USING_MINE)) {
-	          resolveUsingMine(filesStatuses);
-	        }
-	        break;
-	      case RESOLVE_USING_THEIRS:
-	        if (shouldContinueResolvingConflictUsingMineOrTheirs(GitOperation.RESOLVE_USING_THEIRS)) {
-	          resolveUsingTheirs(filesStatuses);
-	        }
-	        break;
 	      default:
 	        break;
 	    }
@@ -80,11 +105,11 @@ public class GitController {
 	/**
 	 * Should continue resolving a conflict using 'mine' or 'theirs'.
 	 * 
-	 * @param cmd GitCommand.RESOLVE_USING_MINE or GitCommand.RESOLVE_USING_THEIRS.
+	 * @param cmd ConflictResolution.RESOLVE_USING_MINE or ConflictResolution.RESOLVE_USING_THEIRS.
 	 * 
 	 * @return <code>true</code> to continue resolving the conflict using 'mine' or 'theirs'.
 	 */
-  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(GitOperation cmd) {
+  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution cmd) {
     boolean shouldContinue = false;
     try {
       RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
@@ -110,8 +135,8 @@ public class GitController {
 	 * 
 	 * @return <code>true</code> to continue.
 	 */
-	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
-	  boolean isResolveUsingMine = cmd == GitOperation.RESOLVE_USING_MINE;
+	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
+	  boolean isResolveUsingMine = cmd == ConflictResolution.RESOLVE_USING_MINE;
     String actionName = isResolveUsingMine ? translator.getTranslation(Tags.RESOLVE_USING_MINE)
 	      : translator.getTranslation(Tags.RESOLVE_USING_THEIRS);
 	  String side = isResolveUsingMine ? translator.getTranslation(Tags.MINE)

@@ -17,14 +17,6 @@ public enum GitOperation {
    */
   DISCARD,
   /**
-   * Conflict resolution. Resolve using mine.
-   */
-  RESOLVE_USING_MINE,
-  /**
-   * Conflict resolution. Resolve using theirs.
-   */
-  RESOLVE_USING_THEIRS,
-  /**
    * Commit the given resources.
    */
   COMMIT,

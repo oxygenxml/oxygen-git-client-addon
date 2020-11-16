@@ -22,8 +22,8 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.event.ConflictResolution;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 
@@ -329,13 +329,11 @@ public class FlatView2Test extends FlatViewTestBase {
     
     GitController sc = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
-        return cmd == GitOperation.RESOLVE_USING_MINE;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
+        return cmd == ConflictResolution.RESOLVE_USING_MINE;
       }
     };
-    sc.doGitCommand(
-        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitOperation.RESOLVE_USING_MINE);
+    sc.asyncResolveUsingMine(Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     waitForScheduler();
     flushAWT();
 
@@ -657,13 +655,12 @@ public class FlatView2Test extends FlatViewTestBase {
       // Resolve conflict
       GitController sc = new GitController() {
         @Override
-        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
-          return cmd == GitOperation.RESOLVE_USING_MINE;
+        protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
+          return cmd == ConflictResolution.RESOLVE_USING_MINE;
         }
       };
-      sc.doGitCommand(
-          Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-          GitOperation.RESOLVE_USING_MINE);
+      sc.asyncResolveUsingMine(
+          Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
       flushAWT();
       
       // Pull again.
