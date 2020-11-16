@@ -382,7 +382,7 @@ public class PanelRefresh implements GitRefreshSupport {
         String message = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
         String passphrase = new PassphraseDialog(message).getPassphrase();
         if(passphrase != null) {
-          call();
+          return fetch();
         }
       }
     } catch (PrivateRepositoryException e) {
@@ -392,7 +392,7 @@ public class PanelRefresh implements GitRefreshSupport {
           GitAccess.getInstance().getHostName(), 
           translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE)).getUserCredentials();
       if (userCredentials != null) {
-        call();
+        return fetch();
       }
     } catch (Exception e) {
       logger.error(e, e);
