@@ -48,7 +48,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
   
       historyPanel.showRepositoryHistory();
   
-      JTable historyTable = historyPanel.getAffectedFilesTable();
+      JTable historyTable = historyPanel.getHistoryTable();
   
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
   
@@ -115,7 +115,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
   
       historyPanel.showRepositoryHistory();
   
-      JTable historyTable = historyPanel.getAffectedFilesTable();
+      JTable historyTable = historyPanel.getHistoryTable();
   
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
   
@@ -186,7 +186,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
 
     historyPanel.showRepositoryHistory();
 
-    JTable historyTable = historyPanel.getAffectedFilesTable();
+    JTable historyTable = historyPanel.getHistoryTable();
 
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
 
@@ -204,7 +204,13 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
     
     List<Object> collect = actions.stream().map(t -> t.getValue(Action.NAME)).collect(Collectors.toList());
     
-    assertEquals("[Open_file, Compare_file_with_previous_version, Compare_file_with_working_tree_version]", collect.toString());
+    assertEquals(
+        "[Compare_file_with_previous_version,"
+        + " Compare_file_with_working_tree_version,"
+        + " Open_file,"
+        + " Create_branch...,"
+        + " Reset_branch_to_this_commit...]",
+        collect.toString());
 
   }
 
@@ -235,7 +241,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
 
     historyPanel.showRepositoryHistory();
 
-    JTable historyTable = historyPanel.getAffectedFilesTable();
+    JTable historyTable = historyPanel.getHistoryTable();
 
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
 
