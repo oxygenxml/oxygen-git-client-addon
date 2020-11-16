@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,12 +17,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -55,6 +51,22 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	 * Commits ahead (to push) and behind (to pull).
 	 */
   private CommitsAheadAndBehind commitsAheadAndBehind;
+  /**
+   * The current branch name in the git repository.
+   */
+  private String currentBranchName;
+  /**
+   * Commit ID to a list of tags.
+   */
+  private Map<String, List<String>> tagMap;
+  /**
+   * Commit ID to a list of branch labels.
+   */
+  private Map<String, List<String>> localBranchMap;
+  /**
+   * Commit ID to a list of branch labels.
+   */
+  private Map<String, List<String>> remoteBranchMap;
 
 	/**
 	 * Construct the Table Renderer with accurate alignment.
@@ -62,9 +74,19 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	 * @param repository            The current repository
 	 * @param commitsAheadAndBehind Commits ahead (to push) and behind (to pull).
 	 */
-	public CommitMessageTableRenderer(Repository repository, CommitsAheadAndBehind commitsAheadAndBehind) {
+	public CommitMessageTableRenderer(
+	    Repository repository, 
+	    CommitsAheadAndBehind commitsAheadAndBehind,
+	    String branchName,
+	    Map<String, List<String>> tagMap,
+	    Map<String, List<String>> localBranchMap,
+	    Map<String, List<String>> remoteBranchMap) {
 		this.repository = repository;
     this.commitsAheadAndBehind = commitsAheadAndBehind;
+    this.currentBranchName = branchName;
+    this.tagMap = tagMap;
+    this.localBranchMap = localBranchMap;
+    this.remoteBranchMap = remoteBranchMap;
 
 		setLayout(new GridBagLayout());
 	}
@@ -128,26 +150,15 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 			if (toRender.equals(uncommittedChangesMessage)) {
 				toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
 			} else if (repository != null) {
-				// add labels in historyTable for tags and branch names from corresponding maps
-				try {
-				  GitAccess gitAccess = GitAccess.getInstance();
-				  
-					String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
-					Map<String, List<String>> tagMap = gitAccess.getTagMap(repository);
-					List<String> tagList = tagMap.get(abbreviatedId);
-					addTagOrBranchLabel(tagList, constr);
+				String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
+        List<String> tagList = tagMap.get(abbreviatedId);
+        addTagOrBranchLabel(tagList, constr);
 
-					Map<String, List<String>> localBranchMap = gitAccess.getBranchMap(repository, ConfigConstants.CONFIG_KEY_LOCAL);
-					List<String> localBranchList = localBranchMap.get(abbreviatedId);
-					addTagOrBranchLabel(localBranchList, constr);
+        List<String> localBranchList = localBranchMap.get(abbreviatedId);
+        addTagOrBranchLabel(localBranchList, constr);
 
-					Map<String, List<String>> remoteBranchMap = gitAccess.getBranchMap(repository, ConfigConstants.CONFIG_KEY_REMOTE);
-					List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
-					addTagOrBranchLabel(remoteBranchList, constr);
-
-				} catch (IOException | GitAPIException e) {
-					logger.debug(e, e);
-				}
+        List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
+        addTagOrBranchLabel(remoteBranchList, constr);
 			}
 		} else {
 			toRender = value != null ? value.toString() : "";
@@ -176,7 +187,6 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 			constr.insets = new Insets(0, 0, 0, 0);
 			int lineSize = 1;
 			int cornerSize = 6;
-			String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
 			for (String name : nameForLabelList) {
 				JLabel label = new JLabel(name);
         if (name.equals(currentBranchName)) {
