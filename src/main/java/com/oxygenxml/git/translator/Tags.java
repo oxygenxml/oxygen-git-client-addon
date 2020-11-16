@@ -1131,7 +1131,7 @@ public class Tags {
   /**
    * Label in preferences.
    */
-  public static final String AUTO_SWITCH_TO_DETECTED_WORKING_COPY = "Auto_switch_to_detected_working_copy";
+  public static final String ALWAYS_SWITCH_TO_DETECTED_WORKING_COPY = "Always_switch_to_detected_working_copy";
   /**
    * Label in preferences.
    */
@@ -1139,7 +1139,7 @@ public class Tags {
   /**
    * Label in preferences.
    */
-  public static final String DO_NOTHING = "Do_nothing";
+  public static final String NEVER_SWITCH_TO_DETECTED_WORKING_COPY = "Never_switch_to_detected_working_copy";
   /**
    * Git Client. Translation loaded from Oxygen.
    */

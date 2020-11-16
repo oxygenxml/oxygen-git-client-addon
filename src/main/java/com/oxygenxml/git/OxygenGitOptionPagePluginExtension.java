@@ -148,17 +148,17 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     repoInProjectSettingsPanel.add(label);
     
     ButtonGroup buttonGroup = new ButtonGroup();
-    autoSwitchToWCRadio = new JRadioButton(translator.getTranslation(Tags.AUTO_SWITCH_TO_DETECTED_WORKING_COPY));
+    autoSwitchToWCRadio = new JRadioButton(translator.getTranslation(Tags.ALWAYS_SWITCH_TO_DETECTED_WORKING_COPY));
     buttonGroup.add(autoSwitchToWCRadio);
     repoInProjectSettingsPanel.add(autoSwitchToWCRadio);
+    
+    doNothingRadio = new JRadioButton(translator.getTranslation(Tags.NEVER_SWITCH_TO_DETECTED_WORKING_COPY));
+    buttonGroup.add(doNothingRadio);
+    repoInProjectSettingsPanel.add(doNothingRadio);
     
     askToSwitchToWCRadio = new JRadioButton(translator.getTranslation(Tags.ASK_SWITCH_TO_DETECTED_WORKING_COPY));
     buttonGroup.add(askToSwitchToWCRadio);
     repoInProjectSettingsPanel.add(askToSwitchToWCRadio);
-    
-    doNothingRadio = new JRadioButton(translator.getTranslation(Tags.DO_NOTHING));
-    buttonGroup.add(doNothingRadio);
-    repoInProjectSettingsPanel.add(doNothingRadio);
     
     return repoInProjectSettingsPanel;
   }

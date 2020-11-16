@@ -21,29 +21,29 @@
         <val lang="ja_JP">When detecting a Git repository inside a newly opened project:</val>
         <val lang="nl_NL">When detecting a Git repository inside a newly opened project:</val>
     </key>
-    <key value="Auto_switch_to_detected_working_copy">
+    <key value="Always_switch_to_detected_working_copy">
         <comment>Option label.</comment>
-        <val lang="en_US">Automatically switch to the new working copy</val>
-        <val lang="de_DE">Automatically switch to the new working copy</val>
-        <val lang="fr_FR">Automatically switch to the new working copy</val>
-        <val lang="ja_JP">Automatically switch to the new working copy</val>
-        <val lang="nl_NL">Automatically switch to the new working copy</val>
+        <val lang="en_US">Always switch to the new working copy</val>
+        <val lang="de_DE">Always switch to the new working copy</val>
+        <val lang="fr_FR">Always switch to the new working copy</val>
+        <val lang="ja_JP">Always switch to the new working copy</val>
+        <val lang="nl_NL">Always switch to the new working copy</val>
     </key>
     <key value="Ask_switch_to_detected_working_copy">
         <comment>Option label.</comment>
-        <val lang="en_US">Ask if Oxygen should switch to the new working copy</val>
-        <val lang="de_DE">Ask if Oxygen should switch to the new working copy</val>
-        <val lang="fr_FR">Ask if Oxygen should switch to the new working copy</val>
-        <val lang="ja_JP">Ask if Oxygen should switch to the new working copy</val>
-        <val lang="nl_NL">Ask if Oxygen should switch to the new working copy</val>
+        <val lang="en_US">Always ask</val>
+        <val lang="de_DE">Always ask</val>
+        <val lang="fr_FR">Always ask</val>
+        <val lang="ja_JP">Always ask</val>
+        <val lang="nl_NL">Always ask</val>
     </key>
-    <key value="Do_nothing">
-        <comment>"Do nothing" message.</comment>
-        <val lang="en_US">Do nothing</val>
-        <val lang="de_DE">Do nothing</val>
-        <val lang="fr_FR">Do nothing</val>
-        <val lang="ja_JP">Do nothing</val>
-        <val lang="nl_NL">Do nothing</val>
+    <key value="Never_switch_to_detected_working_copy">
+        <comment>Option label.</comment>
+        <val lang="en_US">Never switch to the new working copy</val>
+        <val lang="de_DE">Never switch to the new working copy</val>
+        <val lang="fr_FR">Never switch to the new working copy</val>
+        <val lang="ja_JP">Never switch to the new working copy</val>
+        <val lang="nl_NL">Never switch to the new working copy</val>
     </key>
     <key value="Abort_merge">
         <comment>"Abort merge" message.</comment>
