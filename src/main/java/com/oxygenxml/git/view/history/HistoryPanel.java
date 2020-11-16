@@ -16,8 +16,10 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.swing.AbstractAction;
@@ -40,6 +42,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -588,7 +591,13 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
         CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, repo.getFullBranch());
         
         // Compute the row height.
-        CommitMessageTableRenderer renderer = new CommitMessageTableRenderer(repo, commitsAheadAndBehind);
+        CommitMessageTableRenderer renderer = new CommitMessageTableRenderer(
+            repo, 
+            commitsAheadAndBehind,
+            gitAccess.getBranchInfo().getBranchName(),
+            getTagMap(repo),
+            gitAccess.getBranchMap(repo, ConfigConstants.CONFIG_KEY_LOCAL),
+            gitAccess.getBranchMap(repo, ConfigConstants.CONFIG_KEY_REMOTE));
         int rh = getRowHeight(renderer, getFirstCommit(commitCharacteristicsVector));
         
         SwingUtilities.invokeLater(() -> {
@@ -649,6 +658,24 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
                 + StringUtils.toLowerCase(translator.getTranslation(Tags.NOTHING_TO_SHOW_FOR_NEW_FILES)));
       }
     }
+  }
+
+  /**
+   * Gets the tags from the current repository.
+   * 
+   * @param repo Git repository.
+   * 
+   * @return The tags or an empty map. Never null.
+   */
+  private Map<String, List<String>> getTagMap(Repository repo) {
+    Map<String, List<String>> tagMap = new HashMap<>();
+    try {
+      tagMap = gitAccess.getTagMap(repo);
+    } catch (GitAPIException | IOException e) {
+      LOGGER.debug(e, e);
+    }
+    
+    return tagMap;
   }
 
   /**
