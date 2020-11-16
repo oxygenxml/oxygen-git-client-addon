@@ -124,8 +124,6 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * 
 	 * @param fileToBeUpdated
 	 *          - the files on which the nodes will be created
-	 *          
-	 * TODO EXM-41133 Sorin Return the added TreePaths.
 	 */
 	private void insertNodes(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
@@ -140,8 +138,6 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	 * 
 	 * @param fileToBeUpdated
 	 *          - the files on which the nodes will be deleted
-	 *          
-	 * TODO EXM-41133 Sorin Return deleted TreePath.
 	 */
 	private void deleteNodes(List<FileStatus> fileToBeUpdated) {
 		for (FileStatus fileStatus : fileToBeUpdated) {
