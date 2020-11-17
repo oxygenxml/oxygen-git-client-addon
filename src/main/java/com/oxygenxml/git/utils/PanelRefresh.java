@@ -27,6 +27,7 @@ import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.view.ChangesPanel;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
@@ -52,20 +53,6 @@ public class PanelRefresh implements GitRefreshSupport {
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(PanelRefresh.class);
-
-  /**
-   * Repository status: available or not.
-   */
-  public enum RepositoryStatus {
-    /**
-     * Available.
-     */
-    AVAILABLE,
-    /**
-     * Unavailable.
-     */
-    UNAVAILABLE;
-  }
 
 	/**
 	 * Staging panel to update.
@@ -126,7 +113,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	              stagingPanel.getStagedChangesPanel(), 
 	              status.getStagedFiles());
 
-	          RepositoryStatus rstatus = fetch();
+	          RepositoryStatusInfo rstatus = fetch();
 	          updateCounters(rstatus);
 
 	          if (OptionsManager.getInstance().getNotifyAboutNewRemoteCommits()) {
@@ -351,7 +338,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * Update the counters presented on the Pull/Push toolbar action.
 	 */
-  private void updateCounters(RepositoryStatus status) {
+  private void updateCounters(RepositoryStatusInfo status) {
     stagingPanel.getCommitPanel().setRepoStatus(status);
     
     if (stagingPanel.getToolbarPanel() != null) {
@@ -364,15 +351,15 @@ public class PanelRefresh implements GitRefreshSupport {
 	 * 
 	 * @return Repository status.
 	 */
-  private RepositoryStatus fetch() {
+  private RepositoryStatusInfo fetch() {
     // Connect to the remote.
-    RepositoryStatus status = RepositoryStatus.AVAILABLE;
+    RepositoryStatusInfo statusInfo = new RepositoryStatusInfo(RepositoryStatus.AVAILABLE);
     try {
       GitAccess.getInstance().fetch();
     } catch (RepositoryUnavailableException e) {
-      status = RepositoryStatus.UNAVAILABLE;
+      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, e.getMessage());
     } catch (SSHPassphraseRequiredException e) {
-      status = RepositoryStatus.UNAVAILABLE;
+      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, e.getMessage());
       
       String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
       if (sshPassphrase != null && !sshPassphrase.isEmpty()) {
@@ -386,7 +373,7 @@ public class PanelRefresh implements GitRefreshSupport {
         }
       }
     } catch (PrivateRepositoryException e) {
-      status = RepositoryStatus.UNAVAILABLE;
+      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, e.getMessage());
       
       UserCredentials userCredentials = new LoginDialog(
           GitAccess.getInstance().getHostName(), 
@@ -395,9 +382,10 @@ public class PanelRefresh implements GitRefreshSupport {
         return fetch();
       }
     } catch (Exception e) {
+      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, e.getMessage());
       logger.error(e, e);
     }
-    return status;
+    return statusInfo;
   }
 
 	/**

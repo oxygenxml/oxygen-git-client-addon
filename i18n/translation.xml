@@ -13,6 +13,30 @@
         <val lang="ja_JP">Uncommitted changes</val>
         <val lang="nl_NL">Uncommitted changes</val>
     </key>
+    <key value="Hover_for_details">
+        <comment>Message suggesting to hover for more information.</comment>
+        <val lang="en_US">Hover for details.</val>
+        <val lang="de_DE">Hover for details.</val>
+        <val lang="fr_FR">Hover for details.</val>
+        <val lang="ja_JP">Hover for details.</val>
+        <val lang="nl_NL">Hover for details.</val>
+    </key>
+    <key value="SSH_key_passphrase_required">
+        <comment>Message for when the passphrase for the SSH key is required.</comment>
+        <val lang="en_US">SSH key passphrase required.</val>
+        <val lang="de_DE">SSH key passphrase required.</val>
+        <val lang="fr_FR">SSH key passphrase required.</val>
+        <val lang="ja_JP">SSH key passphrase required.</val>
+        <val lang="nl_NL">SSH key passphrase required.</val>
+    </key>
+    <key value="Username_and_password_required">
+        <comment>Message for when the HTTPS user name and password are required.</comment>
+        <val lang="en_US">Username and password required for this private repository.</val>
+        <val lang="de_DE">Username and password required for this private repository.</val>
+        <val lang="fr_FR">Username and password required for this private repository.</val>
+        <val lang="ja_JP">Username and password required for this private repository.</val>
+        <val lang="nl_NL">Username and password required for this private repository.</val>
+    </key>
     <key value="When_detecting_repo_in_project">
         <comment>Label in Git Client preferences page.</comment>
         <val lang="en_US">When detecting a Git repository inside a newly opened project:</val>

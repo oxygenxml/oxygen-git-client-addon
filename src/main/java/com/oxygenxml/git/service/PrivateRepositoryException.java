@@ -1,5 +1,8 @@
 package com.oxygenxml.git.service;
 
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+
 /**
  * A private repository that requires authentication.
  *  
@@ -12,6 +15,6 @@ public class PrivateRepositoryException extends Exception {
    * @param cause The cause.
    */
   public PrivateRepositoryException(Throwable cause) {
-    super("Private repository", cause);
+    super(Translator.getInstance().getTranslation(Tags.USERNAME_AND_PASSWORD_REQUIRED), cause);
   }
 }
