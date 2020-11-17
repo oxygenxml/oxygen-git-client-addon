@@ -28,7 +28,6 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
@@ -281,16 +280,13 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 	  addWorkingCopySelectorListener();
 	  
-	  // Populates the combo box with the previously added repositories. Basically
-	  // restore the state before the application was closed
-	  loadEntries();
 	  this.add(workingCopyCombo, gbc);
 	}
 
 	/**
 	 * Load the recorded workinf copy locations into the combo.
 	 */
-  private void loadEntries() {
+  void loadEntries() {
     List<String> repositoryEntries = new ArrayList<>(OptionsManager.getInstance().getRepositoryEntries());
     for (String repositoryEntry : repositoryEntries) {
 			workingCopyCombo.addItem(repositoryEntry);
@@ -482,14 +478,6 @@ public class WorkingCopySelectionPanel extends JPanel {
             }
           } finally {
             inhibitRepoUpdate = false;
-          }
-        }
-        
-        if (GitAccess.getInstance().getBranchInfo().isDetached()) {
-          RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
-          if (repositoryState != RepositoryState.REBASING_MERGE) {
-            PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
           }
         }
       } catch (NoRepositorySelected e) {
