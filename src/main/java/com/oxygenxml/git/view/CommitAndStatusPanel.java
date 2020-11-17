@@ -595,7 +595,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	      if (fontMetrics.stringWidth(text) > statusLabel.getSize().width) {
           statusLabel.setToolTipText(hasTooltip ? text + "\n\n" + toolTipText : text);
 	      } else if (hasTooltip) {
-	        System.err.println("AAA: " + toolTipText);
 	        statusLabel.setToolTipText(toolTipText);
 	      }
 	    }
@@ -694,15 +693,11 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 */
 	public void setRepoStatus(final RepositoryStatusInfo statusInfo) {
 	  RepositoryStatus repoStatus = statusInfo.getRepoStatus();
-	  System.err.println(repoStatus);
 	  SwingUtilities.invokeLater(() -> {
 	    if (RepositoryStatus.UNAVAILABLE == repoStatus) {
 	      String extraInfo = statusInfo.getExtraInfo();
 	      String text = translator.getTranslation(Tags.CANNOT_REACH_HOST);
-	      System.err.println("EI: " + extraInfo);
 	      if (extraInfo != null && !extraInfo.isEmpty()) {
-	        // TODO: syserr extra info... de ce cand dai prima data cancel
-	        // la user name si password dupa restart nu apare tooltip?
 	        text +=  ". " + translator.getTranslation(Tags.HOVER_FOR_DETAILS);
 	      }
         statusLabel.setText(text);
