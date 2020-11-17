@@ -9,13 +9,12 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
-import com.oxygenxml.git.view.event.GitOperation;
 
 /**
  * Tree model for staged or unstaged resources.
@@ -261,11 +260,10 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
       }
     }
     
-    GitOperation action = GitOperation.UNSTAGE;
-    if (!inIndex) {
-      action = GitOperation.STAGE;
+    if (inIndex) {
+      stageController.asyncReset(filesToBeUpdated);
+    } else {
+      stageController.asyncAddToIndex(filesToBeUpdated);
     }
-    
-    stageController.doGitCommand(filesToBeUpdated, action);
   }
 }

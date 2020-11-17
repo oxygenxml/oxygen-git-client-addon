@@ -40,6 +40,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
@@ -207,14 +208,15 @@ public class ToolbarPanel extends JPanel {
 	    PushPullController pushPullController, 
 	    GitRefreshSupport refreshSupport,
 	    HistoryController historyController,
-	    BranchManagementViewPresenter branchManagementViewPresenter) {
+	    BranchManagementViewPresenter branchManagementViewPresenter,
+	    GitController gitController) {
 	  this.pushPullController = pushPullController;
 	  this.refreshSupport = refreshSupport;
 	  this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
 
 	  createGUI(historyController, branchManagementViewPresenter);
 
-	  GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+	  gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();

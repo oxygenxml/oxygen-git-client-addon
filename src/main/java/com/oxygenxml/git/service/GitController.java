@@ -1,19 +1,21 @@
-package com.oxygenxml.git.view.event;
+package com.oxygenxml.git.service;
 
 import java.text.MessageFormat;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -36,7 +38,45 @@ public class GitController {
 	/**
 	 * Access to the Git API.
 	 */
-	private GitAccess gitAccess = GitAccess.getInstance();
+	private GitAccess gitAccess;
+	/**
+	 * Events issued by the git access. We use it to identify skipped fail events.
+	 */
+	private Deque<GitEventInfo> events = new LinkedList<>();
+	/**
+	 * <code>true</code> to disable event tracking.
+	 */
+	private boolean skipEventTracking = false;
+	
+	/**
+	 * Contructor.
+	 * 
+	 * @param access Access to the Git API.
+	 */
+	public GitController(GitAccess access) {
+	  this.gitAccess = access;
+	  
+	  gitAccess.addGitListener(new GitEventAdapter() {
+	    @Override
+	    public void operationAboutToStart(GitEventInfo info) {
+	      if (!skipEventTracking) {
+	        events.push(info);
+	      }
+	    }
+	    @Override
+	    public void operationSuccessfullyEnded(GitEventInfo info) {
+	      if (!skipEventTracking) {
+	        events.pop();
+	      }
+	    }
+	    @Override
+	    public void operationFailed(GitEventInfo info, Throwable t) {
+	      if (!skipEventTracking) {
+	        events.pop();
+	      }
+	    }
+	  });
+	}
 	
 	/**
 	 * Resolves the conflict state for the files by keeping the local version.
@@ -68,39 +108,54 @@ public class GitController {
 	  * Runs a task on the Git operation thread.
 	  * 
 	  * @param r Git Task.
+	  * 
+	  * @return A future monitoring the orginal task.
 	  */
-	private void async(Runnable r) {
-	  GitOperationScheduler.getInstance().schedule(r);
-	}
-
-  /**
-	 * Executes the given action on the given files.
-	 * 
-	 * @param filesStatuses The files to be processed. 
-	 * @param action        The action that is executed: stage, unstage, discard, resolve, etc.
-	 *                          One of the {@link GitOperation} values that has the "STARTED" suffix.
-	 */
-	public void doGitCommand(List<FileStatus> filesStatuses, GitOperation action) {
-	  if (logger.isDebugEnabled()) {
-	    logger.debug("Do action " + action + " on " + filesStatuses);
-	  }
-
-	  GitOperationScheduler.getInstance().schedule(() -> {
-	    switch (action) {
-	      case STAGE:
-	        gitAccess.addAll(filesStatuses);
-	        break;
-	      case UNSTAGE:
-	        gitAccess.resetAll(filesStatuses);
-	        break;
-	      case DISCARD:
-	        discard(filesStatuses);
-	        break;
-	      default:
-	        break;
+	ScheduledFuture<?> async(Runnable r) {
+	  return GitOperationScheduler.getInstance().schedule(r, t -> {
+	    if (!events.isEmpty()) {
+	      skipEventTracking = true;
+	      try {
+	        // Operations in progress, no failed issued for them.
+	        while (!events.isEmpty()) {
+	          GitEventInfo pop = events.pop();
+	          
+	          gitAccess.fireOperationFailed(pop, t);
+	        }
+	      } finally {
+	        skipEventTracking = false;
+	      }
 	    }
 	  });
 	}
+	
+	
+  /**
+   * Adds multiple files to the staging area.
+   * 
+   * @param filesStatuses Files to add.
+   */
+	public void asyncAddToIndex(List<FileStatus> filesStatuses) {
+	  async(() -> gitAccess.addAll(filesStatuses));
+	}
+	
+	/**
+   * Reset all the specified files from the staging area.
+   * 
+   * @param filesStatuses Files to add.
+   */
+	 public void asyncReset(List<FileStatus> filesStatuses) {
+	    async(() -> gitAccess.resetAll(filesStatuses));
+	 }
+	 
+	 /**
+	   * Discard files.
+	   * 
+	   * @param filesStatuses The resources to discard.
+	   */
+   public void asyncDiscard(List<FileStatus> filesStatuses) {
+     async(() -> discard(filesStatuses));
+  }
 
 	/**
 	 * Should continue resolving a conflict using 'mine' or 'theirs'.
@@ -196,4 +251,28 @@ public class GitController {
     gitAccess.restoreLastCommitFile(paths);
   }
   
+  /**
+   * Add a listener that gets notified about file or repository changes.
+   * 
+   * @param listener The listener to add.
+   */
+  public void addGitListener(GitEventListener listener) {
+    gitAccess.addGitListener(listener);
+  }
+
+  /**
+   * Removes a listener that gets notified about file or repository changes.
+   * 
+   * @param listener The listener to remove.
+   */
+  public void removeGitListener(GitEventAdapter listener) {
+    gitAccess.removeGitListener(listener);
+  }
+  
+  /**
+   * @return Low level operation controller.
+   */
+  public GitAccess getGitAccess() {
+    return gitAccess;
+  }
 }

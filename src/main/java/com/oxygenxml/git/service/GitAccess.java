@@ -404,7 +404,7 @@ public class GitAccess {
    * @param info event info.
    * @param t related exception/error. May be <code>null</code>.
    */
-  private void fireOperationFailed(GitEventInfo info, Throwable t) {
+  void fireOperationFailed(GitEventInfo info, Throwable t) {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
     }
@@ -419,11 +419,24 @@ public class GitAccess {
    * @param listener The listener to add.
    */
   @SuppressWarnings("unchecked")
-	public void addGitListener(GitEventListener listener) {
+	void addGitListener(GitEventListener listener) {
 	  HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventListeners.clone();
 	  clone.add(listener);
 	  
 	  gitEventListeners = clone;
+  }
+  
+  /**
+   * Removes a listener that gets notified about file or repository changes.
+   * 
+   * @param listener The listener to remove.
+   */
+  @SuppressWarnings("unchecked")
+  void removeGitListener(GitEventListener listener) {
+    HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventListeners.clone();
+    clone.remove(listener);
+    
+    gitEventListeners = clone;
   }
 	
   /**

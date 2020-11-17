@@ -9,8 +9,10 @@ import javax.swing.tree.TreeNode;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -101,7 +103,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
 
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     JTree tree = branchManagementPanel.getTree();
@@ -146,7 +148,7 @@ public class BranchManagementTest extends GitTestBase{
     
     gitAccess.fetch();
 
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     JTree tree = branchManagementPanel.getTree();
@@ -191,7 +193,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     JTree tree = branchManagementPanel.getTree();
@@ -232,7 +234,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
 
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     JTree tree = branchManagementPanel.getTree();
@@ -271,7 +273,7 @@ public class BranchManagementTest extends GitTestBase{
     
     gitAccess.fetch();
 
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     branchManagementPanel.filterTree("hedz");
@@ -344,7 +346,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     branchManagementPanel.filterTree("rimotz");
@@ -442,7 +444,7 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
 
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     branchManagementPanel.filterTree("ewu82m");

@@ -16,10 +16,11 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Ignore;
 import org.powermock.api.mockito.PowerMockito;
 
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
@@ -45,7 +46,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
 
   protected void setUpHistoryPanel() {
     // Initialize history panel.
-    historyPanel = new HistoryPanel(new GitController(), new PushPullController()) {
+    historyPanel = new HistoryPanel(new GitController(GitAccess.getInstance()), new PushPullController()) {
       @Override
       protected int getUpdateDelay() {
         return 0;

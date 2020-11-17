@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -31,10 +31,6 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    * Translator instance.
    */
   private static final Translator translator = Translator.getInstance();
-  /**
-   * GitAccess instance.
-   */
-  private GitAccess gitAccess;
   /**
    * Logger for logging.
    */
@@ -58,13 +54,19 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
       }
     }
   };
+  /**
+   * Git operations controller.
+   */
+  private GitController gitController;
   
   /**
    * Constructor.
+   * 
+   * @param ctrl High level Git operations.
    */
-  public GitEditorVariablesResolver(GitAccess gitAccess) {
-    this.gitAccess = gitAccess;
-    this.gitAccess.addGitListener(gitEventListener);
+  public GitEditorVariablesResolver(GitController ctrl) {
+    this.gitController = ctrl;
+    ctrl.addGitListener(gitEventListener);
   }
   
   /**
@@ -87,7 +89,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
         if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR)) {
           String wcName = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR);
           if (wcName == null) {
-            workingCopy = gitAccess.getWorkingCopy();
+            workingCopy = gitController.getGitAccess().getWorkingCopy();
             wcName = workingCopy.getName();
             editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR, wcName);
           }
@@ -101,7 +103,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
           String wcPath = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR);
           if (wcPath == null) {
             if (workingCopy == null) {
-              workingCopy = gitAccess.getWorkingCopy();
+              workingCopy = gitController.getGitAccess().getWorkingCopy();
             }
             wcPath = workingCopy.getAbsolutePath();
             editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR, wcPath);
@@ -129,7 +131,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
     try {
       String branch = editorVarsCache.get(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
       if (branch == null) {
-        branch = gitAccess.getRepository().getFullBranch();
+        branch = gitController.getGitAccess().getRepository().getFullBranch();
         editorVarsCache.put(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR, branch);
       }
       contentWithEditorVariables = contentWithEditorVariables.replace(
@@ -153,7 +155,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   private String resolveShortBranchName(String contentWithEditorVariables) {
     String branch = editorVarsCache.get(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR);
     if (branch == null) {
-      branch = gitAccess.getBranchInfo().getBranchName();
+      branch = gitController.getGitAccess().getBranchInfo().getBranchName();
       editorVarsCache.put(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR, branch);
     }
     return contentWithEditorVariables.replace(

@@ -52,6 +52,7 @@ import org.eclipse.jgit.util.StringUtils;
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
@@ -68,7 +69,6 @@ import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.ActionStatus;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.Observer;
@@ -220,7 +220,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
       }
     });
     
-    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+    stageController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (isShowing()) {

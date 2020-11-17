@@ -13,12 +13,11 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
-import com.oxygenxml.git.view.event.GitOperation;
 
 /**
  * Custom table model
@@ -181,12 +180,12 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		  }
 		}
 
-		GitOperation action = GitOperation.UNSTAGE;
-		if (!inIndex) {
-		  action = GitOperation.STAGE;
+		if (inIndex) {
+		  gitController.asyncReset(filesToBeUpdated);
+		} else {
+		  gitController.asyncAddToIndex(filesToBeUpdated);
 		}
 		
-    gitController.doGitCommand(filesToBeUpdated, action);
 	}
 
 	/**

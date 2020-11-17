@@ -15,14 +15,13 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -109,7 +108,7 @@ public class DiscardAction extends AbstractAction {
       }
       
       // Execute Git command
-      stageController.doGitCommand(allSelectedResources, GitOperation.DISCARD);
+      stageController.asyncDiscard(allSelectedResources);
       
       // Refresh the Project view
       wsAccess.getProjectManager().refreshFolders(foldersToRefresh.toArray(new File[0]));

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitTestBase;
 
 import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
@@ -19,7 +20,7 @@ import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
  */
 public class GitEditorVariablesTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/EditorVariablesTest";
-  private EditorVariablesResolver editorVariablesResolver = new GitEditorVariablesResolver(GitAccess.getInstance());
+  private EditorVariablesResolver editorVariablesResolver = new GitEditorVariablesResolver(new GitController(GitAccess.getInstance()));
 
   @Before
   public void setUp() throws Exception {

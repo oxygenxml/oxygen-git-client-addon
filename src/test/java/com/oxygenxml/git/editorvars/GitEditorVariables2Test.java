@@ -11,6 +11,7 @@ import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.view.event.BranchGitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -62,7 +63,7 @@ public class GitEditorVariables2Test extends GitTestBase {
       }
     }).when(gitAccessMock).getWorkingCopy();
     
-    editorVariablesResolver = new GitEditorVariablesResolver(gitAccessMock);
+    editorVariablesResolver = new GitEditorVariablesResolver(new GitController(gitAccessMock));
   }
 
   /**

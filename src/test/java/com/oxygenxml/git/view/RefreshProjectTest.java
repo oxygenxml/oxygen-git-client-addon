@@ -15,12 +15,11 @@ import org.powermock.reflect.Whitebox;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitOperation;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -108,12 +107,8 @@ public class RefreshProjectTest extends TestCase {
               return Arrays.asList(new FileStatus(GitChangeType.ADD, "test.txt"));
             }
           },
-          new GitController() {
-            @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
-              // Do nothing
-            }
-          });
+          // A mock that does nothing.
+          Mockito.mock(GitController.class));
       discardAction.actionPerformed(null);
       
       assertEquals(
@@ -158,12 +153,8 @@ public class RefreshProjectTest extends TestCase {
                   new FileStatus(GitChangeType.UNTRACKED, "subFolder/test2.txt"));
             }
           },
-          new GitController() {
-            @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
-              // Do nothing
-            }
-          });
+          // A mock that does nothing.
+          Mockito.mock(GitController.class));
       discardAction.actionPerformed(null);
 
       assertEquals(
@@ -206,12 +197,8 @@ public class RefreshProjectTest extends TestCase {
               return Arrays.asList(new FileStatus(GitChangeType.SUBMODULE, "subModule"));
             }
           },
-          new GitController() {
-            @Override
-            public void doGitCommand(List<FileStatus> filesStatus, GitOperation action) {
-              // Do nothing
-            }
-          });
+          // A mock that does nothing.
+          Mockito.mock(GitController.class));
       discardAction.actionPerformed(null);
 
       assertEquals(
