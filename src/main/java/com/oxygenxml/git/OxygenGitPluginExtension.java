@@ -24,6 +24,7 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.editorvars.GitEditorVariablesResolver;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -33,10 +34,10 @@ import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.StagingPanel;
+import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -142,6 +143,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
    * Branch management panel.
    */
   private BranchManagementPanel branchManagementPanel;
+  /**
+   * Git operations controller. Handles async execution.`
+   */
+  private GitController gitCtrl;
   
 	/**
 	 * @see WorkspaceAccessPluginExtension#applicationStarted(StandalonePluginWorkspace)
@@ -161,7 +166,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		  
 		  AuthenticationInterceptor.install();
 
-			GitController gitCtrl = new GitController();
+			gitCtrl = new GitController(GitAccess.getInstance());
+			BlameManager.getInstance().install(gitCtrl);
 			
 			// Add Git actions to the contextual menu of the Project view
 			ProjectMenuGitActionsProvider projectMenuGitActionsProvider = new ProjectMenuGitActionsProvider(
@@ -194,7 +200,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 
 			pluginWorkspaceAccess.addViewComponentCustomizer(
 			    viewInfo -> {
-			      GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+			      gitCtrl.addGitListener(new GitEventAdapter() {
 			        private Timer cursorTimer = new Timer(
 			            1000,
 			            e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(
@@ -257,7 +263,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 		gitRefreshSupport = new PanelRefresh(watcher);
 	  
 		UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
-    utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(GitAccess.getInstance()));
+    utilAccess.addCustomEditorVariablesResolver(new GitEditorVariablesResolver(gitCtrl));
 	}
 
 	/**
@@ -274,7 +280,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     }
     viewInfo.setComponent(stagingPanel);
     
-    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+    gitCtrl.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
@@ -331,7 +337,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
    */
   private void customizeBranchView(ViewInfo viewInfo) {
     if(branchManagementPanel == null) {
-      branchManagementPanel = new BranchManagementPanel();
+      branchManagementPanel = new BranchManagementPanel(gitCtrl);
       gitRefreshSupport.setBranchPanel(branchManagementPanel);
     }
     

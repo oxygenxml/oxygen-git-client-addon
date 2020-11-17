@@ -8,12 +8,13 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.junit.Test;
 
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PopupMenuSerializer;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
-import com.oxygenxml.git.view.event.GitController;
 
 /**
  * Test cases for the actions from the contextual menu of the staged/unstaged resources.
@@ -23,7 +24,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
   /**
    * Staging controller.
    */
-  private GitController stagingCtrl = new GitController();
+  private GitController stagingCtrl = new GitController(GitAccess.getInstance());
   
   /**
    * <p><b>Description:</b> test the enabling state of the actions

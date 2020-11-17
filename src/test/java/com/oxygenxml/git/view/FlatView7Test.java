@@ -8,8 +8,10 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
@@ -40,7 +42,7 @@ public class FlatView7Test extends FlatViewTestBase {
   public void testToolbarComponentsTooltips() throws Exception {
     // Set toolbar panel
     stagingPanel.setToolbarPanelFromTests(
-        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null));
+        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null, Mockito.mock(GitController.class)));
     
     // Create repositories
     String localTestRepository = "target/test-resources/test_EXM_45599_local";
@@ -161,7 +163,8 @@ public class FlatView7Test extends FlatViewTestBase {
             stagingPanel.getPushPullController(),
             refreshSupport,
             null,
-            null));
+            null,
+            Mockito.mock(GitController.class)));
     
     ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
     SplitMenuButton settingsMenuButton = toolbarPanel.getSettingsMenuButton();

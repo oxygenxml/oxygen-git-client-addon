@@ -15,6 +15,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.service.ConflictResolution;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
@@ -22,8 +24,6 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.ConflictResolution;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
 
@@ -327,7 +327,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    GitController sc = new GitController() {
+    GitController sc = new GitController(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_MINE;
@@ -653,7 +653,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertEquals("Cannot_continue_rebase_because_of_conflicts", warnMessage[0]);
 
       // Resolve conflict
-      GitController sc = new GitController() {
+      GitController sc = new GitController(gitAccess) {
         @Override
         protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
           return cmd == ConflictResolution.RESOLVE_USING_MINE;

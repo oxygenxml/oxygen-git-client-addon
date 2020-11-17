@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.event;
+package com.oxygenxml.git.service;
 
 /**
  * Possible conflict resolutions.

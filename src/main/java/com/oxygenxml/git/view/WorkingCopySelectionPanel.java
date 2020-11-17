@@ -34,6 +34,7 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -90,10 +91,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 	
   /**
    * Constructor.
+   * @param gitController Git operations controller.
    */
-	public WorkingCopySelectionPanel() {
+	public WorkingCopySelectionPanel(GitController gitController) {
 	  createGUI();
-	  gitAccess.addGitListener(new GitEventUpdater());
+	  gitController.addGitListener(new GitEventUpdater());
 	}
 
 	public JComboBox<String> getWorkingCopyCombo() {

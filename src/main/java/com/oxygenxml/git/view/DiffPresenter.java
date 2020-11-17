@@ -23,6 +23,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -32,8 +33,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
-import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -276,7 +275,7 @@ public class DiffPresenter {
 			        // Instead of requesting the file status again, we just mark it as modified.
 			        file.setChangeType(GitChangeType.MODIFIED);
 			        
-			        stageController.doGitCommand(Arrays.asList(file), GitOperation.STAGE);
+			        stageController.asyncAddToIndex(Arrays.asList(file));
 			      }
 			      
 			      d.removeComponentListener(this);

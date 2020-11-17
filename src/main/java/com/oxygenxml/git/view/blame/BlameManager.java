@@ -12,6 +12,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.google.common.io.Files;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -40,6 +41,25 @@ public class BlameManager {
    * All active blames. 
    */
   private Map<String, BlamePerformer> activeBlames = new HashMap<>();
+  /**
+   * Listens for repository events.
+   */
+  private GitEventAdapter listener = new GitEventAdapter() {
+    @Override
+    public void operationSuccessfullyEnded(GitEventInfo info) {
+      if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
+        // Dispose all blames from the previous repository.
+        Iterator<String> iterator = activeBlames.keySet().iterator();
+        while (iterator.hasNext()) {
+          String url = iterator.next();
+          BlamePerformer remove = activeBlames.remove(url);
+          if (remove != null) {
+            remove.dispose();
+          }
+        }
+      }
+    }
+  };
   
   /**
    * Private constructor.
@@ -51,24 +71,16 @@ public class BlameManager {
         dispose(editorLocation);
       }
     }, PluginWorkspace.MAIN_EDITING_AREA);
-    
-    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
-      @Override
-      public void operationSuccessfullyEnded(GitEventInfo info) {
-        if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
-          // Dispose all blames from the previous repository.
-          Iterator<String> iterator = activeBlames.keySet().iterator();
-          while (iterator.hasNext()) {
-            String url = iterator.next();
-            BlamePerformer remove = activeBlames.remove(url);
-            if (remove != null) {
-              remove.dispose();
-            }
-          }
-        }
-      }
-    });
-    
+  }
+  
+  /**
+   * Adds repository event hooks.
+   * 
+   * @param ctrl Git controller.
+   */
+  public void install(GitController ctrl) {
+    ctrl.removeGitListener(listener);
+    ctrl.addGitListener(listener);
   }
   
   /**

@@ -22,6 +22,7 @@ import org.powermock.reflect.Whitebox;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.utils.GitOperationScheduler;
 
 import junit.extensions.jfcunit.JFCTestCase;
@@ -97,7 +98,7 @@ public class WorkingCopySelector2Test extends JFCTestCase {
   public void testRemoveStaleEntries() throws Exception {
     JFrame frame = new JFrame();
     try {
-      WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel();
+      WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(Mockito.mock(GitController.class));
       frame.getContentPane().add(wcPanel);
       frame.pack();
       frame.setVisible(true);

@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
@@ -36,7 +37,6 @@ import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -151,9 +151,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
    * Not created from 99% of the test cases.
    * 
    * @param historyController History controller.
+   * @param branchManagementViewPresenter Branch management interface.
+   * @param gitController Git operations controller.
    */
-  protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
-    return new ToolbarPanel(pushPullController, refreshSupport, historyController, branchManagementViewPresenter);
+  protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter, GitController gitController) {
+    return new ToolbarPanel(pushPullController, refreshSupport, historyController, branchManagementViewPresenter, gitController);
   }
 
 	/**
@@ -167,10 +169,10 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		// Creates the panels objects that will be in the staging panel
 		unstagedChangesPanel = new ChangesPanel(stageController, historyController, false);
 		stagedChangesPanel = new ChangesPanel(stageController, historyController, true);
-		workingCopySelectionPanel = new WorkingCopySelectionPanel();
-		commitPanel = new CommitAndStatusPanel(pushPullController);
-		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
-		conflictButtonsPanel = new ConflictButtonsPanel();
+		workingCopySelectionPanel = new WorkingCopySelectionPanel(stageController);
+		commitPanel = new CommitAndStatusPanel(pushPullController, stageController);
+		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter, stageController);
+		conflictButtonsPanel = new ConflictButtonsPanel(stageController);
 		
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);

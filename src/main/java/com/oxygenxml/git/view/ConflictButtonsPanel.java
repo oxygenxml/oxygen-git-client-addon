@@ -13,6 +13,7 @@ import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -46,11 +47,13 @@ public class ConflictButtonsPanel extends JPanel {
 
   /**
    * Constructor.
+   * 
+   * @param stageController Git operations controller.
    */
-  public ConflictButtonsPanel() {
+  public ConflictButtonsPanel(GitController stageController) {
     setVisible(false);
     createGUI();
-    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+    stageController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();

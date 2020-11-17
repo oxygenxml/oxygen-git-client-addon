@@ -13,8 +13,10 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -76,7 +78,7 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
@@ -137,7 +139,7 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
@@ -203,7 +205,7 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
@@ -268,7 +270,7 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel();
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();

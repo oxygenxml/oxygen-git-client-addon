@@ -34,9 +34,6 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.event.ConflictResolution;
-import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.PushPullController;
@@ -216,7 +213,7 @@ public class GitAccessConflictTest {
 		gitAccess.commit("conflict");
 		gitAccess.pull("", "");
 		
-		GitController stageCtrl = new GitController();
+		GitController stageCtrl = new GitController(gitAccess);
     stageCtrl.asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     sleep(700);
@@ -360,7 +357,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController() {
+    GitController stageCtrl = new GitController(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_MINE;
@@ -483,7 +480,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController() {
+    GitController stageCtrl = new GitController(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_MINE;
@@ -607,7 +604,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController() {
+    GitController stageCtrl = new GitController(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_THEIRS;
@@ -733,7 +730,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController() {
+    GitController stageCtrl = new GitController(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_THEIRS;
@@ -860,7 +857,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController() {
+    GitController stageCtrl = new GitController(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_THEIRS;

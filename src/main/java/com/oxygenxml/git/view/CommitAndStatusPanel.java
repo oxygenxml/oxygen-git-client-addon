@@ -46,6 +46,7 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -307,8 +308,9 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 * Constructor.
 	 * 
 	 * @param pushPullController Push / pull controller.
+	 * @param stageController Async Git operations controller.
 	 */
-	public CommitAndStatusPanel(PushPullController pushPullController) {
+	public CommitAndStatusPanel(PushPullController pushPullController, GitController gitController) {
 	  this.pushPullController = pushPullController;
 	  this.observers = new HashSet<>();
 	  
@@ -317,7 +319,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	  
     createGUI();
 	  
-    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+    gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation gitOperation = info.getGitOperation();

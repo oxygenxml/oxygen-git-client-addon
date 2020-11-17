@@ -1,11 +1,14 @@
 package com.oxygenxml.git.utils;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
 
@@ -77,6 +80,31 @@ public class GitOperationScheduler {
     return executor.schedule(r, 0, TimeUnit.MILLISECONDS);
   }
   
+  /**
+   * Schedules a task.
+   * 
+   * @param task A task to run on the dedicated Git actions thread.
+   * @param errorHandler Receives notifications when the task fails with an exception.
+   * 
+   * @return A future that monitors the task.
+   */
+  public <V> ScheduledFuture<?> schedule(Runnable task, Consumer<Throwable> errorHandler) {
+    return schedule(new java.util.concurrent.FutureTask<V> (task, null) {
+      @Override
+      protected void done() {
+        try {
+          get();
+        } catch (ExecutionException e) {
+          errorHandler.accept(e.getCause());      
+        } catch (InterruptedException e) {
+          errorHandler.accept(e);      
+          // Restore interrupted state...
+          Thread.currentThread().interrupt();      
+        }
+      }
+    });
+  }
+
   /**
    * Schedules a runnable for execution.
    * 

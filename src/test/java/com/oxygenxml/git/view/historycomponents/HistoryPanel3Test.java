@@ -15,10 +15,10 @@ import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
@@ -38,7 +38,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
     noOfRefreshes = 0;
     
     // Initialize history panel.
-    historyPanel = new HistoryPanel(new GitController(), PUSH_PULL_CONTROLLER) {
+    historyPanel = new HistoryPanel(new GitController(GitAccess.getInstance()), PUSH_PULL_CONTROLLER) {
       @Override
       protected int getUpdateDelay() {
         return 0;

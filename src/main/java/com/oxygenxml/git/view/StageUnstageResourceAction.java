@@ -5,11 +5,10 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.GitController;
 
 /**
  * Moves files inside/outside the INDEX.
@@ -51,8 +50,11 @@ public class StageUnstageResourceAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    GitOperation command = isStage ? GitOperation.STAGE : GitOperation.UNSTAGE;
-    gitCtrl.doGitCommand(fileStatuses, command);
+    if (isStage) {
+      gitCtrl.asyncAddToIndex(fileStatuses);
+    } else {
+      gitCtrl.asyncReset(fileStatuses);
+    }
   }
   
 }

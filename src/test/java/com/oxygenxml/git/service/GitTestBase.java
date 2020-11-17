@@ -917,6 +917,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * @throws Exception Problems generating the repository.
    */
   protected void generateRepositoryAndLoad(URL script, File wcTree) throws Exception {
+    GitAccess.getInstance().closeRepo();
+    
     RepoGenerationScript.generateRepository(script, wcTree);
     
     GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());

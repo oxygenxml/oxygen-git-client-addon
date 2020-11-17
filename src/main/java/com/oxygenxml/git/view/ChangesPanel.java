@@ -48,6 +48,7 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -57,7 +58,6 @@ import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.HistoryController;
@@ -193,7 +193,7 @@ public class ChangesPanel extends JPanel {
 		this.currentViewMode = forStagedResources ? OptionsManager.getInstance().getStagedResViewMode()
 		    : OptionsManager.getInstance().getUntagedResViewMode();
 		
-    GitAccess.getInstance().addGitListener(new GitEventAdapter() {
+    stageController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
