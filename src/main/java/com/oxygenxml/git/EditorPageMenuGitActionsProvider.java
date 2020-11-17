@@ -9,10 +9,10 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

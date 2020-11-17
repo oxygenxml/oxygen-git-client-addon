@@ -126,7 +126,7 @@ public class BranchManagementPanel extends JPanel {
     });
     addTreeListeners();
     
-    branchesTreeActionProvider = new BranchTreeMenuActionsProvider();
+    branchesTreeActionProvider = new BranchTreeMenuActionsProvider(ctrl);
   }
   
   /**

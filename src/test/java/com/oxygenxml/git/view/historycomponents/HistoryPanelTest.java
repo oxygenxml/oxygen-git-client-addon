@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.utils.GitOperationScheduler;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;

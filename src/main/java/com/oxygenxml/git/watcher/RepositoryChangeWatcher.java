@@ -14,6 +14,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
@@ -21,7 +22,6 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;

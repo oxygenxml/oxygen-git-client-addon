@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -31,7 +30,6 @@ import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -54,7 +52,6 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.GitOperationScheduler;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.dialog.UIUtil;
@@ -212,32 +209,17 @@ public class ChangesPanel extends JPanel {
             try {
               Repository repository = gitAccess.getRepository();
               if (repository != null) {
-                Runnable updateTask = new SwingWorker<List<FileStatus>, Void>() {
-                  @Override
-                  protected List<FileStatus> doInBackground() throws Exception {
-                    if (forStagedResources) {
-                      return gitAccess.getStagedFiles();
-                    } else {
-                      return gitAccess.getUnstagedFiles();
-                    }
-                  }
-                  @Override
-                  protected void done() {
-                    List<FileStatus> files = Collections.emptyList();
-                    try {
-                      files = get();
-                    } catch (InterruptedException e) {
-                      Thread.currentThread().interrupt();
-                      logger.error(e, e);
-                    } catch (ExecutionException e) {
-                      logger.error(e, e);
-                    }
-                    ChangesPanel.this.repositoryChanged(files);
-                    toggleSelectedButton();
-                  }
-                };
-
-                GitOperationScheduler.getInstance().schedule(updateTask);
+                
+                stageController.asyncTask(
+                    () -> {
+                      if (forStagedResources) {
+                        return gitAccess.getStagedFiles();
+                      } else {
+                        return gitAccess.getUnstagedFiles();
+                      }
+                    }, 
+                    this::refresh, 
+                    ex -> refresh(Collections.emptyList()));
               }
             } catch (NoRepositorySelected ex) {
               logger.debug(ex, ex);
@@ -259,6 +241,18 @@ public class ChangesPanel extends JPanel {
             break;
         }
       }
+      /**
+       * Update models with newly detected files.
+       * 
+       * @param files Newly detected files.
+       */
+      private void refresh(List<FileStatus> files) {
+        SwingUtilities.invokeLater(() -> {
+          ChangesPanel.this.repositoryChanged(files);
+          toggleSelectedButton();
+        }); 
+      }
+      
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
         if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {

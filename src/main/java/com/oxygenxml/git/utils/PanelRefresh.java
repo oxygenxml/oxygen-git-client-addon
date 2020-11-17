@@ -19,6 +19,7 @@ import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInPr
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;

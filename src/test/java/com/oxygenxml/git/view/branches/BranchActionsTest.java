@@ -13,7 +13,6 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitController;
@@ -78,10 +77,11 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
+    GitController mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
    
     //------------- Checkout the first branch in the tree: LOCAL_BRANCH_NAME1 -------------
@@ -139,10 +139,11 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
+    GitController mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
     //------------- Create branch LOCAL_BRANCH_COPY_NAME from first branch in the tree: LOCAL_BRANCH_NAME1 -------------
@@ -205,10 +206,11 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
+    GitController mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
     //------------- Delete first branch in the tree: LOCAL_BRANCH_NAME1 -------------
@@ -270,10 +272,11 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitController.class));
+    GitController mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     
     //------------- Checkout the last branch in the tree: REMOTE_BRANCH_NAME2, with the name REMOTE_BRANCH_NAME2_COPY-------------
