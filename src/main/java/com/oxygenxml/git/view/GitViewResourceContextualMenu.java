@@ -15,9 +15,9 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.HistoryController;
-import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -116,7 +116,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_MINE)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        gitCtrl.doGitCommand(allSelectedResources, GitOperation.RESOLVE_USING_MINE);
+	        gitCtrl.asyncResolveUsingMine(allSelectedResources);
 	      }
 	    };
 
@@ -125,7 +125,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        translator.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        gitCtrl.doGitCommand(allSelectedResources, GitOperation.RESOLVE_USING_THEIRS);
+	        gitCtrl.asyncResolveUsingTheirs(allSelectedResources);
 	      }
 	    };
 

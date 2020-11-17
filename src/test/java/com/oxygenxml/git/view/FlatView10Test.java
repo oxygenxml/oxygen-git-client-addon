@@ -15,8 +15,8 @@ import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.view.event.ConflictResolution;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 
 public class FlatView10Test extends FlatViewTestBase {
@@ -104,16 +104,15 @@ public class FlatView10Test extends FlatViewTestBase {
     assertNotNull(abortMergeBtn);
     
     // Resolve using mine
-    GitController gitCtrl = new GitController(() -> refreshSupport) {
+    GitController gitCtrl = new GitController() {
       @Override
-      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
-        return cmd == GitOperation.RESOLVE_USING_MINE;
+      protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
+        return cmd == ConflictResolution.RESOLVE_USING_MINE;
       }
     };
     FileStatus testFileStatus = new FileStatus(GitChangeType.CONFLICT, "test.txt");
-    gitCtrl.doGitCommand(
-        Arrays.asList(testFileStatus),
-        GitOperation.RESOLVE_USING_MINE);
+    gitCtrl.asyncResolveUsingMine(Arrays.asList(testFileStatus));
+    refreshSupport.call();
     waitForScheduler();
     flushAWT();
 
@@ -130,9 +129,7 @@ public class FlatView10Test extends FlatViewTestBase {
     assertNotNull(abortMergeBtn);
     
     // Resolve using theirs
-    gitCtrl.doGitCommand(
-        Arrays.asList(testFileStatus),
-        GitOperation.RESOLVE_USING_THEIRS);
+    gitCtrl.asyncResolveUsingTheirs(Arrays.asList(testFileStatus));
     waitForScheduler();
     flushAWT();
 

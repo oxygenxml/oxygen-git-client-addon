@@ -20,7 +20,6 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
-import com.oxygenxml.git.view.event.GitOperation;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -97,9 +96,8 @@ public class FlatViewTest extends FlatViewTestBase {
 
     assertTableModels("CONFLICT, test.txt", "");
     
-    stagingPanel.getStageController().doGitCommand(
-        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitOperation.RESOLVE_USING_MINE);
+    stagingPanel.getStageController().asyncResolveUsingMine(
+        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     
     waitForScheduler();
     
@@ -168,9 +166,8 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTableModels("CONFLICT, test.txt", "");
     
     // Resolve using theirs
-    stagingPanel.getStageController().doGitCommand(
-        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitOperation.RESOLVE_USING_THEIRS);
+    stagingPanel.getStageController().asyncResolveUsingTheirs(
+        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     waitForScheduler();
     
     assertTableModels("", "CHANGED, test.txt");
@@ -183,9 +180,8 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTableModels("CONFLICT, test.txt", "");
     
     // Resolve again using theirs
-    stagingPanel.getStageController().doGitCommand(
-        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")),
-        GitOperation.RESOLVE_USING_THEIRS);
+    stagingPanel.getStageController().asyncResolveUsingTheirs(
+        Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     waitForScheduler();
     
     assertTableModels("", "CHANGED, test.txt");

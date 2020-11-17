@@ -270,9 +270,7 @@ public class DiffPresenter {
 			            translator.getTranslation(Tags.YES),
 			            translator.getTranslation(Tags.NO));
 			        if (response == OKCancelDialog.RESULT_OK) {
-			          stageController.doGitCommand(
-			              Arrays.asList(file),
-			              GitOperation.RESOLVE_USING_MINE);
+			          stageController.asyncResolveUsingMine(Arrays.asList(file));
 			        }
 			      } else {
 			        // Instead of requesting the file status again, we just mark it as modified.

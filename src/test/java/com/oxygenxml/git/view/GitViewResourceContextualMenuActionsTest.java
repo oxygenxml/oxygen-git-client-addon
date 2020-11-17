@@ -23,7 +23,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
   /**
    * Staging controller.
    */
-  private GitController stagingCtrl = new GitController(() -> refreshSupport);
+  private GitController stagingCtrl = new GitController();
   
   /**
    * <p><b>Description:</b> test the enabling state of the actions

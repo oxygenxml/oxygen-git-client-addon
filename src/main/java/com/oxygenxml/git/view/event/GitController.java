@@ -3,7 +3,6 @@ package com.oxygenxml.git.view.event;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -15,7 +14,6 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
-import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -39,19 +37,41 @@ public class GitController {
 	 * Access to the Git API.
 	 */
 	private GitAccess gitAccess = GitAccess.getInstance();
+	
 	/**
-	 * Refresh support.
+	 * Resolves the conflict state for the files by keeping the local version.
+	 * 
+	 * @param conflictFiles Conflict files.
 	 */
-  private Supplier<GitRefreshSupport> gitRefreshSupportSupplier;
-
-  /**
-   * Constructor.
+	public void asyncResolveUsingMine(List<FileStatus> conflictFiles) {
+	  async(() ->  {
+	    if (shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution.RESOLVE_USING_MINE)) {
+        resolveUsingMine(conflictFiles);
+      }
+	  });
+	}
+	
+	 /**
+   * Resolves the conflict state for the files by keeping the remote version.
    * 
-   * @param gitRefreshSupport Refresh support.
+   * @param conflictFiles Conflict files.
    */
-	public GitController(Supplier<GitRefreshSupport> gitRefreshSupportSupplier) {
-    this.gitRefreshSupportSupplier = gitRefreshSupportSupplier;
-  }
+	 public void asyncResolveUsingTheirs(List<FileStatus> conflictFiles) {
+	    async(() ->  {
+	      if (shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution.RESOLVE_USING_THEIRS)) {
+          resolveUsingTheirs(conflictFiles);
+        }
+	    });
+	  }
+	
+	 /**
+	  * Runs a task on the Git operation thread.
+	  * 
+	  * @param r Git Task.
+	  */
+	private void async(Runnable r) {
+	  GitOperationScheduler.getInstance().schedule(r);
+	}
 
   /**
 	 * Executes the given action on the given files.
@@ -76,18 +96,6 @@ public class GitController {
 	      case DISCARD:
 	        discard(filesStatuses);
 	        break;
-	      case RESOLVE_USING_MINE:
-	        if (shouldContinueResolvingConflictUsingMineOrTheirs(GitOperation.RESOLVE_USING_MINE)) {
-	          resolveUsingMine(filesStatuses);
-	          gitRefreshSupportSupplier.get().call();
-	        }
-	        break;
-	      case RESOLVE_USING_THEIRS:
-	        if (shouldContinueResolvingConflictUsingMineOrTheirs(GitOperation.RESOLVE_USING_THEIRS)) {
-	          resolveUsingTheirs(filesStatuses);
-	          gitRefreshSupportSupplier.get().call();
-	        }
-	        break;
 	      default:
 	        break;
 	    }
@@ -97,11 +105,11 @@ public class GitController {
 	/**
 	 * Should continue resolving a conflict using 'mine' or 'theirs'.
 	 * 
-	 * @param cmd GitCommand.RESOLVE_USING_MINE or GitCommand.RESOLVE_USING_THEIRS.
+	 * @param cmd ConflictResolution.RESOLVE_USING_MINE or ConflictResolution.RESOLVE_USING_THEIRS.
 	 * 
 	 * @return <code>true</code> to continue resolving the conflict using 'mine' or 'theirs'.
 	 */
-  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(GitOperation cmd) {
+  private boolean shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution cmd) {
     boolean shouldContinue = false;
     try {
       RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
@@ -127,8 +135,8 @@ public class GitController {
 	 * 
 	 * @return <code>true</code> to continue.
 	 */
-	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(GitOperation cmd) {
-	  boolean isResolveUsingMine = cmd == GitOperation.RESOLVE_USING_MINE;
+	protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
+	  boolean isResolveUsingMine = cmd == ConflictResolution.RESOLVE_USING_MINE;
     String actionName = isResolveUsingMine ? translator.getTranslation(Tags.RESOLVE_USING_MINE)
 	      : translator.getTranslation(Tags.RESOLVE_USING_THEIRS);
 	  String side = isResolveUsingMine ? translator.getTranslation(Tags.MINE)
