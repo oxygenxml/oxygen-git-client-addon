@@ -1,5 +1,8 @@
 package com.oxygenxml.git.service;
 
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+
 /**
  * A SSH pass is required.
  *  
@@ -12,6 +15,6 @@ public class SSHPassphraseRequiredException extends Exception {
    * @param cause The cause.
    */
   public SSHPassphraseRequiredException(Throwable cause) {
-    super("SSH Passphare required", cause);
+    super(Translator.getInstance().getTranslation(Tags.SSH_KEY_PASSPHRASE_REQUIRED), cause);
   }
 }

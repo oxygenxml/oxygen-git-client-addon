@@ -280,7 +280,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
         GitOperation operation = info.getGitOperation();
         if (operation == GitOperation.CHECKOUT
             || operation == GitOperation.CONTINUE_REBASE 
-            || operation == GitOperation.RESET_TO_COMMIT) {
+            || operation == GitOperation.RESET_TO_COMMIT
+            || operation == GitOperation.OPEN_WORKING_COPY) {
           gitRefreshSupport.call();
           
           if (operation == GitOperation.CHECKOUT) {

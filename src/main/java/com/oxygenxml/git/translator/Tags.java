@@ -1141,6 +1141,18 @@ public class Tags {
    */
   public static final String NEVER_SWITCH_TO_DETECTED_WORKING_COPY = "Never_switch_to_detected_working_copy";
   /**
+   * Message for when the passphrase for the SSH key is required.
+   */
+  public static final String SSH_KEY_PASSPHRASE_REQUIRED = "SSH_key_passphrase_required";
+  /**
+   * Message for when the HTTPS user name and password are required.
+   */
+  public static final String USERNAME_AND_PASSWORD_REQUIRED = "Username_and_password_required";
+  /**
+   * Hover for details.
+   */
+  public static final String HOVER_FOR_DETAILS = "Hover_for_details";
+  /**
    * Git Client. Translation loaded from Oxygen.
    */
   public static final String GIT_CLIENT = "Git_client";

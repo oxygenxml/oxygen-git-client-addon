@@ -53,7 +53,8 @@ import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitOperationScheduler;
-import com.oxygenxml.git.utils.PanelRefresh.RepositoryStatus;
+import com.oxygenxml.git.utils.RepositoryStatusInfo;
+import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.event.ActionStatus;
@@ -589,10 +590,13 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	    String text = statusLabel.getText();
 	    if (text != null && !text.isEmpty()) {
 	      FontMetrics fontMetrics = getFontMetrics(getFont());
+	      String toolTipText = getToolTipText();
+	      boolean hasTooltip = toolTipText != null && !toolTipText.isEmpty();
 	      if (fontMetrics.stringWidth(text) > statusLabel.getSize().width) {
-	        statusLabel.setToolTipText(text);
-	      } else {
-	        statusLabel.setToolTipText(null);
+          statusLabel.setToolTipText(hasTooltip ? text + "\n\n" + toolTipText : text);
+	      } else if (hasTooltip) {
+	        System.err.println("AAA: " + toolTipText);
+	        statusLabel.setToolTipText(toolTipText);
 	      }
 	    }
 	  }
@@ -688,14 +692,26 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 * 
 	 * @param the current status.
 	 */
-	public void setRepoStatus(final RepositoryStatus status) {
+	public void setRepoStatus(final RepositoryStatusInfo statusInfo) {
+	  RepositoryStatus repoStatus = statusInfo.getRepoStatus();
+	  System.err.println(repoStatus);
 	  SwingUtilities.invokeLater(() -> {
-	    if (RepositoryStatus.UNAVAILABLE == status) {
-	      statusLabel.setText(translator.getTranslation(Tags.CANNOT_REACH_HOST));
+	    if (RepositoryStatus.UNAVAILABLE == repoStatus) {
+	      String extraInfo = statusInfo.getExtraInfo();
+	      String text = translator.getTranslation(Tags.CANNOT_REACH_HOST);
+	      System.err.println("EI: " + extraInfo);
+	      if (extraInfo != null && !extraInfo.isEmpty()) {
+	        // TODO: syserr extra info... de ce cand dai prima data cancel
+	        // la user name si password dupa restart nu apare tooltip?
+	        text +=  ". " + translator.getTranslation(Tags.HOVER_FOR_DETAILS);
+	      }
+        statusLabel.setText(text);
 	      statusLabel.setIcon(Icons.getIcon(Icons.VALIDATION_ERROR));
-	    } else if (RepositoryStatus.AVAILABLE == status) {
+        statusLabel.setToolTipText(extraInfo);
+	    } else if (RepositoryStatus.AVAILABLE == repoStatus) {
 	      statusLabel.setText(null);
 	      statusLabel.setIcon(null);
+	      statusLabel.setToolTipText(null);
 	    }
 	  });
 	}
