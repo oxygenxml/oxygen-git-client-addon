@@ -571,4 +571,11 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
   public ConflictButtonsPanel getConflictButtonsPanel() {
     return conflictButtonsPanel;
   }
+  
+  /**
+   * Load working copies.
+   */
+  public void loadWorkingCopies() {
+    workingCopySelectionPanel.loadEntries();
+  }
 }

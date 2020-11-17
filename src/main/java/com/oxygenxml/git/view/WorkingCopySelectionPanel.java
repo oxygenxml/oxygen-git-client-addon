@@ -280,16 +280,13 @@ public class WorkingCopySelectionPanel extends JPanel {
 
 	  addWorkingCopySelectorListener();
 	  
-	  // Populates the combo box with the previously added repositories. Basically
-	  // restore the state before the application was closed
-	  loadEntries();
 	  this.add(workingCopyCombo, gbc);
 	}
 
 	/**
 	 * Load the recorded workinf copy locations into the combo.
 	 */
-  private void loadEntries() {
+  void loadEntries() {
     List<String> repositoryEntries = new ArrayList<>(OptionsManager.getInstance().getRepositoryEntries());
     for (String repositoryEntry : repositoryEntries) {
 			workingCopyCombo.addItem(repositoryEntry);

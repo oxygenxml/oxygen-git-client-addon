@@ -107,8 +107,12 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     @Override
     public void windowActivated(WindowEvent e) {
       super.windowActivated(e);
-      if (refresh && stagingPanel != null && stagingPanel.isShowing()) {
-        gitRefreshSupport.call();
+      boolean isStagingPanelShowing = stagingPanel != null && stagingPanel.isShowing();
+      if (isStagingPanelShowing) {
+        stagingPanel.loadWorkingCopies();
+        if (refresh) {
+          gitRefreshSupport.call();
+        }
       }
       refresh = false;
     }
@@ -303,8 +307,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
             try {
               repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
               if (repositoryState != RepositoryState.REBASING_MERGE) {
-                PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                    translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+                SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+                    translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE)));
               }
             } catch (NoRepositorySelected e) {
               logger.debug(e, e);
