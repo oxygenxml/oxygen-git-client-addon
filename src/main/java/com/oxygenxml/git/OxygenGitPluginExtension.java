@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
@@ -287,6 +288,18 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           if (operation == GitOperation.CHECKOUT) {
             try {
               FileHelper.refreshProjectView();
+            } catch (NoRepositorySelected e) {
+              logger.debug(e, e);
+            }
+          } else if (operation == GitOperation.OPEN_WORKING_COPY
+              && GitAccess.getInstance().getBranchInfo().isDetached()) {
+            RepositoryState repositoryState;
+            try {
+              repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
+              if (repositoryState != RepositoryState.REBASING_MERGE) {
+                PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+                    translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+              }
             } catch (NoRepositorySelected e) {
               logger.debug(e, e);
             }
