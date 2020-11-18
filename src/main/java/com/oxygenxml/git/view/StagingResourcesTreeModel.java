@@ -106,6 +106,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	    case ABORT_REBASE:
 	    case CONTINUE_REBASE:
 	      filesStatuses.clear();
+	      // Rebuild the tree
+	      GitTreeNode root = (GitTreeNode) getRoot();
+	      root.removeAllChildren();
 	      break;
 	    case ABORT_MERGE:
 	      deleteNodes(((FileGitEventInfo) eventInfo).getAffectedFileStatuses());
