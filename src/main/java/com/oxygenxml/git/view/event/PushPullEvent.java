@@ -17,6 +17,10 @@ public class PushPullEvent extends GitEventInfo {
    * Additional information for the fired event
    */
   private String message = "";
+  /**
+   * An exception if the operation failed.
+   */
+  private Exception cause;
 
   /**
    * Constructor.
@@ -40,10 +44,36 @@ public class PushPullEvent extends GitEventInfo {
     this.message = message;
   }
 
+  /**
+   * Constructor.
+   * 
+   * @param op The executed operation.
+   * @param message An optional message about the operation.
+   * @param cause  An exception if the operation failed.
+   */
+  public PushPullEvent(GitOperation operation, String message, Exception cause) {
+    super(operation);
+    this.message = message;
+    this.cause = cause;
+  }
+  
+  /**
+   * @return  An exception if the operation failed.
+   */
+  public Exception getCause() {
+    return cause;
+  }
+
+  /**
+   * @return Extra details about the result.
+   */
   public ActionStatus getActionStatus() {
     return actionStatus;
   }
 
+  /**
+   * @return An information about the curent state of the operation.
+   */
   public String getMessage() {
     return message;
   }
@@ -53,6 +83,9 @@ public class PushPullEvent extends GitEventInfo {
     return "Status: " + actionStatus + ", message: " + message;
   }
 
+  /**
+   * @return <code>true</code> if the operation finished and generated conflicts.
+   */
   public boolean hasConficts() {
     return actionStatus == ActionStatus.PULL_MERGE_CONFLICT_GENERATED || actionStatus == ActionStatus.PULL_REBASE_CONFLICT_GENERATED;
   }

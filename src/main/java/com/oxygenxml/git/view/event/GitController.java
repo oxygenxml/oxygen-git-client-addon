@@ -160,7 +160,6 @@ public class GitController extends GitControllerBase {
       UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
       Optional<PushPullEvent> event = Optional.empty();
       boolean notifyFinish = true;
-      String failureMessage = null;
       try {
         if (logger.isDebugEnabled()) {
           logger.debug("Preparing for push/pull command");
@@ -181,11 +180,11 @@ public class GitController extends GitControllerBase {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage(), lockFailedException);
           
           // This message gets presented in a status, at the bottom of the staging view.
-          failureMessage = composeAndReturnFailureMessage(lockFailedException.getMessage());
+          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(lockFailedException.getMessage()), e));
         } else {
           // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
-          failureMessage = composeAndReturnFailureMessage(e.getMessage());
+          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
         }
       } catch (RebaseUncommittedChangesException e) {
         showPullFailedBecauseOfCertainChanges(
@@ -213,10 +212,10 @@ public class GitController extends GitControllerBase {
           // Try again.
           executeCommand();
         } else {
-          failureMessage = composeAndReturnFailureMessage(e.getMessage());
+          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
         }
       } catch (Exception e) {
-        failureMessage = composeAndReturnFailureMessage(e.getMessage());
+        event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
         logger.error(e, e);
       } finally {
         if (notifyFinish) {
@@ -224,10 +223,14 @@ public class GitController extends GitControllerBase {
           if (event.isPresent()) {
             toFire = event.get();
           } else {
-            toFire = new PushPullEvent(getOperation(), failureMessage);
+            toFire = new PushPullEvent(getOperation(), "");
           }
           
-          listeners.fireOperationSuccessfullyEnded(toFire);
+          if (toFire.getCause() != null) {
+            listeners.fireOperationFailed(toFire, toFire.getCause());
+          } else {
+            listeners.fireOperationSuccessfullyEnded(toFire);
+          }
         }
       }
     }
