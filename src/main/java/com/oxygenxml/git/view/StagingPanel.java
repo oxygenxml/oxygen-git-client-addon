@@ -130,21 +130,24 @@ public class StagingPanel extends JPanel {
 		createGUI(historyController, branchManagementView);
 		
 		stageController.addGitListener(new GitEventListener() {
-      @Override
-      public void operationSuccessfullyEnded(GitEventInfo info) {
-        if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
-        handlePushPullEvent((PushPullEvent) info, false);
-      }
-      @Override
-      public void operationFailed(GitEventInfo info, Throwable t) {
-        if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
-        handlePushPullEvent((PushPullEvent) info, false);
-      }
-      
-      @Override
-      public void operationAboutToStart(GitEventInfo info) {
-        if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
-        handlePushPullEvent((PushPullEvent) info, true);
+		  @Override
+		  public void operationSuccessfullyEnded(GitEventInfo info) {
+		    if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
+		      handlePushPullEvent((PushPullEvent) info, false);
+		    }
+		  }
+		  @Override
+		  public void operationFailed(GitEventInfo info, Throwable t) {
+		    if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
+		      handlePushPullEvent((PushPullEvent) info, false);
+		    }
+		  }
+
+		  @Override
+		  public void operationAboutToStart(GitEventInfo info) {
+		    if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
+		      handlePushPullEvent((PushPullEvent) info, true);
+		    }
       }
     });
 	}
