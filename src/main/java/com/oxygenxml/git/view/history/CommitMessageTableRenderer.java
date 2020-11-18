@@ -40,7 +40,8 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   /**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(CommitMessageTableRenderer.class);
+	@SuppressWarnings("unused")
+  private static Logger logger = Logger.getLogger(CommitMessageTableRenderer.class);
 
 	/**
 	 * Git repository.
