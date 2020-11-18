@@ -8,7 +8,8 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.view.event.GitEventInfo;
 
 /**
- * Git notifications support.
+ * Git notifications support. Central point to register all parties interested in receiving 
+ * Git operation notifications.
  */
 public class GitListeners {
   /**
@@ -20,6 +21,24 @@ public class GitListeners {
    * Receive notifications when things change.
    */
   private HashSet<GitEventListener> gitEventListeners = new LinkedHashSet<>();
+  /**
+   * Singleton.
+   */
+  private static GitListeners instance = null;
+  /**
+   * Private contructor.
+   */
+  private GitListeners() {}
+  /**
+   * @return The singleton instance.
+   */
+  public static GitListeners getInstance() {
+    if (instance == null) {
+      instance = new GitListeners();
+    }
+    
+   return instance; 
+  }
   
   /**
    * Fire operation about to start.
@@ -30,6 +49,7 @@ public class GitListeners {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire operation about to start: " + info);
     }
+    
     for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.operationAboutToStart(info);
     }
@@ -44,6 +64,7 @@ public class GitListeners {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire operation successfully ended: " + info);
     }
+    
     for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.operationSuccessfullyEnded(info);
     }
@@ -59,6 +80,7 @@ public class GitListeners {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
     }
+    
     for (GitEventListener gitEventListener : gitEventListeners) {
       gitEventListener.operationFailed(info, t);
     }

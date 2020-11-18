@@ -429,10 +429,11 @@ public class StagingPanel extends JPanel {
 	    public void run() {
 	      if (started) {
 	        treatPushPullStarted(pushPullEvent);
-	      } else if (pushPullEvent.hasConficts()) {
-	        conflictButtonsPanel.setVisible(true);
 	      } else {
 	        treatPushPullFinished(pushPullEvent);
+	        if (pushPullEvent.hasConficts()) {
+	          conflictButtonsPanel.setVisible(true);
+	        }
 	      }
 	    }
 

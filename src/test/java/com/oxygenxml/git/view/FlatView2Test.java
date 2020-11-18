@@ -24,8 +24,8 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.PullType;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -520,7 +520,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    GitController ppc = new GitController(gitAccess);
+    GitController ppc = stagingPanel.getPushPullController();
     ppc.pull(PullType.REBASE);
     flushAWT();
     sleep(300);
@@ -618,7 +618,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertTrue(rebasePanel.isShowing());
 
       // Pull again. Rebase in progress dialog is shown
-      GitController ppc = new GitController(gitAccess);
+      GitController ppc = stagingPanel.getPushPullController();
       ppc.pull(PullType.REBASE);
       flushAWT();
       sleep(300);
@@ -676,8 +676,12 @@ public class FlatView2Test extends FlatViewTestBase {
       continueBtn = findFirstButton(
           rebaseInProgressDlg.getRootPane(),
           Translator.getInstance().getTranslation(Tags.CONTINUE_REBASE));
+      
+      System.out.println("Click the button");
       continueBtn.doClick();
+      
       flushAWT();
+      waitForScheduler();
       sleep(1000);
 
       rebaseInProgressDlg = findDialog(Tags.REBASE_IN_PROGRESS);
