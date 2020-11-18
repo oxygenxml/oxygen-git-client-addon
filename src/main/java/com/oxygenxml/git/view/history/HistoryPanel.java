@@ -67,11 +67,9 @@ import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
-import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -228,9 +226,7 @@ public class HistoryPanel extends JPanel {
               break;
             case PULL:
             case PUSH:
-              if (((PushPullEvent) info).getActionStatus() == ActionStatus.FINISHED) {
-                refresh();
-              }
+              refresh();
               break;
             case CREATE_BRANCH:
             case CHECKOUT:

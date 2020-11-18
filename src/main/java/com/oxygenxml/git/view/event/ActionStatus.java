@@ -8,14 +8,6 @@ package com.oxygenxml.git.view.event;
  */
 public enum ActionStatus {
 	/**
-	 * Specifies that the Push/Pull command has started
-	 */
-	STARTED, 
-	/**
-	 * Specifies that the Push/Pull command has finished
-	 */
-	FINISHED, 
-	/**
 	 * Pull (rebase) just generated a conflict.
 	 */
 	PULL_REBASE_CONFLICT_GENERATED,

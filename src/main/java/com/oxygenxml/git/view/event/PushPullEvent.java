@@ -8,41 +8,53 @@ package com.oxygenxml.git.view.event;
  */
 public class PushPullEvent extends GitEventInfo {
 
-	/**
-	 * The state in which the push or pull is (Started or Finished)
-	 */
-	private ActionStatus actionStatus;
-	
-	/**
-	 * Additional information for the fired event
-	 */
-	private String message;
+  /**
+   *  An optional status about the operation.
+   */
+  private ActionStatus actionStatus;
 
-	public PushPullEvent(GitOperation op, ActionStatus actionStatus, String message) {
-	  super(op);
-		this.actionStatus = actionStatus;
-		this.message = message;
-	}
+  /**
+   * Additional information for the fired event
+   */
+  private String message = "";
 
-	public ActionStatus getActionStatus() {
-		return actionStatus;
-	}
+  /**
+   * Constructor.
+   * 
+   * @param op The executed operation.
+   * @param actionStatus An optional status about the operation.
+   */
+  public PushPullEvent(GitOperation op, ActionStatus actionStatus) {
+    super(op);
+    this.actionStatus = actionStatus;
+  }
 
-	public void setActionStatus(ActionStatus actionStatus) {
-		this.actionStatus = actionStatus;
-	}
+  /**
+   * Constructor.
+   * 
+   * @param op The executed operation.
+   * @param message An optional message about the operation.
+   */
+  public PushPullEvent(GitOperation op, String message) {
+    super(op);
+    this.message = message;
+  }
 
-	public String getMessage() {
-		return message;
-	}
-	
-	public void setMessage(String message){
-		this.message = message;
-	}
-	
-	@Override
-	public String toString() {
-	  return "Status: " + actionStatus + ", message: " + message;
-	}
+  public ActionStatus getActionStatus() {
+    return actionStatus;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  @Override
+  public String toString() {
+    return "Status: " + actionStatus + ", message: " + message;
+  }
+
+  public boolean hasConficts() {
+    return actionStatus == ActionStatus.PULL_MERGE_CONFLICT_GENERATED || actionStatus == ActionStatus.PULL_REBASE_CONFLICT_GENERATED;
+  }
 
 }

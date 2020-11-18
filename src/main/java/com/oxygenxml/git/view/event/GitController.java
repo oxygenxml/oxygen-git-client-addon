@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
@@ -70,7 +71,7 @@ public class GitController extends GitControllerBase {
 	 */
 	private Future<?> execute(String message, ExecuteCommandRunnable command) {
 		// Notify push about to start.
-		PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), ActionStatus.STARTED, message);
+		PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), message);
 		listeners.fireOperationAboutToStart(pushPullEvent);
 		
 		return GitOperationScheduler.getInstance().schedule(command);
@@ -157,13 +158,14 @@ public class GitController extends GitControllerBase {
     private void executeCommand() {
       String hostName = gitAccess.getHostName();
       UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
-      String message = "";
+      Optional<PushPullEvent> event = Optional.empty();
       boolean notifyFinish = true;
+      String failureMessage = null;
       try {
         if (logger.isDebugEnabled()) {
           logger.debug("Preparing for push/pull command");
         }
-        message = doOperation(userCredentials);
+        event = doOperation(userCredentials);
       } catch (JGitInternalException e) {
         logger.debug(e, e);
         
@@ -179,11 +181,11 @@ public class GitController extends GitControllerBase {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage(), lockFailedException);
           
           // This message gets presented in a status, at the bottom of the staging view.
-          message = composeAndReturnFailureMessage(lockFailedException.getMessage());
+          failureMessage = composeAndReturnFailureMessage(lockFailedException.getMessage());
         } else {
           // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
-          message = composeAndReturnFailureMessage(e.getMessage());
+          failureMessage = composeAndReturnFailureMessage(e.getMessage());
         }
       } catch (RebaseUncommittedChangesException e) {
         showPullFailedBecauseOfCertainChanges(
@@ -211,15 +213,21 @@ public class GitController extends GitControllerBase {
           // Try again.
           executeCommand();
         } else {
-          message = composeAndReturnFailureMessage(e.getMessage());
+          failureMessage = composeAndReturnFailureMessage(e.getMessage());
         }
       } catch (Exception e) {
-        message = composeAndReturnFailureMessage(e.getMessage());
+        failureMessage = composeAndReturnFailureMessage(e.getMessage());
         logger.error(e, e);
       } finally {
         if (notifyFinish) {
-          PushPullEvent pushPullEvent = new PushPullEvent(getOperation(), ActionStatus.FINISHED, message);
-          listeners.fireOperationSuccessfullyEnded(pushPullEvent);
+          PushPullEvent toFire = null;
+          if (event.isPresent()) {
+            toFire = event.get();
+          } else {
+            toFire = new PushPullEvent(getOperation(), failureMessage);
+          }
+          
+          listeners.fireOperationSuccessfullyEnded(toFire);
         }
       }
     }
@@ -232,7 +240,7 @@ public class GitController extends GitControllerBase {
     /**
      * Push or pull, depending on the implementation.
      */
-    protected abstract String doOperation(UserCredentials userCredentials) throws GitAPIException;
+    protected abstract Optional<PushPullEvent> doOperation(UserCredentials userCredentials) throws GitAPIException;
     
     
   }
@@ -251,21 +259,23 @@ public class GitController extends GitControllerBase {
      * Push the changes and inform the user with messages depending on the result status.
      * 
      * @param userCredentials The credentials used to push the changes.
+     * 
+     * @return An event with the operation result, if it was executed.
   
      * @throws GitAPIException
      */
     @Override
-    protected String doOperation(UserCredentials userCredentials)
+    protected Optional<PushPullEvent> doOperation(UserCredentials userCredentials)
         throws  GitAPIException {
       PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
-      String message = "";
+      PushPullEvent event = null;
       if (Status.OK == response.getStatus()) {
-        message = translator.getTranslation(Tags.PUSH_SUCCESSFUL);
+        event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_SUCCESSFUL));
       } else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showErrorMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
       } else if (Status.UP_TO_DATE == response.getStatus()) {
-        message = translator.getTranslation(Tags.PUSH_UP_TO_DATE);
+        event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_UP_TO_DATE));
       } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
         String errMess = translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN);
         if (response.getMessage() != null) {
@@ -279,7 +289,8 @@ public class GitController extends GitControllerBase {
         }
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(errMess);
       }
-      return message;
+      
+      return Optional.ofNullable(event);
     }
 
     @Override
@@ -308,12 +319,13 @@ public class GitController extends GitControllerBase {
      * 
      * @param userCredentials The credentials used to pull the new changes made by others.
      *          
-     * @return The display message.
+     * @return An optional event describing the result.
+     * 
      * @throws GitAPIException
      */
     @Override
-    protected String doOperation(UserCredentials userCredentials) throws GitAPIException {
-      String message = "";
+    protected Optional<PushPullEvent> doOperation(UserCredentials userCredentials) throws GitAPIException {
+      PushPullEvent event = null;
 
       RepositoryState repositoryState = null;
       try {
@@ -341,18 +353,14 @@ public class GitController extends GitControllerBase {
     				  pullType);
           switch (response.getStatus()) {
     		  case OK:
-    			  message = translator.getTranslation(Tags.PULL_SUCCESSFUL);
+    		    event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_SUCCESSFUL));
     			  break;
     		  case CONFLICTS:
     			  showPullSuccessfulWithConflicts(response);
-    			  PushPullEvent pushPullEvent = null;
     			  if (pullType == PullType.REBASE) {
-    				  pushPullEvent = new PushPullEvent(getOperation(), ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
+    				  event = new PushPullEvent(getOperation(), ActionStatus.PULL_REBASE_CONFLICT_GENERATED);
     			  } else if (pullType == PullType.MERGE_FF) {
-    			    pushPullEvent = new PushPullEvent(getOperation(), ActionStatus.PULL_MERGE_CONFLICT_GENERATED, "");
-    			  }
-    			  if (pushPullEvent != null) {
-    			    listeners.fireOperationSuccessfullyEnded(pushPullEvent);
+    			    event = new PushPullEvent(getOperation(), ActionStatus.PULL_MERGE_CONFLICT_GENERATED);
     			  }
     			  break;
     		  case REPOSITORY_HAS_CONFLICTS:
@@ -360,10 +368,10 @@ public class GitController extends GitControllerBase {
     			  .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
     			  break;
     		  case UP_TO_DATE:
-    			  message = translator.getTranslation(Tags.PULL_UP_TO_DATE);
+    			  event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_UP_TO_DATE));
     			  break;
     		  case LOCK_FAILED:
-    			  message = translator.getTranslation(Tags.LOCK_FAILED);
+    			  event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.LOCK_FAILED));
     			  break;
     		  default:
     			  // Nothing
@@ -371,7 +379,7 @@ public class GitController extends GitControllerBase {
     		  }
     	  }
       }
-      return message;
+      return Optional.ofNullable(event);
     }
 
     @Override

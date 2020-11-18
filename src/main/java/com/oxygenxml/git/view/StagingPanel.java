@@ -34,7 +34,6 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
-import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -134,18 +133,18 @@ public class StagingPanel extends JPanel {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
-        handlePushPullEvent((PushPullEvent) info);
+        handlePushPullEvent((PushPullEvent) info, false);
       }
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
         if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
-        handlePushPullEvent((PushPullEvent) info);
+        handlePushPullEvent((PushPullEvent) info, false);
       }
       
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
-        handlePushPullEvent((PushPullEvent) info);
+        handlePushPullEvent((PushPullEvent) info, true);
       }
     });
 	}
@@ -417,25 +416,20 @@ public class StagingPanel extends JPanel {
 
 	/**
 	 * State changed. React.
+	 * 
+	 * @param pushPullEvent Change event.
+	 * @param started <code>true</code> if the task just started. <code>false</code> if it ended.
 	 */
-	public void handlePushPullEvent(PushPullEvent pushPullEvent) {
+	public void handlePushPullEvent(PushPullEvent pushPullEvent, boolean started) {
 	  SwingUtilities.invokeLater(new Runnable() {
 	    @Override
 	    public void run() {
-	      ActionStatus pushPullActionStatus = pushPullEvent.getActionStatus();
-	      switch (pushPullActionStatus) {
-	        case STARTED:
-	          treatPushPullStarted(pushPullEvent);
-	          break;
-	        case FINISHED:
-	          treatPushPullFinished(pushPullEvent);
-	          break;
-	        case PULL_MERGE_CONFLICT_GENERATED:
-	        case PULL_REBASE_CONFLICT_GENERATED:
-	          conflictButtonsPanel.setVisible(true);
-	          break;
-	        default:
-	          break;
+	      if (started) {
+	        treatPushPullStarted(pushPullEvent);
+	      } else if (pushPullEvent.hasConficts()) {
+	        conflictButtonsPanel.setVisible(true);
+	      } else {
+	        treatPushPullFinished(pushPullEvent);
 	      }
 	    }
 
