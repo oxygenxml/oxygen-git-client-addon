@@ -22,8 +22,8 @@ import org.powermock.reflect.Whitebox;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.view.event.GitController;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

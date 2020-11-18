@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 
 /**
@@ -25,7 +26,7 @@ public class GitControllerTest {
    */
   @Test
   public void testFailNotification() throws Exception {
-    GitController ctrl = new GitController(GitAccess.getInstance());
+    GitControllerBase ctrl = new GitController(GitAccess.getInstance());
     
     StringBuilder b = new StringBuilder();
     ctrl.addGitListener(new GitEventListener() {

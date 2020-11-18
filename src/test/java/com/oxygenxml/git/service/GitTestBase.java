@@ -70,6 +70,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
@@ -535,7 +536,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     installGitProtocol();
     
     GitAccess gitAccess = GitAccess.getInstance();
-    gitAccess.addGitListener(new GitEventAdapter() {
+    GitController ctrl = new GitController(gitAccess);
+    ctrl.addGitListener(new GitEventAdapter() {
       private Repository oldRepository;
 
       @Override

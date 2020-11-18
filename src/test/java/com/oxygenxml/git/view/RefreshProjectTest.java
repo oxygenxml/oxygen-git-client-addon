@@ -15,7 +15,7 @@ import org.powermock.reflect.Whitebox;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
@@ -108,7 +108,7 @@ public class RefreshProjectTest extends TestCase {
             }
           },
           // A mock that does nothing.
-          Mockito.mock(GitController.class));
+          Mockito.mock(GitControllerBase.class));
       discardAction.actionPerformed(null);
       
       assertEquals(
@@ -154,7 +154,7 @@ public class RefreshProjectTest extends TestCase {
             }
           },
           // A mock that does nothing.
-          Mockito.mock(GitController.class));
+          Mockito.mock(GitControllerBase.class));
       discardAction.actionPerformed(null);
 
       assertEquals(
@@ -198,7 +198,7 @@ public class RefreshProjectTest extends TestCase {
             }
           },
           // A mock that does nothing.
-          Mockito.mock(GitController.class));
+          Mockito.mock(GitControllerBase.class));
       discardAction.actionPerformed(null);
 
       assertEquals(

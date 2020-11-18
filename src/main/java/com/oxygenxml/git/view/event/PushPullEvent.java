@@ -6,7 +6,7 @@ package com.oxygenxml.git.view.event;
  * @author Beniamin Savu
  *
  */
-public class PushPullEvent {
+public class PushPullEvent extends GitEventInfo {
 
 	/**
 	 * The state in which the push or pull is (Started or Finished)
@@ -18,7 +18,8 @@ public class PushPullEvent {
 	 */
 	private String message;
 
-	public PushPullEvent(ActionStatus actionStatus, String message) {
+	public PushPullEvent(GitOperation op, ActionStatus actionStatus, String message) {
+	  super(op);
 		this.actionStatus = actionStatus;
 		this.message = message;
 	}

@@ -15,12 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.event.GitController;
 /**
  * Test cases for the actions that can be done on a branch.
  * 
@@ -77,7 +78,7 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    GitController mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -139,7 +140,7 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    GitController mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -206,7 +207,7 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    GitController mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();
@@ -272,7 +273,7 @@ public class BranchActionsTest extends GitTestBase {
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("master", initialBranchName);
     
-    GitController mock = new GitController(GitAccess.getInstance());
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
     flushAWT();

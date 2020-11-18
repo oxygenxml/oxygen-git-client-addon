@@ -16,10 +16,8 @@ import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.event.Observer;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -85,7 +83,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(GitAccess.getInstance()) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -98,12 +96,7 @@ public class GitPullCasesTest extends GitTestBase {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     pc.pull().get();
     
@@ -180,7 +173,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(GitAccess.getInstance()) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -193,12 +186,7 @@ public class GitPullCasesTest extends GitTestBase {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     pc.pull(PullType.REBASE).get();
     
@@ -283,7 +271,7 @@ public class GitPullCasesTest extends GitTestBase {
     
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(GitAccess.getInstance()) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -296,12 +284,7 @@ public class GitPullCasesTest extends GitTestBase {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     pc.pull().get();
     
@@ -513,7 +496,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
     final List<String> messages = new ArrayList<>();
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(GitAccess.getInstance()) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -527,12 +510,7 @@ public class GitPullCasesTest extends GitTestBase {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     pc.pull(PullType.REBASE).get();
 
@@ -579,7 +557,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
     final List<String> messages = new ArrayList<>();
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(GitAccess.getInstance()) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -593,12 +571,7 @@ public class GitPullCasesTest extends GitTestBase {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     pc.pull().get();
 
@@ -668,7 +641,7 @@ public class GitPullCasesTest extends GitTestBase {
     final StringBuilder pullWithConflicts = new StringBuilder();
     final List<String> filesWithChanges = new ArrayList<>();
     final List<String> messages = new ArrayList<>();
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(GitAccess.getInstance()) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> files, String message) {
         filesWithChanges.addAll(files);
@@ -682,12 +655,7 @@ public class GitPullCasesTest extends GitTestBase {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     // FIRST REPO
     instance.setRepositorySynchronously(local1Repository);
@@ -756,7 +724,7 @@ public class GitPullCasesTest extends GitTestBase {
     }).when(PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(Mockito.any(), Mockito.any());
     
     //Try to pull
-    PushPullController pushPullController = new PushPullController();
+    GitController pushPullController = new GitController(GitAccess.getInstance());
     Future<?> pull = pushPullController.pull(PullType.MERGE_FF);
     pull.get();
     

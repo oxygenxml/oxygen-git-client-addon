@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.io.Files;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -55,7 +55,7 @@ public class ProjectMenuGitActionsProvider {
   /**
    * Stage controller.
    */
-  private GitController gitCtrl;
+  private GitControllerBase gitCtrl;
 
   /**
    * The "Commit" action.
@@ -100,7 +100,7 @@ public class ProjectMenuGitActionsProvider {
    */
   public ProjectMenuGitActionsProvider(
       StandalonePluginWorkspace pluginWorkspaceAccess,
-      GitController gitCtrl,
+      GitControllerBase gitCtrl,
       HistoryController historyController) {
     this.pluginWS = pluginWorkspaceAccess;
     this.gitCtrl = gitCtrl;

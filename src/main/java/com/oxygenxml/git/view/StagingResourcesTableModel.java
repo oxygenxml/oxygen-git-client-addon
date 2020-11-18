@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
@@ -68,7 +68,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	/**
 	 * Git controller.
 	 */
-  private GitController gitController;
+  private GitControllerBase gitController;
 
   /**
    * Constructor.
@@ -76,7 +76,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
    * @param gitCtrl  Staging controller.
    * @param inIndex  <code>true</code> if this is the model of the staged files.
    */
-	public StagingResourcesTableModel(GitController gitCtrl, boolean inIndex) {
+	public StagingResourcesTableModel(GitControllerBase gitCtrl, boolean inIndex) {
 		this.gitController = gitCtrl;
     this.inIndex = inIndex;
 	}

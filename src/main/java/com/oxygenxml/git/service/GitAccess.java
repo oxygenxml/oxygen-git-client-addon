@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +133,10 @@ public class GitAccess {
 	 */
 	private static final Logger logger = Logger.getLogger(GitAccess.class);
 	/**
+	 * Listeners notifications.
+	 */
+	private GitListeners listeners = new GitListeners();
+	/**
 	 * The GIT repository.
 	 */
 	private Git git;
@@ -145,10 +148,6 @@ public class GitAccess {
 	 * Translation support.
 	 */
 	private static final Translator translator = Translator.getInstance();
-	/**
-	 * Receive notifications when things change.
-	 */
-	private HashSet<GitEventListener> gitEventListeners = new LinkedHashSet<>();
 
 	 /**
    * Singleton instance.
@@ -378,9 +377,7 @@ public class GitAccess {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire operation about to start: " + info);
     }
-    for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.operationAboutToStart(info);
-    }
+    listeners.fireOperationAboutToStart(info);
   }
   
   /**
@@ -392,9 +389,7 @@ public class GitAccess {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire operation successfully ended: " + info);
     }
-    for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.operationSuccessfullyEnded(info);
-    }
+    listeners.fireOperationSuccessfullyEnded(info);
   }
   
   /**
@@ -407,37 +402,9 @@ public class GitAccess {
     if (logger.isDebugEnabled()) {
       logger.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
     }
-    for (GitEventListener gitEventListener : gitEventListeners) {
-      gitEventListener.operationFailed(info, t);
-    }
+    listeners.fireOperationFailed(info, t);
   }
   
-  /**
-   * Add a listener that gets notified about file or repository changes.
-   * 
-   * @param listener The listener to add.
-   */
-  @SuppressWarnings("unchecked")
-	void addGitListener(GitEventListener listener) {
-	  HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventListeners.clone();
-	  clone.add(listener);
-	  
-	  gitEventListeners = clone;
-  }
-  
-  /**
-   * Removes a listener that gets notified about file or repository changes.
-   * 
-   * @param listener The listener to remove.
-   */
-  @SuppressWarnings("unchecked")
-  void removeGitListener(GitEventListener listener) {
-    HashSet<GitEventListener> clone = (HashSet<GitEventListener>) gitEventListeners.clone();
-    clone.remove(listener);
-    
-    gitEventListeners = clone;
-  }
-	
   /**
 	 * Get repository.
 	 * 
@@ -2123,7 +2090,7 @@ public class GitAccess {
    * Clean up.
    */
   public void cleanUp() {
-    gitEventListeners.clear();
+    listeners.clear();
     closeRepo();
   }
 	
@@ -2353,5 +2320,14 @@ public class GitAccess {
 	  revWalk.sort(RevSort.COMMIT_TIME_DESC);
 	  return revWalk.next();
 	}
+	
+	/**
+	 * Sets the listener support.
+	 * 
+	 * @param Git listeners support.
+	 */
+	public void setListeners(GitListeners listeners) {
+    this.listeners = listeners;
+  }
 	
 }

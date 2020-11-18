@@ -18,17 +18,16 @@ import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
+import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.Observer;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.PushPullEvent;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -117,7 +116,7 @@ public class DiffPresenterTest extends GitTestBase {
     setFileContent(file, "content");
     
     FileStatus fileStatus = new FileStatus(GitChangeType.MODIFIED, "test.txt");
-    GitController stageController = Mockito.mock(GitController.class);
+    GitControllerBase stageController = Mockito.mock(GitControllerBase.class);
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
     Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
@@ -207,7 +206,7 @@ public class DiffPresenterTest extends GitTestBase {
     setFileContent(file, "local content");
     
     FileStatus fileStatus = new FileStatus(GitChangeType.MODIFIED, "test.txt");
-    GitController stageController = Mockito.mock(GitController.class);
+    GitControllerBase stageController = Mockito.mock(GitControllerBase.class);
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
     Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
@@ -299,7 +298,7 @@ public class DiffPresenterTest extends GitTestBase {
     DiffPresenter.showDiff(
         // The submodule
         gitAccess.getStagedFiles().get(1),
-        Mockito.mock(GitController.class));
+        Mockito.mock(GitControllerBase.class));
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);
@@ -394,7 +393,7 @@ public class DiffPresenterTest extends GitTestBase {
     final StringBuilder pullWithConflictsSB = new StringBuilder();
     boolean[] wasRebaseInterrupted = new boolean[1];
     final String[] pullFailedMessage = new String[1];
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(gitAccess) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
         pullFailedMessage[0] = message;
@@ -410,12 +409,7 @@ public class DiffPresenterTest extends GitTestBase {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
     pc.pull(PullType.REBASE).get();
@@ -428,7 +422,7 @@ public class DiffPresenterTest extends GitTestBase {
     rightDiff = null;
 
     // Mock the GitController
-    GitController stageController = Mockito.mock(GitController.class);
+    GitControllerBase stageController = Mockito.mock(GitControllerBase.class);
     FileStatus fileStatus = new FileStatus(GitChangeType.CONFLICT, "test.txt");
 
     // Invoke DIFF over the changed file.
@@ -442,6 +436,8 @@ public class DiffPresenterTest extends GitTestBase {
     assertEquals("changed in local 2, resolved", read(leftDiff));
     assertEquals("changed in local 1, conflict content, original", read(rightDiff));
   }
+
+
   
  
 }

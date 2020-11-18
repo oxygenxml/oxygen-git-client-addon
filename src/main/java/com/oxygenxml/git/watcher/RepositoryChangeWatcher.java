@@ -23,7 +23,7 @@ import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
-import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -53,7 +53,7 @@ public class RepositoryChangeWatcher {
   /**
    * High level push and pull support.
    */
-  private PushPullController pushPullController;
+  private GitController pushPullController;
   
   /**
    * The Option Manager instance.
@@ -69,7 +69,7 @@ public class RepositoryChangeWatcher {
    * 
    * @param pushPullController High level push and pull support.
    */
-  private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace, PushPullController pushPullController) {
+  private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace, GitController pushPullController) {
     addListeners4EditingAreas(standalonePluginWorkspace);
     this.pushPullController = pushPullController;
     
@@ -90,7 +90,7 @@ public class RepositoryChangeWatcher {
    * 
    * @return An watcher that keeps track of the remote changes.
    */
-  public static RepositoryChangeWatcher createWatcher(StandalonePluginWorkspace standalonePluginWorkspace, PushPullController pushPullController) {
+  public static RepositoryChangeWatcher createWatcher(StandalonePluginWorkspace standalonePluginWorkspace, GitController pushPullController) {
     return new RepositoryChangeWatcher(standalonePluginWorkspace, pushPullController);
   }
   

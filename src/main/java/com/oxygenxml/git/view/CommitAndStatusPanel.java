@@ -15,9 +15,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -46,7 +44,6 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
@@ -58,13 +55,9 @@ import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
-import com.oxygenxml.git.view.event.ActionStatus;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.PushPullEvent;
-import com.oxygenxml.git.view.event.Subject;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
@@ -72,7 +65,7 @@ import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 /**
  * Panel to insert the commit message and commit the staged files. 
  */
-public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEvent> {
+public class CommitAndStatusPanel extends JPanel {
   
   /**
    * Max number of characters for the previous messages. 
@@ -180,7 +173,7 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
         SwingUtilities.invokeLater(() -> CommitAndStatusPanel.this.getParent().setCursor(Cursor.getDefaultCursor()));
         
         if (commitSuccessful && autoPushWhenCommittingToggle.isSelected()) {
-          pushPullController.push();
+          gitController.push();
         }
       }
     }
@@ -216,9 +209,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
           menuItem.setToolTipText(message.length() > PREV_MESS_MAX_WIDTH ? message : null);
         }
         
-        PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.UPDATE_COUNT, null);
-        observers.forEach((Observer<PushPullEvent> observer) -> observer.stateChanged(pushPullEvent));
-
         SwingUtilities.invokeLater(() -> {
           setStatusMessage(amendLastCommitToggle.isSelected() ? translator.getTranslation(Tags.AMENDED_SUCCESSFULLY)
               : translator.getTranslation(Tags.COMMIT_SUCCESS));
@@ -272,10 +262,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	 * Messages of interest.
 	 */
 	private JLabel statusLabel;
-  /**
-	 * Will be notified after the commit.
-	 */
-	private Collection<Observer<PushPullEvent>> observers;
 	/**
 	 * Translation support.
 	 */
@@ -303,17 +289,15 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
 	/**
 	 * Push / pull controller.
 	 */
-  private PushPullController pushPullController;
+  private GitController gitController;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param pushPullController Push / pull controller.
-	 * @param stageController Async Git operations controller.
+	 * @param gitController Push / pull controller.
 	 */
-	public CommitAndStatusPanel(PushPullController pushPullController, GitController gitController) {
-	  this.pushPullController = pushPullController;
-	  this.observers = new HashSet<>();
+	public CommitAndStatusPanel(GitController gitController) {
+	  this.gitController = gitController;
 	  
 	  // By default a swing timer is on repeat.
 	  commitButtonAndMessageUpdateTaskTimer.setRepeats(false);
@@ -674,19 +658,6 @@ public class CommitAndStatusPanel extends JPanel implements Subject<PushPullEven
       }
     }
   }
-
-	@Override
-  public void addObserver(Observer<PushPullEvent> observer) {
-		if (observer == null) {
-			throw new NullPointerException("Null Observer");
-		}
-		observers.add(observer);
-	}
-
-	@Override
-  public void removeObserver(Observer<PushPullEvent> obj) {
-		observers.remove(obj);
-	}
 
 	/**
 	 * Update status.

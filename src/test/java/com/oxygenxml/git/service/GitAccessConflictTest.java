@@ -34,10 +34,8 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.event.Observer;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.event.PushPullController;
-import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
@@ -225,7 +223,7 @@ public class GitAccessConflictTest {
 		// Pulling now will say that the merge was not concluded and we should commit
     assertEquals(RepositoryState.MERGING_RESOLVED, gitAccess.getRepository().getRepositoryState());
 
-    PushPullController ppc = new PushPullController();
+    GitController ppc = new GitController(gitAccess);
     ppc.pull();
     sleep(1200);
 
@@ -317,7 +315,7 @@ public class GitAccessConflictTest {
     final StringBuilder pullWithConflictsSB = new StringBuilder();
     boolean[] wasRebaseInterrupted = new boolean[1];
     final String[] pullFailedMessage = new String[1];
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(gitAccess) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
         pullFailedMessage[0] = message;
@@ -333,12 +331,7 @@ public class GitAccessConflictTest {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
     assertEquals("changed in local 1", getFileContent(local1File));
@@ -357,7 +350,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(gitAccess) {
+    GitControllerBase stageCtrl = new GitControllerBase(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_MINE;
@@ -440,7 +433,7 @@ public class GitAccessConflictTest {
     final StringBuilder pullWithConflictsSB = new StringBuilder();
     boolean[] wasRebaseInterrupted = new boolean[1];
     final String[] pullFailedMessage = new String[1];
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(gitAccess) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
         pullFailedMessage[0] = message;
@@ -456,12 +449,7 @@ public class GitAccessConflictTest {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
     assertEquals("changed in local 1", getFileContent(local1File));
@@ -480,7 +468,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(gitAccess) {
+    GitControllerBase stageCtrl = new GitControllerBase(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_MINE;
@@ -564,7 +552,7 @@ public class GitAccessConflictTest {
     final StringBuilder pullWithConflictsSB = new StringBuilder();
     boolean[] wasRebaseInterrupted = new boolean[1];
     final String[] pullFailedMessage = new String[1];
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(gitAccess) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
         pullFailedMessage[0] = message;
@@ -580,12 +568,7 @@ public class GitAccessConflictTest {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
     assertEquals("changed in local 1", getFileContent(local1File));
@@ -604,7 +587,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(gitAccess) {
+    GitControllerBase stageCtrl = new GitControllerBase(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_THEIRS;
@@ -690,7 +673,7 @@ public class GitAccessConflictTest {
     final StringBuilder pullWithConflictsSB = new StringBuilder();
     boolean[] wasRebaseInterrupted = new boolean[1];
     final String[] pullFailedMessage = new String[1];
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(gitAccess) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
         pullFailedMessage[0] = message;
@@ -706,12 +689,7 @@ public class GitAccessConflictTest {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
     assertEquals("changed in local 1", getFileContent(local1File));
@@ -730,7 +708,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(gitAccess) {
+    GitControllerBase stageCtrl = new GitControllerBase(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_THEIRS;
@@ -817,7 +795,7 @@ public class GitAccessConflictTest {
     final StringBuilder pullWithConflictsSB = new StringBuilder();
     boolean[] wasRebaseInterrupted = new boolean[1];
     final String[] pullFailedMessage = new String[1];
-    PushPullController pc = new PushPullController() {
+    GitController pc = new GitController(gitAccess) {
       @Override
       protected void showPullFailedBecauseOfCertainChanges(List<String> changes, String message) {
         pullFailedMessage[0] = message;
@@ -833,12 +811,7 @@ public class GitAccessConflictTest {
     };
     
     final StringBuilder b = new StringBuilder();
-    pc.addObserver(new Observer<PushPullEvent>() {
-      @Override
-      public void stateChanged(PushPullEvent changeEvent) {
-        b.append(changeEvent).append("\n");
-      }
-    });
+    TestUtil.collectPushPullEvents(pc, b);
     
     // Get conflict
     assertEquals("changed in local 1", getFileContent(local1File));
@@ -857,7 +830,7 @@ public class GitAccessConflictTest {
     Status status = gitAccess.getGit().status().call();
     assertEquals("[test.txt]", status.getConflicting().toString());
     assertTrue(getFileContent(local1File).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
-    GitController stageCtrl = new GitController(gitAccess) {
+    GitControllerBase stageCtrl = new GitControllerBase(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_THEIRS;

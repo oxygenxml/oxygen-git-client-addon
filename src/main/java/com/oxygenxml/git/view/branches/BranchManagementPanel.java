@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -110,7 +110,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * Public constructor
    */
-  public BranchManagementPanel(GitController ctrl) {
+  public BranchManagementPanel(GitControllerBase ctrl) {
     createGUI();
     ctrl.addGitListener(new GitEventAdapter() {
       @Override

@@ -27,11 +27,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *  
  * @author Beniamin Savu
  */
-public class GitController {
+public abstract class GitControllerBase {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(GitController.class);
+  private static Logger logger = Logger.getLogger(GitControllerBase.class);
   /**
    * Translator for the UI.
    */
@@ -39,7 +39,7 @@ public class GitController {
   /**
    * Access to the Git API.
    */
-  private GitAccess gitAccess;
+  protected GitAccess gitAccess;
   /**
    * Events issued by the git access. We use it to identify skipped fail events.
    */
@@ -48,16 +48,22 @@ public class GitController {
    * <code>true</code> to disable event tracking.
    */
   private boolean skipEventTracking = false;
+  /**
+   * Git notifications.
+   */
+  protected GitListeners listeners = new GitListeners();
 
   /**
    * Contructor.
    * 
    * @param access Access to the Git API.
    */
-  public GitController(GitAccess access) {
+  public GitControllerBase(GitAccess access) {
     this.gitAccess = access;
+    
+    gitAccess.setListeners(listeners);
 
-    gitAccess.addGitListener(new GitEventAdapter() {
+    addGitListener(new GitEventAdapter() {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         if (!skipEventTracking) {
@@ -66,7 +72,7 @@ public class GitController {
       }
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
-        if (!skipEventTracking) {
+        if (!skipEventTracking && !events.isEmpty()) {
           events.pop();
         }
       }
@@ -140,12 +146,7 @@ public class GitController {
    * @return A future monitoring the orginal task.
    */
   public <T> ScheduledFuture<?> asyncTask(Callable<T> r, Consumer<Throwable> errorHandler) {
-    return GitOperationScheduler.getInstance().schedule(r, v -> {}, t -> {
-      consumeEvents(t);
-      if (errorHandler != null) {
-        errorHandler.accept(t);
-      }
-    });
+    return asyncTask(r, v -> {}, errorHandler);
   }
 
   /**
@@ -314,8 +315,9 @@ public class GitController {
    * 
    * @param listener The listener to add.
    */
+  @SuppressWarnings("unchecked")
   public void addGitListener(GitEventListener listener) {
-    gitAccess.addGitListener(listener);
+    listeners.addGitListener(listener);
   }
 
   /**
@@ -323,8 +325,9 @@ public class GitController {
    * 
    * @param listener The listener to remove.
    */
+  @SuppressWarnings("unchecked")
   public void removeGitListener(GitEventAdapter listener) {
-    gitAccess.removeGitListener(listener);
+    listeners.removeGitListener(listener);
   }
 
   /**
@@ -333,6 +336,4 @@ public class GitController {
   public GitAccess getGitAccess() {
     return gitAccess;
   }
-
-
 }

@@ -9,7 +9,7 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.TreeUtil;
@@ -40,7 +40,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	/**
 	 * Stage controller.
 	 */
-  private GitController stageController;
+  private GitControllerBase stageController;
 
 	/**
 	 * Constructor.
@@ -51,7 +51,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    * <code>false</code> if it presents the modified resources that can be put in the index.
 	 * @param filesStatus The files statuses in the model.
 	 */
-	public StagingResourcesTreeModel(GitController controller, String root, boolean inIndex, List<FileStatus> filesStatus) {
+	public StagingResourcesTreeModel(GitControllerBase controller, String root, boolean inIndex, List<FileStatus> filesStatus) {
 		super(new GitTreeNode(root != null ? root : ""));
     this.stageController = controller;
 		this.inIndex = inIndex;

@@ -40,7 +40,6 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -57,10 +56,10 @@ import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -112,7 +111,7 @@ public class ToolbarPanel extends JPanel {
           if (logger.isDebugEnabled()) {
             logger.debug("Pull action invoked");
           }
-          pushPullController.pull(pullType);
+          gitController.pull(pullType);
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
       } catch (NoRepositorySelected e1) {
@@ -141,7 +140,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Used to execute the push and pull commands
 	 */
-	private PushPullController pushPullController;
+	private GitController gitController;
 
 	/**
 	 * Button for push
@@ -200,17 +199,16 @@ public class ToolbarPanel extends JPanel {
   
   /**
    * Constructor.
-   * @param pushPullController Push/pull controller.
+   * @param gitController Push/pull controller.
    * @param refreshSupport     The refresh support.
    * @param historyController History controller.
    */
 	public ToolbarPanel(
-	    PushPullController pushPullController, 
+	    GitController gitController, 
 	    GitRefreshSupport refreshSupport,
 	    HistoryController historyController,
-	    BranchManagementViewPresenter branchManagementViewPresenter,
-	    GitController gitController) {
-	  this.pushPullController = pushPullController;
+	    BranchManagementViewPresenter branchManagementViewPresenter) {
+	  this.gitController = gitController;
 	  this.refreshSupport = refreshSupport;
 	  this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
 
@@ -237,7 +235,7 @@ public class ToolbarPanel extends JPanel {
             // After the fetch is done, update the toolbar icons.
             refresh();
           }).start();
-        } else if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE) {
+        } else if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE || operation == GitOperation.COMMIT) {
           // Update status because we are coming from a detached HEAD
 	        refresh();
         }
@@ -965,7 +963,7 @@ public class ToolbarPanel extends JPanel {
 							logger.debug("Push Button Clicked");
 						}
 
-						pushPullController.push();
+						gitController.push();
 						if (pullsBehind == 0) {
 							pushesAhead = 0;
 						}

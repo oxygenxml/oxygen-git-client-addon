@@ -10,7 +10,7 @@ import javax.swing.JPopupMenu;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -37,7 +37,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	/**
 	 * Controller used for staging and unstaging
 	 */
-	private GitController gitCtrl;
+	private GitControllerBase gitCtrl;
 
 	/**
 	 * The git API, containg the commands
@@ -66,7 +66,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
    */
   public GitViewResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
-      GitController gitController,
+      GitControllerBase gitController,
       HistoryController historyController,
       boolean isStage,
       RepositoryState repoState) {

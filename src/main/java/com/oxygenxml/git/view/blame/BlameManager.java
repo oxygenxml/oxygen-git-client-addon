@@ -12,7 +12,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.google.common.io.Files;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -78,7 +78,7 @@ public class BlameManager {
    * 
    * @param ctrl Git controller.
    */
-  public void install(GitController ctrl) {
+  public void install(GitControllerBase ctrl) {
     ctrl.removeGitListener(listener);
     ctrl.addGitListener(listener);
   }

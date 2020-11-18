@@ -15,7 +15,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -51,7 +51,7 @@ public class DiscardAction extends AbstractAction {
   /**
    * Staging controller.
    */
-  private GitController stageController;
+  private GitControllerBase stageController;
 
   /**
    * Constructor.
@@ -59,7 +59,7 @@ public class DiscardAction extends AbstractAction {
    * @param selResProvider    Selected resources provider..
    * @param stageController   Staging controller.
    */
-  public DiscardAction(SelectedResourcesProvider selResProvider, GitController stageController) {
+  public DiscardAction(SelectedResourcesProvider selResProvider, GitControllerBase stageController) {
     super(translator.getTranslation(Tags.DISCARD));
     this.selResProvider = selResProvider;
     this.stageController = stageController;

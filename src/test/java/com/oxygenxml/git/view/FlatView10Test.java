@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.ConflictResolution;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -104,7 +104,7 @@ public class FlatView10Test extends FlatViewTestBase {
     assertNotNull(abortMergeBtn);
     
     // Resolve using mine
-    GitController gitCtrl = new GitController(gitAccess) {
+    GitControllerBase gitCtrl = new GitControllerBase(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_MINE;

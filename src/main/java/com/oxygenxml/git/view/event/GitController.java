@@ -2,8 +2,6 @@ package com.oxygenxml.git.view.event;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -19,6 +17,7 @@ import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PullResponse;
@@ -42,19 +41,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author Beniamin Savu
  *
  */
-public class PushPullController implements Subject<PushPullEvent> {
-
-	private static Logger logger = Logger.getLogger(PushPullController.class);
-
-	/**
-	 * After a pull or push this will chage it's state
-	 */
-	private Collection<Observer<PushPullEvent>> observers;
-
-	/**
-	 * The Git API
-	 */
-	private GitAccess gitAccess = GitAccess.getInstance();
+public class GitController extends GitControllerBase {
+  /**
+   * Logger for logging.
+   */
+	private static Logger logger = Logger.getLogger(GitController.class);
 
 	/**
 	 * Translator for i18n.
@@ -63,9 +54,11 @@ public class PushPullController implements Subject<PushPullEvent> {
 	
   /**
    * Public constructor
+   * 
+   * @param gitAccess Low level operation performer.
    */
-  public PushPullController() {
-    observers = new HashSet<>();
+  public GitController(GitAccess gitAccess) {
+    super(gitAccess);
   }
   
 	/**
@@ -77,8 +70,8 @@ public class PushPullController implements Subject<PushPullEvent> {
 	 */
 	private Future<?> execute(String message, ExecuteCommandRunnable command) {
 		// Notify push about to start.
-		PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.STARTED, message);
-		notifyObservers(pushPullEvent);
+		PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), ActionStatus.STARTED, message);
+		listeners.fireOperationAboutToStart(pushPullEvent);
 		
 		return GitOperationScheduler.getInstance().schedule(command);
 	}
@@ -105,32 +98,6 @@ public class PushPullController implements Subject<PushPullEvent> {
 	public Future<?> pull(PullType pullType) {
     return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType));
   }
-	
-	/**
-	 * Notifies the observer to update it's state with the given Event fired from
-	 * a Push or Pull action
-	 * 
-	 * @param pushPullEvent
-	 *          - the Event fired
-	 */
-	private void notifyObservers(PushPullEvent pushPullEvent) {
-	  if (!observers.isEmpty()) {
-	    observers.forEach((Observer<PushPullEvent> observer)-> observer.stateChanged(pushPullEvent));
-	  }
-	}
-
-	@Override
-  public void addObserver(Observer<PushPullEvent> observer) {
-		if (observer == null) {
-			throw new NullPointerException("Null Observer");
-		}
-		observers.add(observer);
-	}
-
-	@Override
-  public void removeObserver(Observer<PushPullEvent> obj) {
-		observers.remove(obj);
-	}
 	
 	/**
 	 * Informs the user that pull was successful with conflicts.
@@ -178,6 +145,11 @@ public class PushPullController implements Subject<PushPullEvent> {
     public void run() {
       executeCommand();
     }
+    
+    /**
+     * @return The git operation performed by this command.
+     */
+    protected abstract GitOperation getOperation();
 
     /**
      * Executes the command. If authentication is to be tried again, the method will be called recursively.
@@ -246,8 +218,8 @@ public class PushPullController implements Subject<PushPullEvent> {
         logger.error(e, e);
       } finally {
         if (notifyFinish) {
-          PushPullEvent pushPullEvent = new PushPullEvent(ActionStatus.FINISHED, message);
-          notifyObservers(pushPullEvent);
+          PushPullEvent pushPullEvent = new PushPullEvent(getOperation(), ActionStatus.FINISHED, message);
+          listeners.fireOperationSuccessfullyEnded(pushPullEvent);
         }
       }
     }
@@ -269,6 +241,11 @@ public class PushPullController implements Subject<PushPullEvent> {
    * Execute PUSH.
    */
   private class ExecutePushRunnable extends ExecuteCommandRunnable {
+    
+    @Override
+    protected GitOperation getOperation() {
+      return GitOperation.PUSH;
+    }
   
     /**
      * Push the changes and inform the user with messages depending on the result status.
@@ -321,6 +298,11 @@ public class PushPullController implements Subject<PushPullEvent> {
     public ExecutePullRunnable(PullType pullType) {
       this.pullType = pullType;
     }
+    @Override
+    protected GitOperation getOperation() {
+      return GitOperation.PULL;
+    }
+    
     /**
      * Pull the changes and inform the user with messages depending on the result status.
      * 
@@ -365,12 +347,12 @@ public class PushPullController implements Subject<PushPullEvent> {
     			  showPullSuccessfulWithConflicts(response);
     			  PushPullEvent pushPullEvent = null;
     			  if (pullType == PullType.REBASE) {
-    				  pushPullEvent = new PushPullEvent(ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
+    				  pushPullEvent = new PushPullEvent(getOperation(), ActionStatus.PULL_REBASE_CONFLICT_GENERATED, "");
     			  } else if (pullType == PullType.MERGE_FF) {
-    			    pushPullEvent = new PushPullEvent(ActionStatus.PULL_MERGE_CONFLICT_GENERATED, "");
+    			    pushPullEvent = new PushPullEvent(getOperation(), ActionStatus.PULL_MERGE_CONFLICT_GENERATED, "");
     			  }
     			  if (pushPullEvent != null) {
-    			    notifyObservers(pushPullEvent);
+    			    listeners.fireOperationSuccessfullyEnded(pushPullEvent);
     			  }
     			  break;
     		  case REPOSITORY_HAS_CONFLICTS:

@@ -52,7 +52,6 @@ import org.eclipse.jgit.util.StringUtils;
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -69,10 +68,9 @@ import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.ActionStatus;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -86,7 +84,7 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 /**
  * Presents the commits for a given resource. 
  */
-public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
+public class HistoryPanel extends JPanel {
   /**
    * Logger for logging.
    */
@@ -138,11 +136,10 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
    * 
    * @param stageController Executes a set of Git commands.
    */
-  public HistoryPanel(GitController stageController, PushPullController pushPullController) {
-    pushPullController.addObserver(this);
+  public HistoryPanel(GitController pushPullController) {
     setLayout(new BorderLayout());
     
-    contextualMenuPresenter = new HistoryViewContextualMenuPresenter(stageController);
+    contextualMenuPresenter = new HistoryViewContextualMenuPresenter(pushPullController);
 
     historyTable = UIUtil.createTable();
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -220,7 +217,7 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
       }
     });
     
-    stageController.addGitListener(new GitEventAdapter() {
+    pushPullController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (isShowing()) {
@@ -228,6 +225,12 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
           switch (operation) {
             case OPEN_WORKING_COPY:
               GitOperationScheduler.getInstance().schedule(HistoryPanel.this::showRepositoryHistory);
+              break;
+            case PULL:
+            case PUSH:
+              if (((PushPullEvent) info).getActionStatus() == ActionStatus.FINISHED) {
+                refresh();
+              }
               break;
             case CREATE_BRANCH:
             case CHECKOUT:
@@ -853,16 +856,6 @@ public class HistoryPanel extends JPanel implements Observer<PushPullEvent> {
         }
       }
     });
-  }
-  
-  /**
-   * Acts as an observer and listens for changes.
-   */
-  @Override
-  public void stateChanged(PushPullEvent pushPullEvent) {
-    if (isShowing() && pushPullEvent.getActionStatus() == ActionStatus.FINISHED) {
-      refresh();
-    }
   }
   
   /**

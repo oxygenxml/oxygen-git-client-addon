@@ -16,10 +16,6 @@ public enum ActionStatus {
 	 */
 	FINISHED, 
 	/**
-	 * Specifies to update the Push/Pull counters
-	 */
-	UPDATE_COUNT,
-	/**
 	 * Pull (rebase) just generated a conflict.
 	 */
 	PULL_REBASE_CONFLICT_GENERATED,

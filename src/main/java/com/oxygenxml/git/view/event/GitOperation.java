@@ -55,5 +55,13 @@ public enum GitOperation {
   /**
    * Open working copy.
    */
-  OPEN_WORKING_COPY
+  OPEN_WORKING_COPY,
+  /**
+   * Pull changes from upstream.
+   */
+  PULL,
+  /**
+   * Push changes to upstream.
+   */
+  PUSH
 }

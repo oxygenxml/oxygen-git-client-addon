@@ -12,10 +12,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -28,7 +26,8 @@ import org.apache.log4j.Logger;
 
 import com.jidesoft.swing.JideSplitPane;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
+import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -37,11 +36,10 @@ import com.oxygenxml.git.utils.GitRefreshSupport;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.ActionStatus;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
+import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-import com.oxygenxml.git.view.event.Observer;
-import com.oxygenxml.git.view.event.PushPullController;
 import com.oxygenxml.git.view.event.PushPullEvent;
-import com.oxygenxml.git.view.event.Subject;
 import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -57,7 +55,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author Beniamin Savu
  *
  */
-public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
+public class StagingPanel extends JPanel {
 
   /**
    * Logger for logging.
@@ -100,11 +98,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	private CommitAndStatusPanel commitPanel;
 
 	/**
-	 * List of listeners for this panel
-	 */
-	private List<Subject<PushPullEvent>> subjects = new ArrayList<>();
-
-	/**
 	 * Main panel refresh
 	 */
 	private GitRefreshSupport refreshSupport;
@@ -112,13 +105,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
 	 * Staging controller.
 	 */
-	private GitController stageController;
+	private GitController gitController;
 	
-	/** 
-	 * Manages Push/Pull actions.
-	 */
-  private PushPullController pushPullController;
-  
   /**
    * Plugin workspace access.
    */
@@ -136,13 +124,30 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
       GitRefreshSupport refreshSupport, 
       GitController stageController, 
       HistoryController historyController,
-      BranchManagementViewPresenter branchManagementView,
-      PushPullController pushPullController) {
+      BranchManagementViewPresenter branchManagementView) {
 		this.refreshSupport = refreshSupport;
-		this.stageController = stageController;
-		this.pushPullController = pushPullController;
+		this.gitController = stageController;
 		
 		createGUI(historyController, branchManagementView);
+		
+		stageController.addGitListener(new GitEventListener() {
+      @Override
+      public void operationSuccessfullyEnded(GitEventInfo info) {
+        if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
+        handlePushPullEvent((PushPullEvent) info);
+      }
+      @Override
+      public void operationFailed(GitEventInfo info, Throwable t) {
+        if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
+        handlePushPullEvent((PushPullEvent) info);
+      }
+      
+      @Override
+      public void operationAboutToStart(GitEventInfo info) {
+        if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH)
+        handlePushPullEvent((PushPullEvent) info);
+      }
+    });
 	}
   
   /**
@@ -154,8 +159,8 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
    * @param branchManagementViewPresenter Branch management interface.
    * @param gitController Git operations controller.
    */
-  protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter, GitController gitController) {
-    return new ToolbarPanel(pushPullController, refreshSupport, historyController, branchManagementViewPresenter, gitController);
+  protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
+    return new ToolbarPanel(gitController, refreshSupport, historyController, branchManagementViewPresenter);
   }
 
 	/**
@@ -167,12 +172,12 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		this.setLayout(new GridBagLayout());
 
 		// Creates the panels objects that will be in the staging panel
-		unstagedChangesPanel = new ChangesPanel(stageController, historyController, false);
-		stagedChangesPanel = new ChangesPanel(stageController, historyController, true);
-		workingCopySelectionPanel = new WorkingCopySelectionPanel(stageController);
-		commitPanel = new CommitAndStatusPanel(pushPullController, stageController);
-		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter, stageController);
-		conflictButtonsPanel = new ConflictButtonsPanel(stageController);
+		unstagedChangesPanel = new ChangesPanel(gitController, historyController, false);
+		stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
+		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController);
+		commitPanel = new CommitAndStatusPanel(gitController);
+		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
+		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
 		
 		// adds the unstaged and the staged panels to a split pane
 		JideSplitPane splitPane = new JideSplitPane(JideSplitPane.VERTICAL_SPLIT);
@@ -196,9 +201,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 		// creates the actual GUI for each panel
 		unstagedChangesPanel.createGUI();
 		stagedChangesPanel.createGUI();
-
-		registerSubject(pushPullController);
-		registerSubject(commitPanel);
 
 		addRefreshF5();
 		
@@ -416,8 +418,7 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
 	 * State changed. React.
 	 */
-	@Override
-	public void stateChanged(PushPullEvent pushPullEvent) {
+	public void handlePushPullEvent(PushPullEvent pushPullEvent) {
 	  SwingUtilities.invokeLater(new Runnable() {
 	    @Override
 	    public void run() {
@@ -428,11 +429,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	          break;
 	        case FINISHED:
 	          treatPushPullFinished(pushPullEvent);
-	          break;
-	        case UPDATE_COUNT:
-	          if (toolbarPanel != null) {
-	            toolbarPanel.refresh();
-	          }
 	          break;
 	        case PULL_MERGE_CONFLICT_GENERATED:
 	        case PULL_REBASE_CONFLICT_GENERATED:
@@ -487,17 +483,6 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	}
 
 	/**
-	 * Register a subject for the observer pattern.
-	 * 
-	 * @param subject the subject to register.
-	 */
-	public void registerSubject(Subject<PushPullEvent> subject) {
-		subjects.add(subject);
-
-		subject.addObserver(this);
-	}
-
-	/**
 	 * @return <code>true</code> if panel has focus.
 	 */
 	@Override
@@ -508,15 +493,15 @@ public class StagingPanel extends JPanel implements Observer<PushPullEvent> {
 	/**
    * @return the stageController
    */
-  public GitController getStageController() {
-    return stageController;
+  public GitControllerBase getStageController() {
+    return gitController;
   }
   
   /**
    * @return The controller for Push/Pull events.
    */
-  public PushPullController getPushPullController() {
-    return pushPullController;
+  public GitController getPushPullController() {
+    return gitController;
   }
 
   /**

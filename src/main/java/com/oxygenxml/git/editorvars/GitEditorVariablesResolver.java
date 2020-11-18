@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -57,14 +57,14 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * Git operations controller.
    */
-  private GitController gitController;
+  private GitControllerBase gitController;
   
   /**
    * Constructor.
    * 
    * @param ctrl High level Git operations.
    */
-  public GitEditorVariablesResolver(GitController ctrl) {
+  public GitEditorVariablesResolver(GitControllerBase ctrl) {
     this.gitController = ctrl;
     ctrl.addGitListener(gitEventListener);
   }

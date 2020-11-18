@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
 

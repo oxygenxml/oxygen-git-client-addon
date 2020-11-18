@@ -16,7 +16,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.service.ConflictResolution;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
@@ -25,7 +25,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.PullType;
-import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -327,7 +327,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    GitController sc = new GitController(gitAccess) {
+    GitControllerBase sc = new GitControllerBase(gitAccess) {
       @Override
       protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
         return cmd == ConflictResolution.RESOLVE_USING_MINE;
@@ -419,7 +419,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertTrue(rebasePanel.isShowing());
 
     Semaphore s = new Semaphore(0);
-    PushPullController ppc = new PushPullController() {
+    GitController ppc = new GitController(gitAccess) {
       @Override
       protected void showRebaseInProgressDialog() {
         s.release();
@@ -520,7 +520,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    PushPullController ppc = new PushPullController();
+    GitController ppc = new GitController(gitAccess);
     ppc.pull(PullType.REBASE);
     flushAWT();
     sleep(300);
@@ -618,7 +618,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertTrue(rebasePanel.isShowing());
 
       // Pull again. Rebase in progress dialog is shown
-      PushPullController ppc = new PushPullController();
+      GitController ppc = new GitController(gitAccess);
       ppc.pull(PullType.REBASE);
       flushAWT();
       sleep(300);
@@ -653,7 +653,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertEquals("Cannot_continue_rebase_because_of_conflicts", warnMessage[0]);
 
       // Resolve conflict
-      GitController sc = new GitController(gitAccess) {
+      GitControllerBase sc = new GitControllerBase(gitAccess) {
         @Override
         protected boolean isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(ConflictResolution cmd) {
           return cmd == ConflictResolution.RESOLVE_USING_MINE;

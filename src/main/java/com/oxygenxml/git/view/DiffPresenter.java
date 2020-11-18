@@ -23,7 +23,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -73,7 +73,7 @@ public class DiffPresenter {
 	 * @param gitCtrl    Git controller.
 	 * 
 	 */
-	public static void showDiff(FileStatus fileStatus, GitController gitCtrl) {
+	public static void showDiff(FileStatus fileStatus, GitControllerBase gitCtrl) {
 	  try {
 	    GitChangeType changeType = fileStatus.getChangeType();
 	    switch (changeType) {
@@ -226,7 +226,7 @@ public class DiffPresenter {
 	 * Presents a 3-way diff
 	 * @param file 
 	 */
-	private static void showConflictDiff(FileStatus file, GitController stageController) {
+	private static void showConflictDiff(FileStatus file, GitControllerBase stageController) {
 		try {
 		  URL base = GitRevisionURLHandler.encodeURL(VersionIdentifier.BASE, file.getFileLocation());
 		  URL left = null;

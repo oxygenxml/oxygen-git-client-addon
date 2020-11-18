@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -28,7 +28,7 @@ public class StageUnstageResourceAction extends AbstractAction {
   /**
    * Staging controller.
    */
-  private GitController gitCtrl;
+  private GitControllerBase gitCtrl;
 
   /**
    * Constructor.
@@ -40,7 +40,7 @@ public class StageUnstageResourceAction extends AbstractAction {
   public StageUnstageResourceAction(
       List<FileStatus> fileStatuses,
       boolean isStage,
-      GitController stageCtrl) {
+      GitControllerBase stageCtrl) {
     super(isStage ? Translator.getInstance().getTranslation(Tags.STAGE)
         : Translator.getInstance().getTranslation(Tags.UNSTAGE));
     this.fileStatuses = fileStatuses;

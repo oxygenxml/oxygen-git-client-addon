@@ -13,11 +13,9 @@ import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.jidesoft.swing.JideToggleButton;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
 import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -241,14 +239,14 @@ public class FlatViewTest extends FlatViewTestBase {
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
     // ================= No submodules ====================
     stagingPanel.setToolbarPanelFromTests(
-        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null, Mockito.mock(GitController.class)));
+        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null));
     Future<?> pull2 = stagingPanel.getPushPullController().pull();
     pull2.get();
     
     assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
     
     // ================= Set submodule ====================
-    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null, Mockito.mock(GitController.class)) {
+    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null) {
       @Override
       boolean gitRepoHasSubmodules() {
         return true;

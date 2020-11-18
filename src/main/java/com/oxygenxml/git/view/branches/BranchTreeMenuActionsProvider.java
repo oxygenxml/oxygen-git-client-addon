@@ -11,7 +11,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Constants;
 
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -37,14 +37,14 @@ public class BranchTreeMenuActionsProvider {
   /**
    * Git operation controller.
    */
-  private GitController ctrl;
+  private GitControllerBase ctrl;
   
   /**
    * Constructor.
    * 
    * @param ctrl Git operation controller.
    */
-  public BranchTreeMenuActionsProvider(GitController ctrl) {
+  public BranchTreeMenuActionsProvider(GitControllerBase ctrl) {
     this.ctrl = ctrl;
   }
 

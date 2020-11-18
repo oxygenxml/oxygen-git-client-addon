@@ -21,7 +21,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.RevCommitUtilBase;
@@ -58,14 +58,14 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Executes GIT commands (stage, unstage, discard, etc).
    */
-  protected GitController gitCtrl;
+  protected GitControllerBase gitCtrl;
   
   /**
    * Constructor.
    * 
    * @param gitCtrl Executes GIT commands (stage, unstage, discard, etc).
    */
-  public HistoryViewContextualMenuPresenter(GitController gitCtrl) {
+  public HistoryViewContextualMenuPresenter(GitControllerBase gitCtrl) {
     this.gitCtrl = gitCtrl;
   }
   

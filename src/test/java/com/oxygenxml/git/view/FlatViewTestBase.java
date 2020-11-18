@@ -14,13 +14,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
-import com.oxygenxml.git.view.event.PushPullController;
+import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.HistoryController;
 
 /**
@@ -55,18 +55,17 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
 
     stagingPanel = new StagingPanel(
         refreshSupport,
-        new GitController(gitAccess),
-        null, 
-        null, 
-        new PushPullController() {
+        new GitController(gitAccess) {
           @Override
           protected void showPullSuccessfulWithConflicts(PullResponse response) {
             // Nothing to do.
           }
-        }) {
+        },
+        null, 
+        null) {
       
       @Override
-      protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter, GitController ctrl) {
+      protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
         // We don't need the toolbar from 99% of the test cases.
         // It actually interfered with the tests before we decided 
         // not to create it anymore

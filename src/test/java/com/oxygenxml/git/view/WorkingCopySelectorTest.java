@@ -16,7 +16,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.service.GitController;
+import com.oxygenxml.git.service.GitControllerBase;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -66,7 +66,7 @@ public class WorkingCopySelectorTest extends JFCTestCase {
   public void testClearHistory() throws Exception {
     JFrame frame = new JFrame();
     try {
-      WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(Mockito.mock(GitController.class));
+      WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(Mockito.mock(GitControllerBase.class));
       frame.getContentPane().add(wcPanel);
       frame.pack();
       SwingUtilities.invokeAndWait(() -> frame.setVisible(true));
