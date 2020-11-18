@@ -135,7 +135,7 @@ public class GitAccess {
 	/**
 	 * Listeners notifications.
 	 */
-	private GitListeners listeners = new GitListeners();
+	private GitListeners listeners = GitListeners.getInstance();
 	/**
 	 * The GIT repository.
 	 */
@@ -2320,14 +2320,4 @@ public class GitAccess {
 	  revWalk.sort(RevSort.COMMIT_TIME_DESC);
 	  return revWalk.next();
 	}
-	
-	/**
-	 * Sets the listener support.
-	 * 
-	 * @param Git listeners support.
-	 */
-	public void setListeners(GitListeners listeners) {
-    this.listeners = listeners;
-  }
-	
 }

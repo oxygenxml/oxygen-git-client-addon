@@ -51,7 +51,7 @@ public abstract class GitControllerBase {
   /**
    * Git notifications.
    */
-  protected GitListeners listeners = new GitListeners();
+  protected GitListeners listeners = GitListeners.getInstance();
 
   /**
    * Contructor.
@@ -61,8 +61,6 @@ public abstract class GitControllerBase {
   public GitControllerBase(GitAccess access) {
     this.gitAccess = access;
     
-    gitAccess.setListeners(listeners);
-
     addGitListener(new GitEventAdapter() {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
