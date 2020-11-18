@@ -315,7 +315,6 @@ public abstract class GitControllerBase {
    * 
    * @param listener The listener to add.
    */
-  @SuppressWarnings("unchecked")
   public void addGitListener(GitEventListener listener) {
     listeners.addGitListener(listener);
   }
@@ -325,7 +324,6 @@ public abstract class GitControllerBase {
    * 
    * @param listener The listener to remove.
    */
-  @SuppressWarnings("unchecked")
   public void removeGitListener(GitEventAdapter listener) {
     listeners.removeGitListener(listener);
   }
