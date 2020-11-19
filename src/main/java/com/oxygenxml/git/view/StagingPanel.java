@@ -229,33 +229,36 @@ public class StagingPanel extends JPanel {
 
 			@Override
 			public void focusGained(final FocusEvent e) {
-				focusGained = true;
-				// The focus is somewhere in the view.
-				if (!inTheView) {
-				  // EXM-40880: Invoke later so that the focus event gets processed.
-				  SwingUtilities.invokeLater(() -> refreshSupport.call());
-				}
-				inTheView = true;
+			  if (!e.isTemporary()) {
+			    focusGained = true;
+			    if (!inTheView) {
+			      // EXM-40880: Invoke later so that the focus event gets processed.
+			      SwingUtilities.invokeLater(() -> refreshSupport.call());
+			    }
+			    inTheView = true;
+			  }
 			}
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				focusGained = false;
-				
-				// The focus might still be somewhere in the view.
-				if(e.getOppositeComponent() != null){
-					Window windowAncestor = SwingUtilities.getWindowAncestor(e.getOppositeComponent());
-					if (windowAncestor != null) {
-					  boolean contains = windowAncestor.toString().contains("MainFrame");
-					  if(contains && !SwingUtilities.isDescendingFrom(e.getOppositeComponent(), StagingPanel.this)){
-					    inTheView = false;
-					  } else {
-					    inTheView = true;
-					  }
-					}
-				} else {
-					inTheView = true;
-				}
+			  if (!e.isTemporary()) {
+			    focusGained = false;
+			    // The focus might still be somewhere in the view.
+			    Component opposite = e.getOppositeComponent();
+          if (opposite != null) {
+			      Window windowAncestor = SwingUtilities.getWindowAncestor(opposite);
+			      if (windowAncestor != null) {
+			        boolean contains = windowAncestor.toString().contains("MainFrame");
+			        if (contains && !SwingUtilities.isDescendingFrom(opposite, StagingPanel.this)) {
+			          inTheView = false;
+			        } else {
+			          inTheView = true;
+			        }
+			      }
+			    } else {
+			      inTheView = true;
+			    }
+			  }
 			}
 		};
   }

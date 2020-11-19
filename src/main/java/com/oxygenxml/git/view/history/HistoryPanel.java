@@ -231,8 +231,6 @@ public class HistoryPanel extends JPanel {
             case CREATE_BRANCH:
             case CHECKOUT:
             case DELETE_BRANCH:
-            case STAGE:
-            case UNSTAGE:
             case COMMIT:
             case DISCARD:
             case MERGE_RESTART:
