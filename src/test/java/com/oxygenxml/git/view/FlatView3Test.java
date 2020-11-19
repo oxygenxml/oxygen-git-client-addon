@@ -93,7 +93,7 @@ public class FlatView3Test extends FlatViewTestBase {
             return Arrays.asList(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
           }
         },
-        stagingPanel.getStageController());
+        stagingPanel.getGitController());
     
     discardAction.actionPerformed(null);
     

@@ -116,7 +116,7 @@ public class DiffPresenterTest extends GitTestBase {
     setFileContent(file, "content");
     
     FileStatus fileStatus = new FileStatus(GitChangeType.MODIFIED, "test.txt");
-    GitControllerBase stageController = Mockito.mock(GitControllerBase.class);
+    GitControllerBase gitCtrl = Mockito.mock(GitControllerBase.class);
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
     Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
@@ -127,7 +127,7 @@ public class DiffPresenterTest extends GitTestBase {
     });
     
     // Diff the first WC local file.
-    DiffPresenter.showDiff(fileStatus, stageController);
+    DiffPresenter.showDiff(fileStatus, gitCtrl);
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);
@@ -142,7 +142,7 @@ public class DiffPresenterTest extends GitTestBase {
     // Diff the index file.
     fileStatus = new FileStatus(GitChangeType.ADD, "test.txt");
     
-    DiffPresenter.showDiff(fileStatus, stageController);
+    DiffPresenter.showDiff(fileStatus, gitCtrl);
     
     // On the left we present the Index version.
     assertEquals("git://IndexOrLastCommit/test.txt", leftDiff.toString());
@@ -206,7 +206,7 @@ public class DiffPresenterTest extends GitTestBase {
     setFileContent(file, "local content");
     
     FileStatus fileStatus = new FileStatus(GitChangeType.MODIFIED, "test.txt");
-    GitControllerBase stageController = Mockito.mock(GitControllerBase.class);
+    GitControllerBase gitCtrl = Mockito.mock(GitControllerBase.class);
     // Mock the translator.
     Translator translator = Mockito.mock(Translator.class);
     Mockito.when(translator.getTranslation(Mockito.anyString())).then(new Answer<String>() {
@@ -217,7 +217,7 @@ public class DiffPresenterTest extends GitTestBase {
     });
     
     // Diff the first WC local file.
-    DiffPresenter.showDiff(fileStatus, stageController);
+    DiffPresenter.showDiff(fileStatus, gitCtrl);
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);
@@ -232,7 +232,7 @@ public class DiffPresenterTest extends GitTestBase {
     // Diff the index file.
     fileStatus = new FileStatus(GitChangeType.CHANGED, "test.txt");
     
-    DiffPresenter.showDiff(fileStatus, stageController);
+    DiffPresenter.showDiff(fileStatus, gitCtrl);
     
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);
@@ -422,11 +422,11 @@ public class DiffPresenterTest extends GitTestBase {
     rightDiff = null;
 
     // Mock the GitController
-    GitControllerBase stageController = Mockito.mock(GitControllerBase.class);
+    GitControllerBase gitCtrl = Mockito.mock(GitControllerBase.class);
     FileStatus fileStatus = new FileStatus(GitChangeType.CONFLICT, "test.txt");
 
     // Invoke DIFF over the changed file.
-    DiffPresenter.showDiff(fileStatus, stageController);
+    DiffPresenter.showDiff(fileStatus, gitCtrl);
     assertNotNull(leftDiff);
     assertNotNull(rightDiff);
 

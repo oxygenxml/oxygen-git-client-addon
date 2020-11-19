@@ -34,13 +34,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
- * 
- * Executes the push and pull commands and update the observer state after
- * initiating those commands. Prompts the user to enter new credentials if
- * necessary.
- * 
- * @author Beniamin Savu
- *
+ * Used for executing Git operations.
  */
 public class GitController extends GitControllerBase {
   /**

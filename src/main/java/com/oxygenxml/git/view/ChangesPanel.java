@@ -141,7 +141,7 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * Used to fire an event
 	 */
-	private GitControllerBase stageController;
+	private GitControllerBase gitController;
 
 	/**
 	 * Shows whether or not this is the panel for staged or unstaged resources. 
@@ -170,17 +170,17 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * Constructor.
 	 * 
-	 * @param stageController     Staging controller.
+	 * @param gitController       Git controller.
 	 * @param historyController   History interface.
 	 * @param forStagedResources  <code>true</code> if for staged resources.
 	 */
 	public ChangesPanel(
-	    GitControllerBase stageController, 
+	    GitControllerBase gitController, 
 	    HistoryController historyController, 
 	    boolean forStagedResources) {
 		this.historyController = historyController;
 		this.forStagedResources = forStagedResources;
-		this.stageController = stageController;
+		this.gitController = gitController;
 		
 		tree = createTree();
 		// ==== EXM-41138 hack: expand/collapse on second mouse released ====
@@ -190,7 +190,7 @@ public class ChangesPanel extends JPanel {
 		this.currentViewMode = forStagedResources ? OptionsManager.getInstance().getStagedResViewMode()
 		    : OptionsManager.getInstance().getUntagedResViewMode();
 		
-    stageController.addGitListener(new GitEventAdapter() {
+    gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
@@ -210,7 +210,7 @@ public class ChangesPanel extends JPanel {
               Repository repository = gitAccess.getRepository();
               if (repository != null) {
                 
-                stageController.asyncTask(
+                gitController.asyncTask(
                     () -> {
                       if (forStagedResources) {
                         return gitAccess.getStagedFiles();
@@ -301,7 +301,7 @@ public class ChangesPanel extends JPanel {
 	    // Create the tree with the new model
 	    tree.setModel(
 	        new StagingResourcesTreeModel(
-	            stageController, 
+	            gitController, 
 	            GitAccess.getInstance().getWorkingCopyName(), 
 	            forStagedResources, 
 	            filesStatus));
@@ -442,7 +442,7 @@ public class ChangesPanel extends JPanel {
 		        if (model != null && node != null
 		            && model.isLeaf(node) && !model.getRoot().equals(node)) {
 		          FileStatus file = model.getFileByPath(stringPath);
-		          DiffPresenter.showDiff(file, stageController);
+		          DiffPresenter.showDiff(file, gitController);
 		        }
 		      }
 		    } else if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
@@ -572,7 +572,7 @@ public class ChangesPanel extends JPanel {
 	          GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
 	          if (model.isLeaf(node) && !model.getRoot().equals(node)) {
 	            FileStatus file = model.getFileByPath(stringPath);
-	            DiffPresenter.showDiff(file, stageController);
+	            DiffPresenter.showDiff(file, gitController);
 	          }
 	        }
 	      }
@@ -640,7 +640,7 @@ public class ChangesPanel extends JPanel {
             return model.getFilesByPaths(selPaths);
           }
         },
-        stageController,
+        gitController,
         historyController,
         forStagedResources,
         getRepositoryState());
@@ -708,7 +708,7 @@ public class ChangesPanel extends JPanel {
 	      AbstractAction stageUnstageAction = new StageUnstageResourceAction(
 	          fileStatuses, 
 	          !forStagedResources, 
-	          stageController);
+	          gitController);
 	      stageUnstageAction.actionPerformed(null);
 				
 				changeSelectedButton.setEnabled(false);
@@ -753,7 +753,7 @@ public class ChangesPanel extends JPanel {
 	     // Create the tree with the new model
       tree.setModel(
           new StagingResourcesTreeModel(
-              stageController, 
+              gitController, 
               GitAccess.getInstance().getWorkingCopyName(), 
               forStagedResources, 
               filesStatuses));
@@ -945,7 +945,7 @@ public class ChangesPanel extends JPanel {
 		gbc.weighty = 1;
 		gbc.gridwidth = 3;
 		
-		filesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(stageController, forStagedResources), ()-> isContextMenuShowing);
+		filesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(gitController, forStagedResources), ()-> isContextMenuShowing);
 		
 
 		filesTable.getSelectionModel().addListSelectionListener(e -> {
@@ -1094,7 +1094,7 @@ public class ChangesPanel extends JPanel {
             return files;
           }
         },
-        stageController,
+        gitController,
         historyController,
         forStagedResources,
         getRepositoryState());
@@ -1127,7 +1127,7 @@ public class ChangesPanel extends JPanel {
 		StagingResourcesTableModel model = (StagingResourcesTableModel) filesTable.getModel();
 		int convertedRow = filesTable.convertRowIndexToModel(row);
 		FileStatus file = model.getUnstageFile(convertedRow);
-		DiffPresenter.showDiff(file, stageController);
+		DiffPresenter.showDiff(file, gitController);
 	}
 
 	/**
@@ -1156,7 +1156,7 @@ public class ChangesPanel extends JPanel {
 	  JTree t = UIUtil.createTree();
 	  
 	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
-	  t.setModel(new StagingResourcesTreeModel(stageController, null, forStagedResources, null));
+	  t.setModel(new StagingResourcesTreeModel(gitController, null, forStagedResources, null));
 	  t.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 	  t.setLargeModel(true);
 	  

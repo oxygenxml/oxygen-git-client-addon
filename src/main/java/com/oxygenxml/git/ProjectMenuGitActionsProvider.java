@@ -53,7 +53,7 @@ public class ProjectMenuGitActionsProvider {
    */
   private Translator translator = Translator.getInstance();
   /**
-   * Stage controller.
+   * Git controller.
    */
   private GitControllerBase gitCtrl;
 

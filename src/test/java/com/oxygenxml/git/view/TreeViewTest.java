@@ -310,7 +310,7 @@ public class TreeViewTest extends FlatViewTestBase {
     flushAWT();
     assertTreeModels("CONFLICT, test.txt", "");
     
-    stagingPanel.getStageController().asyncResolveUsingMine(
+    stagingPanel.getGitController().asyncResolveUsingMine(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     
     waitForScheduler();
@@ -392,7 +392,7 @@ public class TreeViewTest extends FlatViewTestBase {
     assertTreeModels("CONFLICT, test.txt", "");
     
     // Resolve using theirs
-    stagingPanel.getStageController().asyncResolveUsingTheirs(
+    stagingPanel.getGitController().asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     waitForScheduler();
     
@@ -405,7 +405,7 @@ public class TreeViewTest extends FlatViewTestBase {
     assertTreeModels("CONFLICT, test.txt", "");
     
     // Resolve again using theirs
-    stagingPanel.getStageController().asyncResolveUsingTheirs(
+    stagingPanel.getGitController().asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     waitForScheduler();
     

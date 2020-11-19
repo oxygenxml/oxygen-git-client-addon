@@ -20,6 +20,7 @@ import com.oxygenxml.git.service.PushResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -96,7 +97,7 @@ public class FlatViewTest extends FlatViewTestBase {
 
     assertTableModels("CONFLICT, test.txt", "");
     
-    stagingPanel.getStageController().asyncResolveUsingMine(
+    stagingPanel.getGitController().asyncResolveUsingMine(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     
     waitForScheduler();
@@ -166,7 +167,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTableModels("CONFLICT, test.txt", "");
     
     // Resolve using theirs
-    stagingPanel.getStageController().asyncResolveUsingTheirs(
+    stagingPanel.getGitController().asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     waitForScheduler();
     
@@ -180,7 +181,7 @@ public class FlatViewTest extends FlatViewTestBase {
     assertTableModels("CONFLICT, test.txt", "");
     
     // Resolve again using theirs
-    stagingPanel.getStageController().asyncResolveUsingTheirs(
+    stagingPanel.getGitController().asyncResolveUsingTheirs(
         Arrays.asList(new FileStatus(GitChangeType.CONFLICT, "test.txt")));
     waitForScheduler();
     
@@ -239,20 +240,21 @@ public class FlatViewTest extends FlatViewTestBase {
   public void testDontEnableSubmoduleButtonForEveryPushOrPull() throws Exception {
     // ================= No submodules ====================
     stagingPanel.setToolbarPanelFromTests(
-        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null));
-    Future<?> pull2 = stagingPanel.getPushPullController().pull();
+        new ToolbarPanel((GitController) stagingPanel.getGitController(), refreshSupport, null, null));
+    Future<?> pull2 = ((GitController) stagingPanel.getGitController()).pull();
     pull2.get();
     
     assertFalse(stagingPanel.getToolbarPanel().getSubmoduleSelectButton().isEnabled());
     
     // ================= Set submodule ====================
-    stagingPanel.setToolbarPanelFromTests(new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null) {
+    stagingPanel.setToolbarPanelFromTests(
+        new ToolbarPanel((GitController) stagingPanel.getGitController(), refreshSupport, null, null) {
       @Override
       boolean gitRepoHasSubmodules() {
         return true;
       }
     });
-    Future<?> pull = stagingPanel.getPushPullController().pull();
+    Future<?> pull = ((GitController) stagingPanel.getGitController()).pull();
     pull.get();
     flushAWT();
     

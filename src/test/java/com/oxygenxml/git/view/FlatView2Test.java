@@ -90,7 +90,7 @@ public class FlatView2Test extends FlatViewTestBase {
       PullResponse pullResponse = gitAccess.pull("", "");
       assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
       assertTrue(showErrorMessageCalled[0]);
-      Future<?> execute = stagingPanel.getPushPullController().pull();
+      Future<?> execute = ((GitController) stagingPanel.getGitController()).pull();
       execute.get();
       flushAWT();
       assertEquals("Lock_failed", stagingPanel.getCommitPanel().getStatusLabel().getText());
@@ -520,7 +520,7 @@ public class FlatView2Test extends FlatViewTestBase {
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
     assertTrue(rebasePanel.isShowing());
     
-    GitController ppc = stagingPanel.getPushPullController();
+    GitController ppc = (GitController) stagingPanel.getGitController();
     ppc.pull(PullType.REBASE);
     flushAWT();
     sleep(300);
@@ -618,7 +618,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertTrue(rebasePanel.isShowing());
 
       // Pull again. Rebase in progress dialog is shown
-      GitController ppc = stagingPanel.getPushPullController();
+      GitController ppc = (GitController) stagingPanel.getGitController();
       ppc.pull(PullType.REBASE);
       flushAWT();
       sleep(300);

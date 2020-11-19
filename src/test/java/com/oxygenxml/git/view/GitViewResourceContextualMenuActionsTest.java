@@ -23,7 +23,7 @@ import com.oxygenxml.git.view.event.GitController;
 public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
   
   /**
-   * Staging controller.
+   * Git controller.
    */
   private GitControllerBase gitCtrl = new GitController(GitAccess.getInstance());
   

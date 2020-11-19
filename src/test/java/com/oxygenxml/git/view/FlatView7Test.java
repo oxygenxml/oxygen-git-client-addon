@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
+import com.oxygenxml.git.view.event.GitController;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
@@ -40,7 +41,11 @@ public class FlatView7Test extends FlatViewTestBase {
   public void testToolbarComponentsTooltips() throws Exception {
     // Set toolbar panel
     stagingPanel.setToolbarPanelFromTests(
-        new ToolbarPanel(stagingPanel.getPushPullController(), refreshSupport, null, null));
+        new ToolbarPanel(
+            (GitController) stagingPanel.getGitController(),
+            refreshSupport,
+            null,
+            null));
     
     // Create repositories
     String localTestRepository = "target/test-resources/test_EXM_45599_local";
@@ -75,7 +80,7 @@ public class FlatView7Test extends FlatViewTestBase {
         toolbarPanel.getBranchSplitMenuButton().getToolTipText());
     
     // Push to create the remote branch
-    stagingPanel.getPushPullController().push();
+    ((GitController) stagingPanel.getGitController()).push();
     waitForScheluerBetter();
     
     toolbarPanel.refresh();
@@ -158,7 +163,7 @@ public class FlatView7Test extends FlatViewTestBase {
     // Set toolbar panel
     stagingPanel.setToolbarPanelFromTests(
         new ToolbarPanel(
-            stagingPanel.getPushPullController(),
+            (GitController) stagingPanel.getGitController(),
             refreshSupport,
             null,
             null));

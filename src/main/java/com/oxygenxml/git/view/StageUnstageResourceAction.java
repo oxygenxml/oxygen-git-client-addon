@@ -26,7 +26,7 @@ public class StageUnstageResourceAction extends AbstractAction {
   private List<FileStatus> fileStatuses;
 
   /**
-   * Staging controller.
+   * Git controller.
    */
   private GitControllerBase gitCtrl;
 
@@ -35,17 +35,17 @@ public class StageUnstageResourceAction extends AbstractAction {
    * 
    * @param fileStatuses Moves files inside/outside the INDEX.
    * @param isStage <code>true</code> if the action is "Stage".
-   * @param stageCtrl Staging controller.
+   * @param gitCtrl Git controller.
    */
   public StageUnstageResourceAction(
       List<FileStatus> fileStatuses,
       boolean isStage,
-      GitControllerBase stageCtrl) {
+      GitControllerBase gitCtrl) {
     super(isStage ? Translator.getInstance().getTranslation(Tags.STAGE)
         : Translator.getInstance().getTranslation(Tags.UNSTAGE));
     this.fileStatuses = fileStatuses;
     this.isStage = isStage;
-    this.gitCtrl = stageCtrl;
+    this.gitCtrl = gitCtrl;
   }
 
   @Override

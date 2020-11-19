@@ -53,7 +53,7 @@ public class RepositoryChangeWatcher {
   /**
    * High level push and pull support.
    */
-  private GitController pushPullController;
+  private GitController gitController;
   
   /**
    * The Option Manager instance.
@@ -67,11 +67,11 @@ public class RepositoryChangeWatcher {
   /**
    * Private constructor.
    * 
-   * @param pushPullController High level push and pull support.
+   * @param gitCtrl High level Git commands support.
    */
-  private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace, GitController pushPullController) {
+  private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace, GitController gitCtrl) {
     addListeners4EditingAreas(standalonePluginWorkspace);
-    this.pushPullController = pushPullController;
+    this.gitController = gitCtrl;
     
     // Check the currently opened editors.
     boolean isNotifyAboutNewRemoteCommits = OptionsManager.getInstance().getNotifyAboutNewRemoteCommits();
@@ -85,13 +85,13 @@ public class RepositoryChangeWatcher {
    * Adds hooks on the workspace and initializes the watcher which will notify the user when the remote 
    * repository changes.
    * 
-   * @param standalonePluginWorkspace The Plugin Workspace.
-   * @param pushPullController High level push and pull support.
+   * @param saPluginWS  The Plugin Workspace.
+   * @param gitCtrl     High level push and pull support.
    * 
    * @return An watcher that keeps track of the remote changes.
    */
-  public static RepositoryChangeWatcher createWatcher(StandalonePluginWorkspace standalonePluginWorkspace, GitController pushPullController) {
-    return new RepositoryChangeWatcher(standalonePluginWorkspace, pushPullController);
+  public static RepositoryChangeWatcher createWatcher(StandalonePluginWorkspace saPluginWS, GitController gitCtrl) {
+    return new RepositoryChangeWatcher(saPluginWS, gitCtrl);
   }
   
   /**
@@ -201,7 +201,7 @@ public class RepositoryChangeWatcher {
         message,
         translator.getTranslation(Tags.PULL_CHANGES),
         translator.getTranslation(Tags.CLOSE)) == OKCancelDialog.RESULT_OK) {
-      pushPullController.pull();
+      gitController.pull();
     }
   }
   

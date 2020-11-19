@@ -49,20 +49,20 @@ public class DiscardAction extends AbstractAction {
   private SelectedResourcesProvider selResProvider;
 
   /**
-   * Staging controller.
+   * Git controller.
    */
-  private GitControllerBase stageController;
+  private GitControllerBase gitController;
 
   /**
    * Constructor.
    * 
-   * @param selResProvider    Selected resources provider..
-   * @param stageController   Staging controller.
+   * @param selResProvider  Selected resources provider..
+   * @param gitController   Git controller.
    */
-  public DiscardAction(SelectedResourcesProvider selResProvider, GitControllerBase stageController) {
+  public DiscardAction(SelectedResourcesProvider selResProvider, GitControllerBase gitController) {
     super(translator.getTranslation(Tags.DISCARD));
     this.selResProvider = selResProvider;
-    this.stageController = stageController;
+    this.gitController = gitController;
   }
   
   /**
@@ -108,7 +108,7 @@ public class DiscardAction extends AbstractAction {
       }
       
       // Execute Git command
-      stageController.asyncDiscard(allSelectedResources);
+      gitController.asyncDiscard(allSelectedResources);
       
       // Refresh the Project view
       wsAccess.getProjectManager().refreshFolders(foldersToRefresh.toArray(new File[0]));

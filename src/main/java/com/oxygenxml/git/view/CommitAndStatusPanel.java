@@ -287,14 +287,14 @@ public class CommitAndStatusPanel extends JPanel {
       });
 	
 	/**
-	 * Push / pull controller.
+	 * Git controller.
 	 */
   private GitController gitController;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param gitController Push / pull controller.
+	 * @param gitController Git controller.
 	 */
 	public CommitAndStatusPanel(GitController gitController) {
 	  this.gitController = gitController;

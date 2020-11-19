@@ -73,7 +73,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
   /**
    * Constructor.
    * 
-   * @param gitCtrl  Staging controller.
+   * @param gitCtrl  Git controller.
    * @param inIndex  <code>true</code> if this is the model of the staged files.
    */
 	public StagingResourcesTableModel(GitControllerBase gitCtrl, boolean inIndex) {

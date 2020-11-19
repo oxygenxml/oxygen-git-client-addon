@@ -38,22 +38,22 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
    */
 	private boolean inIndex;
 	/**
-	 * Stage controller.
+	 * Git controller.
 	 */
-  private GitControllerBase stageController;
+  private GitControllerBase gitController;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param controller Staging controller.
-	 * @param root Root folder's name.
-	 * @param inIndex <code>true</code> if this model presents the resources inside the index.
-   * <code>false</code> if it presents the modified resources that can be put in the index.
+	 * @param controller  Git controller.
+	 * @param root        Root folder's name.
+	 * @param inIndex     <code>true</code> if this model presents the resources inside the index.
+   *                    <code>false</code> if it presents the modified resources that can be put in the index.
 	 * @param filesStatus The files statuses in the model.
 	 */
 	public StagingResourcesTreeModel(GitControllerBase controller, String root, boolean inIndex, List<FileStatus> filesStatus) {
 		super(new GitTreeNode(root != null ? root : ""));
-    this.stageController = controller;
+    this.gitController = controller;
 		this.inIndex = inIndex;
     
     setFilesStatus(filesStatus);
@@ -270,9 +270,9 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
     }
     
     if (inIndex) {
-      stageController.asyncReset(filesToBeUpdated);
+      gitController.asyncReset(filesToBeUpdated);
     } else {
-      stageController.asyncAddToIndex(filesToBeUpdated);
+      gitController.asyncAddToIndex(filesToBeUpdated);
     }
   }
 }

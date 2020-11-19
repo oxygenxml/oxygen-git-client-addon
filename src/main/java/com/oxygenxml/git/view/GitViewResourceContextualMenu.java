@@ -58,7 +58,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
    * Constructor.
    * 
    * @param selResProvider        Provides the resources that will be processed by the menu's actions. 
-   * @param gitController       Staging controller.
+   * @param gitController         Git controller.
    * @param historyController     History interface.
    * @param isStage               <code>true</code> if we create the menu for the staged resources,
    *                                  <code>false</code> for the unstaged resources.

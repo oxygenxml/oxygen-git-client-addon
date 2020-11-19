@@ -724,8 +724,8 @@ public class GitPullCasesTest extends GitTestBase {
     }).when(PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(Mockito.any(), Mockito.any());
     
     //Try to pull
-    GitController pushPullController = new GitController(GitAccess.getInstance());
-    Future<?> pull = pushPullController.pull(PullType.MERGE_FF);
+    GitController gitController = new GitController(GitAccess.getInstance());
+    Future<?> pull = gitController.pull(PullType.MERGE_FF);
     pull.get();
     
     //Verify an exception was intercepted

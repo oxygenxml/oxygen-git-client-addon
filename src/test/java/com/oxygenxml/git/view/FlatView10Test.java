@@ -11,12 +11,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -107,7 +107,7 @@ public class FlatView10Test extends FlatViewTestBase {
     assertNotNull(abortMergeBtn);
     
     // Resolve using mine
-    GitController gitCtrl = stagingPanel.getPushPullController();
+    GitControllerBase gitCtrl = stagingPanel.getGitController();
     
     PluginWorkspace spy = Mockito.spy(PluginWorkspaceProvider.getPluginWorkspace());
     Mockito.when(spy.showConfirmDialog(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any())).thenReturn(0);

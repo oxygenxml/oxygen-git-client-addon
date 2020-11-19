@@ -226,7 +226,7 @@ public class DiffPresenter {
 	 * Presents a 3-way diff
 	 * @param file 
 	 */
-	private static void showConflictDiff(FileStatus file, GitControllerBase stageController) {
+	private static void showConflictDiff(FileStatus file, GitControllerBase gitController) {
 		try {
 		  URL base = GitRevisionURLHandler.encodeURL(VersionIdentifier.BASE, file.getFileLocation());
 		  URL left = null;
@@ -269,13 +269,13 @@ public class DiffPresenter {
 			            translator.getTranslation(Tags.YES),
 			            translator.getTranslation(Tags.NO));
 			        if (response == OKCancelDialog.RESULT_OK) {
-			          stageController.asyncResolveUsingMine(Arrays.asList(file));
+			          gitController.asyncResolveUsingMine(Arrays.asList(file));
 			        }
 			      } else {
 			        // Instead of requesting the file status again, we just mark it as modified.
 			        file.setChangeType(GitChangeType.MODIFIED);
 			        
-			        stageController.asyncAddToIndex(Arrays.asList(file));
+			        gitController.asyncAddToIndex(Arrays.asList(file));
 			      }
 			      
 			      d.removeComponentListener(this);

@@ -132,12 +132,12 @@ public class HistoryPanel extends JPanel {
   /**
    * Constructor.
    * 
-   * @param stageController Executes a set of Git commands.
+   * @param gitCtrl Executes a set of Git commands.
    */
-  public HistoryPanel(GitController pushPullController) {
+  public HistoryPanel(GitController gitCtrl) {
     setLayout(new BorderLayout());
     
-    contextualMenuPresenter = new HistoryViewContextualMenuPresenter(pushPullController);
+    contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
 
     historyTable = UIUtil.createTable();
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -215,7 +215,7 @@ public class HistoryPanel extends JPanel {
       }
     });
     
-    pushPullController.addGitListener(new GitEventAdapter() {
+    gitCtrl.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         if (isShowing()) {

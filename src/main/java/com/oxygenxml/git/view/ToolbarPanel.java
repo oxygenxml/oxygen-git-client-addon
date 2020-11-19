@@ -199,8 +199,8 @@ public class ToolbarPanel extends JPanel {
   
   /**
    * Constructor.
-   * @param gitController Push/pull controller.
-   * @param refreshSupport     The refresh support.
+   * @param gitController     Git controller.
+   * @param refreshSupport    The refresh support.
    * @param historyController History controller.
    */
 	public ToolbarPanel(

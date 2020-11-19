@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -95,14 +94,14 @@ public class FlatViewTestBase extends GitTestBase { // NOSONAR
   }
   
   /**
-   * Pull through the push/pull controller.
+   * Pull through the Git controller.
    * 
    * @throws Exception If it fails.
    */
   protected void pull() throws Exception {
     Thread.sleep(500);
     // Execute pull command and wait for it to finish.
-    stagingPanel.getPushPullController().pull().get();
+    ((GitController) stagingPanel.getGitController()).pull().get();
   }
   
   /**

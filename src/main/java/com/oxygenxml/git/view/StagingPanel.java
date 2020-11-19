@@ -102,7 +102,7 @@ public class StagingPanel extends JPanel {
 	private GitRefreshSupport refreshSupport;
 
 	/**
-	 * Staging controller.
+	 * Git controller.
 	 */
 	private GitController gitController;
 	
@@ -115,21 +115,21 @@ public class StagingPanel extends JPanel {
    * Constructor.
    * 
    * @param refreshSupport   Refresh support.        
-   * @param stageController  Staging controller.
+   * @param gitCtrl  Git controller.
    * @param historyController History related interaction.
-   * @param pushPullController High level push and pull support.
+   * @param branchManagementViewPresenter Branch management view presenter.
    */
   public StagingPanel(
       GitRefreshSupport refreshSupport, 
-      GitController stageController, 
+      GitController gitCtrl, 
       HistoryController historyController,
-      BranchManagementViewPresenter branchManagementView) {
+      BranchManagementViewPresenter branchManagementViewPresenter) {
 		this.refreshSupport = refreshSupport;
-		this.gitController = stageController;
+		this.gitController = gitCtrl;
 		
-		createGUI(historyController, branchManagementView);
+		createGUI(historyController, branchManagementViewPresenter);
 		
-		stageController.addGitListener(new GitEventListener() {
+		gitCtrl.addGitListener(new GitEventListener() {
 		  @Override
 		  public void operationSuccessfullyEnded(GitEventInfo info) {
 		    if (info.getGitOperation() == GitOperation.PULL || info.getGitOperation() == GitOperation.PUSH) {
@@ -492,19 +492,12 @@ public class StagingPanel extends JPanel {
 	}
 	
 	/**
-   * @return the stageController
+   * @return the Git controller.
    */
-  public GitControllerBase getStageController() {
+  public GitControllerBase getGitController() {
     return gitController;
   }
   
-  /**
-   * @return The controller for Push/Pull events.
-   */
-  public GitController getPushPullController() {
-    return gitController;
-  }
-
   /**
    * Update rebase panel visibility based on repo state.
    */

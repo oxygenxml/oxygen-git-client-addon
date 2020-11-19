@@ -48,12 +48,12 @@ public class ConflictButtonsPanel extends JPanel {
   /**
    * Constructor.
    * 
-   * @param stageController Git operations controller.
+   * @param gitController Git operations controller.
    */
-  public ConflictButtonsPanel(GitControllerBase stageController) {
+  public ConflictButtonsPanel(GitControllerBase gitController) {
     setVisible(false);
     createGUI();
-    stageController.addGitListener(new GitEventAdapter() {
+    gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationAboutToStart(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
