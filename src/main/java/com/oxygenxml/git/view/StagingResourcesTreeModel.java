@@ -90,25 +90,21 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	      break;
 	    case COMMIT:
 	      if (inIndex) {
-	        deleteNodes(filesStatuses);
-	        filesStatuses.clear();
+	        clearModel();
 	      }
 	      break;
 	    case DISCARD:
 	      deleteNodes(((FileGitEventInfo) eventInfo).getAffectedFileStatuses());
 	      break;
 	    case MERGE_RESTART:
-	      filesStatuses.clear();
+	      clearModel();
 	      List<FileStatus> fileStatuses = inIndex ? gitAccess.getStagedFiles() 
 	          : gitAccess.getUnstagedFiles();
 	      insertNodes(fileStatuses);
 	      break;
 	    case ABORT_REBASE:
 	    case CONTINUE_REBASE:
-	      filesStatuses.clear();
-	      // Rebuild the tree
-	      GitTreeNode root = (GitTreeNode) getRoot();
-	      root.removeAllChildren();
+      clearModel();
 	      break;
 	    case ABORT_MERGE:
 	      deleteNodes(((FileGitEventInfo) eventInfo).getAffectedFileStatuses());
@@ -120,6 +116,16 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 
 	  fireTreeStructureChanged(this, null, null, null);
 	}
+
+	/**
+	 * Clears all the nodes in the model and leaves an empty root.
+	 */
+  private void clearModel() {
+    filesStatuses.clear();
+    // Rebuild the tree
+    GitTreeNode root = (GitTreeNode) getRoot();
+    root.removeAllChildren();
+  }
 
 	/**
 	 * Insert nodes to the tree based on the given files
