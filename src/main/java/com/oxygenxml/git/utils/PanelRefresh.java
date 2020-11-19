@@ -176,19 +176,22 @@ public class PanelRefresh implements GitRefreshSupport {
     if (stagingPanel != null && stagingPanel.hasFocus()) {
       StandalonePluginWorkspace pluginWS =
           (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-      String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
-      String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
-      if (projectDir != null 
-          && !projectDir.equals(lastSelectedProject)
-          // Fast check to see if this is actually not a Git repository.
-          && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
-        lastSelectedProject = projectDir;
-        File projectFile = new File(projectDir, projectName);
-        File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
-        if (detectedRepo == null) {
-          repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
-        } else {
-          repoChanged = tryToSwitchToRepo(detectedRepo);
+      // Can be null from tests.
+      if (pluginWS.getUtilAccess() != null) {
+        String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
+        String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
+        if (projectDir != null 
+            && !projectDir.equals(lastSelectedProject)
+            // Fast check to see if this is actually not a Git repository.
+            && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
+          lastSelectedProject = projectDir;
+          File projectFile = new File(projectDir, projectName);
+          File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
+          if (detectedRepo == null) {
+            repoChanged = createNewRepoIfUserAgrees(projectDir, projectName);
+          } else {
+            repoChanged = tryToSwitchToRepo(detectedRepo);
+          }
         }
       }
     }

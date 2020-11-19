@@ -64,7 +64,10 @@ public class ConflictButtonsPanel extends JPanel {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
-        if (operation == GitOperation.OPEN_WORKING_COPY || operation == GitOperation.MERGE_RESTART) {
+        if (operation == GitOperation.OPEN_WORKING_COPY 
+            || operation == GitOperation.MERGE_RESTART
+            // A resolve using theirs or mine fires this kind of event.
+            || operation == GitOperation.STAGE) {
           updateBasedOnRepoState();
         } else if (isPullStrategyEndingOperation(operation)) {
           ConflictButtonsPanel.this.setEnabled(true);
