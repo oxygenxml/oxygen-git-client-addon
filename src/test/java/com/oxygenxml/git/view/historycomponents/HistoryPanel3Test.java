@@ -15,7 +15,6 @@ import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
@@ -145,21 +144,19 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       assertEquals(initialNoOfRefreshes + 1, noOfRefreshes);
       
       GitAccess.getInstance().add(new FileStatus(GitChangeType.ADD, "textFile.txt"));
-      assertEquals(initialNoOfRefreshes + 2, noOfRefreshes);
-      
       GitAccess.getInstance().commit("Another commit");
-      assertEquals(initialNoOfRefreshes + 3, noOfRefreshes);
+      assertEquals(initialNoOfRefreshes + 2, noOfRefreshes);
       
       refreshSupport.setHistoryPanel(historyPanel);
       refreshSupport.call();
       sleep(1000);
-      assertEquals(initialNoOfRefreshes + 4, noOfRefreshes);
+      assertEquals(initialNoOfRefreshes + 3, noOfRefreshes);
       
       GitAccess.getInstance().createBranch("new_branch");
-      assertEquals(initialNoOfRefreshes + 5, noOfRefreshes);
+      assertEquals(initialNoOfRefreshes + 4, noOfRefreshes);
       
       GitAccess.getInstance().deleteBranch("new_branch");
-      assertEquals(initialNoOfRefreshes + 6, noOfRefreshes);
+      assertEquals(initialNoOfRefreshes + 5, noOfRefreshes);
       
       final StoredConfig config = GitAccess.getInstance().getRepository().getConfig();
       RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
@@ -170,7 +167,7 @@ public class HistoryPanel3Test extends HistoryPanelTestBase {
       
       PUSH_PULL_CONTROLLER.push();
       sleep(700);
-      assertEquals(initialNoOfRefreshes + 7, noOfRefreshes);
+      assertEquals(initialNoOfRefreshes + 6, noOfRefreshes);
       
     } finally {
       GitAccess.getInstance().closeRepo();
