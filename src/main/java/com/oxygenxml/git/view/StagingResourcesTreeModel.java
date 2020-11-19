@@ -104,7 +104,7 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
 	      break;
 	    case ABORT_REBASE:
 	    case CONTINUE_REBASE:
-      clearModel();
+	      clearModel();
 	      break;
 	    case ABORT_MERGE:
 	      deleteNodes(((FileGitEventInfo) eventInfo).getAffectedFileStatuses());
