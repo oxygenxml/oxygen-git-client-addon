@@ -25,7 +25,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
   /**
    * Staging controller.
    */
-  private GitControllerBase stagingCtrl = new GitController(GitAccess.getInstance());
+  private GitControllerBase gitCtrl = new GitController(GitAccess.getInstance());
   
   /**
    * <p><b>Description:</b> test the enabling state of the actions
@@ -52,7 +52,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -100,7 +100,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -148,7 +148,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -195,7 +195,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -250,7 +250,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -307,7 +307,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -364,7 +364,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         // In merging state
@@ -412,7 +412,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -463,7 +463,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -514,7 +514,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -564,7 +564,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -612,7 +612,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -660,7 +660,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -707,7 +707,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -758,7 +758,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -809,7 +809,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -859,7 +859,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -910,7 +910,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For unstaged resources
         false,
         RepositoryState.SAFE);
@@ -961,7 +961,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -1008,7 +1008,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return fileStatuses;
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         RepositoryState.SAFE);
@@ -1061,7 +1061,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
             return Collections.emptyList();
           }
         },
-        stagingCtrl, null,
+        gitCtrl, null,
         // For staged resources
         true,
         // In merging state
