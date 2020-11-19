@@ -36,24 +36,19 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
   
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
-  
       String dump = dumpHistory(commitsCharacteristics, true);
-  
       String expected =  
           "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
           "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n" + 
           "";
-  
       assertEquals(expected, dump);
   
       historyPanel.showRepositoryHistory();
+      flushAWT();
   
       JTable historyTable = historyPanel.getHistoryTable();
-  
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-  
       dump = dumpHistory(model.getAllCommits(), true);
-  
       assertEquals(expected, dump);
   
       //-----------
@@ -103,24 +98,19 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowCopyRenames"));
   
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
-  
       String dump = dumpHistory(commitsCharacteristics, true);
-  
       String expected =  
           "[ Move , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
           "[ Initial , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , null ]\n" + 
           "";
-  
       assertEquals(expected, dump);
   
       historyPanel.showRepositoryHistory();
+      flushAWT();
   
       JTable historyTable = historyPanel.getHistoryTable();
-  
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-  
       dump = dumpHistory(model.getAllCommits(), true);
-  
       assertEquals(expected, dump);
   
       //-----------
@@ -145,16 +135,12 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       FileStatus fileStatus = affectedFilesModel.getFilesStatuses().get(0);
       
       CommitCharacteristics cc = model.getAllCommits().get(0);
-      
       Action action = getCompareWithPreviousAction(fileStatus, cc);
-      
       action.actionPerformed(null);
-      
       assertEquals("Unexpected number of URLs intercepted in the comparison support:" + urls2compare.toString(), 2, urls2compare.size());
   
       URL left = urls2compare.get(0);
       URL right = urls2compare.get(1);
-      
       assertEquals("git://" + model.getAllCommits().get(0).getCommitId() + "/child/file.txt", left.toString());
       assertEquals("git://" + model.getAllCommits().get(1).getCommitId() + "/file.txt", right.toString());
   }
@@ -172,26 +158,21 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
         new File("target/gen/HistoryPanelTest/testActionsOnRenamedFile"));
 
     List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
-
     String dump = dumpHistory(commitsCharacteristics, true);
-
     String expected =  
         "[ Fourth , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Third (Rename) , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
         "[ Second , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
         "[ First , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n" + 
         "";
-
     assertEquals(expected, dump);
 
     historyPanel.showRepositoryHistory();
-
+    flushAWT();
+    
     JTable historyTable = historyPanel.getHistoryTable();
-
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-
     dump = dumpHistory(model.getAllCommits(), true);
-
     assertEquals(expected, dump);
 
     //---------------
@@ -228,25 +209,20 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
         new File("target/gen/HistoryPanelTest/testMultipleSelectionHistoryActions"));
 
     List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
-
     String dump = dumpHistory(commitsCharacteristics, true);
-
     String expected =  
         "[ Third. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
             "[ Second. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
             "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
             "";
-
     assertEquals(expected, dump);
 
     historyPanel.showRepositoryHistory();
+    flushAWT();
 
     JTable historyTable = historyPanel.getHistoryTable();
-
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-
     dump = dumpHistory(model.getAllCommits(), true);
-
     assertEquals(expected, dump);
     //---------------
     // Invoke the Diff action to see if the built URLs are O.K.
