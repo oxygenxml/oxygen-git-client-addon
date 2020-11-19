@@ -302,8 +302,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
             try {
               repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
               if (repositoryState != RepositoryState.REBASING_MERGE) {
-                SwingUtilities.invokeLater(() -> PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                    translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE)));
+                PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+                    translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
               }
             } catch (NoRepositorySelected e) {
               logger.debug(e, e);
