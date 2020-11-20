@@ -66,6 +66,7 @@ public class ConflictButtonsPanel extends JPanel {
         GitOperation operation = info.getGitOperation();
         if (operation == GitOperation.OPEN_WORKING_COPY 
             || operation == GitOperation.MERGE_RESTART
+            || operation == GitOperation.PULL
             // A resolve using theirs or mine fires this kind of event.
             || operation == GitOperation.STAGE) {
           updateBasedOnRepoState();
@@ -140,6 +141,8 @@ public class ConflictButtonsPanel extends JPanel {
         } else {
           cardLayout.show(this, REBASE_CONFLICT_PANEL);
         }
+        
+        setEnabled(true);
       }
     } catch (NoRepositorySelected e) {
       logger.debug(e, e);

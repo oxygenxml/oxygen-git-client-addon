@@ -80,7 +80,7 @@ public class PushPullEvent extends GitEventInfo {
 
   @Override
   public String toString() {
-    return "Status: " + actionStatus + ", message: " + message;
+    return "Status: " + actionStatus + ", message: " + message + " " + super.toString();
   }
 
   /**
