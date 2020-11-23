@@ -486,4 +486,11 @@ public class WorkingCopySelectionPanel extends JPanel {
       }
     }
 	}
+	
+	/**
+	 * @return <code>true</code> if the working copies were loaded.
+	 */
+	boolean wereWorkingCopiesLoaded() {
+	  return workingCopyCombo.getModel().getSize() > 0;
+	}
 }

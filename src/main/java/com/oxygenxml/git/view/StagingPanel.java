@@ -557,4 +557,11 @@ public class StagingPanel extends JPanel {
   public void loadWorkingCopies() {
     workingCopySelectionPanel.loadEntries();
   }
+  
+  /**
+   * @return <code>true</code> if we should load the working copies.
+   */
+  public boolean shouldLoadWorkingCopies() {
+    return !workingCopySelectionPanel.wereWorkingCopiesLoaded();
+  }
 }

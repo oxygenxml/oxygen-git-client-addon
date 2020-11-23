@@ -109,7 +109,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
       super.windowActivated(e);
       boolean isStagingPanelShowing = stagingPanel != null && stagingPanel.isShowing();
       if (isStagingPanelShowing) {
-        stagingPanel.loadWorkingCopies();
+        if (stagingPanel.shouldLoadWorkingCopies()) {
+          stagingPanel.loadWorkingCopies();
+        }
         if (refresh) {
           gitRefreshSupport.call();
         }
