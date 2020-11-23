@@ -49,7 +49,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     historyPanel = new HistoryPanel(new GitController(GitAccess.getInstance())) {
       @Override
       protected int getUpdateDelay() {
-        return 0;
+        return 50;
       }
 
       @Override
@@ -68,6 +68,11 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
    * @param expected The expected content.
    */
   protected void assertAffectedFiles(HistoryPanel historyPanel, String expected) {
+    try {
+      Thread.sleep(50);
+    } catch (InterruptedException e) {}
+    flushAWT();
+    
     JTable affectedFilesTable = historyPanel.getAffectedFilesTable();
     StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
     String dumpFS = dumpFS(affectedFilesModel.getFilesStatuses());
