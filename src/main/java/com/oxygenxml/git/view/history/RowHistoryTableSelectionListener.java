@@ -84,7 +84,14 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		descriptionUpdateTimer.restart();
+	  if (!e.getValueIsAdjusting()) {
+	    if (descriptionUpdateTimer.getDelay() == 0) {
+	      // Probably from tests.
+	      descriptionUpdateListener.actionPerformed(null);
+	    } else {
+	      descriptionUpdateTimer.restart();
+	    }
+	  }
 	}
 
 	/**
