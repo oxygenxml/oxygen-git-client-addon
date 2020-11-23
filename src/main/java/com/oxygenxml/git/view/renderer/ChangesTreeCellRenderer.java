@@ -23,6 +23,7 @@ import com.oxygenxml.git.view.StagingResourcesTreeModel;
  * @author Beniamin Savu
  *
  */
+@SuppressWarnings("java:S110")
 public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Default selection color.

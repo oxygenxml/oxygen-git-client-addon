@@ -14,6 +14,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 /**
  * Renderer for the staged/unstaged tables.
  */
+@SuppressWarnings("java:S110")
 public final class StagingResourcesTableCellRenderer extends DefaultTableCellRenderer {
   /**
    * Tells if a contextual menu is presented over the table.

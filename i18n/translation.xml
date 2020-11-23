@@ -13,6 +13,14 @@
         <val lang="ja_JP">Uncommitted changes</val>
         <val lang="nl_NL">Uncommitted changes</val>
     </key>
+    <key value="Change_Branch_Error_Message">
+        <comment>The the message displayed when branch selection fails</comment>
+        <val lang="en_US">Commit or discard your local changes before you switch branches.</val>
+        <val lang="de_DE">Commit or discard your local changes before you switch branches.</val>
+        <val lang="fr_FR">Commit or discard your local changes before you switch branches.</val>
+        <val lang="ja_JP">Commit or discard your local changes before you switch branches.</val>
+        <val lang="nl_NL">Commit or discard your local changes before you switch branches.</val>
+    </key>
     <key value="Hover_for_details">
         <comment>Message suggesting to hover for more information.</comment>
         <val lang="en_US">Hover for details.</val>
@@ -87,16 +95,16 @@
     </key>
     <key value="Cannot_checkout_new_branch_because_uncommitted_changes">
         <comment>Message shown when cannot checkout newly created branch because of uncommitted changes.</comment>
-        <val lang="en_US">The new branch was created, but it could not be checked out
-        	because of uncommitted changes that are in conflict with the changes from the selected commit.</val>
-        <val lang="de_DE">The new branch was created, but it could not be checked out
-        	because of uncommitted changes that are in conflict with the changes from the selected commit.</val>
-        <val lang="fr_FR">La nouvelle branche a été créée, mais elle n'a pas pu être extraite
-            en raison de modifications hors commit en conflit avec des modifications du commit sélectionné.</val>
-        <val lang="ja_JP">The new branch was created, but it could not be checked out
-        	because of uncommitted changes that are in conflict with the changes from the selected commit.</val>
-        <val lang="nl_NL">The new branch was created, but it could not be checked out
-        	because of uncommitted changes that are in conflict with the changes from the selected commit.</val>
+        <val lang="en_US">The new branch was created, but it could not be checked out because 
+        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
+        <val lang="de_DE">The new branch was created, but it could not be checked out because 
+        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
+        <val lang="fr_FR">The new branch was created, but it could not be checked out because 
+        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
+        <val lang="ja_JP">The new branch was created, but it could not be checked out because 
+        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
+        <val lang="nl_NL">The new branch was created, but it could not be checked out because 
+        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
     </key>
     <key value="Cannot_checkout_new_branch">
         <comment>Message shown when cannot checkout newly created branch for an uknown reason.</comment>
@@ -1542,14 +1550,6 @@
         <val lang="en_US">Select Branch</val>
         <val lang="de_DE">Branch-Auswahl</val>
         <val lang="fr_FR">Sélectionner la branche</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="Change_Branch_Error_Message">
-        <comment>The the message displayed when branch selection fails</comment>
-        <val lang="en_US">Please commit your changes before you switch branches.</val>
-        <val lang="de_DE">Bitte committen Sie die Änderungen bevor Sie den Branch wechseln.</val>
-        <val lang="fr_FR">Veuillez effectuer un commit de vos modifications avant de changer de branche.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>

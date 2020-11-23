@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -199,9 +200,11 @@ public class ToolbarPanel extends JPanel {
   
   /**
    * Constructor.
+   * 
    * @param gitController     Git controller.
    * @param refreshSupport    The refresh support.
    * @param historyController History controller.
+   * @param branchManagementViewPresenter Branch management view presenter.
    */
 	public ToolbarPanel(
 	    GitController gitController, 
@@ -415,12 +418,29 @@ public class ToolbarPanel extends JPanel {
           try {
             GitAccess.getInstance().setBranch(branchName);
           } catch (CheckoutConflictException ex) {
+            restoreCurrentBranchSelectionInMenu();
             PluginWorkspaceProvider.getPluginWorkspace()
                 .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
           } catch (GitAPIException | JGitInternalException ex) {
+            restoreCurrentBranchSelectionInMenu();
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
         });
+      }
+
+      /**
+       * Restore current branch selection in branches menu.
+       */
+      private void restoreCurrentBranchSelectionInMenu() {
+        String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+        Component[] menuComponents = branchesSplitMenuButton.getMenuComponents();
+        for (Component component : menuComponents) {
+          JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) component;
+          if (menuItem.getText().equals(currentBranchName)) {
+            menuItem.setSelected(true);
+            break;
+          }
+        }
       }
     };
   }

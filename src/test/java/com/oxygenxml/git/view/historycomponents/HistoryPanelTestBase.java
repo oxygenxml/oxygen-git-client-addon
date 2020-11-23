@@ -49,7 +49,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     historyPanel = new HistoryPanel(new GitController(GitAccess.getInstance())) {
       @Override
       protected int getUpdateDelay() {
-        return 0;
+        return 50;
       }
 
       @Override
@@ -87,7 +87,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     historyTable.getSelectionModel().setSelectionInterval(row, row);
     // There is a timer involved.
     try {
-      Thread.sleep(100);
+      Thread.sleep(200);
     } catch (InterruptedException e) {}
     flushAWT();
     CommitCharacteristics selectedObject = (CommitCharacteristics) model.getValueAt(historyTable.getSelectedRow(), 0);

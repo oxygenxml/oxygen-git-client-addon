@@ -23,6 +23,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * 
  * @author alex_jitianu
  */
+@SuppressWarnings("java:S110")
 public class PassphraseDialog extends OKCancelDialog {
   /**
    * The pass phrase given by the user. <code>null</code> if the user canceled the interaction.

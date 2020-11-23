@@ -24,6 +24,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author Bogdan Draghici
  *
  */
+@SuppressWarnings("java:S110")
 public class ResetToCommitDialog extends OKCancelDialog {
   /**
    * Soft reset option label.

@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 /**
  * Renders a date according to a format.
  */
+@SuppressWarnings("java:S110")
 public class DateTableCellRenderer extends DefaultTableCellRenderer {
   /**
    * Date format.

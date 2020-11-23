@@ -24,6 +24,7 @@ import ro.sync.exml.workspace.api.standalone.ui.Button;
  * Dialog shown when an operation is tried to be performed
  * while the repo has a rebasing in progress.
  */
+@SuppressWarnings("java:S110")
 public class RebaseInProgressDialog extends JDialog {
   /**
    * i18n

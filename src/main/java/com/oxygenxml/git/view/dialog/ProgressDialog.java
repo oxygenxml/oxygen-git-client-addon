@@ -15,6 +15,7 @@ import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
+@SuppressWarnings("java:S110")
 public class ProgressDialog extends OKCancelDialog {
 
 	private JProgressBar progressBar;
