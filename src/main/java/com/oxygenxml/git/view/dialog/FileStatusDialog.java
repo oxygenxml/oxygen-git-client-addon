@@ -33,6 +33,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author Beniamin Savu
  *
  */
+@SuppressWarnings("java:S110")
 public class FileStatusDialog extends OKCancelDialog {
   
   /**

@@ -337,6 +337,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * @author Beniamin Savu
 	 *
 	 */
+	@SuppressWarnings("java:S110")
 	private static final class WorkingCopyToolTipRenderer extends DefaultListCellRenderer {
 
 		@Override

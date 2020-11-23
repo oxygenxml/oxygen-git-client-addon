@@ -31,6 +31,7 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
  * @author Bogdan Draghici
  *
  */
+@SuppressWarnings("java:S110")
 public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Default selection color.

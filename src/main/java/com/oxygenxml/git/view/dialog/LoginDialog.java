@@ -24,6 +24,7 @@ import com.oxygenxml.git.translator.Translator;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
+@SuppressWarnings("java:S110")
 public class LoginDialog extends OKCancelDialog {
   /**
    *  Logger for logging.
