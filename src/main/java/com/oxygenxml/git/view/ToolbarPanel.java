@@ -200,9 +200,11 @@ public class ToolbarPanel extends JPanel {
   
   /**
    * Constructor.
+   * 
    * @param gitController     Git controller.
    * @param refreshSupport    The refresh support.
    * @param historyController History controller.
+   * @param branchManagementViewPresenter Branch management view presenter.
    */
 	public ToolbarPanel(
 	    GitController gitController, 
