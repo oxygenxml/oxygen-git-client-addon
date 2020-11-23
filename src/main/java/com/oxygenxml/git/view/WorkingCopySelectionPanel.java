@@ -286,20 +286,22 @@ public class WorkingCopySelectionPanel extends JPanel {
 	/**
 	 * Load the recorded workinf copy locations into the combo.
 	 */
-  void loadEntries() {
-    List<String> repositoryEntries = new ArrayList<>(OptionsManager.getInstance().getRepositoryEntries());
-    for (String repositoryEntry : repositoryEntries) {
-			workingCopyCombo.addItem(repositoryEntry);
-		}
-    if (repositoryEntries.size() > 1) {
-      workingCopyCombo.addItem(CLEAR_HISTORY_ENTRY);
-    }
-    
-    String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
-    if (!repositoryPath.equals("")) {
-      workingCopyCombo.setSelectedItem(repositoryPath);
-    } else if (workingCopyCombo.getItemCount() > 0) {
-      workingCopyCombo.setSelectedIndex(0);
+  void initializeWorkingCopyCombo() {
+    if (workingCopyCombo.getModel().getSize() == 0) {
+      List<String> repositoryEntries = new ArrayList<>(OptionsManager.getInstance().getRepositoryEntries());
+      for (String repositoryEntry : repositoryEntries) {
+        workingCopyCombo.addItem(repositoryEntry);
+      }
+      if (repositoryEntries.size() > 1) {
+        workingCopyCombo.addItem(CLEAR_HISTORY_ENTRY);
+      }
+
+      String repositoryPath = OptionsManager.getInstance().getSelectedRepository();
+      if (!repositoryPath.equals("")) {
+        workingCopyCombo.setSelectedItem(repositoryPath);
+      } else if (workingCopyCombo.getItemCount() > 0) {
+        workingCopyCombo.setSelectedIndex(0);
+      }
     }
   }
 
@@ -487,10 +489,4 @@ public class WorkingCopySelectionPanel extends JPanel {
     }
 	}
 	
-	/**
-	 * @return <code>true</code> if the working copies were loaded.
-	 */
-	boolean wereWorkingCopiesLoaded() {
-	  return workingCopyCombo.getModel().getSize() > 0;
-	}
 }
