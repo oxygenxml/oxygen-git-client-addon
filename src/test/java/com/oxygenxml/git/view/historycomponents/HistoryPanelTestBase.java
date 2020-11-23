@@ -68,11 +68,6 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
    * @param expected The expected content.
    */
   protected void assertAffectedFiles(HistoryPanel historyPanel, String expected) {
-    try {
-      Thread.sleep(50);
-    } catch (InterruptedException e) {}
-    flushAWT();
-    
     JTable affectedFilesTable = historyPanel.getAffectedFilesTable();
     StagingResourcesTableModel affectedFilesModel = (StagingResourcesTableModel) affectedFilesTable.getModel();
     String dumpFS = dumpFS(affectedFilesModel.getFilesStatuses());
@@ -92,7 +87,7 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
     historyTable.getSelectionModel().setSelectionInterval(row, row);
     // There is a timer involved.
     try {
-      Thread.sleep(100);
+      Thread.sleep(200);
     } catch (InterruptedException e) {}
     flushAWT();
     CommitCharacteristics selectedObject = (CommitCharacteristics) model.getValueAt(historyTable.getSelectedRow(), 0);
