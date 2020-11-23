@@ -393,6 +393,8 @@ public class FlatViewTest extends FlatViewTestBase {
       stagingPanel.getCommitPanel().getCommitButton().doClick();
       });
     waitForScheluerBetter();
+    sleep(500);
+    flushAWT();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     
     // Change the file again.
@@ -409,6 +411,8 @@ public class FlatViewTest extends FlatViewTestBase {
       stagingPanel.getCommitPanel().getCommitButton().doClick();
       });
     waitForScheluerBetter();
+    sleep(500);
+    flushAWT();
     assertEquals(0, GitAccess.getInstance().getPushesAhead());
   }
 
