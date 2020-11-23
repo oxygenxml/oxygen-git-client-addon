@@ -226,7 +226,7 @@ public class WorkingCopySelectionPanel extends JPanel {
             }
               
 						// sets the directory path as the selected repository
-						workingCopyCombo.setSelectedItem(directoryPath);
+						SwingUtilities.invokeLater(() -> workingCopyCombo.setSelectedItem(directoryPath));
 					} else {
 						PluginWorkspaceProvider.getPluginWorkspace()
 								.showInformationMessage(translator.getTranslation(Tags.WORKINGCOPY_NOT_GIT_DIRECTORY));
