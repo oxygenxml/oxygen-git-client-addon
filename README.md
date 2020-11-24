@@ -155,6 +155,7 @@ The Git Client add-on contributes a preferences page to Oxygen. To access it, op
   - **Always switch to the new working copy**
   - **Never switch to the new working copy**
   - **Always ask**
+  
   This determines what happens in regards to the current working copy when a project that contains a Git repository is opened in the **Project** side-view in Oxygen.
 - **Notify me about new commits in the remote repository** - When this option is selected, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.
 
