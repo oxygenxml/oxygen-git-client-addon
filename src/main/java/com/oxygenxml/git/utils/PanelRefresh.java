@@ -181,10 +181,7 @@ public class PanelRefresh implements GitRefreshSupport {
       // Can be null from tests.
       if (pluginWS.getUtilAccess() != null) {
         String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
-        if (projectDir != null 
-            && !projectDir.equals(lastOpenedProject)
-            // Fast check to see if this is actually not a Git repository.
-            && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
+        if (projectDir != null && !projectDir.equals(lastOpenedProject)) {
           String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
           File projectFile = new File(projectDir, projectName);
           File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
@@ -315,29 +312,32 @@ public class PanelRefresh implements GitRefreshSupport {
    */
   private boolean createNewRepoIfUserAgrees(String projectDir, String projectName) {
     boolean repoChanged = false;
-    StandalonePluginWorkspace pluginWS =
-        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    int response = pluginWS.showConfirmDialog(
-        translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-        MessageFormat.format(translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
-        new String[] {
-            "   " + translator.getTranslation(Tags.YES) + "   ",
-            "   " + translator.getTranslation(Tags.NO) + "   "
-        },
-        new int[] { 0, 1 });
-    if (response == 0) {
-      try {
-        gitAccess.createNewRepository(projectDir);
-        repoChanged = true;
-      } catch (IllegalStateException | GitAPIException e) {
-        logger.debug(e,  e);
-        pluginWS.showErrorMessage("Failed to create a new repository.", e);
+    // Fast check to see if this is actually not a Git repository.
+    if (!OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
+      StandalonePluginWorkspace pluginWS =
+          (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      int response = pluginWS.showConfirmDialog(
+          translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
+          MessageFormat.format(translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
+          new String[] {
+              "   " + translator.getTranslation(Tags.YES) + "   ",
+              "   " + translator.getTranslation(Tags.NO) + "   "
+          },
+          new int[] { 0, 1 });
+      if (response == 0) {
+        try {
+          gitAccess.createNewRepository(projectDir);
+          repoChanged = true;
+        } catch (IllegalStateException | GitAPIException e) {
+          logger.debug(e,  e);
+          pluginWS.showErrorMessage("Failed to create a new repository.", e);
+        }
       }
+
+      // Don't ask the user again.
+      OptionsManager.getInstance().saveProjectTestedForGit(projectDir);
     }
 
-    // Don't ask the user again.
-    OptionsManager.getInstance().saveProjectTestedForGit(projectDir);
-    
     return repoChanged;
   }
 
