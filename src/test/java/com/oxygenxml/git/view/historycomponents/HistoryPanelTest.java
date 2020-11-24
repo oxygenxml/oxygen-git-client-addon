@@ -71,7 +71,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       //-----------
       // Select an entry in the revision table.
       //-----------
-      selectAndAssertRevision(historyTable, 0, "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]");
+      selectAndAssertRevision(historyTable, historyPanel.getAffectedFilesTable(), 0, "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]");
 
       //-----------
       // Assert the affected files
@@ -82,7 +82,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       //-----------
       // Select an entry in the revision table.
       //-----------
-      selectAndAssertRevision(historyTable, 1, "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]");
+      selectAndAssertRevision(historyTable, historyPanel.getAffectedFilesTable(), 1, "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]");
 
       //-----------
       // Assert the affected files
@@ -92,7 +92,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       //-----------
       // Select an entry in the revision table.
       //-----------
-      selectAndAssertRevision(historyTable, 2, "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]");
+      selectAndAssertRevision(historyTable, historyPanel.getAffectedFilesTable(), 2, "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]");
 
       //-----------
       // Assert the affected files
@@ -107,7 +107,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
       //-----------
       // Select an entry in the revision table.
       //-----------
-      selectAndAssertRevision(historyTable, 3, "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]");
+      selectAndAssertRevision(historyTable, historyPanel.getAffectedFilesTable(), 3, "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]");
 
       //-----------
       // Assert the affected files

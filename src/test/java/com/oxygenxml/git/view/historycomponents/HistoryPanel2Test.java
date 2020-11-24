@@ -57,7 +57,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       expected = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]";
       expected = replaceDate(expected);
       
-      selectAndAssertRevision(historyTable, 0, expected);
+      selectAndAssertRevision(historyTable, historyPanel.getAffectedFilesTable(), 0, expected);
   
       //-----------
       // Assert the affected files
@@ -106,6 +106,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       assertEquals(expected, dump);
   
       historyPanel.showRepositoryHistory();
+      waitForScheduler();
       flushAWT();
   
       JTable historyTable = historyPanel.getHistoryTable();
@@ -119,7 +120,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       expected = "[ Move , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]";
       expected = replaceDate(expected);
       
-      selectAndAssertRevision(historyTable, 0, expected);
+      selectAndAssertRevision(historyTable, historyPanel.getAffectedFilesTable(), 0, expected);
   
       //-----------
       // Assert the affected files

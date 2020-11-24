@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.swing.Action;
@@ -11,6 +13,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.MenuElement;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Ignore;
@@ -80,16 +84,31 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
    * Selects a specific revision in the history table and asserts its description. 
    * 
    * @param historyTable History table.
+   * @param affectedTable The table that present the affected files from the commit selected in the history view.
    * @param row Which row to select.
    * @param expected The expected revision description.
    */
-  protected void selectAndAssertRevision(JTable historyTable, int row, String expected) {
+  protected void selectAndAssertRevision(JTable historyTable, JTable affectedTable, int row, String expected) {
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
+    
+    Semaphore s = new Semaphore(0);
+    TableModelListener l = new TableModelListener() {
+      @Override
+      public void tableChanged(TableModelEvent e) {
+        s.release();
+      }
+    };
+    affectedTable.getModel().addTableModelListener(l);
+    
     historyTable.getSelectionModel().setSelectionInterval(row, row);
     // There is a timer involved.
     try {
-      Thread.sleep(200);
-    } catch (InterruptedException e) {}
+      s.tryAcquire(3, TimeUnit.SECONDS);
+    } catch (InterruptedException e1) {
+      e1.printStackTrace();
+    } finally {
+      affectedTable.getModel().removeTableModelListener(l);
+    }
     flushAWT();
     CommitCharacteristics selectedObject = (CommitCharacteristics) model.getValueAt(historyTable.getSelectedRow(), 0);
     assertEquals(replaceDate(expected), toString(selectedObject));
