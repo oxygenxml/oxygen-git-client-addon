@@ -72,7 +72,7 @@ public class WorkingCopySelectorTest extends JFCTestCase {
       SwingUtilities.invokeAndWait(() -> frame.setVisible(true));
       sleep(150);
       
-      wcPanel.loadEntries();
+      wcPanel.initializeWorkingCopyCombo();
       JComboBox<String> workingCopyCombo = wcPanel.getWorkingCopyCombo();
       ComboBoxModel<String> model = workingCopyCombo.getModel();
       StringBuilder sb = new StringBuilder();
