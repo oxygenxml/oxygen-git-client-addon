@@ -90,12 +90,14 @@ public class HistoryPanelTestBase extends GitTestBase { // NOSONAR squid:S2187
    */
   protected void selectAndAssertRevision(JTable historyTable, JTable affectedTable, int row, String expected) {
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
-    
+    historyTable.getSelectionModel().clearSelection();
     Semaphore s = new Semaphore(0);
     TableModelListener l = new TableModelListener() {
       @Override
       public void tableChanged(TableModelEvent e) {
-        s.release();
+        if (e.getType() == TableModelEvent.INSERT) {
+          s.release();
+        }
       }
     };
     affectedTable.getModel().addTableModelListener(l);
