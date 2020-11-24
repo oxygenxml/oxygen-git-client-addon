@@ -920,6 +920,9 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
   protected void generateRepositoryAndLoad(URL script, File wcTree) throws Exception {
     GitAccess.getInstance().closeRepo();
     
+    // Clean up.
+    FileSystemUtil.deleteRecursivelly(wcTree);
+    
     RepoGenerationScript.generateRepository(script, wcTree);
     
     GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
