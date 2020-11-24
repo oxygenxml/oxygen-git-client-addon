@@ -56,7 +56,7 @@ public class PanelRefresh implements GitRefreshSupport {
   private static Logger logger = Logger.getLogger(PanelRefresh.class);
 
 	/**
-	 * Staging panel to update.
+	 * The staging panel.
 	 */
 	private StagingPanel stagingPanel;
 	/**
@@ -64,9 +64,9 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	private final GitAccess gitAccess = GitAccess.getInstance();
 	/**
-	 * The last analyzed project.
+	 * The last opened project in the Project side-view.
 	 */
-	private String lastSelectedProject = "";
+	private String lastOpenedProject;
 	/**
 	 * Translation support.
 	 */
@@ -97,7 +97,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	private Runnable refreshRunnable = () -> {
 	  logger.debug("Start refresh on thread.");
 
-	  boolean isAfterRestart = lastSelectedProject.isEmpty(); 
+	  boolean isAfterRestart = lastOpenedProject == null; 
 	  // No point in refreshing if we've just changed the repository.
 	  boolean repoChanged = loadRepositoryFromOxygenProject();
 	  if (!repoChanged || isAfterRestart) {
@@ -146,6 +146,9 @@ public class PanelRefresh implements GitRefreshSupport {
     this.watcher = watcher;
   }
 
+  /**
+   * @see com.oxygenxml.git.utils.GitRefreshSupport.call()
+   */
   @Override
   public void call() {
     if (refreshFuture != null && !refreshFuture.isDone()) {
@@ -166,7 +169,7 @@ public class PanelRefresh implements GitRefreshSupport {
   /**
    * Checks the current loaded project and:
    * 
-   * 1. load it if it contains a Git project.
+   * 1. load it if it contains a Git project and the Oxygen > Git preferences allow it.
    * 2. create a new Git repo if the project doesn't contains a Git project and the user agrees.
    * 
    * @return <code>true</code> if the repository changed.
@@ -178,10 +181,7 @@ public class PanelRefresh implements GitRefreshSupport {
       // Can be null from tests.
       if (pluginWS.getUtilAccess() != null) {
         String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
-        if (projectDir != null 
-            && !projectDir.equals(lastSelectedProject)
-            // Fast check to see if this is actually not a Git repository.
-            && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
+        if (projectDir != null && !projectDir.equals(lastOpenedProject)) {
           String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
           File projectFile = new File(projectDir, projectName);
           File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
@@ -191,7 +191,7 @@ public class PanelRefresh implements GitRefreshSupport {
             repoChanged = tryToSwitchToRepo(detectedRepo);
           }
         }
-        lastSelectedProject = projectDir;
+        lastOpenedProject = projectDir;
       }
     }
     return repoChanged;
@@ -233,6 +233,8 @@ public class PanelRefresh implements GitRefreshSupport {
   }
 
   /**
+   * Get canonical path.
+   * 
    * @param file A file. 
    * 
    * @return The canonical version of the file.
@@ -310,33 +312,34 @@ public class PanelRefresh implements GitRefreshSupport {
    */
   private boolean createNewRepoIfUserAgrees(String projectDir, String projectName) {
     boolean repoChanged = false;
-    StandalonePluginWorkspace pluginWS =
-        (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    int response = pluginWS.showConfirmDialog(
-        translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
-        MessageFormat.format(translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
-        new String[] {
-            "   " + translator.getTranslation(Tags.YES) + "   ",
-            "   " + translator.getTranslation(Tags.NO) + "   "
-        },
-        new int[] { 0, 1 });
-    if (response == 0) {
-      try {
-        gitAccess.createNewRepository(projectDir);
-        repoChanged = true;
-      } catch (IllegalStateException | GitAPIException e) {
-        logger.debug(e,  e);
-        pluginWS.showErrorMessage("Failed to create a new repository.", e);
+    // Fast check to see if this is actually not a Git repository.
+    if (!OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
+      StandalonePluginWorkspace pluginWS =
+          (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      int response = pluginWS.showConfirmDialog(
+          translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT_TITLE),
+          MessageFormat.format(translator.getTranslation(Tags.CHECK_PROJECTXPR_IS_GIT), projectName),
+          new String[] {
+              "   " + translator.getTranslation(Tags.YES) + "   ",
+              "   " + translator.getTranslation(Tags.NO) + "   "
+          },
+          new int[] { 0, 1 });
+      if (response == 0) {
+        try {
+          gitAccess.createNewRepository(projectDir);
+          repoChanged = true;
+        } catch (IllegalStateException | GitAPIException e) {
+          logger.debug(e,  e);
+          pluginWS.showErrorMessage("Failed to create a new repository.", e);
+        }
       }
+
+      // Don't ask the user again.
+      OptionsManager.getInstance().saveProjectTestedForGit(projectDir);
     }
 
-    // Don't ask the user again.
-    OptionsManager.getInstance().saveProjectTestedForGit(projectDir);
-    
     return repoChanged;
   }
-
-
 
 	/**
 	 * Update the counters presented on the Pull/Push toolbar action.
