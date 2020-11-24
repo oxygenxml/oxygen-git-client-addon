@@ -66,7 +66,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	/**
 	 * The last opened project in the Project side-view.
 	 */
-	private String lastOpenedProject = "";
+	private String lastOpenedProject;
 	/**
 	 * Translation support.
 	 */
@@ -97,7 +97,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	private Runnable refreshRunnable = () -> {
 	  logger.debug("Start refresh on thread.");
 
-	  boolean isAfterRestart = lastOpenedProject.isEmpty(); 
+	  boolean isAfterRestart = lastOpenedProject == null; 
 	  // No point in refreshing if we've just changed the repository.
 	  boolean repoChanged = loadRepositoryFromOxygenProject();
 	  if (!repoChanged || isAfterRestart) {
