@@ -174,17 +174,15 @@ public class PanelRefresh implements GitRefreshSupport {
   private boolean loadRepositoryFromOxygenProject() {
     boolean repoChanged = false;
     if (stagingPanel != null && stagingPanel.hasFocus()) {
-      StandalonePluginWorkspace pluginWS =
-          (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       // Can be null from tests.
       if (pluginWS.getUtilAccess() != null) {
         String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
-        String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
         if (projectDir != null 
             && !projectDir.equals(lastSelectedProject)
             // Fast check to see if this is actually not a Git repository.
             && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
-          lastSelectedProject = projectDir;
+          String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
           File projectFile = new File(projectDir, projectName);
           File detectedRepo = RepoUtil.detectRepositoryInProject(projectFile);
           if (detectedRepo == null) {
@@ -193,6 +191,7 @@ public class PanelRefresh implements GitRefreshSupport {
             repoChanged = tryToSwitchToRepo(detectedRepo);
           }
         }
+        lastSelectedProject = projectDir;
       }
     }
     return repoChanged;
