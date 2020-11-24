@@ -6,6 +6,8 @@ package com.oxygenxml.git.utils;
  * @author alex_jitianu
  */
 public interface GitRefreshSupport {
-	
+	/**
+	 * Call the refresh support (i.e. perform the actual refresh).
+	 */
 	public void call();
 }

@@ -56,7 +56,7 @@ public class PanelRefresh implements GitRefreshSupport {
   private static Logger logger = Logger.getLogger(PanelRefresh.class);
 
 	/**
-	 * Staging panel to update.
+	 * The staging panel.
 	 */
 	private StagingPanel stagingPanel;
 	/**
@@ -64,9 +64,9 @@ public class PanelRefresh implements GitRefreshSupport {
 	 */
 	private final GitAccess gitAccess = GitAccess.getInstance();
 	/**
-	 * The last analyzed project.
+	 * The last opened project in the Project side-view.
 	 */
-	private String lastSelectedProject = "";
+	private String lastOpenedProject = "";
 	/**
 	 * Translation support.
 	 */
@@ -97,7 +97,7 @@ public class PanelRefresh implements GitRefreshSupport {
 	private Runnable refreshRunnable = () -> {
 	  logger.debug("Start refresh on thread.");
 
-	  boolean isAfterRestart = lastSelectedProject.isEmpty(); 
+	  boolean isAfterRestart = lastOpenedProject.isEmpty(); 
 	  // No point in refreshing if we've just changed the repository.
 	  boolean repoChanged = loadRepositoryFromOxygenProject();
 	  if (!repoChanged || isAfterRestart) {
@@ -146,6 +146,9 @@ public class PanelRefresh implements GitRefreshSupport {
     this.watcher = watcher;
   }
 
+  /**
+   * @see com.oxygenxml.git.utils.GitRefreshSupport.call()
+   */
   @Override
   public void call() {
     if (refreshFuture != null && !refreshFuture.isDone()) {
@@ -166,7 +169,7 @@ public class PanelRefresh implements GitRefreshSupport {
   /**
    * Checks the current loaded project and:
    * 
-   * 1. load it if it contains a Git project.
+   * 1. load it if it contains a Git project and the Oxygen > Git preferences allow it.
    * 2. create a new Git repo if the project doesn't contains a Git project and the user agrees.
    * 
    * @return <code>true</code> if the repository changed.
@@ -179,7 +182,7 @@ public class PanelRefresh implements GitRefreshSupport {
       if (pluginWS.getUtilAccess() != null) {
         String projectDir = pluginWS.getUtilAccess().expandEditorVariables("${pd}", null);
         if (projectDir != null 
-            && !projectDir.equals(lastSelectedProject)
+            && !projectDir.equals(lastOpenedProject)
             // Fast check to see if this is actually not a Git repository.
             && !OptionsManager.getInstance().getProjectsTestedForGit().contains(projectDir)) {
           String projectName = pluginWS.getUtilAccess().expandEditorVariables("${pn}", null) + ".xpr";
@@ -191,7 +194,7 @@ public class PanelRefresh implements GitRefreshSupport {
             repoChanged = tryToSwitchToRepo(detectedRepo);
           }
         }
-        lastSelectedProject = projectDir;
+        lastOpenedProject = projectDir;
       }
     }
     return repoChanged;
@@ -233,6 +236,8 @@ public class PanelRefresh implements GitRefreshSupport {
   }
 
   /**
+   * Get canonical path.
+   * 
    * @param file A file. 
    * 
    * @return The canonical version of the file.
@@ -335,8 +340,6 @@ public class PanelRefresh implements GitRefreshSupport {
     
     return repoChanged;
   }
-
-
 
 	/**
 	 * Update the counters presented on the Pull/Push toolbar action.
