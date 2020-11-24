@@ -121,10 +121,14 @@ At this point, the next actions depend on which **Pull** action was chosen:
     1. When all the conflicts are resolved and no more files are left in the **Unstaged** area, the changes can be committed.
     2. Enter a message and commit. You will now have new changes to push.
     3. Push the changes to the remote repository.
+    
+    **Note:** You can abort the merge by pressing the **Abort merge** button. This will revert the repository to its state before trying to pull.
 
  - **Pull (rebase)**:
     1. When all the conflicts are resolved, press the **Continue rebase** button.
-    2. You can abort the *Pull with rebase* action by pressing the **Abort rebase** button. This will revert the repository to its state before trying to pull.
+    2. Push any outgoing changes.
+    
+    **Note:** You can abort the rebase by pressing the **Abort rebase** button. This will revert the repository to its state before trying to pull.
     
 ## The Project view and the current editor
 
@@ -146,7 +150,13 @@ For the remote branches, the following action is available in the contextual men
 
 ## Preferences
 
-The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (Options menu -> Preferences) and go to **Plugins > Git Client**, or click the **Settings** button from the toolbar of the Git Staging view and select **Preferences**. This preferences page includes the following option:
+The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (Options menu -> Preferences) and go to **Plugins > Git Client**, or click the **Settings** button from the toolbar of the Git Staging view and select **Preferences**. This preferences page includes the following options:
+- **When detecting a Git repository inside a newly opened project:**
+  - **Always switch to the new working copy**
+  - **Never switch to the new working copy**
+  - **Always ask**
+  
+  This determines what happens in regards to the current working copy when a project that contains a Git repository is opened in the **Project** side-view in Oxygen.
 - **Notify me about new commits in the remote repository** - When this option is selected, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.
 
 ## Editor variables
