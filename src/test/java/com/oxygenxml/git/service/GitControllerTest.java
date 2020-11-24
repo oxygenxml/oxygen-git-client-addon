@@ -95,8 +95,8 @@ public class GitControllerTest {
     push.get();
     
     Assert.assertEquals("Not the expected events", 
-        "S: Status: null, message: Push_In_Progress\n" + 
-        "F: Status: null, message: Push_failed: null\n" + 
+        "S: Status: null, message: Push_In_Progress GitEventInfo [Operation: PUSH].\n" + 
+        "F: Status: null, message: Push_failed: null GitEventInfo [Operation: PUSH].\n" + 
         "   class java.lang.NullPointerException\n" + 
         "", b.toString());
   }
