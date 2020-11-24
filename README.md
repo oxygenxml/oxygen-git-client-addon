@@ -151,10 +151,11 @@ For the remote branches, the following action is available in the contextual men
 ## Preferences
 
 The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (Options menu -> Preferences) and go to **Plugins > Git Client**, or click the **Settings** button from the toolbar of the Git Staging view and select **Preferences**. This preferences page includes the following options:
-- The **When detecting a Git repository inside a newly opened project** section. The possible values are:
+- **When detecting a Git repository inside a newly opened project:**
   - **Always switch to the new working copy**
   - **Never switch to the new working copy**
   - **Always ask**
+  This determines what happens in regards to the current working copy when a project that contains a Git repository is opened in the **Project** side-view in Oxygen.
 - **Notify me about new commits in the remote repository** - When this option is selected, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.
 
 ## Editor variables
