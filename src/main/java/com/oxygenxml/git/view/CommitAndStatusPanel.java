@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -69,7 +70,10 @@ import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
  * Panel to insert the commit message and commit the staged files. 
  */
 public class CommitAndStatusPanel extends JPanel {
-  
+  /**
+   * The pixel distance between label's icon and text.
+   */
+  private static final int LABEL_ICON_TO_TEXT_DISTANCE = 4;
   /**
    * Max number of characters for the previous messages. 
    */
@@ -622,10 +626,17 @@ public class CommitAndStatusPanel extends JPanel {
 	  if (statusLabel != null && statusLabel.isShowing()) {
 	    String text = statusLabel.getText();
 	    if (text != null && !text.isEmpty()) {
-	      FontMetrics fontMetrics = getFontMetrics(getFont());
-	      String toolTipText = getToolTipText();
+	      String toolTipText = statusLabel.getToolTipText();
 	      boolean hasTooltip = toolTipText != null && !toolTipText.isEmpty();
-	      if (fontMetrics.stringWidth(text) > statusLabel.getSize().width) {
+	      if (hasTooltip) {
+	        toolTipText = toolTipText.replace(text, "").trim();
+	      }
+	      
+	      Icon icon = statusLabel.getIcon();
+        int iconWidth = icon != null ? icon.getIconWidth() : 0;
+        FontMetrics fontMetrics = statusLabel.getFontMetrics(statusLabel.getFont());
+        int availableWidth = statusLabel.getSize().width - iconWidth - LABEL_ICON_TO_TEXT_DISTANCE;
+        if (fontMetrics.stringWidth(text) > availableWidth) {
           statusLabel.setToolTipText(hasTooltip ? text + "\n\n" + toolTipText : text);
 	      } else if (hasTooltip) {
 	        statusLabel.setToolTipText(toolTipText);

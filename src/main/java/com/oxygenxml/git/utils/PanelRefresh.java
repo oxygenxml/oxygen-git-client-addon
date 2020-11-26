@@ -409,8 +409,8 @@ public class PanelRefresh implements GitRefreshSupport {
       logger.debug(ex, ex);
     }
     String extraInfo = e.getMessage();
-    if (remoteURLFromConfig != null) {
-      extraInfo += "\nURL: " + remoteURLFromConfig;
+    if (remoteURLFromConfig != null && !extraInfo.contains(remoteURLFromConfig)) {
+      extraInfo += "\n" + translator.getTranslation(Tags.REMOTE_REPO_URL) + " " + remoteURLFromConfig;
     }
     return extraInfo;
   }

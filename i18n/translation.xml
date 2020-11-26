@@ -13,6 +13,14 @@
         <val lang="ja_JP">Uncommitted changes</val>
         <val lang="nl_NL">Uncommitted changes</val>
     </key>
+    <key value="Cannot_Reach_Host">
+        <comment>The text is displayed in the bottom left corner in the commit panel when the host is down</comment>
+        <val lang="en_US">Cannot reach remote repository</val>
+        <val lang="de_DE">Cannot reach remote repository</val>
+        <val lang="fr_FR">Cannot reach remote repository</val>
+        <val lang="ja_JP">Cannot reach remote repository</val>
+        <val lang="nl_NL">Cannot reach remote repository</val>
+    </key>
     <key value="Change_Branch_Error_Message">
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">Commit or discard your local changes before you switch branches.</val>
@@ -1822,14 +1830,6 @@
         <val lang="en_US">Cloning repository</val>
         <val lang="de_DE">Repository wird geklont</val>
         <val lang="fr_FR">Clonage du dépôt</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="Cannot_Reach_Host">
-        <comment>The text is displayed in the bottom left corner in the commit panel when the host is down</comment>
-        <val lang="en_US">Cannot reach host</val>
-        <val lang="de_DE">Host nicht erreichbar</val>
-        <val lang="fr_FR">Impossible de joindre l'hôte</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
