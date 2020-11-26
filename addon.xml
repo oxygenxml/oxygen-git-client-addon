@@ -26,6 +26,20 @@
                             changes.</p>
                     </div>
                     <div>
+                        <h3>What's new in version 2.4.0</h3>
+                        <ol>
+                            <li>Added an "Abort merge" button for when conflicts result after a 
+                            	<i>Pull (merge)</i> operation. It allows you to abort the current
+                             	conflict resolution process</li>
+                            <li>Added a set of options in the Git Client preferences page that
+                            	can be used to decide whether to always switch to a newly detected working copy
+                            	from a project, never switch or always ask.</li>
+                            <li>Added a Preferences action in the Settings menu that acts as a shortcut
+                            	to the Git Client preferences page.</li>
+                          	<li>Numerous bug fixes, UI improvements and speed improvements.</li>
+                        </ol>
+                    </div>
+                    <div>
                         <h3>What's new in version 2.3.1</h3>
                         <ol>
                             <li>Fixed some performance problems introduced by version 2.3.0.</li>
