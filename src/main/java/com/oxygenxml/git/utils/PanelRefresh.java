@@ -363,9 +363,9 @@ public class PanelRefresh implements GitRefreshSupport {
     try {
       GitAccess.getInstance().fetch();
     } catch (RepositoryUnavailableException e) {
-      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, e.getMessage());
+      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
     } catch (SSHPassphraseRequiredException e) {
-      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, e.getMessage());
+      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
       
       String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
       if (sshPassphrase != null && !sshPassphrase.isEmpty()) {
@@ -379,7 +379,7 @@ public class PanelRefresh implements GitRefreshSupport {
         }
       }
     } catch (PrivateRepositoryException e) {
-      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, e.getMessage());
+      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
       
       UserCredentials userCredentials = new LoginDialog(
           GitAccess.getInstance().getHostName(), 
@@ -388,10 +388,31 @@ public class PanelRefresh implements GitRefreshSupport {
         return fetch();
       }
     } catch (Exception e) {
-      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, e.getMessage());
+      statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
       logger.error(e, e);
     }
     return statusInfo;
+  }
+
+  /**
+   * Compute status extra info.
+   * 
+   * @param e Exception.
+   * 
+   * @return The extra info about the current repo status.
+   */
+  private String computeStatusExtraInfo(Throwable e) {
+    String remoteURLFromConfig = null;
+    try {
+      remoteURLFromConfig = gitAccess.getRemoteURLFromConfig();
+    } catch (NoRepositorySelected ex) {
+      logger.debug(ex, ex);
+    }
+    String extraInfo = e.getMessage();
+    if (remoteURLFromConfig != null) {
+      extraInfo += "\nURL: " + remoteURLFromConfig;
+    }
+    return extraInfo;
   }
 
 	/**

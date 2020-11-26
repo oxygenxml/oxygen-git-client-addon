@@ -1965,6 +1965,18 @@ public class GitAccess {
 	  Repository repository = GitAccess.getInstance().getRepository();
 	  return repository.getConfig().getString("branch", branchName, ConfigConstants.CONFIG_KEY_REMOTE);
 	}
+	
+	 /**
+   * Get the URL of the current remote.
+   * 
+   * @return The URL of the remote.
+   * 
+   * @throws NoRepositorySelected 
+   */
+  public String getRemoteURLFromConfig() throws NoRepositorySelected {
+    Repository repository = GitAccess.getInstance().getRepository();
+    return repository.getConfig().getString(ConfigConstants.CONFIG_KEY_REMOTE, Constants.DEFAULT_REMOTE_NAME, "url");
+  }
 
 	/**
 	 * Gets the full remote-tracking branch name or null is the local branch is not tracking a remote branch.
