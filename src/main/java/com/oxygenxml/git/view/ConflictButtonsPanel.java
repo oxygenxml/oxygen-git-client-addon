@@ -95,7 +95,7 @@ public class ConflictButtonsPanel extends JPanel {
    */
   private void createGUI() {
     FlowLayout flowLayout = new FlowLayout(
-        FlowLayout.CENTER,
+        FlowLayout.LEFT,
         2 *  UIConstants.COMPONENT_LEFT_PADDING,
         0);
     

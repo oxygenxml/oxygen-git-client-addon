@@ -197,7 +197,7 @@ public class StagingPanel extends JPanel {
 		  addToolbatPanel(gbc);
 		}
 		addWorkingCopySelectionPanel(gbc);
-		addRebasePanel(gbc);
+		addConflictButtonsPanel(gbc);
 		addSplitPanel(gbc, splitPane);
 
 		// creates the actual GUI for each panel
@@ -320,11 +320,11 @@ public class StagingPanel extends JPanel {
 	 * 
 	 * @param gbc Constraints.
 	 */
-  private void addRebasePanel(GridBagConstraints gbc) {
+  private void addConflictButtonsPanel(GridBagConstraints gbc) {
     gbc.gridx = 0;
 		gbc.gridy ++;
 		gbc.insets = new Insets(10, 2, 10, 0);
-    gbc.anchor = GridBagConstraints.CENTER;
+    gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.NONE;
     gbc.weightx = 1;
     gbc.weighty = 0;
