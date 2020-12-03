@@ -14,6 +14,14 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Keep conflict.
+   */
+  public static final String KEEP_CONFLICT = "Keep_conflict";
+  /**
+   * Resolve anyway.
+   */
+  public static final String RESOLVE_ANYWAY = "Resolve_anyway";
+  /**
    * Description for the short_branch_name editor variable.
    */
   public static final String SHORT_BRANCH_NAME_DESCRIPTION = "Short_branch_name_description";

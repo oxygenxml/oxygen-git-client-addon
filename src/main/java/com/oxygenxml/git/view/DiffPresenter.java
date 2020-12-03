@@ -266,8 +266,8 @@ public class DiffPresenter {
 			        int response = FileStatusDialog.showWarningMessageWithConfirmation(
 			            translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
 			            message,
-			            translator.getTranslation(Tags.YES),
-			            translator.getTranslation(Tags.NO));
+			            translator.getTranslation(Tags.RESOLVE_ANYWAY),
+			            translator.getTranslation(Tags.KEEP_CONFLICT));
 			        if (response == OKCancelDialog.RESULT_OK) {
 			          gitController.asyncResolveUsingMine(Arrays.asList(file));
 			        }

@@ -13,6 +13,35 @@
         <val lang="ja_JP">Uncommitted changes</val>
         <val lang="nl_NL">Uncommitted changes</val>
     </key>
+    <key value="Keep_conflict">
+        <comment>"Keep conflict" message.</comment>
+        <val lang="en_US">Keep conflict</val>
+        <val lang="de_DE">Keep conflict</val>
+        <val lang="fr_FR">Keep conflict</val>
+        <val lang="ja_JP">Keep conflict</val>
+        <val lang="nl_NL">Keep conflict</val>
+    </key>
+	<key value="Resolve_anyway">
+        <comment>"Resolve anyway" message.</comment>
+        <val lang="en_US">Resolve anyway</val>
+        <val lang="de_DE">Resolve anyway</val>
+        <val lang="fr_FR">Resolve anyway</val>
+        <val lang="ja_JP">Resolve anyway</val>
+        <val lang="nl_NL">Resolve anyway</val>
+    </key>
+    <key value="Keep_resolved_version_for_rebase_conflict">
+        <comment>The text displayed after exiting the diff for a rebase conflict file and you didn't modify anything.</comment>
+        <val lang="en_US">No changes have been made to the version on the left side that will be used to resolve the conflict.
+			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="de_DE">No changes have been made to the version on the left side that will be used to resolve the conflict.
+			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="fr_FR">No changes have been made to the version on the left side that will be used to resolve the conflict.
+			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="ja_JP">No changes have been made to the version on the left side that will be used to resolve the conflict.
+			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="nl_NL">No changes have been made to the version on the left side that will be used to resolve the conflict.
+			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+    </key>
     <key value="Cannot_Reach_Host">
         <comment>The text is displayed in the bottom left corner in the commit panel when the host is down</comment>
         <val lang="en_US">Cannot reach remote repository</val>
@@ -318,24 +347,6 @@
         <val lang="fr_FR">Faire un pull des modifications</val>
         <val lang="ja_JP">Pull changes</val>
         <val lang="nl_NL">Pull changes</val>
-    </key>
-    <key value="Keep_resolved_version_for_rebase_conflict">
-        <comment>The text displayed after exiting the diff for a rebase conflict file and you didn't modify anything.</comment>
-        <val lang="en_US">No changes have been made to the version that will be used to resolve the conflict (left side).
-         \nAre you sure you want to resolve the conflict by keeping this version as it is?
-        \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
-        <val lang="de_DE">No changes have been made to the version that will be used to resolve the conflict (left side).
-         \nAre you sure you want to resolve the conflict by keeping this version as it is?
-        \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
-        <val lang="fr_FR">Aucune modification n'a été apportée à la version qui sera utilisée pour résoudre le conflit (côté gauche).
-         \nÊtes-vous sûr de vouloir résoudre le conflit en gardant cette version telle quelle?
-        \n\nVous perdrez vos modifications (côté droit) en ne les fusionnant pas dans la version finale.</val>
-        <val lang="ja_JP">No changes have been made to the version that will be used to resolve the conflict (left side).
-         \nAre you sure you want to resolve the conflict by keeping this version as it is?
-        \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
-        <val lang="nl_NL">No changes have been made to the version that will be used to resolve the conflict (left side).
-         \nAre you sure you want to resolve the conflict by keeping this version as it is?
-        \n\nYou will lose your changes (right side) by not merging them into the final version.</val>
     </key>
     <key value = "Pre_receive_hook_declined_custom_message">
 		<comment>"The 'pre-receive' server-side hook declined the operation."</comment>
