@@ -31,16 +31,16 @@
     </key>
     <key value="Keep_resolved_version_for_rebase_conflict">
         <comment>The text displayed after exiting the diff for a rebase conflict file and you didn't modify anything.</comment>
-        <val lang="en_US">No changes have been made to the version on the left side that will be used to resolve the conflict.
-			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
-        <val lang="de_DE">No changes have been made to the version on the left side that will be used to resolve the conflict.
-			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
-        <val lang="fr_FR">No changes have been made to the version on the left side that will be used to resolve the conflict.
-			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
-        <val lang="ja_JP">No changes have been made to the version on the left side that will be used to resolve the conflict.
-			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
-        <val lang="nl_NL">No changes have been made to the version on the left side that will be used to resolve the conflict.
-			\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="en_US">No changes have been made to the version on the left side that will be used to resolve
+          the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="de_DE">No changes have been made to the version on the left side that will be used to resolve
+          the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="fr_FR">No changes have been made to the version on the left side that will be used to resolve
+          the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="ja_JP">No changes have been made to the version on the left side that will be used to resolve
+          the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="nl_NL">No changes have been made to the version on the left side that will be used to resolve
+          the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
     </key>
     <key value="Cannot_Reach_Host">
         <comment>The text is displayed in the bottom left corner in the commit panel when the host is down</comment>
