@@ -29,6 +29,22 @@
         <val lang="ja_JP">Resolve anyway</val>
         <val lang="nl_NL">Resolve anyway</val>
     </key>
+    <key value="Use_filter_to_search">
+        <comment>"Search filter hint message"</comment>
+        <val lang="en_US">Use filter to search</val>
+        <val lang="de_DE">Use filter to search</val>
+        <val lang="fr_FR">Use filter to search</val>
+        <val lang="ja_JP">Use filter to search</val>
+        <val lang="nl_NL">Use filter to search</val>
+    </key>
+    <key value="Type_text_to_filter">
+        <comment>"Hint for filter"</comment>
+        <val lang="en_US">Type text to filter</val>
+        <val lang="de_DE">Type text to filter</val>
+        <val lang="fr_FR">Type text to filter</val>
+        <val lang="ja_JP">Type text to filter</val>
+        <val lang="nl_NL">Type text to filter</val>
+    </key>
     <key value="Keep_resolved_version_for_rebase_conflict">
         <comment>The text displayed after exiting the diff for a rebase conflict file and you didn't modify anything.</comment>
         <val lang="en_US">No changes have been made to the version on the left side that will be used to resolve

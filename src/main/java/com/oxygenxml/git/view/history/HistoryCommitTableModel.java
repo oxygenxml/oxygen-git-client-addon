@@ -1,6 +1,8 @@
 package com.oxygenxml.git.view.history;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -8,12 +10,15 @@ import javax.swing.table.AbstractTableModel;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import ro.sync.basic.util.Equaler;
+
 /**
  * Table Model for Commit History Characteristics.
  * 
  * @Alexandra_Dinisor
  *
  */
+@SuppressWarnings("serial")
 public class HistoryCommitTableModel extends AbstractTableModel {
 
 	/*
@@ -23,11 +28,21 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	public static final int DATE = 1;
 	public static final int AUTHOR = 2;
 	public static final int COMMIT_ABBREVIATED_ID = 3;
+	
+	/**
+   * Text from filter field
+   */
+  private String textToFilter = "";
 
 	/**
 	 * The internal representation of the model.
 	 */
-	private List<CommitCharacteristics> allCommitsCharacteristics;
+	private List<CommitCharacteristics> allCommitsCharacteristics = new ArrayList<CommitCharacteristics>();
+	
+	/**
+   * The internal representation of the model filtered.
+   */
+  private List<CommitCharacteristics> allCommitsCharacteristicsFiltered;
 
 	/**
 	 * Construct the Table Model with a Vector containing all commitCharacteristics.
@@ -35,12 +50,13 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 * @param commitVector The computed commitVector
 	 */
 	public HistoryCommitTableModel(List<CommitCharacteristics> commitVector) {
-		this.allCommitsCharacteristics = commitVector;
+		this.allCommitsCharacteristicsFiltered = commitVector;
+		this.allCommitsCharacteristics.addAll(commitVector);
 	}
 	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		CommitCharacteristics commitCharacteristics = allCommitsCharacteristics.get(rowIndex);
+		CommitCharacteristics commitCharacteristics = allCommitsCharacteristicsFiltered.get(rowIndex);
 		Object temp = null;
 
 		switch (columnIndex) {
@@ -91,7 +107,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		return allCommitsCharacteristics != null ? allCommitsCharacteristics.size() : 0;
+		return allCommitsCharacteristicsFiltered != null ? allCommitsCharacteristicsFiltered.size() : 0;
 	}
 
 	@Override
@@ -122,7 +138,79 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	}
 	
 	public List<CommitCharacteristics> getAllCommits() {
-    return allCommitsCharacteristics;
+    return allCommitsCharacteristicsFiltered;
+  }
+	
+	/**
+	 * Filters the table
+	 * @param text The text to filter
+	 */
+	public void filterChanged(String textFilter) {
+	  if(!Equaler.verifyEquals(this.textToFilter, textFilter)) {
+	    filter(textFilter);
+	  }
+	}
+	
+	/**
+   * Filters the table
+   * @param text The text to filter
+   */
+  public void filter(String textFilter) {
+    this.textToFilter = textFilter;
+    if(textFilter != null) {
+      allCommitsCharacteristicsFiltered.clear();
+      allCommitsCharacteristicsFiltered.addAll(allCommitsCharacteristics);
+      for (Iterator<CommitCharacteristics> iterator = allCommitsCharacteristicsFiltered.iterator(); iterator.hasNext();) {
+        CommitCharacteristics comitCharac = iterator.next();
+        boolean shouldFilter = shouldFilter(comitCharac, textToFilter);
+        if(shouldFilter) {
+          iterator.remove();
+        }
+      }
+      //update model
+      fireTableDataChanged();
+    }
+  }
+	
+	/**
+	 * Tells if a commit should be removed or not
+	 * @param commitCharac The commit with details
+	 * @param textFilter The filter that should be applied
+	 * @return True if the commit should be removed, false otherwise
+	 */
+	private boolean shouldFilter(CommitCharacteristics commitCharac, String textFilter) {
+    if( textFilter != null &&  !textFilter.isEmpty()) {
+      String date = "", author = "", commitId = "", message = "";
+      
+      String authorTemp = commitCharac.getAuthor();
+      if(authorTemp != null) {
+        author = authorTemp.toLowerCase();
+      }
+      Date dateTemp = commitCharac.getDate();
+      if(dateTemp != null) {
+        date = dateTemp.toString();
+        System.err.println("date: " + date);
+      }
+      String commitIdTemp = commitCharac.getCommitId();
+      if(commitIdTemp != null) {
+        commitId = commitIdTemp.toLowerCase();
+      }
+      String messageTemp = commitCharac.getCommitMessage();
+      if(messageTemp != null) {
+        message = messageTemp.toLowerCase();
+      }
+      ///////text filter
+      String[] split = textFilter.split("[, .!-]+");
+      for (int i = 0; i < split.length; i++) {
+        String valueTerm = split[i].trim().toLowerCase();
+        String valueDate = split[i].trim();
+        if(!author.contains(valueTerm) && !commitId.contains(valueTerm) &&
+            !date.contains(valueDate) && !message.contains(valueTerm)){
+          return true;
+        }
+      }
+    } 
+    return false;
   }
 
 }

@@ -1,8 +1,13 @@
 package com.oxygenxml.git.view.dialog;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -285,6 +290,61 @@ public class UIUtil {
     }
     
     return msgArea;
+  }
+  
+  /**
+   * Draws a hint text inside a text component.
+   *
+   * @param component Text component.
+   * @param g Graphics used to draw.
+   * @param noFocusHint The text to draw.
+   * @param hintColor An explicit color for the hint. <code>null</code> to use system default color.
+   */
+  public static void drawHint(JComponent component, Graphics g, String text, Color hintColor) {
+    FontMetrics fm = component.getFontMetrics(g.getFont());
+    int x = 0;
+    int y = 0;
+    int availableHeight = component.getHeight();
+
+    // Adjust for insets
+    Insets insets = component.getInsets();
+    if (insets != null) {
+      x += insets.left;
+      y += insets.top;
+      availableHeight -= insets.top;
+      availableHeight -= insets.bottom;
+    }
+
+    // Adjust the y if the font height is different than the available height
+    // @see BasicTextFieldUI#getBaseline(javax.swing.JComponent, int, int)
+    int fontHeight = fm.getHeight();
+    if (availableHeight != fontHeight) {
+      y += (availableHeight - fontHeight) / 2;
+    }
+
+    y += fm.getAscent();
+
+    if (hintColor != null) {
+      g.setColor(hintColor);
+    } else {
+      g.setColor(new Color(128, 128, 128));
+    }
+    
+    
+    if (g instanceof Graphics2D) {
+      final Graphics2D g2d = (Graphics2D) g;
+      Object originalAntialiasingHint = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+      // update antialiasing
+      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      try {
+        g2d.drawString(text, x, y);
+      } finally {
+        // Restore original settings
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, originalAntialiasingHint);
+      }
+    } else {
+      g.drawString(text, x, y);
+    }
   }
 
 }

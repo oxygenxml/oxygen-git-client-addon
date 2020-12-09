@@ -1164,4 +1164,12 @@ public class Tags {
    * Git Client. Translation loaded from Oxygen.
    */
   public static final String GIT_CLIENT = "Git_client";
+  /**
+   * Use filter to serach 
+   */
+  public static final String USE_FILTER_TO_SEARCH = "Use_filter_to_search";
+  /**
+   * Type text to filter 
+   */
+  public static final String TYPE_TEXT_TO_FILTER = "Type_text_to_filter";
 }
