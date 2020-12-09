@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.history;
 
 import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +11,6 @@ import javax.swing.table.AbstractTableModel;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
-import ro.sync.basic.util.Equaler;
 
 /**
  * Table Model for Commit History Characteristics.
@@ -146,7 +146,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 * @param text The text to filter
 	 */
 	public void filterChanged(String textFilter) {
-	  if(!Equaler.verifyEquals(this.textToFilter, textFilter)) {
+	  if(textFilter != null && !this.textToFilter.equals(textFilter)) {
 	    filter(textFilter);
 	  }
 	}
