@@ -22,20 +22,15 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 
-import org.apache.log4j.Logger;
-
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.renderer.StagingResourcesTableCellRenderer;
 
@@ -47,15 +42,12 @@ import ro.sync.exml.workspace.api.editor.page.author.WSAuthorEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
+import ro.sync.exml.workspace.api.standalone.ui.Table;
 
 /**
  * Utility class for UI-related issues. 
  */
 public class UIUtil {
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(UIUtil.class.getName());
   /**
    * Extra width for the icon column of the resources table (for beautifying reasons).
    */
@@ -100,48 +92,6 @@ public class UIUtil {
   }
   
   /**
-   * This method first tries to create an undoable text field,
-   * that also has a contextual menu with editing action. If this is not possible,
-   * a standard Java text field is created.
-   * 
-   * @return the text field.
-   */
-  public static JTextField createTextField() {
-    JTextField textField = null;
-    try {
-      Class<?> textFieldClass= Class.forName("ro.sync.exml.workspace.api.standalone.ui.TextField");
-      textField = (JTextField) textFieldClass.newInstance();
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
-      textField = new JTextField();
-      UndoSupportInstaller.installUndoManager(textField);
-      if (logger.isDebugEnabled()) {
-        logger.debug(e1, e1);
-      }
-    }
-    return textField;
-  }
-  
-  
-  /**
-   * @return The tree that presents the resources. 
-   */
-  public static JTree createTree() {
-    JTree t = null;
-    try {
-      Class<?> treeClass = UIUtil.class.getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Tree");
-      t = (JTree) treeClass.newInstance();
-    } catch (Exception e) {
-      logger.debug(e, e);
-    }
-    
-    if (t == null) {
-      t = new JTree();
-    }
-    
-    return t;
-  }
-  
-  /**
    * Compute necessary height for text area with <b>line wrap and wrap style word</b>
    *  to display contained all rows.
    *
@@ -167,27 +117,6 @@ public class UIUtil {
   }
   
   /**
-   * @param fileTableModel The model for the table.
-   * 
-   * @return The table that presents the resources.
-   */
-  public static JTable createTable() {
-    JTable table = null;
-    try {
-      Class<?> tableClass = UIUtil.class.getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Table");
-      table = (JTable) tableClass.newInstance();
-    } catch (Exception e) {
-      logger.debug(e, e);
-    }
-    
-    if (table == null) {
-      table = new JTable();
-    }
-    
-    return table;
-  }
-  
-  /**
    * Creates a git resource table widget and install renderers on it.
    * 
    * @param fileTableModel The model for the table.
@@ -198,7 +127,7 @@ public class UIUtil {
   public static JTable createResourcesTable(
       StagingResourcesTableModel fileTableModel, 
       BooleanSupplier contextMenuShowing) {
-    JTable table = UIUtil.createTable();
+    JTable table = new Table();
     table.setModel(fileTableModel);
     
     table.getColumnModel().setColumnMargin(0);

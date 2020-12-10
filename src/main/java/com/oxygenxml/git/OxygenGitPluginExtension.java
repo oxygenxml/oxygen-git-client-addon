@@ -25,7 +25,6 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.editorvars.GitEditorVariablesResolver;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;

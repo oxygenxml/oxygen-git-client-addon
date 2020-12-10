@@ -48,11 +48,11 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.GitTreeNode;
-import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.TextField;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
@@ -339,7 +339,7 @@ public class BranchManagementPanel extends JPanel {
    * Creates the search bar for the branches in the current repository.
    */
   private void createSearchBar() {
-    searchField = UIUtil.createTextField();
+    searchField = new TextField();
     searchField.setText(translator.getTranslation(Tags.FILTER_HINT));
     searchField.setForeground(searchField.getDisabledTextColor());
     searchField.setToolTipText(translator.getTranslation(Tags.SEARCH_BAR_TOOL_TIP));

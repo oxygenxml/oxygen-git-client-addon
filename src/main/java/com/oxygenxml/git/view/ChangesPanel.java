@@ -61,6 +61,7 @@ import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
 
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 /**
  * This is the staging or the unstaging area, depending on the forStaging
@@ -1153,7 +1154,7 @@ public class ChangesPanel extends JPanel {
 	 * @return The tree that presents the resources. 
 	 */
 	private JTree createTree() {
-	  JTree t = UIUtil.createTree();
+	  JTree t = new Tree();
 	  
 	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(gitController, null, forStagedResources, null));
