@@ -98,6 +98,7 @@ public class Log4jUtil {
    * EXM-44131 Filter an exception that we know it appears quite often and has no repercussions.
    */
   private static void addFiltersOnAppendersForLog4j1Dot2() {
+    @SuppressWarnings("rawtypes")
     Enumeration allAppenders = Logger.getRootLogger().getAllAppenders();
     while (allAppenders.hasMoreElements()) {
       Appender appender = (Appender) allAppenders.nextElement();
