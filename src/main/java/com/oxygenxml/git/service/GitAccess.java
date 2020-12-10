@@ -47,8 +47,11 @@ import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidConfigurationException;
+import org.eclipse.jgit.api.errors.InvalidMergeHeadsException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
@@ -83,6 +86,8 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
@@ -2331,5 +2336,38 @@ public class GitAccess {
 	  RevWalk revWalk = (RevWalk) git.log().add(repo.resolve(branchNAme)).call();
 	  revWalk.sort(RevSort.COMMIT_TIME_DESC);
 	  return revWalk.next();
+	}
+	
+	/**
+	 * @return Pull information for the repository as well as any detected submodules.
+	 */
+	public PullData getPullStatus() {
+	  PullData data = new PullData(getPullsBehind());
+	  try (SubmoduleWalk walk = SubmoduleWalk.forIndex(git.getRepository())) {
+	    while(walk.next()) {
+	      try (Repository submoduleRepository = walk.getRepository()) {
+	        logger.info("Submodule " + walk.getModuleName());
+	        Git wrap = Git.wrap(submoduleRepository);
+	        FetchResult result = wrap.fetch().call();
+	        logger.info("Fetch " + result.getMessages());
+
+	        String branchName = wrap.getRepository().getFullBranch();
+	        logger.info("Branch " + branchName);
+	        if (branchName != null && branchName.length() > 0) {
+	          BranchTrackingStatus bts = BranchTrackingStatus.of(wrap.getRepository(), branchName);
+	          if (bts != null) {
+	            int numberOfCommits = bts.getBehindCount();
+	            data.setSubmoduleData(walk.getModuleName(), numberOfCommits);
+
+	            logger.info("Commits  " + numberOfCommits);
+	          }
+	        }
+	      }
+	    }
+	  } catch (Exception ex) {
+	    logger.debug(ex, ex);
+	  }
+
+	  return data;
 	}
 }

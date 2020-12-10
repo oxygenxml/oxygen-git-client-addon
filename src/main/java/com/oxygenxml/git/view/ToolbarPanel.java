@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -45,6 +46,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
+import com.oxygenxml.git.service.PullData;
 import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
@@ -181,7 +183,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Counter for how many pulls the local copy is behind the base
 	 */
-	private int pullsBehind = 0;
+	private PullData pullsBehind = new PullData(0);
 
 	/**
 	 * The translator for the messages that are displayed in this panel
@@ -553,7 +555,41 @@ public class ToolbarPanel extends JPanel {
 	      }
 	    }
 	  };
-		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
+		submoduleSelectButton = new ToolbarButton(branchSelectAction, false) {
+      @Override
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintPullsBehind(g);
+      }
+      
+      /**
+       * Paint the number of pulls behind.
+       * 
+       * @param g Graphics.
+       */
+      private void paintPullsBehind(Graphics g) {
+        String noOfPullsBehindString = "";
+        if (pullsBehind.getSubmoduleCount() > 0) {
+          noOfPullsBehindString += pullsBehind.getSubmoduleCount();
+        }
+        
+        if (pullsBehind.getPullBehind() > 9) {
+          setHorizontalAlignment(SwingConstants.LEFT);
+        } else {
+          setHorizontalAlignment(SwingConstants.CENTER);
+        }
+        g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
+        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+        int stringWidth = fontMetrics.stringWidth(noOfPullsBehindString);
+        g.setColor(getForeground());
+        g.drawString(noOfPullsBehindString,
+            // X
+            getWidth() - stringWidth - 1,
+            // Y
+            fontMetrics.getHeight() - fontMetrics.getDescent() - fontMetrics.getLeading());
+      }
+		};
+		
 		submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
 		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
 		setDefaultToolbarButtonWidth(submoduleSelectButton);
@@ -598,7 +634,7 @@ public class ToolbarPanel extends JPanel {
 	public void refresh() {
     GitAccess gitAccess = GitAccess.getInstance();
     
-    this.pullsBehind = gitAccess.getPullsBehind();
+    this.pullsBehind = gitAccess.getPullStatus();
     try {
       this.pushesAhead = gitAccess.getPushesAhead();
     } catch (RepoNotInitializedException e) {
@@ -666,17 +702,21 @@ public class ToolbarPanel extends JPanel {
 				        : translator.getTranslation(Tags.NO_UPSTREAM_BRANCH)) 
 				    + "</b>.<br>";
         
-        String commitsBehindMessage = "";
+        StringBuilder commitsBehindMessage = new StringBuilder();
         String commitsAheadMessage = "";
         if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
-          if (pullsBehind == 0) {
-            commitsBehindMessage = translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
-          } else if (pullsBehind == 1) {
-            commitsBehindMessage = translator.getTranslation(Tags.ONE_COMMIT_BEHIND);
-          } else {
-            commitsBehindMessage = MessageFormat.format(translator.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
+          commitsBehindMessage.append(getPullBehindMessage(pullsBehind.getPullBehind()));
+          
+          if (pullsBehind.hasSubmoduleUpdates()) {
+            commitsBehindMessage.append("\n\n");
+            // There are things coming in submodules.
+            Map<String, Integer> submodules = pullsBehind.getSubmodules();
+            submodules.forEach((k, v) -> {
+              commitsBehindMessage.append("Submodule \"").append(k).append("\" is ").append(getPullBehindMessage(v));
+            });
           }
-          branchTooltip += commitsBehindMessage + "<br>";
+          
+          branchTooltip += commitsBehindMessage.toString() + "<br>";
           
           if (pushesAhead == 0) {
             commitsAheadMessage = translator.getTranslation(Tags.NOTHING_TO_PUSH);
@@ -722,8 +762,17 @@ public class ToolbarPanel extends JPanel {
 				        currentBranchName);
 				  }
 				}
-				String pushButtonTooltipFinal = pushButtonTooltip;
-				SwingUtilities.invokeLater(() -> pushButton.setToolTipText(pushButtonTooltipFinal));
+        String pushButtonTooltipFinal = pushButtonTooltip;
+        SwingUtilities.invokeLater(() -> pushButton.setToolTipText(pushButtonTooltipFinal));
+			
+        // There are things coming in submodules.
+				StringBuilder sm = new StringBuilder();
+        Map<String, Integer> submodules = pullsBehind.getSubmodules();
+        submodules.forEach((k, v) -> {
+          sm.append("Submodule \"").append(k).append("\" is ").append(getPullBehindMessage(v));
+        });
+        
+				submoduleSelectButton.setToolTipText(sm.toString());
 
 				//  ===================== Pull button tooltip =====================
 				String pullButtonTooltip = "";
@@ -770,6 +819,18 @@ public class ToolbarPanel extends JPanel {
 		String branchInfoTextFinal = branchInfoText;
 		SwingUtilities.invokeLater(() ->branchesSplitMenuButton.setText(branchInfoTextFinal));
 	}
+
+  private String getPullBehindMessage(int pullBehind) {
+    String commitsBehindMessage;
+    if (pullBehind == 0) {
+      commitsBehindMessage = translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+    } else if (pullBehind == 1) {
+      commitsBehindMessage = translator.getTranslation(Tags.ONE_COMMIT_BEHIND);
+    } else {
+      commitsBehindMessage = MessageFormat.format(translator.getTranslation(Tags.COMMITS_BEHIND), pullBehind);
+    }
+    return commitsBehindMessage;
+  }
 
 	/**
 	 * @return The translation tag for the "Pull" button tooltip text.
@@ -859,10 +920,15 @@ public class ToolbarPanel extends JPanel {
        */
       private void paintPullsBehind(Graphics g) {
         String noOfPullsBehindString = "";
-        if (pullsBehind > 0) {
-          noOfPullsBehindString += pullsBehind;
+        if (pullsBehind.getPullBehind() > 0) {
+          noOfPullsBehindString += pullsBehind.getPullBehind();
         }
-        if (pullsBehind > 9) {
+        
+        if (pullsBehind.hasSubmoduleUpdates()) {
+          noOfPullsBehindString += "*";
+        }
+        
+        if (pullsBehind.getPullBehind() > 9) {
           setHorizontalAlignment(SwingConstants.LEFT);
         } else {
           setHorizontalAlignment(SwingConstants.CENTER);
@@ -984,7 +1050,7 @@ public class ToolbarPanel extends JPanel {
 						}
 
 						gitController.push();
-						if (pullsBehind == 0) {
+						if (pullsBehind.getPullBehind() == 0) {
 							pushesAhead = 0;
 						}
 					}
