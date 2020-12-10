@@ -505,9 +505,9 @@ public class HistoryPanel extends JPanel {
     toolbar.setOpaque(false);
     toolbar.setFloatable(false);
     topPanel.add(toolbar, BorderLayout.EAST);
-    @SuppressWarnings("serial")
-    FilterTextField filterTemp = new FilterTextField(Translator.getInstance().getTranslation(Tags.TYPE_TEXT_TO_FILTER)) { 
-
+    @SuppressWarnings("java:S110")
+    FilterTextField filterTemp = new FilterTextField(
+        Translator.getInstance().getTranslation(Tags.TYPE_TEXT_TO_FILTER)) { 
       @Override
       public void filterChanged(String text) {
         HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();

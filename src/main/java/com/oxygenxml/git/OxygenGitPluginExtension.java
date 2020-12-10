@@ -224,9 +224,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			      
             // The constants' values are defined in plugin.xml
             if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
-              customizeGitStagingView(gitController, viewInfo);
+              customizeGitStagingView(viewInfo);
           	} else if (GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
-          	  customizeHistoryView(gitController, viewInfo);
+          	  customizeHistoryView(viewInfo);
           	} else if(GIT_BRANCH_VIEW.equals(viewInfo.getViewID())) {
           	  customizeBranchView(viewInfo);
           	}
@@ -272,7 +272,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * @param gitCtrl  Git controller.
 	 * @param viewInfo View information.
 	 */
-	private void customizeGitStagingView(GitControllerBase gitCtrl, ViewInfo viewInfo) {
+	private void customizeGitStagingView(ViewInfo viewInfo) {
     boolean shouldRecreateStagingPanel = stagingPanel == null;
     if (shouldRecreateStagingPanel) {
       stagingPanel = new StagingPanel(gitRefreshSupport, gitController, OxygenGitPluginExtension.this, OxygenGitPluginExtension.this);
@@ -280,7 +280,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     }
     viewInfo.setComponent(stagingPanel);
     
-    gitCtrl.addGitListener(new GitEventAdapter() {
+    gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
         GitOperation operation = info.getGitOperation();
@@ -332,7 +332,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	 * @param gitCtrl   Git controller.
 	 * @param viewInfo  View information.
 	 */
-  private void customizeHistoryView(GitControllerBase gitCtrl, ViewInfo viewInfo) {
+  private void customizeHistoryView(ViewInfo viewInfo) {
     if (historyView == null) {
       historyView = new HistoryPanel(gitController);
       gitRefreshSupport.setHistoryPanel(historyView);
