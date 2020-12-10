@@ -529,10 +529,9 @@ public class HistoryPanel extends JPanel {
     
     toolbar.addSeparator(new Dimension(2,0));
     this.filter = filterTemp;
-    filter.setColumns(37);
+    filter.setColumns(30);
     toolbar.add(filter);
     
-
     add(topPanel, BorderLayout.NORTH);
   }
 
@@ -589,7 +588,7 @@ public class HistoryPanel extends JPanel {
           historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
         historyInfoLabel.setText(historyLabelMessage);
-        historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 0));
+        historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 
         // Install selection listener.
         if (revisionDataUpdater != null) {
@@ -742,6 +741,7 @@ public class HistoryPanel extends JPanel {
   /**
    * @return A cell renderer for the author column.
    */
+  @SuppressWarnings("serial")
   private DefaultTableCellRenderer createAuthorColumnRenderer() {
     return new DefaultTableCellRenderer() { // NOSONAR
       @Override
