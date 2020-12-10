@@ -80,7 +80,7 @@ public class AuthenticationInterceptor {
 			requestingAuthType = Authenticator.class.getDeclaredField("requestingAuthType");
 
 			// Making the fields accessible
-			requestingHost.setAccessible(true);
+			requestingHost.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
 			requestingSite.setAccessible(true);
 			requestingPort.setAccessible(true);
 			requestingProtocol.setAccessible(true);
