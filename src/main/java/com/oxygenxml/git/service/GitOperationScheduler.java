@@ -71,6 +71,7 @@ public class GitOperationScheduler {
    * @return a ScheduledFuture representing pending completion of the task 
    * and whose get() method will return null upon completion.
    */
+  @SuppressWarnings("java:S1452")
   public ScheduledFuture<?> schedule(Runnable r) {
     if (executor.isShutdown()) {
       // A shutdown operation was canceled.
@@ -88,6 +89,7 @@ public class GitOperationScheduler {
    * 
    * @return A future that monitors the task.
    */
+  @SuppressWarnings("java:S1452")
   public <V> ScheduledFuture<?> schedule(Runnable task, Consumer<Throwable> errorHandler) {
     return schedule(new java.util.concurrent.FutureTask<V> (task, null) {
       @Override
@@ -113,6 +115,7 @@ public class GitOperationScheduler {
    * 
    * @return A future that monitors the task.
    */
+  @SuppressWarnings("java:S1452")
   public <V> ScheduledFuture<?> schedule(Callable<V> task, Consumer<V> resultHandler,  Consumer<Throwable> errorHandler) {
     return schedule(new java.util.concurrent.FutureTask<V> (task) {
       @Override
@@ -140,6 +143,7 @@ public class GitOperationScheduler {
    * @return a ScheduledFuture representing pending completion of the task 
    * and whose get() method will return null upon completion.
    */
+  @SuppressWarnings("java:S1452")
   public ScheduledFuture<?> schedule(Runnable r, int delayMillis) {
     if (executor.isShutdown()) {
       // A shutdown operation was canceled.

@@ -74,6 +74,7 @@ public class GitController extends GitControllerBase {
 	/**
 	 * Push.
 	 */
+	@SuppressWarnings("java:S1452")
 	public Future<?> push() {
 	  return execute(translator.getTranslation(Tags.PUSH_IN_PROGRESS), new ExecutePushRunnable());
 	}
@@ -81,6 +82,7 @@ public class GitController extends GitControllerBase {
 	/**
 	 * Pull.
 	 */
+	@SuppressWarnings("java:S1452")
 	public Future<?> pull() {
 	 return	pull(PullType.MERGE_FF);
 	}
@@ -90,6 +92,7 @@ public class GitController extends GitControllerBase {
 	 * 
 	 * @param pullType The pull type / merging strategy.
 	 */
+	@SuppressWarnings("java:S1452")
 	public Future<?> pull(PullType pullType) {
     return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType));
   }

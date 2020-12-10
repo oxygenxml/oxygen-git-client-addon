@@ -54,11 +54,11 @@ public abstract class GitControllerBase {
   protected GitListeners listeners = GitListeners.getInstance();
 
   /**
-   * Contructor.
+   * Constructor.
    * 
    * @param access Access to the Git API.
    */
-  public GitControllerBase(GitAccess access) {
+  protected GitControllerBase(GitAccess access) {
     this.gitAccess = access;
     
     addGitListener(new GitEventAdapter() {

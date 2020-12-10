@@ -1795,6 +1795,7 @@ public class GitAccess {
 	 * 
 	 * @return The restart merge task.
 	 */
+	@SuppressWarnings("java:S1452")
 	public ScheduledFuture<?> restartMerge() {
     fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
 	  return GitOperationScheduler.getInstance().schedule(() -> {

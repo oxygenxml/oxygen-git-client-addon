@@ -26,6 +26,73 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 public class RowHistoryTableSelectionListener implements ListSelectionListener {
+  
+  /**
+   * Timer Listener when selecting a row in HistoryTable.
+   */
+  private class TableTimerListener implements ActionListener {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      setCommitDescription();
+    }
+    
+    /**
+     * Set the commit description in a non-editable editor pane, including: CommitID,
+     * Parents IDs with hyperlink, Author, Committer and Commit Message.
+     */
+    private void setCommitDescription() {
+      int selectedRow = historyTable.getSelectedRow();
+      if (selectedRow != -1) {
+        CommitCharacteristics commitCharacteristics = allCommits.get(selectedRow);
+        StringBuilder commitDescription = new StringBuilder();
+        // Case for already committed changes.
+        if (commitCharacteristics.getCommitter() != null) {
+          XMLUtilAccess xmlUtilAccess = PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess();
+          
+          commitDescription.append("<html><b>").append(Translator.getInstance().getTranslation(Tags.COMMIT)).append("</b>: ")
+              .append(commitCharacteristics.getCommitId())
+              .append(" [").append(commitCharacteristics.getCommitAbbreviatedId()).append("]");
+
+          // Add all parent commit IDs to the text
+          if (commitCharacteristics.getParentCommitId() != null) {
+            commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.PARENTS)).append("</b>: ");
+            int parentSize = commitCharacteristics.getParentCommitId().size();
+
+            for (int j = 0; j < parentSize - 1; j++) {
+              commitDescription.append("<a href=\"").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(j)).append("\">")
+                  .append(commitCharacteristics.getParentCommitId().get(j)).append("</a> , ");
+            }
+            commitDescription.append("<a href=\" ").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("\">")
+                .append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("</a> ");
+          }
+          
+          commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR))
+              .append("</b>: ").append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getAuthor())).append("<br>") 
+              .append("<b>").append(Translator.getInstance().getTranslation(Tags.DATE)).append("</b>: ")
+              .append(commitCharacteristics.getDate()).append("<br>") 
+              .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ")
+              .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitter())).append("<br><br>")
+              .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitMessage()).replace("\n", "<br>"))
+              .append("</html>");
+        }
+        commitDescriptionPane.setText(commitDescription.toString());
+        commitDescriptionPane.setCaretPosition(0);
+
+        StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
+        if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
+          try {
+            List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
+            dataModel.setFilesStatus(changes);
+          } catch (GitAPIException | RevisionSyntaxException | IOException e) {
+            logger.error(e, e);
+          }
+        } else {
+          dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles());
+        }
+      }
+    }
+  }
+  
   /**
    * Logger for logging.
    */
@@ -92,72 +159,6 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 	      descriptionUpdateTimer.restart();
 	    }
 	  }
-	}
-
-	/**
-	 * Timer Listener when selecting a row in HistoryTable.
-	 */
-	private class TableTimerListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			setCommitDescription();
-		}
-	}
-	
-	/**
-	 * Set the commit description in a non-editable editor pane, including: CommitID,
-	 * Parents IDs with hyperlink, Author, Committer and Commit Message.
-	 */
-	private void setCommitDescription() {
-		int selectedRow = historyTable.getSelectedRow();
-		if (selectedRow != -1) {
-		  CommitCharacteristics commitCharacteristics = allCommits.get(selectedRow);
-		  StringBuilder commitDescription = new StringBuilder();
-		  // Case for already committed changes.
-		  if (commitCharacteristics.getCommitter() != null) {
-		    XMLUtilAccess xmlUtilAccess = PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess();
-		    
-		    commitDescription.append("<html><b>").append(Translator.getInstance().getTranslation(Tags.COMMIT)).append("</b>: ")
-    		    .append(commitCharacteristics.getCommitId())
-    		    .append(" [").append(commitCharacteristics.getCommitAbbreviatedId()).append("]");
-
-		    // Add all parent commit IDs to the text
-		    if (commitCharacteristics.getParentCommitId() != null) {
-		      commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.PARENTS)).append("</b>: ");
-		      int parentSize = commitCharacteristics.getParentCommitId().size();
-
-		      for (int j = 0; j < parentSize - 1; j++) {
-		        commitDescription.append("<a href=\"").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(j)).append("\">")
-		            .append(commitCharacteristics.getParentCommitId().get(j)).append("</a> , ");
-		      }
-		      commitDescription.append("<a href=\" ").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("\">")
-		          .append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("</a> ");
-		    }
-		    
-        commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR))
-            .append("</b>: ").append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getAuthor())).append("<br>") 
-    		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.DATE)).append("</b>: ")
-    		    .append(commitCharacteristics.getDate()).append("<br>") 
-    		    .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ")
-    		    .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitter())).append("<br><br>")
-    		    .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitMessage()).replace("\n", "<br>"))
-    		    .append("</html>");
-		  }
-		  commitDescriptionPane.setText(commitDescription.toString());
-		  commitDescriptionPane.setCaretPosition(0);
-
-		  StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
-		  if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
-		    try {
-		      List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
-		      dataModel.setFilesStatus(changes);
-		    } catch (GitAPIException | RevisionSyntaxException | IOException e) {
-		      logger.error(e, e);
-		    }
-		  } else {
-		    dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles());
-		  }
-		}
 	}
 
 }
