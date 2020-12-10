@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.history;
 
 import java.util.ArrayList;
-
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +36,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	/**
 	 * The internal representation of the model.
 	 */
-	private List<CommitCharacteristics> allCommitsCharacteristics = new ArrayList<CommitCharacteristics>();
+	private transient List<CommitCharacteristics> allCommitsCharacteristics = new ArrayList<>();
 	
 	/**
    * The internal representation of the model filtered.
@@ -180,7 +179,10 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 */
 	private boolean shouldFilter(CommitCharacteristics commitCharac, String textFilter) {
     if( textFilter != null &&  !textFilter.isEmpty()) {
-      String date = "", author = "", commitId = "", message = "";
+      String date = "";
+      String author = ""; 
+      String commitId = "";
+      String message = "";
       
       String authorTemp = commitCharac.getAuthor();
       if(authorTemp != null) {
@@ -189,7 +191,6 @@ public class HistoryCommitTableModel extends AbstractTableModel {
       Date dateTemp = commitCharac.getDate();
       if(dateTemp != null) {
         date = dateTemp.toString();
-        System.err.println("date: " + date);
       }
       String commitIdTemp = commitCharac.getCommitId();
       if(commitIdTemp != null) {

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -37,8 +36,6 @@ import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -531,10 +528,9 @@ public class HistoryPanel extends JPanel {
     
     toolbar.addSeparator(new Dimension(2,0));
     this.filter = filterTemp;
-    filter.setColumns(37);
+    filter.setColumns(30);
     toolbar.add(filter);
     
-
     add(topPanel, BorderLayout.NORTH);
   }
 
@@ -591,7 +587,7 @@ public class HistoryPanel extends JPanel {
           historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
         historyInfoLabel.setText(historyLabelMessage);
-        historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 0));
+        historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 
         // Install selection listener.
         if (revisionDataUpdater != null) {
@@ -744,6 +740,7 @@ public class HistoryPanel extends JPanel {
   /**
    * @return A cell renderer for the author column.
    */
+  @SuppressWarnings("serial")
   private DefaultTableCellRenderer createAuthorColumnRenderer() {
     return new DefaultTableCellRenderer() { // NOSONAR
       @Override
