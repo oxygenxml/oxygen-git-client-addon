@@ -91,7 +91,7 @@ public class RendererUtil {
     Color inactiveBgColor = defaultColor;
     try {
       Class<?> colorProviderClass = Class.forName("ro.sync.ui.theme.SAThemeColorProvider");
-      Object colorProvider = colorProviderClass.newInstance();
+      Object colorProvider = colorProviderClass.getDeclaredConstructor().newInstance();
       Method getInactiveSelBgColorMethod = colorProviderClass.getMethod("getInactiveSelectionBgColor");
       int[] rgb = (int[]) getInactiveSelBgColorMethod.invoke(colorProvider);
       inactiveBgColor = new Color(rgb[0], rgb[1], rgb[2]);
