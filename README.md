@@ -122,13 +122,13 @@ At this point, the next actions depend on which **Pull** action was chosen:
     2. Enter a message and commit. You will now have new changes to push.
     3. Push the changes to the remote repository.
     
-    **Note:** You can abort the merge by pressing the **Abort merge** button. This will revert the repository to its state before trying to pull.
+    **Note:** You can abort the merge by clicking the **Abort merge** button. This will revert the repository to its previous state prior to the pull attempt.
 
  - **Pull (rebase)**:
-    1. When all the conflicts are resolved, press the **Continue rebase** button.
+    1. When all the conflicts are resolved, click the **Continue rebase** button.
     2. Push any outgoing changes.
     
-    **Note:** You can abort the rebase by pressing the **Abort rebase** button. This will revert the repository to its state before trying to pull.
+    **Note:** You can abort the rebase by clicking the **Abort rebase** button. This will revert the repository to its previous state prior to the pull request.
     
 ## The Project view and the current editor
 
