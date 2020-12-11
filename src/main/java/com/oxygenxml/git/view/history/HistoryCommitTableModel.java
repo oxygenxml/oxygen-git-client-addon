@@ -9,6 +9,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.Equaler;
 
 
 /**
@@ -36,12 +37,12 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	/**
 	 * The internal representation of the model.
 	 */
-	private transient List<CommitCharacteristics> allCommitsCharacteristics = new ArrayList<>();
+	private transient List<CommitCharacteristics> allCommitsCharacteristics;
 	
 	/**
    * The internal representation of the model filtered.
    */
-  private List<CommitCharacteristics> allCommitsCharacteristicsFiltered;
+  private transient List<CommitCharacteristics> allCommitsCharacteristicsFiltered;
 
 	/**
 	 * Construct the Table Model with a Vector containing all commitCharacteristics.
@@ -49,8 +50,8 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 * @param commitVector The computed commitVector
 	 */
 	public HistoryCommitTableModel(List<CommitCharacteristics> commitVector) {
-		this.allCommitsCharacteristicsFiltered = commitVector;
-		this.allCommitsCharacteristics.addAll(commitVector);
+		this.allCommitsCharacteristicsFiltered = new ArrayList<>(commitVector);
+		this.allCommitsCharacteristics = new ArrayList<>(commitVector);
 	}
 	
 	@Override
@@ -145,39 +146,31 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 * @param text The text to filter
 	 */
 	public void filterChanged(String textFilter) {
-	  if(textFilter != null && !this.textToFilter.equals(textFilter)) {
-	    filter(textFilter);
+	  if (!Equaler.verifyEquals(textFilter, this.textToFilter)) {
+	    this.textToFilter = textFilter;
+	    allCommitsCharacteristicsFiltered.clear();
+	    if (textFilter != null && textFilter.length() > 0) {
+	      for (Iterator<CommitCharacteristics> iterator = allCommitsCharacteristics.iterator(); iterator.hasNext();) {
+	        CommitCharacteristics comitCharac = iterator.next();
+	        if(!shouldFilter(comitCharac, textToFilter)) {
+	          allCommitsCharacteristicsFiltered.add(comitCharac);
+	        }
+	      }
+	    }
+	    //update model
+	    fireTableDataChanged();
 	  }
 	}
 	
 	/**
-   * Filters the table
-   * @param text The text to filter
-   */
-  public void filter(String textFilter) {
-    this.textToFilter = textFilter;
-    if(textFilter != null) {
-      allCommitsCharacteristicsFiltered.clear();
-      allCommitsCharacteristicsFiltered.addAll(allCommitsCharacteristics);
-      for (Iterator<CommitCharacteristics> iterator = allCommitsCharacteristicsFiltered.iterator(); iterator.hasNext();) {
-        CommitCharacteristics comitCharac = iterator.next();
-        boolean shouldFilter = shouldFilter(comitCharac, textToFilter);
-        if(shouldFilter) {
-          iterator.remove();
-        }
-      }
-      //update model
-      fireTableDataChanged();
-    }
-  }
-	
-	/**
-	 * Tells if a commit should be removed or not
+	 * Tells if a commit should be removed or not.
+	 * 
 	 * @param commitCharac The commit with details
 	 * @param textFilter The filter that should be applied
+	 * 
 	 * @return True if the commit should be removed, false otherwise
 	 */
-	private boolean shouldFilter(CommitCharacteristics commitCharac, String textFilter) {
+	private static boolean shouldFilter(CommitCharacteristics commitCharac, String textFilter) {
     if( textFilter != null &&  !textFilter.isEmpty()) {
       String date = "";
       String author = ""; 
@@ -201,10 +194,10 @@ public class HistoryCommitTableModel extends AbstractTableModel {
         message = messageTemp.toLowerCase();
       }
       ///////text filter
-      String[] split = textFilter.split("[, .!-]+");
-      for (int i = 0; i < split.length; i++) {
-        String valueTerm = split[i].trim().toLowerCase();
-        String valueDate = split[i].trim();
+      String[] tokens = textFilter.split("[, .!-]+");
+      for (int i = 0; i < tokens.length; i++) {
+        String valueTerm = tokens[i].trim().toLowerCase();
+        String valueDate = tokens[i].trim();
         if(!author.contains(valueTerm) && !commitId.contains(valueTerm) &&
             !date.contains(valueDate) && !message.contains(valueTerm)){
           return true;

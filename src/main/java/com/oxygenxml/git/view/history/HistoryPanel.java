@@ -613,7 +613,9 @@ public class HistoryPanel extends JPanel {
         int rh = getRowHeight(renderer, getFirstCommit(commitCharacteristicsVector));
 
         SwingUtilities.invokeLater(() -> {
-          historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
+          HistoryCommitTableModel historyModel = new HistoryCommitTableModel(commitCharacteristicsVector);
+          historyModel.filterChanged(filter.getText());
+          historyTable.setModel(historyModel);
           updateHistoryTableWidths();
 
           historyTable.setDefaultRenderer(CommitCharacteristics.class, renderer);
@@ -622,8 +624,6 @@ public class HistoryPanel extends JPanel {
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
 
           historyTable.setRowHeight(rh);
-          HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
-          historyTableModel.filter(filter.getText());
         });
 
         revisionDataUpdater = new RowHistoryTableSelectionListener(getUpdateDelay(), historyTable,

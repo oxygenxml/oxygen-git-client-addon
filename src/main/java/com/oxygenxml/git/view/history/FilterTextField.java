@@ -38,11 +38,11 @@ public abstract class FilterTextField extends JTextField implements FocusListene
   /**
    * colaescing delay
    */
-  private static final int DELAY = 200;
+  private static final int DELAY = 400;
   /**
    * Timer
    */
-  private static Timer timer = new Timer(false);
+  private transient Timer timer = new Timer(false);
   /**
    * TimerTask
    */
