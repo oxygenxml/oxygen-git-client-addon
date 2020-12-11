@@ -148,14 +148,16 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	public void filterChanged(String textFilter) {
 	  if (!Equaler.verifyEquals(textFilter, this.textToFilter)) {
 	    this.textToFilter = textFilter;
-	    allCommitsCharacteristicsFiltered.clear();
 	    if (textFilter != null && textFilter.length() > 0) {
+	      allCommitsCharacteristicsFiltered.clear();
 	      for (Iterator<CommitCharacteristics> iterator = allCommitsCharacteristics.iterator(); iterator.hasNext();) {
 	        CommitCharacteristics comitCharac = iterator.next();
 	        if(!shouldFilter(comitCharac, textToFilter)) {
 	          allCommitsCharacteristicsFiltered.add(comitCharac);
 	        }
 	      }
+	    } else {
+	      allCommitsCharacteristicsFiltered = new ArrayList<>(allCommitsCharacteristics);
 	    }
 	    //update model
 	    fireTableDataChanged();

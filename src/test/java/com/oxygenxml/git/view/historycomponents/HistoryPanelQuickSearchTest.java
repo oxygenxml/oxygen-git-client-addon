@@ -39,7 +39,6 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       model.filterChanged("nimic");
       String dump = dumpHistory(model.getAllCommits(), true);
       assertEquals("", dump);
-
   }
   
   /**
@@ -53,8 +52,6 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
         getClass().getClassLoader().getResource("scripts/history_script_rename.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
   
-      String expected = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
-          "";
       historyPanel.showRepositoryHistory();
       flushAWT();
   
@@ -62,6 +59,8 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
       String dump = dumpHistory(model.getAllCommits(), true);
+      
+      String expected = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n";
       assertEquals(expected, dump);
       
   }
@@ -78,8 +77,6 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
         getClass().getClassLoader().getResource("scripts/history_script_rename.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
   
-      String expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n" + 
-          "" ;
       historyPanel.showRepositoryHistory();
       flushAWT();
   
@@ -88,6 +85,7 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       //we search the message, but the message is not with uppercase
       model.filterChanged("FIRST COMMIT");
       String dump = dumpHistory(model.getAllCommits(), true);
+      String expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n";
       assertEquals(expected, dump);
       Thread.sleep(100);
       //we go back to the original list
