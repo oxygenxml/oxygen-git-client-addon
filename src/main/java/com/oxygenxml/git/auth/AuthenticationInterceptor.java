@@ -81,13 +81,13 @@ public class AuthenticationInterceptor {
 
 			// Making the fields accessible
 			requestingHost.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
-			requestingSite.setAccessible(true);
-			requestingPort.setAccessible(true);
-			requestingProtocol.setAccessible(true);
-			requestingPrompt.setAccessible(true);
-			requestingScheme.setAccessible(true);
-			requestingURL.setAccessible(true);
-			requestingAuthType.setAccessible(true);
+			requestingSite.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
+			requestingPort.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
+			requestingProtocol.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
+			requestingPrompt.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
+			requestingScheme.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
+			requestingURL.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
+			requestingAuthType.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
 		}
 
 		@Override
@@ -119,23 +119,26 @@ public class AuthenticationInterceptor {
 				} else {
 					// Resets the Authenticator, thus making it ready to be restored
 					Method reset = Authenticator.class.getDeclaredMethod("reset");
-					reset.setAccessible(true);
+					reset.setAccessible(true); // NOSONAR We don't have API to intercept Oxygen's authenticator
 					reset.invoke(oldAuth);
 
 					// Set the Authenticator current values with the values from the old
 					// Authenticator
-					requestingHost.set(oldAuth, oldRequestingHost);
-					requestingSite.set(oldAuth, oldRequestingSite);
-					requestingPort.set(oldAuth, oldRequestingPort);
-					requestingProtocol.set(oldAuth, oldRequestingProtocol);
-					requestingPrompt.set(oldAuth, oldRequestingPrompt);
-					requestingScheme.set(oldAuth, oldRequestingScheme);
-					requestingURL.set(oldAuth, oldRequestingURL);
-					requestingAuthType.set(oldAuth, oldRequestingAuthType);
+					requestingHost.set(oldAuth, oldRequestingHost); // NOSONAR We don't have API to intercept Oxygen's authenticator
+					requestingSite.set(oldAuth, oldRequestingSite); // NOSONAR We don't have API to intercept Oxygen's authenticator
+					requestingPort.set(oldAuth, oldRequestingPort); // NOSONAR We don't have API to intercept Oxygen's authenticator
+					requestingProtocol.set(oldAuth, oldRequestingProtocol); // NOSONAR We don't have API to intercept Oxygen's authenticator
+					requestingPrompt.set(oldAuth, oldRequestingPrompt); // NOSONAR We don't have API to intercept Oxygen's authenticator
+					requestingScheme.set(oldAuth, oldRequestingScheme); // NOSONAR We don't have API to intercept Oxygen's authenticator
+					requestingURL.set(oldAuth, oldRequestingURL); // NOSONAR We don't have API to intercept Oxygen's authenticator
+					requestingAuthType.set(oldAuth, oldRequestingAuthType); // NOSONAR We don't have API to intercept Oxygen's authenticator
 
 					// Delegate back to the old Authenticator
 					Method getPasswordAuthentication = Authenticator.class.getDeclaredMethod("getPasswordAuthentication");
+					// Don't NOSONAR the following setAccessible(), because we want to be reminded that sometime
+					// in the future we should replace this with some API
 					getPasswordAuthentication.setAccessible(true);
+					
 					return (PasswordAuthentication) getPasswordAuthentication.invoke(oldAuth);
 				}
 			} catch (Exception e) {
