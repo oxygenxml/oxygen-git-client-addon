@@ -17,7 +17,7 @@
         <comment>"Keep conflict" message.</comment>
         <val lang="en_US">Keep conflict</val>
         <val lang="de_DE">Keep conflict</val>
-        <val lang="fr_FR">Keep conflict</val>
+        <val lang="fr_FR">Conserver le conflit</val>
         <val lang="ja_JP">Keep conflict</val>
         <val lang="nl_NL">Keep conflict</val>
     </key>
@@ -25,7 +25,7 @@
         <comment>"Resolve anyway" message.</comment>
         <val lang="en_US">Resolve anyway</val>
         <val lang="de_DE">Resolve anyway</val>
-        <val lang="fr_FR">Resolve anyway</val>
+	    <val lang="fr_FR">Résoudre quand même</val>
         <val lang="ja_JP">Resolve anyway</val>
         <val lang="nl_NL">Resolve anyway</val>
     </key>
@@ -33,7 +33,7 @@
         <comment>"Search filter hint message"</comment>
         <val lang="en_US">Use filter to search</val>
         <val lang="de_DE">Use filter to search</val>
-        <val lang="fr_FR">Use filter to search</val>
+        <val lang="fr_FR">Utiliser un filtre pour la recherche</val>
         <val lang="ja_JP">Use filter to search</val>
         <val lang="nl_NL">Use filter to search</val>
     </key>
@@ -41,7 +41,7 @@
         <comment>"Hint for filter"</comment>
         <val lang="en_US">Type text to filter</val>
         <val lang="de_DE">Type text to filter</val>
-        <val lang="fr_FR">Type text to filter</val>
+        <val lang="fr_FR">Tapez le texte à filtrer</val>
         <val lang="ja_JP">Type text to filter</val>
         <val lang="nl_NL">Type text to filter</val>
     </key>
@@ -51,8 +51,8 @@
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
         <val lang="de_DE">No changes have been made to the version on the left side that will be used to resolve
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
-        <val lang="fr_FR">No changes have been made to the version on the left side that will be used to resolve
-          the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
+        <val lang="fr_FR">Aucun changement n'a été apporté à la version de gauche qui sera utilisée pour résoudre
+          le conflit.\nVos changements (côté droit) seront perdus si vous ne les fusionnez pas avant de résoudre le conflit.</val>
         <val lang="ja_JP">No changes have been made to the version on the left side that will be used to resolve
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
         <val lang="nl_NL">No changes have been made to the version on the left side that will be used to resolve
@@ -62,7 +62,7 @@
         <comment>The text is displayed in the bottom left corner in the commit panel when the host is down</comment>
         <val lang="en_US">Cannot reach remote repository</val>
         <val lang="de_DE">Cannot reach remote repository</val>
-        <val lang="fr_FR">Cannot reach remote repository</val>
+        <val lang="fr_FR">Impossible de joindre le dépôt remote</val>
         <val lang="ja_JP">Cannot reach remote repository</val>
         <val lang="nl_NL">Cannot reach remote repository</val>
     </key>
@@ -70,7 +70,7 @@
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">Commit or discard your local changes before you switch branches.</val>
         <val lang="de_DE">Commit or discard your local changes before you switch branches.</val>
-        <val lang="fr_FR">Commit or discard your local changes before you switch branches.</val>
+        <val lang="fr_FR">Effectuez un commit ou abandonnez vos modifications locales avant de changer de branche.</val>
         <val lang="ja_JP">Commit or discard your local changes before you switch branches.</val>
         <val lang="nl_NL">Commit or discard your local changes before you switch branches.</val>
     </key>
@@ -78,7 +78,7 @@
         <comment>Message suggesting to hover for more information.</comment>
         <val lang="en_US">Hover for details.</val>
         <val lang="de_DE">Hover for details.</val>
-        <val lang="fr_FR">Hover for details.</val>
+        <val lang="fr_FR">Survolez pour plus de détails.</val>
         <val lang="ja_JP">Hover for details.</val>
         <val lang="nl_NL">Hover for details.</val>
     </key>
@@ -86,7 +86,7 @@
         <comment>Message for when the passphrase for the SSH key is required.</comment>
         <val lang="en_US">SSH key passphrase required.</val>
         <val lang="de_DE">SSH key passphrase required.</val>
-        <val lang="fr_FR">SSH key passphrase required.</val>
+        <val lang="fr_FR">Le passphrase de la clé SSH est requis.</val>
         <val lang="ja_JP">SSH key passphrase required.</val>
         <val lang="nl_NL">SSH key passphrase required.</val>
     </key>
@@ -94,7 +94,7 @@
         <comment>Message for when the HTTPS user name and password are required.</comment>
         <val lang="en_US">Username and password required for this private repository.</val>
         <val lang="de_DE">Username and password required for this private repository.</val>
-        <val lang="fr_FR">Username and password required for this private repository.</val>
+        <val lang="fr_FR">Nom d'utilisateur et mot de passe requis pour ce dépôt privé.</val>
         <val lang="ja_JP">Username and password required for this private repository.</val>
         <val lang="nl_NL">Username and password required for this private repository.</val>
     </key>
@@ -102,7 +102,7 @@
         <comment>Label in Git Client preferences page.</comment>
         <val lang="en_US">When detecting a Git repository inside a newly opened project:</val>
         <val lang="de_DE">When detecting a Git repository inside a newly opened project:</val>
-        <val lang="fr_FR">When detecting a Git repository inside a newly opened project:</val>
+        <val lang="fr_FR">Lors de la détection d'un dépôt Git à l'intérieur d'un projet nouvellement ouvert :</val>
         <val lang="ja_JP">When detecting a Git repository inside a newly opened project:</val>
         <val lang="nl_NL">When detecting a Git repository inside a newly opened project:</val>
     </key>
@@ -110,7 +110,7 @@
         <comment>Option label.</comment>
         <val lang="en_US">Always switch to the new working copy</val>
         <val lang="de_DE">Always switch to the new working copy</val>
-        <val lang="fr_FR">Always switch to the new working copy</val>
+        <val lang="fr_FR">Toujours passer à la nouvelle copie de travail</val>
         <val lang="ja_JP">Always switch to the new working copy</val>
         <val lang="nl_NL">Always switch to the new working copy</val>
     </key>
@@ -118,7 +118,7 @@
         <comment>Option label.</comment>
         <val lang="en_US">Always ask</val>
         <val lang="de_DE">Always ask</val>
-        <val lang="fr_FR">Always ask</val>
+        <val lang="fr_FR">Toujours demander</val>
         <val lang="ja_JP">Always ask</val>
         <val lang="nl_NL">Always ask</val>
     </key>
@@ -126,7 +126,7 @@
         <comment>Option label.</comment>
         <val lang="en_US">Never switch to the new working copy</val>
         <val lang="de_DE">Never switch to the new working copy</val>
-        <val lang="fr_FR">Never switch to the new working copy</val>
+        <val lang="fr_FR">Ne jamais passer à la nouvelle copie de travail</val>
         <val lang="ja_JP">Never switch to the new working copy</val>
         <val lang="nl_NL">Never switch to the new working copy</val>
     </key>
@@ -134,7 +134,7 @@
         <comment>"Abort merge" message.</comment>
         <val lang="en_US">Abort merge</val>
         <val lang="de_DE">Abort merge</val>
-        <val lang="fr_FR">Abort merge</val>
+        <val lang="fr_FR">Abandon de la fusion</val>
         <val lang="ja_JP">Abort merge</val>
         <val lang="nl_NL">Abort merge</val>
     </key>
@@ -152,8 +152,8 @@
         there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
         <val lang="de_DE">The new branch was created, but it could not be checked out because 
         there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
-        <val lang="fr_FR">The new branch was created, but it could not be checked out because 
-        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
+        <val lang="fr_FR">La nouvelle branche a été créée, mais elle n'a pas pu être extraite car 
+        il y a des changements hors commit dans votre copie de travail. Effectuez le commit ou abandonnez les changements pour changer de branche.</val>
         <val lang="ja_JP">The new branch was created, but it could not be checked out because 
         there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
         <val lang="nl_NL">The new branch was created, but it could not be checked out because 
