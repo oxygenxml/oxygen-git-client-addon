@@ -40,13 +40,13 @@ public class GitController extends GitControllerBase {
   /**
    * Logger for logging.
    */
-	private static Logger logger = Logger.getLogger(GitController.class);
+  private static Logger logger = Logger.getLogger(GitController.class);
 
-	/**
-	 * Translator for i18n.
-	 */
-	private Translator translator = Translator.getInstance();
-	
+  /**
+   * Translator for i18n.
+   */
+  private Translator translator = Translator.getInstance();
+
   /**
    * Public constructor
    * 
@@ -55,62 +55,62 @@ public class GitController extends GitControllerBase {
   public GitController(GitAccess gitAccess) {
     super(gitAccess);
   }
-  
-	/**
-	 * Execute an push or pull action, depending on the given command.
-	 * 
-	 * @param command The command runnable to execute.
-	 * 
-	 * @return The result of the operation execution.
-	 */
-	private Future<?> execute(String message, ExecuteCommandRunnable command) {
-		// Notify push about to start.
-		PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), message);
-		listeners.fireOperationAboutToStart(pushPullEvent);
-		
-		return GitOperationScheduler.getInstance().schedule(command);
-	}
-	
-	/**
-	 * Push.
-	 */
-	@SuppressWarnings("java:S1452")
-	public Future<?> push() {
-	  return execute(translator.getTranslation(Tags.PUSH_IN_PROGRESS), new ExecutePushRunnable());
-	}
-	
-	/**
-	 * Pull.
-	 */
-	@SuppressWarnings("java:S1452")
-	public Future<?> pull() {
-	 return	pull(PullType.MERGE_FF);
-	}
-	
-	/**
-	 * Pull and choose the merging strategy.
-	 * 
-	 * @param pullType The pull type / merging strategy.
-	 */
-	@SuppressWarnings("java:S1452")
-	public Future<?> pull(PullType pullType) {
+
+  /**
+   * Execute an push or pull action, depending on the given command.
+   * 
+   * @param command The command runnable to execute.
+   * 
+   * @return The result of the operation execution.
+   */
+  private Future<?> execute(String message, ExecuteCommandRunnable command) {
+    // Notify push about to start.
+    PushPullEvent pushPullEvent = new PushPullEvent(command.getOperation(), message);
+    listeners.fireOperationAboutToStart(pushPullEvent);
+
+    return GitOperationScheduler.getInstance().schedule(command);
+  }
+
+  /**
+   * Push.
+   */
+  @SuppressWarnings("java:S1452")
+  public Future<?> push() {
+    return execute(translator.getTranslation(Tags.PUSH_IN_PROGRESS), new ExecutePushRunnable());
+  }
+
+  /**
+   * Pull.
+   */
+  @SuppressWarnings("java:S1452")
+  public Future<?> pull() {
+    return	pull(PullType.MERGE_FF);
+  }
+
+  /**
+   * Pull and choose the merging strategy.
+   * 
+   * @param pullType The pull type / merging strategy.
+   */
+  @SuppressWarnings("java:S1452")
+  public Future<?> pull(PullType pullType) {
     return execute(translator.getTranslation(Tags.PULL_IN_PROGRESS), new ExecutePullRunnable(pullType));
   }
-	
-	/**
-	 * Informs the user that pull was successful with conflicts.
-	 *  
-	 * @param response Pull response.
-	 */
-	protected void showPullSuccessfulWithConflicts(PullResponse response) {
-	  List<String> conflictingFilesList = new ArrayList<>();
-	  conflictingFilesList.addAll(response.getConflictingFiles());
-	  FileStatusDialog.showWarningMessage(
+
+  /**
+   * Informs the user that pull was successful with conflicts.
+   *  
+   * @param response Pull response.
+   */
+  protected void showPullSuccessfulWithConflicts(PullResponse response) {
+    List<String> conflictingFilesList = new ArrayList<>();
+    conflictingFilesList.addAll(response.getConflictingFiles());
+    FileStatusDialog.showWarningMessage(
         translator.getTranslation(Tags.PULL_STATUS),
         conflictingFilesList,
         translator.getTranslation(Tags.PULL_SUCCESSFUL_CONFLICTS));
   }
-	
+
 
   /**
    * Pull failed because there are uncommitted files that would be overwritten.
@@ -126,7 +126,7 @@ public class GitController extends GitControllerBase {
         filesWithChanges, 
         message);
   }
-  
+
   /**
    * Show the "Rebase in progress" dialog. It allows the user to continue or abort the rebase.
    */
@@ -143,7 +143,7 @@ public class GitController extends GitControllerBase {
     public void run() {
       executeCommand();
     }
-    
+
     /**
      * @return The git operation performed by this command.
      */
@@ -164,7 +164,7 @@ public class GitController extends GitControllerBase {
         event = doOperation(userCredentials);
       } catch (JGitInternalException e) {
         logger.debug(e, e);
-        
+
         Throwable cause = e.getCause();
         if (cause instanceof org.eclipse.jgit.errors.CheckoutConflictException) {
           String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
@@ -175,7 +175,7 @@ public class GitController extends GitControllerBase {
           // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
           LockFailedException lockFailedException = (org.eclipse.jgit.errors.LockFailedException) cause;
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage(), lockFailedException);
-          
+
           // This message gets presented in a status, at the bottom of the staging view.
           event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(lockFailedException.getMessage()), e));
         } else {
@@ -222,7 +222,7 @@ public class GitController extends GitControllerBase {
           } else {
             toFire = new PushPullEvent(getOperation(), "");
           }
-          
+
           if (toFire.getCause() != null) {
             listeners.fireOperationFailed(toFire, toFire.getCause());
           } else {
@@ -241,27 +241,27 @@ public class GitController extends GitControllerBase {
      * Push or pull, depending on the implementation.
      */
     protected abstract Optional<PushPullEvent> doOperation(UserCredentials userCredentials) throws GitAPIException;
-    
-    
+
+
   }
 
   /**
    * Execute PUSH.
    */
   private class ExecutePushRunnable extends ExecuteCommandRunnable {
-    
+
     @Override
     protected GitOperation getOperation() {
       return GitOperation.PUSH;
     }
-  
+
     /**
      * Push the changes and inform the user with messages depending on the result status.
      * 
      * @param userCredentials The credentials used to push the changes.
      * 
      * @return An event with the operation result, if it was executed.
-  
+
      * @throws GitAPIException
      */
     @Override
@@ -273,7 +273,7 @@ public class GitController extends GitControllerBase {
         event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_SUCCESSFUL));
       } else if (Status.REJECTED_NONFASTFORWARD == response.getStatus()) {
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showErrorMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
+        .showErrorMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
       } else if (Status.UP_TO_DATE == response.getStatus()) {
         event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_UP_TO_DATE));
       } else if (Status.REJECTED_OTHER_REASON == response.getStatus()) {
@@ -289,7 +289,7 @@ public class GitController extends GitControllerBase {
         }
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(errMess);
       }
-      
+
       return Optional.ofNullable(event);
     }
 
@@ -303,7 +303,7 @@ public class GitController extends GitControllerBase {
    * Execute command runnable.
    */
   private class ExecutePullRunnable extends ExecuteCommandRunnable {
-    
+
     private PullType pullType;
 
     public ExecutePullRunnable(PullType pullType) {
@@ -313,7 +313,7 @@ public class GitController extends GitControllerBase {
     protected GitOperation getOperation() {
       return GitOperation.PULL;
     }
-    
+
     /**
      * Pull the changes and inform the user with messages depending on the result status.
      * 
@@ -333,53 +333,66 @@ public class GitController extends GitControllerBase {
       } catch (NoRepositorySelected e) {
         logger.debug(e, e);
       }
-      
+
       if (logger.isDebugEnabled()) {
         logger.debug("Do pull. Pull type: " + pullType);
         logger.debug("Repo state: " + repositoryState);
       }
-      
+
       if(repositoryState != null) {
-    	  if (repositoryState == RepositoryState.MERGING_RESOLVED) {
-    		  ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-    		  .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
-    	  } else if (repositoryState == RepositoryState.REBASING_MERGE
-    			  || repositoryState == RepositoryState.REBASING_REBASING) {
-    		  showRebaseInProgressDialog();
-    	  } else {
-    		  PullResponse response = gitAccess.pull(
-    				  userCredentials.getUsername(),
-    				  userCredentials.getPassword(),
-    				  pullType);
-          switch (response.getStatus()) {
-    		  case OK:
-    		    event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_SUCCESSFUL));
-    			  break;
-    		  case CONFLICTS:
-    			  showPullSuccessfulWithConflicts(response);
-    			  if (pullType == PullType.REBASE) {
-    				  event = new PushPullEvent(getOperation(), ActionStatus.PULL_REBASE_CONFLICT_GENERATED);
-    			  } else if (pullType == PullType.MERGE_FF) {
-    			    event = new PushPullEvent(getOperation(), ActionStatus.PULL_MERGE_CONFLICT_GENERATED);
-    			  }
-    			  break;
-    		  case REPOSITORY_HAS_CONFLICTS:
-    			  ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-    			  .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
-    			  break;
-    		  case UP_TO_DATE:
-    			  event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_UP_TO_DATE));
-    			  break;
-    		  case LOCK_FAILED:
-    			  event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.LOCK_FAILED));
-    			  break;
-    		  default:
-    			  // Nothing
-    			  break;
-    		  }
-    	  }
+        if (repositoryState == RepositoryState.MERGING_RESOLVED) {
+          ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+          .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
+        } else if (repositoryState == RepositoryState.REBASING_MERGE
+            || repositoryState == RepositoryState.REBASING_REBASING) {
+          showRebaseInProgressDialog();
+        } else {
+          PullResponse response = gitAccess.pull(
+              userCredentials.getUsername(),
+              userCredentials.getPassword(),
+              pullType);
+          event = treatPullResponse(response);
+        }
       }
       return Optional.ofNullable(event);
+    }
+
+    /**
+     * Treat push response.
+     * 
+     * @param response The pull response to treat.
+     * 
+     * @return an event describing the result of the pull operation.
+     */
+    private PushPullEvent treatPullResponse(PullResponse response) {
+      PushPullEvent event = null;
+      switch (response.getStatus()) {
+        case OK:
+          event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_SUCCESSFUL));
+          break;
+        case CONFLICTS:
+          showPullSuccessfulWithConflicts(response);
+          if (pullType == PullType.REBASE) {
+            event = new PushPullEvent(getOperation(), ActionStatus.PULL_REBASE_CONFLICT_GENERATED);
+          } else if (pullType == PullType.MERGE_FF) {
+            event = new PushPullEvent(getOperation(), ActionStatus.PULL_MERGE_CONFLICT_GENERATED);
+          }
+          break;
+        case REPOSITORY_HAS_CONFLICTS:
+          ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+          .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
+          break;
+        case UP_TO_DATE:
+          event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_UP_TO_DATE));
+          break;
+        case LOCK_FAILED:
+          event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.LOCK_FAILED));
+          break;
+        default:
+          // Nothing
+          break;
+      }
+      return event;
     }
 
     @Override

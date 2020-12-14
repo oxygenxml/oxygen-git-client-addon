@@ -33,6 +33,7 @@ public class Equaler {
    *          Second object collection to be compared.
    * @return True if objects are equal or both null, false otherwise.
    */
+  @SuppressWarnings("java:S3776")
   public static boolean verifyListEquals(Collection<?> o1, Collection<?> o2) {
     if (o1 == o2) {
       return true;
@@ -98,6 +99,7 @@ public class Equaler {
     return equals;
   }
 
+  @SuppressWarnings("java:S3776")
   private static boolean verifyStringObjectEquals(Object first, Object second) {
     if (first instanceof CharSequence && second instanceof CharSequence) {
       if (first instanceof String && second instanceof String) {

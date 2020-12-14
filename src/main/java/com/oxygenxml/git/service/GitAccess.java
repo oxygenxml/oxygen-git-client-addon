@@ -2022,43 +2022,15 @@ public class GitAccess {
 	public ObjectId getCommit(Commit commit, String path) {
 	  ObjectId toReturn = null;
 		try {
-		  List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
-			int noOfDiffEntries = entries.size();
-      boolean isTwoWayDiff = noOfDiffEntries < 3;
 			switch (commit) {
 			  case MINE:
-			    int indexOfMine = isTwoWayDiff ? 0 : 1;
-			    if (indexOfMine < noOfDiffEntries) {
-			      toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
-			    } else {
-			      if (logger.isDebugEnabled()) {
-			        logger.debug("No MINE commit available for: '" + path + "'."
-			            + " Falling back to the last commit for this path.");
-			      }
-			      toReturn = getLastLocalCommitForPath(path);
-			    }
+			    toReturn = getMyCommit(path);
 			    break;
 			  case THEIRS:
-			    int indexOfTheirs = isTwoWayDiff ? 1 : 2;
-	        if (indexOfTheirs < noOfDiffEntries) {
-	          toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
-	        } else {
-	          if (logger.isDebugEnabled()) {
-	            logger.debug("No THEIRS commit available for: '" + path + "'. "
-	                + "Falling back to the last commit for this path.");
-            }
-	          toReturn = getLastLocalCommitForPath(path);
-	        }
+			    toReturn = getTheirCommit(path);
 			    break;
 			  case BASE:
-			    if (!entries.isEmpty()) {
-			      toReturn = entries.get(0).getOldId().toObjectId();
-			    } else { 
-			      if (logger.isDebugEnabled()) {
-			        logger.debug("No BASE commit for: '" + path + "'");
-			      }
-			      toReturn = getLastLocalCommitForPath(path);
-			    }
+			    toReturn = getBaseCommit(path);
 			    break;
 			  case LOCAL:
 	        toReturn = getLastLocalCommitForPath(path);
@@ -2069,6 +2041,89 @@ public class GitAccess {
 		}
 		return toReturn;
 	}
+
+	/**
+	 * Returns the SHA-1 id for the BASE commit of a file. The BASE commit
+	 * only exits if there is a conflict on the current file.
+	 * 
+	 * @param filePath File path.
+	 * 
+	 * @return The SHA-1 commit ID or <code>null</code>.
+	 * 
+	 * @throws IOException
+	 * @throws GitAPIException 
+	 */
+  private ObjectId getBaseCommit(String filePath) throws IOException, GitAPIException {
+    ObjectId toReturn;
+    List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(filePath)).call();
+    if (!entries.isEmpty()) {
+      toReturn = entries.get(0).getOldId().toObjectId();
+    } else { 
+      if (logger.isDebugEnabled()) {
+        logger.debug("No BASE commit for: '" + filePath + "'");
+      }
+      toReturn = getLastLocalCommitForPath(filePath);
+    }
+    return toReturn;
+  }
+
+  /**
+   * Returns the SHA-1 id for their commit of a file. Their commit (THEIRS)
+   * only exits if there is a conflict on the current file.
+   * 
+   * @param filePath File path.
+   * 
+   * @return The SHA-1 commit ID or <code>null</code>.
+   * 
+   * @throws IOException
+   * @throws GitAPIException 
+   */
+  private ObjectId getTheirCommit(String filePath) throws IOException, GitAPIException {
+    ObjectId toReturn;
+    List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(filePath)).call();
+    int noOfDiffEntries = entries.size();
+    boolean isTwoWayDiff = noOfDiffEntries < 3;
+    int indexOfTheirs = isTwoWayDiff ? 1 : 2;
+    if (indexOfTheirs < noOfDiffEntries) {
+      toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
+    } else {
+      if (logger.isDebugEnabled()) {
+        logger.debug("No THEIRS commit available for: '" + filePath + "'. "
+            + "Falling back to the last commit for this path.");
+      }
+      toReturn = getLastLocalCommitForPath(filePath);
+    }
+    return toReturn;
+  }
+
+  /**
+   * Returns the SHA-1 id for my commit of a file. My commit (MINE)
+   * only exits if there is a conflict on the current file.
+   * 
+   * @param filePath File path.
+   * 
+   * @return The SHA-1 commit ID or <code>null</code>.
+   * 
+   * @throws IOException
+   * @throws GitAPIException 
+   */
+  private ObjectId getMyCommit(String path) throws IOException, GitAPIException {
+    ObjectId toReturn;
+    List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
+    int noOfDiffEntries = entries.size();
+    boolean isTwoWayDiff = noOfDiffEntries < 3;
+    int indexOfMine = isTwoWayDiff ? 0 : 1;
+    if (indexOfMine < noOfDiffEntries) {
+      toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
+    } else {
+      if (logger.isDebugEnabled()) {
+        logger.debug("No MINE commit available for: '" + path + "'."
+            + " Falling back to the last commit for this path.");
+      }
+      toReturn = getLastLocalCommitForPath(path);
+    }
+    return toReturn;
+  }
 
 	/**
 	 * Get last local commit for resource path.

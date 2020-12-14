@@ -154,38 +154,47 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 			  
 				progressDialog.dispose();
 
-	      Throwable cause = e.getCause();
-	      while (cause != null) {
-	        boolean shouldBreak = false;
-	        if (cause.getMessage() != null && cause.getMessage().contains("Download cancelled")) {
-	          // Download cancelled
-	          shouldBreak = true;
-	        } else if (cause instanceof InvalidRemoteException) {
-	          // Invalid remote
-	          SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
-                translator.getTranslation(Tags.INVALID_REMOTE)
-                + ": " 
-                + sourceUrl));
-	          shouldBreak = true;
-	        } else if (cause instanceof TransportException) {
-	          // Invalid credentials
-	          String lowercaseMsg = cause.getMessage().toLowerCase();
-	          if (lowercaseMsg.contains("not authorized")) {
-	            SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
-	                translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-	                + ": " 
-	                + sourceUrl.getHost()));
-	            shouldBreak = true;
-	          }
-	        }
-	        if (shouldBreak) {
-	          cleanDestDir();
-	          break;
-	        }
-	        cause = cause.getCause();
-	      }
+	      treatExecutionExceptionCause(e);
 			}
 		}
+
+		/**
+		 * Treat exception's cause.
+		 * 
+		 * @param e The exception.
+		 */
+    private void treatExecutionExceptionCause(ExecutionException e) {
+      Throwable cause = e.getCause();
+      while (cause != null) {
+        boolean shouldBreak = false;
+        if (cause.getMessage() != null && cause.getMessage().contains("Download cancelled")) {
+          // Download cancelled
+          shouldBreak = true;
+        } else if (cause instanceof InvalidRemoteException) {
+          // Invalid remote
+          SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
+              translator.getTranslation(Tags.INVALID_REMOTE)
+              + ": " 
+              + sourceUrl));
+          shouldBreak = true;
+        } else if (cause instanceof TransportException) {
+          // Invalid credentials
+          String lowercaseMsg = cause.getMessage().toLowerCase();
+          if (lowercaseMsg.contains("not authorized")) {
+            SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
+                translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+                + ": " 
+                + sourceUrl.getHost()));
+            shouldBreak = true;
+          }
+        }
+        if (shouldBreak) {
+          cleanDestDir();
+          break;
+        }
+        cause = cause.getCause();
+      }
+    }
 
 		/**
 		 * Clean the destination directory.

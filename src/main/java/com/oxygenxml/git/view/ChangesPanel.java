@@ -431,40 +431,54 @@ public class ChangesPanel extends JPanel {
 		  @Override
 		  public void keyReleased(KeyEvent e) {
 		    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-		      TreePath pathForRow = null;
-		      int[] selectionRows = tree.getSelectionRows();
-		      if (selectionRows != null && selectionRows.length > 0) {
-		        pathForRow = tree.getPathForRow(selectionRows[selectionRows.length - 1]);
-		      }
-		      if (pathForRow != null) {
-		        StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
-		        String stringPath = TreeUtil.getStringPath(pathForRow);
-		        GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
-		        if (model != null && node != null
-		            && model.isLeaf(node) && !model.getRoot().equals(node)) {
-		          FileStatus file = model.getFileByPath(stringPath);
-		          DiffPresenter.showDiff(file, gitController);
-		        }
-		      }
+		      treatEnterKeyPressedOnTreeSelection();
 		    } else if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
-		      // Show context menu
-		      TreePath[] treePaths = tree.getSelectionPaths();
-		      if (treePaths != null && treePaths.length > 0) {
-		        TreePath lastTreePath = treePaths[treePaths.length - 1];
-		        Rectangle pathBounds = tree.getPathBounds(lastTreePath);
-		        if (pathBounds != null) {
-		          showContextualMenuForTree(
-		              pathBounds.x,
-		              pathBounds.y + pathBounds.height,
-		              (StagingResourcesTreeModel) tree.getModel());
-		        }
-		      }
+		      treatContextMenuKeyPressedOnTreeSelection();
 		    }
 		  }
 		});
 
 		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_MIN_HEIGHT));
 	}
+	
+	/**
+	 * Context menu key was pressed when having something selected in the resources tree. Treat the event.
+	 */
+	private void treatContextMenuKeyPressedOnTreeSelection() {
+    // Show context menu
+    TreePath[] treePaths = tree.getSelectionPaths();
+    if (treePaths != null && treePaths.length > 0) {
+      TreePath lastTreePath = treePaths[treePaths.length - 1];
+      Rectangle pathBounds = tree.getPathBounds(lastTreePath);
+      if (pathBounds != null) {
+        showContextualMenuForTree(
+            pathBounds.x,
+            pathBounds.y + pathBounds.height,
+            (StagingResourcesTreeModel) tree.getModel());
+      }
+    }
+  }
+
+	/**
+	 * Enter key was pressed when having something selected in the resources tree. Treat the event. 
+	 */
+  private void treatEnterKeyPressedOnTreeSelection() {
+    TreePath pathForRow = null;
+    int[] selectionRows = tree.getSelectionRows();
+    if (selectionRows != null && selectionRows.length > 0) {
+      pathForRow = tree.getPathForRow(selectionRows[selectionRows.length - 1]);
+    }
+    if (pathForRow != null) {
+      StagingResourcesTreeModel model = (StagingResourcesTreeModel) tree.getModel();
+      String stringPath = TreeUtil.getStringPath(pathForRow);
+      GitTreeNode node = TreeUtil.getTreeNodeFromString(model, stringPath);
+      if (model != null && node != null
+          && model.isLeaf(node) && !model.getRoot().equals(node)) {
+        FileStatus file = model.getFileByPath(stringPath);
+        DiffPresenter.showDiff(file, gitController);
+      }
+    }
+  }
 
 	/**
 	 * Adds an expand listener to the tree: When the user expands a node the node
@@ -936,8 +950,11 @@ public class ChangesPanel extends JPanel {
 	 *          - the constraints used for this component
 	 */
 	private void addFilesPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				0, UIConstants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(
+		    UIConstants.COMPONENT_TOP_PADDING,
+		    UIConstants.COMPONENT_LEFT_PADDING,
+				0,
+				UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
@@ -947,7 +964,6 @@ public class ChangesPanel extends JPanel {
 		gbc.gridwidth = 3;
 		
 		filesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(gitController, forStagedResources), ()-> isContextMenuShowing);
-		
 
 		filesTable.getSelectionModel().addListSelectionListener(e -> {
       if (!e.getValueIsAdjusting()) {
@@ -986,7 +1002,6 @@ public class ChangesPanel extends JPanel {
             openFileInCompareEditor(clickedRow);
           }
         }
-        
 			}
 
 		  /**

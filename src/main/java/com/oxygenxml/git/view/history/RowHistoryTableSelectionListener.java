@@ -40,6 +40,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
      * Set the commit description in a non-editable editor pane, including: CommitID,
      * Parents IDs with hyperlink, Author, Committer and Commit Message.
      */
+    @SuppressWarnings("java:S1192")
     private void setCommitDescription() {
       int selectedRow = historyTable.getSelectedRow();
       if (selectedRow != -1) {
@@ -78,17 +79,26 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
         commitDescriptionPane.setText(commitDescription.toString());
         commitDescriptionPane.setCaretPosition(0);
 
-        StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
-        if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
-          try {
-            List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
-            dataModel.setFilesStatus(changes);
-          } catch (GitAPIException | RevisionSyntaxException | IOException e) {
-            logger.error(e, e);
-          }
-        } else {
-          dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles());
+        updateDataModel(commitCharacteristics);
+      }
+    }
+
+    /**
+     * Update data model.
+     * 
+     * @param commitCharacteristics Details about the current commit.
+     */
+    private void updateDataModel(CommitCharacteristics commitCharacteristics) {
+      StagingResourcesTableModel dataModel = (StagingResourcesTableModel) changesTable.getModel();
+      if (GitAccess.UNCOMMITED_CHANGES != commitCharacteristics) {
+        try {
+          List<FileStatus> changes = RevCommitUtil.getChangedFiles(commitCharacteristics.getCommitId());
+          dataModel.setFilesStatus(changes);
+        } catch (GitAPIException | RevisionSyntaxException | IOException e) {
+          logger.error(e, e);
         }
+      } else {
+        dataModel.setFilesStatus(GitAccess.getInstance().getUnstagedFiles());
       }
     }
   }

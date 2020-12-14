@@ -558,9 +558,7 @@ public class RevCommitUtil {
 
     if (!revisions.isEmpty()) {
       RevCommit lastRev = revisions.get(revisions.size() - 1);
-
       List<FileStatus> targetRevFiles = getFiles(git.getRepository(), lastRev);
-      
       Set<String> lastRevFiles = targetRevFiles.stream().map(FileStatus::getFileLocation).collect(Collectors.toSet());
       
       RevCommit previous = null;

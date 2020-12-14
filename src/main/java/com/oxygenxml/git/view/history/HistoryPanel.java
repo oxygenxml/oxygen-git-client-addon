@@ -741,9 +741,9 @@ public class HistoryPanel extends JPanel {
   /**
    * @return A cell renderer for the author column.
    */
-  @SuppressWarnings("serial")
+  @SuppressWarnings("java:S110")
   private DefaultTableCellRenderer createAuthorColumnRenderer() {
-    return new DefaultTableCellRenderer() { // NOSONAR
+    return new DefaultTableCellRenderer() {
       @Override
       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
           int row, int column) {
