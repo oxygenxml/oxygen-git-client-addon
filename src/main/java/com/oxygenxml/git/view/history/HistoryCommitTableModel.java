@@ -20,8 +20,8 @@ import com.oxygenxml.git.utils.Equaler;
  */
 @SuppressWarnings("serial")
 public class HistoryCommitTableModel extends AbstractTableModel {
-
-	/*
+  
+  /*
 	 * Constants for the index representing the table column.
 	 */
 	public static final int COMMIT_MESSAGE = 0;
@@ -29,6 +29,10 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	public static final int AUTHOR = 2;
 	public static final int COMMIT_ABBREVIATED_ID = 3;
 	
+	/**
+	 * Length of the short commit id
+	 */
+	private static final int SHORT_COMMIT_ID_LENGTH = 7;
 	/**
    * Text from filter field
    */
@@ -176,7 +180,8 @@ public class HistoryCommitTableModel extends AbstractTableModel {
     if( textFilter != null &&  !textFilter.isEmpty()) {
       String date = "";
       String author = ""; 
-      String commitId = "";
+      String longCommitId = "";
+      String shortCommitId = "";
       String message = "";
       
       String authorTemp = commitCharac.getAuthor();
@@ -189,7 +194,10 @@ public class HistoryCommitTableModel extends AbstractTableModel {
       }
       String commitIdTemp = commitCharac.getCommitId();
       if(commitIdTemp != null) {
-        commitId = commitIdTemp.toLowerCase();
+        longCommitId = commitIdTemp.toLowerCase();
+        if(longCommitId.length() >= SHORT_COMMIT_ID_LENGTH) {
+          shortCommitId = longCommitId.substring(0,SHORT_COMMIT_ID_LENGTH);
+        }
       }
       String messageTemp = commitCharac.getCommitMessage();
       if(messageTemp != null) {
@@ -200,8 +208,9 @@ public class HistoryCommitTableModel extends AbstractTableModel {
       for (int i = 0; i < tokens.length; i++) {
         String valueTerm = tokens[i].trim().toLowerCase();
         String valueDate = tokens[i].trim();
-        if(!author.contains(valueTerm) && !commitId.contains(valueTerm) &&
-            !date.contains(valueDate) && !message.contains(valueTerm)){
+        if(!author.contains(valueTerm) && !longCommitId.equals(valueTerm) &&
+            !date.contains(valueDate) && !message.contains(valueTerm) &&
+            !shortCommitId.equals(valueTerm)){
           return true;
         }
       }
