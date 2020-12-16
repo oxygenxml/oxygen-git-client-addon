@@ -66,6 +66,7 @@ import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
+import com.oxygenxml.git.view.FilterTextField.FilterTextField;
 import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;

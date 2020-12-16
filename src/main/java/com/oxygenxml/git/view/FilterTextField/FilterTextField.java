@@ -5,14 +5,12 @@
  * Unauthorized copying of this file, via any medium, is strictly prohibited.
  */
 
-package com.oxygenxml.git.view.history;
+package com.oxygenxml.git.view.FilterTextField;
 
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
 import javax.swing.JTextField;
@@ -23,6 +21,7 @@ import javax.swing.text.Document;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
 /**
@@ -40,13 +39,9 @@ public abstract class FilterTextField extends JTextField implements FocusListene
    */
   private static final int DELAY = 400;
   /**
-   * Timer
+   * Coalescing updater
    */
-  private transient Timer timer = new Timer(false);
-  /**
-   * TimerTask
-   */
-  private transient TimerTask task;
+  private CoalescedEventUpdater updater;
   /**
    * UID
    */
@@ -89,6 +84,7 @@ public abstract class FilterTextField extends JTextField implements FocusListene
    */
   protected FilterTextField(String noFocusHint) {
     this(noFocusHint, null);
+    updater = new CoalescedEventUpdater(DELAY,()-> filterChanged(getText()));
   }
 
   /**
@@ -112,19 +108,7 @@ public abstract class FilterTextField extends JTextField implements FocusListene
 
       @Override
       public void insertUpdate(DocumentEvent e) {
-
-        if (task != null) {
-          task.cancel();
-          task = null;
-        }
-        task = new TimerTask() {
-
-          @Override
-          public void run() {
-            filterChanged(getText());
-          }
-        };
-        timer.schedule(task, DELAY);
+        updater.update();
       }
 
       @Override
