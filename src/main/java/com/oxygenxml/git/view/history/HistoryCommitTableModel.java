@@ -177,45 +177,62 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 * @return True if the commit should be removed, false otherwise
 	 */
 	private static boolean shouldFilter(CommitCharacteristics commitCharac, String textFilter) {
-    if( textFilter != null &&  !textFilter.isEmpty()) {
-      String date = "";
-      String author = ""; 
-      String longCommitId = "";
-      String shortCommitId = "";
-      String message = "";
-      
-      String authorTemp = commitCharac.getAuthor();
-      if(authorTemp != null) {
-        author = authorTemp.toLowerCase();
-      }
-      Date dateTemp = commitCharac.getDate();
-      if(dateTemp != null) {
-        date = dateTemp.toString();
-      }
-      String commitIdTemp = commitCharac.getCommitId();
-      if(commitIdTemp != null) {
-        longCommitId = commitIdTemp.toLowerCase();
-        if(longCommitId.length() >= SHORT_COMMIT_ID_LENGTH) {
-          shortCommitId = longCommitId.substring(0,SHORT_COMMIT_ID_LENGTH);
-        }
-      }
-      String messageTemp = commitCharac.getCommitMessage();
-      if(messageTemp != null) {
-        message = messageTemp.toLowerCase();
-      }
-      ///////text filter
-      String[] tokens = textFilter.split("[, .!-]+");
-      for (int i = 0; i < tokens.length; i++) {
-        String valueTerm = tokens[i].trim().toLowerCase();
-        String valueDate = tokens[i].trim();
-        if(!author.contains(valueTerm) && !longCommitId.equals(valueTerm) &&
-            !date.contains(valueDate) && !message.contains(valueTerm) &&
-            !shortCommitId.equals(valueTerm)){
-          return true;
-        }
-      }
-    } 
-    return false;
-  }
+	  boolean shouldFilter = false;
+	  if( textFilter != null &&  !textFilter.isEmpty()) {
+	    String date = "";
+	    String author = ""; 
+	    String commitId = "";
+	    String message = "";
+
+	    String authorTemp = commitCharac.getAuthor();
+	    if(authorTemp != null) {
+	      author = authorTemp.toLowerCase();
+	    }
+	    Date dateTemp = commitCharac.getDate();
+	    if(dateTemp != null) {
+	      date = dateTemp.toString();
+	    }
+	    String commitIdTemp = commitCharac.getCommitId();
+	    if(commitIdTemp != null) {
+	      commitId = commitIdTemp.toLowerCase();
+	    }
+	    String messageTemp = commitCharac.getCommitMessage();
+	    if(messageTemp != null) {
+	      message = messageTemp.toLowerCase();
+	    }
+	    shouldFilter = shouldFilterCommit(textFilter, date, author, commitId, message);
+	  } 
+	  return shouldFilter;
+	}
+	
+	/**
+	 * Tells if a commit should be removed or not.
+	 * @param textFilter The text from filter field
+	 * @param date The date of the commit
+	 * @param author The author of the commit
+	 * @param commitId The commit id
+	 * @param message The message of the commit
+	 * @return True if commit should be filtered
+	 */
+	private static boolean shouldFilterCommit(
+      String textFilter,
+      String date,
+      String author,
+      String commitId,
+      String message) {
+	  boolean shouldFilter = false;
+	  String[] tokens = textFilter.split("[, .!-]+");
+	  for (int i = 0; i < tokens.length; i++) {
+	    String token = tokens[i].trim();
+	    String lowercaseToken = token.toLowerCase();
+	    if(!author.contains(lowercaseToken) 
+	        && !commitId.contains(lowercaseToken) 
+	        && !date.contains(token) 
+	        && !message.contains(lowercaseToken)){
+	      shouldFilter = true;
+	    }
+	  }
+	  return shouldFilter;
+	}
 
 }

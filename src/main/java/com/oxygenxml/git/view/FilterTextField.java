@@ -5,7 +5,7 @@
  * Unauthorized copying of this file, via any medium, is strictly prohibited.
  */
 
-package com.oxygenxml.git.view.FilterTextField;
+package com.oxygenxml.git.view;
 
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -21,7 +21,6 @@ import javax.swing.text.Document;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.CoalescedEventUpdater;
 import com.oxygenxml.git.view.dialog.UIUtil;
 
 /**

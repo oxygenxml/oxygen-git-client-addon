@@ -43,8 +43,8 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.TreeUtil;
+import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.GitTreeNode;
-import com.oxygenxml.git.view.FilterTextField.FilterTextField;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
