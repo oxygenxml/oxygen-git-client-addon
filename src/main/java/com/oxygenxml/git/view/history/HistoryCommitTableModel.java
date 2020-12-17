@@ -19,6 +19,10 @@ import com.oxygenxml.git.utils.Equaler;
  *
  */
 public class HistoryCommitTableModel extends AbstractTableModel {
+  /**
+   * Length of the short commit id
+   */
+  private static final int SHORT_COMMIT_ID_LENGTH = 7;
   
   /**
 	 * Commit message table column index.
