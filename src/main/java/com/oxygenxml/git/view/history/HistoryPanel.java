@@ -195,6 +195,7 @@ public class HistoryPanel extends JPanel {
     // ----------
 
     JPanel topPanel = new JPanel(new GridBagLayout());
+    topPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     GridBagConstraints constr = new GridBagConstraints();
     constr.fill = GridBagConstraints.HORIZONTAL;
     constr.gridx = 0;
