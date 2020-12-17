@@ -18,21 +18,28 @@ import com.oxygenxml.git.utils.Equaler;
  * @Alexandra_Dinisor
  *
  */
-@SuppressWarnings("serial")
 public class HistoryCommitTableModel extends AbstractTableModel {
   
-  /*
-	 * Constants for the index representing the table column.
+  /**
+	 * Commit message table column index.
 	 */
 	public static final int COMMIT_MESSAGE = 0;
-	public static final int DATE = 1;
-	public static final int AUTHOR = 2;
-	public static final int COMMIT_ABBREVIATED_ID = 3;
 	
 	/**
-	 * Length of the short commit id
-	 */
-	private static final int SHORT_COMMIT_ID_LENGTH = 7;
+   *Date table column index.
+   */
+	public static final int DATE = 1;
+	
+	/**
+   * Author table column index.
+   */
+	public static final int AUTHOR = 2;
+	
+	/**
+   * Commit ID table column index.
+   */
+	public static final int COMMIT_ABBREVIATED_ID = 3;
+	
 	/**
    * Text from filter field
    */
@@ -58,6 +65,9 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 		this.allCommitsCharacteristics = new ArrayList<>(commitVector);
 	}
 	
+	/**
+	 * @see javax.swing.table.TableModel.getValueAt(int rowIndex, int columnIndex)
+	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		CommitCharacteristics commitCharacteristics = allCommitsCharacteristicsFiltered.get(rowIndex);
@@ -82,6 +92,9 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 		return temp;
 	}
 
+	/**
+	 * @see javax.swing.table.AbstractTableModel.getColumnClass(int columnIndex)
+	 */
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		Class<?> clazz = null;
@@ -104,21 +117,33 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 		return clazz;
 	}
 	
+	/**
+	 * @see javax.swing.table.AbstractTableModel.isCellEditable(int rowIndex, int columnIndex)
+	 */
 	@Override
 	public boolean isCellEditable(int row, int column) {
 		return false;
 	}
 	
+	/**
+	 * @see javax.swing.table.TableModel.getRowCount()
+	 */
 	@Override
 	public int getRowCount() {
 		return allCommitsCharacteristicsFiltered != null ? allCommitsCharacteristicsFiltered.size() : 0;
 	}
 
+	/**
+	 * @see vax.swing.table.TableModel.getColumnCount()
+	 */
 	@Override
 	public int getColumnCount() {
 		return 4;
 	}
 	
+	/**
+	 * @see javax.swing.table.AbstractTableModel.getColumnName(int column)
+	 */
 	@Override
 	public String getColumnName(int index) {
 		String columnName = null;
@@ -141,12 +166,16 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 		return columnName;	
 	}
 	
+	/**
+	 * @return all commits.
+	 */
 	public List<CommitCharacteristics> getAllCommits() {
     return allCommitsCharacteristicsFiltered;
   }
 	
 	/**
 	 * Filters the table
+	 * 
 	 * @param text The text to filter
 	 */
 	public void filterChanged(String textFilter) {
@@ -174,7 +203,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 * @param commitCharac The commit with details
 	 * @param textFilter The filter that should be applied
 	 * 
-	 * @return True if the commit should be removed, false otherwise
+	 * @return <code>true</code> if the commit should be removed, false otherwise
 	 */
 	private static boolean shouldFilter(CommitCharacteristics commitCharac, String textFilter) {
 	  boolean shouldFilter = false;
@@ -207,12 +236,14 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	
 	/**
 	 * Tells if a commit should be removed or not.
+	 * 
 	 * @param textFilter The text from filter field
 	 * @param date The date of the commit
 	 * @param author The author of the commit
 	 * @param commitId The commit id
 	 * @param message The message of the commit
-	 * @return True if commit should be filtered
+	 * 
+	 * @return <code>true</code> if commit should be filtered
 	 */
 	private static boolean shouldFilterCommit(
       String textFilter,
