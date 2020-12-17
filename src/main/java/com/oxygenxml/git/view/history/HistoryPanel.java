@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -32,7 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -192,10 +194,17 @@ public class HistoryPanel extends JPanel {
     // Top panel (with the "Showing history" label and the "Refresh" action
     // ----------
 
-    JPanel topPanel = new JPanel(new BorderLayout());
+    JPanel topPanel = new JPanel(new GridBagLayout());
+    GridBagConstraints constr = new GridBagConstraints();
+    constr.fill = GridBagConstraints.HORIZONTAL;
+    constr.gridx = 0;
+    constr.gridy = 0;
+    constr.insets = new Insets(0, 1, 0, 0);
+    constr.weightx = 1;
+    
     historyInfoLabel = new JLabel();
-    topPanel.add(historyInfoLabel, BorderLayout.WEST);
-    createAndAddToolbarToTopPanel(topPanel);
+    topPanel.add(historyInfoLabel, constr);
+    createAndAddToolbarToTopPanel(topPanel, constr);
 
     JPanel infoBoxesSplitPane = createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, commitDescriptionScrollPane,
         affectedFilesTableScrollPane);
@@ -498,12 +507,9 @@ public class HistoryPanel extends JPanel {
    * Creates the toolbar.
    * 
    * @param topPanel Parent for the toolbar.
+   * @param constr The GridBagLayout constraints
    */
-  private void createAndAddToolbarToTopPanel(JPanel topPanel) {
-    JToolBar toolbar = new JToolBar();
-    toolbar.setOpaque(false);
-    toolbar.setFloatable(false);
-    topPanel.add(toolbar, BorderLayout.EAST);
+  private void createAndAddToolbarToTopPanel(JPanel topPanel, GridBagConstraints constr) {
     @SuppressWarnings("java:S110")
     FilterTextField filterTemp = new FilterTextField(
         Translator.getInstance().getTranslation(Tags.TYPE_TEXT_TO_FILTER)) { 
@@ -515,7 +521,7 @@ public class HistoryPanel extends JPanel {
         }
       }
     };
-
+    
     // Add the Refresh action to the toolbar
     Action refreshAction = new AbstractAction() {
       @Override
@@ -526,12 +532,16 @@ public class HistoryPanel extends JPanel {
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
     refreshAction.putValue(Action.SHORT_DESCRIPTION, Translator.getInstance().getTranslation(Tags.REFRESH));
     ToolbarButton refreshButton = new ToolbarButton(refreshAction, false);
-    toolbar.add(refreshButton);
+    constr.gridx ++;
+    constr.fill = GridBagConstraints.NONE;
+    constr.weightx = 0;
+    topPanel.add(refreshButton);
     
-    toolbar.addSeparator(new Dimension(2,0));
     this.filter = filterTemp;
-    filter.setColumns(30);
-    toolbar.add(filter);
+    constr.gridx ++;
+    constr.fill = GridBagConstraints.HORIZONTAL;
+    constr.weightx = 0.5;
+    topPanel.add(filter, constr);
     
     add(topPanel, BorderLayout.NORTH);
   }
