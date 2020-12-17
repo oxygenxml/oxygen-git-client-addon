@@ -210,8 +210,9 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	  if( textFilter != null &&  !textFilter.isEmpty()) {
 	    String date = "";
 	    String author = ""; 
-	    String commitId = "";
 	    String message = "";
+	    String longCommitId = "";
+      String shortCommitId = "";
 
 	    String authorTemp = commitCharac.getAuthor();
 	    if(authorTemp != null) {
@@ -223,13 +224,16 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	    }
 	    String commitIdTemp = commitCharac.getCommitId();
 	    if(commitIdTemp != null) {
-	      commitId = commitIdTemp.toLowerCase();
-	    }
+        longCommitId = commitIdTemp.toLowerCase();
+        if(longCommitId.length() >= SHORT_COMMIT_ID_LENGTH) {
+          shortCommitId = longCommitId.substring(0,SHORT_COMMIT_ID_LENGTH);
+        }
+      }
 	    String messageTemp = commitCharac.getCommitMessage();
 	    if(messageTemp != null) {
 	      message = messageTemp.toLowerCase();
 	    }
-	    shouldFilter = shouldFilterCommit(textFilter, date, author, commitId, message);
+	    shouldFilter = shouldFilterCommit(textFilter, date, author, shortCommitId, longCommitId, message);
 	  } 
 	  return shouldFilter;
 	}
@@ -240,7 +244,8 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 * @param textFilter The text from filter field
 	 * @param date The date of the commit
 	 * @param author The author of the commit
-	 * @param commitId The commit id
+	 * @param shortCommitId The short commit id
+	 * @param longCommitId The full commit id 
 	 * @param message The message of the commit
 	 * 
 	 * @return <code>true</code> if commit should be filtered
@@ -249,19 +254,21 @@ public class HistoryCommitTableModel extends AbstractTableModel {
       String textFilter,
       String date,
       String author,
-      String commitId,
+      String shortCommitId,
+      String longCommitId,
       String message) {
 	  boolean shouldFilter = false;
 	  String[] tokens = textFilter.split("[, .!-]+");
 	  for (int i = 0; i < tokens.length; i++) {
 	    String token = tokens[i].trim();
 	    String lowercaseToken = token.toLowerCase();
-	    if(!author.contains(lowercaseToken) 
-	        && !commitId.contains(lowercaseToken) 
-	        && !date.contains(token) 
-	        && !message.contains(lowercaseToken)){
-	      shouldFilter = true;
-	    }
+	    if(!author.contains(lowercaseToken) &&
+          !date.contains(token) &&
+          !message.contains(lowercaseToken) &&
+          !longCommitId.equals(lowercaseToken) &&
+          !shortCommitId.equals(lowercaseToken)){
+        return true;
+      }
 	  }
 	  return shouldFilter;
 	}
