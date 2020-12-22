@@ -37,6 +37,7 @@
                             <li>Added a "Preferences" action in the Settings menu that acts as a shortcut
                             	to the Git Client preferences page.</li>
                             <li>Integrated numerous bug fixes, UI improvements, and speed improvements.</li>
+			    <li>The JGit component included in the Git Client was updated to version 5.10.0.</li>
                         </ol>
                     </div>
                     <div>
