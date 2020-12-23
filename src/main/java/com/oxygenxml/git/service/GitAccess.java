@@ -968,10 +968,7 @@ public class GitAccess {
 	  AuthenticationInterceptor.install();
 	  
 	  PushResponse response = new PushResponse();
-	  // Default status and message. May be overwritten below.
-	  response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-    response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
-
+	  
 	  Repository repo = git.getRepository();
     RepositoryState repositoryState = repo.getRepositoryState();
 	  if (repositoryState == RepositoryState.MERGING) {
@@ -996,12 +993,13 @@ public class GitAccess {
       logger.debug(e, e);
     }
 	  
-	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-	  SSHCapableUserCredentialsProvider credentialsProvider = 
-	      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName());
-	  String localBranchName = getBranchInfo().getBranchName();
-    
-    PushCommand pushCommand = git.push().setCredentialsProvider(credentialsProvider);
+    PushCommand pushCommand = git.push().setCredentialsProvider(
+        new SSHCapableUserCredentialsProvider(
+            username,
+            password,
+            OptionsManager.getInstance().getSshPassphrase(),
+            getHostName()));
+    String localBranchName = getBranchInfo().getBranchName();
     String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
     if (upstreamBranch != null) {
       pushCommand.setRefSpecs(
@@ -1040,6 +1038,9 @@ public class GitAccess {
 	      return response; // NOSONAR
 	    }
 	  }
+	  
+	  response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+    response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 
 	  return response;
 	}
