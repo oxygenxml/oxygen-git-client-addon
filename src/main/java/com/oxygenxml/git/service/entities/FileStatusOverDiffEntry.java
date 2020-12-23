@@ -4,6 +4,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
 import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.utils.Equaler;
 
 /**
  * A wrapper over a diff entry representing a changed suffered by a resource. 
@@ -91,5 +92,28 @@ public class FileStatusOverDiffEntry extends FileStatus {
   public DiffEntry getDiffEntry() {
     return entry;
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((newRevId == null) ? 0 : newRevId.hashCode());
+    result = prime * result + ((oldRevId == null) ? 0 : oldRevId.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    boolean equals = false;
+    if (obj instanceof FileStatusOverDiffEntry) {
+      FileStatusOverDiffEntry other = (FileStatusOverDiffEntry) obj;
+      equals = super.equals(other)
+          && Equaler.verifyEquals(other.newRevId, newRevId)
+          && Equaler.verifyEquals(other.oldRevId, oldRevId);
+    }
+    return equals;
+  }
+  
+  
 
 }

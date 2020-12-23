@@ -20,6 +20,7 @@ import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 /**
  * Git editor variables test.
  */
+@SuppressWarnings("java:S5961")
 public class GitEditorVariables2Test extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/EditorVariablesTest";
   private GitEditorVariablesResolver editorVariablesResolver;

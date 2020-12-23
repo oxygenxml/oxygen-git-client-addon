@@ -11,7 +11,7 @@ To install the add-on, follow these instructions:
 1. Go to **Help > Install new add-ons...** to open an add-on selection dialog box.
 2. Enter or paste https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml in the **Show add-ons from** field.
 3. Select the **Git Client** add-on and click **Next**.
-4. Select the **I accept all terms of the end user license agreement** option and click **Finish**.
+4. Read the end-user license agreement. Then select the **I accept all terms of the end-user license agreement** option and click **Finish**.
 5. Restart the application.
 
 **Result:** A **Git Staging** view will now be available in Oxygen. If it is not visible, go to **Window > Show View** and select **Git Staging**. This view acts as a basic Git client integrated directly in Oxygen, and it provides support for committing changes to a Git repository, comparing and merging changes, resolving conflicts, and other Git commands.
@@ -122,13 +122,13 @@ At this point, the next actions depend on which **Pull** action was chosen:
     2. Enter a message and commit. You will now have new changes to push.
     3. Push the changes to the remote repository.
     
-    **Note:** You can abort the merge by pressing the **Abort merge** button. This will revert the repository to its state before trying to pull.
+    **Note:** You can abort the merge by clicking the **Abort merge** button. This will revert the repository to its previous state prior to the pull attempt.
 
  - **Pull (rebase)**:
-    1. When all the conflicts are resolved, press the **Continue rebase** button.
+    1. When all the conflicts are resolved, click the **Continue rebase** button.
     2. Push any outgoing changes.
     
-    **Note:** You can abort the rebase by pressing the **Abort rebase** button. This will revert the repository to its state before trying to pull.
+    **Note:** You can abort the rebase by clicking the **Abort rebase** button. This will revert the repository to its previous state prior to the pull request.
     
 ## The Project view and the current editor
 

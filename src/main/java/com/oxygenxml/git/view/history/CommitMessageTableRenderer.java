@@ -171,6 +171,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 		JLabel comp = new JLabel(toRender);
 		comp.setForeground(getForeground());
     add(comp, constr);
+    
 		return this;
 	}
 

@@ -25,6 +25,7 @@ import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.standalone.ui.TextField;
 
 /**
  * Dialog that appears when a repository has no remote and the user tries to
@@ -118,7 +119,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		remoteRepoTextField = UIUtil.createTextField();
+		remoteRepoTextField = new TextField();
 		remoteRepoTextField.setPreferredSize(new Dimension(350, remoteRepoTextField.getPreferredSize().height));
 		getContentPane().add(remoteRepoTextField, gbc);
 	}

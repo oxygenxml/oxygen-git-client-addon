@@ -22,6 +22,7 @@ import com.oxygenxml.git.view.dialog.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.standalone.ui.TextField;
 
 /**
  * Dialog used to create a new local branch (from commit, from another branch, etc.)
@@ -112,7 +113,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     panel.add(label, gbc);
     
     // Branch name field.
-    branchNameField = UIUtil.createTextField();
+    branchNameField = new TextField();
     if (sourceBranch != null) {
       branchNameField.setText(sourceBranch);
     }

@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view;
 
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 /**
@@ -33,11 +32,7 @@ public class CoalescedEventUpdater {
    * Update (restart the timer of AWT).
    */
   public void update() {
-    if (!SwingUtilities.isEventDispatchThread()) {
-      SwingUtilities.invokeLater(timer::restart);
-    } else {
-      timer.restart();
-    }
+    timer.restart();
   }
 
 }

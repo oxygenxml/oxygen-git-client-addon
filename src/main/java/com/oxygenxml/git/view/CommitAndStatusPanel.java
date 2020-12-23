@@ -422,31 +422,38 @@ public class CommitAndStatusPanel extends JPanel {
       String previousText = "";
       public void itemStateChanged(ItemEvent ev) {
         if (ev.getStateChange() == ItemEvent.SELECTED) {
-          previousText = commitMessageArea.getText();
-          try {
-            if (gitAccess.getPushesAhead() == 0) {
-              int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-                  translator.getTranslation(Tags.AMEND_LAST_COMMIT),
-                  translator.getTranslation(Tags.AMEND_PUSHED_COMMIT_WARNING),
-                  new String[] {
-                      "   " + translator.getTranslation(Tags.YES) + "   ",
-                      "   " + translator.getTranslation(Tags.NO) + "   " },
-                  new int[] {1, 0});
-              if (result == 1) {
-                prepareAmend();
-              } else {
-                amendLastCommitToggle.setSelected(false);
-              }
-            } else {
-              prepareAmend();
-            }
-          } catch (RepoNotInitializedException e) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
-          }
+          treatAmendEnabled();
         } else {
           commitMessageArea.setText(previousText);
           toggleCommitButtonAndUpdateMessageArea(false);
           commitButton.setText(translator.getTranslation(Tags.COMMIT));
+        }
+      }
+
+      /**
+       * Amend was enabled. Treat the event.
+       */
+      private void treatAmendEnabled() {
+        previousText = commitMessageArea.getText();
+        try {
+          if (gitAccess.getPushesAhead() == 0) {
+            int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
+                translator.getTranslation(Tags.AMEND_LAST_COMMIT),
+                translator.getTranslation(Tags.AMEND_PUSHED_COMMIT_WARNING),
+                new String[] {
+                    "   " + translator.getTranslation(Tags.YES) + "   ",
+                    "   " + translator.getTranslation(Tags.NO) + "   " },
+                new int[] {1, 0});
+            if (result == 1) {
+              prepareAmend();
+            } else {
+              amendLastCommitToggle.setSelected(false);
+            }
+          } else {
+            prepareAmend();
+          }
+        } catch (RepoNotInitializedException e) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage());
         }
       }
       
@@ -469,6 +476,7 @@ public class CommitAndStatusPanel extends JPanel {
       }
       
     });
+    
     toolbar.add(amendLastCommitToggle);
   }
 	

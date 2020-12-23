@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -33,12 +35,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -67,6 +66,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.dialog.UIUtil;
@@ -80,6 +80,7 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.ui.Table;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -146,7 +147,7 @@ public class HistoryPanel extends JPanel {
     setLayout(new BorderLayout());
 
     contextualMenuPresenter = new HistoryViewContextualMenuPresenter(gitCtrl);
-    historyTable = UIUtil.createTable();
+    historyTable = new Table();
     historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     historyTable.addMouseListener(new MouseAdapter() {
       @Override
@@ -193,10 +194,18 @@ public class HistoryPanel extends JPanel {
     // Top panel (with the "Showing history" label and the "Refresh" action
     // ----------
 
-    JPanel topPanel = new JPanel(new BorderLayout());
+    JPanel topPanel = new JPanel(new GridBagLayout());
+    topPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+    GridBagConstraints constr = new GridBagConstraints();
+    constr.fill = GridBagConstraints.HORIZONTAL;
+    constr.gridx = 0;
+    constr.gridy = 0;
+    constr.insets = new Insets(0, 1, 0, 0);
+    constr.weightx = 1;
+    
     historyInfoLabel = new JLabel();
-    topPanel.add(historyInfoLabel, BorderLayout.WEST);
-    createAndAddToolbarToTopPanel(topPanel);
+    topPanel.add(historyInfoLabel, constr);
+    createAndAddToolbarToTopPanel(topPanel, constr);
 
     JPanel infoBoxesSplitPane = createSplitPane(JideSplitPane.HORIZONTAL_SPLIT, commitDescriptionScrollPane,
         affectedFilesTableScrollPane);
@@ -499,15 +508,12 @@ public class HistoryPanel extends JPanel {
    * Creates the toolbar.
    * 
    * @param topPanel Parent for the toolbar.
+   * @param constr The GridBagLayout constraints
    */
-  private void createAndAddToolbarToTopPanel(JPanel topPanel) {
-    JToolBar toolbar = new JToolBar();
-    toolbar.setOpaque(false);
-    toolbar.setFloatable(false);
-    topPanel.add(toolbar, BorderLayout.EAST);
-    @SuppressWarnings("serial")
-    FilterTextField filterTemp = new FilterTextField(Translator.getInstance().getTranslation(Tags.TYPE_TEXT_TO_FILTER)) { 
-
+  private void createAndAddToolbarToTopPanel(JPanel topPanel, GridBagConstraints constr) {
+    @SuppressWarnings("java:S110")
+    FilterTextField filterTemp = new FilterTextField(
+        Translator.getInstance().getTranslation(Tags.TYPE_TEXT_TO_FILTER)) { 
       @Override
       public void filterChanged(String text) {
         HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
@@ -516,7 +522,7 @@ public class HistoryPanel extends JPanel {
         }
       }
     };
-
+    
     // Add the Refresh action to the toolbar
     Action refreshAction = new AbstractAction() {
       @Override
@@ -527,14 +533,17 @@ public class HistoryPanel extends JPanel {
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
     refreshAction.putValue(Action.SHORT_DESCRIPTION, Translator.getInstance().getTranslation(Tags.REFRESH));
     ToolbarButton refreshButton = new ToolbarButton(refreshAction, false);
-    toolbar.add(refreshButton);
+    constr.gridx ++;
+    constr.fill = GridBagConstraints.NONE;
+    constr.weightx = 0;
+    topPanel.add(refreshButton);
     
-    toolbar.addSeparator(new Dimension(2,0));
     this.filter = filterTemp;
-    filter.setColumns(37);
-    toolbar.add(filter);
+    constr.gridx ++;
+    constr.fill = GridBagConstraints.HORIZONTAL;
+    constr.weightx = 0.5;
+    topPanel.add(filter, constr);
     
-
     add(topPanel, BorderLayout.NORTH);
   }
 
@@ -591,7 +600,7 @@ public class HistoryPanel extends JPanel {
           historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
         historyInfoLabel.setText(historyLabelMessage);
-        historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 0));
+        historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 
         // Install selection listener.
         if (revisionDataUpdater != null) {
@@ -616,7 +625,9 @@ public class HistoryPanel extends JPanel {
         int rh = getRowHeight(renderer, getFirstCommit(commitCharacteristicsVector));
 
         SwingUtilities.invokeLater(() -> {
-          historyTable.setModel(new HistoryCommitTableModel(commitCharacteristicsVector));
+          HistoryCommitTableModel historyModel = new HistoryCommitTableModel(commitCharacteristicsVector);
+          historyModel.filterChanged(filter.getText());
+          historyTable.setModel(historyModel);
           updateHistoryTableWidths();
 
           historyTable.setDefaultRenderer(CommitCharacteristics.class, renderer);
@@ -625,8 +636,6 @@ public class HistoryPanel extends JPanel {
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
 
           historyTable.setRowHeight(rh);
-          HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
-          historyTableModel.filter(filter.getText());
         });
 
         revisionDataUpdater = new RowHistoryTableSelectionListener(getUpdateDelay(), historyTable,
@@ -744,8 +753,9 @@ public class HistoryPanel extends JPanel {
   /**
    * @return A cell renderer for the author column.
    */
+  @SuppressWarnings("java:S110")
   private DefaultTableCellRenderer createAuthorColumnRenderer() {
-    return new DefaultTableCellRenderer() { // NOSONAR
+    return new DefaultTableCellRenderer() {
       @Override
       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
           int row, int column) {

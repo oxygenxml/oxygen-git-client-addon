@@ -102,36 +102,48 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			}
 			
 			GitAccess gitAccess = GitAccess.getInstance();
-			if (VersionIdentifier.MINE.equals(currentHost) || VersionIdentifier.MINE_RESOLVED.equals(currentHost)) {
-			  fileObject = gitAccess.getCommit(Commit.MINE, path);
-			} else if (VersionIdentifier.INDEX_OR_LAST_COMMIT.equals(currentHost)) {
-			  try {
-			    fileObject = gitAccess.locateObjectIdInIndex(path);
-			  } catch (Exception ex) {
-			    logger.error(ex, ex);
-			  }
-			  if (fileObject == null) {
+			
+			switch(currentHost) {
+			  case VersionIdentifier.MINE:
+			  case VersionIdentifier.MINE_RESOLVED:
+			    fileObject = gitAccess.getCommit(Commit.MINE, path);
+			    break;
+			  case VersionIdentifier.INDEX_OR_LAST_COMMIT:
+			    try {
+	          fileObject = gitAccess.locateObjectIdInIndex(path);
+	        } catch (Exception ex) {
+	          logger.error(ex, ex);
+	        }
+	        if (fileObject == null) {
+	          fileObject = gitAccess.getCommit(Commit.LOCAL, path);
+	        }
+			    break;
+			  case VersionIdentifier.LAST_COMMIT:
 			    fileObject = gitAccess.getCommit(Commit.LOCAL, path);
-			  }
-			} else if (VersionIdentifier.LAST_COMMIT.equals(currentHost)) {
-			  fileObject = gitAccess.getCommit(Commit.LOCAL, path);
-			} else if (VersionIdentifier.THEIRS.equals(currentHost) || VersionIdentifier.MINE_ORIGINAL.equals(currentHost)) {
-			  fileObject = gitAccess.getCommit(Commit.THEIRS, path);
-			} else if (VersionIdentifier.BASE.equals(currentHost)) {
-			  fileObject = gitAccess.getCommit(Commit.BASE, path);
-			} else if (VersionIdentifier.CURRENT_SUBMODULE.equals(currentHost)) {
-			  fileObject = gitAccess.submoduleCompare(path, false);
-			} else if (VersionIdentifier.PREVIOUSLY_SUBMODULE.equals(currentHost)) {
-			  fileObject = gitAccess.submoduleCompare(path, true);
-			} else {
-			  // Probably an ID.
-			  try {
-          fileObject = RevCommitUtil.getObjectID(gitAccess.getRepository(), currentHost, path);
-        } catch (IOException | NoRepositorySelected e) {
-          throw new IOException("Unable to extract GIT data from: " + getURL(), e);
-        }
+			    break;
+			  case VersionIdentifier.THEIRS:
+			  case VersionIdentifier.MINE_ORIGINAL:
+			    fileObject = gitAccess.getCommit(Commit.THEIRS, path);
+			    break;
+			  case VersionIdentifier.BASE:
+			    fileObject = gitAccess.getCommit(Commit.BASE, path);
+			    break;
+			  case VersionIdentifier.CURRENT_SUBMODULE:
+			    fileObject = gitAccess.submoduleCompare(path, false);
+			    break;
+			  case VersionIdentifier.PREVIOUSLY_SUBMODULE:
+			    fileObject = gitAccess.submoduleCompare(path, true);
+			    break;
+			  default:
+	        // Probably an ID.
+	        try {
+	          fileObject = RevCommitUtil.getObjectID(gitAccess.getRepository(), currentHost, path);
+	        } catch (IOException | NoRepositorySelected e) {
+	          throw new IOException("Unable to extract GIT data from: " + getURL(), e);
+	        }
+			    break;
 			}
-
+			
 			if (fileObject == null) {
 			  throw new IOException("Unable to obtain commit ID for: " + getURL());
 			}

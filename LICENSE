@@ -59,9 +59,9 @@ jsch-0.1.55
 Site: http://www.jcraft.com/jsch
 License: BSD-style license (http://www.jcraft.com/jsch/LICENSE.txt)
 
-org.eclipse.jgit-5.9.0.202009080501-r
-org.eclipse.jgit.ssh.apache-5.9.0.202009080501-r,
-org.eclipse.jgit.ssh.jsch-5.9.0.202009080501-r
+org.eclipse.jgit-5.10.0.202012080955-r,
+org.eclipse.jgit.ssh.apache-5.10.0.202012080955-r,
+org.eclipse.jgit.ssh.jsch-5.10.0.202012080955-r
 Site: https://www.eclipse.org/jgit/
 License:
 Eclipse Distribution License - v 1.0

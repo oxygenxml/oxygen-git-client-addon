@@ -54,11 +54,11 @@ public abstract class GitControllerBase {
   protected GitListeners listeners = GitListeners.getInstance();
 
   /**
-   * Contructor.
+   * Constructor.
    * 
    * @param access Access to the Git API.
    */
-  public GitControllerBase(GitAccess access) {
+  protected GitControllerBase(GitAccess access) {
     this.gitAccess = access;
     
     addGitListener(new GitEventAdapter() {
@@ -116,6 +116,7 @@ public abstract class GitControllerBase {
    * 
    * @return A future monitoring the orginal task.
    */
+  @SuppressWarnings("java:S1452")
   ScheduledFuture<?> async(Runnable r) {
     return async(r, null);
   }
@@ -127,6 +128,7 @@ public abstract class GitControllerBase {
    * 
    * @return A future monitoring the orginal task.
    */
+  @SuppressWarnings("java:S1452")
   private ScheduledFuture<?> async(Runnable r, Consumer<Throwable> errorHandler) {
     return GitOperationScheduler.getInstance().schedule(r, t -> {
       consumeEvents(t);
@@ -143,6 +145,7 @@ public abstract class GitControllerBase {
    * 
    * @return A future monitoring the orginal task.
    */
+  @SuppressWarnings("java:S1452")
   public <T> ScheduledFuture<?> asyncTask(Callable<T> r, Consumer<Throwable> errorHandler) {
     return asyncTask(r, v -> {}, errorHandler);
   }
@@ -156,6 +159,7 @@ public abstract class GitControllerBase {
    * 
    * @return A future monitoring the orginal task.
    */
+  @SuppressWarnings("java:S1452")
   public <T> ScheduledFuture<?> asyncTask(Callable<T> callable, Consumer<T> resultHandler, Consumer<Throwable> errorHandler) {
     return GitOperationScheduler.getInstance().schedule(callable, resultHandler, t -> {
       consumeEvents(t);

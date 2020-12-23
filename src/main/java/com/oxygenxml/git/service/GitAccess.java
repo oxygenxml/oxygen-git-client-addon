@@ -1540,13 +1540,7 @@ public class GitAccess {
 	 * @return the last local commit
 	 */
 	public ObjectId getLastLocalCommitInRepo() {
-		Repository repo = git.getRepository();
-		try {
-			return repo.resolve("HEAD^{commit}");
-		} catch (IOException e) {
-		  logger.error(e, e);
-		}
-		return null;
+		return RevCommitUtil.getLastLocalCommitInRepo(git);
 	}
 
 	/**
@@ -1800,6 +1794,7 @@ public class GitAccess {
 	 * 
 	 * @return The restart merge task.
 	 */
+	@SuppressWarnings("java:S1452")
 	public ScheduledFuture<?> restartMerge() {
     fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
 	  return GitOperationScheduler.getInstance().schedule(() -> {
@@ -2026,46 +2021,18 @@ public class GitAccess {
 	public ObjectId getCommit(Commit commit, String path) {
 	  ObjectId toReturn = null;
 		try {
-		  List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
-			int noOfDiffEntries = entries.size();
-      boolean isTwoWayDiff = noOfDiffEntries < 3;
 			switch (commit) {
 			  case MINE:
-			    int indexOfMine = isTwoWayDiff ? 0 : 1;
-			    if (indexOfMine < noOfDiffEntries) {
-			      toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
-			    } else {
-			      if (logger.isDebugEnabled()) {
-			        logger.debug("No MINE commit available for: '" + path + "'."
-			            + " Falling back to the last commit for this path.");
-			      }
-			      toReturn = getLastLocalCommitForPath(path);
-			    }
+			    toReturn = RevCommitUtil.getMyCommit(git, path);
 			    break;
 			  case THEIRS:
-			    int indexOfTheirs = isTwoWayDiff ? 1 : 2;
-	        if (indexOfTheirs < noOfDiffEntries) {
-	          toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
-	        } else {
-	          if (logger.isDebugEnabled()) {
-	            logger.debug("No THEIRS commit available for: '" + path + "'. "
-	                + "Falling back to the last commit for this path.");
-            }
-	          toReturn = getLastLocalCommitForPath(path);
-	        }
+			    toReturn = RevCommitUtil.getTheirCommit(git, path);
 			    break;
 			  case BASE:
-			    if (!entries.isEmpty()) {
-			      toReturn = entries.get(0).getOldId().toObjectId();
-			    } else { 
-			      if (logger.isDebugEnabled()) {
-			        logger.debug("No BASE commit for: '" + path + "'");
-			      }
-			      toReturn = getLastLocalCommitForPath(path);
-			    }
+			    toReturn = RevCommitUtil.getBaseCommit(git, path);
 			    break;
 			  case LOCAL:
-	        toReturn = getLastLocalCommitForPath(path);
+	        toReturn = RevCommitUtil.getLastLocalCommitForPath(git, path);
 			    break;
 			}
 		} catch (GitAPIException | IOException e) {
@@ -2074,35 +2041,6 @@ public class GitAccess {
 		return toReturn;
 	}
 
-	/**
-	 * Get last local commit for resource path.
-	 * 
-	 * @param path The path.
-	 * 
-	 * @return the last local commit. Can be <code>null</code>.
-	 * 
-	 * @throws IOException
-	 */
-  private ObjectId getLastLocalCommitForPath(String path) throws IOException {
-    ObjectId toReturn = null;
-    
-    ObjectId lastLocalCommit = getLastLocalCommitInRepo();
-    RevWalk revWalk = new RevWalk(git.getRepository());
-    RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
-    RevTree tree = revCommit.getTree();
-    TreeWalk treeWalk = new TreeWalk(git.getRepository());
-    treeWalk.addTree(tree);
-    treeWalk.setRecursive(true);
-    treeWalk.setFilter(PathFilter.create(path));
-    if (treeWalk.next()) {
-      toReturn = treeWalk.getObjectId(0);
-    }
-    treeWalk.close();
-    revWalk.close();
-    
-    return toReturn;
-  }
-	
 	 /**
    * Clean up.
    */

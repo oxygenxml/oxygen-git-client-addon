@@ -7,8 +7,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -24,7 +22,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
@@ -46,9 +43,8 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.TreeUtil;
-import com.oxygenxml.git.view.CoalescedEventUpdater;
+import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.GitTreeNode;
-import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
@@ -70,7 +66,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * A field for searching branches in the current repository.
    */
-  private JTextField searchField;
+  private FilterTextField searchField;
   
   /**
    * The refresh button for the tree.
@@ -339,36 +335,16 @@ public class BranchManagementPanel extends JPanel {
    * Creates the search bar for the branches in the current repository.
    */
   private void createSearchBar() {
-    searchField = UIUtil.createTextField();
-    searchField.setText(translator.getTranslation(Tags.FILTER_HINT));
-    searchField.setForeground(searchField.getDisabledTextColor());
-    searchField.setToolTipText(translator.getTranslation(Tags.SEARCH_BAR_TOOL_TIP));
-    searchField.addFocusListener(new FocusListener() {
+    @SuppressWarnings("java:S110")
+    FilterTextField filterTemp = new FilterTextField(
+        Translator.getInstance().getTranslation(Tags.FILTER_HINT)) { 
       @Override
-      public void focusGained(FocusEvent e) {
-        if (searchField.getText().contentEquals(translator.getTranslation(Tags.FILTER_HINT))) {
-          searchField.setText("");
-        } else {
-          searchField.selectAll();
-        }
-        searchField.setForeground(getForeground());
+      public void filterChanged(String text) {
+        filterTree(text);
       }
-      @Override
-      public void focusLost(FocusEvent e) {
-        if (searchField.getText().isEmpty()) {
-          searchField.setText(translator.getTranslation(Tags.FILTER_HINT));
-          searchField.setForeground(searchField.getDisabledTextColor());
-        }
-      }
-    });
-    
-    CoalescedEventUpdater updater = new CoalescedEventUpdater(500, () -> filterTree(searchField.getText()));
-    searchField.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyReleased(KeyEvent evt) {
-        updater.update();
-      }
-    });
+    };
+    filterTemp.setToolTipText(translator.getTranslation(Tags.SEARCH_BAR_TOOL_TIP));
+    searchField = filterTemp;
   }
 
   /**
