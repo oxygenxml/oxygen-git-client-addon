@@ -36,6 +36,7 @@ import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RebaseCommand.Operation;
 import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
@@ -965,7 +966,11 @@ public class GitAccess {
 	    throws GitAPIException {
 
 	  AuthenticationInterceptor.install();
+	  
 	  PushResponse response = new PushResponse();
+	  // Default status and message. May be overwritten below.
+	  response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+    response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 
 	  Repository repo = git.getRepository();
     RepositoryState repositoryState = repo.getRepositoryState();
@@ -992,25 +997,35 @@ public class GitAccess {
     }
 	  
 	  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-	  Iterable<PushResult> call = git.push().setCredentialsProvider(
-	      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName())).call();
+	  SSHCapableUserCredentialsProvider credentialsProvider = 
+	      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName());
+	  String localBranchName = getBranchInfo().getBranchName();
+    
+    PushCommand pushCommand = git.push().setCredentialsProvider(credentialsProvider);
+    String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
+    if (upstreamBranch != null) {
+      pushCommand.setRefSpecs(
+          Arrays.asList(
+              new RefSpec(localBranchName + ":" + upstreamBranch.substring(upstreamBranch.indexOf('/') + 1))));
+    }
+    Iterable<PushResult> pushResults = pushCommand.call();
+    
 	  logger.debug("Push Ended");
 	  
-	  Iterator<PushResult> results = call.iterator();
+	  Iterator<PushResult> results = pushResults.iterator();
 	  while (results.hasNext()) {
 	    PushResult result = results.next();
 	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
 	      try {
-	        String localBranchName = getBranchInfo().getBranchName();
           if (getRemoteFromConfig(localBranchName) == null) {
             repo.getConfig().setString(
                 ConfigConstants.CONFIG_BRANCH_SECTION,
-                getBranchInfo().getBranchName(),
+                localBranchName,
                 ConfigConstants.CONFIG_KEY_REMOTE,
                 Constants.DEFAULT_REMOTE_NAME);
             repo.getConfig().setString(
                 ConfigConstants.CONFIG_BRANCH_SECTION,
-                getBranchInfo().getBranchName(),
+                localBranchName,
                 ConfigConstants.CONFIG_KEY_MERGE,
                 info.getRemoteName());
             repo.getConfig().save();
@@ -1026,8 +1041,6 @@ public class GitAccess {
 	    }
 	  }
 
-	  response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-	  response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 	  return response;
 	}
 
