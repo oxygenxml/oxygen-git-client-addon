@@ -50,7 +50,7 @@ public class GitAccessPush2Test extends GitTestBase {
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITPRY);
     
     // Push to init remote.
-    File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
+    File file = new File(LOCAL_TEST_REPOSITPRY, "/test.txt");
     file.createNewFile();
     
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
@@ -62,7 +62,7 @@ public class GitAccessPush2Test extends GitTestBase {
     assertEquals("localBranch", detectedBranchName);
     assertEquals("origin/master", gitAccess.getUpstreamBranchShortNameFromConfig(detectedBranchName));
     
-    setFileContent(new File("test.txt"), "NEW TEXT CONTENT");
+    setFileContent(file, "NEW TEXT CONTENT");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
     assertEquals(1, gitAccess.getPushesAhead());
