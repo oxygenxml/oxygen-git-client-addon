@@ -166,8 +166,6 @@ public class GitAccessPushTest extends GitTestBase {
 
 	@After
 	public void tearDown() throws Exception {
-	  super.tearDown();
-	  
 		gitAccess.closeRepo();
 		firstLocalRepo.close();
 		remoteRepo.close();
@@ -182,5 +180,7 @@ public class GitAccessPushTest extends GitTestBase {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		super.tearDown();
 	}
 }
