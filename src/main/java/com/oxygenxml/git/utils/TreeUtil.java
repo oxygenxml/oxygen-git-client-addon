@@ -375,7 +375,9 @@ public class TreeUtil {
    */
   public static String getWordToFitInWidth(String initialString, FontMetrics fontMetrics, int maxWidth) {
     int singleRowStringWidth = 0;
-    if (fontMetrics.stringWidth(initialString) > maxWidth) {
+    if (fontMetrics != null &&
+        initialString != null && 
+        fontMetrics.stringWidth(initialString) > maxWidth) {
       char[] charArray = initialString.toCharArray();
       int stringWidth = fontMetrics.stringWidth("...");
       
