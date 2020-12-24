@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -66,6 +67,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.HiDPIUtil;
 import com.oxygenxml.git.view.StagingResourcesTableModel;
@@ -104,6 +106,10 @@ public class HistoryPanel extends JPanel {
    */
   private JEditorPane commitDescriptionPane;
   /**
+   * The history label text
+   */
+  private String historyLabelMessage;
+  /**
    * The label that shows information about the history we present.
    */
   private JLabel historyInfoLabel;
@@ -137,6 +143,10 @@ public class HistoryPanel extends JPanel {
    * Filter field for quick search
    */
   private FilterTextField filter;
+  /**
+   * Top panel (with the "Showing history" label and the "Refresh" action
+   */
+  private JPanel topPanel;
 
   /**
    * Constructor.
@@ -194,14 +204,28 @@ public class HistoryPanel extends JPanel {
     // Top panel (with the "Showing history" label and the "Refresh" action
     // ----------
 
-    JPanel topPanel = new JPanel(new GridBagLayout());
+    topPanel = new JPanel(new GridBagLayout());
+    this.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentResized(ComponentEvent e) {
+        if (e.getComponent().getWidth() < 600) {
+          historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage, 
+              historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
+              HistoryPanel.this.getWidth()/topPanel.getComponentCount()));
+          repaint();
+        } else {
+          historyInfoLabel.setText(historyLabelMessage);
+          repaint();
+        }
+      }
+    });
     topPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     GridBagConstraints constr = new GridBagConstraints();
     constr.fill = GridBagConstraints.HORIZONTAL;
     constr.gridx = 0;
     constr.gridy = 0;
     constr.insets = new Insets(0, 1, 0, 0);
-    constr.weightx = 1;
+    constr.weightx = 0.8;
     
     historyInfoLabel = new JLabel();
     topPanel.add(historyInfoLabel, constr);
@@ -593,13 +617,16 @@ public class HistoryPanel extends JPanel {
         tryFetch();
 
         File directory = gitAccess.getWorkingCopy();
-        String historyLabelMessage = translator.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
+        historyLabelMessage = translator.getTranslation(Tags.REPOSITORY) + ": " + directory.getName() + ". "
             + translator.getTranslation(Tags.BRANCH) + ": " + gitAccess.getBranchInfo().getBranchName() + ".";
         if (filePath != null) {
           directory = new File(directory, filePath);
           historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
-        historyInfoLabel.setText(historyLabelMessage);
+        historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage, 
+            historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
+            this.getWidth()/topPanel.getComponentCount()));
+        historyInfoLabel.setToolTipText(historyLabelMessage);
         historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 
         // Install selection listener.
@@ -885,4 +912,5 @@ public class HistoryPanel extends JPanel {
   public JTable getHistoryTable() {
     return historyTable;
   }
+  
 }

@@ -1,5 +1,6 @@
 package com.oxygenxml.git.utils;
 
+import java.awt.FontMetrics;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -361,5 +362,36 @@ public class TreeUtil {
     Collections.sort(children, new NodeTreeComparator());
     node.removeAllChildren();
     children.forEach(node::add);
+  }
+  
+  /**
+   * Trims the text to fit the given width.
+   *  
+   * @param initialString Text to trim.
+   * @param fontMetrics The font metrics that will be used to render the string.
+   * @param maxWidth Maximum available width.
+   * 
+   * @return The trimmed version.
+   */
+  public static String getWordToFitInWidth(String initialString, FontMetrics fontMetrics, int maxWidth) {
+    int singleRowStringWidth = 0;
+    if (fontMetrics.stringWidth(initialString) > maxWidth) {
+      char[] charArray = initialString.toCharArray();
+      int stringWidth = fontMetrics.stringWidth("...");
+      
+      for (int i = 0; i < charArray.length; i++) {
+        char character = charArray[i];
+        // Is Chinese/Japanese/Korean character?
+          singleRowStringWidth += fontMetrics.charWidth(character);
+          
+          // Make sure the three dots have enough space (if we actually need them).
+          if (singleRowStringWidth + stringWidth > maxWidth) {
+            // There is not enough space for the current word.
+            initialString = initialString.substring(0, i) + "...";
+            break;
+          }
+        }
+    }
+    return initialString;
   }
 }
