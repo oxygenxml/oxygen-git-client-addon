@@ -551,11 +551,4 @@ public class StagingPanel extends JPanel {
     return conflictButtonsPanel;
   }
   
-  /**
-   * Load working copies.
-   */
-  public void initializeWorkingCopyCombo() {
-    workingCopySelectionPanel.initializeWorkingCopyCombo();
-  }
-  
 }

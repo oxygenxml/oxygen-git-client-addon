@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -95,6 +97,16 @@ public class WorkingCopySelectionPanel extends JPanel {
 	public WorkingCopySelectionPanel(GitControllerBase gitController) {
 	  createGUI();
 	  gitController.addGitListener(new GitEventUpdater());
+	  addHierarchyListener(new HierarchyListener() {
+      @Override
+      public void hierarchyChanged(HierarchyEvent e) {
+        if (e.getChangeFlags() == HierarchyEvent.SHOWING_CHANGED
+            && WorkingCopySelectionPanel.this.isShowing()) {
+          initializeWorkingCopyCombo();
+          removeHierarchyListener(this);
+        }
+      }
+    });
 	}
 
 	public JComboBox<String> getWorkingCopyCombo() {
