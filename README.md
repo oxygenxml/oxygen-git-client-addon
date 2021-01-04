@@ -168,6 +168,6 @@ The Git Client contributes the following editor variables to Oxygen:
 
 Copyright and License
 ---------------------
-Copyright 2020 Syncro Soft SRL.
+Copyright 2021 Syncro Soft SRL.
 
 This project is licensed under [Apache License 2.0](https://github.com/oxygenxml/oxygen-git-plugin/blob/master/LICENSE)
