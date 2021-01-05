@@ -9,8 +9,7 @@
 	    <artifactId>oxygen-superpom-standard</artifactId>
 	    <version>20.1.0.3</version>
   	</parent>
-	
-	
+  	
     <developers>
       <developer>
         <name>Alex Jitianu</name>
@@ -31,6 +30,8 @@
 	<properties>
     	<maven.compiler.source>1.8</maven.compiler.source>
     	<maven.compiler.target>1.8</maven.compiler.target>
+    	<!-- We want sonar. -->
+		<sonar.skip>false</sonar.skip>
   	</properties>
 
 	<repositories>
