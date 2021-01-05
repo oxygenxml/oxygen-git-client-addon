@@ -465,7 +465,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     });
     
     XMLUtilAccess xmlUtilAccess = Mockito.mock(XMLUtilAccess.class);
-//    Mockito.when(pluginWSMock.getXMLUtilAccess()).thenReturn(xmlUtilAccess);
+    Mockito.when(pluginWSMock.getXMLUtilAccess()).thenReturn(xmlUtilAccess);
     Mockito.doAnswer(new Answer<XMLUtilAccess>() {
       @Override
       public XMLUtilAccess answer(InvocationOnMock invocation) throws Throwable {

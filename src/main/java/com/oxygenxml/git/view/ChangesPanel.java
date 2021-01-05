@@ -353,10 +353,10 @@ public class ChangesPanel extends JPanel {
 	 * @param changeEvent Change event.
 	 */
 	void fileStatesChanged(GitEventInfo changeEvent) {
-	  if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+	  if (currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable != null) {
 	    StagingResourcesTableModel modelTable = (StagingResourcesTableModel) filesTable.getModel();
 	    modelTable.stateChanged(changeEvent);
-	  } else {
+	  } else if (currentViewMode == ResourcesViewMode.TREE_VIEW && tree != null) {
 	    Enumeration<TreePath> expandedPaths = TreeUtil.getLastExpandedPaths(tree);
 	    TreePath[] selectionPaths = tree.getSelectionPaths();
 
@@ -1151,10 +1151,12 @@ public class ChangesPanel extends JPanel {
 	 * something is selected in the current view(flat or tree)
 	 */
 	private void toggleSelectedButton() {
-		boolean isEnabled = 
-		    currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable != null && filesTable.getSelectedRowCount() > 0
-				    || currentViewMode == ResourcesViewMode.TREE_VIEW && tree != null && tree.getSelectionCount() > 0;
-			changeSelectedButton.setEnabled(isEnabled);
+	  if (changeSelectedButton != null) {
+	    boolean isEnabled = 
+	        currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable != null && filesTable.getSelectedRowCount() > 0
+	            || currentViewMode == ResourcesViewMode.TREE_VIEW && tree != null && tree.getSelectionCount() > 0;
+	    changeSelectedButton.setEnabled(isEnabled);
+	  }
 	}
 
 	public JButton getChangeSelectedButton() {

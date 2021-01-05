@@ -181,9 +181,9 @@ public class OptionsManager {
     if (save) {
       PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
       if (pluginWorkspace != null) {
-      pluginWorkspace.getOptionsStorage().setOption(
-          GIT_PLUGIN_OPTIONS,
-          pluginWorkspace.getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
+        pluginWorkspace.getOptionsStorage().setOption(
+            GIT_PLUGIN_OPTIONS,
+            pluginWorkspace.getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
       }
     }
 
