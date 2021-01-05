@@ -21,6 +21,7 @@ import com.oxygenxml.git.OxygenGitPlugin;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -178,8 +179,12 @@ public class OptionsManager {
     }
     
     if (save) {
-      PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage().setOption(GIT_PLUGIN_OPTIONS,
-          PluginWorkspaceProvider.getPluginWorkspace().getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
+      PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+      if (pluginWorkspace != null) {
+      pluginWorkspace.getOptionsStorage().setOption(
+          GIT_PLUGIN_OPTIONS,
+          pluginWorkspace.getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
+      }
     }
 
   }

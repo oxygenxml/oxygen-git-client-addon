@@ -596,7 +596,7 @@ public class CommitAndStatusPanel extends JPanel {
 		  
 		  @Override
 		  public void setToolTipText(String text) {
-		    if (!IS_MULTILINE_TOOLTIP_AVAILABLE) {
+		    if (text != null && !IS_MULTILINE_TOOLTIP_AVAILABLE) {
 		      text = text.replaceAll("\\s+", " ");
 		    }
 		    super.setToolTipText(text);

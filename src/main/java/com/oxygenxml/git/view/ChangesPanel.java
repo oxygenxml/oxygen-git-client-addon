@@ -1152,8 +1152,8 @@ public class ChangesPanel extends JPanel {
 	 */
 	private void toggleSelectedButton() {
 		boolean isEnabled = 
-		    currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable.getSelectedRowCount() > 0
-				    || currentViewMode == ResourcesViewMode.TREE_VIEW && tree.getSelectionCount() > 0;
+		    currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable != null && filesTable.getSelectedRowCount() > 0
+				    || currentViewMode == ResourcesViewMode.TREE_VIEW && tree != null && tree.getSelectionCount() > 0;
 			changeSelectedButton.setEnabled(isEnabled);
 	}
 
