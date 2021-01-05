@@ -295,6 +295,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * @param clazz The class of the component.
    * @return The component if found, or null.
    */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected <T extends Component> T findComponentNearJLabel(Container parent, String text, Class<T> clazz) {
     T ret = null;
     
