@@ -18,7 +18,6 @@ import javax.swing.border.AbstractBorder;
  * We added this class because the in built-in {@link javax.swing.border.LineBorder} the rounded corner depends on the thickness of the line. For a thickness or 
  * 1 is not enough to create a visible rounded effect
  */
-@SuppressWarnings("serial")
 public class RoundedLineBorder extends AbstractBorder {
   /**
    * The width of the border.

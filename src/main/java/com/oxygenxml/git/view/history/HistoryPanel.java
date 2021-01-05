@@ -208,9 +208,9 @@ public class HistoryPanel extends JPanel {
       @Override
       public void componentResized(ComponentEvent e) {
         if (e.getComponent().getWidth() < 600) {
-          historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage, 
+          historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage,
               historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
-              HistoryPanel.this.getWidth()/topPanel.getComponentCount()));
+              HistoryPanel.this.getWidth() / topPanel.getComponentCount()));
           repaint();
         } else {
           historyInfoLabel.setText(historyLabelMessage);
@@ -225,7 +225,7 @@ public class HistoryPanel extends JPanel {
     constr.gridy = 0;
     constr.insets = new Insets(0, 1, 0, 0);
     constr.weightx = 0.8;
-    
+
     historyInfoLabel = new JLabel();
     topPanel.add(historyInfoLabel, constr);
     createAndAddToolbarToTopPanel(topPanel, constr);
@@ -531,12 +531,12 @@ public class HistoryPanel extends JPanel {
    * Creates the toolbar.
    * 
    * @param topPanel Parent for the toolbar.
-   * @param constr The GridBagLayout constraints
+   * @param constr   The GridBagLayout constraints
    */
   private void createAndAddToolbarToTopPanel(JPanel topPanel, GridBagConstraints constr) {
     @SuppressWarnings("java:S110")
     FilterTextField filterTemp = new FilterTextField(
-        Translator.getInstance().getTranslation(Tags.TYPE_TEXT_TO_FILTER)) { 
+        Translator.getInstance().getTranslation(Tags.TYPE_TEXT_TO_FILTER)) {
       @Override
       public void filterChanged(String text) {
         HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
@@ -545,7 +545,7 @@ public class HistoryPanel extends JPanel {
         }
       }
     };
-    
+
     // Add the Refresh action to the toolbar
     Action refreshAction = new AbstractAction() {
       @Override
@@ -556,17 +556,18 @@ public class HistoryPanel extends JPanel {
     refreshAction.putValue(Action.SMALL_ICON, Icons.getIcon(Icons.REFRESH_ICON));
     refreshAction.putValue(Action.SHORT_DESCRIPTION, Translator.getInstance().getTranslation(Tags.REFRESH));
     ToolbarButton refreshButton = new ToolbarButton(refreshAction, false);
-    constr.gridx ++;
+    constr.gridx++;
     constr.fill = GridBagConstraints.NONE;
     constr.weightx = 0;
     topPanel.add(refreshButton);
-    
+
     this.filter = filterTemp;
-    constr.gridx ++;
+    constr.insets = new Insets(0, 7, 0, 0);
+    constr.gridx++;
     constr.fill = GridBagConstraints.HORIZONTAL;
     constr.weightx = 0.5;
     topPanel.add(filter, constr);
-    
+
     add(topPanel, BorderLayout.NORTH);
   }
 
@@ -622,9 +623,9 @@ public class HistoryPanel extends JPanel {
           directory = new File(directory, filePath);
           historyLabelMessage += " " + translator.getTranslation(Tags.FILE) + ": " + directory.getName() + ".";
         }
-        historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage, 
+        historyInfoLabel.setText(TreeUtil.getWordToFitInWidth(historyLabelMessage,
             historyInfoLabel.getFontMetrics(historyInfoLabel.getFont()),
-            this.getWidth()/topPanel.getComponentCount()));
+            this.getWidth() / topPanel.getComponentCount()));
         historyInfoLabel.setToolTipText(historyLabelMessage);
         historyInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 
@@ -911,5 +912,5 @@ public class HistoryPanel extends JPanel {
   public JTable getHistoryTable() {
     return historyTable;
   }
-  
+
 }
