@@ -42,11 +42,6 @@ public abstract class FilterTextField extends JTextField implements FocusListene
    */
   private CoalescedEventUpdater updater;
   /**
-   * UID
-   */
-  private static final long serialVersionUID = 1L;
-
-  /**
    * Hint to present when the field is not focused.
    */
   private String noFocusHint;
@@ -118,11 +113,6 @@ public abstract class FilterTextField extends JTextField implements FocusListene
     getDocument().addDocumentListener(docListener);
     this.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "clear_field");
     this.getActionMap().put("clear_field", new AbstractAction() {
-      /**
-       * generated UID
-       */
-      private static final long serialVersionUID = 6936768622117942289L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         setText(EMPTY);
