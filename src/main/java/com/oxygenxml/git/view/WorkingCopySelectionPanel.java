@@ -100,7 +100,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	  addHierarchyListener(new HierarchyListener() {
       @Override
       public void hierarchyChanged(HierarchyEvent e) {
-        if (e.getChangeFlags() == HierarchyEvent.SHOWING_CHANGED
+        if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0
             && WorkingCopySelectionPanel.this.isShowing()) {
           initializeWorkingCopyCombo();
           removeHierarchyListener(this);
