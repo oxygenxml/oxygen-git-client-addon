@@ -36,7 +36,9 @@
                             	from a project, to never switch, or to always ask.</li>
                             <li>Added a "Preferences" action in the Settings menu that acts as a shortcut
                             	to the Git Client preferences page.</li>
-                            <li>Integrated numerous bug fixes, UI improvements, and speed improvements.</li>
+		            <li>Fixed an issue where pushing to a remote branch with a name different than
+				the one of the local branch did not work.</li>
+                            <li>Integrated numerous other bug fixes, UI improvements, and speed improvements.</li>
 			    <li>The JGit component included in the Git Client was updated to version 5.10.0.</li>
                         </ol>
                     </div>
