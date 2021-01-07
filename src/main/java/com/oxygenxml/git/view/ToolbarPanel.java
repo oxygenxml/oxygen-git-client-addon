@@ -352,7 +352,7 @@ public class ToolbarPanel extends JPanel {
 		gbc.weighty = 0;
 		this.add(branchesSplitMenuButton, gbc);
 		 
-		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
 	}
 
 	/**

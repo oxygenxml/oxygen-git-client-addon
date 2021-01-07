@@ -104,7 +104,9 @@ public class BranchManagementPanel extends JPanel {
   private BranchTreeMenuActionsProvider branchesTreeActionProvider;
 
   /**
-   * Public constructor
+   * Constructor.
+   * 
+   * @param ctrl Git conroller.
    */
   public BranchManagementPanel(GitControllerBase ctrl) {
     createGUI();
@@ -294,7 +296,7 @@ public class BranchManagementPanel extends JPanel {
     gbc.fill = GridBagConstraints.BOTH;
     add(branchesTreeScrollPane, gbc);
 
-    setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
+    setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
   }
 
   /**
@@ -378,6 +380,9 @@ public class BranchManagementPanel extends JPanel {
     branchesTree.setVisible(true);
   }
   
+  /**
+   * @return All branches.
+   */
   private static List<String> getAllBranches(){
     try {
       return BranchesUtil.getAllBranches();

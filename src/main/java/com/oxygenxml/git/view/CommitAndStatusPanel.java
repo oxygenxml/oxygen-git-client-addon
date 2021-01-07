@@ -360,8 +360,8 @@ public class CommitAndStatusPanel extends JPanel {
 		addStatusLabel(gbc);
 		addCommitButton(gbc);
 
-		this.setPreferredSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
-		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.COMMIT_PANEL_MIN_HEIGHT));
+		this.setPreferredSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.COMMIT_PANEL_MIN_HEIGHT));
 	}
 	
 	/**
