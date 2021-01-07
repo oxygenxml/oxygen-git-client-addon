@@ -438,7 +438,7 @@ public class ChangesPanel extends JPanel {
 		  }
 		});
 
-		this.setMinimumSize(new Dimension(UIConstants.PANEL_WIDTH, UIConstants.STAGING_PANEL_MIN_HEIGHT));
+		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.STAGING_PANEL_MIN_HEIGHT));
 	}
 	
 	/**

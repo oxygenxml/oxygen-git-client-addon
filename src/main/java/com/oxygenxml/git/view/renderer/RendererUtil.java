@@ -14,6 +14,9 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.branches.BranchManagementConstants;
 
+/**
+ * Utility class for renderers.
+ */
 public class RendererUtil {
   /**
    * Logger for logging.
@@ -84,6 +87,9 @@ public class RendererUtil {
 
   /**
    * Get inactive selection color.
+   * 
+   * @param comp The component.
+   * @param defaultColor The default color.
    * 
    * @return the color.
    */
