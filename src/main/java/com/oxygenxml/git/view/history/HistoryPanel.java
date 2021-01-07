@@ -95,7 +95,7 @@ public class HistoryPanel extends JPanel {
   /**
    * Git API access.
    */
-  private static final GitAccess gitAccess = GitAccess.getInstance();
+  private static GitAccess gitAccess = GitAccess.getInstance();
   /**
    * Table view that presents the commits.
    */

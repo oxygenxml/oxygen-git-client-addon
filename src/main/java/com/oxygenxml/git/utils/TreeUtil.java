@@ -63,9 +63,8 @@ public class TreeUtil {
 				GitTreeNode newChild = new GitTreeNode(s);
 				node.insert(newChild, node.getChildCount());
 				node = newChild;
-			}
-			// Else, existing node, skip to the next string
-			else {
+			} else {
+			  // Existing node, skip to the next string
 				node = (GitTreeNode) node.getChildAt(index);
 			}
 		}
@@ -103,9 +102,8 @@ public class TreeUtil {
           GitTreeNode newChild = new GitTreeNode(currentNodePath.toString());
           node.insert(newChild, node.getChildCount());
           node = newChild;
-        }
-        // Else, existing node, skip to the next string
-        else {
+        } else {
+          // Existing node, skip to the next string
           node = (GitTreeNode) node.getChildAt(index);
         }
       }

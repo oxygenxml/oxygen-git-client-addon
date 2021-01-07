@@ -160,7 +160,8 @@ public class FileHelper {
         if(anchorIndex != -1) {
           name = name.substring(0, anchorIndex);
         }        
-      }}
+      }
+    }
     return name;
   }
 

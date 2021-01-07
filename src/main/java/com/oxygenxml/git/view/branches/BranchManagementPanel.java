@@ -76,7 +76,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * Translator for translation.
    */
-  private static final Translator translator = Translator.getInstance();
+  private static Translator translator = Translator.getInstance();
 
   /**
    * The tree in which the branches will be presented.
@@ -362,8 +362,9 @@ public class BranchManagementPanel extends JPanel {
       for (String branch : allBranches) {
         String[] path = branch.split("/");
         // Sees if the leaf node/branch contains the given text
-        if (path[path.length - 1].contains(filterText))
+        if (path[path.length - 1].contains(filterText)) {
           remainingBranches.add(branch);
+        }
       }
     }
     SwingUtilities.invokeLater(() -> {

@@ -50,7 +50,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
   /**
    * The translator instance.
    */
-  private static final Translator translator = Translator.getInstance();
+  private static Translator translator = Translator.getInstance();
 
   /**
    * Public constructor.

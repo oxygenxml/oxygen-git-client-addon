@@ -34,7 +34,7 @@ public class ShowBlameForUnstagedResourceAction extends AbstractAction {
   /**
    * The translator used for the contextual menu names
    */
-  private static final Translator translator = Translator.getInstance();
+  private static Translator translator = Translator.getInstance();
   
   /**
    * Selected resources provider.

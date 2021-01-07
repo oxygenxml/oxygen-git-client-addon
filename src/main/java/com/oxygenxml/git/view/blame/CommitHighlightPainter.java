@@ -97,8 +97,7 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
       Color paintColor = getColor();
       if (paintColor == null) {
         g.setColor(textComp.getSelectionColor());
-      }
-      else {
+      } else {
         g.setColor(paintColor);
       }
       
@@ -139,8 +138,7 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
     Color paintColor = getColor();
     if (paintColor == null) {
       g.setColor(textComp.getSelectionColor());
-    }
-    else {
+    } else {
       g.setColor(paintColor);
     }
 
@@ -150,12 +148,10 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
       // Contained in view, can just use bounds.
       if (bounds instanceof Rectangle) {
         rect = (Rectangle) bounds;
-      }
-      else {
+      } else {
         rect = bounds.getBounds();
       }
-    }
-    else {
+    } else {
       // Should only render part of View.
       try {
         // --- determine locations ---

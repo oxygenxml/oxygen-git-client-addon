@@ -116,8 +116,9 @@ public class RoundedLineBorder extends AbstractBorder {
       //Resets the graphics to the old paint, stroke and rendering hint
       g2d.setPaint(oldPaint);
       g2d.setStroke(oldStroke);
-      if (aaHint != null)
+      if (aaHint != null) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
+      }
     }
   }
   

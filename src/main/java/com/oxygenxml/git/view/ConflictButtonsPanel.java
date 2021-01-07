@@ -31,7 +31,7 @@ public class ConflictButtonsPanel extends JPanel {
   /**
    * i18n
    */
-  private static final Translator translator = Translator.getInstance();
+  private static Translator translator = Translator.getInstance();
   /**
    * Logger for logging.
    */

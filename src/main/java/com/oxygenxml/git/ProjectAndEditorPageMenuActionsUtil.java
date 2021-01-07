@@ -35,7 +35,7 @@ public class ProjectAndEditorPageMenuActionsUtil {
   /**
    * i18n
    */
-  private static final Translator translator = Translator.getInstance();
+  private static Translator translator = Translator.getInstance();
   
   /**
    * Hidden constructor.

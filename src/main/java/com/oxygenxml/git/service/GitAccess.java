@@ -148,7 +148,7 @@ public class GitAccess {
 	/**
 	 * Translation support.
 	 */
-	private static final Translator translator = Translator.getInstance();
+	private static Translator translator = Translator.getInstance();
 
 	 /**
    * Singleton instance.
@@ -1325,8 +1325,9 @@ public class GitAccess {
 		walk.markStart(a);
 		walk.markStart(b);
 		final RevCommit base = walk.next();
-		if (base == null)
+		if (base == null) {
 			return null;
+		}
 		final RevCommit base2 = walk.next();
 		if (base2 != null) {
 			throw new NoMergeBaseException(MergeBaseFailureReason.MULTIPLE_MERGE_BASES_NOT_SUPPORTED,
@@ -2042,6 +2043,8 @@ public class GitAccess {
 			    break;
 			  case LOCAL:
 	        toReturn = RevCommitUtil.getLastLocalCommitForPath(git, path);
+			    break;
+			  default:
 			    break;
 			}
 		} catch (GitAPIException | IOException e) {

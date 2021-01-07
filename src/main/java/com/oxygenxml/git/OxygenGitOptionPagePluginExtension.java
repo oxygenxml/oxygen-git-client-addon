@@ -53,11 +53,11 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   /**
    * The OptionsManager instance
    */
-  private static final OptionsManager optionsManager = OptionsManager.getInstance();
+  private static OptionsManager optionsManager = OptionsManager.getInstance();
   /**
    * The Translator instance
    */
-  private static final Translator translator = Translator.getInstance();
+  private static Translator translator = Translator.getInstance();
   /**
    * Automatically switch to the new working copy when detecting a repo inside a project.
    */

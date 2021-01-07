@@ -752,16 +752,19 @@ public class RevCommitUtil {
         shortBranchName);
 
     String trackingBranch = branchConfig.getTrackingBranch();
-    if (trackingBranch == null)
+    if (trackingBranch == null) {
       return null;
+    }
 
     Ref tracking = repository.exactRef(trackingBranch);
-    if (tracking == null)
+    if (tracking == null) {
       return null;
+    }
 
     Ref local = repository.exactRef(fullBranchName);
-    if (local == null)
+    if (local == null) {
       return null;
+    }
 
     try (RevWalk walk = new RevWalk(repository)) {
 

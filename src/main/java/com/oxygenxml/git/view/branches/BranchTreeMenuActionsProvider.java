@@ -28,7 +28,7 @@ public class BranchTreeMenuActionsProvider {
   /**
    * Translator instance.
    */
-  private static final Translator translator = Translator.getInstance();
+  private static Translator translator = Translator.getInstance();
   
   /**
    * A list with all the possible actions for a specific node in the tree.

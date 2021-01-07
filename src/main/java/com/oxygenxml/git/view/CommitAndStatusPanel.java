@@ -236,7 +236,7 @@ public class CommitAndStatusPanel extends JPanel {
   /**
    * Options manager.
    */
-  private static final OptionsManager optionsManager = OptionsManager.getInstance();
+  private static OptionsManager optionsManager = OptionsManager.getInstance();
   /**
    * Logger for logging.
    */

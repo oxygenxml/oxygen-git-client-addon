@@ -21,7 +21,7 @@ public class ResetBranchToCommitAction extends AbstractAction {
   /**
    * i18n
    */
-  private static final Translator translator = Translator.getInstance();
+  private static Translator translator = Translator.getInstance();
   /**
    * Commit characteristics.
    */

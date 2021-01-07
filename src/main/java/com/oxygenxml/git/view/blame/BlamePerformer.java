@@ -230,8 +230,7 @@ public class BlamePerformer {
         activeRevCommit = nextRevCommit;
         textArea.repaint();
 
-        SwingUtilities.invokeLater(() -> 
-        {
+        SwingUtilities.invokeLater(() -> {
           if (historyController.isHistoryShowing()) {
             historyController.showCommit(filePath, activeRevCommit);
           }

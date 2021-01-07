@@ -159,8 +159,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	          String selectedEntry = (String) workingCopyCombo.getSelectedItem();
 	          logger.debug("Selected working copy: " + selectedEntry);
 	          if (CLEAR_HISTORY_ENTRY.equals(selectedEntry)) {
-	            SwingUtilities.invokeLater(() -> 
-	            {
+	            SwingUtilities.invokeLater(() -> {
 	              String[] options = new String[] { 
 	                  "   " + translator.getTranslation(Tags.YES) + "   ",
 	                  "   " + translator.getTranslation(Tags.NO) + "   "};
