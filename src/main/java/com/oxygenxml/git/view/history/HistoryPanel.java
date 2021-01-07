@@ -41,6 +41,7 @@ import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -539,9 +540,12 @@ public class HistoryPanel extends JPanel {
         Translator.getInstance().getTranslation(Tags.TYPE_TEXT_TO_FILTER)) {
       @Override
       public void filterChanged(String text) {
-        HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) historyTable.getModel();
-        if (historyTableModel != null) {
-          historyTableModel.filterChanged(text);
+        TableModel tableModel = historyTable.getModel();
+        if(tableModel instanceof HistoryCommitTableModel) {
+          HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) tableModel;
+          if (historyTableModel != null) {
+            historyTableModel.filterChanged(text);
+          }
         }
       }
     };
