@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-- [ ] Make sure the automated test pass. Check Travis (https://travis-ci.org/github/oxygenxml/oxygen-git-plugin).
+- [ ] Make sure the automated tests pass. Check Jenkins (https://jenkins-master.sync.ro/job/oxygen-git-plugin/).
 - [ ] Add the "What's New" list to **addon.xml**.
 - [ ] Tag the commit that will be the last one included in the release and push the tag to the remote repository.
 - [ ] Add the "What's New" list to the new release from GitHub. See https://github.com/oxygenxml/oxygen-git-plugin/releases.
