@@ -31,6 +31,7 @@
                             <li>Added an "Abort merge" button for when conflicts result after a 
                             	<i>Pull (merge)</i> operation. It allows you to abort the current
                              	conflict resolution process.</li>
+			    <li>Added a quick find filter to the Git History view.</li>
                             <li>Added a set of options in the Git Client preferences page that
                             	can be used to decide whether to always switch to a newly detected working copy
                             	from a project, to never switch, or to always ask.</li>
