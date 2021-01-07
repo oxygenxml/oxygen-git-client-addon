@@ -23,6 +23,7 @@ import com.oxygenxml.git.view.event.PullType;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
@@ -179,11 +180,15 @@ public class OptionsManager {
     }
     
     if (save) {
+      // pluginWorkspace and optionsStorage can be null from tests.
       PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
       if (pluginWorkspace != null) {
-        pluginWorkspace.getOptionsStorage().setOption(
-            GIT_PLUGIN_OPTIONS,
-            pluginWorkspace.getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
+        WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
+        if (optionsStorage != null) {
+          optionsStorage.setOption(
+              GIT_PLUGIN_OPTIONS,
+              pluginWorkspace.getXMLUtilAccess().escapeTextValue(optionsWriter.toString()));
+        }
       }
     }
 
