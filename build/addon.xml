@@ -4,8 +4,8 @@
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension" id="com.oxygenxml.git">
         <xt:location
-            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.3.1/git.support-2.3.1-plugin.jar"/>
-        <xt:version>2.3.1</xt:version>
+            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.4.0/oxygen-git-client-2.4.0-plugin.jar"/>
+        <xt:version>2.4.0</xt:version>
         <xt:oxy_version>20.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
@@ -24,6 +24,23 @@
                             perform common Git commands, such as push, pull, change branch, commit,
                             and more. It also includes a built-in tool for comparing and merging
                             changes.</p>
+                    </div>
+                    <div>
+                        <h3>What's new in version 2.4.0</h3>
+                        <ol>
+                            <li>Added an "Abort merge" button for when conflicts result after a 
+                            	<i>Pull (merge)</i> operation. It allows you to abort the current
+                             	conflict resolution process.</li>
+                            <li>Added a set of options in the Git Client preferences page that
+                            	can be used to decide whether to always switch to a newly detected working copy
+                            	from a project, to never switch, or to always ask.</li>
+                            <li>Added a "Preferences" action in the Settings menu that acts as a shortcut
+                            	to the Git Client preferences page.</li>
+		            <li>Fixed an issue where pushing to a remote branch with a name different than
+				the one of the local branch did not work.</li>
+                            <li>Integrated numerous other bug fixes, UI improvements, and speed improvements.</li>
+			    <li>The JGit component included in the Git Client was updated to version 5.10.0.</li>
+                        </ol>
                     </div>
                     <div>
                         <h3>What's new in version 2.3.1</h3>
