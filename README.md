@@ -61,7 +61,7 @@ For each commit in the history table, the following actions are available:
 - **Create branch**: Used to create a new branch starting from the selected commit.
 - **Reset "\[branch_name\]" to this commit**: Used to undo changes by moving the HEAD of the current branch to the selected commit.
 
-The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. For each resource, the following actions are available in the contextual menu:
+The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. It includes a text filter field at the top that you can use to conduct searches (i.e. by Date, Author, or Commit ID). For each resource, the following actions are available in the contextual menu:
 - **Open** (available for added and modifed resources): This action opens the selected resource.
 - **Open previous version** (available for deleted resources): This action opens the version of the selected resource from before its deletion.
 - **Compare with previous version** (available for modified resources): This action compares the selected version of the selected resource with the previous one using the **Oxygen Diff Files** tool.
