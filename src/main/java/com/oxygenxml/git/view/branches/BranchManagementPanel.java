@@ -58,6 +58,11 @@ import ro.sync.exml.workspace.api.standalone.ui.Tree;
 public class BranchManagementPanel extends JPanel {
 
   /**
+   * Inset.
+   */
+  private static final int INSET_3_PX = 3;
+
+  /**
    * Logger for this class.
    */
   @SuppressWarnings("unused")
@@ -275,19 +280,19 @@ public class BranchManagementPanel extends JPanel {
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = new Insets(0, 3, 0, 0);
+    gbc.insets = new Insets(0, INSET_3_PX, 0, 0);
     add(searchField, gbc);
     
     createRefreshButton();
     gbc.gridx ++;
     gbc.weightx = 0;
     gbc.fill = GridBagConstraints.NONE;
-    gbc.insets = new Insets(0, 3, 0, 3);
+    gbc.insets = new Insets(0, INSET_3_PX, 0, INSET_3_PX);
     add(refreshButton, gbc);
     
     createBranchesTree();
     JScrollPane branchesTreeScrollPane = new JScrollPane(branchesTree);
-    gbc.insets = new Insets(3, 3, 3, 3);
+    gbc.insets = new Insets(INSET_3_PX, INSET_3_PX, INSET_3_PX, INSET_3_PX);
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.weightx = 1;

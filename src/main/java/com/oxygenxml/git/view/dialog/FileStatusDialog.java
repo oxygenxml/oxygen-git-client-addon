@@ -40,13 +40,18 @@ public class FileStatusDialog extends OKCancelDialog {
    * Document with custom wrapping.
    */
   private static class CustomWrapDocument extends DefaultStyledDocument {
+    /**
+     * Maximum number of characters without a newline.
+     */
+    private static final int MAX_NO_OF_CHARS_PER_LINE = 100;
+
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
       StringBuilder sb = new StringBuilder();
       int charsSinceLastNewline = 0;
       char[] charArray = str.toCharArray();
       for (char ch : charArray) {
-        if (charsSinceLastNewline >= 100) {
+        if (charsSinceLastNewline >= MAX_NO_OF_CHARS_PER_LINE) {
           if (Character.isWhitespace(ch)) {
             sb.append('\n');
             charsSinceLastNewline = 0;

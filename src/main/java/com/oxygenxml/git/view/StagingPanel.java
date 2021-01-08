@@ -57,6 +57,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 public class StagingPanel extends JPanel {
 
   /**
+   * Left and right component inset.
+   */
+  private static final int HORIZONTAL_INSET = 5;
+
+  /**
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(StagingPanel.class);
@@ -381,7 +386,7 @@ public class StagingPanel extends JPanel {
 	 *          - the splitPane to add
 	 */
 	private void addSplitPanel(GridBagConstraints gbc, Component splitPane) {
-		gbc.insets = new Insets(0, 5, 0, 5);
+		gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
@@ -398,7 +403,7 @@ public class StagingPanel extends JPanel {
 	 *          - the constraints used for this component
 	 */
 	private void addToolbatPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(0, 5, 0, 5);
+		gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
@@ -414,7 +419,7 @@ public class StagingPanel extends JPanel {
 	 * @param gbc The constraints used for this component
 	 */
 	private void addWorkingCopySelectionPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(0, 5, 0, 5);
+		gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
