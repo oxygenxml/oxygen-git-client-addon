@@ -474,7 +474,7 @@ public class OptionsManager {
   /**
    * Returns the stored answer for the given prompt.
    * 
-   * @param The prompt.
+   * @param prompt The prompt.
    * 
    * @return The stored answer for the given prompt or <code>null</code> if this question was never asked.
    */

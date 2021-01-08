@@ -243,7 +243,7 @@ public class GitController extends GitControllerBase {
     /**
      * Compose and return failure message.
      * 
-     * @param The initial message.
+     * @param message The initial message.
      * 
      * @return the failure message.
      */
@@ -255,6 +255,8 @@ public class GitController extends GitControllerBase {
      * @param userCredentials User credentials.
      * 
      * @return an optional response.
+     * 
+     * @throws GitAPIException
      */
     protected abstract Optional<PushPullEvent> doOperation(UserCredentials userCredentials) throws GitAPIException;
   }

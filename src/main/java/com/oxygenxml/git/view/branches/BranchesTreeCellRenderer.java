@@ -136,11 +136,11 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Paints the border for the selected node.
    * 
-   * @param g      Graphics.
-   * @param x      X coordinate.
-   * @param y      Y coordinate.
-   * @param width  Width.
-   * @param height Height.
+   * @param g Graphics.
+   * @param x X coordinate.
+   * @param y Y coordinate.
+   * @param w Width.
+   * @param h Height.
    */
   private void paintBorder(Graphics g, int x, int y, int w, int h) {
     Color bsColor = getBorderSelectionColor();
