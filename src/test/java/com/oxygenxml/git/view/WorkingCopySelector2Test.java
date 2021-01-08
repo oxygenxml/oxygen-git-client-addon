@@ -101,9 +101,9 @@ public class WorkingCopySelector2Test extends JFCTestCase {
       WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(new GitController(GitAccess.getInstance()));
       frame.getContentPane().add(wcPanel);
       frame.pack();
+      // Showing the WC panel also initializes the combo
       frame.setVisible(true);
       
-      wcPanel.initializeWorkingCopyCombo();
       JComboBox<String> workingCopyCombo = wcPanel.getWorkingCopyCombo();
       ComboBoxModel<String> model = workingCopyCombo.getModel();
       StringBuilder sb = new StringBuilder();

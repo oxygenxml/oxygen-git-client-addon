@@ -69,10 +69,10 @@ public class WorkingCopySelectorTest extends JFCTestCase {
       WorkingCopySelectionPanel wcPanel = new WorkingCopySelectionPanel(Mockito.mock(GitControllerBase.class));
       frame.getContentPane().add(wcPanel);
       frame.pack();
+      // Showing the WC panel also initializes the combo
       SwingUtilities.invokeAndWait(() -> frame.setVisible(true));
       sleep(150);
       
-      wcPanel.initializeWorkingCopyCombo();
       JComboBox<String> workingCopyCombo = wcPanel.getWorkingCopyCombo();
       ComboBoxModel<String> model = workingCopyCombo.getModel();
       StringBuilder sb = new StringBuilder();
