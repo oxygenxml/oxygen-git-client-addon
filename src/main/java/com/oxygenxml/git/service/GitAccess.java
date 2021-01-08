@@ -150,19 +150,19 @@ public class GitAccess {
 	 */
 	private static Translator translator = Translator.getInstance();
 
-	 /**
-   * Singleton instance.
-   */
+	/**
+	 * Singleton instance.
+	 */
 	private GitAccess() {}
 
-	 /**
-   * Singleton instance.
-   */
+	/**
+	 * @return the singleton instance.
+	 */
 	public static GitAccess getInstance() {
-		if (instance == null) {
-			instance = new GitAccess();
-		}
-		return instance;
+	  if (instance == null) {
+	    instance = new GitAccess();
+	  }
+	  return instance;
 	}
 
 	/**
@@ -277,6 +277,8 @@ public class GitAccess {
    * Sets the Git repository on the current thread. The repository file path must exist.
    * 
    * @param path A string that specifies the Git repository folder.
+   * 
+   * @throws IOException
    */
   public void setRepositorySynchronously(String path) throws IOException {
     openRepository(path);
@@ -296,9 +298,7 @@ public class GitAccess {
   /**
    * Open repo.
    * 
-   * @param currentRepo The repo to open.
-   * 
-   * @return a {@link org.eclipse.jgit.api.Git} object for the existing git repository.
+   * @param path The path of the repo to open.
    * 
    * @throws IOException
    */
@@ -336,8 +336,6 @@ public class GitAccess {
 
 	/**
 	 * Log SSH key loading location data.
-	 * 
-	 * @param path The path to the Git repository folder.
 	 */
   private void logSshKeyLoadingData() {
     // Debug data for the SSH key load location.
@@ -434,21 +432,16 @@ public class GitAccess {
 	/**
 	 * Creates a blank new Repository.
 	 * 
-	 * @param path - A string that specifies the git Repository folder
+	 * @param path A string that specifies the git Repository folder
+	 * 
+	 * @throws GitAPIException
 	 */
 	public void createNewRepository(String path) throws GitAPIException {
-	  System.err.println(1);
 	  File wc = new File(path);
-	  System.err.println(2);
 	  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
-	  System.err.println(3);
     closeRepo();
-    System.err.println(4);
     try {
-      System.err.println(path + " ?>SADSA S AD SA AS");
       git = Git.init().setBare(false).setDirectory(wc).call();
-      System.err.println("=============asdsadsadsadasdasdasdsdsd");
-      
       fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     } catch (GitAPIException e) {
       fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc), e);
@@ -703,8 +696,7 @@ public class GitAccess {
 	 /**
    * Commits a single file locally
    * 
-   * @param file    - File to be committed
-   * @param message - Message for the commit
+   * @param message Message for the commit
    * 
    * All JGit exceptions have a common ancestor, but sub classes offer different API for getting extra information
    * about the cause of the exception.
@@ -730,8 +722,8 @@ public class GitAccess {
 	/**
 	 * Commits a single file locally
 	 * 
-	 * @param file    - File to be committed
-	 * @param message - Message for the commit
+	 * @param message Message for the commit
+	 * @param isAmendLastCommit <code>true</code> if the last commit should be amended.
 	 * 
 	 * All JGit exceptions have a common ancestor, but sub classes offer different API for getting extra information
 	 * about the cause of the exception.
@@ -825,7 +817,7 @@ public class GitAccess {
   /**
    * List the remote branches for the given repository URL.
    * 
-   * @param urlString         The repository URL.
+   * @param sourceURL         The repository URL.
    * @param excMessPresenter  Exception message presenter.
    * 
    * @return the collection of remote branches or an empty set.
@@ -961,8 +953,10 @@ public class GitAccess {
 	/**
 	 * Pushes all the commits from the local repository to the remote repository
 	 * 
-	 * @param username - Git username
-	 * @param password - Git password
+	 * @param username Git username.
+	 * @param password Git password.
+	 * 
+	 * @return a response.
 	 *          
 	 * @throws GitAPIException
 	 */
@@ -1055,7 +1049,6 @@ public class GitAccess {
 	 * 
 	 * @param username Git username
 	 * @param password Git password
-   * @param pullType One of ff, no-ff, ff-only, rebase.
 	 * 
 	 * @return The result, if successful.
 	 *  
@@ -1364,7 +1357,7 @@ public class GitAccess {
 	/**
 	 * Adds multiple files to the staging area. Preparing the for commit
 	 * 
-	 * @param fileNames - the names of the files to be added
+	 * @param files The files to be added.
 	 */
 	public void addAll(List<FileStatus> files) {
 	  Collection<String> filePaths = getFilePaths(files);
@@ -1406,7 +1399,7 @@ public class GitAccess {
 	 /**
    * Gets all the files from the index.
    * 
-   * @return - a set containing all the staged file names
+   * @return A set containing all the staged file names
    */
   public List<FileStatus> getStagedFiles() {
     return getStagedFile(Collections.<String>emptyList());
@@ -1443,7 +1436,7 @@ public class GitAccess {
 	 * Checks which files from the given subset are in the Index and returns their
 	 * state.
 	 * 
-	 * @param statusCmd Status command to execute.
+	 * @param status The current status.
 	 * 
 	 * @return - a set containing the subset of files present in the INDEX.
 	 */
@@ -1498,7 +1491,7 @@ public class GitAccess {
 	/**
 	 * Reset all the specified files from the staging area.
 	 * 
-	 * @param fileNames - the list of file to be removed
+	 * @param files The list of file to be removed
 	 */
 	public void resetAll(List<FileStatus> files) {
 	  Collection<String> filePaths = getFilePaths(files);
@@ -1624,8 +1617,7 @@ public class GitAccess {
 	 * Gets the InputStream for the file that is found in the given commit at the
 	 * given path
 	 * 
-	 * @param commitID - the commit in which the file exists
-	 * @param path     - the path to the file
+	 * @param commitID The commit in which the file exists
 	 *          
 	 * @return the InputStream for the file
 	 * 
@@ -1663,7 +1655,7 @@ public class GitAccess {
 	 * Restores the last commit file content to the local file at the given path.
 	 * Both files must have the same path, otherwise it will not work.
 	 * 
-	 * @param file - the path to the file you want to restore
+	 * @param paths The paths to the files to restore.
 	 */
 	public void restoreLastCommitFile(List<String> paths) {
 		try {
@@ -1733,7 +1725,9 @@ public class GitAccess {
 	/**
 	 * Brings all the commits to the local repository but does not merge them.
 	 * 
-	 * @throws PrivateRepositoryException 
+	 * @throws SSHPassphraseRequiredException
+	 * @throws PrivateRepositoryException
+	 * @throws RepositoryUnavailableException
 	 */
 	public void fetch()
 			throws SSHPassphraseRequiredException, PrivateRepositoryException, RepositoryUnavailableException {
@@ -2066,6 +2060,8 @@ public class GitAccess {
 	
 	/**
 	 * Get the {@link Git} object through which to interact with the repository.
+	 * 
+	 * @return the Git object.
 	 */
 	public Git getGit() {
 	  return git;
@@ -2278,7 +2274,9 @@ public class GitAccess {
 	}
 	
 	/**
-	 * Get latest commit om current branch.
+	 * Get latest commit on current branch.
+	 * 
+	 * @return the latest commit.
 	 * 
 	 * @throws GitAPIException 
 	 * @throws IOException 

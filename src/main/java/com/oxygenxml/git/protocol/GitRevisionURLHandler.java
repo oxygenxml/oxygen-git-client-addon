@@ -67,8 +67,9 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		/**
 		 * Construct the connection
 		 * 
-		 * @param url
-		 *          The URL
+		 * @param url The URL.
+		 * 
+		 * @throws IOException
 		 */
 		protected GitRevisionConnection(URL url) throws IOException {
 			super(url);
@@ -80,9 +81,9 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		/**
 		 * Extracts the Git identifiers from the URL.
 		 * 
-		 * @param url
-		 *          - URL to get the host
-		 * @return the URL host
+		 * @param url  URL to get the host.
+		 * 
+		 * @throws IOException
 		 */
 		private void decode(URL url) throws IOException {
 		  // Decode the URL first.

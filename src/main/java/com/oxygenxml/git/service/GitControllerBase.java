@@ -125,6 +125,7 @@ public abstract class GitControllerBase {
    * Runs a task on the Git operation thread.
    * 
    * @param r Git Task.
+   * @param errorHandler Error handler.
    * 
    * @return A future monitoring the orginal task.
    */
@@ -141,23 +142,26 @@ public abstract class GitControllerBase {
   /**
    * Runs a task on the Git operation thread.
    * 
-   * @param r Git Task.
+   * @param <T> The type of the task result.
+   * @param task Git Task.
+   * @param errorHandler Error handler.
    * 
    * @return A future monitoring the orginal task.
    */
   @SuppressWarnings("java:S1452")
-  public <T> ScheduledFuture<?> asyncTask(Callable<T> r, Consumer<Throwable> errorHandler) {
-    return asyncTask(r, v -> {}, errorHandler);
+  public <T> ScheduledFuture<?> asyncTask(Callable<T> task, Consumer<Throwable> errorHandler) {
+    return asyncTask(task, v -> {}, errorHandler);
   }
 
   /**
    * Runs a task on the Git operation thread. Exceptions should be handled in the errorHandler parameter.
    * 
+   * @param <T> The type of the callable result.
    * @param callable Git related instructions. <b>Do not catch Git exceptions. Intercept them in the errorHandler</b>
    * @param resultHandler Receives a notification when the result of the task is completed.
    * @param errorHandler Notified when the task throws exceptions.
    * 
-   * @return A future monitoring the orginal task.
+   * @return A future monitoring the original task.
    */
   @SuppressWarnings("java:S1452")
   public <T> ScheduledFuture<?> asyncTask(Callable<T> callable, Consumer<T> resultHandler, Consumer<Throwable> errorHandler) {

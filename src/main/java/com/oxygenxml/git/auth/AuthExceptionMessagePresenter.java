@@ -10,7 +10,7 @@ public interface AuthExceptionMessagePresenter {
   /**
    * Present exception message.
    * 
-   * @param ex The message.
+   * @param message The message.
    */
   void presentMessage(String message);
 

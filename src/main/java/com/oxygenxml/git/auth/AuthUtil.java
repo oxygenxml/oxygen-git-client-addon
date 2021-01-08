@@ -132,7 +132,8 @@ public class AuthUtil {
   /**
    * Opens a login dialog to update the credentials
    * 
-   * @param loginMessage
+   * @param hostName     Host name.
+   * @param loginMessage Login message.
    * 
    * @return the new credentials or <code>null</code> if the user canceled.
    */

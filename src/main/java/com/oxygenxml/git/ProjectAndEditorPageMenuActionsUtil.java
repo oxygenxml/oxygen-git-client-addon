@@ -46,6 +46,10 @@ public class ProjectAndEditorPageMenuActionsUtil {
 
   /**
    * Show blame for selected resource.
+   * 
+   * @param file                   The current file.
+   * @param historyCtrl            History controller.
+   * @param viewsToUpdateCursorFor A list of views for which to update the cursor (for example, make it busy).
    */
   public static void showBlame(
       File file,
@@ -110,6 +114,10 @@ public class ProjectAndEditorPageMenuActionsUtil {
   
   /**
    * Show history for selected resource.
+   * 
+   * @param file                   The current file.
+   * @param historyCtrl            History controller.
+   * @param viewsToUpdateCursorFor A list of views for which to update the cursor (for example, make it busy).
    */
   public static void showHistory(
       File file,

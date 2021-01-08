@@ -36,7 +36,7 @@ public class ProjectViewManager {
 	/**
 	 * Add a pop-up menu customizer to the Project view's contextual menu. Add git specific actions.
 	 * 
-	 * @param menuItem The item to be added
+	 * @param gitActionsProvider Actions provider.
 	 */
 	public static void addPopUpMenuCustomizer(ProjectMenuGitActionsProvider gitActionsProvider) {
 	  StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
@@ -77,8 +77,6 @@ public class ProjectViewManager {
 
 	/**
 	 * Get all the selected files + the files from inside the selected directories in the Project view.
-	 * 
-	 * @param pluginWorkspaceAccess  Plug-in workspace access.
 	 * 
 	 * @return the selected files and all the files from inside the selected directories in the Project view.
 	 */

@@ -96,7 +96,8 @@ public class ProjectMenuGitActionsProvider {
    * Constructor.
    * 
    * @param pluginWorkspaceAccess Plug-in workspace access.
-   * @param gitCtrl             The staging panel.
+   * @param gitCtrl               The staging panel.
+   * @param historyController     History controller.
    */
   public ProjectMenuGitActionsProvider(
       StandalonePluginWorkspace pluginWorkspaceAccess,
@@ -289,8 +290,6 @@ public class ProjectMenuGitActionsProvider {
    * Stage files.
    * 
    * @param repository The current repository.
-   * 
-   * @return <code>true</code> if we have staged files.
    */
   private void stageFiles(String repository) {
     repository = FileHelper.rewriteSeparator(repository);

@@ -279,16 +279,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }
     
     GitAccess gitAccess = GitAccess.getInstance();
-    System.err.println("AAAAAAAAAAAAAAAAAAAAAa");
-    try {
-      System.err.println("BBBBBBBBBBBBBBBBBBBBBB " + Thread.currentThread().getName());
-      gitAccess.createNewRepository(repositoryPath);
-    } catch (Throwable e) {
-      e.printStackTrace();
-    }
+    gitAccess.createNewRepository(repositoryPath);
     Repository repo = gitAccess.getRepository();
-    System.err.println("THREAD   " + Thread.currentThread().getName());
-    System.err.println("REPOOOOOOOOOOOOOOOOOOO " + repo);
     loadedRepos.add(repo);
     
     return repo;

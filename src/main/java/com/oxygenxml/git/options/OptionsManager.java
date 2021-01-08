@@ -196,6 +196,8 @@ public class OptionsManager {
   
   /**
    * Save the new view mode for the staged resources.
+   * 
+   * @param stagedResViewMode The view mode.
    */
   public void saveStagedResViewMode(ResourcesViewMode stagedResViewMode) {
     getOptions().setStagedResViewMode(stagedResViewMode);
@@ -221,6 +223,8 @@ public class OptionsManager {
   
   /**
    * Save the new view mode for the unstaged resources.
+   * 
+   * @param unstagedResViewMode The view mode.
    */
   public void saveUnstagedResViewMode(ResourcesViewMode unstagedResViewMode) {
     getOptions().setUnstagedResViewMode(unstagedResViewMode);
@@ -334,6 +338,8 @@ public class OptionsManager {
 
   /**
    * Loads the user credentials for git push and pull
+   * 
+   * @param host Host.
    * 
    * @return the credentials. Never <code>null</code>.
    */
@@ -465,8 +471,11 @@ public class OptionsManager {
     return getOptions().getUnstagedResViewMode();
   }
   
-   /**
-    * Returns the stored answer for the given prompt.
+  /**
+   * Returns the stored answer for the given prompt.
+   * 
+   * @param The prompt.
+   * 
    * @return The stored answer for the given prompt or <code>null</code> if this question was never asked.
    */
   public Boolean getSshPromptAnswer(String prompt) {
@@ -474,11 +483,13 @@ public class OptionsManager {
   }
   
   /**
-   * @return A cache for asking the user for connection message.
+   * Save SSH prompt.
+   * 
+   * @param prompt The prompt.
+   * @param answer The answer.
    */
   public void saveSshPrompt(String prompt, boolean answer) {
     getOptions().getSshPromptAnswers().put(prompt, answer);
-    
     saveOptions();
   }
 

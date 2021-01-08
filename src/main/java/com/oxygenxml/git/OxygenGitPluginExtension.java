@@ -265,7 +265,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	/**
 	 * Customize the Git Staging view.
 	 * 
-	 * @param gitCtrl  Git controller.
 	 * @param viewInfo View information.
 	 */
 	private void customizeGitStagingView(ViewInfo viewInfo) {
@@ -325,7 +324,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	/**
 	 * Customize the history view.
 	 * 
-	 * @param gitCtrl   Git controller.
 	 * @param viewInfo  View information.
 	 */
   private void customizeHistoryView(ViewInfo viewInfo) {

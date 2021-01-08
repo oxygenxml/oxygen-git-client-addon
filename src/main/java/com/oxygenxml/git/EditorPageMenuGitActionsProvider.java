@@ -43,6 +43,8 @@ public class EditorPageMenuGitActionsProvider {
   
   /**
    * Constructor.
+   * 
+   * @param historyController History controller.
    */
   public EditorPageMenuGitActionsProvider(HistoryController historyController) {
     this.historyCtrl = historyController;
@@ -57,6 +59,10 @@ public class EditorPageMenuGitActionsProvider {
   }
 
   /**
+   * Get the Git-specific action for the current editor page.
+   * 
+   * @param editorURL Editor URL
+   * 
    * @return the Git-specific action for the current editor page.
    */
   public List<AbstractAction> getActionsForCurrentEditorPage(URL editorURL) {

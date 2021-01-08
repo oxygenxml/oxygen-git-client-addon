@@ -84,6 +84,7 @@ public class GitOperationScheduler {
   /**
    * Schedules a task.
    * 
+   * @param <V> the type of the result returned by the future task.
    * @param task A task to run on the dedicated Git actions thread.
    * @param errorHandler Receives notifications when the task fails with an exception.
    * 
@@ -110,7 +111,9 @@ public class GitOperationScheduler {
   /**
    * Schedules a task.
    * 
+   * @param <V> the type of the result returned by the future task.
    * @param task A task to run on the dedicated Git actions thread.
+   * @param resultHandler Result handler.
    * @param errorHandler Receives notifications when the task fails with an exception.
    * 
    * @return A future that monitors the task.
@@ -136,9 +139,8 @@ public class GitOperationScheduler {
   /**
    * Schedules a runnable for execution.
    * 
-   * @param delayMillis Milliseconds after which to execute the runnable.
-   * 
    * @param r Code to be executed on thread.
+   * @param delayMillis Milliseconds after which to execute the runnable.
    * 
    * @return a ScheduledFuture representing pending completion of the task 
    * and whose get() method will return null upon completion.
