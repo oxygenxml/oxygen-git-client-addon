@@ -748,8 +748,7 @@ public class RevCommitUtil {
 
     String shortBranchName = Repository.shortenRefName(branchName);
     String fullBranchName = Constants.R_HEADS + shortBranchName;
-    BranchConfig branchConfig = new BranchConfig(repository.getConfig(),
-        shortBranchName);
+    BranchConfig branchConfig = new BranchConfig(repository.getConfig(), shortBranchName);
 
     String trackingBranch = branchConfig.getTrackingBranch();
     if (trackingBranch == null) {
@@ -767,7 +766,6 @@ public class RevCommitUtil {
     }
 
     try (RevWalk walk = new RevWalk(repository)) {
-
       RevCommit localCommit = walk.parseCommit(local.getObjectId());
       RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
 

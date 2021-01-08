@@ -279,8 +279,16 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }
     
     GitAccess gitAccess = GitAccess.getInstance();
-    gitAccess.createNewRepository(repositoryPath);
+    System.err.println("AAAAAAAAAAAAAAAAAAAAAa");
+    try {
+      System.err.println("BBBBBBBBBBBBBBBBBBBBBB " + Thread.currentThread().getName());
+      gitAccess.createNewRepository(repositoryPath);
+    } catch (Throwable e) {
+      e.printStackTrace();
+    }
     Repository repo = gitAccess.getRepository();
+    System.err.println("THREAD   " + Thread.currentThread().getName());
+    System.err.println("REPOOOOOOOOOOOOOOOOOOO " + repo);
     loadedRepos.add(repo);
     
     return repo;
@@ -676,9 +684,11 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * @throws IOException If it fails.
    */
   private void deleteRepository(Repository repository) throws IOException {
-    String absolutePath = repository.getWorkTree().getAbsolutePath();
-    File dirToDelete = new File(absolutePath);
-    FileUtils.deleteDirectory(dirToDelete);
+    if (repository != null) {
+      String absolutePath = repository.getWorkTree().getAbsolutePath();
+      File dirToDelete = new File(absolutePath);
+      FileUtils.deleteDirectory(dirToDelete);
+    }
   }
   
   /**

@@ -105,7 +105,13 @@ public class ChangesPanel extends JPanel {
    */
   @XmlEnum
   public enum ResourcesViewMode {
+    /**
+     * Flat (list) view.
+     */
     FLAT_VIEW,
+    /**
+     * Tree view.
+     */
     TREE_VIEW;
   }
 

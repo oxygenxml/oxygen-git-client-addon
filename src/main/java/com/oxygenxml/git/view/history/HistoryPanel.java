@@ -543,9 +543,7 @@ public class HistoryPanel extends JPanel {
         TableModel tableModel = historyTable.getModel();
         if(tableModel instanceof HistoryCommitTableModel) {
           HistoryCommitTableModel historyTableModel = (HistoryCommitTableModel) tableModel;
-          if (historyTableModel != null) {
-            historyTableModel.filterChanged(text);
-          }
+          historyTableModel.filterChanged(text);
         }
       }
     };

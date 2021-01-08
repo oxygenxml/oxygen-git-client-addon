@@ -92,6 +92,7 @@ public class AuthenticationInterceptor {
 
 		@Override
 		protected PasswordAuthentication getPasswordAuthentication() {
+		  PasswordAuthentication passwordAuth = null;
 			try {
 				// get the old Authenticator values that will be used to delegate back
 				final String oldRequestingHost = (String) requestingHost.get(this);
@@ -115,7 +116,6 @@ public class AuthenticationInterceptor {
            * because there we also get a message stating the cause: either the credentials are wrong
            * or perhaps the user doesn't have permissions on the repository. 
 				   */
-					return null;
 				} else {
 					// Resets the Authenticator, thus making it ready to be restored
 					Method reset = Authenticator.class.getDeclaredMethod("reset");
@@ -139,12 +139,12 @@ public class AuthenticationInterceptor {
 					// in the future we should replace this with some API
 					getPasswordAuthentication.setAccessible(true);
 					
-					return (PasswordAuthentication) getPasswordAuthentication.invoke(oldAuth);
+					passwordAuth = (PasswordAuthentication) getPasswordAuthentication.invoke(oldAuth);
 				}
 			} catch (Exception e) {
 				logger.error(e, e);
 			}
-			return null;
+			return passwordAuth;
 		}
 		
 		/**

@@ -437,11 +437,18 @@ public class GitAccess {
 	 * @param path - A string that specifies the git Repository folder
 	 */
 	public void createNewRepository(String path) throws GitAPIException {
+	  System.err.println(1);
 	  File wc = new File(path);
+	  System.err.println(2);
 	  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
+	  System.err.println(3);
     closeRepo();
+    System.err.println(4);
     try {
+      System.err.println(path + " ?>SADSA S AD SA AS");
       git = Git.init().setBare(false).setDirectory(wc).call();
+      System.err.println("=============asdsadsadsadasdasdasdsdsd");
+      
       fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     } catch (GitAPIException e) {
       fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc), e);
@@ -641,19 +648,16 @@ public class GitAccess {
 	 * @return the SHA-1 id
 	 */
 	public ObjectId submoduleCompare(String submodulePath, boolean index) {
+	  ObjectId objID = null;
 		try {
 			SubmoduleStatus submoduleStatus = git.submoduleStatus().addPath(submodulePath).call().get(submodulePath);
 			if (submoduleStatus != null) {
-			  if (index) {
-			    return submoduleStatus.getIndexId();
-			  } else {
-			    return submoduleStatus.getHeadId();
-			  }
+			  objID = index ? submoduleStatus.getIndexId() : submoduleStatus.getHeadId();
 			}
 		} catch (GitAPIException e) {
 		  logger.error(e, e);
 		}
-		return null;
+		return objID;
 	}
 
 	/**
@@ -1521,6 +1525,7 @@ public class GitAccess {
 	 *         <code>null</code>.
 	 */
 	public String getHostName() {
+	  String hostName = "";
 		if (git != null) {
 			Config storedConfig = git.getRepository().getConfig();
 			// TODO How we should react when there are multiple remote repositories?
@@ -1533,14 +1538,12 @@ public class GitAccess {
 			  }
 			}
 			try {
-				URL u = new URL(url);
-				url = u.getHost();
-				return url;
+				hostName = new URL(url).getHost();
 			} catch (MalformedURLException e) {
-				return "";
+				logger.debug(e, e);
 			}
 		}
-		return "";
+		return hostName;
 
 	}
 
@@ -1839,8 +1842,9 @@ public class GitAccess {
 	 * @return An object specifying the branch name and if it is detached or not
 	 */
 	public BranchInfo getBranchInfo() {
+	  BranchInfo branchInfo = new BranchInfo("", false);
 		if (git != null) {
-			BranchInfo branchInfo = new BranchInfo();
+			branchInfo = new BranchInfo();
 			String branchName = "";
 			try {
 				branchName = git.getRepository().getBranch();
@@ -1854,15 +1858,14 @@ public class GitAccess {
 						break;
 					}
 				}
-				return branchInfo;
 			} catch (NoHeadException e) {
+			  branchInfo = new BranchInfo(branchName, false);
 			  logger.debug(e, e);
-			  return new BranchInfo(branchName, false);
 			} catch (IOException | GitAPIException e) {
 			  logger.error(e, e);
 			}
 		}
-		return new BranchInfo("", false);
+		return branchInfo;
 	}
 
 	/**

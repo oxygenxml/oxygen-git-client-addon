@@ -2,6 +2,7 @@ package com.oxygenxml.git.auth;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.SocketAddress;
 import java.util.Arrays;
 
 import org.eclipse.jgit.transport.sshd.DefaultProxyDataFactory;
@@ -36,32 +37,37 @@ public class ResolvingProxyDataFactory extends DefaultProxyDataFactory {
       return null;
     }
 
+    ProxyData newProxyData = null;
     Proxy proxy = data.getProxy();
-    if (proxy.type() == Proxy.Type.DIRECT || !(proxy.address() instanceof InetSocketAddress)) {
-      return data;
-    }
-
-    InetSocketAddress address = (InetSocketAddress) proxy.address();
-
-    char[] password = null;
-    InetSocketAddress proxyAddress = new InetSocketAddress(address.getHostName(), address.getPort());
-    try {
-      password = data.getPassword() == null ? null : data.getPassword();
-      switch (proxy.type()) {
-        case HTTP:
-          proxy = new Proxy(Proxy.Type.HTTP, proxyAddress);
-          return new ProxyData(proxy, data.getUser(), password);
-        case SOCKS:
-          proxy = new Proxy(Proxy.Type.SOCKS, proxyAddress);
-          return new ProxyData(proxy, data.getUser(), password);
-        default:
-          return null;
+    SocketAddress addr = proxy.address();
+    if (proxy.type() == Proxy.Type.DIRECT || !(addr instanceof InetSocketAddress)) {
+      newProxyData = data;
+    } else {
+      InetSocketAddress address = (InetSocketAddress) addr;
+      InetSocketAddress proxyAddress = new InetSocketAddress(address.getHostName(), address.getPort());
+      char[] password = null;
+      try {
+        password = data.getPassword() == null ? null : data.getPassword();
+        switch (proxy.type()) {
+          case HTTP:
+            proxy = new Proxy(Proxy.Type.HTTP, proxyAddress);
+            newProxyData = new ProxyData(proxy, data.getUser(), password);
+            break;
+          case SOCKS:
+            proxy = new Proxy(Proxy.Type.SOCKS, proxyAddress);
+            newProxyData = new ProxyData(proxy, data.getUser(), password);
+            break;
+          default:
+            break;
+        }
+      } finally {
+        if (password != null) {
+          Arrays.fill(password, '\000');
+        }
       }
-    } finally {
-      if (password != null) {
-        Arrays.fill(password, '\000');
-      }
     }
+    
+    return newProxyData;
   }
 
 }

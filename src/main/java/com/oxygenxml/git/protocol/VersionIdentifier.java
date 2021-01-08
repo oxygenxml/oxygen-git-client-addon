@@ -1,11 +1,10 @@
 package com.oxygenxml.git.protocol;
 
 /**
- * Constants for the location of a git file content. Informs where to find the
- * file content
+ * Constants for the location of a git file content.
+ * Informs where to find the file content.
  * 
  * @author Beniamin Savu
- *
  */
 public class VersionIdentifier {
   /**
@@ -75,7 +74,13 @@ public class VersionIdentifier {
 	 */
 	public static final String INDEX_OR_LAST_COMMIT = "IndexOrLastCommit";
 
+	/**
+	 * Current submodule.
+	 */
 	public static final String CURRENT_SUBMODULE = "CurrentSubmodule";
 
+	/**
+	 * Previous submodule.
+	 */
 	public static final String PREVIOUSLY_SUBMODULE = "PreviousSubmodule";
 }
