@@ -54,8 +54,6 @@ public class AddRemoteDialog extends OKCancelDialog {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param translator Translator for i18n.
 	 */
 	public AddRemoteDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),

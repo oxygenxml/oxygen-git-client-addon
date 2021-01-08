@@ -183,6 +183,8 @@ public class HistoryViewContextualMenuPresenter {
    * @param filePath File path.
    * @param commit     Revision information.
    * @param fileStatus File information at the given revision.
+   * 
+   * @throws IOException
    */
   private void checkIfValidForOpen(
       String filePath, 
@@ -325,7 +327,7 @@ public class HistoryViewContextualMenuPresenter {
    * @param actions               List where to put the actions.
    * @param commitCharacteristics Commit data.
    * @param addFileName           <code>true</code> to append the name of the file to the actions' name.
-   * @param filePath              File to DIFF.
+   * @param fileStatus            File to diff.
    */
   private void createCompareActionsForCommit(
       List<Action> actions, 

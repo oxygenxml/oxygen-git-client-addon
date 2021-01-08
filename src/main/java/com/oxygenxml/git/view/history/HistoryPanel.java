@@ -441,9 +441,8 @@ public class HistoryPanel extends JPanel {
   /**
    * Show the contextual menu on the history table.
    * 
-   * @param commitResourcesTable The table with the files from a committed on a
-   *                             revision.
-   * @param point                The point where to show the contextual menu.
+   * @param historyTable The table with the files from a committed on a revision.
+   * @param point        The point where to show the contextual menu.
    */
   protected void showHistoryTableContextualMenu(JTable historyTable, Point point) {
     // If we present the history for a specific file.
@@ -802,8 +801,6 @@ public class HistoryPanel extends JPanel {
 
   /**
    * Tries a fetch to update remote information.
-   * 
-   * @param gitAccess Git access.
    */
   private void tryFetch() {
     try {

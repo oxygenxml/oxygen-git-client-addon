@@ -226,7 +226,7 @@ public class UIUtil {
    *
    * @param component Text component.
    * @param g Graphics used to draw.
-   * @param noFocusHint The text to draw.
+   * @param text The text to draw.
    * @param hintColor An explicit color for the hint. <code>null</code> to use system default color.
    */
   public static void drawHint(JComponent component, Graphics g, String text, Color hintColor) {

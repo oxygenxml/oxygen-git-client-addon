@@ -59,6 +59,7 @@ public class GitController extends GitControllerBase {
   /**
    * Execute an push or pull action, depending on the given command.
    * 
+   * @param message An optional message about the operation.
    * @param command The command runnable to execute.
    * 
    * @return The result of the operation execution.
@@ -73,6 +74,8 @@ public class GitController extends GitControllerBase {
 
   /**
    * Push.
+   * 
+   * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
   public Future<?> push() {
@@ -81,6 +84,8 @@ public class GitController extends GitControllerBase {
 
   /**
    * Pull.
+   * 
+   * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
   public Future<?> pull() {
@@ -91,6 +96,8 @@ public class GitController extends GitControllerBase {
    * Pull and choose the merging strategy.
    * 
    * @param pullType The pull type / merging strategy.
+   * 
+   * @return The result of the operation execution.
    */
   @SuppressWarnings("java:S1452")
   public Future<?> pull(PullType pullType) {
@@ -115,7 +122,8 @@ public class GitController extends GitControllerBase {
   /**
    * Pull failed because there are uncommitted files that would be overwritten.
    * 
-   * @param e Exception.
+   * @param filesWithChanges Files with changes.
+   * @param message The message to show.
    */
   protected void showPullFailedBecauseOfCertainChanges(List<String> filesWithChanges, String message) {
     if (logger.isDebugEnabled()) {
@@ -234,15 +242,21 @@ public class GitController extends GitControllerBase {
 
     /**
      * Compose and return failure message.
+     * 
+     * @param The initial message.
+     * 
+     * @return the failure message.
      */
     protected abstract String composeAndReturnFailureMessage(String message);
 
     /**
      * Push or pull, depending on the implementation.
+     * 
+     * @param userCredentials User credentials.
+     * 
+     * @return an optional response.
      */
     protected abstract Optional<PushPullEvent> doOperation(UserCredentials userCredentials) throws GitAPIException;
-
-
   }
 
   /**

@@ -403,9 +403,6 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	
 	/**
 	 * Constructor.
-	 *  
-	 * @param parentFrame Parent frame.
-	 * @param translator Translation support.
 	 */
 	public CloneRepositoryDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
@@ -593,6 +590,8 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 	/**
 	 * 
 	 * Get a branch short name.
+	 * 
+	 * @param ref The current reference from which to get the name.
 	 * 
 	 * @return the name or an empty string.
 	 */

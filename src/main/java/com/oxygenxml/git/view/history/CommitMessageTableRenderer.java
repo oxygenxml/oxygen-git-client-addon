@@ -74,7 +74,11 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	 * 
 	 * @param repository            The current repository
 	 * @param commitsAheadAndBehind Commits ahead (to push) and behind (to pull).
-	 */
+   * @param branchName            Branch name.
+   * @param tagMap                Tags map.
+   * @param localBranchMap        Local branches map.
+   * @param remoteBranchMap       Remote branches map.
+   */
 	public CommitMessageTableRenderer(
 	    Repository repository, 
 	    CommitsAheadAndBehind commitsAheadAndBehind,

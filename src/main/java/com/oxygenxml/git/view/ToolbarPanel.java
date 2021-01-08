@@ -255,6 +255,8 @@ public class ToolbarPanel extends JPanel {
 	
 	/**
 	 * Fetch.
+	 * 
+	 * @param firstRun <code>true</code> if this the first fetch.
 	 */
   private void fetch(boolean firstRun) {
     try {
@@ -318,9 +320,13 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Sets the panel layout and creates all the buttons with their functionality
 	 * making them visible
+	 * 
 	 * @param historyController History controller.
+	 * @param branchManagementViewPresenter Branches presenter.
 	 */
-	public void createGUI(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
+	public void createGUI(
+	    HistoryController historyController,
+	    BranchManagementViewPresenter branchManagementViewPresenter) {
 		gitToolbar = new JToolBar();
 		gitToolbar.setOpaque(false);
 		gitToolbar.setFloatable(false);
@@ -566,7 +572,9 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Adds to the tool bar a button for selecting branches. When clicked, a new
 	 * dialog appears that shows all the branches for the current repository and
-	 * allows the user to select one of them
+	 * allows the user to select one of them.
+	 * 
+	 * @param branchManagementViewPresenter Branches presenter.
 	 */
 	private void addBranchSelectButton(BranchManagementViewPresenter branchManagementViewPresenter) {
 		Action branchSelectAction = new AbstractAction() {

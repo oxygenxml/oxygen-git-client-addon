@@ -50,8 +50,6 @@ public class SubmoduleSelectDialog extends OKCancelDialog {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param translator Translation support.
 	 */
 	public SubmoduleSelectDialog() {
 		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),

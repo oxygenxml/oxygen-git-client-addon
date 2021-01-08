@@ -67,10 +67,11 @@ public class RepositoryChangeWatcher {
   /**
    * Private constructor.
    * 
-   * @param gitCtrl High level Git commands support.
+   * @param pluginWS Access to the workspace.
+   * @param gitCtrl  High level Git commands support.
    */
-  private RepositoryChangeWatcher(StandalonePluginWorkspace standalonePluginWorkspace, GitController gitCtrl) {
-    addListeners4EditingAreas(standalonePluginWorkspace);
+  private RepositoryChangeWatcher(StandalonePluginWorkspace pluginWS, GitController gitCtrl) {
+    addListeners4EditingAreas(pluginWS);
     this.gitController = gitCtrl;
     
     // Check the currently opened editors.

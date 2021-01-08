@@ -49,9 +49,8 @@ public class CommitCharacteristics {
 	/**
 	 * Construct the CommitCharacteristics.
 	 * 
-	 * @param graph               The graph representation
 	 * @param commitMessage       The commit message
-	 * @param authorDate                The date
+	 * @param authorDate          The date
 	 * @param author              The commit author
 	 * @param commitAbbreviatedId The abbreviated commit id
 	 * @param commitId            The commit id

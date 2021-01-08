@@ -180,12 +180,12 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	/**
 	 * Filters the table
 	 * 
-	 * @param text The text to filter
+	 * @param text The text to user for filtering.
 	 */
-	public void filterChanged(String textFilter) {
-	  if (!Equaler.verifyEquals(textFilter, this.textToFilter)) {
-	    this.textToFilter = textFilter;
-	    if (textFilter != null && textFilter.length() > 0) {
+	public void filterChanged(String text) {
+	  if (!Equaler.verifyEquals(text, this.textToFilter)) {
+	    this.textToFilter = text;
+	    if (text != null && text.length() > 0) {
 	      allCommitsCharacteristicsFiltered.clear();
 	      for (Iterator<CommitCharacteristics> iterator = allCommitsCharacteristics.iterator(); iterator.hasNext();) {
 	        CommitCharacteristics comitCharac = iterator.next();

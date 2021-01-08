@@ -47,7 +47,7 @@ public class PushPullEvent extends GitEventInfo {
   /**
    * Constructor.
    * 
-   * @param op The executed operation.
+   * @param operation The executed operation.
    * @param message An optional message about the operation.
    * @param cause  An exception if the operation failed.
    */

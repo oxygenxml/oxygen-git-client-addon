@@ -81,7 +81,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
    * 
    * @param panel      The panel in which the components are added.
    * @param branchName The name of the current branch.
-   * @param commitId   The commit id to which to reset the branch.
+   * @param commitCharacteristics  The commit to which to reset the branch.
    */
   private void createGUI(JPanel panel, String branchName, CommitCharacteristics commitCharacteristics) {
     GridBagConstraints gbc = new GridBagConstraints();
