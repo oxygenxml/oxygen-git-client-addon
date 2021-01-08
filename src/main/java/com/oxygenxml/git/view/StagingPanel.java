@@ -159,9 +159,12 @@ public class StagingPanel extends JPanel {
    * 
    * @param historyController History controller.
    * @param branchManagementViewPresenter Branch management interface.
-   * @param gitController Git operations controller.
+   * 
+   * @return the toolbar.
    */
-  protected ToolbarPanel createToolbar(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
+  protected ToolbarPanel createToolbar(
+      HistoryController historyController,
+      BranchManagementViewPresenter branchManagementViewPresenter) {
     return new ToolbarPanel(gitController, refreshSupport, historyController, branchManagementViewPresenter);
   }
 
@@ -169,8 +172,11 @@ public class StagingPanel extends JPanel {
 	 * Create the GUI.
 	 * 
 	 * @param historyController History related interaction.
+	 * @param branchManagementViewPresenter The branches presenter.
 	 */
-	private void createGUI(HistoryController historyController, BranchManagementViewPresenter branchManagementViewPresenter) {
+	private void createGUI(
+	    HistoryController historyController,
+	    BranchManagementViewPresenter branchManagementViewPresenter) {
 		this.setLayout(new GridBagLayout());
 
 		// Creates the panels objects that will be in the staging panel
@@ -266,7 +272,6 @@ public class StagingPanel extends JPanel {
   /**
    * Adds a hook to refresh the models if the editor is part of the Git working copy.
    * 
-   * @param gitAccess Git access.
    * @param editorLocation Editor to check.
    */
   private void addEditorSaveHook(final URL editorLocation) {
@@ -406,8 +411,7 @@ public class StagingPanel extends JPanel {
 	/**
 	 * Adds the working copy area to the panel
 	 * 
-	 * @param gbc-
-	 *          the constraints used for this component
+	 * @param gbc The constraints used for this component
 	 */
 	private void addWorkingCopySelectionPanel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, 5, 0, 5);

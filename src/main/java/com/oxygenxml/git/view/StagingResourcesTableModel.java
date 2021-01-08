@@ -164,11 +164,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Change the files stage state from unstaged to staged or from staged to
-	 * unstaged
-	 * 
-	 * @param selectedFiles
-	 *          - the files to change their stage state
+	 * Change the files stage state from unstaged to staged or from staged to unstaged.
 	 */
 	public void switchAllFilesStageState() {
 		List<FileStatus> filesToBeUpdated = new ArrayList<>();

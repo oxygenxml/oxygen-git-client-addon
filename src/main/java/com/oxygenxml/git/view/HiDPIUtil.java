@@ -351,8 +351,8 @@ public class HiDPIUtil {
   /**
    * Compute the dialog dimension for a HiDPI screen with no implicit support from the OS.
    * 
-   * @param initialDimension  The initial dimension.
-   * @param preferredDimension The dimension preferred by the component.
+   * @param initialDimension The initial dimension.
+   * @param preferredSize    The dimension preferred by the component.
    * 
    * @return the computed dimension.
    */

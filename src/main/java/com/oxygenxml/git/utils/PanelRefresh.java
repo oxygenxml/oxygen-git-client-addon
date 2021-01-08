@@ -343,6 +343,8 @@ public class PanelRefresh implements GitRefreshSupport {
 
 	/**
 	 * Update the counters presented on the Pull/Push toolbar action.
+	 * 
+	 * @param status The current status.
 	 */
   private void updateCounters(RepositoryStatusInfo status) {
     stagingPanel.getCommitPanel().setRepoStatus(status);

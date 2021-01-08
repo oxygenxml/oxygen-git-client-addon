@@ -236,10 +236,15 @@ public class RevCommitUtil {
   /**
    * Checks if the given path was renamed between the two revisions.
    * 
+   * @param repository The current repository.
+   * @param parent     Parent commit.
+   * @param commit     Current commit.
+   * @param path       Resource path.
+   * 
    * @return If the resource was renamed between the two revisions, it will return a diff information.
    * 
    * @throws IOException
-   * @throws GitAPIException 
+   * @throws GitAPIException
    */
   public static Optional<DiffEntry> findRename(
       Repository repository,
@@ -333,7 +338,7 @@ public class RevCommitUtil {
    * Collects all the revisions by waking the revision iterator.
    * 
    * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
-   * @param revisions Revisions are collected in here.
+   * @param commits Revisions/Commits are collected in here.
    * @param repository Loaded repository.
    * @param revWalk Revision iterator.
    * 
@@ -342,7 +347,7 @@ public class RevCommitUtil {
    */
   private static void collectRevisions(
       String filePath, 
-      List<CommitCharacteristics> commitVector, 
+      List<CommitCharacteristics> commits, 
       Repository repository,
       RevWalk revWalk) throws IOException, GitAPIException {
     
@@ -356,14 +361,14 @@ public class RevCommitUtil {
 
     RevCommit lastProcessedRevision = null;
     for (RevCommit commit : revWalk) {
-      appendRevCommit(commitVector, commit);
+      appendRevCommit(commits, commit);
       
       lastProcessedRevision = commit;
     }
     
     // If we are following a resource, check for rename events.
     if (filePath != null && lastProcessedRevision != null) {
-      handleRename(filePath, commitVector, repository, lastProcessedRevision);
+      handleRename(filePath, commits, repository, lastProcessedRevision);
     }
   }
 
@@ -372,7 +377,7 @@ public class RevCommitUtil {
    * it will continue collecting revisions based on the previous resource name/path.  
    * 
    * @param filePath An optional resource path. If not null, only the revisions that changed this resource are collected.
-   * @param revisions Revisions are collected in here.
+   * @param commits Revisions are collected in here.
    * @param repository Loaded repository.
    * @param current The last revision encountered for the file path.
    * 
@@ -381,7 +386,7 @@ public class RevCommitUtil {
    */
   private static void handleRename(
       String filePath, 
-      List<CommitCharacteristics> commitVector, 
+      List<CommitCharacteristics> commits, 
       Repository repository,
       RevCommit current)
       throws IOException, GitAPIException {
@@ -399,8 +404,8 @@ public class RevCommitUtil {
           revWalk.markStart(current);
           
           // We will re-append this commit but this time it will be linked to 
-          commitVector.remove(commitVector.size() - 1);
-          collectRevisions(oldPath, commitVector, repository, revWalk);
+          commits.remove(commits.size() - 1);
+          collectRevisions(oldPath, commits, repository, revWalk);
         }
       }
     }
@@ -471,7 +476,9 @@ public class RevCommitUtil {
    * @param since Start of the interval.
    * @param until End of the interval.
    * @param filePath The new path of a resource.
-   * @return
+   * 
+   * @return The new path.
+   * 
    * @throws GitAPIException
    * @throws IOException
    */
@@ -519,7 +526,8 @@ public class RevCommitUtil {
    * we want to find out the path in the OLD revision.
    * 
    * @param git Git interaction.
-   * @param oldRevisionId The ID of the old revision in which the file might have had another 
+   * @param oldRevisionId The ID of the old revision in which the file might have had another
+   * @param originalFilePath The original file path.
    *  
    * @return The new path of the resource.
    * 
@@ -529,13 +537,13 @@ public class RevCommitUtil {
   public static String getOldPathStartingFromHead(
       Git git, 
       String oldRevisionId, 
-      String newFilePath) throws GitAPIException, IOException {
+      String originalFilePath) throws GitAPIException, IOException {
     
     Repository repository = git.getRepository();
     RevCommit olderRevCommit = repository.parseCommit(repository.resolve(oldRevisionId));
     RevCommit headRevCommit = repository.parseCommit(repository.resolve("HEAD"));
     
-    return getOldPath(git, olderRevCommit, headRevCommit, newFilePath);
+    return getOldPath(git, olderRevCommit, headRevCommit, originalFilePath);
   }
 
   /**
@@ -610,6 +618,7 @@ public class RevCommitUtil {
   /**
    * Utility method  to put the revisions in a proper order.
    * 
+   * @param <E> The type of the list elements.
    * @param new2old A list of already sorted revisions, from new to old.
    * @param oldestRev A revision older than all the others. It will be added in the resulting list.
    * @param ascending <code>true</code> to sort from older to newest.
@@ -845,7 +854,7 @@ public class RevCommitUtil {
    * only exits if there is a conflict on the current file.
    * 
    * @param git Git access.
-   * @param filePath File path.
+   * @param path File path.
    * 
    * @return The SHA-1 commit ID or <code>null</code>.
    * 
@@ -902,6 +911,8 @@ public class RevCommitUtil {
   
   /**
    * Finds the last local commit in the repository
+   * 
+   * @param git The Git-API object.
    * 
    * @return the last local commit
    */

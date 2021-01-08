@@ -39,6 +39,8 @@ public class Translator {
    * Get the translation for the given key.
    * 
    * @param key The key identifying the message.
+   * 
+   * @return the translation.
    */
 	public String getTranslation(String key) {
 		StandalonePluginWorkspace spw =

@@ -223,8 +223,10 @@ public class DiffPresenter {
   }
 
 	/**
-	 * Presents a 3-way diff
-	 * @param file 
+	 * Presents a 3-way diff.
+	 * 
+	 * @param file The file for which to show the Diff.
+	 * @param gitController Git controller. 
 	 */
 	private static void showConflictDiff(FileStatus file, GitControllerBase gitController) {
 		try {

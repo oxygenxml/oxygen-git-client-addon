@@ -334,6 +334,8 @@ public class TreeUtil {
   
   /**
    * Sorts the entire tree.
+   * 
+   * @param treeModel The tree model.
    */
   public static void sortGitTree(DefaultTreeModel treeModel) {
     GitTreeNode root = (GitTreeNode) treeModel.getRoot();

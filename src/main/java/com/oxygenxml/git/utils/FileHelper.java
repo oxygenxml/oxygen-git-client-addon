@@ -354,6 +354,8 @@ public class FileHelper {
 	}
 	
 	/**
+	 * @param ext The extension to check.
+	 * 
 	 * @return <code>true</code> if the given text is an archive extension.
 	 */
 	public static boolean isArchiveExtension(String ext) {
@@ -362,6 +364,8 @@ public class FileHelper {
 	
 	 /**
    * Refresh project view.
+   * 
+   * @throws NoRepositorySelected
    */
   public static void refreshProjectView() throws NoRepositorySelected {
     StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();

@@ -365,7 +365,9 @@ public class CommitAndStatusPanel extends JPanel {
 	}
 	
 	/**
-   * Add "Commit" label. 
+   * Add "Commit" label.
+   * 
+   * @param gbc Grid bad constraints.
    */
   private void addLabel(GridBagConstraints gbc) {
     gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -530,6 +532,8 @@ public class CommitAndStatusPanel extends JPanel {
 
   /**
    * Add commit message text area.
+   * 
+   * @param gbc Grid bad constraints.
    */
 	private void addCommitMessageTextArea(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -561,6 +565,8 @@ public class CommitAndStatusPanel extends JPanel {
 
 	/**
 	 * Add status label.
+	 * 
+	 * @param gbc Grid bad constraints.
 	 */
 	private void addStatusLabel(GridBagConstraints gbc) {
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
@@ -655,6 +661,8 @@ public class CommitAndStatusPanel extends JPanel {
 
 	/**
 	 * Add commit button.
+	 * 
+	 * @param gbc Grid bad constraints.
 	 */
 	private void addCommitButton(GridBagConstraints gbc) {
 		gbc.insets = new Insets(0, UIConstants.COMPONENT_LEFT_PADDING,
@@ -728,7 +736,7 @@ public class CommitAndStatusPanel extends JPanel {
 	/**
 	 * Update status.
 	 * 
-	 * @param the current status.
+	 * @param statusInfo The current status.
 	 */
 	public void setRepoStatus(final RepositoryStatusInfo statusInfo) {
 	  RepositoryStatus repoStatus = statusInfo.getRepoStatus();

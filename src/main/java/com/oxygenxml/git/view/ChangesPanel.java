@@ -341,8 +341,7 @@ public class ChangesPanel extends JPanel {
    * Updates the flat view with the given files. Also if in the view some of the
    * files were selected, the selection is preserved.
    * 
-   * @param unstagedFiles
-   *          - the new files to update the flat view
+   * @param newFiles The new files to update in the flat view.
    */
   public void update(List<FileStatus> newFiles) {
     if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
@@ -616,8 +615,6 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * Check if the merging has been resolved.
 	 * 
-	 * @param repositoryState the repository state.
-	 * 
 	 * @return <code>true</code> if the merging has been resolved.
 	 */
 	private boolean isMergingResolved() {
@@ -646,7 +643,6 @@ public class ChangesPanel extends JPanel {
    * @param x         X coordinate where to show.
    * @param y         Y coordinate where to show.
    * @param model     The model of the tree.
-   * @param treePath  The current tree path.
    */
   private void showContextualMenuForTree(int x, int y, final StagingResourcesTreeModel model) {
     final List<String> selPaths = TreeUtil.getStringComonAncestor(tree);
