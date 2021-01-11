@@ -9,7 +9,7 @@ This add-on is compatible with Oxygen XML Editor/Author/Developer version 20.1 o
 To install the add-on, follow these instructions:
 
 1. Go to **Help > Install new add-ons...** to open an add-on selection dialog box.
-2. Enter or paste https://raw.githubusercontent.com/oxygenxml/Oxygen-Git-Plugin/master/build/addon.xml in the **Show add-ons from** field.
+2. Enter or paste https://www.oxygenxml.com/InstData/Addons/default/updateSite.xml in the **Show add-ons from** field.
 3. Select the **Git Client** add-on and click **Next**.
 4. Read the end-user license agreement. Then select the **I accept all terms of the end-user license agreement** option and click **Finish**.
 5. Restart the application.
