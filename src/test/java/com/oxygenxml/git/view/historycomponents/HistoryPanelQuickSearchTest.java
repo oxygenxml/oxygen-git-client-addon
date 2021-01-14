@@ -15,12 +15,10 @@ import org.junit.Test;
 
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 
-import net.sf.saxon.expr.SlashExpression;
-
 /**
  * Tests the quick search function
+ * 
  * @author mircea_badoi
- *
  */
 public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
   
