@@ -15,6 +15,8 @@ import org.junit.Test;
 
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 
+import net.sf.saxon.expr.SlashExpression;
+
 /**
  * Tests the quick search function
  * @author mircea_badoi
@@ -32,11 +34,15 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
     generateRepositoryAndLoad(
         getClass().getClassLoader().getResource("scripts/history_script_rename.txt"), 
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
+    
       historyPanel.showRepositoryHistory();
       flushAWT();
+      
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("nimic");
+      sleep(300);
+      
       String dump = dumpHistory(model.getAllCommits(), true);
       assertEquals("", dump);
   }
@@ -58,8 +64,9 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
-      String dump = dumpHistory(model.getAllCommits(), true);
+      sleep(300);
       
+      String dump = dumpHistory(model.getAllCommits(), true);
       String expected = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n";
       assertEquals(expected, dump);
       
@@ -84,20 +91,29 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       //we search the message, but the message is not with uppercase
       model.filterChanged("FIRST COMMIT");
+      sleep(300);
+      
       String dump = dumpHistory(model.getAllCommits(), true);
       String expected = "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n";
       assertEquals(expected, dump);
-      Thread.sleep(100);
+      
+      sleep(100);
+      
       //we go back to the original list
       model.filterChanged("");
+      sleep(300);
+      
       dump = dumpHistory(model.getAllCommits(), true);
       String expectedAll = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [1] ]\n" + 
           "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , null ]\n" + 
           "";
       assertEquals(expectedAll, dump);
+      
+      sleep(100);
+      
       //we search for message but not in the right order 
-      Thread.sleep(100);
       model.filterChanged("commit First");
+      sleep(300);
       dump = dumpHistory(model.getAllCommits(), true);
       assertEquals(expected, dump);
       
