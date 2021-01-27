@@ -24,6 +24,12 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
  * Plugin option page extension.
  */
 public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtension{
+  
+  /**
+   * Inset value for nested/subordinated options. 
+   */
+  private static final int NESTED_OPTION_INSET = 15;
+
   /**
    * What to do when detecting a repository inside a newly opened project.
    */
@@ -93,7 +99,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     c.weightx = 0;
     c.weighty = 0;
     c.anchor = GridBagConstraints.LINE_START;
-    c.insets = new Insets(15, 0, 0, 0);
+    c.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
     notifyAboutRemoteCommitsCheckBox = new JCheckBox(translator.getTranslation(Tags.NOTIFY_ON_NEW_COMMITS));
     mainPanel.add(notifyAboutRemoteCommitsCheckBox, c);
     

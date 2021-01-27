@@ -125,6 +125,10 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class GitAccess {
   /**
+   * The length of th eshort commit ID.
+   */
+  private static final int SHORT_COMMIT_ID_LENGTH = 7;
+  /**
 	 * A synthetic object representing the uncommitted changes.
 	 */
   public static final CommitCharacteristics UNCOMMITED_CHANGES = new CommitCharacteristics(
@@ -2257,9 +2261,8 @@ public class GitAccess {
         int refIdx = indexOfPrefix + prefix.length();
         String branchName = ref.getName().substring(refIdx);
         
-        String commit = ref.getObjectId().getName().substring(0, 7);
-        List<String> values = branchMap.computeIfAbsent(commit, t -> new ArrayList<>());
-        values.add(branchName);
+        String commit = ref.getObjectId().getName().substring(0, SHORT_COMMIT_ID_LENGTH);
+        branchMap.computeIfAbsent(commit, t -> new ArrayList<>()).add(branchName);
       }
     }
 
