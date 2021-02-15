@@ -25,6 +25,12 @@
                             and more. It also includes a built-in tool for comparing and merging
                             changes.</p>
                     </div>
+		    <div>
+                        <h3>What's new in version X.Y.Z</h3>
+                        <ol>
+                            <li>Support for Dutch localization was added.</li>
+                        </ol>
+                    </div>
                     <div>
                         <h3>What's new in version 2.4.0</h3>
                         <ol>
