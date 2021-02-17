@@ -116,6 +116,13 @@
             <version>2.08</version>
             <scope>test</scope>
         </dependency>
+
+		<!-- EXM-47243 Log4j is declared in superpom. We don't want to add this as runtime dependency-->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>provided</scope>
+		</dependency>
         
 		<!-- JGIT uses slf4j. We will distribute an implementation to avoid class 
 			loader issues. -->
