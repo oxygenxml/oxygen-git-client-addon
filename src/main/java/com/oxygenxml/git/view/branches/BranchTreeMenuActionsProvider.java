@@ -114,7 +114,8 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(translator.getTranslation(Tags.CHECKOUT)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        ctrl.asyncTask(() -> {
+        ctrl.asyncTask(
+            () -> {
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
               return null;
@@ -152,17 +153,19 @@ public class BranchTreeMenuActionsProvider {
               BranchesUtil.getLocalBranches(),
               true);
           if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-            ctrl.asyncTask(() -> {
-              ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath);
-              return null;
-            }, ex -> {
-              if (ex instanceof CheckoutConflictException) {
-                PluginWorkspaceProvider.getPluginWorkspace()
-                .showErrorMessage(translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH));
-              } else if (ex instanceof GitAPIException) {
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-              }
-            });
+            ctrl.asyncTask(
+                () -> {
+                  ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath);
+                  return null;
+                },
+                ex -> {
+                  if (ex instanceof CheckoutConflictException) {
+                    PluginWorkspaceProvider.getPluginWorkspace()
+                    .showErrorMessage(translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH));
+                  } else if (ex instanceof GitAPIException) {
+                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+                  }
+                });
           }
         } catch (NoRepositorySelected ex) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
@@ -190,8 +193,8 @@ public class BranchTreeMenuActionsProvider {
               BranchesUtil.getLocalBranches(),
               false);
           if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-            ctrl.asyncTask(() ->
-                {
+            ctrl.asyncTask(
+                () -> {
                   ctrl.getGitAccess().createBranchFromLocalBranch(
                       dialog.getBranchName(),
                       nodePath,
@@ -232,7 +235,8 @@ public class BranchTreeMenuActionsProvider {
                 nodePath.substring(nodePath.indexOf("refs/heads/") != -1 ? "refs/heads/".length() : 0)),
             translator.getTranslation(Tags.YES),
             translator.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
-          ctrl.asyncTask(() -> {
+          ctrl.asyncTask(
+              () -> {
                 String branch = BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
                 ctrl.getGitAccess().deleteBranch(branch);
                 return null;
