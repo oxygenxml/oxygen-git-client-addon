@@ -10,7 +10,7 @@
 		<comment>The confirmation message when trying to delete a branch.</comment>
         <val lang="en_US">Are you sure you want to delete the local branch "{0}"?</val>
         <val lang="de_DE">Are you sure you want to delete the local branch "{0}"?</val>
-        <val lang="fr_FR">Are you sure you want to delete the local branch "{0}"?</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir supprimer la branche "{0}" locale?</val>
         <val lang="ja_JP">Are you sure you want to delete the local branch "{0}"?</val>
         <val lang="nl_NL">Are you sure you want to delete the local branch "{0}"?</val>
     </key>
