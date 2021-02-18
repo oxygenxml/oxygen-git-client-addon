@@ -52,7 +52,8 @@ public class CreateBranchFromCommitAction extends AbstractAction {
         CreateBranchDialog dialog = new CreateBranchDialog(
             Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
             null,
-            BranchesUtil.getLocalBranches());
+            BranchesUtil.getLocalBranches(),
+            false);
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
         }

@@ -921,16 +921,26 @@ public class GitAccess {
 	 * 
 	 * @param newBranchName The name for the new branch.
 	 * @param sourceBranch The full path for the local branch from which to create the new branch.
+	 * @param isCheckoutNewBranch <code>true</code> to checkout the new branch.
 	 */
-	public void createBranchFromLocalBranch(String newBranchName, String sourceBranch) {
+	public void createBranchFromLocalBranch(
+	    String newBranchName,
+	    String sourceBranch,
+	    boolean isCheckoutNewBranch) {
 	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
 	  try {
       git.branchCreate()
         .setName(newBranchName)
         .setStartPoint(sourceBranch)
         .call();
+      
+      if (isCheckoutNewBranch) {
+        git.checkout().setName(newBranchName).call();
+      }
+      
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
     } catch (GitAPIException e) {
+      // TODO: perhaps treat CheckoutConflictException better
       fireOperationFailed(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName), e);
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }

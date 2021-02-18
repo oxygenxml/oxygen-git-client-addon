@@ -1061,7 +1061,7 @@ public class Tags {
   /**
    * Title for no message when commit
    */
-  public static final String NO_COMMIT_MESSAGE_TITLE = "No_commit_massage_provided";
+  public static final String NO_COMMIT_MESSAGE_TITLE = "No_commit_message_provided";
   
   /**
    * Informations when about commit without a message   
@@ -1172,4 +1172,8 @@ public class Tags {
    * Type text to filter 
    */
   public static final String TYPE_TEXT_TO_FILTER = "Type_text_to_filter";
+  /**
+   * "Create". Loaded from Oxygen.
+   */
+  public static final String CREATE = "Create";
 }

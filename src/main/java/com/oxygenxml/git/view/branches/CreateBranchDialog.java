@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.branches;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -9,13 +10,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.UIUtil;
@@ -48,28 +49,46 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
    * The list with all the local branches.
    */
   private List<String> existingBranches;
+  /**
+   * Check box to choose whether or not to checkout the branch when 
+   * creating it from a local branch or commit.
+   */
+  private JCheckBox checkoutLocalBranchCheckBox = 
+      new JCheckBox(Translator.getInstance().getTranslation(Tags.CHECKOUT_BRANCH));
+  /**
+   * <code>true</code> of the dialog is created for checking out a remote branch.
+   */
+  private boolean isCheckoutRemote;
 
   /**
    * Public constructor.
    * 
    * @param title            The title of the dialog.
-   * @param sourceBranch     The name of the branch from which to create a new one. Can be <code>null</code>,
-   *                         for example when creating a branch from a commit.
+   * @param nameToPropose    The name to propose. Can be <code>null</code>.
    * @param existingBranches A list with all existing local branches.
+   * @param isCheckoutRemote <code>true</code> if we create by checking out a remote branch.
    */
-  public CreateBranchDialog(String title, String sourceBranch, List<String> existingBranches) {
+  public CreateBranchDialog(
+      String title,
+      String nameToPropose,
+      List<String> existingBranches,
+      boolean isCheckoutRemote) {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
         ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
         : null, title, true);
 
     this.existingBranches = existingBranches;
+    this.isCheckoutRemote = isCheckoutRemote;
     
     // Create GUI
     JPanel panel = new JPanel(new GridBagLayout());
-    createGUI(panel, sourceBranch);
+    createGUI(panel, nameToPropose);
     getContentPane().add(panel);
     setResizable(true);
     pack();
+    
+    setOkButtonText(isCheckoutRemote ? TRANSLATOR.getTranslation(Tags.CHECKOUT) 
+        : TRANSLATOR.getTranslation(Tags.CREATE));
     
     // Enable or disable the OK button based on the user input
     updateUI(branchNameField.getText());
@@ -91,11 +110,10 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
   /**
    * Adds the elements to the user interface/
    * 
-   * @param panel The panel in which the components are added.
-   * @param sourceBranch The name of the source branch. Can be <code>null</code>,
-   *                         for example when creating a branch from a commit.
+   * @param panel         The panel in which the components are added.
+   * @param nameToPropose The name to propose. Can be <code>null</code>.
    */
-  private void createGUI(JPanel panel, String sourceBranch) {
+  private void createGUI(JPanel panel, String nameToPropose) {
     // Branch name label.
     JLabel label = new JLabel(TRANSLATOR.getTranslation(Tags.BRANCH_NAME) + ": ");
     GridBagConstraints gbc = new GridBagConstraints();
@@ -105,17 +123,12 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     gbc.weighty = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = new Insets(
-        UIConstants.COMPONENT_TOP_PADDING, 
-        UIConstants.COMPONENT_LEFT_PADDING,
-        UIConstants.COMPONENT_BOTTOM_PADDING, 
-        UIConstants.COMPONENT_RIGHT_PADDING);
     panel.add(label, gbc);
     
     // Branch name field.
     branchNameField = new TextField();
-    if (sourceBranch != null) {
-      branchNameField.setText(sourceBranch);
+    if (nameToPropose != null) {
+      branchNameField.setText(nameToPropose);
     }
     branchNameField.setPreferredSize(new Dimension(200, branchNameField.getPreferredSize().height));
     branchNameField.selectAll();
@@ -125,14 +138,29 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     panel.add(branchNameField, gbc);
     
     label.setLabelFor(branchNameField);
-
+    
     // Error message area
     errorMessageTextArea = UIUtil.createMessageArea("");
     errorMessageTextArea.setForeground(Color.RED);
-    gbc.gridx = 0;
+    Font font = errorMessageTextArea.getFont();
+    errorMessageTextArea.setFont(font.deriveFont(font.getSize() - 1.0f));
+    gbc.gridx = 1;
     gbc.gridy ++;
     gbc.gridwidth = 2;
+    gbc.insets = new Insets(3, 0, 0, 0);
     panel.add(errorMessageTextArea, gbc);
+    
+    // "Checkout branch" check box
+    if (!isCheckoutRemote) {
+      checkoutLocalBranchCheckBox = new JCheckBox(Translator.getInstance().getTranslation(Tags.CHECKOUT_BRANCH));
+      checkoutLocalBranchCheckBox.setSelected(true);
+      gbc.gridx = 0;
+      gbc.gridy ++;
+      gbc.gridwidth = 2;
+      gbc.insets = new Insets(0, 0, 7, 0);
+      panel.add(checkoutLocalBranchCheckBox, gbc);
+    }
+
   }
 
   /**
@@ -145,7 +173,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
       super.doOK();
     }
   }
-
+  
   /**
    * Check if the given branch already exists.
    * 
@@ -178,5 +206,12 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
    */
   public String getBranchName() {
     return branchNameField.getText();
+  }
+  
+  /**
+   * @return <code>true</code> to checkout the newly created branch.
+   */
+  public boolean shouldCheckoutNewBranch() {
+    return isCheckoutRemote || checkoutLocalBranchCheckBox.isSelected();
   }
 }
