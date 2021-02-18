@@ -4,11 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * This class contains some utility functions for the branches.
@@ -17,8 +24,22 @@ import com.oxygenxml.git.service.NoRepositorySelected;
  *
  */
 public class BranchesUtil {
+
   
-  private BranchesUtil() {}
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = LogManager.getLogger(BranchesUtil.class.getName());
+  
+  /**
+    * Constructor.
+    *
+    * @throws UnsupportedOperationException when invoked.
+    */
+  private BranchesUtil() {
+    // Private to avoid instantiations
+    throw new UnsupportedOperationException("Instantiation of this utility class is not allowed!");
+  }
 
   /**
    * Creates a list with local branches short names for the current repository.
@@ -83,6 +104,34 @@ public class BranchesUtil {
       branchList = branches.stream().map(Ref::getName).collect(Collectors.toList());
     }
     return branchList;
+  }
+  
+  /**
+   * Show a message saying why the branch checkout failed.
+   */
+  public static void showCannotCheckoutBranchMessage() {
+    RepositoryState state = null;
+    try {
+      state = GitAccess.getInstance().getRepository().getRepositoryState();
+    } catch (NoRepositorySelected e2) {
+      logger.debug(e2, e2);
+    }
+
+    if (state != null) {
+      String messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH;
+      switch (state) {
+        case SAFE:
+          messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_BECAUSE_UNCOMMITTED_CHANGES;
+          break;
+        case MERGING:
+          messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS;
+          break;
+        default:
+          break;
+      }
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+          Translator.getInstance().getTranslation(messageTag));
+    }
   }
 
 }

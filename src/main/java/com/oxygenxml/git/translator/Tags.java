@@ -460,7 +460,7 @@ public class Tags {
 	/**
 	 * The the message displayed when branch selection fails
 	 */
-	public static final String COMMIT_CHANGES_BEFORE_CHANGING_BRANCH = "Change_Branch_Error_Message";
+	public static final String COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH = "Change_Branch_Error_Message";
 
 	/**
 	 * The text displayed in the title for the dialog that appears when you push

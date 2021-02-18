@@ -122,7 +122,7 @@ public class BranchTreeMenuActionsProvider {
             ex -> {
               if (ex instanceof CheckoutConflictException) {
                 PluginWorkspaceProvider.getPluginWorkspace()
-                    .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
+                    .showErrorMessage(translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH));
               } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
               }
@@ -158,7 +158,7 @@ public class BranchTreeMenuActionsProvider {
             }, ex -> {
               if (ex instanceof CheckoutConflictException) {
                 PluginWorkspaceProvider.getPluginWorkspace()
-                .showErrorMessage(translator.getTranslation(Tags.COMMIT_CHANGES_BEFORE_CHANGING_BRANCH));
+                .showErrorMessage(translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH));
               } else if (ex instanceof GitAPIException) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
               }
@@ -198,7 +198,13 @@ public class BranchTreeMenuActionsProvider {
                       dialog.shouldCheckoutNewBranch());
                   return null;
                 },
-                null);
+                ex -> {
+                  if (ex instanceof CheckoutConflictException) {
+                    BranchesUtil.showCannotCheckoutBranchMessage();
+                  } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
+                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+                  }
+                });
           }
         } catch (NoRepositorySelected ex) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);

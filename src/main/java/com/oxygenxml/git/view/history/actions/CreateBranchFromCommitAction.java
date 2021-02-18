@@ -58,7 +58,7 @@ public class CreateBranchFromCommitAction extends AbstractAction {
           GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
         }
       } catch (CheckoutConflictException e1) {
-        showCannotCheckoutBranchMessage();
+        BranchesUtil.showCannotCheckoutBranchMessage();
       } catch (HeadlessException | GitAPIException | NoRepositorySelected e1) {
         LOGGER.debug(e1);
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
@@ -66,32 +66,4 @@ public class CreateBranchFromCommitAction extends AbstractAction {
     });
   }
   
-  /**
-   * Show a message saying why the branch checkout failed.
-   */
-  private void showCannotCheckoutBranchMessage() {
-    RepositoryState state = null;
-    try {
-      state = GitAccess.getInstance().getRepository().getRepositoryState();
-    } catch (NoRepositorySelected e2) {
-      LOGGER.debug(e2, e2);
-    }
-
-    if (state != null) {
-      String messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH;
-      switch (state) {
-        case SAFE:
-          messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_BECAUSE_UNCOMMITTED_CHANGES;
-          break;
-        case MERGING:
-          messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS;
-          break;
-        default:
-          break;
-      }
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-          Translator.getInstance().getTranslation(messageTag));
-    }
-  }
-
 }
