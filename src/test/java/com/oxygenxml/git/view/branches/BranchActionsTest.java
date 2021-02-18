@@ -164,7 +164,7 @@ public class BranchActionsTest extends GitTestBase {
         JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
             translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
         branchNameTextField.setText(LOCAL_BRANCH_COPY_NAME);
-        JButton okButton = findFirstButton(createBranchDialog, "OK");
+        JButton okButton = findFirstButton(createBranchDialog, "Create");
         if (okButton != null) {
           okButton.setEnabled(true);
           okButton.doClick();
@@ -298,7 +298,7 @@ public class BranchActionsTest extends GitTestBase {
         JTextField branchNameTextField = findComponentNearJLabel(checkoutBranchDialog,
             translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
         branchNameTextField.setText(REMOTE_BRANCH_NAME2_COPY);
-        JButton firstButtonFound = findFirstButton(checkoutBranchDialog, "OK");
+        JButton firstButtonFound = findFirstButton(checkoutBranchDialog, "Checkout");
         if (firstButtonFound != null) {
           firstButtonFound.setEnabled(true);
           firstButtonFound.doClick();
@@ -342,7 +342,7 @@ public class BranchActionsTest extends GitTestBase {
           JTextField branchNameTextField = findComponentNearJLabel(checkoutDialog,
               translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
           branchNameTextField.setText(REMOTE_BRANCH_NAME1_COPY);
-          JButton firstButtonFound = findFirstButton(checkoutDialog, "OK");
+          JButton firstButtonFound = findFirstButton(checkoutDialog, "Checkout");
           if (firstButtonFound != null) {
             firstButtonFound.setEnabled(true);
             firstButtonFound.doClick();
