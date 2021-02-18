@@ -6,6 +6,14 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value = "Confirmation_message_delete_branch">
+		<comment>The confirmation message when trying to delete a branch.</comment>
+        <val lang="en_US">Are you sure you want to delete the local branch "{0}"?</val>
+        <val lang="de_DE">Are you sure you want to delete the local branch "{0}"?</val>
+        <val lang="fr_FR">Are you sure you want to delete the local branch "{0}"?</val>
+        <val lang="ja_JP">Are you sure you want to delete the local branch "{0}"?</val>
+        <val lang="nl_NL">Are you sure you want to delete the local branch "{0}"?</val>
+    </key>
     <key value="Uncommitted_changes">
         <comment>"Uncommitted changes" message.</comment>
         <val lang="en_US">Uncommitted changes</val>
@@ -316,14 +324,6 @@
         <val lang="fr_FR">La branche locale existe déjà.</val>
         <val lang="ja_JP">The local branch already exists.</val>
         <val lang="nl_NL">De lokale branch bestaat al.</val>
-    </key>
-    <key value = "Confirmation_dialog_delete_branch">
-		<comment>"The confirmation message when trying to delete a branch."</comment>
-        <val lang="en_US">Are you sure you want to delete this branch?</val>
-        <val lang="de_DE">Are you sure you want to delete this branch?</val>
-        <val lang="fr_FR">Êtes-vous sûr de vouloir supprimer cette branche?</val>
-        <val lang="ja_JP">Are you sure you want to delete this branch?</val>
-        <val lang="nl_NL">Weet u zeker dat u deze branch wilt verwijderen?</val>
     </key>
     <key value = "Delete_branch">
 		<comment>"The message for branch deletion."</comment>

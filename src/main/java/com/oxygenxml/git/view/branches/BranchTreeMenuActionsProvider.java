@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.branches;
 
 import java.awt.event.ActionEvent;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -211,7 +212,9 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         if (FileStatusDialog.showQuestionMessage(
             translator.getTranslation(Tags.DELETE_BRANCH),
-            translator.getTranslation(Tags.CONFIRMATION_DIALOG_DELETE_BRANCH), 
+            MessageFormat.format(
+                translator.getTranslation(Tags.CONFIRMATION_MESSAGE_DELETE_BRANCH),
+                nodePath.substring(nodePath.indexOf("refs/heads/") != -1 ? "refs/heads/".length() : 0)),
             translator.getTranslation(Tags.YES),
             translator.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(() -> {

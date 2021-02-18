@@ -92,7 +92,7 @@ public class Tags {
   /**
    * The confirmation message when trying to delete a branch.
    */
-  public static final String CONFIRMATION_DIALOG_DELETE_BRANCH = "Confirmation_dialog_delete_branch";
+  public static final String CONFIRMATION_MESSAGE_DELETE_BRANCH = "Confirmation_message_delete_branch";
   /**
    * Delete branch.
    */
