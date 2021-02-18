@@ -9,7 +9,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
