@@ -246,15 +246,18 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	 * @return The Border with no focus
 	 */
 	private Border getNoFocusBorder() {
+	  Border toReturn = noFocusBorder;
+	  
 		Border border = DefaultLookup.getBorder(this, ui, "Table.cellNoFocusBorder");
 		if (System.getSecurityManager() != null) {
-			return border != null ? border : SAFE_NO_FOCUS_BORDER;
+		  toReturn = border != null ? border : SAFE_NO_FOCUS_BORDER;
 		} else if (border != null) {
 			if (noFocusBorder == null || noFocusBorder == DEFAULT_NO_FOCUS_BORDER) { // NOSONAR squid:S1066
-				return border;
+			  toReturn = border;
 			}
 		}
-		return noFocusBorder;
+		
+		return toReturn;
 	}
 
 	/**
