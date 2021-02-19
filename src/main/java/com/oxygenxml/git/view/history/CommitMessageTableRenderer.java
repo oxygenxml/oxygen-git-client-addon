@@ -130,41 +130,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
 		String toRender = "";
 		if (value instanceof CommitCharacteristics) {
-			CommitCharacteristics commitCharacteristics = (CommitCharacteristics) value;
-			toRender = commitCharacteristics.getCommitMessage().replaceAll("\\n+", " ").trim();
-			
-			// Show outgoing and incoming commits using arrows
-			String arrow = "";
-			if (isAheadCommit(commitCharacteristics.getCommitId())) {
-			  // Up arrow
-			  arrow = "\u2191";
-      } else if (isBehindCommit(commitCharacteristics.getCommitId())) {
-        // Down arrow
-        arrow = "\u2193";
-      }
-			if (!arrow.isEmpty()) {
-			  JLabel arrowLabel = new JLabel(arrow);
-			  arrowLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
-			  arrowLabel.setForeground(getForeground());
-			  constr.gridx ++;
-			  add(arrowLabel, constr);
-			}
-			
-			// bold the text for uncommitted changes
-			String uncommittedChangesMessage = Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES);
-			if (toRender.equals(uncommittedChangesMessage)) {
-				toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
-			} else if (repository != null) {
-				String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
-        List<String> tagList = tagMap.get(abbreviatedId);
-        addTagOrBranchLabel(tagList, constr);
-
-        List<String> localBranchList = localBranchMap.get(abbreviatedId);
-        addTagOrBranchLabel(localBranchList, constr);
-
-        List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
-        addTagOrBranchLabel(remoteBranchList, constr);
-			}
+			toRender = getRenderingStringForCommit(value, constr);
 		} else {
 			toRender = value != null ? value.toString() : "";
 		}
@@ -178,6 +144,53 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
     
 		return this;
 	}
+
+	/**
+	 * Get the text to render for a commit.
+	 * 
+	 * @param value  The commit characteristics.
+	 * @param constr Grid bag constraints.
+	 * 
+	 * @return the text to render.
+	 */
+  private String getRenderingStringForCommit(Object value, GridBagConstraints constr) {
+    CommitCharacteristics commitCharacteristics = (CommitCharacteristics) value;
+    String toRender = commitCharacteristics.getCommitMessage().replaceAll("\\n+", " ").trim();
+    
+    // Show outgoing and incoming commits using arrows
+    String arrow = "";
+    if (isAheadCommit(commitCharacteristics.getCommitId())) {
+      // Up arrow
+      arrow = "\u2191";
+    } else if (isBehindCommit(commitCharacteristics.getCommitId())) {
+      // Down arrow
+      arrow = "\u2193";
+    }
+    if (!arrow.isEmpty()) {
+      JLabel arrowLabel = new JLabel(arrow);
+      arrowLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
+      arrowLabel.setForeground(getForeground());
+      constr.gridx ++;
+      add(arrowLabel, constr);
+    }
+    
+    // bold the text for uncommitted changes
+    String uncommittedChangesMessage = Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES);
+    if (toRender.equals(uncommittedChangesMessage)) {
+    	toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
+    } else if (repository != null) {
+    	String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
+      List<String> tagList = tagMap.get(abbreviatedId);
+      addTagOrBranchLabel(tagList, constr);
+
+      List<String> localBranchList = localBranchMap.get(abbreviatedId);
+      addTagOrBranchLabel(localBranchList, constr);
+
+      List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
+      addTagOrBranchLabel(remoteBranchList, constr);
+    }
+    return toRender;
+  }
 
 	/**
 	 * Add Label to "Commit Message" column: tag or local/remote branch
@@ -246,15 +259,18 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 	 * @return The Border with no focus
 	 */
 	private Border getNoFocusBorder() {
+	  Border toReturn = noFocusBorder;
+	  
 		Border border = DefaultLookup.getBorder(this, ui, "Table.cellNoFocusBorder");
 		if (System.getSecurityManager() != null) {
-			return border != null ? border : SAFE_NO_FOCUS_BORDER;
+		  toReturn = border != null ? border : SAFE_NO_FOCUS_BORDER;
 		} else if (border != null) {
 			if (noFocusBorder == null || noFocusBorder == DEFAULT_NO_FOCUS_BORDER) { // NOSONAR squid:S1066
-				return border;
+			  toReturn = border;
 			}
 		}
-		return noFocusBorder;
+		
+		return toReturn;
 	}
 
 	/**

@@ -78,17 +78,26 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 		  label.setIcon(icon);
 		  label.setToolTipText(toolTip);
 
-		  // Active/inactive table selection
 		  if (sel) {
-		    if (tree.hasFocus()) {
-		      setBackgroundSelectionColor(defaultSelectionColor);
-		    } else if (!contextMenuShowing.getAsBoolean()) {
-		      // Do nor render the tree as inactive if we have a contextual menu over it.
-		      setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
-		    }
+		    setBackgroundSelectionColor(tree);
 		  }
 		}
 
     return label;
 	}
+
+	/**
+	 * Set background selection color.
+	 * 
+	 * @param tree The tree.
+	 */
+  private void setBackgroundSelectionColor(JTree tree) {
+      if (tree.hasFocus()) {
+        setBackgroundSelectionColor(defaultSelectionColor);
+      } else if (!contextMenuShowing.getAsBoolean()) {
+        // Do nor render the tree as inactive if we have a contextual menu over it.
+        setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
+      }
+  }
+  
 }

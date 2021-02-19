@@ -111,7 +111,7 @@ public class BranchManagementPanel extends JPanel {
   /**
    * Constructor.
    * 
-   * @param ctrl Git conroller.
+   * @param ctrl Git controller.
    */
   public BranchManagementPanel(GitControllerBase ctrl) {
     createGUI();

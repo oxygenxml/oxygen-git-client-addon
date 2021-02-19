@@ -634,28 +634,30 @@ public class CommitAndStatusPanel extends JPanel {
 	/**
 	 * Set a tooltip for the status label.
 	 */
-	private void setStatusLabelTooltip() {
-	  if (statusLabel != null && statusLabel.isShowing()) {
-	    String text = statusLabel.getText();
-	    if (text != null && !text.isEmpty()) {
-	      String toolTipText = statusLabel.getToolTipText();
-	      boolean hasTooltip = toolTipText != null && !toolTipText.isEmpty();
-	      if (hasTooltip) {
-	        toolTipText = toolTipText.replace(text, "").trim();
-	      }
-	      
-	      Icon icon = statusLabel.getIcon();
-        int iconWidth = icon != null ? icon.getIconWidth() : 0;
-        FontMetrics fontMetrics = statusLabel.getFontMetrics(statusLabel.getFont());
-        int availableWidth = statusLabel.getSize().width - iconWidth - LABEL_ICON_TO_TEXT_DISTANCE;
-        if (fontMetrics.stringWidth(text) > availableWidth) {
-          statusLabel.setToolTipText(hasTooltip ? text + "\n\n" + toolTipText : text);
-	      } else if (hasTooltip) {
-	        statusLabel.setToolTipText(toolTipText);
-	      }
-	    }
-	  }
-	}
+  private void setStatusLabelTooltip() {
+    if (statusLabel == null || !statusLabel.isShowing()) {
+      return;
+    }
+    
+    String text = statusLabel.getText();
+    if (text != null && !text.isEmpty()) {
+      String toolTipText = statusLabel.getToolTipText();
+      boolean hasTooltip = toolTipText != null && !toolTipText.isEmpty();
+      if (hasTooltip) {
+        toolTipText = toolTipText.replace(text, "").trim();
+      }
+
+      Icon icon = statusLabel.getIcon();
+      int iconWidth = icon != null ? icon.getIconWidth() : 0;
+      FontMetrics fontMetrics = statusLabel.getFontMetrics(statusLabel.getFont());
+      int availableWidth = statusLabel.getSize().width - iconWidth - LABEL_ICON_TO_TEXT_DISTANCE;
+      if (fontMetrics.stringWidth(text) > availableWidth) {
+        statusLabel.setToolTipText(hasTooltip ? text + "\n\n" + toolTipText : text);
+      } else if (hasTooltip) {
+        statusLabel.setToolTipText(toolTipText);
+      }
+    }
+  }
 
 	/**
 	 * Add commit button.

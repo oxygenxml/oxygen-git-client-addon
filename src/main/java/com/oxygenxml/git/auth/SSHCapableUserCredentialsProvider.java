@@ -58,31 +58,7 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 	    
 	    if ((item instanceof CredentialItem.StringType || item instanceof CredentialItem.Password)
 	        && item.getPromptText().startsWith("Passphrase")) {
-	      
-	      logger.debug("Passphrase required.");
-	      
-	      // A not so great method to check that the pass phrase is requested.
-	      passphaseRequested = true;
-	      
-	      if (!validPassphrase(passphrase)) {
-	        // We don't have a phrase from options. Ask the user.
-	        logger.debug("Ask for new passphrase...");
-	        passphrase = new PassphraseDialog(translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE) + ".").getPassphrase();
-	      }
-	      
-	      if (validPassphrase(passphrase)) {
-	        if (item instanceof CredentialItem.StringType) {
-	          ((CredentialItem.StringType) item).setValue(passphrase);
-	        } else if (item instanceof CredentialItem.Password) {
-	          ((CredentialItem.Password) item).setValue(passphrase.toCharArray());
-	        }
-	        // true tells the engine that we supplied the value.
-	        // The engine will look inside the given item for the response.
-	        return true;
-	      } else {
-	        // The user canceled the dialog.
-	        return false;
-	      }
+	      return treatPassphrase(item);
 	    }
 
 	    if (item instanceof CredentialItem.YesNoType) {
@@ -102,6 +78,41 @@ public class SSHCapableUserCredentialsProvider extends ResetableUserCredentialsP
 		
 		return super.get(uri, items);
 	}
+
+	/**
+	 * Treat passphrase.
+	 * 
+	 * @param item The credential item.
+	 * 
+	 * @return <code>true</code> if the request was successful and values were supplied; 
+	 * <code>false</code> if the user canceled the request and did not supply all requested values.
+	 */
+  private boolean treatPassphrase(CredentialItem item) {
+    logger.debug("Passphrase required.");
+    
+    // A not so great method to check that the pass phrase is requested.
+    passphaseRequested = true;
+    
+    if (!validPassphrase(passphrase)) {
+      // We don't have a phrase from options. Ask the user.
+      logger.debug("Ask for new passphrase...");
+      passphrase = new PassphraseDialog(translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE) + ".").getPassphrase();
+    }
+    
+    if (validPassphrase(passphrase)) {
+      if (item instanceof CredentialItem.StringType) {
+        ((CredentialItem.StringType) item).setValue(passphrase);
+      } else if (item instanceof CredentialItem.Password) {
+        ((CredentialItem.Password) item).setValue(passphrase.toCharArray());
+      }
+      // true tells the engine that we supplied the value.
+      // The engine will look inside the given item for the response.
+      return true;
+    } else {
+      // The user canceled the dialog.
+      return false;
+    }
+  }
 
 	/**
 	 * @param passphrase Pass phrase.

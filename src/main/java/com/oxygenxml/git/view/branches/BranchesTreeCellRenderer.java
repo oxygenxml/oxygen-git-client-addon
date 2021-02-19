@@ -102,19 +102,28 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       
       // Active/inactive table selection
       if (sel) {
-        if (tree.hasFocus()) {
-          ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
-          setBorderSelectionColor(colorTheme.isDarkTheme() ? defaultSelectionColor 
-              : defaultBorderSelectionColor);
-          setBackgroundSelectionColor(defaultSelectionColor);
-        } else if (!isContextMenuShowing.getAsBoolean()) {
-          setBorderSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
-          setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
-        }
+        setSelectionColors(tree);
       }
     }
 
     return label;
+  }
+
+  /**
+   * Set selection background and border colors.
+   * 
+   * @param tree The tree.
+   */
+  private void setSelectionColors(JTree tree) {
+    if (tree.hasFocus()) {
+      ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
+      setBorderSelectionColor(colorTheme.isDarkTheme() ? defaultSelectionColor 
+          : defaultBorderSelectionColor);
+      setBackgroundSelectionColor(defaultSelectionColor);
+    } else if (!isContextMenuShowing.getAsBoolean()) {
+      setBorderSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
+      setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
+    }
   }
   
   /**
