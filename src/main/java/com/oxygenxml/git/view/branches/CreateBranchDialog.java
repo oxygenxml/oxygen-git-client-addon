@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.UIUtil;
@@ -153,7 +154,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
     // "Checkout branch" check box
     if (!isCheckoutRemote) {
       checkoutLocalBranchCheckBox = new JCheckBox(Translator.getInstance().getTranslation(Tags.CHECKOUT_BRANCH));
-      checkoutLocalBranchCheckBox.setSelected(true);
+      checkoutLocalBranchCheckBox.setSelected(OptionsManager.getInstance().isCheckoutNewlyCreatedLocalBranch());
       gbc.gridx = 0;
       gbc.gridy ++;
       gbc.gridwidth = 2;
@@ -170,6 +171,8 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
   protected void doOK() {
     updateUI(branchNameField.getText());
     if (getOkButton().isEnabled()) {
+      OptionsManager.getInstance().setCheckoutNewlyCreatedLocalBranch(
+          checkoutLocalBranchCheckBox.isSelected());
       super.doOK();
     }
   }

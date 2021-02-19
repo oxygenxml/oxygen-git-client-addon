@@ -39,6 +39,11 @@ public class Options {
 	 * Stores the option selected to notify or not if there are new changes in the remote
 	 */
 	private boolean notifyAboutNewRemoteCommits;
+	
+	/**
+	 * <code>true</code> to automatically checkout a newly created local branch.
+	 */
+	private boolean isCheckoutNewlyCreatedLocalBranch = true;
 
 	/**
 	 * The id from the last commit fetched.
@@ -179,12 +184,27 @@ public class Options {
   }
   
   /**
+   * @param isCheckoutNewlyCreatedLocalBranch <code>true</code> to automatically
+   * checkout a newly created local branch.
+   */
+  public void setCheckoutNewlyCreatedLocalBranch(boolean isCheckoutNewlyCreatedLocalBranch) {
+    this.isCheckoutNewlyCreatedLocalBranch = isCheckoutNewlyCreatedLocalBranch;
+  }
+  
+  /**
    * Get the option about when to verify about remote changes in the repository.
    * 
    * @return Option stored about to verify or not.
    */
   public boolean getNotifyAboutNewRemoteCommits() {
     return notifyAboutNewRemoteCommits;
+  }
+  
+  /**
+   * @return <code>true</code> to automatically checkout a newly created local branch.
+   */
+  public boolean isCheckoutNewlyCreatedLocalBranch() {
+    return isCheckoutNewlyCreatedLocalBranch;
   }
   
   public Map<String, String> getWarnOnChangeCommitId() {
@@ -302,6 +322,7 @@ public class Options {
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
 		result = prime * result + (notifyAboutNewRemoteCommits ? 1 : 0);
+		result = prime * result + (isCheckoutNewlyCreatedLocalBranch ? 1 : 0);
     result = prime * result + ((warnOnChangeCommitId == null) ? 0 : warnOnChangeCommitId.hashCode());
 		
 		return result;
@@ -318,6 +339,7 @@ public class Options {
 	        && Equaler.verifyEquals(projectsTestsForGit, opt.getProjectsTestsForGit())
 	        && Equaler.verifyEquals(repositoryLocations, opt.getRepositoryLocations())
 	        && Equaler.verifyEquals(notifyAboutNewRemoteCommits, opt.getNotifyAboutNewRemoteCommits())
+	        && Equaler.verifyEquals(isCheckoutNewlyCreatedLocalBranch, opt.isCheckoutNewlyCreatedLocalBranch)
 	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
 	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())

@@ -543,6 +543,7 @@ public class OptionsManager {
  public void setNotifyAboutNewRemoteCommits(boolean notifyAboutNewRemoteCommits) {
    getOptions().setNotifyAboutNewRemoteCommits(notifyAboutNewRemoteCommits);
  }
+ 
  /**
   * Get the option about when to verify about remote changes in the repository.
   * @return Option stored about to verify or not.
@@ -550,6 +551,22 @@ public class OptionsManager {
  public boolean getNotifyAboutNewRemoteCommits() {
    return getOptions().getNotifyAboutNewRemoteCommits();
  }
+ 
+ /**
+  * @param isCheckoutNewlyCreatedLocalBranch <code>true</code> to automatically
+  * checkout a newly created local branch.
+  */
+ public void setCheckoutNewlyCreatedLocalBranch(boolean isCheckoutNewlyCreatedLocalBranch) {
+   getOptions().setCheckoutNewlyCreatedLocalBranch(isCheckoutNewlyCreatedLocalBranch);
+ }
+ 
+ /**
+  * @return <code>true</code> to automatically checkout a newly created local branch.
+  */
+ public boolean isCheckoutNewlyCreatedLocalBranch() {
+   return getOptions().isCheckoutNewlyCreatedLocalBranch();
+ }
+ 
  /**
   * Get the ID of the latest commit fetched from a given repository.
   * @param repositoryId The repository from which to get the commit ID, obtained from
