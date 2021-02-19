@@ -116,6 +116,7 @@ public class ToolbarPanelTest extends GitTestBase {
       
       // The switch should have failed, and the selected branch shouldn't have changed
       branchSplitMenuButton.setPopupMenuVisible(true);
+      flushAWT();
       firstItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(0);
       assertFalse(firstItem.isSelected());
       

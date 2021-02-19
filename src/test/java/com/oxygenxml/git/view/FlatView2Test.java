@@ -627,18 +627,18 @@ public class FlatView2Test extends FlatViewTestBase {
       assertNotNull(rebaseInProgressDlg);
 
       // Get Cannot_continue_rebase_because_of_conflicts message
-      final String[] warnMessage = new String[1];
+      final String[] errMessage = new String[1];
       StandalonePluginWorkspace mockedPluginWS = Mockito.mock(StandalonePluginWorkspace.class);
       Mockito.doAnswer(new Answer<Void>() {
         @Override
         public Void answer(InvocationOnMock invocation) throws Throwable {
           Object[] arguments = invocation.getArguments();
           if (arguments != null && arguments.length == 1) {
-            warnMessage[0] = arguments[0].toString();
+            errMessage[0] = arguments[0].toString();
           }
           return null;
         }
-      }).when(mockedPluginWS).showWarningMessage(Mockito.anyString());
+      }).when(mockedPluginWS).showErrorMessage(Mockito.anyString());
       Mockito.when(mockedPluginWS.getParentFrame()).thenReturn(null);
       PluginWorkspaceProvider.setPluginWorkspace(mockedPluginWS);
       
@@ -650,7 +650,7 @@ public class FlatView2Test extends FlatViewTestBase {
 
       waitForScheduler();
       
-      assertEquals("Cannot_continue_rebase_because_of_conflicts", warnMessage[0]);
+      assertEquals("Cannot_continue_rebase_because_of_conflicts", errMessage[0]);
 
       // Resolve conflict
       GitControllerBase sc = new GitControllerBase(gitAccess) {
