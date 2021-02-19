@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
@@ -284,6 +285,31 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     loadedRepos.add(repo);
     
     return repo;
+  }
+  
+  /**
+   * Searches for a checkbox with the specified text in the container.
+   * 
+   * @param parent The parent container.
+   * @return The checkbox, or null if there is no checkbox having that text.
+   */
+  protected JCheckBox findCheckBox(Container parent, String text ){
+    JCheckBox result = null;
+    
+    // Gets all the checkboxes.
+    ComponentFinder cf = new ComponentFinder(JCheckBox.class);
+    List<Component> allButtons = cf.findAll(parent);
+    
+    // Selects the one with the given text.
+    for (Iterator iterator = allButtons.iterator(); iterator.hasNext();) {
+      JCheckBox checkBox = (JCheckBox) iterator.next();
+      if(checkBox.getText().equalsIgnoreCase(text)){
+        result = checkBox;
+        break;
+      }        
+    }
+    
+    return result;      
   }
   
   /**

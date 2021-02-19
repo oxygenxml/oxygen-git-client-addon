@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -14,6 +15,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
@@ -97,6 +99,7 @@ public class BranchActionsTest extends GitTestBase {
     for (AbstractAction abstractAction : actionsForNode) {
       if(abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CHECKOUT))) {
         abstractAction.actionPerformed(null);
+        break;
       }
     }
     sleep(500);
@@ -127,64 +130,164 @@ public class BranchActionsTest extends GitTestBase {
    */
   @Test
   public void testCreateLocalBranchAction() throws Exception{
-    File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
-    file.createNewFile();
-    setFileContent(file, "local content");
-    //Make the first commit for the local repository and create a branch for it.
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("First local commit.");
-    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
-    gitAccess.createBranch(LOCAL_BRANCH_NAME2);
-    gitAccess.fetch();
-    
-    String initialBranchName = gitAccess.getBranchInfo().getBranchName();
-    assertEquals("master", initialBranchName);
-    
-    GitControllerBase mock = new GitController(GitAccess.getInstance());
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
-    branchManagementPanel.refreshBranches();
-    flushAWT();
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
-    GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
-    
-    //------------- Create branch LOCAL_BRANCH_COPY_NAME from first branch in the tree: LOCAL_BRANCH_NAME1 -------------
-    GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
-    String firstLeafPath = (String)firstLeaf.getUserObject();
-    assertTrue(firstLeafPath.contains(Constants.R_HEADS));
-    String[] split = firstLeafPath.split("/");
-    assertEquals(LOCAL_BRANCH_NAME1, split[split.length - 1]);
-    
-    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
-    for (AbstractAction abstractAction : actionsForNode) {
-      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
-        SwingUtilities.invokeLater(() -> {
-          abstractAction.actionPerformed(null);
-        });
-        JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
-        JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
-            translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
-        branchNameTextField.setText(LOCAL_BRANCH_COPY_NAME);
-        JButton okButton = findFirstButton(createBranchDialog, "Create");
-        if (okButton != null) {
-          okButton.setEnabled(true);
-          okButton.doClick();
+    boolean initialIsCheckoutNewBranch = OptionsManager.getInstance().isCheckoutNewlyCreatedLocalBranch();
+    try {
+      File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+      file.createNewFile();
+      setFileContent(file, "local content");
+      //Make the first commit for the local repository and create a branch for it.
+      gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+      gitAccess.commit("First local commit.");
+      gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+      gitAccess.createBranch(LOCAL_BRANCH_NAME2);
+      gitAccess.fetch();
+
+      String initialBranchName = gitAccess.getBranchInfo().getBranchName();
+      assertEquals("master", initialBranchName);
+
+      GitControllerBase mock = new GitController(GitAccess.getInstance());
+      BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+      branchManagementPanel.refreshBranches();
+      flushAWT();
+      BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+      GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+
+      //------------- Create branch LOCAL_BRANCH_COPY_NAME from first branch in the tree: LOCAL_BRANCH_NAME1 -------------
+      GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
+      String firstLeafPath = (String)firstLeaf.getUserObject();
+      assertTrue(firstLeafPath.contains(Constants.R_HEADS));
+      String[] split = firstLeafPath.split("/");
+      assertEquals(LOCAL_BRANCH_NAME1, split[split.length - 1]);
+
+      List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
+      for (AbstractAction abstractAction : actionsForNode) {
+        if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
+          SwingUtilities.invokeLater(() -> {
+            abstractAction.actionPerformed(null);
+          });
+          flushAWT();
+
+          JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
+          JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
+          assertNotNull(checkoutBranchCheckBox);
+          checkoutBranchCheckBox.setSelected(true);
+          flushAWT();
+
+          JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
+              translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
+          branchNameTextField.setText(LOCAL_BRANCH_COPY_NAME);
+          JButton okButton = findFirstButton(createBranchDialog, "Create");
+          if (okButton != null) {
+            okButton.setEnabled(true);
+            okButton.doClick();
+          }
+          break;
         }
       }
+      sleep(500);
+
+      gitAccess.fetch();
+      root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+      StringBuilder actualTree = new StringBuilder();
+      BranchManagementTest.serializeTree(actualTree, root);
+      assertEquals(
+          "localRepository\n" + 
+              "  refs/heads/\n" + 
+              "    refs/heads/LocalBranch\n" +
+              "    refs/heads/LocalBranch2\n" +
+              "    refs/heads/LocalBranchCopy\n" +
+              "    refs/heads/master\n",
+              actualTree.toString());
+
+      assertEquals("LocalBranchCopy", gitAccess.getBranchInfo().getBranchName());
+    } finally {
+      OptionsManager.getInstance().setCheckoutNewlyCreatedLocalBranch(initialIsCheckoutNewBranch);
     }
-    sleep(500);
-    
-    gitAccess.fetch();
-    root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
-    StringBuilder actualTree = new StringBuilder();
-    BranchManagementTest.serializeTree(actualTree, root);
-    assertEquals(
-        "localRepository\n" + 
-        "  refs/heads/\n" + 
-        "    refs/heads/LocalBranch\n" +
-        "    refs/heads/LocalBranch2\n" +
-        "    refs/heads/LocalBranchCopy\n" +
-        "    refs/heads/master\n",
-        actualTree.toString());
+  }
+  
+  /**
+   * <p><b>Description:</b> create local branch but don't check it out.</p>
+   * <p><b>Bug ID:</b> EXM-47204</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testCreateLocalBranchAction_dontCheckout() throws Exception{
+    boolean initialIsCheckoutNewBranch = OptionsManager.getInstance().isCheckoutNewlyCreatedLocalBranch();
+    try {
+      File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+      file.createNewFile();
+      setFileContent(file, "local content");
+      //Make the first commit for the local repository and create a branch for it.
+      gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+      gitAccess.commit("First local commit.");
+      gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+      gitAccess.createBranch(LOCAL_BRANCH_NAME2);
+      gitAccess.fetch();
+
+      String initialBranchName = gitAccess.getBranchInfo().getBranchName();
+      assertEquals("master", initialBranchName);
+
+      GitControllerBase mock = new GitController(GitAccess.getInstance());
+      BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+      branchManagementPanel.refreshBranches();
+      flushAWT();
+      BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+      GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+
+      //------------- Create branch LOCAL_BRANCH_COPY_NAME from first branch in the tree: LOCAL_BRANCH_NAME1 -------------
+      GitTreeNode firstLeaf = (GitTreeNode)root.getFirstLeaf();
+      String firstLeafPath = (String)firstLeaf.getUserObject();
+      assertTrue(firstLeafPath.contains(Constants.R_HEADS));
+      String[] split = firstLeafPath.split("/");
+      assertEquals(LOCAL_BRANCH_NAME1, split[split.length - 1]);
+
+      List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
+      for (AbstractAction abstractAction : actionsForNode) {
+        if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
+          SwingUtilities.invokeLater(() -> {
+            abstractAction.actionPerformed(null);
+          });
+          flushAWT();
+
+          JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
+          JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
+          assertNotNull(checkoutBranchCheckBox);
+          checkoutBranchCheckBox.setSelected(false);
+          flushAWT();
+
+          JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
+              translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
+          branchNameTextField.setText(LOCAL_BRANCH_COPY_NAME);
+          JButton okButton = findFirstButton(createBranchDialog, "Create");
+          if (okButton != null) {
+            okButton.setEnabled(true);
+            okButton.doClick();
+          }
+          break;
+        }
+      }
+      sleep(500);
+
+      gitAccess.fetch();
+      root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+      StringBuilder actualTree = new StringBuilder();
+      BranchManagementTest.serializeTree(actualTree, root);
+      assertEquals(
+          "localRepository\n" + 
+              "  refs/heads/\n" + 
+              "    refs/heads/LocalBranch\n" +
+              "    refs/heads/LocalBranch2\n" +
+              "    refs/heads/LocalBranchCopy\n" +
+              "    refs/heads/master\n",
+              actualTree.toString());
+
+      assertEquals(initialBranchName, gitAccess.getBranchInfo().getBranchName());
+    } finally {
+      OptionsManager.getInstance().setCheckoutNewlyCreatedLocalBranch(initialIsCheckoutNewBranch);
+    }
   }
   
   /**
@@ -231,6 +334,8 @@ public class BranchActionsTest extends GitTestBase {
         JDialog deleteBranchDialog = findDialog(translator.getTranslation(Tags.DELETE_BRANCH));
         JButton yesButton = findFirstButton(deleteBranchDialog, translator.getTranslation(Tags.YES));
         yesButton.doClick();
+        
+        break;
       }
     }
     sleep(500);
@@ -348,6 +453,7 @@ public class BranchActionsTest extends GitTestBase {
             firstButtonFound.doClick();
           }
         }
+        break;
       }
     }
     sleep(500);
@@ -369,4 +475,5 @@ public class BranchActionsTest extends GitTestBase {
         "",
         actualTree.toString());
   }
+  
 }
