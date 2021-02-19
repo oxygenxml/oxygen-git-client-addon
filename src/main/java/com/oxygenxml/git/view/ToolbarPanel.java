@@ -424,6 +424,7 @@ public class ToolbarPanel extends JPanel {
           try {
             GitAccess.getInstance().setBranch(branchName);
           } catch (CheckoutConflictException ex) {
+            logger.debug(ex, ex);
             restoreCurrentBranchSelectionInMenu();
             PluginWorkspaceProvider.getPluginWorkspace()
                 .showErrorMessage(translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH));

@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -26,11 +28,15 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * Action provider for the contextual menu of the branches tree. 
  */
 public class BranchTreeMenuActionsProvider {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = LogManager.getLogger(BranchTreeMenuActionsProvider.class.getName());
   /**
    * Translator instance.
    */
   private static Translator translator = Translator.getInstance();
-  
   /**
    * A list with all the possible actions for a specific node in the tree.
    */
@@ -122,8 +128,9 @@ public class BranchTreeMenuActionsProvider {
             },
             ex -> {
               if (ex instanceof CheckoutConflictException) {
-                PluginWorkspaceProvider.getPluginWorkspace()
-                    .showErrorMessage(translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH));
+                logger.debug(ex, ex);
+                String msg = translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH);
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);
               } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
               }
@@ -160,8 +167,9 @@ public class BranchTreeMenuActionsProvider {
                 },
                 ex -> {
                   if (ex instanceof CheckoutConflictException) {
-                    PluginWorkspaceProvider.getPluginWorkspace()
-                    .showErrorMessage(translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH));
+                    logger.debug(ex, ex);
+                    String msg = translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH);
+                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);
                   } else if (ex instanceof GitAPIException) {
                     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
                   }
@@ -203,6 +211,7 @@ public class BranchTreeMenuActionsProvider {
                 },
                 ex -> {
                   if (ex instanceof CheckoutConflictException) {
+                    logger.debug(ex, ex);
                     BranchesUtil.showCannotCheckoutBranchMessage();
                   } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
                     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
