@@ -309,7 +309,7 @@ public class Tags {
 	/**
 	 * The massage displayed when you push with conflicts
 	 */
-	public static final String PUSH_WITH_CONFLICTS = "Push_With_Conflicts";
+	public static final String RESOLVE_CONFLICTS_FIRST = "Resolve_conflicts_first";
 
 	/**
 	 * The massage displayed when you push but your repository is not up to date

@@ -1003,7 +1003,7 @@ public class GitAccess {
         || repoState == RepositoryState.REBASING_MERGE
         || repoState == RepositoryState.REBASING_REBASING) {
 	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-	    response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
+	    response.setMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
 	    return response;
 	  }
 	  
