@@ -122,7 +122,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    * Set the initial states of the options.
    */
   private void setOptionsInitialStates() {
-    boolean notifyOnNewRemoteCommits = optionsManager.getNotifyAboutNewRemoteCommits();
+    boolean notifyOnNewRemoteCommits = optionsManager.isNotifyAboutNewRemoteCommits();
     notifyAboutRemoteCommitsCheckBox.setSelected(notifyOnNewRemoteCommits);
     
     WhenRepoDetectedInProject whatToDo = optionsManager.getWhenRepoDetectedInProject();

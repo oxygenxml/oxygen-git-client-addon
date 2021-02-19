@@ -196,7 +196,7 @@ public class Options {
    * 
    * @return Option stored about to verify or not.
    */
-  public boolean getNotifyAboutNewRemoteCommits() {
+  public boolean isNotifyAboutNewRemoteCommits() {
     return notifyAboutNewRemoteCommits;
   }
   
@@ -338,7 +338,7 @@ public class Options {
 	        && Equaler.verifyEquals(passphrase, opt.getPassphrase())
 	        && Equaler.verifyEquals(projectsTestsForGit, opt.getProjectsTestsForGit())
 	        && Equaler.verifyEquals(repositoryLocations, opt.getRepositoryLocations())
-	        && Equaler.verifyEquals(notifyAboutNewRemoteCommits, opt.getNotifyAboutNewRemoteCommits())
+	        && Equaler.verifyEquals(notifyAboutNewRemoteCommits, opt.isNotifyAboutNewRemoteCommits())
 	        && Equaler.verifyEquals(isCheckoutNewlyCreatedLocalBranch, opt.isCheckoutNewlyCreatedLocalBranch)
 	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())

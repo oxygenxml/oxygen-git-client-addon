@@ -75,7 +75,7 @@ public class RepositoryChangeWatcher {
     this.gitController = gitCtrl;
     
     // Check the currently opened editors.
-    boolean isNotifyAboutNewRemoteCommits = OptionsManager.getInstance().getNotifyAboutNewRemoteCommits();
+    boolean isNotifyAboutNewRemoteCommits = OptionsManager.getInstance().isNotifyAboutNewRemoteCommits();
     if(isNotifyAboutNewRemoteCommits) {
       GitOperationScheduler.getInstance().schedule(() -> checkRemoteRepository(true), 2 * SLEEP);
     }
@@ -103,7 +103,7 @@ public class RepositoryChangeWatcher {
     WSEditorChangeListener editorListenerAlways = new WSEditorChangeListener() {
       @Override
       public void editorOpened(URL editorLocation) {
-        boolean isNotifyAboutNewRemoteCommits = OptionsManager.getInstance().getNotifyAboutNewRemoteCommits();
+        boolean isNotifyAboutNewRemoteCommits = OptionsManager.getInstance().isNotifyAboutNewRemoteCommits();
         if (isNotifyAboutNewRemoteCommits) {
           // Remote tracking is activated.
           // Cancel the previous scheduled task, if any, to implement coalescing.

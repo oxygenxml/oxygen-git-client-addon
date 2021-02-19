@@ -548,8 +548,8 @@ public class OptionsManager {
   * Get the option about when to verify about remote changes in the repository.
   * @return Option stored about to verify or not.
   */
- public boolean getNotifyAboutNewRemoteCommits() {
-   return getOptions().getNotifyAboutNewRemoteCommits();
+ public boolean isNotifyAboutNewRemoteCommits() {
+   return getOptions().isNotifyAboutNewRemoteCommits();
  }
  
  /**
