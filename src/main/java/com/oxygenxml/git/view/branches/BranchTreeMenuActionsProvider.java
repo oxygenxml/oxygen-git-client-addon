@@ -129,8 +129,7 @@ public class BranchTreeMenuActionsProvider {
             ex -> {
               if (ex instanceof CheckoutConflictException) {
                 logger.debug(ex, ex);
-                String msg = translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH);
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);
+                BranchesUtil.showBranchSwitchErrorMessage();
               } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
               }
@@ -168,8 +167,7 @@ public class BranchTreeMenuActionsProvider {
                 ex -> {
                   if (ex instanceof CheckoutConflictException) {
                     logger.debug(ex, ex);
-                    String msg = translator.getTranslation(Tags.COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH);
-                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);
+                    BranchesUtil.showCannotCheckoutNewBranchMessage();
                   } else if (ex instanceof GitAPIException) {
                     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
                   }
@@ -212,7 +210,7 @@ public class BranchTreeMenuActionsProvider {
                 ex -> {
                   if (ex instanceof CheckoutConflictException) {
                     logger.debug(ex, ex);
-                    BranchesUtil.showCannotCheckoutBranchMessage();
+                    BranchesUtil.showCannotCheckoutNewBranchMessage();
                   } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
                     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
                   }

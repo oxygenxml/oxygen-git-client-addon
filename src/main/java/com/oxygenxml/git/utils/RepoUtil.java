@@ -17,6 +17,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.jaxp.SAXParserFactoryImpl;
+import org.eclipse.jgit.lib.RepositoryState;
 import org.xml.sax.SAXException;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -39,6 +40,25 @@ public class RepoUtil {
   private RepoUtil() {
     // Avoid instantiation 
   }
+  
+  /**
+   * Check if repo is merging or rebasing.
+   * 
+   * @param repoState The repo state.
+   * 
+   * @return <code>true</code> if the repository merging or rebasing.
+   */
+ public static boolean isRepoMergingOrRebasing(RepositoryState repoState) {
+   boolean toReturn = false;
+   if (repoState != null) {
+     toReturn = repoState == RepositoryState.MERGING
+         || repoState == RepositoryState.MERGING_RESOLVED
+         || repoState == RepositoryState.REBASING
+         || repoState == RepositoryState.REBASING_MERGE
+         || repoState == RepositoryState.REBASING_REBASING;
+   }
+   return toReturn;
+ }
   
   /**
    * Get the repository corresponding to the given file.

@@ -57,7 +57,7 @@ public class CreateBranchFromCommitAction extends AbstractAction {
           GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
         }
       } catch (CheckoutConflictException e1) {
-        BranchesUtil.showCannotCheckoutBranchMessage();
+        BranchesUtil.showCannotCheckoutNewBranchMessage();
       } catch (HeadlessException | GitAPIException | NoRepositorySelected e1) {
         LOGGER.debug(e1);
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);

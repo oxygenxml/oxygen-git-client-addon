@@ -359,7 +359,7 @@ public class Tags {
 	/**
 	 * The massage displayed when you pull while having conflicts
 	 */
-	public static final String PULL_WITH_CONFLICTS = "Pull_With_Conflicts";
+	public static final String PULL_WHEN_REPO_IN_CONFLICT = "Pull_when_repo_in_conflict";
 
 	/**
 	 * The massage displayed when your pull is successful but has conflicts
@@ -458,9 +458,14 @@ public class Tags {
 	public static final String BRANCH_SELECTION_DIALOG_TITLE = "Branch_Selection_Dialog_Title";
 
 	/**
-	 * The the message displayed when branch selection fails
+	 * The the message displayed when branch selection fails because of checkout conflict.
 	 */
-	public static final String COMMIT_OR_DISCARD_CHANGES_BEFORE_CHANGING_BRANCH = "Change_Branch_Error_Message";
+	public static final String BRANCH_SWITCH_CHECKOUT_CONFLICT_ERROR_MSG = "Branch_switch_checkout_conflict_error_msg";
+	
+	/**
+	 * The the message displayed when branch selection fails because the repo is in conflict.
+	 */
+	public static final String BRANCH_SWITCH_WHEN_REPO_IN_CONFLICT_ERROR_MSG = "Branch_switch_when_repo_in_conflict_error_msg";
 
 	/**
 	 * The text displayed in the title for the dialog that appears when you push

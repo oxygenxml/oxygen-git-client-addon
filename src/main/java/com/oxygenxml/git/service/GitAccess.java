@@ -997,8 +997,11 @@ public class GitAccess {
 	  PushResponse response = new PushResponse();
 	  
 	  Repository repo = git.getRepository();
-    RepositoryState repositoryState = repo.getRepositoryState();
-	  if (repositoryState == RepositoryState.MERGING) {
+    RepositoryState repoState = repo.getRepositoryState();
+	  if (repoState == RepositoryState.MERGING
+	      || repoState == RepositoryState.REBASING
+        || repoState == RepositoryState.REBASING_MERGE
+        || repoState == RepositoryState.REBASING_REBASING) {
 	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
 	    response.setMessage(translator.getTranslation(Tags.PUSH_WITH_CONFLICTS));
 	    return response;
@@ -2171,12 +2174,12 @@ public class GitAccess {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         logger.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showWarningMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
+            .showErrorMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         logger.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-        .showErrorMessage(e.getMessage());
+            .showErrorMessage(e.getMessage());
       }
     });
   }

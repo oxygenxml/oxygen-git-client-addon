@@ -14,6 +14,30 @@
         <val lang="ja_JP">Are you sure you want to delete the local branch "{0}"?</val>
         <val lang="nl_NL">Are you sure you want to delete the local branch "{0}"?</val>
     </key>
+    <key value="Branch_switch_when_repo_in_conflict_error_msg">
+        <comment>The the message displayed when branch selection fails</comment>
+        <val lang="en_US">Resolve the conflicts before you switch branches.</val>
+        <val lang="de_DE">Resolve the conflicts before you switch branches.</val>
+        <val lang="fr_FR">Resolve the conflicts before you switch branches.</val>
+        <val lang="ja_JP">Resolve the conflicts before you switch branches.</val>
+        <val lang="nl_NL">Resolve the conflicts before you switch branches.</val>
+    </key>
+    <key value="Pull_when_repo_in_conflict">
+        <comment>The message displayed when you pull while having conflicts</comment>
+        <val lang="en_US">Cannot pull. Resolve the conflicts first.</val>
+        <val lang="de_DE">Cannot pull. Resolve the conflicts first.</val>
+        <val lang="fr_FR">Cannot pull. Resolve the conflicts first.</val>
+        <val lang="ja_JP">Cannot pull. Resolve the conflicts first.</val>
+        <val lang="nl_NL">Cannot pull. Resolve the conflicts first.</val>
+    </key>
+        <key value="Push_With_Conflicts">
+        <comment>The message displayed when you push with conflicts</comment>
+        <val lang="en_US">Resolve the conflicts first.</val>
+        <val lang="de_DE">Resolve the conflicts first.</val>
+        <val lang="fr_FR">Resolve the conflicts first.</val>
+        <val lang="ja_JP">Resolve the conflicts first.</val>
+        <val lang="nl_NL">Resolve the conflicts first.</val>
+    </key>
     <key value="Uncommitted_changes">
         <comment>"Uncommitted changes" message.</comment>
         <val lang="en_US">Uncommitted changes</val>
@@ -75,7 +99,7 @@
         <val lang="ja_JP">Cannot reach remote repository</val>
         <val lang="nl_NL">Kan externe repository niet bereiken</val>
     </key>
-    <key value="Change_Branch_Error_Message">
+    <key value="Branch_switch_checkout_conflict_error_msg">
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">Commit or discard your local changes before you switch branches.</val>
         <val lang="de_DE">Commit or discard your local changes before you switch branches.</val>
@@ -1355,14 +1379,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Kan geen commit doen zolang er nog conflicten zijn.</val>
     </key>
-    <key value="Push_With_Conflicts">
-        <comment>The message displayed when you push with conflicts</comment>
-        <val lang="en_US">Cannot push. Please resolve conflicts</val>
-        <val lang="de_DE">Push nicht möglich. Bitte Konflikte lösen</val>
-        <val lang="fr_FR">Push impossible. Veuillez résoudre les conflits</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Kan niet pushen. Los eerst de conflicten op</val>
-    </key>
     <key value="Branch_Behind">
         <comment>The message displayed when you push but your repository is not up to date</comment>
         <val lang="en_US">Cannot push. Your current branch is behind. Pull first.</val>
@@ -1435,14 +1451,6 @@
         <val lang="fr_FR">Pull en cours...</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Bezig met pull ...</val>
-    </key>
-    <key value="Pull_With_Conflicts">
-        <comment>The message displayed when you pull while having conflicts</comment>
-        <val lang="en_US">Cannot pull. Please resolve conflicts</val>
-        <val lang="de_DE">Pull nicht möglich. Bitte Konflikte lösen</val>
-        <val lang="fr_FR">Pull impossible. Veuillez résoudre les conflits</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Kan geen pull doen. Los eerst conflicten op</val>
     </key>
     <key value="Pull_Successful_Conflicts">
         <comment>The message displayed when your pull is successful but has conflicts</comment>

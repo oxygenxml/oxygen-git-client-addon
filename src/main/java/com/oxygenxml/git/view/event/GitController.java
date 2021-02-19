@@ -396,7 +396,7 @@ public class GitController extends GitControllerBase {
           break;
         case REPOSITORY_HAS_CONFLICTS:
           ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-          .showWarningMessage(translator.getTranslation(Tags.PULL_WITH_CONFLICTS));
+              .showErrorMessage(translator.getTranslation(Tags.PULL_WHEN_REPO_IN_CONFLICT));
           break;
         case UP_TO_DATE:
           event = new PushPullEvent(GitOperation.PULL, translator.getTranslation(Tags.PULL_UP_TO_DATE));

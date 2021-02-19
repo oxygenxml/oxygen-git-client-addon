@@ -14,6 +14,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -25,6 +26,10 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  */
 public class BranchesUtil {
 
+  /**
+   * i18n.
+   */
+  private static final Translator TRANSLATOR = Translator.getInstance();
   
   /**
    * Logger for logging.
@@ -107,9 +112,9 @@ public class BranchesUtil {
   }
   
   /**
-   * Show a message saying why the branch checkout failed.
+   * Show a message saying why checking out a newly created branch failed.
    */
-  public static void showCannotCheckoutBranchMessage() {
+  public static void showCannotCheckoutNewBranchMessage() {
     RepositoryState state = null;
     try {
       state = GitAccess.getInstance().getRepository().getRepositoryState();
@@ -129,9 +134,24 @@ public class BranchesUtil {
         default:
           break;
       }
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-          Translator.getInstance().getTranslation(messageTag));
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(messageTag));
     }
+  }
+  
+  /**
+   * Show error message when switching to another branch failed.
+   */
+  public static void showBranchSwitchErrorMessage() {
+    RepositoryState repoState = null;
+    try {
+      repoState = GitAccess.getInstance().getRepository().getRepositoryState();
+    } catch (NoRepositorySelected e1) {
+      logger.error(e1, e1);
+    }
+    String msg = RepoUtil.isRepoMergingOrRebasing(repoState)
+        ? TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_WHEN_REPO_IN_CONFLICT_ERROR_MSG)
+        : TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_CHECKOUT_CONFLICT_ERROR_MSG);
+    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);
   }
 
 }

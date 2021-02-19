@@ -15,6 +15,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.history.HistoryController;
 
@@ -86,7 +87,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    final SelectedResourcesProvider selResProvider, 
 	    final boolean forStagedRes) {
 	  StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-	  if (!selResProvider.getAllSelectedResources().isEmpty() || isRepoMergingOrRebasing()) {
+	  if (!selResProvider.getAllSelectedResources().isEmpty() || RepoUtil.isRepoMergingOrRebasing(repoState)) {
 	    final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
 	    final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
 
@@ -226,11 +227,11 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	    showDiffAction.setEnabled(selectedLeaves.size() == 1);
 	    openAction.setEnabled(!selectionContainsDeletions && !selectionContainsSubmodule && !allSelectedResources.isEmpty());
 	    stageUnstageAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
-	    resolveConflict.setEnabled(isRepoMergingOrRebasing());
+	    resolveConflict.setEnabled(RepoUtil.isRepoMergingOrRebasing(repoState));
 	    resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 	    resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 	    markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
-	    restartMergeAction.setEnabled(isRepoMergingOrRebasing());
+	    restartMergeAction.setEnabled(RepoUtil.isRepoMergingOrRebasing(repoState));
 	    discardAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
 	  }
 	}
@@ -254,20 +255,4 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
     return hasHistory;
   }
 	
-	 /**
-   * Get repo state
-   * 
-   * @return <code>true</code> if the repository merging or rebasing.
-   */
-  private boolean isRepoMergingOrRebasing() {
-    boolean toReturn = false;
-    if (repoState != null) {
-      toReturn = repoState == RepositoryState.MERGING
-          || repoState == RepositoryState.MERGING_RESOLVED
-          || repoState == RepositoryState.REBASING
-          || repoState == RepositoryState.REBASING_MERGE
-          || repoState == RepositoryState.REBASING_REBASING;
-    }
-    return toReturn;
-  }
 }
