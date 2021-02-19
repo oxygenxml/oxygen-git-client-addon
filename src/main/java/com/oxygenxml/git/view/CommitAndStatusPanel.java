@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -55,6 +56,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
@@ -556,10 +558,6 @@ public class CommitAndStatusPanel extends JPanel {
 
 		UndoSupportInstaller.installUndoManager(commitMessageArea);
 		
-		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK);
-		commitMessageArea.getInputMap(JComponent.WHEN_FOCUSED).put(keyStroke, COMMIT_SHORTCUT);
-		commitMessageArea.getActionMap().put(COMMIT_SHORTCUT, commitAction);
-		
 		this.add(scrollPane, gbc);
 	}
 
@@ -676,6 +674,20 @@ public class CommitAndStatusPanel extends JPanel {
 		gbc.gridwidth = 1;
 		commitButton = new JButton(commitAction);
 		this.add(commitButton, gbc);
+		
+		// Add shortcut to the Commit action
+		KeyStroke commitKeyStroke = KeyStroke.getKeyStroke(
+		    KeyEvent.VK_ENTER,
+		    PlatformDetectionUtil.isMacOS() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
+    commitMessageArea.getInputMap(JComponent.WHEN_FOCUSED).put(commitKeyStroke, COMMIT_SHORTCUT);
+    commitMessageArea.getActionMap().put(COMMIT_SHORTCUT, commitAction);
+    commitAction.putValue(Action.ACCELERATOR_KEY, commitKeyStroke);
+    commitButton.setToolTipText(
+        translator.getTranslation(Tags.COMMIT)
+            + " "
+            + "(" 
+            + (PlatformDetectionUtil.isMacOS() ? "\u2318" : "Ctrl") + "+Enter"
+            + ")");
 	}
 
   /**
