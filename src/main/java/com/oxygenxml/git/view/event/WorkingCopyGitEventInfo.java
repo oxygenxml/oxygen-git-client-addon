@@ -11,16 +11,33 @@ public class WorkingCopyGitEventInfo extends GitEventInfo {
    * Working copy.
    */
   private File workingCopy;
+  
+  /**
+   * <code>true</code> if the WC is a submodule.
+   */
+  private boolean isWcSubmodule;
 
   /**
    * Constructor.
    * 
-   * @param gitOp Operation.
+   * @param gitOp        Operation.
    * @param workingCopy  Working copy.
    */
   public WorkingCopyGitEventInfo(GitOperation gitOp, File workingCopy) {
+    this(gitOp, workingCopy, false);
+  }
+  
+  /**
+   * Constructor.
+   * 
+   * @param gitOp       Operation.
+   * @param workingCopy Working copy.
+   * @param isSubmodule <code>true</code> if the WC is a submodule.
+   */
+  public WorkingCopyGitEventInfo(GitOperation gitOp, File workingCopy, boolean isSubmodule) {
     super(gitOp);
     this.workingCopy = workingCopy;
+    this.isWcSubmodule = isSubmodule;
   }
   
   /**
@@ -28,6 +45,13 @@ public class WorkingCopyGitEventInfo extends GitEventInfo {
    */
   public File getWorkingCopy() {
     return workingCopy;
+  }
+  
+  /**
+   * @return <code>true</code> if the WC is a submodule.
+   */
+  public boolean isWorkingCopySubmodule() {
+    return isWcSubmodule;
   }
   
   @Override

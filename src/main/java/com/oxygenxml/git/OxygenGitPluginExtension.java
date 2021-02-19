@@ -41,6 +41,7 @@ import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
@@ -293,19 +294,25 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
             }
           } else if (operation == GitOperation.OPEN_WORKING_COPY
               && GitAccess.getInstance().getBranchInfo().isDetached()) {
-            RepositoryState repositoryState;
-            try {
-              repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
-              if (repositoryState != RepositoryState.REBASING_MERGE) {
-                PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                    translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
-              }
-            } catch (NoRepositorySelected e) {
-              logger.debug(e, e);
-            }
+            treatDetachedHead((WorkingCopyGitEventInfo) info);
           }
         }
       }
+      
+      private void treatDetachedHead(WorkingCopyGitEventInfo wcEventInfo) {
+        if (!wcEventInfo.isWorkingCopySubmodule()) {
+          try {
+            RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
+            if (repositoryState != RepositoryState.REBASING_MERGE) {
+              PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
+                  translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+            }
+          } catch (NoRepositorySelected e) {
+            logger.debug(e, e);
+          }
+        }
+      }
+      
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
         GitOperation operation = info.getGitOperation();

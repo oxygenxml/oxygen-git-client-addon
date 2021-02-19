@@ -694,7 +694,11 @@ public class GitAccess {
 		
 		git = Git.wrap(submoduleRepository);
 		
-		fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleRepository.getDirectory()));
+		fireOperationSuccessfullyEnded(
+		    new WorkingCopyGitEventInfo(
+		        GitOperation.OPEN_WORKING_COPY,
+		        submoduleRepository.getDirectory(),
+		        true));
 	}
 	
 	 /**
