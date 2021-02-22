@@ -42,7 +42,7 @@ import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
 /**
- * Test cases for checkout conflicts. With visual interatction too.
+ * Test cases for checkout conflicts. With visual interaction too.
  */
 public class GitCheckoutConflict2Test extends GitTestBase {
   PanelRefresh refreshSupport = new PanelRefresh(null) {
@@ -248,7 +248,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(5000);
+    sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -339,7 +339,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(5000);
+    sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -426,7 +426,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(5000);
+    sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -500,7 +500,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(5000);
+    sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view

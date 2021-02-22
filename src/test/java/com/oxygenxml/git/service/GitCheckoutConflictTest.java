@@ -248,7 +248,7 @@ public class GitCheckoutConflictTest {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    Thread.sleep(5000);
+    Thread.sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -430,7 +430,7 @@ public class GitCheckoutConflictTest {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    Thread.sleep(5000);
+    Thread.sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -488,7 +488,7 @@ public class GitCheckoutConflictTest {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    Thread.sleep(5000);
+    Thread.sleep(500);
    
     // Simulate branch checkout from Git Staging
     ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
