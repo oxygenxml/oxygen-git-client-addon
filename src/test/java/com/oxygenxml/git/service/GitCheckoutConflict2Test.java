@@ -107,7 +107,6 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
     config.save();
 
-
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
@@ -139,13 +138,6 @@ public class GitCheckoutConflict2Test extends GitTestBase {
       }
     }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getXMLUtilAccess();
 
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(pluginWSMock).showWarningMessage(Mockito.anyString());
-    
     ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
     Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
     Mockito.doAnswer(new Answer<Void>() {

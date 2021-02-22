@@ -134,20 +134,7 @@ public class GitCheckoutConflictTest {
         return (String) invocation.getArguments()[0];
       }
     });
-    Mockito.doAnswer(new Answer<XMLUtilAccess>() {
-      @Override
-      public XMLUtilAccess answer(InvocationOnMock invocation) throws Throwable {
-        return xmlUtilAccess;
-      }
-    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getXMLUtilAccess();
 
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(pluginWSMock).showWarningMessage(Mockito.anyString());
-    
     ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
     Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
     Mockito.doAnswer(new Answer<Void>() {
