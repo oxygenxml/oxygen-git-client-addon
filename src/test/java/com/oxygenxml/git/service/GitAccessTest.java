@@ -2,6 +2,7 @@ package com.oxygenxml.git.service;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.concurrent.Future;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
@@ -93,8 +94,10 @@ public class GitAccessTest extends TestCase {
     GitAccess.getInstance().setGit(gitMock);
 
     GitController gitCtrl = new GitController(GitAccess.getInstance());
-    gitCtrl.pull();
-    Thread.sleep(700);
+    Future<?> pullResp = gitCtrl.pull();
+    pullResp.get();
+    
+    Thread.sleep(300);
     
     assertEquals("Pull_when_repo_in_conflict", errMsg[0]);
   }
