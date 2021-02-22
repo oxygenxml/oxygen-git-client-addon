@@ -129,7 +129,7 @@ public class BranchTreeMenuActionsProvider {
             ex -> {
               if (ex instanceof CheckoutConflictException) {
                 logger.debug(ex, ex);
-                BranchesUtil.showBranchSwitchErrorMessage();
+                BranchesUtil.showBranchSwitchErrorMessage((CheckoutConflictException) ex);
               } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
               }
@@ -229,7 +229,7 @@ public class BranchTreeMenuActionsProvider {
    */
   private void treatCheckoutConflictForNewlyCreatedBranche(CheckoutConflictException ex) {
     logger.debug(ex, ex);
-    BranchesUtil.showCannotCheckoutNewBranchMessage();
+    BranchesUtil.showCannotCheckoutNewBranchMessage(ex);
   }
   
   /**

@@ -2,10 +2,12 @@ package com.oxygenxml.git.view.branches;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
@@ -113,8 +115,10 @@ public class BranchesUtil {
   
   /**
    * Show a message saying why checking out a newly created branch failed.
+   * 
+   * @param ex Checkout conflict exception. 
    */
-  public static void showCannotCheckoutNewBranchMessage() {
+  public static void showCannotCheckoutNewBranchMessage(CheckoutConflictException ex) {
     RepositoryState state = null;
     try {
       state = GitAccess.getInstance().getRepository().getRepositoryState();
@@ -129,7 +133,11 @@ public class BranchesUtil {
           messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_BECAUSE_UNCOMMITTED_CHANGES;
           break;
         case MERGING:
-          messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS;
+          if (getCheckoutConflictAndPullConflictFilesIntersection(ex).isEmpty()) {
+            messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_BECAUSE_UNCOMMITTED_CHANGES;
+          } else {
+            messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS;
+          }
           break;
         default:
           break;
@@ -137,20 +145,44 @@ public class BranchesUtil {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(messageTag));
     }
   }
+
+  /**
+   * Get the intersection of the checkout conflict files and pull conflict files.
+   * 
+   * @param ex The checkout conflict exception.
+   * 
+   * @return the intersection set. Never <code>null</code>.
+   */
+  private static Set<String> getCheckoutConflictAndPullConflictFilesIntersection(CheckoutConflictException ex) {
+    // The files that don't allow the checkout to be done
+    List<String> checkoutConflictingPaths = ex.getConflictingPaths();
+    // The conflicting files after a pull
+    Set<String> repoConflictingFiles = GitAccess.getInstance().getConflictingFiles();
+    // Only if the the same files are in pull conflict and checkout conflict show
+    // the message to resolve the conflict. Otherwise show the one that says to
+    // commit or discard the conflicting (talking here about checkout conflicts) changes
+    return checkoutConflictingPaths.stream()
+        .filter(repoConflictingFiles::contains)
+        .collect(Collectors.toSet());
+  }
   
   /**
    * Show error message when switching to another branch failed.
+   * 
+   * @param ex Checkout conflict exception. 
    */
-  public static void showBranchSwitchErrorMessage() {
+  public static void showBranchSwitchErrorMessage(CheckoutConflictException ex) {
     RepositoryState repoState = null;
     try {
       repoState = GitAccess.getInstance().getRepository().getRepositoryState();
     } catch (NoRepositorySelected e1) {
       logger.error(e1, e1);
     }
-    String msg = RepoUtil.isRepoMergingOrRebasing(repoState)
-        ? TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_WHEN_REPO_IN_CONFLICT_ERROR_MSG)
-        : TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_CHECKOUT_CONFLICT_ERROR_MSG);
+    String msg = 
+        RepoUtil.isRepoMergingOrRebasing(repoState) 
+            && !getCheckoutConflictAndPullConflictFilesIntersection(ex).isEmpty()
+          ? TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_WHEN_REPO_IN_CONFLICT_ERROR_MSG)
+          : TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_CHECKOUT_CONFLICT_ERROR_MSG);
     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);
   }
 

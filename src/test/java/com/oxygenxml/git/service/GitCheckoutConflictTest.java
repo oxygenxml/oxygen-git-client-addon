@@ -331,6 +331,70 @@ public class GitCheckoutConflictTest {
   }
   
   /**
+   * <p><b>Description:</b> try to switch branch from Git Staging when repo is in conflict state.
+   * This should succeed.</p>
+   * <p><b>Bug ID:</b> EXM-47439</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testSwitchBranchWhenRepoInConflict_succeed_1() throws Exception {
+ // Push test.txt from first repo
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("file test added");
+    gitAccess.push("", "");
+  
+    // Commit test.txt from second repo
+    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
+    
+    File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
+    file.createNewFile();
+    writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "teeeeeest");;
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("conflict");
+    
+    // Change file.txt file on the new branch
+    gitAccess.createBranchFromLocalBranch(
+        "new_branch",
+        gitAccess.getGit().getRepository().getFullBranch(),
+        true);
+    writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "altfel");;
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
+    gitAccess.commit("commit on nnew branch");
+    
+    // move to master
+    gitAccess.setBranch("master");
+    
+    // change file.txt to create checkout conflict
+    writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "new changes");;
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
+    
+    // Pull to create conflict o text.txt
+    PullResponse pullResp = gitAccess.pull("", "");
+    assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
+    
+    // Simulate branch checkout from Git Staging
+    ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
+    toolbarPanel.refresh();
+    Thread.sleep(1000);
+    SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
+    
+    JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
+    newBranchItem.setSelected(true);
+    newBranchItem.getAction().actionPerformed(null);
+    Thread.sleep(600);
+    
+    assertEquals("master", gitAccess.getRepository().getBranch());
+    
+    assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
+  }
+  
+  /**
    * <p><b>Description:</b> try to switch branch from Git Branch Manager.
    * The branch witch generates a checkout conflict.</p>
    * <p><b>Bug ID:</b> EXM-47439</p>

@@ -289,6 +289,182 @@ public class GitCheckoutConflict2Test extends GitTestBase {
   }
   
   /**
+   * <p><b>Description:</b> try to switch to a newly created branch from Git Branch Manager 
+   * when repo is in conflict state.
+   * The branch checkout also generates a checkout conflict, but not on the resource that is in pull conflict.</p>
+   * <p><b>Bug ID:</b> EXM-47439</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  public void testCheckoutNewBranchWhenRepoInConflict_checkoutConflict_2() throws Exception {
+    // Push test.txt from first repo
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("file test added");
+    gitAccess.push("", "");
+  
+    // Commit test.txt from second repo
+    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
+    
+    File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
+    file.createNewFile();
+    writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "teeeeeest");;
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("conflict");
+    
+    // Change file.txt file on the new branch
+    gitAccess.createBranchFromLocalBranch(
+        "new_branch",
+        gitAccess.getGit().getRepository().getFullBranch(),
+        true);
+    writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "altfel");;
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
+    gitAccess.commit("commit on nnew branch");
+    
+    // move to master
+    gitAccess.setBranch("master");
+    
+    // change file.txt to create checkout conflict
+    writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "new changes");;
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
+    
+    // Pull to create conflict o text.txt
+    PullResponse pullResp = gitAccess.pull("", "");
+    assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
+    
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    Thread.sleep(5000);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+   
+    // Simulate branch checkout from Git Branch Manager view
+    GitTreeNode node = new GitTreeNode(
+        new TreePath(
+            new String[] {"refs", "heads", "new_branch"}));
+    node.setUserObject("refs/heads/new_branch");
+    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(node);
+    for (AbstractAction abstractAction : actionsForNode) {
+      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
+        SwingUtilities.invokeLater(() -> {
+          abstractAction.actionPerformed(null);
+        });
+        flushAWT();
+
+        JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
+        JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
+        assertNotNull(checkoutBranchCheckBox);
+        checkoutBranchCheckBox.setSelected(true);
+        flushAWT();
+
+        JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
+            translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
+        branchNameTextField.setText("a_new_day");
+        JButton okButton = findFirstButton(createBranchDialog, "Create");
+        if (okButton != null) {
+          okButton.setEnabled(true);
+          okButton.doClick();
+        }
+        break;
+      }
+    }
+    sleep(500);
+    
+    assertEquals("master", gitAccess.getRepository().getBranch());
+    
+    assertEquals("Cannot_checkout_new_branch_because_uncommitted_changes", errMsg[0]);
+  }
+  
+  /**
+   * <p><b>Description:</b> try to switch to a newly created branch from Git Branch Manager 
+   * when repo is in conflict state.
+   * This should succeed.</p>
+   * <p><b>Bug ID:</b> EXM-47439</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  public void testCheckoutNewBranchWhenRepoInConflict_succeed_1() throws Exception {
+    // Push test.txt from first repo
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("file test added");
+    gitAccess.push("", "");
+  
+    // Commit test.txt from second repo
+    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
+    
+    File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
+    file.createNewFile();
+    writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "teeeeeest");;
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("conflict");
+    
+    // Change file.txt file on the new branch
+    gitAccess.createBranchFromLocalBranch(
+        "new_branch",
+        gitAccess.getGit().getRepository().getFullBranch(),
+        true);
+    writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "altfel");;
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
+    gitAccess.commit("commit on nnew branch");
+    
+    // move to master
+    gitAccess.setBranch("master");
+    
+    // Pull to create conflict o text.txt
+    PullResponse pullResp = gitAccess.pull("", "");
+    assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
+    
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    Thread.sleep(5000);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+   
+    // Simulate branch checkout from Git Branch Manager view
+    GitTreeNode node = new GitTreeNode(
+        new TreePath(
+            new String[] {"refs", "heads", "new_branch"}));
+    node.setUserObject("refs/heads/new_branch");
+    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(node);
+    for (AbstractAction abstractAction : actionsForNode) {
+      if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
+        SwingUtilities.invokeLater(() -> {
+          abstractAction.actionPerformed(null);
+        });
+        flushAWT();
+
+        JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
+        JCheckBox checkoutBranchCheckBox = findCheckBox(createBranchDialog, Tags.CHECKOUT_BRANCH);
+        assertNotNull(checkoutBranchCheckBox);
+        checkoutBranchCheckBox.setSelected(true);
+        flushAWT();
+
+        JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
+            translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
+        branchNameTextField.setText("a_new_day");
+        JButton okButton = findFirstButton(createBranchDialog, "Create");
+        if (okButton != null) {
+          okButton.setEnabled(true);
+          okButton.doClick();
+        }
+        break;
+      }
+    }
+    sleep(500);
+    
+    assertEquals("a_new_day", gitAccess.getRepository().getBranch());
+  }
+  
+  /**
    * <p><b>Description:</b> try to switch to a newly created branch from Git Branch Manager.
    * Repo is not in conflict.
    * The branch checkout generates a checkout conflict.</p>

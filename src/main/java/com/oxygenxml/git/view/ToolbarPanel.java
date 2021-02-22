@@ -426,7 +426,7 @@ public class ToolbarPanel extends JPanel {
           } catch (CheckoutConflictException ex) {
             logger.debug(ex, ex);
             restoreCurrentBranchSelectionInMenu();
-            BranchesUtil.showBranchSwitchErrorMessage();
+            BranchesUtil.showBranchSwitchErrorMessage((CheckoutConflictException) ex);
           } catch (GitAPIException | JGitInternalException ex) {
             restoreCurrentBranchSelectionInMenu();
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
