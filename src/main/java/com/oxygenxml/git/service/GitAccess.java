@@ -2098,6 +2098,15 @@ public class GitAccess {
 	public Git getGit() {
 	  return git;
 	}
+	
+	/**
+	 * <<< !!!FOR TESTS!!! >>>
+	 * 
+	 * @param git Git.
+	 */
+	public void setGit(Git git) {
+    this.git = git;
+  }
 
   /**
    * No repository.
