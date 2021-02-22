@@ -44,7 +44,10 @@ import ro.sync.exml.workspace.api.standalone.project.ProjectController;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
-public class GitAccessConflict2Test {
+/**
+ * Test cases for checkout conflicts.
+ */
+public class GitCheckoutConflictTest {
   PanelRefresh refreshSupport = new PanelRefresh(null) {
     @Override
     protected int getScheduleDelay() {
@@ -219,7 +222,6 @@ public class GitAccessConflict2Test {
   
     // Commit from second repo
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
-    gitAccess.fetch();
     
     File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
     file.createNewFile();
@@ -262,7 +264,6 @@ public class GitAccessConflict2Test {
       }
     }
     sleep(500);
-    gitAccess.fetch();
     
     assertEquals("master", gitAccess.getRepository().getBranch());
     
@@ -290,7 +291,6 @@ public class GitAccessConflict2Test {
   
     // Commit from second repo
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
-    gitAccess.fetch();
     
     File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
     file.createNewFile();
@@ -328,6 +328,118 @@ public class GitAccessConflict2Test {
     assertEquals("master", gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_when_repo_in_conflict_error_msg", errMsg[0]);
+  }
+  
+  /**
+   * <p><b>Description:</b> try to switch branch from Git Branch Manager.
+   * The branch witch generates a checkout conflict.</p>
+   * <p><b>Bug ID:</b> EXM-47439</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testSwitchBranchFromGitBranchManager_checkoutConflict_1() throws Exception {
+    // Push from first repo
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("file test added");
+    gitAccess.push("", "");
+  
+    // Change file on the new branch
+    gitAccess.createBranchFromLocalBranch(
+        "new_branch",
+        gitAccess.getGit().getRepository().getFullBranch(),
+        true);
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "altfel");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("commit 2");
+    
+    // move to master
+    gitAccess.setBranch("master");
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    Thread.sleep(5000);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+   
+    // Simulate branch checkout from Git Branch Manager view
+    GitTreeNode node = new GitTreeNode(
+        new TreePath(
+            new String[] {"refs", "heads", "new_branch"}));
+    node.setUserObject("refs/heads/new_branch");
+    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(node);
+    for (AbstractAction abstractAction : actionsForNode) {
+      if(abstractAction.getValue(AbstractAction.NAME).equals(Tags.CHECKOUT)) {
+        abstractAction.actionPerformed(null);
+        break;
+      }
+    }
+    sleep(500);
+    
+    assertEquals("master", gitAccess.getRepository().getBranch());
+    
+    assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
+  }
+  
+  /**
+   * <p><b>Description:</b> try to switch branch from Git Staging.
+   * The branch witch generates a checkout conflict.</p>
+   * <p><b>Bug ID:</b> EXM-47439</p>
+   *
+   * @author sorin_carbunaru
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testSwitchBranchFromGitBranchManager_checkoutConflict_2() throws Exception {
+    // Push from first repo
+    gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("file test added");
+    gitAccess.push("", "");
+  
+    // Change file on the new branch
+    gitAccess.createBranchFromLocalBranch(
+        "new_branch",
+        gitAccess.getGit().getRepository().getFullBranch(),
+        true);
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "altfel");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    gitAccess.commit("commit 2");
+    
+    // move to master
+    gitAccess.setBranch("master");
+    writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
+    
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    Thread.sleep(5000);
+   
+    // Simulate branch checkout from Git Staging
+    ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
+    toolbarPanel.refresh();
+    Thread.sleep(1000);
+    SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
+    
+    JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
+    newBranchItem.setSelected(true);
+    newBranchItem.getAction().actionPerformed(null);
+    Thread.sleep(600);
+    
+    assertEquals("master", gitAccess.getRepository().getBranch());
+    
+    assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
   }
 
 	/**
