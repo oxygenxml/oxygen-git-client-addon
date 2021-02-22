@@ -358,7 +358,7 @@ public class GitController extends GitControllerBase {
       if(repositoryState != null) {
         if (repositoryState == RepositoryState.MERGING_RESOLVED) {
           ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-          .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
+              .showWarningMessage(translator.getTranslation(Tags.CONCLUDE_MERGE_MESSAGE));
         } else if (repositoryState == RepositoryState.REBASING_MERGE
             || repositoryState == RepositoryState.REBASING_REBASING) {
           showRebaseInProgressDialog();
