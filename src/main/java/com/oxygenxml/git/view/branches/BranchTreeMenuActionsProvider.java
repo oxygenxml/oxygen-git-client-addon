@@ -166,8 +166,7 @@ public class BranchTreeMenuActionsProvider {
                 },
                 ex -> {
                   if (ex instanceof CheckoutConflictException) {
-                    logger.debug(ex, ex);
-                    BranchesUtil.showCannotCheckoutNewBranchMessage();
+                    treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
                   } else if (ex instanceof GitAPIException) {
                     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
                   }
@@ -209,8 +208,7 @@ public class BranchTreeMenuActionsProvider {
                 },
                 ex -> {
                   if (ex instanceof CheckoutConflictException) {
-                    logger.debug(ex, ex);
-                    BranchesUtil.showCannotCheckoutNewBranchMessage();
+                    treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
                   } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
                     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
                   }
@@ -221,6 +219,17 @@ public class BranchTreeMenuActionsProvider {
         }
       }
     };
+  }
+  
+  /**
+   * Treat the checkout conflict exception thrown for a newly created branch
+   * (when the checkout is to be automatically performed after branch creation).
+   * 
+   * @param ex The exception.
+   */
+  private void treatCheckoutConflictForNewlyCreatedBranche(CheckoutConflictException ex) {
+    logger.debug(ex, ex);
+    BranchesUtil.showCannotCheckoutNewBranchMessage();
   }
   
   /**
