@@ -1,7 +1,5 @@
 package com.oxygenxml.git.service;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,8 +18,6 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -37,6 +33,7 @@ import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 
+import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -47,7 +44,7 @@ import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 /**
  * Test cases for checkout conflicts.
  */
-public class GitCheckoutConflictTest {
+public class GitCheckoutConflictTest extends TestCase {
   PanelRefresh refreshSupport = new PanelRefresh(null) {
     @Override
     protected int getScheduleDelay() {
@@ -65,9 +62,10 @@ public class GitCheckoutConflictTest {
   protected GitAccess gitAccess;
   private String[] shownWarningMess = new String[1];
   private String[] errMsg = new String[1];
-  
-  @Before
-  public void init() throws Exception {
+
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
 
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(FIRST_LOCAL_TEST_REPOSITPRY);
@@ -166,8 +164,8 @@ public class GitCheckoutConflictTest {
     errMsg[0] = "";
   }
   
-  @After
-  public void freeResources() {
+  @Override
+  protected void tearDown() throws Exception {
     // JGit relies on GC to release some file handles. See org.eclipse.jgit.internal.storage.file.WindowCache.Ref
     // When an object is collected by the GC, it releases a file lock.
     System.gc();
@@ -186,6 +184,8 @@ public class GitCheckoutConflictTest {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    
+    super.tearDown();
   }
   
   /**
