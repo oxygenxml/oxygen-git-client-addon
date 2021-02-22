@@ -94,7 +94,7 @@ public class GitAccessTest extends TestCase {
 
     GitController gitCtrl = new GitController(GitAccess.getInstance());
     gitCtrl.pull();
-    Thread.sleep(300);
+    Thread.sleep(700);
     
     assertEquals("Pull_when_repo_in_conflict", errMsg[0]);
   }
