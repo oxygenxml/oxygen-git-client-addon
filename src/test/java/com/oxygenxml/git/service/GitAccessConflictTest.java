@@ -60,6 +60,7 @@ public class GitAccessConflictTest {
   private Repository remoteRepo;
   protected GitAccess gitAccess;
   private String[] shownWarningMess = new String[1];
+  private String[] errMsg = new String[1];
   
   @Before
   public void init() throws Exception {
@@ -161,8 +162,17 @@ public class GitAccessConflictTest {
         return null;
       }
     }).when(pluginWSMock).showWarningMessage(Mockito.anyString());
-    
     shownWarningMess[0] = "";
+    
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        String message = (String) invocation.getArguments()[0];
+        errMsg[0] = message;
+        return null;
+      }
+    }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
+    errMsg[0] = "";
   }
   
   @After
@@ -186,8 +196,8 @@ public class GitAccessConflictTest {
       e.printStackTrace();
     }
   }
-
-	@Test
+  
+  @Test
 	public void testResolveUsingTheirs() throws Exception {
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     OptionsManager.getInstance().saveSelectedRepository(FIRST_LOCAL_TEST_REPOSITPRY);
@@ -204,7 +214,7 @@ public class GitAccessConflictTest {
 		File testFileSecondRepo = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		testFileSecondRepo.createNewFile();
 
-		writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "teeeeeest");
+		writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "teeeeeest");
 
 		FileStatus fileStatus = new FileStatus(GitChangeType.ADD, "test.txt");
     gitAccess.add(fileStatus);
@@ -248,7 +258,7 @@ public class GitAccessConflictTest {
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt");
 		file.createNewFile();
 
-		writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "teeeeeest");;
+		writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "teeeeeest");;
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
