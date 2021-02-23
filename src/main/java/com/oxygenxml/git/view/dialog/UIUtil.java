@@ -50,6 +50,22 @@ import ro.sync.exml.workspace.api.standalone.ui.Table;
  */
 public class UIUtil {
   /**
+   * Meta symbol.
+   */
+  private static final char MAC_META_SYMBOL = (char) 0x2318;
+  /**
+   * Shift symbol.
+   */
+  private static final char SHIFT_SYMBOL = (char) 0x21E7;
+  /**
+   * Alt symbol.
+   */
+  private static final char ALT_SYMBOL = (char) 0x2325;
+  /**
+   * Ctrl symbol.
+   */
+  private static final char CTRL_SYMBOL = (char) 0x2303;
+  /**
    * Extra width for the icon column of the resources table (for beautifying reasons).
    */
   private static final int RESOURCE_TABLE_ICON_COLUMN_EXTRA_WIDTH = 3;
@@ -287,32 +303,32 @@ public class UIUtil {
    */
   public static String getKeyModifiersSymbol(int modifiers, boolean independent) {
     StringBuilder result = new StringBuilder();
-    if ((modifiers & KeyEvent.CTRL_MASK) != 0) {
+    if ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0) {
       if (independent) {
         result.append("M4 ");
       } else {
-        result.append((char)0x2303 + " ");
+        result.append(CTRL_SYMBOL + " ");
       }
     }
-    if ((modifiers & KeyEvent.ALT_MASK) != 0) {
+    if ((modifiers & KeyEvent.ALT_DOWN_MASK) != 0) {
       if (independent) {
         result.append("M3 ");
       } else {
-        result.append((char)0x2325 + " ");
+        result.append(ALT_SYMBOL + " ");
       }
     }
-    if ((modifiers & KeyEvent.SHIFT_MASK) != 0) {
+    if ((modifiers & KeyEvent.SHIFT_DOWN_MASK) != 0) {
       if (independent) {
         result.append("M2 ");
       } else {
-        result.append((char)0x21E7 + " ");
+        result.append(SHIFT_SYMBOL + " ");
       }
     }
-    if ((modifiers & KeyEvent.META_MASK) != 0) {
+    if ((modifiers & KeyEvent.META_DOWN_MASK) != 0) {
       if (independent) {
         result.append("M1 ");
       } else {
-        result.append((char)0x2318 + " ");
+        result.append(MAC_META_SYMBOL + " ");
       }
     }
     return result.toString();
