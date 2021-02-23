@@ -61,6 +61,7 @@ import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.utils.UndoSupportInstaller;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -688,7 +689,10 @@ public class CommitAndStatusPanel extends JPanel {
         translator.getTranslation(Tags.COMMIT)
             + " "
             + "(" 
-            + (PlatformDetectionUtil.isMacOS() ? "\u2318" : "Ctrl") + "+Enter"
+            + (PlatformDetectionUtil.isMacOS() ? UIUtil.getKeyModifiersSymbol(commitKeyStroke.getModifiers(), false) 
+                : KeyEvent.getKeyModifiersText(commitKeyStroke.getModifiers())) 
+            + "+"
+            + KeyEvent.getKeyText(commitKeyStroke.getKeyCode())
             + ")");
 	}
 

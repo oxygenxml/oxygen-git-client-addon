@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -274,6 +275,47 @@ public class UIUtil {
     } else {
       g.drawString(text, x, y);
     }
+  }
+  
+  /**
+   *  Gets a string containing the UNICODE codes of the key modifier(s).
+   * 
+   * @param modifiers   The specified key modifiers
+   * @param independent <code>true</code> to use a platform independent representation using 'M' keys. 
+   * 
+   * @return The string representation of the modifier(s)
+   */
+  public static String getKeyModifiersSymbol(int modifiers, boolean independent) {
+    StringBuilder result = new StringBuilder();
+    if ((modifiers & KeyEvent.CTRL_MASK) != 0) {
+      if (independent) {
+        result.append("M4 ");
+      } else {
+        result.append((char)0x2303 + " ");
+      }
+    }
+    if ((modifiers & KeyEvent.ALT_MASK) != 0) {
+      if (independent) {
+        result.append("M3 ");
+      } else {
+        result.append((char)0x2325 + " ");
+      }
+    }
+    if ((modifiers & KeyEvent.SHIFT_MASK) != 0) {
+      if (independent) {
+        result.append("M2 ");
+      } else {
+        result.append((char)0x21E7 + " ");
+      }
+    }
+    if ((modifiers & KeyEvent.META_MASK) != 0) {
+      if (independent) {
+        result.append("M1 ");
+      } else {
+        result.append((char)0x2318 + " ");
+      }
+    }
+    return result.toString();
   }
 
 }
