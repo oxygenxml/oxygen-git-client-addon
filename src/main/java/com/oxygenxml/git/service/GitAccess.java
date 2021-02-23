@@ -192,7 +192,7 @@ public class GitAccess {
 		String username = gitCredentials.getUsername();
 		String password = gitCredentials.getPassword();
 
-		ProgressMonitor p = new ProgressMonitor() {
+		ProgressMonitor progressMonitor = new ProgressMonitor() {
 			String taskTitle;
 			float totalWork;
 			float currentWork = 0;
@@ -248,9 +248,17 @@ public class GitAccess {
 		}
 		
 		String pass = OptionsManager.getInstance().getSshPassphrase();
-		CloneCommand cloneCommand = Git.cloneRepository().setURI(url.toString()).setDirectory(directory)
-		    .setCredentialsProvider(new SSHCapableUserCredentialsProvider(username, password, pass, url.getHost()))
-		    .setProgressMonitor(p);
+		CloneCommand cloneCommand = 
+		    Git.cloneRepository()
+		        .setURI(url.toString())
+		        .setDirectory(directory)
+		        .setCredentialsProvider(
+		            new SSHCapableUserCredentialsProvider(
+		                username,
+		                password, 
+		                pass,
+		                url.getHost()))
+		        .setProgressMonitor(progressMonitor);
 		if (branchName != null) {
 			git = cloneCommand.setBranchesToClone(Arrays.asList(branchName)).setBranch(branchName).call();
 		} else {
