@@ -259,13 +259,20 @@ public class GitAccess {
 		                pass,
 		                url.getHost()))
 		        .setProgressMonitor(progressMonitor);
-		if (branchName != null) {
-			git = cloneCommand.setBranchesToClone(Arrays.asList(branchName)).setBranch(branchName).call();
-		} else {
-		  git = cloneCommand.call();
+		
+		fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+		try {
+		  if (branchName != null) {
+		    git = cloneCommand.setBranchesToClone(Arrays.asList(branchName)).setBranch(branchName).call();
+		  } else {
+		    git = cloneCommand.call();
+		  } 
+		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+		} catch (GitAPIException ex)  {
+		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
+      throw ex;
 		}
 		
-		fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
 	}
 	
 	/**
@@ -684,29 +691,34 @@ public class GitAccess {
 	/**
 	 * Sets the given submodule as the current repository
 	 * 
-	 * @param submodule - the name of the submodule
+	 * @param submodule - the name of the submodule.
+	 * 
 	 * @throws IOException Failed to load the submodule.
 	 * @throws GitAPIException Failed to load the submodule.
 	 */
 	public void setSubmodule(String submodule) throws IOException, GitAPIException {
 		Repository parentRepository = git.getRepository();
-		Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
+		File submoduleDir = SubmoduleWalk.getSubmoduleDirectory(parentRepository, submodule);
+
+		fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
 		
-		if (submoduleRepository == null) {
-		  // The submodule wasn't updated.
-		  git.submoduleInit().call();
-		  git.submoduleUpdate().call();
+		try {
+		  Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
+		  if (submoduleRepository == null) {
+		    // The submodule wasn't updated.
+		    git.submoduleInit().call();
+		    git.submoduleUpdate().call();
+
+		    submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
+		  }
+
+		  git = Git.wrap(submoduleRepository);
 		  
-		  submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
+		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
+		} catch (Exception e) {
+		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true), e);
 		}
 		
-		git = Git.wrap(submoduleRepository);
-		
-		fireOperationSuccessfullyEnded(
-		    new WorkingCopyGitEventInfo(
-		        GitOperation.OPEN_WORKING_COPY,
-		        submoduleRepository.getDirectory(),
-		        true));
 	}
 	
 	 /**
