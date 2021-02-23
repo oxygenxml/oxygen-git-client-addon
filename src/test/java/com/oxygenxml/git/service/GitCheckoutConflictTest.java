@@ -235,7 +235,7 @@ public class GitCheckoutConflictTest extends TestCase {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    Thread.sleep(500);
+    sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -304,13 +304,13 @@ public class GitCheckoutConflictTest extends TestCase {
     // Simulate branch checkout from Git Staging
     ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
     toolbarPanel.refresh();
-    Thread.sleep(1000);
+    sleep(1000);
     SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
     
     JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
     newBranchItem.setSelected(true);
     newBranchItem.getAction().actionPerformed(null);
-    Thread.sleep(600);
+    sleep(600);
     
     assertEquals("master", gitAccess.getRepository().getBranch());
     
@@ -368,13 +368,13 @@ public class GitCheckoutConflictTest extends TestCase {
     // Simulate branch checkout from Git Staging
     ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
     toolbarPanel.refresh();
-    Thread.sleep(1000);
+    sleep(1000);
     SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
     
     JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
     newBranchItem.setSelected(true);
     newBranchItem.getAction().actionPerformed(null);
-    Thread.sleep(600);
+    sleep(600);
     
     assertEquals("master", gitAccess.getRepository().getBranch());
     
@@ -417,7 +417,7 @@ public class GitCheckoutConflictTest extends TestCase {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    Thread.sleep(500);
+    sleep(500);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -475,18 +475,18 @@ public class GitCheckoutConflictTest extends TestCase {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    Thread.sleep(500);
+    sleep(500);
    
     // Simulate branch checkout from Git Staging
     ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
     toolbarPanel.refresh();
-    Thread.sleep(1000);
+    sleep(1000);
     SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
     
     JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
     newBranchItem.setSelected(true);
     newBranchItem.getAction().actionPerformed(null);
-    Thread.sleep(600);
+    sleep(600);
     
     assertEquals("master", gitAccess.getRepository().getBranch());
     
@@ -501,7 +501,7 @@ public class GitCheckoutConflictTest extends TestCase {
    * @throws InterruptedException
    */
   private void sleep(int delay) throws InterruptedException {
-    Thread.sleep(delay);
+    sleep(delay);
   }
 
   /**
