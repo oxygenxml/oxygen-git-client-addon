@@ -690,7 +690,7 @@ public class CommitAndStatusPanel extends JPanel {
             + " "
             + "(" 
             + (PlatformDetectionUtil.isMacOS() ? UIUtil.getKeyModifiersSymbol(commitKeyStroke.getModifiers(), false) 
-                : KeyEvent.getKeyModifiersText(commitKeyStroke.getModifiers())) 
+                : InputEvent.getModifiersExText(commitKeyStroke.getModifiers())) 
             + "+"
             + KeyEvent.getKeyText(commitKeyStroke.getKeyCode())
             + ")");
