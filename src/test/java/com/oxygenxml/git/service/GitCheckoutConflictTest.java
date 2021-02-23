@@ -501,7 +501,7 @@ public class GitCheckoutConflictTest extends TestCase {
    * @throws InterruptedException
    */
   private void sleep(int delay) throws InterruptedException {
-    sleep(delay);
+    Thread.sleep(delay);
   }
 
   /**
