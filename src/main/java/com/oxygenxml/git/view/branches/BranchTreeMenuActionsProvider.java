@@ -15,7 +15,6 @@ import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.service.GitControllerBase;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.GitTreeNode;
@@ -152,28 +151,23 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         String branchPath = BranchesUtil.createBranchPath(nodePath,
             BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
-        try {
-          CreateBranchDialog dialog = new CreateBranchDialog(
-              translator.getTranslation(Tags.CHECKOUT_BRANCH),
-              branchPath,
-              BranchesUtil.getLocalBranches(),
-              true);
-          if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-            ctrl.asyncTask(
-                () -> {
-                  ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath);
-                  return null;
-                },
-                ex -> {
-                  if (ex instanceof CheckoutConflictException) {
-                    treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
-                  } else if (ex instanceof GitAPIException) {
-                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-                  }
-                });
-          }
-        } catch (NoRepositorySelected ex) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        CreateBranchDialog dialog = new CreateBranchDialog(
+            translator.getTranslation(Tags.CHECKOUT_BRANCH),
+            branchPath,
+            true);
+        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+          ctrl.asyncTask(
+              () -> {
+                ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath);
+                return null;
+              },
+              ex -> {
+                if (ex instanceof CheckoutConflictException) {
+                  treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
+                } else if (ex instanceof GitAPIException) {
+                  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+                }
+              });
         }
       }
     };
@@ -191,31 +185,26 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction(translator.getTranslation(Tags.CREATE_BRANCH) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        try {
-          CreateBranchDialog dialog = new CreateBranchDialog(
-              translator.getTranslation(Tags.CREATE_BRANCH),
-              null,
-              BranchesUtil.getLocalBranches(),
-              false);
-          if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-            ctrl.asyncTask(
-                () -> {
-                  ctrl.getGitAccess().createBranchFromLocalBranch(
-                      dialog.getBranchName(),
-                      nodePath,
-                      dialog.shouldCheckoutNewBranch());
-                  return null;
-                },
-                ex -> {
-                  if (ex instanceof CheckoutConflictException) {
-                    treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
-                  } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
-                    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-                  }
-                });
-          }
-        } catch (NoRepositorySelected ex) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        CreateBranchDialog dialog = new CreateBranchDialog(
+            translator.getTranslation(Tags.CREATE_BRANCH),
+            null,
+            false);
+        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+          ctrl.asyncTask(
+              () -> {
+                ctrl.getGitAccess().createBranchFromLocalBranch(
+                    dialog.getBranchName(),
+                    nodePath,
+                    dialog.shouldCheckoutNewBranch());
+                return null;
+              },
+              ex -> {
+                if (ex instanceof CheckoutConflictException) {
+                  treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
+                } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
+                  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+                }
+              });
         }
       }
     };

@@ -12,7 +12,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.branches.BranchesUtil;
@@ -51,14 +50,13 @@ public class CreateBranchFromCommitAction extends AbstractAction {
         CreateBranchDialog dialog = new CreateBranchDialog(
             Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
             null,
-            BranchesUtil.getLocalBranches(),
             false);
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
         }
       } catch (CheckoutConflictException e1) {
         BranchesUtil.showCannotCheckoutNewBranchMessage(e1);
-      } catch (HeadlessException | GitAPIException | NoRepositorySelected e1) {
+      } catch (HeadlessException | GitAPIException e1) {
         LOGGER.debug(e1);
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
       }

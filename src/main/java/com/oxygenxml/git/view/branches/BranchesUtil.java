@@ -185,5 +185,18 @@ public class BranchesUtil {
           : TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_CHECKOUT_CONFLICT_ERROR_MSG);
     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);
   }
+  
+  /**
+   * Check if the given branch already exists.
+   * 
+   * @param branchName The branch name to check.
+   * 
+   * @return <code>true</code> if a locals branch with the given name already exists.
+   * 
+   * @throws NoRepositorySelected 
+   */
+  public static boolean doesBranchAlreadyExist(String branchName) throws NoRepositorySelected {
+    return getLocalBranches().stream().anyMatch((String branch) -> branch.equalsIgnoreCase(branchName));
+  }
 
 }

@@ -8,7 +8,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.List;
 
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -17,7 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.UIUtil;
@@ -35,6 +38,10 @@ import ro.sync.exml.workspace.api.standalone.ui.TextField;
  */
 public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
   /**
+   * Logger for logging.
+   */
+  private static final Logger logger = LogManager.getLogger(CreateBranchDialog.class.getName());
+  /**
    * Translator.
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
@@ -46,10 +53,6 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
    * The error message area.
    */
   private JTextArea errorMessageTextArea;
-  /**
-   * The list with all the local branches.
-   */
-  private List<String> existingBranches;
   /**
    * Check box to choose whether or not to checkout the branch when 
    * creating it from a local branch or commit.
@@ -66,19 +69,16 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
    * 
    * @param title            The title of the dialog.
    * @param nameToPropose    The name to propose. Can be <code>null</code>.
-   * @param existingBranches A list with all existing local branches.
    * @param isCheckoutRemote <code>true</code> if we create by checking out a remote branch.
    */
   public CreateBranchDialog(
       String title,
       String nameToPropose,
-      List<String> existingBranches,
       boolean isCheckoutRemote) {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
         ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
         : null, title, true);
 
-    this.existingBranches = existingBranches;
     this.isCheckoutRemote = isCheckoutRemote;
     
     // Create GUI
@@ -178,24 +178,19 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
   }
   
   /**
-   * Check if the given branch already exists.
-   * 
-   * @param branchName The branch name to check.
-   * 
-   * @return <code>true</code> if a locals branch with the given name already exists.
-   */
-  private boolean doesBranchAlreadyExist(String branchName) {
-    return existingBranches.stream().anyMatch((String branch) -> branch.equals(branchName));
-  }
-  
-  /**
    * Update UI components depending whether the provided branch name
    * is valid or not.
    * 
    * @param branchName The branch name provided in the input field.
    */
   private void updateUI(String branchName) {
-    boolean branchAlreadyExists = doesBranchAlreadyExist(branchName);
+    boolean branchAlreadyExists = false;
+    try {
+      branchAlreadyExists = BranchesUtil.doesBranchAlreadyExist(branchName);
+    } catch (NoRepositorySelected e) {
+      // Not really possible 
+      logger.debug(e, e);
+    }
     errorMessageTextArea.setText(branchAlreadyExists ? TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH_ALREADY_EXISTS) : "");
     
     boolean isBranchNameValid = !branchName.isEmpty() && !branchAlreadyExists;
