@@ -129,7 +129,8 @@ public class GitCheckoutConflictTest extends TestCase {
     Mockito.when(xmlUtilAccess.escapeTextValue(Mockito.anyString())).thenAnswer(new Answer<String>() {
       @Override
       public String answer(InvocationOnMock invocation) throws Throwable {
-        return (String) invocation.getArguments()[0];
+        Object[] arguments = invocation.getArguments();
+        return arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
       }
     });
 
@@ -146,8 +147,8 @@ public class GitCheckoutConflictTest extends TestCase {
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        String message = (String) invocation.getArguments()[0];
-        shownWarningMess[0] = message;
+        Object[] arguments = invocation.getArguments();
+        shownWarningMess[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
         return null;
       }
     }).when(pluginWSMock).showWarningMessage(Mockito.anyString());
@@ -156,8 +157,8 @@ public class GitCheckoutConflictTest extends TestCase {
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        String message = (String) invocation.getArguments()[0];
-        errMsg[0] = message;
+        Object[] arguments = invocation.getArguments();
+        errMsg[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
         return null;
       }
     }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
