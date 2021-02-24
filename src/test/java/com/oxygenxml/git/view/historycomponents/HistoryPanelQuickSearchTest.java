@@ -57,12 +57,14 @@ public class HistoryPanelQuickSearchTest extends HistoryPanelTestBase {
         new File("target/gen/HistoryPanelTest/testAffectedFiles_ShowRenames"));
   
       historyPanel.showRepositoryHistory();
+      waitForScheduler();
       flushAWT();
+      sleep(300);
   
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
       model.filterChanged("alex rename");
-      sleep(300);
+      sleep(700);
       
       String dump = dumpHistory(model.getAllCommits(), true);
       String expected = "[ Rename. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n";
