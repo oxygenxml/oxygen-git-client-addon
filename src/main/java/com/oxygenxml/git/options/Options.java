@@ -111,6 +111,10 @@ public class Options {
 	 */
 	@XmlElement(name = "whenRepoDetectedInProject")
 	private WhenRepoDetectedInProject whenRepoDetectedInProject = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
+	/**
+	 * <code>true</code> to update submodules on pull.
+	 */
+	private boolean updateSubmodulesOnPull = true;
   
 	/**
 	 * <code>true</code> to automatically push to remote when committing.
@@ -358,5 +362,16 @@ public class Options {
 				+ "CLASSIFIED" + ", resourcesViewMode=" + stagedResViewMode
 				+ ", defaultPullType=" + defaultPullType + "]";
 	}
+
+	/**
+	 * @return <code>true</code> to execute the equivalent of a "git submodule update --recursive".
+	 */
+  public boolean getUpdateSubmodulesOnPull() {
+    return updateSubmodulesOnPull;
+  }
+
+  public boolean setUpdateSubmodulesOnPull(boolean updateSubmodules) {
+    return updateSubmodulesOnPull = updateSubmodules;
+  }
 
 }

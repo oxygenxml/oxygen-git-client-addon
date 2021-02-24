@@ -95,7 +95,7 @@ public class GitAccessPullTest extends GitTestBase{
 
 	    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 	    OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
-	    PullResponse response = gitAccess.pull("", "", PullType.REBASE);
+	    PullResponse response = gitAccess.pull("", "", PullType.REBASE, false);
 	    PullStatus actual = response.getStatus();
 	    PullStatus expected = PullStatus.OK;
 	    assertEquals(expected, actual);
@@ -105,7 +105,7 @@ public class GitAccessPullTest extends GitTestBase{
    public void testPullRebaseUpToDate() throws Exception {
      pushOneFileToRemote();
 
-     PullResponse response = gitAccess.pull("", "", PullType.REBASE);
+     PullResponse response = gitAccess.pull("", "", PullType.REBASE, false);
      PullStatus actual = response.getStatus();
      PullStatus expected = PullStatus.UP_TO_DATE;
      assertEquals(expected, actual);
@@ -119,7 +119,7 @@ public class GitAccessPullTest extends GitTestBase{
      File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test2.txt");
      file.createNewFile();
 
-     PullResponse response = gitAccess.pull("", "", PullType.REBASE);
+     PullResponse response = gitAccess.pull("", "", PullType.REBASE, false);
      PullStatus actual = response.getStatus();
      PullStatus expected = PullStatus.OK;
      assertEquals(expected, actual);

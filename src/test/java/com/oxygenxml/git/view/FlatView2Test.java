@@ -142,7 +142,7 @@ public class FlatView2Test extends FlatViewTestBase {
     sleep(400);
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE);
+    gitAccess.pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
@@ -161,7 +161,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
+    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
@@ -221,7 +221,7 @@ public class FlatView2Test extends FlatViewTestBase {
     sleep(400);
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE);
+    gitAccess.pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
@@ -240,7 +240,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
+    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     sleep(1000);
@@ -301,7 +301,7 @@ public class FlatView2Test extends FlatViewTestBase {
     sleep(400);
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE);
+    gitAccess.pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
@@ -320,7 +320,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
+    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     
@@ -392,7 +392,7 @@ public class FlatView2Test extends FlatViewTestBase {
     waitForScheduler();
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE);
+    gitAccess.pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
@@ -411,7 +411,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
+    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     
@@ -495,7 +495,7 @@ public class FlatView2Test extends FlatViewTestBase {
     waitForScheduler();
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE);
+    gitAccess.pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
@@ -514,7 +514,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
+    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
@@ -591,7 +591,7 @@ public class FlatView2Test extends FlatViewTestBase {
       sleep(400);
 
       assertFalse(secondRepoFile.exists());
-      gitAccess.pull("", "", PullType.REBASE);
+      gitAccess.pull("", "", PullType.REBASE, false);
       assertTrue(secondRepoFile.exists());
 
       // Modify file and commit and push
@@ -610,7 +610,7 @@ public class FlatView2Test extends FlatViewTestBase {
       ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
       assertFalse(rebasePanel.isShowing());
       flushAWT();
-      PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE);
+      PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
       refreshSupport.call();
       flushAWT();
       sleep(500);

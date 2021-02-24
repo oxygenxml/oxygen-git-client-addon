@@ -67,7 +67,7 @@ public class FlatView10Test extends FlatViewTestBase {
     sleep(400);
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.MERGE_FF);
+    gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
@@ -86,7 +86,7 @@ public class FlatView10Test extends FlatViewTestBase {
     ConflictButtonsPanel abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(abortMergeButtonPanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.MERGE_FF);
+    PullResponse pullResponse = gitAccess.pull("", "", PullType.MERGE_FF, false);
     refreshSupport.call();
     waitForScheduler();
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
