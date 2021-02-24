@@ -357,7 +357,7 @@ public class GitPullCasesTest extends GitTestBase {
     gitAccess.commit("Edited last line");
     
     // Now pull with rebase 
-    gitAccess.pull("", "", PullType.REBASE);
+    gitAccess.pull("", "", PullType.REBASE, false);
     sleep(200);
     
     File firstRepofile = new File( new File(local1Repository), "test.txt");

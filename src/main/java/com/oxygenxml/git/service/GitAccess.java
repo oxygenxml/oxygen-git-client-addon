@@ -105,6 +105,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.BranchGitEventInfo;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
@@ -1109,7 +1110,7 @@ public class GitAccess {
    * @throws GitAPIException other errors.
    */
   public PullResponse pull(String username, String password) throws GitAPIException {
-    return pull(username, password, PullType.MERGE_FF);
+    return pull(username, password, PullType.MERGE_FF, false);
   }
 
 	/**
@@ -1119,6 +1120,7 @@ public class GitAccess {
 	 * @param username Git username
 	 * @param password Git password
 	 * @param pullType One of ff, no-ff, ff-only, rebase.
+	 * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive"
 	 * 
 	 * @return The result, if successful.
 	 *  
@@ -1128,7 +1130,7 @@ public class GitAccess {
 	 *                                   the working copy so operation is aborted.
 	 * @throws GitAPIException other errors.
 	 */
-  public PullResponse pull(String username, String password, PullType pullType) throws GitAPIException {
+  public PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
 	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
 	  AuthenticationInterceptor.install();
 
@@ -1169,6 +1171,14 @@ public class GitAccess {
 		    treatMergeResult(pullResponseToReturn, pullCommandResult.getMergeResult());
 		  }
 		}
+		}
+		
+		if (pullResponseToReturn.getStatus().isSuccessful()) {
+		  try {
+        RepoUtil.updateSubmodules(git);
+      } catch (IOException e) {
+        throw new GitAPIException(e.getMessage(), e) {};
+      }
 		}
 		
 		return pullResponseToReturn;
@@ -1864,7 +1874,8 @@ public class GitAccess {
 	        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
 	        String username = gitCredentials.getUsername();
 	        String password = gitCredentials.getPassword();
-	        pull(username, password, PullType.REBASE);
+	        // TODO EXM-47461 Should update submodules as well.
+	        pull(username, password, PullType.REBASE, false);
 	      } else {
 	        AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
 	        git.clean().call();

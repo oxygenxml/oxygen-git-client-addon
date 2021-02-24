@@ -17,7 +17,11 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.jaxp.SAXParserFactoryImpl;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.xml.sax.SAXException;
 
 import com.oxygenxml.git.options.OptionsManager;
@@ -233,5 +237,29 @@ public class RepoUtil {
     }
     
     return repoDir;
+  }
+
+  /**
+   * Recursively updates submodules.
+   * 
+   * @param git Current git repository.
+   * 
+   * @throws GitAPIException Git command falied.
+   * @throws IOException Problems while iterating the modules.
+   */
+  public static void updateSubmodules(Git git) throws GitAPIException, IOException {
+    // Update current repo.
+    git.submoduleInit().call();
+    git.submoduleUpdate().call();
+    
+    // Go recursively.
+    SubmoduleWalk walk = SubmoduleWalk.forIndex(git.getRepository());
+    while (walk.next()) {
+      try (Repository subRepo = walk.getRepository()) {
+        if (subRepo != null) {
+          updateSubmodules(Git.wrap(subRepo));
+        }
+      }
+    }
   }
 }

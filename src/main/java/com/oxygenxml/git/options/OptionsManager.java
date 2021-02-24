@@ -602,5 +602,19 @@ public class OptionsManager {
  public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
    return getOptions().getWhenRepoDetectedInProject();
  }
+
+  /**
+   * @return <code>true</code> to execute the equivalent of a "git submodule update --recursive".
+   */
+  public boolean getUpdateSubmodulesOnPull() {
+    return getOptions().getUpdateSubmodulesOnPull();
+  }
+  
+  /**
+   * @return <code>true</code> to execute the equivalent of a "git submodule update --recursive".
+   */
+  public boolean setUpdateSubmodulesOnPull(boolean updateSubmodules) {
+    return getOptions().setUpdateSubmodulesOnPull(updateSubmodules);
+  }
  
 }

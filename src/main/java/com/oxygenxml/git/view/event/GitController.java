@@ -366,7 +366,8 @@ public class GitController extends GitControllerBase {
           PullResponse response = gitAccess.pull(
               userCredentials.getUsername(),
               userCredentials.getPassword(),
-              pullType);
+              pullType,
+              OptionsManager.getInstance().getUpdateSubmodulesOnPull());
           event = treatPullResponse(response);
         }
       }
