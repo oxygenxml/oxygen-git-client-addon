@@ -11,14 +11,12 @@ import org.junit.Test;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitController;
 
-import ro.sync.basic.io.IOUtil;
-
 /**
  * Update submodules after a pull.
  * 
  * @author alex_jitianu
  */
-public class PullSubmoduleUpdate extends GitTestBase {
+public class PullSubmoduleUpdateTest extends GitTestBase {
 
   /**
    * <p><b>Description:</b> Update submodules on pull.</p>
@@ -47,7 +45,7 @@ public class PullSubmoduleUpdate extends GitTestBase {
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
     
-    String content = IOUtil.readFile(new File(db2.getWorkTree(), "sub/file.txt"), "UTF-8");
+    String content = read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
     assertEquals("The submodules must be initialized and updated", "version 1", content);
     
     // Move the submodule target forward.
@@ -58,7 +56,7 @@ public class PullSubmoduleUpdate extends GitTestBase {
     // Pull again.
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
-    content = IOUtil.readFile(new File(db2.getWorkTree(), "sub/file.txt"), "UTF-8");
+    content = read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
     assertEquals("The submodules must be initialized and updated", "version 2", content);
   }
   
@@ -141,12 +139,12 @@ public class PullSubmoduleUpdate extends GitTestBase {
     assertEquals(
         "The submodules must be initialized and updated", 
         "base", 
-        IOUtil.readFile(new File(remote2.getWorkTree(), "main/base.txt"), "UTF-8"));
+        read(new File(remote2.getWorkTree(), "main/base.txt").toURI().toURL()));
     
     assertEquals(
         "The submodules must be initialized and updated", 
         "version 1", 
-        IOUtil.readFile(new File(remote2.getWorkTree(), "main/sub/file.txt"), "UTF-8"));
+        read(new File(remote2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
     
     // Main entry point.
     Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
@@ -159,11 +157,11 @@ public class PullSubmoduleUpdate extends GitTestBase {
     assertEquals(
         "The submodules must be initialized and updated", 
         "base", 
-        IOUtil.readFile(new File(db2.getWorkTree(), "main/base.txt"), "UTF-8"));
+        read(new File(db2.getWorkTree(), "main/base.txt").toURI().toURL()));
     
     assertEquals(
         "The submodules must be initialized and updated", 
         "version 1", 
-        IOUtil.readFile(new File(db2.getWorkTree(), "main/sub/file.txt"), "UTF-8"));
+        read(new File(db2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
   }
 }

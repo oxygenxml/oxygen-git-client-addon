@@ -239,7 +239,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
         e.printStackTrace();
       }
     }
-    return result;
+    return result != null ? result.trim() : null;
   }
   
   /**
