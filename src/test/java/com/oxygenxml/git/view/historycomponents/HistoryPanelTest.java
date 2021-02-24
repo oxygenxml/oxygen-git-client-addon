@@ -57,7 +57,9 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
           expected, dump);
 
       historyPanel.showRepositoryHistory();
+      waitForScheduler();
       flushAWT();
+      sleep(300);
 
       JTable historyTable = historyPanel.getHistoryTable();
 
@@ -156,7 +158,9 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
         expected, dump);
 
     historyPanel.showRepositoryHistory();
+    waitForScheduler();
     flushAWT();
+    sleep(300);
 
     JTable historyTable = historyPanel.getHistoryTable();
 

@@ -44,7 +44,9 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       assertEquals(expected, dump);
   
       historyPanel.showRepositoryHistory();
+      waitForScheduler();
       flushAWT();
+      sleep(300);
   
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
@@ -108,6 +110,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       waitForScheduler();
       flushAWT();
+      sleep(300);
   
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
@@ -169,7 +172,9 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
     assertEquals(expected, dump);
 
     historyPanel.showRepositoryHistory();
+    waitForScheduler();
     flushAWT();
+    sleep(300);
     
     JTable historyTable = historyPanel.getHistoryTable();
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
@@ -219,7 +224,9 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
     assertEquals(expected, dump);
 
     historyPanel.showRepositoryHistory();
+    waitForScheduler();
     flushAWT();
+    sleep(300);
 
     JTable historyTable = historyPanel.getHistoryTable();
     HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
