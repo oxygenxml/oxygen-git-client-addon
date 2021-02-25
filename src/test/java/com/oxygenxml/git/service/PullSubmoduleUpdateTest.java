@@ -6,6 +6,7 @@ import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
+import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 
 import com.oxygenxml.git.utils.RepoUtil;
@@ -163,5 +164,58 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
         "The submodules must be initialized and updated", 
         "version 1", 
         read(new File(db2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
+  }
+
+  /**
+   * <p><b>Description:</b> Update submodules on clone.</p>
+   * <p><b>Bug ID:</b> EXM-45658</p>
+   *
+   * @author alex_jitianu
+   *
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testClone() throws Exception {
+    Repository submoduleRepoLvl1 = createRepository("target/test-resources/PullSubmoduleUpdate_sub");
+    String fileName = "file.txt";
+    TestUtil.commitOneFile(submoduleRepoLvl1, fileName, "version 1");
+    
+    // Committing a file in the remote makes required initializations.
+    Repository submoduleRepoLvl2 = createRepository("target/test-resources/PullSubmodule_main_remote");
+    TestUtil.commitOneFile(submoduleRepoLvl2, "base.txt", "base");
+    setupSubmodule(submoduleRepoLvl2, submoduleRepoLvl1, "sub");
+    
+    // Committing a file in the remote makes required initializations.
+    Repository remote2 = createRepository("target/test-resources/PullSubmodule_main_remote_2");
+    TestUtil.commitOneFile(remote2, "main.txt", "main");
+    setupSubmodule(remote2, submoduleRepoLvl2, "main");
+    
+    // Assert submodules.
+    assertEquals(
+        "The submodules must be initialized and updated", 
+        "base", 
+        read(new File(remote2.getWorkTree(), "main/base.txt").toURI().toURL()));
+    
+    assertEquals(
+        "The submodules must be initialized and updated", 
+        "version 1", 
+        read(new File(remote2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
+    
+    File directory = new File("target/test-resources/clone");
+    GitAccess.getInstance().clone(
+        new URIish(remote2.getDirectory().toURI().toURL().toString()), 
+        directory,
+        null, 
+        null);
+    
+    assertEquals(
+        "The submodules must be initialized and updated", 
+        "base", 
+        read(new File(directory, "main/base.txt").toURI().toURL()));
+    
+    assertEquals(
+        "The submodules must be initialized and updated", 
+        "version 1", 
+        read(new File(directory, "main/sub/file.txt").toURI().toURL()));
   }
 }

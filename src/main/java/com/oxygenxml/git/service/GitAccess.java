@@ -251,6 +251,7 @@ public class GitAccess {
 		String pass = OptionsManager.getInstance().getSshPassphrase();
 		CloneCommand cloneCommand = 
 		    Git.cloneRepository()
+		    .setCloneSubmodules(true)
 		        .setURI(url.toString())
 		        .setDirectory(directory)
 		        .setCredentialsProvider(
