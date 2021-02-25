@@ -1874,8 +1874,8 @@ public class GitAccess {
 	        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
 	        String username = gitCredentials.getUsername();
 	        String password = gitCredentials.getPassword();
-	        // TODO EXM-47461 Should update submodules as well.
-	        pull(username, password, PullType.REBASE, false);
+	        // EXM-47461 Should update submodules as well.
+	        pull(username, password, PullType.REBASE, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
 	      } else {
 	        AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
 	        git.clean().call();
