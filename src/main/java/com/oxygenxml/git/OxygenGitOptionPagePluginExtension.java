@@ -53,6 +53,10 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   public static final String KEY = "Git_client_plugin_preferences_page";
   /**
+   * Update submodules on pull.
+   */
+  private JCheckBox updateSubmodulesOnPull;
+  /**
    * CheckBox for the option to notify the user about new commits in the remote.
    */
   private JCheckBox notifyAboutRemoteCommitsCheckBox;
@@ -103,6 +107,16 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     notifyAboutRemoteCommitsCheckBox = new JCheckBox(translator.getTranslation(Tags.NOTIFY_ON_NEW_COMMITS));
     mainPanel.add(notifyAboutRemoteCommitsCheckBox, c);
     
+    // Option that notifies us when commits are detected in the remote branch
+    c.gridx = 0;
+    c.gridy ++;
+    c.weightx = 0;
+    c.weighty = 0;
+    c.anchor = GridBagConstraints.LINE_START;
+    c.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
+    updateSubmodulesOnPull = new JCheckBox(translator.getTranslation(Tags.UPDATE_SUBMODULES_ON_PULL));
+    mainPanel.add(updateSubmodulesOnPull, c);
+    
     // Empty panel to take up the rest of the space
     c.gridx = 0;
     c.gridy ++;
@@ -124,6 +138,9 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   private void setOptionsInitialStates() {
     boolean notifyOnNewRemoteCommits = optionsManager.isNotifyAboutNewRemoteCommits();
     notifyAboutRemoteCommitsCheckBox.setSelected(notifyOnNewRemoteCommits);
+    
+    boolean updateSubmodules = optionsManager.getUpdateSubmodulesOnPull();
+    updateSubmodulesOnPull.setSelected(updateSubmodules);
     
     WhenRepoDetectedInProject whatToDo = optionsManager.getWhenRepoDetectedInProject();
     switch (whatToDo) {
@@ -175,6 +192,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   @Override
   public void apply(PluginWorkspace pluginWorkspace) {
     optionsManager.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
+    optionsManager.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
     
     WhenRepoDetectedInProject whatToDo = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
     if (autoSwitchToWCRadio.isSelected()) {
@@ -193,6 +211,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   @Override
   public void restoreDefaults() {
     notifyAboutRemoteCommitsCheckBox.setSelected(false);
+    updateSubmodulesOnPull.setSelected(true);
     askToSwitchToWCRadio.setSelected(true);
   }
 

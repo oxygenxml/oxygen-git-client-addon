@@ -6,6 +6,15 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value = "Update_submodules_on_pull">
+        <comment>An option that controls whether we automatically update submodules 
+            after pulling changes from the remote repository</comment>
+        <val lang="en_US">Update all submodules after pulling changes from the remote repository</val>
+        <val lang="de_DE">Update all submodules after pulling changes from the remote repository</val>
+        <val lang="fr_FR">Update all submodules after pulling changes from the remote repository</val>
+        <val lang="ja_JP">Update all submodules after pulling changes from the remote repository</val>
+        <val lang="nl_NL">Update all submodules after pulling changes from the remote repository</val>
+    </key>
     <key value = "Confirmation_message_delete_branch">
 		<comment>The confirmation message when trying to delete a branch.</comment>
         <val lang="en_US">Are you sure you want to delete the local branch "{0}"?</val>

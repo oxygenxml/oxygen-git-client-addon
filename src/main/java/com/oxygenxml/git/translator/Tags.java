@@ -1181,4 +1181,8 @@ public class Tags {
    * "Create". Loaded from Oxygen.
    */
   public static final String CREATE = "Create";
+  /**
+   * Update submodules after a pull action.
+   */
+  public static final String UPDATE_SUBMODULES_ON_PULL = "Update_submodules_on_pull";
 }
