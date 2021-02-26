@@ -364,12 +364,17 @@ public class Options {
 	}
 
 	/**
-	 * @return <code>true</code> to execute the equivalent of a "git submodule update --recursive".
+	 * @return <code>true</code> to update submodules after a pull.
 	 */
   public boolean getUpdateSubmodulesOnPull() {
     return updateSubmodulesOnPull;
   }
 
+  /**
+   * Sets the submodule update policy on pull.
+   * 
+   * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
+   */
   public boolean setUpdateSubmodulesOnPull(boolean updateSubmodules) {
     return updateSubmodulesOnPull = updateSubmodules;
   }

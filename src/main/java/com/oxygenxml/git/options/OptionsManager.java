@@ -604,14 +604,16 @@ public class OptionsManager {
  }
 
   /**
-   * @return <code>true</code> to execute the equivalent of a "git submodule update --recursive".
+   * @return <code>true</code> to update submodules after a pull.
    */
   public boolean getUpdateSubmodulesOnPull() {
     return getOptions().getUpdateSubmodulesOnPull();
   }
   
   /**
-   * @return <code>true</code> to execute the equivalent of a "git submodule update --recursive".
+   * Sets the submodule update policy on pull.
+   * 
+   * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
    */
   public boolean setUpdateSubmodulesOnPull(boolean updateSubmodules) {
     return getOptions().setUpdateSubmodulesOnPull(updateSubmodules);
