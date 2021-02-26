@@ -359,7 +359,7 @@ public class DiffPresenterTest extends GitTestBase {
     gitAccess.setRepositorySynchronously(localTestRepository2);
     
     // Receive changes from remote/upstream.
-    PullResponse pull = gitAccess.pull("", "");
+    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     
     //Create new file for second repository.

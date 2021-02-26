@@ -1103,23 +1103,6 @@ public class GitAccess {
 	 * 
 	 * @param username Git username
 	 * @param password Git password
-	 * 
-	 * @return The result, if successful.
-	 *  
-   * @throws CheckoutConflictException There is a conflict between the local repository and the remote one.
-   *  The same file that is in conflict is changed inside the working copy so operation is aborted.
-   * @throws GitAPIException other errors.
-   */
-  public PullResponse pull(String username, String password) throws GitAPIException {
-    return pull(username, password, PullType.MERGE_FF, false);
-  }
-
-	/**
-	 * Pulls the files that are not on the local repository from the remote
-	 * repository
-	 * 
-	 * @param username Git username
-	 * @param password Git password
 	 * @param pullType One of ff, no-ff, ff-only, rebase.
 	 * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive"
 	 * 

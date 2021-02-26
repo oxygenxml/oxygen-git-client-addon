@@ -11,7 +11,23 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.PushPullEvent;
 
+/**
+ * Test utility methods.
+ * 
+ * @author alex_jitianu
+ */
 public class TestUtil {
+  /**
+   * Utility class.
+   */
+  private TestUtil() {}
+  
+  /**
+   * Adds a listener that will collect push events.
+   * 
+   * @param pc Git controller.
+   * @param b Event collector.
+   */
   public static void collectPushPullEvents(GitController pc, final StringBuilder b) {
     pc.addGitListener(new GitEventAdapter() {
       @Override

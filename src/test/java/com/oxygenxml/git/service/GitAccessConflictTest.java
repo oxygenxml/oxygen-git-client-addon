@@ -219,7 +219,7 @@ public class GitAccessConflictTest {
 		FileStatus fileStatus = new FileStatus(GitChangeType.ADD, "test.txt");
     gitAccess.add(fileStatus);
 		gitAccess.commit("conflict");
-		gitAccess.pull("", "");
+		gitAccess.pull("", "", PullType.MERGE_FF, false);
 		
 		GitController gitCtrl = new GitController(gitAccess);
     gitCtrl.asyncResolveUsingTheirs(
@@ -262,7 +262,7 @@ public class GitAccessConflictTest {
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
-		gitAccess.pull("", "");
+		gitAccess.pull("", "", PullType.MERGE_FF, false);
 		for (FileStatus fileStatus : gitAccess.getUnstagedFiles()) {
 			if(fileStatus.getChangeType() == GitChangeType.CONFLICT){
 				gitAccess.add(fileStatus);
@@ -305,7 +305,7 @@ public class GitAccessConflictTest {
     // LOCAL 2
     //----------------
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
-    PullResponse pull = gitAccess.pull("", "");
+    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File(SECOND_LOCAL_TEST_REPOSITORY, "test.txt");
     assertEquals("original", getFileContent(local2File));
@@ -423,7 +423,7 @@ public class GitAccessConflictTest {
     // LOCAL 2
     //----------------
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
-    PullResponse pull = gitAccess.pull("", "");
+    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File(SECOND_LOCAL_TEST_REPOSITORY, "test.txt");
     assertEquals("original", getFileContent(local2File));
@@ -542,7 +542,7 @@ public class GitAccessConflictTest {
     // LOCAL 2
     //----------------
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
-    PullResponse pull = gitAccess.pull("", "");
+    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File(SECOND_LOCAL_TEST_REPOSITORY, "test.txt");
     assertEquals("original", getFileContent(local2File));
@@ -663,7 +663,7 @@ public class GitAccessConflictTest {
     // LOCAL 2
     //----------------
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
-    PullResponse pull = gitAccess.pull("", "");
+    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File(SECOND_LOCAL_TEST_REPOSITORY, "test.txt");
     assertEquals("original", getFileContent(local2File));
@@ -785,7 +785,7 @@ public class GitAccessConflictTest {
     // LOCAL 2
     //----------------
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
-    PullResponse pull = gitAccess.pull("", "");
+    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File(SECOND_LOCAL_TEST_REPOSITORY, "test.txt");
     assertEquals("original", getFileContent(local2File));

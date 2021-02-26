@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.event.PullType;
 
 public class GitAccessPushTest extends GitTestBase {
 	private final static String FIRST_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessPushTest/local";
@@ -152,7 +153,7 @@ public class GitAccessPushTest extends GitTestBase {
     gitAccess.commit("Primul");
     
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
-    gitAccess.pull("", "");
+    gitAccess.pull("", "", PullType.MERGE_FF, false);
     
     String branchName = "master";
     String remoteName = "origin";

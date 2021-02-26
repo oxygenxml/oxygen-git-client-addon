@@ -83,7 +83,7 @@ public class GitAccessPullTest extends GitTestBase{
 
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		PullResponse response = gitAccess.pull("", "");
+		PullResponse response = gitAccess.pull("", "", PullType.MERGE_FF, false);
 		PullStatus actual = response.getStatus();
 		PullStatus expected = PullStatus.OK;
 		assertEquals(expected, actual);
@@ -133,7 +133,7 @@ public class GitAccessPullTest extends GitTestBase{
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test2.txt");
 		file.createNewFile();
 
-		PullResponse response = gitAccess.pull("", "");
+		PullResponse response = gitAccess.pull("", "", PullType.MERGE_FF, false);
 		PullStatus actual = response.getStatus();
 		PullStatus expected = PullStatus.OK;
 		assertEquals(expected, actual);
@@ -159,7 +159,7 @@ public class GitAccessPullTest extends GitTestBase{
 		Status pushExpected = Status.REJECTED_NONFASTFORWARD;
 		assertEquals(pushExpected, pushActual);
 		
-		PullResponse pullResponse = gitAccess.pull("", "");
+		PullResponse pullResponse = gitAccess.pull("", "", PullType.MERGE_FF, false);
 		PullStatus pullActual = pullResponse.getStatus();
 		PullStatus pullExpected = PullStatus.CONFLICTS;
 		assertEquals(pullExpected, pullActual);

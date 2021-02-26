@@ -20,6 +20,7 @@ import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.PullResponse;
 import com.oxygenxml.git.service.PullStatus;
 import com.oxygenxml.git.service.PushResponse;
+import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -87,7 +88,7 @@ public class FlatView2Test extends FlatViewTestBase {
       assertEquals("status: OK message null", push.toString());
 
       // Pull should throw "Lock failed" error
-      PullResponse pullResponse = gitAccess.pull("", "");
+      PullResponse pullResponse = gitAccess.pull("", "", PullType.MERGE_FF, false);
       assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
       assertTrue(showErrorMessageCalled[0]);
       Future<?> execute = ((GitController) stagingPanel.getGitController()).pull();

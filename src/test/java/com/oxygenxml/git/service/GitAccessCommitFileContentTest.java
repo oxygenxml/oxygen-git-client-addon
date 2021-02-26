@@ -19,6 +19,7 @@ import org.mockito.stubbing.Answer;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.event.PullType;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -135,7 +136,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
-		gitAccess.pull("", "");
+		gitAccess.pull("", "", PullType.MERGE_FF, false);
 		ObjectId commit = gitAccess.getCommit(Commit.MINE, "test.txt");
 		ObjectLoader open = gitAccess.getRepository().open(commit);
 		String actual = new String(open.getBytes());
@@ -150,7 +151,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 		
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		gitAccess.pull("", "");
+		gitAccess.pull("", "", PullType.MERGE_FF, false);
 		gitAccess.closeRepo();
 
 		gitAccess = GitAccess.getInstance();
@@ -163,7 +164,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 
 		gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
 		gitAccess.commit("conflict");
-		gitAccess.pull("", "");
+		gitAccess.pull("", "", PullType.MERGE_FF, false);
 
 		ObjectId commit = gitAccess.getCommit(Commit.MINE, "test.txt");
 		ObjectLoader open = gitAccess.getRepository().open(commit);
@@ -203,7 +204,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
-		gitAccess.pull("", "");
+		gitAccess.pull("", "", PullType.MERGE_FF, false);
 		ObjectId commit = gitAccess.getCommit(Commit.THEIRS, "test.txt");
 		ObjectLoader open = gitAccess.getRepository().open(commit);
 		String actual = new String(open.getBytes());

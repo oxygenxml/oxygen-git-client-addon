@@ -32,6 +32,7 @@ import com.oxygenxml.git.view.ToolbarPanel;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.PullType;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -230,7 +231,7 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.setBranch("master");
     
     // Pull to create conflict
-    PullResponse pullResp = gitAccess.pull("", "");
+    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     GitControllerBase mock = new GitController(GitAccess.getInstance());
@@ -299,7 +300,7 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.setBranch("master");
     
     // Pull to create conflict
-    PullResponse pullResp = gitAccess.pull("", "");
+    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     // Simulate branch checkout from Git Staging
@@ -363,7 +364,7 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     
     // Pull to create conflict o text.txt
-    PullResponse pullResp = gitAccess.pull("", "");
+    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     // Simulate branch checkout from Git Staging
