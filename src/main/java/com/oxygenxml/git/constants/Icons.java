@@ -78,7 +78,7 @@ public class Icons {
 	/**
 	 * Flat/table mode icon.
 	 */
-	public static final String TABLE_VIEW = "/images/GitFlatMode16.png";
+	public static final String LIST_VIEW = "/images/GitFlatMode16.png";
 	/**
 	 * Folder icon in tree.
 	 */

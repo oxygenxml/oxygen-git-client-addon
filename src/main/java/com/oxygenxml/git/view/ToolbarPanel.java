@@ -34,7 +34,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.util.StringUtils;
 
-import com.oxygenxml.git.OxygenGitOptionPagePluginExtension;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
@@ -462,41 +461,12 @@ public class ToolbarPanel extends JPanel {
 	      false,
 	      true,
 	      false);
-    
-    // Reset all credentials
-    settingsMenuButton.addActionToMenu(
-        new AbstractAction(translator.getTranslation(Tags.RESET_ALL_CREDENTIALS)) {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-                translator.getTranslation(Tags.RESET_ALL_CREDENTIALS),
-                translator.getTranslation(Tags.RESET_CREDENTIALS_CONFIRM_MESAGE),
-                new String[] {
-                    "   " + translator.getTranslation(Tags.YES) + "   ",
-                    "   " + translator.getTranslation(Tags.NO) + "   " },
-                new int[] {1, 0});
-            if (result == 1) {
-              OptionsManager optManager = OptionsManager.getInstance();
-              optManager.saveSshPassphare(null);
-              optManager.saveGitCredentials(null);
-              optManager.saveOptions();
-              
-              refreshSupport.call();
-            }
-          }
-        }, false);
-    
+	  
+	  SettingsMenuActionProvider actionsProvider = new SettingsMenuActionProvider(refreshSupport);
+    settingsMenuButton.addActionToMenu(actionsProvider.createAndGetResetCredentialsAction(), false);
     settingsMenuButton.addSeparator();
-    settingsMenuButton.addActionToMenu(new AbstractAction(translator.getTranslation(Tags.PREFERENCES)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        PluginWorkspaceProvider.getPluginWorkspace().showPreferencesPages(
-            new String[] {OxygenGitOptionPagePluginExtension.KEY},
-            OxygenGitOptionPagePluginExtension.KEY,
-            true);
-      }
-    }, false);
-
+    settingsMenuButton.addActionToMenu(actionsProvider.createAndGetGoToPreferencesAction(), false);
+    
     gitToolbar.add(settingsMenuButton);
   }
 
