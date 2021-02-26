@@ -402,7 +402,7 @@ public class CommitAndStatusPanel extends JPanel {
 		gbc.insets = new Insets(
         UIConstants.COMPONENT_TOP_PADDING, 
         UIConstants.COMPONENT_LEFT_PADDING,
-        3, 
+        0, 
         UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.EAST;
     gbc.fill = GridBagConstraints.NONE;
@@ -539,8 +539,11 @@ public class CommitAndStatusPanel extends JPanel {
    * @param gbc Grid bad constraints.
    */
 	private void addCommitMessageTextArea(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(
+		    0,
+		    UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING,
+				UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;

@@ -1278,7 +1278,7 @@
     </key>
     <key value="Stage_All_Button_Text">
         <comment>The text displayed on the StageAll button</comment>
-        <val lang="en_US">Stage All</val>
+        <val lang="en_US">Stage all</val>
         <val lang="de_DE">Alle vormerken</val>
         <val lang="fr_FR">Tout réserver</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -1286,7 +1286,7 @@
     </key>
     <key value="Unstage_All_Button_Text">
         <comment>The text displayed on the UnstageAll button</comment>
-        <val lang="en_US">Unstage All</val>
+        <val lang="en_US">Unstage all</val>
         <val lang="de_DE">Alle nicht mehr vormerken</val>
         <val lang="fr_FR">Tout libérer</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -1294,7 +1294,7 @@
     </key>
     <key value="Stage_Selected_Button_Text">
         <comment>The text displayed on the Stage Selected button</comment>
-        <val lang="en_US">Stage Selected</val>
+        <val lang="en_US">Stage selected</val>
         <val lang="de_DE">Auswahl vormerken</val>
         <val lang="fr_FR">Réserver la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -1302,7 +1302,7 @@
     </key>
     <key value="Unstage_Selected_Button_Text">
         <comment>The text displayed on the Unstage Selected button</comment>
-        <val lang="en_US">Unstage Selected</val>
+        <val lang="en_US">Unstage selected</val>
         <val lang="de_DE">Auswahl nicht mehr vormerken</val>
         <val lang="fr_FR">Libérer la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -1350,11 +1350,11 @@
     </key>
     <key value="Commit_Message_Label">
         <comment>The message displayed above the previously committed messages combo box</comment>
-        <val lang="en_US">Commit message: </val>
-        <val lang="de_DE">Commit-Nachricht: </val>
-        <val lang="fr_FR">Message de commit: </val>
+        <val lang="en_US">Commit message</val>
+        <val lang="de_DE">Commit-Nachricht</val>
+        <val lang="fr_FR">Message de commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Commitbericht: </val>
+        <val lang="nl_NL">Commitbericht</val>
     </key>
     <key value="Commit_ComboBox_Display_Message">
         <comment>The message displayed on the combo box containing the previouslt commited messages</comment>
