@@ -9,8 +9,11 @@ import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitController;
+
+import ro.sync.exml.options.Options;
 
 /**
  * Update submodules after a pull.
@@ -86,8 +89,10 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
   }
 
   @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
+  public void setUp() throws Exception {
+    super.setUp();
+    
+    OptionsManager.getInstance().setUpdateSubmodulesOnPull(true);
   }
 
   /**
@@ -217,5 +222,48 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
         "The submodules must be initialized and updated", 
         "version 1", 
         read(new File(directory, "main/sub/file.txt").toURI().toURL()));
+  }
+
+  /**
+   * <p><b>Description:</b> If the option is disabled, do not update submodules on pull.</p>
+   * <p><b>Bug ID:</b> EXM-47461</p>
+   *
+   * @author alex_jitianu
+   *
+   * @throws Exception If it fails.
+   */
+  @Test
+  public void testDoNotUpdate() throws Exception {
+    Repository submoduleRepo = createRepository("target/test-resources/PullSubmoduleUpdate_sub");
+    String fileName = "file.txt";
+    TestUtil.commitOneFile(submoduleRepo, fileName, "version 1");
+    
+    // Committing a file in the remote makes required initializations.
+    Repository remote = createRepository("target/test-resources/PullSubmodule_main_remote");
+    TestUtil.commitOneFile(remote, "base.txt", "base");
+    setupSubmodule(remote, submoduleRepo, "sub");
+    
+    Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
+    
+    bindLocalToRemote(db2, remote);
+    
+    GitController ctrl = new GitController(GitAccess.getInstance());
+    GitAccess.getInstance().setGit(new Git(db2));
+    ctrl.pull().get();
+    
+    String content = read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+    assertEquals("The submodules must be initialized and updated", "version 1", content);
+    
+    // Move the submodule target forward.
+    TestUtil.commitOneFile(submoduleRepo, fileName, "version 2");
+    // Change the submodule to the last commit from target.
+    updateSubmoduleToBranchHead(remote, "sub");
+    
+    OptionsManager.getInstance().setUpdateSubmodulesOnPull(false);
+    // Pull again.
+    GitAccess.getInstance().setGit(new Git(db2));
+    ctrl.pull().get();
+    content = read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+    assertEquals("The submodules must no be initialized and updated automatically", "version 1", content);
   }
 }

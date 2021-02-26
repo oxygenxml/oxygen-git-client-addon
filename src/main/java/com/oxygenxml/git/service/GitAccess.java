@@ -1174,7 +1174,7 @@ public class GitAccess {
 		}
 		}
 		
-		if (pullResponseToReturn.getStatus().isSuccessful()) {
+		if (updateSubmodules && pullResponseToReturn.getStatus().isSuccessful()) {
 		  try {
         RepoUtil.updateSubmodules(git);
       } catch (IOException e) {

@@ -673,7 +673,6 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     for (Repository repository : loadedRepos) {
       // Remove the file system resources.
       try {
-        System.out.println("close " + repository.getWorkTree().getAbsolutePath());
         repository.close();
         deleteRepository(repository);
       } catch (IOException e) {
