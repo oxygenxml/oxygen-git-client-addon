@@ -375,8 +375,8 @@ public class Options {
    * 
    * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
    */
-  public boolean setUpdateSubmodulesOnPull(boolean updateSubmodules) {
-    return updateSubmodulesOnPull = updateSubmodules;
+  public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
+    this.updateSubmodulesOnPull = updateSubmodules;
   }
 
 }
