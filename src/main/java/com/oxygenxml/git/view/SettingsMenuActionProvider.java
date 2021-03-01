@@ -19,7 +19,7 @@ final class SettingsMenuActionProvider {
   /**
    * i18n.
    */
-  private static final Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
   
   /**
    * Refresh support.
@@ -39,15 +39,15 @@ final class SettingsMenuActionProvider {
    * @return the "Reset all credentials" action;
    */
   public AbstractAction createAndGetResetCredentialsAction() {
-    return new AbstractAction(translator.getTranslation(Tags.RESET_ALL_CREDENTIALS)) {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.RESET_ALL_CREDENTIALS)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         int result = PluginWorkspaceProvider.getPluginWorkspace().showConfirmDialog(
-            translator.getTranslation(Tags.RESET_ALL_CREDENTIALS),
-            translator.getTranslation(Tags.RESET_CREDENTIALS_CONFIRM_MESAGE),
+            TRANSLATOR.getTranslation(Tags.RESET_ALL_CREDENTIALS),
+            TRANSLATOR.getTranslation(Tags.RESET_CREDENTIALS_CONFIRM_MESAGE),
             new String[] {
-                "   " + translator.getTranslation(Tags.YES) + "   ",
-                "   " + translator.getTranslation(Tags.NO) + "   " },
+                "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+                "   " + TRANSLATOR.getTranslation(Tags.NO) + "   " },
             new int[] {1, 0});
         if (result == 1) {
           OptionsManager optManager = OptionsManager.getInstance();
@@ -65,7 +65,7 @@ final class SettingsMenuActionProvider {
    * @return the "Preferences" action.
    */
   public AbstractAction createAndGetGoToPreferencesAction() {
-    return new AbstractAction(translator.getTranslation(Tags.PREFERENCES)) {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.PREFERENCES)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         PluginWorkspaceProvider.getPluginWorkspace().showPreferencesPages(

@@ -284,12 +284,18 @@ public class RepoUtil {
     b.append("\n");
     try (Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(main, submoduleStatus.getPath())) {
       b.append(Translator.getInstance().getTranslation(Tags.SUBMODULE_NEW_TRACKED_COMMIT)).append("\n");
-      b.append(Translator.getInstance().getTranslation(Tags.COMMIT)).append(": ").append(submoduleStatus.getHeadId().abbreviate(7).name()).append("\n");
+      b.append(Translator.getInstance().getTranslation(Tags.COMMIT))
+        .append(": ")
+        .append(submoduleStatus.getHeadId().abbreviate(GitAccess.SHORT_COMMIT_ID_LENGTH).name())
+        .append("\n");
       appendCommitDetails(b, submoduleRepository.parseCommit(submoduleStatus.getHeadId()));
       
       b.append("\n");
       b.append(Translator.getInstance().getTranslation(Tags.SUBMODULE_PREVIOUS_TRACKED_COMMIT)).append("\n");
-      b.append(Translator.getInstance().getTranslation(Tags.COMMIT)).append(": ").append(submoduleStatus.getIndexId().abbreviate(7).name()).append("\n");
+      b.append(Translator.getInstance().getTranslation(Tags.COMMIT))
+        .append(": ")
+        .append(submoduleStatus.getIndexId().abbreviate(GitAccess.SHORT_COMMIT_ID_LENGTH).name())
+        .append("\n");
       appendCommitDetails(b, submoduleRepository.parseCommit(submoduleStatus.getIndexId()));
     } catch (IOException e) {
       logger.error(e, e);

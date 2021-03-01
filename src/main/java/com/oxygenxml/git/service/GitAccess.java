@@ -126,9 +126,9 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public class GitAccess {
   /**
-   * The length of th eshort commit ID.
+   * The length of the short commit ID.
    */
-  private static final int SHORT_COMMIT_ID_LENGTH = 7;
+  public static final int SHORT_COMMIT_ID_LENGTH = 7;
   /**
 	 * A synthetic object representing the uncommitted changes.
 	 */
@@ -649,8 +649,8 @@ public class GitAccess {
     	    && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
 			  
     		unstagedFiles.add(
-    		    new FileStatus(GitChangeType.SUBMODULE, submodulePath).
-    		    setDescription(RepoUtil.extractSubmoduleChangeDescription(git.getRepository(), submoduleStatus)));
+    		    new FileStatus(GitChangeType.SUBMODULE, submodulePath).setDescription(
+    		        RepoUtil.extractSubmoduleChangeDescription(git.getRepository(), submoduleStatus)));
     	}
     }
   }
