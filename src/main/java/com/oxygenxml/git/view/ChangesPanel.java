@@ -702,6 +702,7 @@ public class ChangesPanel extends JPanel {
     scrollPane.add(tree);
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
     scrollPane.setPreferredSize(new Dimension(200, PlatformDetectionUtil.isMacOS() ? 160 : 220));
+    UIUtil.setDefaultScrollPaneBorder(scrollPane);
     filesTable.setFillsViewportHeight(true);
     this.add(scrollPane, gbc);
     

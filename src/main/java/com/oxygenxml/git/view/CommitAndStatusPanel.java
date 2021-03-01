@@ -562,6 +562,7 @@ public class CommitAndStatusPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(commitMessageArea);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setMinimumSize(new Dimension(10, 3 * fontH));
+		UIUtil.setDefaultScrollPaneBorder(scrollPane);
 
 		UndoSupportInstaller.installUndoManager(commitMessageArea);
 		
