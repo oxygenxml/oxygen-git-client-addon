@@ -203,7 +203,6 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    boolean allSelResHaveSameChangeType = true;
 	    boolean selectionContainsConflicts = false;
-	    boolean selectionContainsSubmodule = false;
 	    boolean selectionContainsDeletions = false;
 
 	    if (!allSelectedResources.isEmpty()) {
@@ -215,8 +214,6 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 	        }
 	        if (changeType == GitChangeType.CONFLICT) {
 	          selectionContainsConflicts = true;
-	        } else if (changeType == GitChangeType.SUBMODULE) {
-	          selectionContainsSubmodule = true;
 	        } else if (changeType == GitChangeType.MISSING || changeType == GitChangeType.REMOVED) {
 	          selectionContainsDeletions = true;
 	        }
