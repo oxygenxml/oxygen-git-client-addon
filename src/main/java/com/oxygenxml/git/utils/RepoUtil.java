@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.xml.XMLConstants;
@@ -19,14 +20,19 @@ import org.apache.log4j.Logger;
 import org.apache.xerces.jaxp.SAXParserFactoryImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
 import org.xml.sax.SAXException;
 
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 
 /**
  * Utility methods for detecting a Git repository and repository related issues.
@@ -261,5 +267,47 @@ public class RepoUtil {
         }
       }
     }
+  }
+  
+  /**
+   * Extracts a description about the submodule currently tracked commit and the previously tracked commit.
+   * 
+   * @param main The main repository.
+   * @param submoduleStatus Submodule status.
+   * 
+   * @return A description about the submodule currently tracked commit and the previously tracked commit.
+   */
+  public static String extractSubmoduleChangeDescription(Repository main, SubmoduleStatus submoduleStatus) {
+    StringBuilder b = new StringBuilder();
+    String url = main.getConfig().getString(ConfigConstants.CONFIG_SUBMODULE_SECTION, submoduleStatus.getPath(), "url");
+    b.append(Translator.getInstance().getTranslation(Tags.SUBMODULE)).append(": ").append(url).append("\n");
+    b.append("\n");
+    try (Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(main, submoduleStatus.getPath())) {
+      b.append(Translator.getInstance().getTranslation(Tags.SUBMODULE_NEW_TRACKED_COMMIT)).append("\n");
+      b.append(Translator.getInstance().getTranslation(Tags.COMMIT)).append(": ").append(submoduleStatus.getHeadId().abbreviate(7).name()).append("\n");
+      appendCommitDetails(b, submoduleRepository.parseCommit(submoduleStatus.getHeadId()));
+      
+      b.append("\n");
+      b.append(Translator.getInstance().getTranslation(Tags.SUBMODULE_PREVIOUS_TRACKED_COMMIT)).append("\n");
+      b.append(Translator.getInstance().getTranslation(Tags.COMMIT)).append(": ").append(submoduleStatus.getIndexId().abbreviate(7).name()).append("\n");
+      appendCommitDetails(b, submoduleRepository.parseCommit(submoduleStatus.getIndexId()));
+    } catch (IOException e) {
+      logger.error(e, e);
+    }
+    
+    return b.toString();
+  }
+
+  /**
+   * Appends commit details: author, message and date.
+   * 
+   * @param b Buffer where to append commit details.
+   * @param parseCommit Commit object.
+   */
+  private static void appendCommitDetails(StringBuilder b, RevCommit parseCommit) {
+    b.append(Translator.getInstance().getTranslation(Tags.AUTHOR)).append(": " + parseCommit.getAuthorIdent().getName()).append("\n");
+    b.append(Translator.getInstance().getTranslation(Tags.COMMIT_MESSAGE_LABEL)).append(": " + parseCommit.getFullMessage()).append("\n");
+    b.append(Translator.getInstance().getTranslation(Tags.DATE)).append(": ")
+    .append(new SimpleDateFormat("d MMM yyyy HH:mm").format(parseCommit.getAuthorIdent().getWhen())).append("\n");
   }
 }

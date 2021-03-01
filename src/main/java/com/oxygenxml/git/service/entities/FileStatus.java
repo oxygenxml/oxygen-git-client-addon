@@ -23,6 +23,11 @@ public class FileStatus {
 	 * sotred in C:/Git/Folder/file.txt, the fileLocation will be Folder/file.txt
 	 */
 	private String fileLocation;
+	/**
+	 * An optional description for the change suffered by the resource. For example, a submodule change will give details 
+	 * as the remote repository it is bound to, information about the previous and the new revision (maybe date and author).
+	 */
+	private String description;
 
 	public FileStatus(GitChangeType changeType, String fileLocation) {
 		this.changeType = changeType;
@@ -70,4 +75,21 @@ public class FileStatus {
 	  return equals;
 	}
 
+	/**
+	 * @param description An optional description for the change suffered by the resource. For example, a submodule change will give details 
+   * as the remote repository it is bound to, information about the previous and the new revision (maybe date and author).
+	 */
+	public FileStatus setDescription(String description) {
+    this.description = description;
+    
+    return this;
+  }
+	
+	/**
+	 * @return An optional description for the change suffered by the resource. For example, a submodule change will give details 
+   * as the remote repository it is bound to, information about the previous and the new revision (maybe date and author).
+	 */
+	public String getDescription() {
+    return description;
+  }
 }

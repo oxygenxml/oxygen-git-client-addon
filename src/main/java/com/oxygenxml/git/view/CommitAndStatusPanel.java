@@ -14,8 +14,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -300,7 +298,7 @@ public class CommitAndStatusPanel extends JPanel {
 	 * <code>true</code> if the multiline tooltip is available.
 	 */
 	private static final boolean IS_MULTILINE_TOOLTIP_AVAILABLE = 
-	    CommitAndStatusPanel.getInstallMultilineTooltipMethod() != null;
+	    UIUtil.getInstallMultilineTooltipMethod() != null;
 	
 	/**
 	 * Git controller.
@@ -587,16 +585,7 @@ public class CommitAndStatusPanel extends JPanel {
 		  @Override
 		  public JToolTip createToolTip() {
 		    JToolTip tooltip = super.createToolTip();
-		    try {
-          Method installMultilineTooltip = getInstallMultilineTooltipMethod();
-          if (installMultilineTooltip != null) {
-            tooltip = (JToolTip) installMultilineTooltip.invoke(null, statusLabel);
-          }
-        } catch (SecurityException | IllegalAccessException | IllegalArgumentException 
-            | InvocationTargetException e) {
-          logger.debug(e, e);
-        }
-		    return tooltip;
+		    return UIUtil.createMultilineTooltip(statusLabel).orElseGet(() -> tooltip);
 		  }
 		  
 		  @Override
@@ -616,21 +605,6 @@ public class CommitAndStatusPanel extends JPanel {
 		});
 		this.add(statusLabel, gbc);
 	}
-	
-  /**
-   * @return the installMultilineTooltip method or <code>null</code>.
-   */
-  private static Method getInstallMultilineTooltipMethod() {
-    Method installMultilineTooltip = null;
-    try {
-      Class<?> uiCompsFactory = Class.forName(
-          "ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory");
-      installMultilineTooltip = uiCompsFactory.getMethod("installMultilineTooltip", JComponent.class);
-    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-      logger.debug(e, e);
-    }
-    return installMultilineTooltip;
-  }
 	
 	/**
 	 * Set a tooltip for the status label.

@@ -60,7 +60,7 @@ public class RendererUtil {
     } else if (GitChangeType.SUBMODULE == changeType) {
       renderingInfo = new RenderingInfo(
           Icons.getIcon(Icons.GIT_SUBMODULE_FILE_ICON),
-          translator.getTranslation(Tags.SUBMODULE_ICON_TOOLTIP));
+          translator.getTranslation(Tags.SUBMODULE));
     }
     return renderingInfo;
   }

@@ -6,6 +6,22 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value = "Submodule_previous_tracked_commit">
+        <comment>The old/previous commit tracked by a submodule.</comment>
+        <val lang="en_US">Previously tracked commit</val>
+        <val lang="de_DE">Previously tracked commit</val>
+        <val lang="fr_FR">Previously tracked commit</val>
+        <val lang="ja_JP">Previously tracked commit</val>
+        <val lang="nl_NL">Previously tracked commit</val>
+    </key>
+    <key value = "Submodule_new_tracked_commit">
+        <comment>The new commit tracked by a submodule.</comment>
+        <val lang="en_US">Currently tracked commit</val>
+        <val lang="de_DE">Currently tracked commit</val>
+        <val lang="fr_FR">Currently tracked commit</val>
+        <val lang="ja_JP">Currently tracked commit</val>
+        <val lang="nl_NL">Currently tracked commit</val>
+    </key>
     <key value = "Update_submodules_on_pull">
         <comment>An option that controls whether we automatically update submodules 
             after pulling changes from the remote repository</comment>
@@ -1350,11 +1366,11 @@
     </key>
     <key value="Commit_Message_Label">
         <comment>The message displayed above the previously committed messages combo box</comment>
-        <val lang="en_US">Commit message: </val>
-        <val lang="de_DE">Commit-Nachricht: </val>
-        <val lang="fr_FR">Message de commit: </val>
+        <val lang="en_US">Commit message</val>
+        <val lang="de_DE">Commit-Nachricht</val>
+        <val lang="fr_FR">Message de commit</val>
         <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Commitbericht: </val>
+        <val lang="nl_NL">Commitbericht</val>
     </key>
     <key value="Commit_ComboBox_Display_Message">
         <comment>The message displayed on the combo box containing the previouslt commited messages</comment>
@@ -1669,7 +1685,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Submodules</val>
     </key>
-    <key value="Submodule_Icon_Tooltip">
+    <key value="Submodule">
         <comment>The tooltip for the submodule icon that appears on the left side of the file</comment>
         <val lang="en_US">Submodule</val>
         <val lang="de_DE">Submodule</val>

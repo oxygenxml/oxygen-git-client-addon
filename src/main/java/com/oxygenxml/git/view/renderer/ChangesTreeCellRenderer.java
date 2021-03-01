@@ -68,6 +68,10 @@ public class ChangesTreeCellRenderer extends DefaultTreeCellRenderer {
 				    icon = renderingInfo.getIcon();
 				    toolTip = renderingInfo.getTooltip();
 				  }
+				  
+				  if (changeType == GitChangeType.SUBMODULE) {
+				    toolTip = file.getDescription();
+				  }
 				} else {
 				  label = null;
 				}

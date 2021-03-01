@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
@@ -1173,7 +1174,13 @@ public class ChangesPanel extends JPanel {
 	 * @return The tree that presents the resources. 
 	 */
 	private JTree createTree() {
-	  JTree t = new Tree();
+	  JTree t = new Tree() {
+	    @Override
+	    public JToolTip createToolTip() {
+	      return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+	    }
+	  };
+	  
 	  
 	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(gitController, null, forStagedResources, null));

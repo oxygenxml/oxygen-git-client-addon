@@ -158,7 +158,6 @@ public class DiffPresenter {
 	 * @param path The path of the file to compare. Relative to the working tree.
 	 */
 	private static void showSubmoduleDiff(String path) {
-		GitAccess.getInstance().submoduleCompare(path, true);
 		try {
 			URL currentSubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.CURRENT_SUBMODULE, path);
 			URL previouslySubmoduleCommit = GitRevisionURLHandler.encodeURL(VersionIdentifier.PREVIOUSLY_SUBMODULE,
@@ -329,6 +328,10 @@ public class DiffPresenter {
 	    logger.debug("Remote " + remoteUL);
 	    logger.debug("Base   " + baseURL);
 	  }
+	  
+	  System.out.println("Local  " + localURL);
+	  System.out.println("Remote " + remoteUL);
+	  System.out.println("Base   " + baseURL);
 
 	  boolean threeWays = baseURL != null;
 	  try {

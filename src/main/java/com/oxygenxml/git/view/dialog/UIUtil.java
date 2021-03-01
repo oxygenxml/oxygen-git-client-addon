@@ -9,7 +9,10 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 import javax.accessibility.AccessibleContext;
@@ -23,11 +26,14 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
+
+import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.translator.Tags;
@@ -49,6 +55,10 @@ import ro.sync.exml.workspace.api.standalone.ui.Table;
  * Utility class for UI-related issues. 
  */
 public class UIUtil {
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(UIUtil.class);
   /**
    * Meta symbol.
    */
@@ -332,6 +342,42 @@ public class UIUtil {
       }
     }
     return result.toString();
+  }
+  
+  /**
+   * @return The installMultilineTooltip method or <code>null</code> if it's unavailable in the current Oxygen.
+   */
+  public static Method getInstallMultilineTooltipMethod() {
+    Method installMultilineTooltip = null;
+    try {
+      Class<?> uiCompsFactory = Class.forName(
+          "ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory");
+      installMultilineTooltip = uiCompsFactory.getMethod("installMultilineTooltip", JComponent.class);
+    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+      logger.debug(e, e);
+    }
+    return installMultilineTooltip;
+  }
+  
+  /**
+   * Install a multiline tooltip on the component.
+   * 
+   * @param component Component on which to install the tooltip.
+   * 
+   * @return The installed tooltip, if one was installed.
+   */
+  public static Optional<JToolTip> createMultilineTooltip(JComponent component) {
+    try {
+      Method installMultilineTooltip = UIUtil.getInstallMultilineTooltipMethod();
+      if (installMultilineTooltip != null) {
+        return Optional.of((JToolTip) installMultilineTooltip.invoke(null, component));
+      }
+    } catch (SecurityException | IllegalAccessException | IllegalArgumentException 
+        | InvocationTargetException e) {
+      logger.debug(e, e);
+    }
+    
+    return Optional.empty();
   }
 
 }

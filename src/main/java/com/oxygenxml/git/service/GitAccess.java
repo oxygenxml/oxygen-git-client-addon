@@ -643,14 +643,19 @@ public class GitAccess {
     if (logger.isDebugEnabled()) {
       logger.debug("addSubmodulesToUnstaged " + submodules);
     }
-    for (String string : submodules) {
-    	SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(string);
+    for (String submodulePath : submodules) {
+    	SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(submodulePath);
 			if (submoduleStatus != null && submoduleStatus.getHeadId() != null
     	    && !submoduleStatus.getHeadId().equals(submoduleStatus.getIndexId())) {
-    		unstagedFiles.add(new FileStatus(GitChangeType.SUBMODULE, string));
+			  
+    		unstagedFiles.add(
+    		    new FileStatus(GitChangeType.SUBMODULE, submodulePath).
+    		    setDescription(RepoUtil.extractSubmoduleChangeDescription(git.getRepository(), submoduleStatus)));
     	}
     }
   }
+
+ 
 
 	/**
 	 * Returns for the given submodule the SHA-1 commit id for the Index if the

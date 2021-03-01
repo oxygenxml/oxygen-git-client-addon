@@ -535,7 +535,7 @@ public class Tags {
 	 * The tooltip for the submodule icon that appears on the left side of the
 	 * file
 	 */
-	public static final String SUBMODULE_ICON_TOOLTIP = "Submodule_Icon_Tooltip";
+	public static final String SUBMODULE = "Submodule";
 	
 	/**
    * The tooltip for a renamed file.
@@ -1185,4 +1185,12 @@ public class Tags {
    * Update submodules after a pull action.
    */
   public static final String UPDATE_SUBMODULES_ON_PULL = "Update_submodules_on_pull";
+  /**
+   * The new commit tracked by a submodule.
+   */
+  public static final String SUBMODULE_NEW_TRACKED_COMMIT = "Submodule_new_tracked_commit";
+  /**
+   * The previous commit tracked by a submodule.
+   */
+  public static final String SUBMODULE_PREVIOUS_TRACKED_COMMIT = "Submodule_previous_tracked_commit";
 }
