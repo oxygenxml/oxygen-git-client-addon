@@ -76,8 +76,12 @@ public class FileStatus {
 	}
 
 	/**
+	 * Set description.
+	 * 
 	 * @param description An optional description for the change suffered by the resource. For example, a submodule change will give details 
    * as the remote repository it is bound to, information about the previous and the new revision (maybe date and author).
+   * 
+   * @return the current file status, which now has a new description.
 	 */
 	public FileStatus setDescription(String description) {
     this.description = description;
