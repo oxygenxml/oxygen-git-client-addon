@@ -615,8 +615,8 @@ public class OptionsManager {
    * 
    * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
    */
-  public boolean setUpdateSubmodulesOnPull(boolean updateSubmodules) {
-    return getOptions().setUpdateSubmodulesOnPull(updateSubmodules);
+  public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
+    getOptions().setUpdateSubmodulesOnPull(updateSubmodules);
   }
  
 }
