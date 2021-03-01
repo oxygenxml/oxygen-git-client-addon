@@ -93,8 +93,7 @@ public class OpenAction extends AbstractAction {
   private void openFile(FileStatus file) throws MalformedURLException, NoRepositorySelected {
     URL fileURL = null;
     String fileLocation = file.getFileLocation();
-    if (file.getChangeType() == GitChangeType.ADD
-        || file.getChangeType() == GitChangeType.CHANGED) {
+    if (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.CHANGED) {
       // A file from the INDEX. We need a special URL to access it.
       fileURL = GitRevisionURLHandler.encodeURL(
           VersionIdentifier.INDEX_OR_LAST_COMMIT,
@@ -113,6 +112,6 @@ public class OpenAction extends AbstractAction {
     PluginWorkspaceProvider.getPluginWorkspace().open(
         fileURL,
         isProjectExt ? EditorPageConstants.PAGE_TEXT : null,
-            isProjectExt ? "text/xml" : null);
+        isProjectExt ? "text/xml" : null);
   }
 }
