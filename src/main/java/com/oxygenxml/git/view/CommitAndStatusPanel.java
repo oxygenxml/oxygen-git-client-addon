@@ -373,8 +373,11 @@ public class CommitAndStatusPanel extends JPanel {
    * @param gbc Grid bad constraints.
    */
   private void addLabel(GridBagConstraints gbc) {
-    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-        0, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_PADDING,
+        0,
+        UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.gridx = 0;
