@@ -7,7 +7,7 @@
 	<parent>
 	    <groupId>com.oxygenxml</groupId>
 	    <artifactId>oxygen-superpom-standard</artifactId>
-	    <version>20.1.0.3</version>
+	    <version>21.1.0.2</version>
   	</parent>
   	
     <developers>
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>com.oxygenxml</groupId>
 			<artifactId>oxygen-sdk</artifactId>
-			<version>20.1.0.3</version>
+			<version>21.1.0.2</version>
 			<scope>provided</scope>
 		</dependency>
 		

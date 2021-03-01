@@ -7,7 +7,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -22,6 +21,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -61,7 +61,7 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.renderer.ChangesTreeCellRenderer;
 
-import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 import ro.sync.exml.workspace.api.standalone.ui.Tree;
 
 /**
@@ -421,14 +421,12 @@ public class ChangesPanel extends JPanel {
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		addFilesPanel(gbc);
-		addChangeSelectedButton(gbc);
-		addChangeAllButton(gbc);
-		addSwitchViewButton(gbc);
 
-		addSwitchViewButtonListener();
-		addChangeSelectedButtonListener();
-		addChangeAllButtonListener();
+		// UI
+		addTopPanel(gbc);
+		addFilesPanel(gbc);
+
+		// Listeners
 		addTreeMouseListener();
 		addTreeExpandListener();
 		
@@ -447,7 +445,272 @@ public class ChangesPanel extends JPanel {
 		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.STAGING_PANEL_MIN_HEIGHT));
 	}
 	
+	private void addTopPanel(GridBagConstraints gbc) {
+	  JPanel topPanel = new JPanel(new GridBagLayout());
+	  
+	  
+	  // Label
+	  JLabel label = new JLabel(forStagedResources ? translator.getTranslation(Tags.STAGED_FILES) + ":" 
+	      : translator.getTranslation(Tags.UNSTAGED_FILES) + ":");
+	  GridBagConstraints c = new GridBagConstraints();
+	  c.gridx = 0;
+	  c.gridy = 0;
+	  c.weightx = 1;
+	  c.fill = GridBagConstraints.HORIZONTAL;
+	  c.anchor = GridBagConstraints.WEST;
+	  topPanel.add(label, c);
+	  
+	  // Toolbar
+	  JToolBar actionsToolbar = new JToolBar();
+    actionsToolbar.setOpaque(false);
+    actionsToolbar.setFloatable(false);
+
+    createTopPanelToolbarButtons();
+    actionsToolbar.add(changeSelectedButton);
+    actionsToolbar.add(changeAllButton);
+    actionsToolbar.addSeparator();
+    actionsToolbar.add(switchViewButton);
+    
+    c.gridx ++;
+    c.fill = GridBagConstraints.NONE;
+    c.weightx = 0;
+    c.anchor = GridBagConstraints.EAST;
+    topPanel.add(actionsToolbar, c);
+    
+    // Add top panel
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_PADDING,
+        0,
+        UIConstants.COMPONENT_RIGHT_PADDING - 1);
+    add(topPanel, gbc);
+  }
+
 	/**
+	 * Create the buttons for the toolbar in the top panel.
+	 */
+  private void createTopPanelToolbarButtons() {
+    // Change selected
+    String changeSelectedTranslationTag = forStagedResources ? Tags.UNSTAGE_SELECTED_BUTTON_TEXT 
+        : Tags.STAGE_SELECTED_BUTTON_TEXT;
+    String changeSelectedIconTag = forStagedResources ? Icons.UNSTAGE_SELECTED : Icons.STAGE_SELECTED;
+    changeSelectedButton = OxygenUIComponentsFactory.createToolbarButton(
+        new AbstractAction(
+            translator.getTranslation(changeSelectedTranslationTag),
+            Icons.getIcon(changeSelectedIconTag)) {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            List<FileStatus> fileStatuses = new ArrayList<>();
+            if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+              int[] selectedRows = filesTable.getSelectedRows();
+              StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
+              for (int i = selectedRows.length - 1; i >= 0; i--) {
+                int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
+                FileStatus fileStatus = fileTableModel.getFileStatus(convertedRow);
+                fileStatuses.add(fileStatus);
+              }
+            } else {
+              List<String> selectedFiles = TreeUtil.getStringComonAncestor(tree);
+              StagingResourcesTreeModel fileTreeModel = (StagingResourcesTreeModel) tree.getModel();
+              List<FileStatus> fileStatusesForPaths = fileTreeModel.getFilesByPaths(selectedFiles);
+              fileStatuses.addAll(fileStatusesForPaths);
+            }
+
+            // "Stage"/"Unstage" actions
+            AbstractAction stageUnstageAction = new StageUnstageResourceAction(
+                fileStatuses, 
+                !forStagedResources, 
+                gitController);
+            stageUnstageAction.actionPerformed(null);
+
+            changeSelectedButton.setEnabled(false);
+          }
+        },
+    false);
+    changeSelectedButton.setEnabled(false);
+    
+    // Change all
+    String changeAllTranslationTag = forStagedResources ? Tags.UNSTAGE_ALL_BUTTON_TEXT 
+        : Tags.STAGE_ALL_BUTTON_TEXT;
+    String changeAllIconTag = forStagedResources ? Icons.UNSTAGE_ALL : Icons.STAGE_ALL;
+    changeAllButton = OxygenUIComponentsFactory.createToolbarButton(
+        new AbstractAction(
+            translator.getTranslation(changeAllTranslationTag),
+            Icons.getIcon(changeAllIconTag)) {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+              StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
+              fileTableModel.switchAllFilesStageState();
+            } else {
+              StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
+              treeModel.switchAllFilesStageState();
+            }
+          }
+        },
+        false);
+    changeAllButton.setEnabled(true);
+    
+    // Switch view mode
+    String iconType = currentViewMode == ResourcesViewMode.FLAT_VIEW ? Icons.TREE_VIEW : Icons.LIST_VIEW;
+    switchViewButton = OxygenUIComponentsFactory.createToolbarButton(
+        new AbstractAction(null, Icons.getIcon(iconType)) {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            setResourcesViewMode(currentViewMode == ResourcesViewMode.FLAT_VIEW ? 
+                ResourcesViewMode.TREE_VIEW : ResourcesViewMode.FLAT_VIEW);
+            isContextMenuShowing = false;
+          }
+        }, 
+        false);
+    switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
+  }
+	
+	/**
+   * Adds the scollPane to the panel
+   * 
+   * @param gbc
+   *          - the constraints used for this component
+   */
+  private void addFilesPanel(GridBagConstraints gbc) {
+    gbc.insets = new Insets(
+        0,
+        UIConstants.COMPONENT_LEFT_PADDING,
+        0,
+        UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.BOTH;
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    gbc.weightx = 1;
+    gbc.weighty = 1;
+    
+    filesTable = UIUtil.createResourcesTable(
+        new StagingResourcesTableModel(gitController, forStagedResources),
+        ()-> isContextMenuShowing);
+
+    filesTable.getSelectionModel().addListSelectionListener(e -> {
+      if (!e.getValueIsAdjusting()) {
+        toggleSelectedButton();
+      }
+    });
+    
+    // Adds mouse listener on the table: When the user right clicks on an item
+    // in the table, a
+    // contextual menu will pop. Also when the user double clicks on a leaf node
+    // an action will occur depending on it's file status. If the status is
+    // MODIFY,
+    // the open in compare editor will be executed, if the status is Add the
+    // file
+    // will be opened in the Oxygen.
+    filesTable.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        // For MacOS the popup trigger comes on mouse pressed.
+        handleContexMenuEvent(e);
+      }
+      
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        // Switching between Staged and UnStaged with right click introduced some paint artifacts.
+        filesTable.requestFocus();
+        filesTable.repaint();
+        
+        // Maybe the event is a pop-up trigger
+        handleContexMenuEvent(e);
+        // Maybe (not pop-up trigger) double click
+        if (!e.isPopupTrigger() && e.getClickCount() == 2) {
+          Point point = new Point(e.getX(), e.getY());
+          int clickedRow = filesTable.rowAtPoint(point);
+          if (clickedRow != -1) {
+            openFileInCompareEditor(clickedRow);
+          }
+        }
+      }
+
+      /**
+       * Present the contextual menu if this is the proper event.
+       * 
+       * @param e Mouse event.
+       */
+      private void handleContexMenuEvent(MouseEvent e) {
+        if (e.isPopupTrigger() && e.getClickCount() == 1) {
+          Point point = new Point(e.getX(), e.getY());
+          int clickedRow = filesTable.rowAtPoint(point);
+          int[] selectedRows = filesTable.getSelectedRows();
+          if (clickedRow != -1) {
+            // Might be a right click over a non-selected row. 
+            boolean inSelection = false;
+            for (int i = 0; i < selectedRows.length; i++) {
+              if (clickedRow == selectedRows[i]) {
+                inSelection = true;
+                break;
+              }
+            }
+
+            if (!inSelection) {
+              filesTable.setRowSelectionInterval(clickedRow, clickedRow);
+              selectedRows = filesTable.getSelectedRows();
+            }
+          }
+          
+          if (selectedRows.length == 0) {
+            // When resolving a conflict "using mine" and there are no more entries in the tables,
+            // show the contextual menu for being able to restart the merging
+            if (filesTable.getRowCount() == 0 && isMergingResolved()) {
+              showContextualMenuForFlatView(e.getX(), e.getY(), new int[0]);
+            }
+          } else {
+            // ======== RIGHT CLICK ==========
+            showContextualMenuForFlatView(e.getX(), e.getY(), selectedRows);
+          }
+        }
+      }
+
+    });
+    
+    filesTable.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+          int[] selectedRows = filesTable.getSelectedRows();
+          if (selectedRows.length > 0) {
+            Rectangle cellRect = filesTable.getCellRect(selectedRows[selectedRows.length - 1], 0, true);
+            showContextualMenuForFlatView(cellRect.x, cellRect.y + cellRect.height, selectedRows);
+          }
+        }
+      }
+    });
+    
+    // Compare files on enter.
+    filesTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
+    filesTable.getActionMap().put("Enter", new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int row = filesTable.convertRowIndexToModel(filesTable.getSelectedRow());
+        if (row != -1) {
+          openFileInCompareEditor(row);
+        }
+      }
+    });
+    
+    scrollPane = new JScrollPane(filesTable);
+    scrollPane.add(tree);
+    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setPreferredSize(new Dimension(200, PlatformDetectionUtil.isMacOS() ? 160 : 220));
+    UIUtil.setDefaultScrollPaneBorder(scrollPane);
+    filesTable.setFillsViewportHeight(true);
+    this.add(scrollPane, gbc);
+    
+    setResourcesViewMode(currentViewMode);
+  }
+
+  /**
 	 * Context menu key was pressed when having something selected in the resources tree. Treat the event.
 	 */
 	private void treatContextMenuKeyPressedOnTreeSelection() {
@@ -681,74 +944,6 @@ public class ChangesPanel extends JPanel {
   }
 	
 	/**
-	 * Adds a listener on the changeAll button: When clicked all the files will go
-	 * in the staging or unstaging area, depending on the forStaging variable
-	 */
-	private void addChangeAllButtonListener() {
-		changeAllButton.addActionListener(e -> {
-      if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
-        StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
-        fileTableModel.switchAllFilesStageState();
-      } else {
-        StagingResourcesTreeModel treeModel = (StagingResourcesTreeModel) tree.getModel();
-        treeModel.switchAllFilesStageState();
-      }
-    });
-	}
-
-	/**
-	 * Adds a listener on the changeSelected button: When clicked all the files
-	 * selected will go in the staging or unstaging area, depending on the
-	 * forStaging variable
-	 */
-	private void addChangeSelectedButtonListener() {
-		changeSelectedButton.addActionListener(
-		    new ActionListener() { // NOSONAR
-			@Override
-      public void actionPerformed(ActionEvent e) {
-			  List<FileStatus> fileStatuses = new ArrayList<>();
-				if (currentViewMode == ResourcesViewMode.FLAT_VIEW) {
-					int[] selectedRows = filesTable.getSelectedRows();
-					StagingResourcesTableModel fileTableModel = (StagingResourcesTableModel) filesTable.getModel();
-					for (int i = selectedRows.length - 1; i >= 0; i--) {
-						int convertedRow = filesTable.convertRowIndexToModel(selectedRows[i]);
-						FileStatus fileStatus = fileTableModel.getFileStatus(convertedRow);
-						fileStatuses.add(fileStatus);
-					}
-				} else {
-					List<String> selectedFiles = TreeUtil.getStringComonAncestor(tree);
-					StagingResourcesTreeModel fileTreeModel = (StagingResourcesTreeModel) tree.getModel();
-					List<FileStatus> fileStatusesForPaths = fileTreeModel.getFilesByPaths(selectedFiles);
-					fileStatuses.addAll(fileStatusesForPaths);
-				}
-				
-	      // "Stage"/"Unstage" actions
-	      AbstractAction stageUnstageAction = new StageUnstageResourceAction(
-	          fileStatuses, 
-	          !forStagedResources, 
-	          gitController);
-	      stageUnstageAction.actionPerformed(null);
-				
-				changeSelectedButton.setEnabled(false);
-			}
-
-		});
-	}
-
-	/**
-	 * Adds a listener on the switchView button: When clicked the current view
-	 * will change. Also the selected files will be selected in the new view (the
-	 * selection is preserved between the view changes)
-	 */
-	private void addSwitchViewButtonListener() {
-		switchViewButton.addActionListener(e -> {
-    	setResourcesViewMode(currentViewMode == ResourcesViewMode.FLAT_VIEW ? 
-    	    ResourcesViewMode.TREE_VIEW : ResourcesViewMode.FLAT_VIEW);
-    	isContextMenuShowing = false;
-    });
-	}
-
-	/**
 	 * Set the current view mode for the resources: tree or table.
 	 * 
 	 * @param viewMode The new view mode.
@@ -825,7 +1020,7 @@ public class ChangesPanel extends JPanel {
   private void updateChangeViewButton() {
     if (switchViewButton != null) {
       if (currentViewMode == ResourcesViewMode.TREE_VIEW) {
-        Icon icon = Icons.getIcon(Icons.TABLE_VIEW);
+        Icon icon = Icons.getIcon(Icons.LIST_VIEW);
           switchViewButton.setIcon(icon);
         switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
       } else {
@@ -864,226 +1059,6 @@ public class ChangesPanel extends JPanel {
 		tree.setSelectionPaths(selPaths);
 	}
 
-	/**
-	 * Adds the changeAll button to the panel
-	 * 
-	 * @param gbc
-	 *          - the constraints used for this component
-	 */
-	private void addChangeAllButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridwidth = 1;
-		if (forStagedResources) {
-			changeAllButton = new JButton(translator.getTranslation(Tags.UNSTAGE_ALL_BUTTON_TEXT));
-		} else {
-			changeAllButton = new JButton(translator.getTranslation(Tags.STAGE_ALL_BUTTON_TEXT));
-		}
-		this.add(changeAllButton, gbc);
-	}
-
-	/**
-	 * Adds the changeSelected button to the panel
-	 * 
-	 * @param gbc
-	 *          - the constraints used for this component
-	 */
-	private void addChangeSelectedButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.gridwidth = 1;
-		if (forStagedResources) {
-			changeSelectedButton = new JButton(translator.getTranslation(Tags.UNSTAGE_SELECTED_BUTTON_TEXT));
-		} else {
-			changeSelectedButton = new JButton(translator.getTranslation(Tags.STAGE_SELECTED_BUTTON_TEXT));
-		}
-		changeSelectedButton.setEnabled(false);
-		this.add(changeSelectedButton, gbc);
-
-	}
-
-	/**
-	 * Adds the switchView button the the panel
-	 * 
-	 * @param gbc
-	 *          - the constraints used for this component
-	 */
-	private void addSwitchViewButton(GridBagConstraints gbc) {
-		gbc.insets = new Insets(0, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.EAST;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.gridx = 2;
-		gbc.gridy = 1;
-		gbc.gridwidth = 1;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		JToolBar toolbar = new JToolBar();
-		switchViewButton = new ToolbarButton(null, false);
-		switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TREE_VIEW_BUTTON_TOOLTIP));
-		
-		String iconType = currentViewMode == ResourcesViewMode.FLAT_VIEW 
-		    ? Icons.TREE_VIEW
-		    : Icons.TABLE_VIEW;
-	  Icon icon = Icons.getIcon(iconType);
-		  switchViewButton.setIcon(icon);
-		toolbar.add(switchViewButton);
-		toolbar.setFloatable(false);
-		toolbar.setOpaque(false);
-		this.add(toolbar, gbc);
-
-	}
-
-	/**
-	 * Adds the scollPane to the panel
-	 * 
-	 * @param gbc
-	 *          - the constraints used for this component
-	 */
-	private void addFilesPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(
-		    UIConstants.COMPONENT_TOP_PADDING,
-		    UIConstants.COMPONENT_LEFT_PADDING,
-				0,
-				UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		gbc.gridwidth = 3;
-		
-		filesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(gitController, forStagedResources), ()-> isContextMenuShowing);
-
-		filesTable.getSelectionModel().addListSelectionListener(e -> {
-      if (!e.getValueIsAdjusting()) {
-        toggleSelectedButton();
-      }
-    });
-		
-		// Adds mouse listener on the table: When the user right clicks on an item
-		// in the table, a
-		// contextual menu will pop. Also when the user double clicks on a leaf node
-		// an action will occur depending on it's file status. If the status is
-		// MODIFY,
-		// the open in compare editor will be executed, if the status is Add the
-		// file
-		// will be opened in the Oxygen.
-		filesTable.addMouseListener(new MouseAdapter() {
-		  @Override
-		  public void mousePressed(MouseEvent e) {
-	      // For MacOS the popup trigger comes on mouse pressed.
-		    handleContexMenuEvent(e);
-		  }
-		  
-		  @Override
-			public void mouseReleased(MouseEvent e) {
-        // Switching between Staged and UnStaged with right click introduced some paint artifacts.
-		    filesTable.requestFocus();
-		    filesTable.repaint();
-        
-		    // Maybe the event is a pop-up trigger
-				handleContexMenuEvent(e);
-				// Maybe (not pop-up trigger) double click
-        if (!e.isPopupTrigger() && e.getClickCount() == 2) {
-          Point point = new Point(e.getX(), e.getY());
-          int clickedRow = filesTable.rowAtPoint(point);
-          if (clickedRow != -1) {
-            openFileInCompareEditor(clickedRow);
-          }
-        }
-			}
-
-		  /**
-		   * Present the contextual menu if this is the proper event.
-		   * 
-		   * @param e Mouse event.
-		   */
-		  private void handleContexMenuEvent(MouseEvent e) {
-		    if (e.isPopupTrigger() && e.getClickCount() == 1) {
-		      Point point = new Point(e.getX(), e.getY());
-		      int clickedRow = filesTable.rowAtPoint(point);
-		      int[] selectedRows = filesTable.getSelectedRows();
-		      if (clickedRow != -1) {
-		        // Might be a right click over a non-selected row. 
-		        boolean inSelection = false;
-		        for (int i = 0; i < selectedRows.length; i++) {
-		          if (clickedRow == selectedRows[i]) {
-		            inSelection = true;
-		            break;
-		          }
-		        }
-
-		        if (!inSelection) {
-		          filesTable.setRowSelectionInterval(clickedRow, clickedRow);
-		          selectedRows = filesTable.getSelectedRows();
-		        }
-		      }
-		      
-		      if (selectedRows.length == 0) {
-		        // When resolving a conflict "using mine" and there are no more entries in the tables,
-		        // show the contextual menu for being able to restart the merging
-		        if (filesTable.getRowCount() == 0 && isMergingResolved()) {
-		          showContextualMenuForFlatView(e.getX(), e.getY(), new int[0]);
-		        }
-		      } else {
-		        // ======== RIGHT CLICK ==========
-		        showContextualMenuForFlatView(e.getX(), e.getY(), selectedRows);
-		      }
-		    }
-		  }
-
-		});
-		
-		filesTable.addKeyListener(new KeyAdapter() {
-		  @Override
-		  public void keyPressed(KeyEvent e) {
-		    if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
-		      int[] selectedRows = filesTable.getSelectedRows();
-		      if (selectedRows.length > 0) {
-		        Rectangle cellRect = filesTable.getCellRect(selectedRows[selectedRows.length - 1], 0, true);
-		        showContextualMenuForFlatView(cellRect.x, cellRect.y + cellRect.height, selectedRows);
-		      }
-		    }
-		  }
-		});
-		
-		// Compare files on enter.
-		filesTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-		    .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
-		filesTable.getActionMap().put("Enter", new AbstractAction() {
-			@Override
-      public void actionPerformed(ActionEvent e) {
-				int row = filesTable.convertRowIndexToModel(filesTable.getSelectedRow());
-				if (row != -1) {
-					openFileInCompareEditor(row);
-				}
-			}
-		});
-		
-		scrollPane = new JScrollPane(filesTable);
-		scrollPane.add(tree);
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setPreferredSize(new Dimension(200, PlatformDetectionUtil.isMacOS() ? 160 : 220));
-		filesTable.setFillsViewportHeight(true);
-		this.add(scrollPane, gbc);
-		
-		setResourcesViewMode(currentViewMode);
-	}
-	
 	/**
 	 * Show contextual menu for flat view.
 	 * 

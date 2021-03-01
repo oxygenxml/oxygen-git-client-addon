@@ -371,8 +371,11 @@ public class CommitAndStatusPanel extends JPanel {
    * @param gbc Grid bad constraints.
    */
   private void addLabel(GridBagConstraints gbc) {
-    gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-        0, UIConstants.COMPONENT_RIGHT_PADDING);
+    gbc.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_PADDING,
+        0,
+        UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.gridx = 0;
@@ -380,7 +383,7 @@ public class CommitAndStatusPanel extends JPanel {
     gbc.weightx = 1;
     gbc.weighty = 0;
     gbc.gridwidth = 1;
-    this.add(new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)), gbc);
+    this.add(new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL) + ":"), gbc);
   }
 
 	/**
@@ -400,7 +403,7 @@ public class CommitAndStatusPanel extends JPanel {
 		gbc.insets = new Insets(
         UIConstants.COMPONENT_TOP_PADDING, 
         UIConstants.COMPONENT_LEFT_PADDING,
-        3, 
+        0, 
         UIConstants.COMPONENT_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.EAST;
     gbc.fill = GridBagConstraints.NONE;
@@ -537,8 +540,11 @@ public class CommitAndStatusPanel extends JPanel {
    * @param gbc Grid bad constraints.
    */
 	private void addCommitMessageTextArea(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(
+		    0,
+		    UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING,
+				UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
@@ -554,6 +560,7 @@ public class CommitAndStatusPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(commitMessageArea);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setMinimumSize(new Dimension(10, 3 * fontH));
+		UIUtil.setDefaultScrollPaneBorder(scrollPane);
 
 		UndoSupportInstaller.installUndoManager(commitMessageArea);
 		

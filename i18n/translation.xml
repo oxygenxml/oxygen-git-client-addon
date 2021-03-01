@@ -55,7 +55,23 @@
         <val lang="ja_JP">Cannot pull. Resolve the conflicts first.</val>
         <val lang="nl_NL">Cannot pull. Resolve the conflicts first.</val>
     </key>
-        <key value="Resolve_conflicts_first">
+    <key value="Staged_files">
+        <comment>"Staged files" label.</comment>
+        <val lang="en_US">Staged files</val>
+        <val lang="de_DE">Staged files</val>
+        <val lang="fr_FR">Staged files</val>
+        <val lang="ja_JP">Staged files</val>
+        <val lang="nl_NL">Staged files</val>
+    </key>
+    <key value="Unstaged_files">
+        <comment>"Unstaged files" label.</comment>
+        <val lang="en_US">Unstaged files</val>
+        <val lang="de_DE">Unstaged files</val>
+        <val lang="fr_FR">Unstaged files</val>
+        <val lang="ja_JP">Unstaged files</val>
+        <val lang="nl_NL">Unstaged files</val>
+    </key>
+    <key value="Resolve_conflicts_first">
         <comment>The message displayed when you push with conflicts</comment>
         <val lang="en_US">Resolve the conflicts first.</val>
         <val lang="de_DE">Resolve the conflicts first.</val>
@@ -1294,7 +1310,7 @@
     </key>
     <key value="Stage_All_Button_Text">
         <comment>The text displayed on the StageAll button</comment>
-        <val lang="en_US">Stage All</val>
+        <val lang="en_US">Stage all</val>
         <val lang="de_DE">Alle vormerken</val>
         <val lang="fr_FR">Tout réserver</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -1302,7 +1318,7 @@
     </key>
     <key value="Unstage_All_Button_Text">
         <comment>The text displayed on the UnstageAll button</comment>
-        <val lang="en_US">Unstage All</val>
+        <val lang="en_US">Unstage all</val>
         <val lang="de_DE">Alle nicht mehr vormerken</val>
         <val lang="fr_FR">Tout libérer</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -1310,7 +1326,7 @@
     </key>
     <key value="Stage_Selected_Button_Text">
         <comment>The text displayed on the Stage Selected button</comment>
-        <val lang="en_US">Stage Selected</val>
+        <val lang="en_US">Stage selected</val>
         <val lang="de_DE">Auswahl vormerken</val>
         <val lang="fr_FR">Réserver la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -1318,7 +1334,7 @@
     </key>
     <key value="Unstage_Selected_Button_Text">
         <comment>The text displayed on the Unstage Selected button</comment>
-        <val lang="en_US">Unstage Selected</val>
+        <val lang="en_US">Unstage selected</val>
         <val lang="de_DE">Auswahl nicht mehr vormerken</val>
         <val lang="fr_FR">Libérer la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>

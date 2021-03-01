@@ -255,8 +255,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 *          - the constraints used for this component
 	 */
 	private void addLabel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+		gbc.insets = new Insets(
+		    UIConstants.COMPONENT_TOP_PADDING,
+		    UIConstants.COMPONENT_LEFT_PADDING,
+				UIConstants.COMPONENT_BOTTOM_PADDING,
+				UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 0;

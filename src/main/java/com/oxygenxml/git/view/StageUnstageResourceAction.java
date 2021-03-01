@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
@@ -42,7 +43,8 @@ public class StageUnstageResourceAction extends AbstractAction {
       boolean isStage,
       GitControllerBase gitCtrl) {
     super(isStage ? Translator.getInstance().getTranslation(Tags.STAGE)
-        : Translator.getInstance().getTranslation(Tags.UNSTAGE));
+        : Translator.getInstance().getTranslation(Tags.UNSTAGE),
+        isStage ? Icons.getIcon(Icons.STAGE_SELECTED) : Icons.getIcon(Icons.UNSTAGE_SELECTED));
     this.fileStatuses = fileStatuses;
     this.isStage = isStage;
     this.gitCtrl = gitCtrl;

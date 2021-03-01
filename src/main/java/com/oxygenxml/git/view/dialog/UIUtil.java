@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JToolTip;
@@ -50,6 +51,7 @@ import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ViewInfo;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
+import ro.sync.exml.workspace.api.util.ColorTheme;
 
 /**
  * Utility class for UI-related issues. 
@@ -347,6 +349,16 @@ public class UIUtil {
       }
     }
     return result.toString();
+  }
+
+  /**
+   * Set border to the given component.
+   * 
+   * @param scrollPane The scroll pane.
+   */
+  public static void setDefaultScrollPaneBorder(JScrollPane scrollPane) {
+    ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
+    scrollPane.setBorder(BorderFactory.createLineBorder(colorTheme.isDarkTheme() ? Color.GRAY : Color.LIGHT_GRAY));
   }
   
   /**
