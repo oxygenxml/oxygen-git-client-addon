@@ -382,7 +382,7 @@ public class CommitAndStatusPanel extends JPanel {
     gbc.weightx = 1;
     gbc.weighty = 0;
     gbc.gridwidth = 1;
-    this.add(new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)), gbc);
+    this.add(new JLabel(translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL) + ":"), gbc);
   }
 
 	/**

@@ -449,7 +449,7 @@ public class ChangesPanel extends JPanel {
 	  
 	  
 	  // Label
-	  JLabel label = new JLabel(forStagedResources ? "Unstaged files" : "Staged files"); //  TODO: i18n
+	  JLabel label = new JLabel(forStagedResources ? "Unstaged files:" : "Staged files:"); //  TODO: i18n
 	  GridBagConstraints c = new GridBagConstraints();
 	  c.gridx = 0;
 	  c.gridy = 0;
@@ -587,7 +587,9 @@ public class ChangesPanel extends JPanel {
     gbc.weightx = 1;
     gbc.weighty = 1;
     
-    filesTable = UIUtil.createResourcesTable(new StagingResourcesTableModel(gitController, forStagedResources), ()-> isContextMenuShowing);
+    filesTable = UIUtil.createResourcesTable(
+        new StagingResourcesTableModel(gitController, forStagedResources),
+        ()-> isContextMenuShowing);
 
     filesTable.getSelectionModel().addListSelectionListener(e -> {
       if (!e.getValueIsAdjusting()) {
