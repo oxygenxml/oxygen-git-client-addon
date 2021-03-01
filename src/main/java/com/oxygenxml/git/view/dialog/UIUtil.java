@@ -154,7 +154,12 @@ public class UIUtil {
   public static JTable createResourcesTable(
       StagingResourcesTableModel fileTableModel, 
       BooleanSupplier contextMenuShowing) {
-    JTable table = new Table();
+    JTable table = new Table() {
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+    };
     table.setModel(fileTableModel);
     
     table.getColumnModel().setColumnMargin(0);

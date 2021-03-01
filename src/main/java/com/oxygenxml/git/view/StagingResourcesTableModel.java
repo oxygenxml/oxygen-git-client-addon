@@ -94,7 +94,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	      clazz = ChangeType.class;
 	      break;
 	    case FILE_LOCATION_COLUMN:
-	      clazz = String.class;
+	      clazz = FileStatus.class;
 	      break;
 	    default:
 	      break;
@@ -120,7 +120,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		    temp = filesStatuses.get(rowIndex).getChangeType();
 		    break;
 		  case FILE_LOCATION_COLUMN:
-		    temp = filesStatuses.get(rowIndex).getFileLocation();
+		    temp = filesStatuses.get(rowIndex);
 		    break;
 		  default:
 		    break;

@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
 /**
@@ -48,14 +49,22 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
         icon = renderingInfo.getIcon();
         tooltipText = renderingInfo.getTooltip();
       }
-    } else if (value instanceof String) {
-      tooltipText = (String) value;
-      String fileName = tooltipText.substring(tooltipText.lastIndexOf('/') + 1);
-      if (!fileName.equals(tooltipText)) {
-        tooltipText = tooltipText.replace("/" + fileName, "");
-        tooltipText = fileName + " - " + tooltipText;
+    } else if (value instanceof FileStatus) {
+      String location = ((FileStatus) value).getFileLocation();
+      labelText = location;
+      
+      String description = ((FileStatus) value).getDescription();
+      if (description != null) {
+        tooltipText = description;
+      } else {
+        tooltipText = location;
+        String fileName = tooltipText.substring(tooltipText.lastIndexOf('/') + 1);
+        if (!fileName.equals(tooltipText)) {
+          tooltipText = tooltipText.replace("/" + fileName, "");
+          tooltipText = fileName + " - " + tooltipText;
+        }
       }
-      labelText = (String) value;
+      
     }
     
     tableCellRendererComponent.setIcon(icon);

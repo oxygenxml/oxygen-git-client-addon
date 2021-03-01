@@ -329,10 +329,6 @@ public class DiffPresenter {
 	    logger.debug("Base   " + baseURL);
 	  }
 	  
-	  System.out.println("Local  " + localURL);
-	  System.out.println("Remote " + remoteUL);
-	  System.out.println("Base   " + baseURL);
-
 	  boolean threeWays = baseURL != null;
 	  try {
 	    if (threeWays) {
