@@ -39,7 +39,23 @@
         <val lang="ja_JP">Cannot pull. Resolve the conflicts first.</val>
         <val lang="nl_NL">Cannot pull. Resolve the conflicts first.</val>
     </key>
-        <key value="Resolve_conflicts_first">
+    <key value="Staged_files">
+        <comment>"Staged files" label.</comment>
+        <val lang="en_US">Staged files</val>
+        <val lang="de_DE">Staged files</val>
+        <val lang="fr_FR">Staged files</val>
+        <val lang="ja_JP">Staged files</val>
+        <val lang="nl_NL">Staged files</val>
+    </key>
+    <key value="Unstaged_files">
+        <comment>"Unstaged files" label.</comment>
+        <val lang="en_US">Unstaged files</val>
+        <val lang="de_DE">Unstaged files</val>
+        <val lang="fr_FR">Unstaged files</val>
+        <val lang="ja_JP">Unstaged files</val>
+        <val lang="nl_NL">Unstaged files</val>
+    </key>
+    <key value="Resolve_conflicts_first">
         <comment>The message displayed when you push with conflicts</comment>
         <val lang="en_US">Resolve the conflicts first.</val>
         <val lang="de_DE">Resolve the conflicts first.</val>

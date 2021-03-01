@@ -449,7 +449,8 @@ public class ChangesPanel extends JPanel {
 	  
 	  
 	  // Label
-	  JLabel label = new JLabel(forStagedResources ? "Unstaged files:" : "Staged files:"); //  TODO: i18n
+	  JLabel label = new JLabel(forStagedResources ? translator.getTranslation(Tags.STAGED_FILES) + ":" 
+	      : translator.getTranslation(Tags.UNSTAGED_FILES) + ":");
 	  GridBagConstraints c = new GridBagConstraints();
 	  c.gridx = 0;
 	  c.gridy = 0;
@@ -482,7 +483,7 @@ public class ChangesPanel extends JPanel {
     gbc.gridy = 0;
     gbc.insets = new Insets(
         UIConstants.COMPONENT_TOP_PADDING,
-        UIConstants.COMPONENT_LEFT_PADDING + 2,
+        UIConstants.COMPONENT_LEFT_PADDING,
         0,
         UIConstants.COMPONENT_RIGHT_PADDING - 1);
     add(topPanel, gbc);

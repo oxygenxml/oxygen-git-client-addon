@@ -14,6 +14,14 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Staged files.
+   */
+  public static final String STAGED_FILES = "Staged_files";
+  /**
+   * Unstaged files.
+   */
+  public static final String UNSTAGED_FILES = "Unstaged_files";
+  /**
    * Keep conflict.
    */
   public static final String KEEP_CONFLICT = "Keep_conflict";
