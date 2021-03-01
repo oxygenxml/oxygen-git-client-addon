@@ -301,7 +301,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     List<Component> allButtons = cf.findAll(parent);
     
     // Selects the one with the given text.
-    for (Iterator iterator = allButtons.iterator(); iterator.hasNext();) {
+    for (Iterator<Component> iterator = allButtons.iterator(); iterator.hasNext();) {
       JCheckBox checkBox = (JCheckBox) iterator.next();
       if(checkBox.getText().equalsIgnoreCase(text)){
         result = checkBox;

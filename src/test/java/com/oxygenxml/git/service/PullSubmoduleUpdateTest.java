@@ -13,8 +13,6 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitController;
 
-import ro.sync.exml.options.Options;
-
 /**
  * Update submodules after a pull.
  * 
