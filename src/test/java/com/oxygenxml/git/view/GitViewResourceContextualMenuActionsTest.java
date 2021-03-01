@@ -1015,7 +1015,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     
     assertEquals("\n" + 
         "Open_In_Compare [ENABLED]\n" + 
-        "Open [DISABLED]\n" + 
+        "Open [ENABLED]\n" + 
         "----\n" + 
         "Unstage [ENABLED]\n" + 
         "Resolve_Conflict [DISABLED]\n" + 

@@ -225,7 +225,7 @@ public class GitViewResourceContextualMenu extends JPopupMenu {
 
 	    // Enable/disable the actions
 	    showDiffAction.setEnabled(selectedLeaves.size() == 1);
-	    openAction.setEnabled(!selectionContainsDeletions && !selectionContainsSubmodule && !allSelectedResources.isEmpty());
+	    openAction.setEnabled(!selectionContainsDeletions && !allSelectedResources.isEmpty());
 	    stageUnstageAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
 	    resolveConflict.setEnabled(RepoUtil.isRepoMergingOrRebasing(repoState));
 	    resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
