@@ -358,7 +358,10 @@ public class UIUtil {
    */
   public static void setDefaultScrollPaneBorder(JScrollPane scrollPane) {
     ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
-    scrollPane.setBorder(BorderFactory.createLineBorder(colorTheme.isDarkTheme() ? Color.GRAY : Color.LIGHT_GRAY));
+    if (colorTheme != null) {
+      // Can be null from tests
+      scrollPane.setBorder(BorderFactory.createLineBorder(colorTheme.isDarkTheme() ? Color.GRAY : Color.LIGHT_GRAY));
+    }
   }
   
   /**
