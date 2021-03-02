@@ -37,9 +37,13 @@ import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 
 /**
- * Computes the blame information and installs highlights on the tet page. 
+ * Computes the blame information and installs highlights on the text page. 
  */
 public class BlamePerformer {
+  /**
+   * Alpha for the color of the highlight painter.
+   */
+  private static final float HIGHLIGHT_PAINTER_COLOR_ALPHA = (float) 0.4;
   /**
    * Caret listener delay.
    */
@@ -260,7 +264,7 @@ public class BlamePerformer {
       float r = rand.nextFloat();
       float g = rand.nextFloat();
       float b = rand.nextFloat();
-      Color randomColor = new Color(r, g, b, (float) 0.4);
+      Color randomColor = new Color(r, g, b, HIGHLIGHT_PAINTER_COLOR_ALPHA);
       return new CommitHighlightPainter(randomColor, textpage, lineIndicesToRevCommits, () -> activeRevCommit);
     });
   }

@@ -34,6 +34,10 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
 @SuppressWarnings("java:S110")
 public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
+   * The corner size for the current branch border.
+   */
+  private static final int CURRENT_BRANCH_BORDER_CRONER_SIZE = 8;
+  /**
    * Default selection color.
    */
   private final Color defaultSelectionColor = getBackgroundSelectionColor();
@@ -97,7 +101,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       if (path.equals(Constants.R_HEADS + currentBranchNameSupplier.get())) {
         // Mark the current branch
         label.setFont(font.deriveFont(Font.BOLD));
-        label.setBorder(new RoundedLineBorder(label.getForeground(), 1, 8, true));
+        label.setBorder(new RoundedLineBorder(label.getForeground(), 1, CURRENT_BRANCH_BORDER_CRONER_SIZE, true));
       }
       
       // Active/inactive table selection

@@ -119,7 +119,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
     if(commitMessage.length() > COMMIT_MSG_MAX_LENGTH) {
       commitMessageLabel.setToolTipText(
               "<html>" + commitCharacteristics.getCommitMessage().replace("\n", "<br>") + "</html>");
-      commitMessage = commitMessage.substring(0, COMMIT_MSG_MAX_LENGTH - 3) + "...";
+      commitMessage = commitMessage.substring(0, COMMIT_MSG_MAX_LENGTH - "...".length()) + "...";
     }
     commitMessageLabel.setText("[" + commitCharacteristics.getCommitAbbreviatedId() + "] " 
         + commitMessage);

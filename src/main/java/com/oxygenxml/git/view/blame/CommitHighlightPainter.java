@@ -26,7 +26,10 @@ import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
  * a solid color.
  */
 public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
-
+  /**
+   * Alpha value for highlight color.
+   */
+  private static final float HIGHLIGHT_COLOR_ALPHA = (float) 0.1;
   /**
    * Logger for logging.
    */
@@ -206,17 +209,32 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
         }
       }
 
-      RevCommit currentRevCommit = activeCommit.get();
-      if (!Equaler.verifyEquals(currentRevCommit, revCommit)) {
-        // Bleach it a bit.
-        Color color2 = getColor();
-        Color bleached = new Color((float) color2.getRed() / 255, (float) color2.getGreen() / 255, (float) color2.getBlue() / 255, (float )0.1);
-        g.setColor(bleached);
-      }
+      setCommitColor(g, revCommit);
     } catch (BadLocationException e) {
       LOGGER.error(e, e);
     }
 
     return delta;
+  }
+
+
+  /**
+   * Set the commit color.
+   * 
+   * @param g          Graphics.
+   * @param revCommit  Commit.
+   */
+  private void setCommitColor(Graphics g, RevCommit revCommit) {
+    RevCommit currentRevCommit = activeCommit.get();
+    if (!Equaler.verifyEquals(currentRevCommit, revCommit)) {
+      // Bleach it a bit.
+      Color c = getColor();
+      Color bleached = new Color(
+          (float) c.getRed() / 255,
+          (float) c.getGreen() / 255,
+          (float) c.getBlue() / 255,
+          HIGHLIGHT_COLOR_ALPHA);
+      g.setColor(bleached);
+    }
   }
 }
