@@ -467,10 +467,7 @@ public class ToolbarPanel extends JPanel {
 	      true,
 	      false);
 	  
-	  SettingsMenuActionProvider actionsProvider = new SettingsMenuActionProvider(refreshSupport);
-    settingsMenuButton.addActionToMenu(actionsProvider.createResetCredentialsAction(), false);
-    settingsMenuButton.addSeparator();
-    settingsMenuButton.addActionToMenu(actionsProvider.createGoToPreferencesAction(), false);
+	  SettingsMenuBuilder.build(settingsMenuButton, refreshSupport);
     
     gitToolbar.add(settingsMenuButton);
   }

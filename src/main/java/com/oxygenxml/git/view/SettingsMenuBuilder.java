@@ -11,34 +11,37 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 
 /**
  * Action provider for the Settings menu button.
  */
-final class SettingsMenuActionProvider {
+final class SettingsMenuBuilder {
   /**
    * i18n.
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
   
   /**
-   * Refresh support.
-   */
-  private GitRefreshSupport refreshSupport;
-
-  /**
-   * Constructor.
+   * Create and add the actions in the Settings menu.
    * 
-   * @param refreshSupport Refresh support.
+   * @param settingsMenuButton The Settings menu button.
+   * @param refreshSupport     Refresh support. Needed by some actions.
    */
-  public SettingsMenuActionProvider(GitRefreshSupport refreshSupport) {
-    this.refreshSupport = refreshSupport;
+  public static void build(SplitMenuButton settingsMenuButton, GitRefreshSupport refreshSupport) {
+    settingsMenuButton.addActionToMenu(createResetCredentialsAction(refreshSupport), false);
+    settingsMenuButton.addSeparator();
+    settingsMenuButton.addActionToMenu(createGoToPreferencesAction(), false);
   }
   
   /**
-   * @return the "Reset all credentials" action;
+   * Create "Reset all credentials".
+   * 
+   * @param refreshSupport Needed to perform a refresh after resetting the credentials.
+   * 
+   * @return the "Reset all credentials" action.
    */
-  public AbstractAction createResetCredentialsAction() {
+  private static AbstractAction createResetCredentialsAction(GitRefreshSupport refreshSupport) {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.RESET_ALL_CREDENTIALS)) {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -64,7 +67,7 @@ final class SettingsMenuActionProvider {
   /**
    * @return the "Preferences" action.
    */
-  public AbstractAction createGoToPreferencesAction() {
+  private static AbstractAction createGoToPreferencesAction() {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.PREFERENCES)) {
       @Override
       public void actionPerformed(ActionEvent e) {
