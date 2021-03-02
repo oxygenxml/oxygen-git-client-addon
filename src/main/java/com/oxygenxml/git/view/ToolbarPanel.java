@@ -459,15 +459,7 @@ public class ToolbarPanel extends JPanel {
 	 * Add the settings button.
 	 */
 	private void addSettingsButton() {
-	  settingsMenuButton = new SplitMenuButton(
-	      null,
-	      Icons.getIcon(Icons.SETTINGS),
-	      false,
-	      false,
-	      true,
-	      false);
-	  
-	  SettingsMenuBuilder.build(settingsMenuButton, refreshSupport);
+	  settingsMenuButton = SettingsMenuBuilder.build(refreshSupport);
     
     gitToolbar.add(settingsMenuButton);
   }

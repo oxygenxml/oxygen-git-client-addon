@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -23,15 +24,27 @@ final class SettingsMenuBuilder {
   private static final Translator TRANSLATOR = Translator.getInstance();
   
   /**
-   * Create and add the actions in the Settings menu.
+   * Builds the Settings menu button.
    * 
    * @param settingsMenuButton The Settings menu button.
    * @param refreshSupport     Refresh support. Needed by some actions.
+   * 
+   * @return A button with the settings actions.
    */
-  public static void build(SplitMenuButton settingsMenuButton, GitRefreshSupport refreshSupport) {
+  public static SplitMenuButton build(GitRefreshSupport refreshSupport) {
+    SplitMenuButton settingsMenuButton = new SplitMenuButton(
+        null,
+        Icons.getIcon(Icons.SETTINGS),
+        false,
+        false,
+        true,
+        false);
+    
     settingsMenuButton.addActionToMenu(createResetCredentialsAction(refreshSupport), false);
     settingsMenuButton.addSeparator();
     settingsMenuButton.addActionToMenu(createGoToPreferencesAction(), false);
+    
+    return settingsMenuButton;
   }
   
   /**
