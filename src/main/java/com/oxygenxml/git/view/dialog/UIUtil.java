@@ -81,6 +81,10 @@ public class UIUtil {
    * Extra width for the icon column of the resources table (for beautifying reasons).
    */
   private static final int RESOURCE_TABLE_ICON_COLUMN_EXTRA_WIDTH = 3;
+  /**
+   * Dummy minimum width.
+   */
+  public static final int DUMMY_MIN_WIDTH = 1;
   
   /**
    * Hidden constructor.

@@ -49,7 +49,10 @@ import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
  * Utility methods for working with commits.
  */
 public class RevCommitUtil {
-  
+  /**
+   * Maximum number of diff entries.
+   */
+  private static final int THREE_DIFF_ENTRIES = 3;
   /**
    * Logger for logging.
    */
@@ -835,7 +838,7 @@ public class RevCommitUtil {
     ObjectId toReturn;
     List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(filePath)).call();
     int noOfDiffEntries = entries.size();
-    boolean isTwoWayDiff = noOfDiffEntries < 3;
+    boolean isTwoWayDiff = noOfDiffEntries < THREE_DIFF_ENTRIES;
     int indexOfTheirs = isTwoWayDiff ? 1 : 2;
     if (indexOfTheirs < noOfDiffEntries) {
       toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
@@ -865,7 +868,7 @@ public class RevCommitUtil {
     ObjectId toReturn;
     List<DiffEntry> entries = git.diff().setPathFilter(PathFilter.create(path)).call();
     int noOfDiffEntries = entries.size();
-    boolean isTwoWayDiff = noOfDiffEntries < 3;
+    boolean isTwoWayDiff = noOfDiffEntries < THREE_DIFF_ENTRIES;
     int indexOfMine = isTwoWayDiff ? 0 : 1;
     if (indexOfMine < noOfDiffEntries) {
       toReturn =  entries.get(indexOfMine).getOldId().toObjectId();

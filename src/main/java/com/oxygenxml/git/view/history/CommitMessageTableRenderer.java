@@ -33,6 +33,16 @@ import sun.swing.DefaultLookup;
  */
 public class CommitMessageTableRenderer extends JPanel implements TableCellRenderer {
   /**
+   * The size of the border shown for a tag or branch label.
+   */
+  private static final int LABEL_BORDER_CORNER_SIZE = 6;
+
+  /**
+   * Font size for the arrow characters that show the incoming and outgoing changes.
+   */
+  private static final int ARROWS_FONT_SIZE = 12;
+
+  /**
    * Default horizontal insets between components.
    */
 	private static final int HORIZONTAL_INSET = 3;
@@ -168,7 +178,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
     }
     if (!arrow.isEmpty()) {
       JLabel arrowLabel = new JLabel(arrow);
-      arrowLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
+      arrowLabel.setFont(new Font("Dialog", Font.PLAIN, ARROWS_FONT_SIZE));
       arrowLabel.setForeground(getForeground());
       constr.gridx ++;
       add(arrowLabel, constr);
@@ -205,14 +215,13 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 		  // No insets. We will impose space from the borders.
 			constr.insets = new Insets(0, 0, 0, 0);
 			int lineSize = 1;
-			int cornerSize = 6;
 			for (String name : nameForLabelList) {
 				JLabel label = new JLabel(name);
         if (name.equals(currentBranchName)) {
           label.setFont(label.getFont().deriveFont(Font.BOLD));
         }
 				label.setForeground(foregroundColor);
-				label.setBorder(new RoundedLineBorder(foregroundColor, lineSize, cornerSize, true));
+				label.setBorder(new RoundedLineBorder(foregroundColor, lineSize, LABEL_BORDER_CORNER_SIZE, true));
 				constr.gridx ++;
 				add(label, constr);
 			}

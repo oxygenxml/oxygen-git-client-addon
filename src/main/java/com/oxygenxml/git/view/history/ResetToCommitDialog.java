@@ -27,6 +27,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 @SuppressWarnings("java:S110")
 public class ResetToCommitDialog extends OKCancelDialog {
   /**
+   * Maximum length for commit message. When longer than this,
+   * we truncate it and add three dots.
+   */
+  private static final int COMMIT_MSG_MAX_LENGTH = 60;
+  /**
    * Soft reset option label.
    */
   private static final String SOFT_RESET = "Soft";
@@ -111,10 +116,10 @@ public class ResetToCommitDialog extends OKCancelDialog {
     
     JLabel commitMessageLabel = new JLabel ();
     String commitMessage = commitCharacteristics.getCommitMessage().replace("\n", " ");
-    if(commitMessage.length() > 60) {
+    if(commitMessage.length() > COMMIT_MSG_MAX_LENGTH) {
       commitMessageLabel.setToolTipText(
               "<html>" + commitCharacteristics.getCommitMessage().replace("\n", "<br>") + "</html>");
-      commitMessage = commitMessage.substring(0, 57) + "...";
+      commitMessage = commitMessage.substring(0, COMMIT_MSG_MAX_LENGTH - 3) + "...";
     }
     commitMessageLabel.setText("[" + commitCharacteristics.getCommitAbbreviatedId() + "] " 
         + commitMessage);

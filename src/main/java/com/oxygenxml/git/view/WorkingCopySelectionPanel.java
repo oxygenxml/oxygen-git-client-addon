@@ -41,6 +41,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
@@ -290,7 +291,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	  WorkingCopyToolTipRenderer renderer = new WorkingCopyToolTipRenderer();
 	  workingCopyCombo.setRenderer(renderer);
 	  int height = (int) workingCopyCombo.getPreferredSize().getHeight();
-	  workingCopyCombo.setMinimumSize(new Dimension(10, height));
+	  workingCopyCombo.setMinimumSize(new Dimension(UIUtil.DUMMY_MIN_WIDTH, height));
 
 	  addWorkingCopySelectorListener();
 	  

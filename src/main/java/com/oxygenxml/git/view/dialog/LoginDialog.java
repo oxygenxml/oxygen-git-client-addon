@@ -27,6 +27,14 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 @SuppressWarnings("java:S110")
 public class LoginDialog extends OKCancelDialog {
   /**
+   * Dialog minimum height.
+   */
+  private static final int DLG_MIN_HEIGHT = 200;
+  /**
+   * Dialog minimum width.
+   */
+  private static final int DLG_MIN_WIDTH = 250;
+  /**
    *  Logger for logging.
    */
   private static Logger logger = Logger.getLogger(LoginDialog.class); 
@@ -76,7 +84,7 @@ public class LoginDialog extends OKCancelDialog {
 		this.message = loginMessage;
 		createGUI();
 
-		this.setMinimumSize(new Dimension(250, 200));
+		this.setMinimumSize(new Dimension(DLG_MIN_WIDTH, DLG_MIN_HEIGHT));
 		this.setResizable(true);
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.pack();

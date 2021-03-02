@@ -38,6 +38,10 @@ public class OptionsManager {
    */
   private static final int HISTORY_MAX_COUNT = 20;
   /**
+   * Maximum number of destinations stored in history.
+   */
+  private static final int DESTINATIONS_MAX_COUNT = 20;
+  /**
    * The initial key used to saved options.
    */
   private static final String OLD_GIT_PLUGIN_OPTIONS = "MY_PLUGIN_OPTIONS";
@@ -438,7 +442,7 @@ public class OptionsManager {
     LinkedList<String> destinationPaths = (LinkedList<String>) getOptions().getDestinationPaths().getPaths();
     destinationPaths.remove(destinationPath);
     destinationPaths.add(0, destinationPath);
-    if (destinationPaths.size() > 20) {
+    if (destinationPaths.size() > DESTINATIONS_MAX_COUNT) {
       destinationPaths.removeLast();
     }
 

@@ -20,6 +20,11 @@ import com.oxygenxml.git.utils.Equaler;
  */
 public class HistoryCommitTableModel extends AbstractTableModel {
   /**
+   * Number of columns.
+   */
+  private static final int COLUMN_COUNT = 4;
+  
+  /**
    * Length of the short commit id
    */
   private static final int SHORT_COMMIT_ID_LENGTH = 7;
@@ -142,7 +147,7 @@ public class HistoryCommitTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public int getColumnCount() {
-		return 4;
+		return COLUMN_COUNT;
 	}
 	
 	/**

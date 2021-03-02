@@ -72,6 +72,10 @@ import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
  */
 public class CommitAndStatusPanel extends JPanel {
   /**
+   * The minimum number of available lines for the commit message.
+   */
+  private static final int COMMIT_MSG_MIN_NO_OF_AVAILABLE_LINES = 3;
+  /**
    * The pixel distance between label's icon and text.
    */
   private static final int LABEL_ICON_TO_TEXT_DISTANCE = 4;
@@ -559,7 +563,9 @@ public class CommitAndStatusPanel extends JPanel {
 		commitMessageArea.setWrapStyleWord(true);
 		JScrollPane scrollPane = new JScrollPane(commitMessageArea);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setMinimumSize(new Dimension(10, 3 * fontH));
+		scrollPane.setMinimumSize(new Dimension(
+		    UIUtil.DUMMY_MIN_WIDTH,
+		    COMMIT_MSG_MIN_NO_OF_AVAILABLE_LINES * fontH));
 		UIUtil.setDefaultScrollPaneBorder(scrollPane);
 
 		UndoSupportInstaller.installUndoManager(commitMessageArea);

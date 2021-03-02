@@ -26,6 +26,18 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 @SuppressWarnings("java:S110")
 public class PassphraseDialog extends OKCancelDialog {
   /**
+   * Dialog minimum height.
+   */
+  private static final int DLG_MIN_HEIGHT = 150;
+  /**
+   * Dialog minimum width.
+   */
+  private static final int DLG_MIN_WIDTH = 380;
+  /**
+   * Dialog preferred width.
+   */
+  private static final int DLG_PREFERRED_WIDTH = 250;
+  /**
    * The pass phrase given by the user. <code>null</code> if the user canceled the interaction.
    */
 	private String passphrase;
@@ -34,6 +46,11 @@ public class PassphraseDialog extends OKCancelDialog {
 	 */
 	private JPasswordField tfPassphrase;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param message Message.
+	 */
 	public PassphraseDialog(String message) {
 		super((JFrame) ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getParentFrame(),
 				"SSH Passphrase", true);
@@ -66,7 +83,7 @@ public class PassphraseDialog extends OKCancelDialog {
 		panel.add(label, gbc);
 
 		tfPassphrase = new JPasswordField();
-		tfPassphrase.setPreferredSize(new Dimension(250, tfPassphrase.getPreferredSize().height));
+		tfPassphrase.setPreferredSize(new Dimension(DLG_PREFERRED_WIDTH, tfPassphrase.getPreferredSize().height));
 		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
 		gbc.anchor = GridBagConstraints.WEST;
@@ -79,7 +96,7 @@ public class PassphraseDialog extends OKCancelDialog {
 		panel.add(tfPassphrase, gbc);
 
 		this.getContentPane().add(panel);
-		this.setMinimumSize(new Dimension(380, 150));
+		this.setMinimumSize(new Dimension(DLG_MIN_WIDTH, DLG_MIN_HEIGHT));
 		this.setResizable(true);
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.pack();
