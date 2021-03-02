@@ -38,7 +38,7 @@ final class SettingsMenuActionProvider {
   /**
    * @return the "Reset all credentials" action;
    */
-  public AbstractAction createAndGetResetCredentialsAction() {
+  public AbstractAction createResetCredentialsAction() {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.RESET_ALL_CREDENTIALS)) {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -64,7 +64,7 @@ final class SettingsMenuActionProvider {
   /**
    * @return the "Preferences" action.
    */
-  public AbstractAction createAndGetGoToPreferencesAction() {
+  public AbstractAction createGoToPreferencesAction() {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.PREFERENCES)) {
       @Override
       public void actionPerformed(ActionEvent e) {
