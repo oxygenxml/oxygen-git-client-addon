@@ -41,6 +41,10 @@ import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
  */
 public class BlamePerformer {
   /**
+   * Caret listener delay.
+   */
+  private static final int CARET_LISTENER_DELAY = 400;
+  /**
    * Logger for logging.
    */
   private static final Logger LOGGER = Logger.getLogger(BlamePerformer.class);
@@ -195,7 +199,7 @@ public class BlamePerformer {
         }
       };
       
-      caretSyncTimer.schedule(caretSyncTask, 400);
+      caretSyncTimer.schedule(caretSyncTask, CARET_LISTENER_DELAY);
     };
     textArea.addCaretListener(caretListener);
     

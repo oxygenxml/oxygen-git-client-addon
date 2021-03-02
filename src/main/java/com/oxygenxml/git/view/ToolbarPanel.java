@@ -75,6 +75,11 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  */
 public class ToolbarPanel extends JPanel {
   /**
+   * The font size of the push/pull counters.
+   */
+  private static final float PUSH_PULL_COUNTERS_FONT_SIZE = 8.5f;
+
+  /**
    * Pull button extra width, for beautifying reasons.
    */
 	private static final int PULL_BUTTON_EXTRA_WIDTH = 4;
@@ -463,9 +468,9 @@ public class ToolbarPanel extends JPanel {
 	      false);
 	  
 	  SettingsMenuActionProvider actionsProvider = new SettingsMenuActionProvider(refreshSupport);
-    settingsMenuButton.addActionToMenu(actionsProvider.createAndGetResetCredentialsAction(), false);
+    settingsMenuButton.addActionToMenu(actionsProvider.createResetCredentialsAction(), false);
     settingsMenuButton.addSeparator();
-    settingsMenuButton.addActionToMenu(actionsProvider.createAndGetGoToPreferencesAction(), false);
+    settingsMenuButton.addActionToMenu(actionsProvider.createGoToPreferencesAction(), false);
     
     gitToolbar.add(settingsMenuButton);
   }
@@ -845,7 +850,7 @@ public class ToolbarPanel extends JPanel {
         } else {
           setHorizontalAlignment(SwingConstants.CENTER);
         }
-        g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
+        g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
         FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
         int stringWidth = fontMetrics.stringWidth(noOfPullsBehindString);
         g.setColor(getForeground());
@@ -932,7 +937,7 @@ public class ToolbarPanel extends JPanel {
 				} else {
 					pushButton.setHorizontalAlignment(SwingConstants.CENTER);
 				}
-				g.setFont(g.getFont().deriveFont(Font.BOLD, 8.5f));
+				g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
 				FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
 				int stringWidth = fontMetrics.stringWidth(noOfPushesAheadString);
 				g.setColor(getForeground());
