@@ -26,7 +26,6 @@ final class SettingsMenuBuilder {
   /**
    * Builds the Settings menu button.
    * 
-   * @param settingsMenuButton The Settings menu button.
    * @param refreshSupport     Refresh support. Needed by some actions.
    * 
    * @return A button with the settings actions.
