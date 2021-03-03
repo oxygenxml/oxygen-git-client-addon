@@ -442,10 +442,10 @@ public class ChangesPanel extends JPanel {
 		  }
 		});
 
-		this.setMinimumSize(
-		    new Dimension(
-		        (int) (UIConstants.MIN_PANEL_WIDTH * HiDPIUtil.getScalingFactor()),
-		        UIConstants.STAGING_PANEL_MIN_HEIGHT));
+		int minWidth = HiDPIUtil.isRetinaNoImplicitSupport() 
+		    ? (int) (UIConstants.MIN_PANEL_WIDTH * HiDPIUtil.getScalingFactor())
+		    : UIConstants.MIN_PANEL_WIDTH;
+		this.setMinimumSize(new Dimension(minWidth, UIConstants.STAGING_PANEL_MIN_HEIGHT));
 	}
 	
 	private void addTopPanel(GridBagConstraints gbc) {
