@@ -33,7 +33,7 @@ After cloning a repository, it will automatically be set as the current working 
 
 This Git client supports both **HTTPS** and **SSH** connections to **GitHub, GitLab, Bitbucket**, etc.
 
-To access the remote repository, you will need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for them. If you have the _two-factor authentication_ enabled for GitHub, you must go to your GitHub account, **Settings > Developer settings > Personal access tokens > Generate new token**, and back in the **Git Staging** view in Oxygen, use the generated token value as the authentication username when asked for your credentials (no password is needed).
+To access the remote repository, you will need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for them. If you have the _two-factor authentication_ enabled for GitHub, you must go to your GitHub account, **Settings > Developer settings > Personal access tokens > Generate new token**, and back in the **Git Staging** view in Oxygen, use the generated token value as the authentication password when asked for your credentials.
 
 If, for example, you have been using a GitHub account but you decide to switch to another GitHub account, you would need to reset your credentials so that you will be prompted for new ones. This is because we currently only store one set of credentials for each Git platform/server.
 
