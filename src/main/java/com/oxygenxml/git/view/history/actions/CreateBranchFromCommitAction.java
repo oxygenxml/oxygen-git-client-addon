@@ -54,11 +54,11 @@ public class CreateBranchFromCommitAction extends AbstractAction {
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
         }
-      } catch (CheckoutConflictException e1) {
-        BranchesUtil.showCannotCheckoutNewBranchMessage(e1);
-      } catch (HeadlessException | GitAPIException e1) {
-        LOGGER.debug(e1);
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e1.getMessage(), e1);
+      } catch (CheckoutConflictException ex) {
+        BranchesUtil.showCannotCheckoutNewBranchMessage();
+      } catch (HeadlessException | GitAPIException ex) {
+        LOGGER.debug(ex);
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
       }
     });
   }

@@ -380,7 +380,7 @@ public class GitCheckoutConflictTest extends TestCase {
     
     assertEquals("master", gitAccess.getRepository().getBranch());
     
-    assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
+    assertEquals("Branch_switch_when_repo_in_conflict_error_msg", errMsg[0]);
   }
   
   /**
