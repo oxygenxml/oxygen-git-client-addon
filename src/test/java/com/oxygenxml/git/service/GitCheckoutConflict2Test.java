@@ -370,7 +370,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     
     assertEquals("master", gitAccess.getRepository().getBranch());
     
-    assertEquals("Cannot_checkout_new_branch_because_uncommitted_changes", errMsg[0]);
+    assertEquals("Cannot_checkout_new_branch_when_having_conflicts", errMsg[0]);
   }
   
   /**
