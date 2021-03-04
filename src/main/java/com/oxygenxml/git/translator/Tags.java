@@ -574,6 +574,16 @@ public class Tags {
 	 * Authenticate.
 	 */
 	public static final String AUTHENTICATE = "Authenticate";
+	
+	/**
+   * Basic authentication.
+   */
+  public static final String BASIC_AUTHENTICATION = "Basic_authentication";
+  
+  /**
+   * Personal access token.
+   */
+  public static final String PERSONAL_ACCESS_TOKEN = "Personal_access_token";
 
 	/**
 	 * The text displayed on the first row of the login dialog if there are no

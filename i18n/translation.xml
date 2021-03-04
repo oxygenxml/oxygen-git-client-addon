@@ -30,6 +30,22 @@
         <val lang="ja_JP">Authenticate</val>
         <val lang="nl_NL">Authenticate</val>
     </key>
+    <key value="Basic_authentication">
+        <comment>"Basic authentication" radio button text.</comment>
+        <val lang="en_US">Basic authentication</val>
+        <val lang="de_DE">Basic authentication</val>
+        <val lang="fr_FR">Basic authentication</val>
+        <val lang="ja_JP">Basic authentication</val>
+        <val lang="nl_NL">Basic authentication</val>
+    </key>
+    <key value="Personal_access_token">
+        <comment>"Personal access token" radio button text.</comment>
+        <val lang="en_US">Personal access token</val>
+        <val lang="de_DE">Personal access token</val>
+        <val lang="fr_FR">Personal access token</val>
+        <val lang="ja_JP">Personal access token</val>
+        <val lang="nl_NL">Personal access token</val>
+    </key>
     <key value="Login_Dialog_Title">
         <comment>The text displayed on the title for the login dialog</comment>
         <val lang="en_US">Git authentication</val>

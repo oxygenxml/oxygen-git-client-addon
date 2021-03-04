@@ -1,10 +1,13 @@
 package com.oxygenxml.git.view.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
@@ -29,6 +32,10 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 @SuppressWarnings("java:S110")
 public class LoginDialog extends OKCancelDialog {
   /**
+   * GitHub host.
+   */
+  private static final String GITHUB_COM = "github.com";
+  /**
    * Left inset for the inner panels.
    */
   private static final int INNER_PANELS_LEFT_INSET = 21;
@@ -41,6 +48,10 @@ public class LoginDialog extends OKCancelDialog {
    */
   private static final int DLG_MIN_WIDTH = 250;
   /**
+   * The translator for the messages that are displayed in this dialog
+   */
+  private static Translator translator = Translator.getInstance();
+  /**
    *  Logger for logging.
    */
   private static Logger logger = Logger.getLogger(LoginDialog.class); 
@@ -48,31 +59,38 @@ public class LoginDialog extends OKCancelDialog {
 	 * The host for which to enter the credentials
 	 */
 	private String host;
-
 	/**
 	 * The error message
 	 */
 	private String message;
-
 	/**
 	 * TextField for entering the username
 	 */
 	private JTextField tfUsername;
-
 	/**
 	 * TextField for entering the password
 	 */
 	private JPasswordField pfPassword;
-
 	/**
 	 * The new user credentials stored by this dialog
 	 */
 	private UserCredentials userCredentials;
-
 	/**
-	 * The translator for the messages that are displayed in this dialog
+	 * Basic (user + password) authentication radio button.
 	 */
-	private static Translator translator = Translator.getInstance();
+  private JRadioButton basicAuthRadio;
+  /**
+   * Personal access token authentication radio button.
+   */
+  private JRadioButton tokenAuthRadio;
+  /**
+   * Personal access token text field.
+   */
+  private JTextField tokenTextField;
+  /**
+   * Username and password panel.
+   */
+  private JPanel userAndPasswordPanel;
 
 	/**
 	 * Constructor.
@@ -134,7 +152,7 @@ public class LoginDialog extends OKCancelDialog {
 		
 		// Basic authentication radio
 		ButtonGroup buttonGroup = new ButtonGroup();
-		JRadioButton basicAuthRadio = new JRadioButton("Basic authentication");
+		basicAuthRadio = new JRadioButton(translator.getTranslation(Tags.BASIC_AUTHENTICATION));
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.gridx = 0;
     gbc.gridy ++;
@@ -142,21 +160,21 @@ public class LoginDialog extends OKCancelDialog {
     buttonGroup.add(basicAuthRadio);
     
     // User + password
-    JPanel userAndPasswordPanel = createUserAndPasswordPanel();
+    userAndPasswordPanel = createUserAndPasswordPanel();
     gbc.gridy ++;
     gbc.insets = new Insets(0, INNER_PANELS_LEFT_INSET, 0, 0);
     panel.add(userAndPasswordPanel, gbc);
     
     // Personal access token radio
-    JRadioButton tokenRadio = new JRadioButton("Personal access token");
+    tokenAuthRadio = new JRadioButton(translator.getTranslation(Tags.PERSONAL_ACCESS_TOKEN));
     gbc.insets = new Insets(0, 0, 0, 0);
     gbc.gridx = 0;
     gbc.gridy ++;
-    panel.add(tokenRadio, gbc);
-    buttonGroup.add(tokenRadio);
+    panel.add(tokenAuthRadio, gbc);
+    buttonGroup.add(tokenAuthRadio);
     
     // Token field
-    JPasswordField tokenTextField = new JPasswordField();
+    tokenTextField = new JTextField();
     gbc.insets = new Insets(
         0,
         INNER_PANELS_LEFT_INSET,
@@ -170,8 +188,40 @@ public class LoginDialog extends OKCancelDialog {
 
 		this.add(panel, BorderLayout.CENTER);
 		
-		setOkButtonText(translator.getTranslation(Tags.AUTHENTICATE));
+		ItemListener radioItemListener = e -> {
+		  if (e.getStateChange() == ItemEvent.SELECTED) {
+		    updateGUI();
+		  }
+		};
+    tokenAuthRadio.addItemListener(radioItemListener);
+		basicAuthRadio.addItemListener(radioItemListener);
+		
+		initGUI();
 	}
+	
+  /**
+   * Init GUI.
+   */
+  private void initGUI() {
+    setOkButtonText(translator.getTranslation(Tags.AUTHENTICATE));
+    
+    if (GITHUB_COM.equals(host)) {
+      tokenAuthRadio.doClick();
+    } else {
+      basicAuthRadio.doClick();
+    }
+  }
+
+	/**
+	 * Update GUI.
+	 */
+  private void updateGUI() {
+    Component[] components = userAndPasswordPanel.getComponents();
+    for (Component component : components) {
+      component.setEnabled(basicAuthRadio.isSelected());
+    }
+    tokenTextField.setEnabled(tokenAuthRadio.isSelected());
+  }
 
 	/**
 	 * @return The username and password panel.
@@ -238,10 +288,14 @@ public class LoginDialog extends OKCancelDialog {
 
 	@Override
 	protected void doOK() {
-		String username = tfUsername.getText().trim();
-		String password = new String(pfPassword.getPassword());
-		userCredentials = new UserCredentials(username, password, host);
-		OptionsManager.getInstance().saveGitCredentials(userCredentials);
+	  if (basicAuthRadio.isSelected()) {
+	    String username = tfUsername.getText().trim();
+	    String password = new String(pfPassword.getPassword());
+	    userCredentials = new UserCredentials(username, password, host);
+	    OptionsManager.getInstance().saveGitCredentials(userCredentials);
+    } else if (tokenAuthRadio.isSelected()) {
+      
+    }
 		super.doOK();
 	}
 
