@@ -22,6 +22,14 @@
         <val lang="ja_JP">Currently tracked commit</val>
         <val lang="nl_NL">Currently tracked commit</val>
     </key>
+    <key value="Authenticate">
+        <comment>Text for the OK button in the login dialog.</comment>
+        <val lang="en_US">Authenticate</val>
+        <val lang="de_DE">Authenticate</val>
+        <val lang="fr_FR">Authenticate</val>
+        <val lang="ja_JP">Authenticate</val>
+        <val lang="nl_NL">Authenticate</val>
+    </key>
     <key value="Login_Dialog_Title">
         <comment>The text displayed on the title for the login dialog</comment>
         <val lang="en_US">Git authentication</val>

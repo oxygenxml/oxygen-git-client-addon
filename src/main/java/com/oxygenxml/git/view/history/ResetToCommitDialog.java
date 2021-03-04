@@ -137,7 +137,7 @@ public class ResetToCommitDialog extends OKCancelDialog {
 
     addRadioButtons(panel, gbc);
 
-    getOkButton().setText(translator.getTranslation(Tags.RESET));
+    setOkButtonText(translator.getTranslation(Tags.RESET));
   }
 
   /**

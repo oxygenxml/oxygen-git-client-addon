@@ -569,6 +569,11 @@ public class Tags {
 	 * The text displayed above the text fields
 	 */
 	public static final String LOGIN_DIALOG_MAIN_LABEL = "Login_Dialog_Main_Label";
+	
+	/**
+	 * Authenticate.
+	 */
+	public static final String AUTHENTICATE = "Authenticate";
 
 	/**
 	 * The text displayed on the first row of the login dialog if there are no

@@ -81,8 +81,10 @@ public class LoginDialog extends OKCancelDialog {
 	 * @param loginMessage The login message.
 	 */
 	public LoginDialog(String host, String loginMessage) {
-		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true);
+		super(
+		    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE),
+		    true);
 		
 		if (logger.isDebugEnabled()) {
 		  logger.debug(new Exception("LOGIN DIALOG WAS SHOWN..."));
@@ -167,6 +169,8 @@ public class LoginDialog extends OKCancelDialog {
     panel.add(tokenTextField, gbc);
 
 		this.add(panel, BorderLayout.CENTER);
+		
+		setOkButtonText(translator.getTranslation(Tags.AUTHENTICATE));
 	}
 
 	/**
