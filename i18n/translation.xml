@@ -22,6 +22,22 @@
         <val lang="ja_JP">Currently tracked commit</val>
         <val lang="nl_NL">Currently tracked commit</val>
     </key>
+    <key value="Login_Dialog_Title">
+        <comment>The text displayed on the title for the login dialog</comment>
+        <val lang="en_US">Git authentication</val>
+        <val lang="de_DE">Git authentication</val>
+        <val lang="fr_FR">Git authentication</val>
+        <val lang="ja_JP">Git authentication</val>
+        <val lang="nl_NL">Git authentication</val>
+    </key>
+    <key value="Login_Dialog_Main_Label">
+        <comment>The text displayed above the text fields</comment>
+        <val lang="en_US">Enter the authentication details for</val>
+        <val lang="de_DE">Enter the authentication details for</val>
+        <val lang="fr_FR">Enter the authentication details for</val>
+        <val lang="ja_JP">Enter the authentication details for</val>
+        <val lang="nl_NL">Enter the authentication details for</val>
+    </key>
     <key value = "Update_submodules_on_pull">
         <comment>An option that controls whether we automatically update submodules 
             after pulling changes from the remote repository</comment>
@@ -1725,29 +1741,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Wachtwoord: </val>
     </key>
-    <key value="Login_Dilaog_Title">
-        <comment>The text displayed on the title for the login dialog</comment>
-        <val lang="en_US">Git Account</val>
-        <val lang="de_DE">Git-Account</val>
-        <val lang="fr_FR">Compte Git</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Git-account</val>
-    </key>
-    <key value="Login_Dilaog">
-        <comment>The text displayed above the text fields</comment>
-        <val lang="en_US">Enter account for</val>
-        <val lang="de_DE">Account angeben für</val>
-        <val lang="fr_FR">Entrez le compte pour</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Account invoeren voor</val>
-    </key>
     <key value="Login_Dilaog_Credentials_Not_Found_Message">
         <comment>The text displayed on the first row of the login dialog if there are no credentials stored</comment>
-        <val lang="en_US">No credentials found</val>
-        <val lang="de_DE">Keine Zugangsdaten gefunden</val>
-        <val lang="fr_FR">Aucun identifiant trouvé</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Geen inloggegevens gevonden</val>
+        <val lang="en_US">No credentials found.</val>
+        <val lang="de_DE">Keine Zugangsdaten gefunden.</val>
+        <val lang="fr_FR">Aucun identifiant trouvé.</val>
+        <val lang="ja_JP">ja_JP_translation.</val>
+        <val lang="nl_NL">Geen inloggegevens gevonden.</val>
     </key>
     <key value="Login_Dilaog_Credentials_Invalid_Message">
         <comment>The text displayed on the first row of the login dialog if the credentials are invalid</comment>

@@ -563,12 +563,12 @@ public class Tags {
 	/**
 	 * The text displayed on the title for the login dialog
 	 */
-	public static final String LOGIN_DIALOG_TITLE = "Login_Dilaog_Title";
+	public static final String LOGIN_DIALOG_TITLE = "Login_Dialog_Title";
 
 	/**
 	 * The text displayed above the text fields
 	 */
-	public static final String LOGIN_DIALOG = "Login_Dilaog";
+	public static final String LOGIN_DIALOG_MAIN_LABEL = "Login_Dialog_Main_Label";
 
 	/**
 	 * The text displayed on the first row of the login dialog if there are no
