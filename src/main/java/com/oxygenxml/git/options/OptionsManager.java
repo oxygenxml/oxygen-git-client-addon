@@ -306,6 +306,71 @@ public class OptionsManager {
 
     saveOptions();
   }
+  
+  /**
+   * Saves the given user personal access token info.
+   * 
+   * @param tokenInfo Personal access token info.
+   */
+  public void savePersonalAccessTokenInfo(PersonalAccessTokenInfo tokenInfo) {
+    if (tokenInfo == null) {
+      // Reset
+      getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(null);
+    } else {
+      String encryptedToken = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+          .getUtilAccess().encrypt(tokenInfo.getTokenValue());
+      PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(
+          tokenInfo.getHost(),
+          encryptedToken
+          );
+      
+      List<PersonalAccessTokenInfo> personalAccessTokens = 
+          getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
+      if (personalAccessTokens != null) {
+        for (Iterator<PersonalAccessTokenInfo> iterator = personalAccessTokens.iterator(); iterator.hasNext();) {
+          PersonalAccessTokenInfo alreadyHere = iterator.next();
+          if (alreadyHere.getHost().equals(paTokenInfo.getHost())) {
+            // Replace.
+            iterator.remove();
+            break;
+          }
+        }
+        personalAccessTokens.add(paTokenInfo);
+      } else {
+        getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(Arrays.asList(paTokenInfo));
+      }
+    }
+    saveOptions();
+  }
+  
+  /**
+   * Gets the user personal access token info item for a given host.
+   * 
+   * @param host The host.
+   * 
+   * @return the token info items. Never <code>null</code>.
+   */
+  public PersonalAccessTokenInfo getPersonalAccessTokenInfo(String host) {
+    String decryptedTokenValue = null;
+    if (host != null) {
+      String tokenVal = null;
+      List<PersonalAccessTokenInfo> tokens = getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
+      if (tokens != null) { 
+        for (PersonalAccessTokenInfo token : tokens) {
+          if (host.equals(token.getHost())) {
+            tokenVal = token.getTokenValue();
+            break;
+          }
+        }
+      }
+      if (OxygenGitPlugin.getInstance() != null) {
+        decryptedTokenValue = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+            .getUtilAccess()
+            .decrypt(tokenVal);
+      }
+    }
+    return new PersonalAccessTokenInfo(host, decryptedTokenValue);
+  }
 
   /**
    * Saves the user credentials for git push and pull

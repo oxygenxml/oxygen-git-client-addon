@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.PersonalAccessTokenInfo;
 import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -75,6 +76,10 @@ public class LoginDialog extends OKCancelDialog {
 	 * The new user credentials stored by this dialog
 	 */
 	private UserCredentials userCredentials;
+	/**
+	 * The new personal access token provided by the user.
+	 */
+	private PersonalAccessTokenInfo personalAccessTokenInfo;
 	/**
 	 * Basic (user + password) authentication radio button.
 	 */
@@ -294,7 +299,10 @@ public class LoginDialog extends OKCancelDialog {
 	    userCredentials = new UserCredentials(username, password, host);
 	    OptionsManager.getInstance().saveGitCredentials(userCredentials);
     } else if (tokenAuthRadio.isSelected()) {
-      
+      personalAccessTokenInfo = new PersonalAccessTokenInfo(
+          host,
+          tokenTextField.getText().trim());
+      OptionsManager.getInstance().savePersonalAccessTokenInfo(personalAccessTokenInfo);
     }
 		super.doOK();
 	}

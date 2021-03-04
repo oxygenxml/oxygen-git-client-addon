@@ -62,6 +62,12 @@ public class Options {
 	 */
 	@XmlElement(name = "userCredentials")
 	private UserCredentialsList userCredentialsList = new UserCredentialsList();
+	
+	/**
+	 * A list of personal access token + host entries. Only one personal access token per host.
+	 */
+	@XmlElement(name = "personalAccessTokens")
+	private PersonalAccessTokenInfoList paTokensList = new PersonalAccessTokenInfoList();
 
 	/**
 	 * Wrapper for a list of commit messages
@@ -312,8 +318,39 @@ public class Options {
 	public WhenRepoDetectedInProject getWhenRepoDetectedInProject() {
 	  return whenRepoDetectedInProject;
 	}
+	
+	 /**
+   * @return <code>true</code> to update submodules after a pull.
+   */
+  public boolean getUpdateSubmodulesOnPull() {
+    return updateSubmodulesOnPull;
+  }
 
-	@Override
+  /**
+   * Sets the submodule update policy on pull.
+   * 
+   * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
+   */
+  public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
+    this.updateSubmodulesOnPull = updateSubmodules;
+  }
+  
+
+	/**
+   * @return the list of personal access token info items.
+   */
+  public PersonalAccessTokenInfoList getPersonalAccessTokensList() {
+    return paTokensList;
+  }
+
+  /**
+   * @param paTokensList the list of personal access token info items to set.
+   */
+  public void setPersonalAccessTokensList(PersonalAccessTokenInfoList paTokensList) {
+    this.paTokensList = paTokensList;
+  }
+
+  @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -324,6 +361,7 @@ public class Options {
 		result = prime * result + ((repositoryLocations == null) ? 0 : repositoryLocations.hashCode());
 		result = prime * result + ((selectedRepository == null) ? 0 : selectedRepository.hashCode());
 		result = prime * result + ((userCredentialsList == null) ? 0 : userCredentialsList.hashCode());
+		result = prime * result + ((paTokensList == null) ? 0 : paTokensList.hashCode());
 		result = prime * result + ((sshPromptAnswers == null) ? 0 : sshPromptAnswers.hashCode());
 		result = prime * result + (notifyAboutNewRemoteCommits ? 1 : 0);
 		result = prime * result + (isCheckoutNewlyCreatedLocalBranch ? 1 : 0);
@@ -347,6 +385,7 @@ public class Options {
 	        && Equaler.verifyEquals(selectedRepository, opt.getSelectedRepository())
 	        && Equaler.verifyEquals(sshPromptAnswers, opt.getSshPromptAnswers())
 	        && Equaler.verifyEquals(userCredentialsList, opt.getUserCredentialsList())
+	        && Equaler.verifyEquals(paTokensList, opt.getPersonalAccessTokensList())
 	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode)
 	        && Equaler.verifyEquals(defaultPullType, opt.defaultPullType)
 	        && Equaler.verifyEquals(warnOnChangeCommitId, opt.getWarnOnChangeCommitId());
@@ -354,29 +393,17 @@ public class Options {
 	  return toReturn;
 	}
 
-	@Override
-	public String toString() {
-		return "Options [repositoryLocations=" + repositoryLocations + ", selectedRepository=" + selectedRepository
-				+ ", userCredentialsList=" + "CLASSIFIED" + ", commitMessages=" + commitMessages
-				+ ", prjectsTestsForGit=" + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase="
-				+ "CLASSIFIED" + ", resourcesViewMode=" + stagedResViewMode
-				+ ", defaultPullType=" + defaultPullType + "]";
-	}
-
-	/**
-	 * @return <code>true</code> to update submodules after a pull.
-	 */
-  public boolean getUpdateSubmodulesOnPull() {
-    return updateSubmodulesOnPull;
-  }
-
-  /**
-   * Sets the submodule update policy on pull.
-   * 
-   * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
-   */
-  public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
-    this.updateSubmodulesOnPull = updateSubmodules;
+  @Override
+  public String toString() {
+    return "Options [sshPromptAnswers=" + sshPromptAnswers + ", repositoryLocations=" + repositoryLocations
+        + ", notifyAboutNewRemoteCommits=" + notifyAboutNewRemoteCommits + ", isCheckoutNewlyCreatedLocalBranch="
+        + isCheckoutNewlyCreatedLocalBranch + ", warnOnChangeCommitId=" + warnOnChangeCommitId + ", selectedRepository="
+        + selectedRepository + ", userCredentialsList=" + userCredentialsList + ", paTokensList=" + paTokensList
+        + ", commitMessages=" + commitMessages + ", defaultPullType=" + defaultPullType + ", projectsTestsForGit="
+        + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase=" + passphrase
+        + ", stagedResViewMode=" + stagedResViewMode + ", unstagedResViewMode=" + unstagedResViewMode
+        + ", whenRepoDetectedInProject=" + whenRepoDetectedInProject + ", updateSubmodulesOnPull="
+        + updateSubmodulesOnPull + ", isAutoPushWhenCommitting=" + isAutoPushWhenCommitting + "]";
   }
 
 }
