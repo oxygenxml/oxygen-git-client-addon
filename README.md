@@ -55,7 +55,7 @@ When cloning a repository that contains submodules, all submodules are initializ
 
 To open and work with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box. As an alternative, if the submodule is modified and is presented in the **Unstaged files** area, the **Open** contextual action can be used.
 
-The tooltip of a modified submodule presented in the **Unstaged files** area presents information about the currently and previously tracked commits.
+The tooltip of a modified submodule shown in the **Unstaged files** area presents information about the currently and previously tracked commits.
 
 ## Showing the current branch history
 
