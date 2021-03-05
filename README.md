@@ -58,7 +58,7 @@ To open and work with a Git submodule, use the **Submodules** action from the to
 To show the history of the current branch, invoke the **Show current branch history** action from the toolbar of the Git Staging panel (look for the clock icon), or go to the **Window menu > Show view > Git History**. This will open the **Git History** view at the bottom of Oxygen.
 
 For each commit in the history table, the following actions are available:
-- **Create branch**: Used to create a new branch starting from the selected commit.
+- **Create branch**: Used to create a new branch starting from the selected commit. The new branch is automatically checked out by default. To disable this behavior, deselect the *Checkout branch* option in the *Create branch* dialog box.
 - **Reset "\[branch_name\]" to this commit**: Used to undo changes by moving the HEAD of the current branch to the selected commit.
 
 The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. It includes a text filter field at the top that you can use to conduct searches (i.e. by Date, Author, or Commit ID). For each resource, the following actions are available in the contextual menu:
@@ -142,7 +142,7 @@ The Git Branch Manager side-view displays all the branches as a tree. The tree c
 
 The following actions are available in the contextual menu for each local branch:
 - **Checkout branch**: Checks out the selected branch and switches the local repository to the selected branch.
-- **Create branch**: Creates a new branch using the selected branch as the starting point.
+- **Create branch**: Creates a new branch using the selected branch as the starting point. The new branch is automatically checked out by default. To disable this behavior, deselect the *Checkout branch* option in the *Create branch* dialog box.
 - **Delete branch**: Deletes the selected branch.
 
 For the remote branches, the following action is available in the contextual menu:
