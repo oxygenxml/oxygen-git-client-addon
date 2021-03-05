@@ -29,6 +29,8 @@
                         <h3>What's new in version X.Y.Z</h3>
                         <ol>
                             <li>Support for Dutch localization was added.</li>
+		            <li>Branches created from other local branches are now automatically checked out. This behavior can be
+				disabled by deselecting the <i>Checkout branch</i> option in the <i>Create branch</i> dialog box.</li>
                         </ol>
                     </div>
                     <div>
