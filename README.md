@@ -51,7 +51,7 @@ New branches can be created from the **Git Branch Manager** or from the History 
 
 ## Working with submodules
 
-To open and work with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box.
+To open and work with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box. As an alternative, if the submodule is modified and is presented in the **Unstaged files** area, the **Open** contextual action can be used.
 
 ## Showing the current branch history
 
