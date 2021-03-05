@@ -1911,7 +1911,7 @@
     </key>
     <key value="Detached_Head_Message">
         <comment>The text is displayed when your repository is on a detached head</comment>
-        <val lang="en_US">You are on a detached HEAD. We suggest you checkout to a branch.</val>
+        <val lang="en_US">You are on a detached HEAD. We suggest you checkout a branch.</val>
         <val lang="de_DE">Das Repository befindet sich im "detached HEAD" Status. Wir empfehlen einen Branch auszuchecken.</val>
         <val lang="fr_FR">Vous êtes sur une branche HEAD détachée. Nous suggérons une extraction vers une branche.</val>
         <val lang="ja_JP">ja_JP_translation</val>
