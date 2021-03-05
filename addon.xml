@@ -35,7 +35,7 @@
 				</li>
 		            <li>If a submodule appears as changed in the <i>Unstaged files</i> area, you can open it 
 				    using the <i>Open</i> action from the contextual menu.</li>
-		            <li>The tooltip shown for a modified submodule presented in the *Ustanged files* area will present information about 
+		            <li>The tooltip shown for a modified submodule from the *Ustanged files* area now presents information about 
 				    the currently and previously tracked commits.</li>
 		            <li>Branches created from other local branches are now automatically checked out. This behavior can be
 				    disabled by deselecting the <i>Checkout branch</i> option in the <i>Create branch</i> dialog box.</li>
