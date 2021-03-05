@@ -28,9 +28,11 @@
 		    <div>
                         <h3>What's new in version X.Y.Z</h3>
                         <ol>
+		            <li>If a submodule appears as changed in the <i>Unstaged files</i> area, you can open it 
+				    using the <i>Open</i> action from the contextual menu.</li>
                             <li>Support for Dutch localization was added.</li>
 		            <li>Branches created from other local branches are now automatically checked out. This behavior can be
-				disabled by deselecting the <i>Checkout branch</i> option in the <i>Create branch</i> dialog box.</li>
+				    disabled by deselecting the <i>Checkout branch</i> option in the <i>Create branch</i> dialog box.</li>
                         </ol>
                     </div>
                     <div>
