@@ -111,6 +111,14 @@
         <val lang="ja_JP">Unstaged files</val>
         <val lang="nl_NL">Unstaged files</val>
     </key>
+    <key value="Change_To_List_View">
+        <comment>The tooltip for the Change View button when the icon shows the list view icon</comment>
+        <val lang="en_US">Switch to list view</val>
+        <val lang="de_DE">Switch to list view</val>
+        <val lang="fr_FR">Switch to list view</val>
+        <val lang="ja_JP">Switch to list view</val>
+        <val lang="nl_NL">Switch to list view</val>
+    </key>
     <key value="Resolve_conflicts_first">
         <comment>The message displayed when you push with conflicts</comment>
         <val lang="en_US">Resolve the conflicts first.</val>
@@ -1844,14 +1852,6 @@
         <val lang="fr_FR">Passer à la vue arborescente</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Boomweergave wijzigen</val>
-    </key>
-    <key value="Change_Flat_View_Button_ToolTip">
-        <comment>The tooltip for the ChangeView button when the icon shows the flat view icon</comment>
-        <val lang="en_US">Switch to flat view</val>
-        <val lang="de_DE">Zur Pfadansicht wechseln</val>
-        <val lang="fr_FR">Passer à la vue à plat</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Naar platte weergave</val>
     </key>
     <key value="Login_Dialog_Private_Repository_Message">
         <comment>The text displayed on the first row of the login dialog if the repositroy is private</comment>
