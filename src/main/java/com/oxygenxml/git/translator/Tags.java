@@ -669,7 +669,7 @@ public class Tags {
 	 * The tooltip for the ChangeView button when the icon shows the flat view
 	 * icon
 	 */
-	public static final String CHANGE_FLAT_VIEW_BUTTON_TOOLTIP = "Change_Flat_View_Button_ToolTip";
+	public static final String CHANGE_TO_LIST_VIEW = "Change_To_List_View";
 
 	/**
 	 * The text displayed on the first row of the login dialog if the repository

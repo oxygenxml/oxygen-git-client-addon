@@ -1025,7 +1025,7 @@ public class ChangesPanel extends JPanel {
       if (currentViewMode == ResourcesViewMode.TREE_VIEW) {
         Icon icon = Icons.getIcon(Icons.LIST_VIEW);
           switchViewButton.setIcon(icon);
-        switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_FLAT_VIEW_BUTTON_TOOLTIP));
+        switchViewButton.setToolTipText(translator.getTranslation(Tags.CHANGE_TO_LIST_VIEW));
       } else {
         Icon icon = Icons.getIcon(Icons.TREE_VIEW);
           switchViewButton.setIcon(icon);
