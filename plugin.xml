@@ -22,7 +22,7 @@
     <extension type="URLHandler" class="com.oxygenxml.git.protocol.CustomProtocolURLHandlerExtension"/>
     <extension type="OptionPage" class="com.oxygenxml.git.OxygenGitOptionPagePluginExtension"/>
     
-    <!-- The main side-view of the Git Client add-on. -->
+    <!--The sample view which will present messages from the sample plugin.-->
     <view id="GitStagingView" initialSide="WEST" initialRow="0" initialState="docked">
     	<perspective id="xslt_debugger" initialState="hidden"/>
     	<perspective id="xquery_debugger" initialState="hidden"/>
