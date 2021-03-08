@@ -51,7 +51,7 @@ New branches can be created from the **Git Branch Manager** or from the History 
 
 ## Working with submodules
 
-When cloning a repository that contains submodules, all submodules are initialized and cloned as well. And when pulling changes from the remote repository, the submodules are also updated. The update of the submodules when performing a pull operation depends on the *Update all submodules after pulling changes from the remote repository* option from the *Git Client* preferences page in Oxygen (the option is enabled by default).
+When cloning a repository that contains submodules, all submodules are initialized and cloned as well. And when pulling changes from the remote repository, the submodules are also updated. The update of the submodules when performing a pull operation depends on the **Update all submodules after pulling changes from the remote repository** option from the *Git Client* preferences page in Oxygen (the option is enabled by default).
 
 To open and work with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box. As an alternative, if the submodule is modified and is presented in the **Unstaged files** area, the **Open** contextual action can be used.
 
@@ -59,10 +59,10 @@ The tooltip of a modified submodule shown in the **Unstaged files** area present
 
 ## Showing the current branch history
 
-To show the history of the current branch, invoke the **Show current branch history** action from the toolbar of the Git Staging panel (look for the clock icon), or go to the **Window menu > Show view > Git History**. This will open the **Git History** view at the bottom of Oxygen.
+To show the history of the current branch, invoke the **Show current branch history** action from the toolbar of the *Git Staging* panel (look for the clock icon), or go to the **Window menu > Show view > Git History**. This will open the **Git History** view at the bottom of Oxygen.
 
 For each commit in the history table, the following actions are available:
-- **Create branch**: Used to create a new branch starting from the selected commit. The new branch is automatically checked out by default. To disable this behavior, deselect the *Checkout branch* option in the *Create branch* dialog box.
+- **Create branch**: Used to create a new branch starting from the selected commit. The new branch is automatically checked out by default. To disable this behavior, deselect the **Checkout branch** option in the *Create branch* dialog box.
 - **Reset "\[branch_name\]" to this commit**: Used to undo changes by moving the HEAD of the current branch to the selected commit.
 
 The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. It includes a text filter field at the top that you can use to conduct searches (i.e. by Date, Author, or Commit ID). For each resource, the following actions are available in the contextual menu:
@@ -99,7 +99,7 @@ If the file has a conflict (has been modified both by you and another), [Oxygen'
 
 After staging the files, on the bottom of the view you can provide a commit message and commit them to your local repository. For convenience, you can also select a previously provided message.
 
-In the toolbar above the _Commit message_ text area, there are a few toggle buttons that affect your commit if they are enabled:
+In the toolbar above the **Commit message** text area, there are a few toggle buttons that affect your commit if they are enabled:
 - **Amend last commit**: Enabling this option is a convenient way to modify the most recent commit. It lets you combine staged changes with the previous commit instead of creating an entirely new commit. It can also be used to simply edit the previous commit message without changing its snapshot.
 - **Automatically push changes to remote when committing**: If this option is enabled, when a commit is performed, the committed changes are also pushed to the remote repository.
 
@@ -117,12 +117,12 @@ After editing a file, committing it to the local repository, and trying to push 
 
 1. Pull the data from the repository using one of the **Pull** actions.
 2. In the **Unstaged files** area, select each conflicted file and resolve the conflicts. You can do this, for example, by opening the conflicted files in the compare editor, either by double-clicking on them or by using the contextual menu action, and then choose what changes you want to keep and discard, and save the document. You can also use the **Resolve using Mine**, **Resolve using Theirs**, or **Mark as resolved** actions from the contextual menu of a resource. 
-3. If you choose to use the compare editor, after you close it, the file will be staged automatically and moved to the **Staged files** area.
+3. If you choose to use the compare editor, after you close it, the file will be staged automatically and moved to the *Staged files* area.
 
 At this point, the next actions depend on which **Pull** action was chosen:
 
  - **Pull (merge)**:
-    1. When all the conflicts are resolved and no more files are left in the **Unstaged files** area, the changes can be committed.
+    1. When all the conflicts are resolved and no more files are left in the *Unstaged files* area, the changes can be committed.
     2. Enter a message and commit. You will now have new changes to push.
     3. Push the changes to the remote repository.
     
@@ -136,17 +136,17 @@ At this point, the next actions depend on which **Pull** action was chosen:
     
 ## The Project view and the current editor
 
-For resources from Git repositories, this add-on also contributes a variety of actions in the contextual menus of the **Project** side-view and the current editor (Text and Author pages). These actions include: **Show history**, **Show blame**, **Git Diff** (only in the Project view), and **Commit** (only in the Project view).
+For resources from Git repositories, this add-on also contributes a variety of actions in the contextual menus of the **Project** side-view and the current editor (Text and Author pages). These actions include: **Show history**, **Show blame**, **Git Diff** (only in the *Project* view), and **Commit** (only in the *Project* view).
 
 ## Git Branch Manager
 
-To show all the local and remote branches, click the **Show Git Branch Manager** button on the toolbar of the Git Staging panel (look for the branches icon) or select **Git Branch Manager** from the **Window > Show view** menu. By default, the Git Branch Manager is presented to the right of the editing area.
+To show all the local and remote branches, click the **Show Git Branch Manager** button on the toolbar of the *Git Staging* panel (look for the branches icon) or select **Git Branch Manager** from the **Window > Show view** menu. By default, the *Git Branch Manager* is presented to the right of the editing area.
 
 The *Git Branch Manager* side-view displays all the branches as a tree. The tree can be filtered using the text field at the top of the panel and you can reload the information by using the **Refresh** action.
 
 The following actions are available in the contextual menu for each local branch:
 - **Checkout branch**: Checks out the selected branch and switches the local repository to the selected branch.
-- **Create branch**: Creates a new branch using the selected branch as the starting point. The new branch is automatically checked out by default. To disable this behavior, deselect the *Checkout branch* option in the *Create branch* dialog box.
+- **Create branch**: Creates a new branch using the selected branch as the starting point. The new branch is automatically checked out by default. To disable this behavior, deselect the **Checkout branch** option in the *Create branch* dialog box.
 - **Delete branch**: Deletes the selected branch.
 
 For the remote branches, the following action is available in the contextual menu:
@@ -154,7 +154,7 @@ For the remote branches, the following action is available in the contextual men
 
 ## Preferences
 
-The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (*Options* menu > *Preferences*) and go to **Plugins > Git Client**, or click the **Settings** button from the toolbar of the *Git Staging* view and select **Preferences**. This preferences page includes the following options:
+The *Git Client* add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (*Options* menu > *Preferences*) and go to **Plugins > Git Client**, or click the **Settings** button from the toolbar of the *Git Staging* view and select **Preferences**. This preferences page includes the following options:
 - **When detecting a Git repository inside a newly opened project:**
   - **Always switch to the new working copy**
   - **Never switch to the new working copy**
@@ -167,8 +167,8 @@ The Git Client add-on contributes a preferences page to Oxygen. To access it, op
 The Git Client contributes the following editor variables to Oxygen:
 - **${git(working_copy_name)}**: The name of the working copy directory.
 - **${git(working_copy_path)}**: The absolute file path of the working copy directory.
-- **${git(short_branch_name)}**: The short name of the current branch (e.g. "dev").
-- **${git(full_branch_name)}**: The full name of the current branch (e.g. "refs/heads/dev").
+- **${git(short_branch_name)}**: The short name of the current branch (e.g. `dev`).
+- **${git(full_branch_name)}**: The full name of the current branch (e.g. `refs/heads/dev`).
 
 Copyright and License
 ---------------------
