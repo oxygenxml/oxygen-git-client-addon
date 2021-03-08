@@ -2,7 +2,7 @@
 
 This add-on contributes a Git client directly in Oxygen XML Editor/Author/Developer, as a side-view, available in the Editor and DITA perspectives.
 
-This add-on is compatible with Oxygen XML Editor/Author/Developer version 20.1 or higher. 
+This add-on is compatible with Oxygen XML Editor/Author/Developer version 21.1 or higher. 
 
 ## Installation
 
