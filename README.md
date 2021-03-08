@@ -1,6 +1,6 @@
 # Oxygen Git Client add-on
 
-This add-on contributes a Git client directly in Oxygen XML Editor/Author/Developer, as a side-view, available in the Editor and DITA perspectives.
+The **Git Client** add-on installs a Git client in Oxygen XML Editor/Author/Developer. It contributes multiple side-views, specialized for different Git operations, the main one being named **Git Staging**. The *Git Staging* side-view is available by default only in the *Editor* and *DITA* UI perspectives.
 
 This add-on is compatible with Oxygen XML Editor/Author/Developer version 21.1 or higher. 
 
@@ -78,26 +78,26 @@ The contextual menu of each unstaged resource contains a **Show blame** action t
 
 This action is also available in the contextual menu of the current editor and of the Git resources from the **Project** side-view.
 
-## Unstaged resources area
+## Unstaged files area
 
-In the *unstaged resources area* (the top pane), you will see all the modifications that have occurred in your working copy (files that have been modified, new files, and deleted files) and are not part of the next commit.
+In the **Unstaged files** area, you will see all the modifications that have occurred in your working copy (files that have been modified, new files, and deleted files) and are **not** part of the next commit.
 - Various actions are available in the contextual menu (**Open**, **Open in compare editor**, **Stage**, **Discard**, **Show history**, **Show blame**, and more).
-- You can stage all the files by clicking the **Stage All** button or you can stage certain files by selecting and clicking the **Stage Selected** button.
-- You can switch between the flat (table) view and the tree view by clicking on the **Switch to tree/flat view** button positioned to the right of the staging buttons.
+- You can stage files (i.e. move them to the *Staged files* area) using the actions from the toolbar found above the top-right corner of this area. You can can choose between staging all the files, by clicking the **Stage all** button (double arrow icon), and staging specific files, by selecting them and clicking the **Stage selected** button (single arrow icon).
+- You can switch between the list view and the tree view by clicking on the **Switch to tree/list view** button positioned to the right of the staging buttons.
 
-## Staged resources area
+## Staged files area
 
-In the *staged resources area*, you will see all the resources that are ready to be committed. The files from this area can be unstaged and sent back to the *unstaged resources area*. The *staged resources area* has actions similar to those from the *unstaged resources area*, with the exception of the **Show history** and **Show blame** actions that are only available in the *unstqaged resources area*.
+In the **Staged files** area, you will see all the resources that are ready to be committed. The files from this area can be unstaged and sent back to the *Unstaged files* area. This area has actions similar to those from the *Unstaged files* area, with the exception of the **Show history** and **Show blame** actions that are **not** available here.
 
 ## Comparing changes and conflict resolution
 
-At any time, if you want to see the differences between the last commit and your current modifications, you can double-click a file from either the *unstaged resources area* or *staged resources area*, and the [Oxygen's Diff](https://www.oxygenxml.com/xml_editor/xml_diff_and_merge.html) window will appear and highlight the changes.
+At any time, if you want to see the differences between the last commit and your current modifications, you can double-click a file from either the *Unstaged files* area or *Staged files* area, and the [Oxygen's Diff](https://www.oxygenxml.com/xml_editor/xml_diff_and_merge.html) window will appear and highlight the changes.
 
 If the file has a conflict (has been modified both by you and another), [Oxygen's Three Way Diff](https://www.oxygenxml.com/xml_editor/xml_diff_and_merge.html) will show a comparison between the local change, the remote change, and the original base revision.
 
 ## Committing
 
-After staging the files, on the bottom of the view, you can provide a commit message and commit them to your local repository. For convenience, you can also select a previously provided message.
+After staging the files, on the bottom of the view you can provide a commit message and commit them to your local repository. For convenience, you can also select a previously provided message.
 
 In the toolbar above the _Commit message_ text area, there are a few toggle buttons that affect your commit if they are enabled:
 - **Amend last commit**: Enabling this option is a convenient way to modify the most recent commit. It lets you combine staged changes with the previous commit instead of creating an entirely new commit. It can also be used to simply edit the previous commit message without changing its snapshot.
@@ -116,13 +116,13 @@ To bring the changes from the remote repository into your local repository, use 
 After editing a file, committing it to the local repository, and trying to push it to the remote repository, if a warning appears about not being up-to-date with the repository, follow these steps:
 
 1. Pull the data from the repository using one of the **Pull** actions.
-2. In the **Unstaged** area, select each conflicted file and resolve the conflicts. You can do this, for example, by opening the conflicted files in the compare editor, either by double-clicking on them or by using the contextual menu action, and then choose what changes you want to keep and discard, and save the document. You can also use the **Resolve using Mine**, **Resolve using Theirs**, or **Mark as resolved** actions from the contextual menu of a resource. 
-3. If you choose to use the compare editor, after you close it, the file will be staged automatically and moved to the **Staged** area.
+2. In the **Unstaged files** area, select each conflicted file and resolve the conflicts. You can do this, for example, by opening the conflicted files in the compare editor, either by double-clicking on them or by using the contextual menu action, and then choose what changes you want to keep and discard, and save the document. You can also use the **Resolve using Mine**, **Resolve using Theirs**, or **Mark as resolved** actions from the contextual menu of a resource. 
+3. If you choose to use the compare editor, after you close it, the file will be staged automatically and moved to the **Staged files** area.
 
 At this point, the next actions depend on which **Pull** action was chosen:
 
  - **Pull (merge)**:
-    1. When all the conflicts are resolved and no more files are left in the **Unstaged** area, the changes can be committed.
+    1. When all the conflicts are resolved and no more files are left in the **Unstaged files** area, the changes can be committed.
     2. Enter a message and commit. You will now have new changes to push.
     3. Push the changes to the remote repository.
     
@@ -142,7 +142,7 @@ For resources from Git repositories, this add-on also contributes a variety of a
 
 To show all the local and remote branches, click the **Show Git Branch Manager** button on the toolbar of the Git Staging panel (look for the branches icon) or select **Git Branch Manager** from the **Window > Show view** menu. By default, the Git Branch Manager is presented to the right of the editing area.
 
-The Git Branch Manager side-view displays all the branches as a tree. The tree can be filtered using the text field at the top of the panel and you can reload the information by using the **Refresh** action.
+The *Git Branch Manager* side-view displays all the branches as a tree. The tree can be filtered using the text field at the top of the panel and you can reload the information by using the **Refresh** action.
 
 The following actions are available in the contextual menu for each local branch:
 - **Checkout branch**: Checks out the selected branch and switches the local repository to the selected branch.
@@ -154,7 +154,7 @@ For the remote branches, the following action is available in the contextual men
 
 ## Preferences
 
-The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (Options menu -> Preferences) and go to **Plugins > Git Client**, or click the **Settings** button from the toolbar of the Git Staging view and select **Preferences**. This preferences page includes the following options:
+The Git Client add-on contributes a preferences page to Oxygen. To access it, open the **Preferences** dialog box (*Options* menu > *Preferences*) and go to **Plugins > Git Client**, or click the **Settings** button from the toolbar of the *Git Staging* view and select **Preferences**. This preferences page includes the following options:
 - **When detecting a Git repository inside a newly opened project:**
   - **Always switch to the new working copy**
   - **Never switch to the new working copy**
