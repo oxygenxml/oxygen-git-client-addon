@@ -53,7 +53,7 @@ New branches can be created from the **Git Branch Manager** or from the History 
 
 When cloning a repository that contains submodules, all submodules are initialized and cloned as well. And when pulling changes from the remote repository, the submodules are also updated. The update of the submodules when performing a pull operation depends on the **Update all submodules after pulling changes from the remote repository** option from the *Git Client* preferences page in Oxygen (the option is enabled by default).
 
-To open and work with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box. As an alternative, if the submodule is modified and is presented in the **Unstaged files** area, the **Open** contextual action can be used.
+To open and work with a Git submodule, use the **Submodules** action from the toolbar and select the desired submodule from the presented combo box. As an alternative, if the submodule is modified and is presented in the **Unstaged files** area, the **Open** contextual menu action can be used to open it.
 
 The tooltip of a modified submodule shown in the **Unstaged files** area presents information about the currently and previously tracked commits.
 
