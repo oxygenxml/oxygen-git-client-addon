@@ -21,9 +21,10 @@ import javax.swing.WindowConstants;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.options.PersonalAccessTokenInfo;
-import com.oxygenxml.git.options.UserCredentials;
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -73,13 +74,9 @@ public class LoginDialog extends OKCancelDialog {
 	 */
 	private JPasswordField pfPassword;
 	/**
-	 * The new user credentials stored by this dialog
+	 * The new credentials stored by this dialog
 	 */
-	private UserCredentials userCredentials;
-	/**
-	 * The new personal access token provided by the user.
-	 */
-	private PersonalAccessTokenInfo personalAccessTokenInfo;
+	private CredentialsBase credentials;
 	/**
 	 * Basic (user + password) authentication radio button.
 	 */
@@ -137,7 +134,7 @@ public class LoginDialog extends OKCancelDialog {
 
 		// Info label
 		JLabel lblGitRemote = new JLabel(
-				"<html>" + message + " " 
+				"<html>" + message + "<br/>" 
 				    + translator.getTranslation(Tags.LOGIN_DIALOG_MAIN_LABEL) 
 				    + " <b>" + host + "</b>"
 				    + "."
@@ -296,14 +293,14 @@ public class LoginDialog extends OKCancelDialog {
 	  if (basicAuthRadio.isSelected()) {
 	    String username = tfUsername.getText().trim();
 	    String password = new String(pfPassword.getPassword());
-	    userCredentials = new UserCredentials(username, password, host);
-	    OptionsManager.getInstance().saveGitCredentials(userCredentials);
-    } else if (tokenAuthRadio.isSelected()) {
-      personalAccessTokenInfo = new PersonalAccessTokenInfo(
-          host,
-          tokenTextField.getText().trim());
-      OptionsManager.getInstance().savePersonalAccessTokenInfo(personalAccessTokenInfo);
+	    credentials = new UserAndPasswordCredentials(username, password, host);
+    } else {
+      String tokenValue = tokenTextField.getText().trim();
+      credentials = new PersonalAccessTokenInfo(host, tokenValue);
     }
+	  
+	  OptionsManager.getInstance().saveGitCredentials(credentials);
+	  
 		super.doOK();
 	}
 
@@ -311,7 +308,8 @@ public class LoginDialog extends OKCancelDialog {
 	 * @return The user credentials retrieved from the user. <code>null</code> if the user canceled
 	 * the dialog.
 	 */
-	public UserCredentials getUserCredentials() {
-		return userCredentials;
+	public CredentialsBase getCredentials() {
+		return credentials;
 	}
+	
 }

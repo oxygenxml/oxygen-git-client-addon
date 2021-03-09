@@ -24,17 +24,17 @@ public class UserCredentialsList {
 	 * List with the credentials
 	 */
 	@XmlElement(name = "credential")
-	private List<UserCredentials> credentials = new ArrayList<>();
+	private List<UserAndPasswordCredentials> credentials = new ArrayList<>();
 	/**
 	 * The list with user credentials. The actual list, not a copy.
 	 * 
 	 * @return The user credentials.
 	 */
-	public List<UserCredentials> getCredentials() {
+	public List<UserAndPasswordCredentials> getCredentials() {
 		return credentials;
 	}
 
-	public void setCredentials(List<UserCredentials> credentials) {
+	public void setCredentials(List<UserAndPasswordCredentials> credentials) {
 		this.credentials = credentials;
 	}
 

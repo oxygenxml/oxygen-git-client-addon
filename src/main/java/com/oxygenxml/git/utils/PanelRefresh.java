@@ -17,7 +17,6 @@ import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
@@ -383,10 +382,10 @@ public class PanelRefresh implements GitRefreshSupport {
     } catch (PrivateRepositoryException e) {
       statusInfo = new RepositoryStatusInfo(RepositoryStatus.UNAVAILABLE, computeStatusExtraInfo(e));
       
-      UserCredentials userCredentials = new LoginDialog(
+      LoginDialog loginDlg = new LoginDialog(
           GitAccess.getInstance().getHostName(), 
-          translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE)).getUserCredentials();
-      if (userCredentials != null) {
+          translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE));
+      if (loginDlg.getCredentials() != null) {
         return fetch();
       }
     } catch (Exception e) {

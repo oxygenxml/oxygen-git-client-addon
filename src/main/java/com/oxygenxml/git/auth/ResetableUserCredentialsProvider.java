@@ -6,7 +6,10 @@ import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
-import com.oxygenxml.git.options.UserCredentials;
+import com.oxygenxml.git.options.CredentialsBase;
+import com.oxygenxml.git.options.PersonalAccessTokenInfo;
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
+import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.LoginDialog;
@@ -94,14 +97,20 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
         userCredentialsRequested 
         // The user hasn't already canceled a login session.
         && !shouldCancelLogin) {
-      LoginDialog loginDialog = new LoginDialog(
-          host,
-          username == null ? translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE)
-              : translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE) + " " + username);
+      String loginMessage = username == null ? translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE)
+              : translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE) + " " + username;
+      LoginDialog loginDialog = new LoginDialog(host, loginMessage);
       if (loginDialog.getResult() == OKCancelDialog.RESULT_OK) {
-        UserCredentials userCredentials = loginDialog.getUserCredentials();
-        username = userCredentials.getUsername();
-        password = userCredentials.getPassword();
+        CredentialsBase credentials = loginDialog.getCredentials();
+        if (credentials != null) {
+          if (credentials.getType() == CredentialsType.USER_AND_PASSWORD) {
+            username = ((UserAndPasswordCredentials) credentials).getUsername();
+            password = ((UserAndPasswordCredentials) credentials).getPassword();
+          } else if (credentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+            // Use the personal access token as the name
+            username = ((PersonalAccessTokenInfo) credentials).getTokenValue();
+          }
+        }
       } else {
         shouldCancelLogin = true;
       }
@@ -120,6 +129,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
     } 
     if (!shouldCancelLogin) {
       for (CredentialItem credentialItem : items) { // NOSONAR
+        System.err.println(credentialItem.getClass());
         if (credentialItem instanceof CredentialItem.Username) {
           ((CredentialItem.Username) credentialItem).setValue(username);
           userCredentialsRequested = true;

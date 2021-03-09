@@ -12,14 +12,8 @@ import com.oxygenxml.git.utils.Equaler;
  */
 @XmlRootElement(name = "personalAccessToken")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PersonalAccessTokenInfo {
+public class PersonalAccessTokenInfo extends CredentialsBase {
 
-  /**
-   * The host for which the username and password are valid.
-   */
-  @XmlElement(name = "host")
-  private String host = "";
-  
   /**
    * The personal access token value.
    */
@@ -40,22 +34,8 @@ public class PersonalAccessTokenInfo {
    * @param tokenValue Token value. 
    */
   public PersonalAccessTokenInfo(String host, String tokenValue) {
-    this.host = host;
+    super(host);
     this.tokenValue = tokenValue;
-  }
-
-  /**
-   * @return the host.
-   */
-  public String getHost() {
-    return host;
-  }
-
-  /**
-   * @param host the host to set.
-   */
-  public void setHost(String host) {
-    this.host = host;
   }
 
   /**
@@ -70,6 +50,11 @@ public class PersonalAccessTokenInfo {
    */
   public void setTokenValue(String tokenValue) {
     this.tokenValue = tokenValue;
+  }
+  
+  @Override
+  public CredentialsType getType() {
+    return CredentialsType.PERSONAL_ACCESS_TOKEN;
   }
 
   @Override

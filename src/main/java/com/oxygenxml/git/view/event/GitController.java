@@ -15,8 +15,9 @@ import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
 import com.oxygenxml.git.auth.AuthUtil;
+import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitOperationScheduler;
@@ -162,14 +163,14 @@ public class GitController extends GitControllerBase {
      */
     private void executeCommand() {
       String hostName = gitAccess.getHostName();
-      UserCredentials userCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
+      CredentialsBase credentials = OptionsManager.getInstance().getGitCredentials(hostName);
       Optional<PushPullEvent> event = Optional.empty();
       boolean notifyFinish = true;
       try {
         if (logger.isDebugEnabled()) {
           logger.debug("Preparing for push/pull command");
         }
-        event = doOperation(userCredentials);
+        event = doOperation(credentials);
       } catch (JGitInternalException e) {
         logger.debug(e, e);
 
@@ -208,7 +209,7 @@ public class GitController extends GitControllerBase {
         boolean shouldTryAgain = AuthUtil.handleAuthException(
             e,
             hostName,
-            userCredentials,
+            credentials,
             exMessage -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(exMessage),
             true);
         if (shouldTryAgain) {
@@ -252,13 +253,13 @@ public class GitController extends GitControllerBase {
     /**
      * Push or pull, depending on the implementation.
      * 
-     * @param userCredentials User credentials.
+     * @param credentials User credentials (either user + pass, or token).
      * 
      * @return an optional response.
      * 
      * @throws GitAPIException
      */
-    protected abstract Optional<PushPullEvent> doOperation(UserCredentials userCredentials) throws GitAPIException;
+    protected abstract Optional<PushPullEvent> doOperation(CredentialsBase credentials) throws GitAPIException;
   }
 
   /**
@@ -281,7 +282,7 @@ public class GitController extends GitControllerBase {
      * @throws GitAPIException
      */
     @Override
-    protected Optional<PushPullEvent> doOperation(UserCredentials userCredentials)
+    protected Optional<PushPullEvent> doOperation(CredentialsBase userCredentials)
         throws  GitAPIException {
       PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
       PushPullEvent event = null;
@@ -340,7 +341,7 @@ public class GitController extends GitControllerBase {
      * @throws GitAPIException
      */
     @Override
-    protected Optional<PushPullEvent> doOperation(UserCredentials userCredentials) throws GitAPIException {
+    protected Optional<PushPullEvent> doOperation(CredentialsBase userCredentials) throws GitAPIException {
       PushPullEvent event = null;
 
       RepositoryState repositoryState = null;

@@ -6,7 +6,11 @@ import org.apache.sshd.common.SshException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 
-import com.oxygenxml.git.options.UserCredentials;
+import com.oxygenxml.git.options.CredentialsBase;
+import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
+import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.PersonalAccessTokenInfo;
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
@@ -20,7 +24,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * Utility class for authentication-related issues.
  */
 public class AuthUtil {
-
   /**
    * Logger.
    */
@@ -38,12 +41,33 @@ public class AuthUtil {
   }
   
   /**
+   * Get the credentials provider for the given host.
+   * 
+   * @param host The host.
+   * 
+   * @return The credentials provider.
+   */
+  public static SSHCapableUserCredentialsProvider getCredentialsProvider(String host) {
+    CredentialsBase credentials = OptionsManager.getInstance().getGitCredentials(host);
+    CredentialsType credentialsType = credentials.getType();
+    return new SSHCapableUserCredentialsProvider(
+        credentialsType == CredentialsType.USER_AND_PASSWORD 
+          ? ((UserAndPasswordCredentials) credentials).getUsername() 
+            : ((PersonalAccessTokenInfo) credentials).getTokenValue(),
+        credentialsType == CredentialsType.USER_AND_PASSWORD 
+          ? ((UserAndPasswordCredentials) credentials).getPassword()
+            : null,
+        OptionsManager.getInstance().getSshPassphrase(),
+        credentials.getHost());
+  }
+  
+  /**
    * Handle authentication exception.
    * 
    * @param ex                The exception to handle.
    * @param hostName          The host name.
    * @param userCredentials   The user credentials.
-   * @param excMessPresenter  Exception message preenter.  
+   * @param excMessPresenter  Exception message presenter.  
    * @param retryLoginHere    <code>true</code> to retry login here, in this method.
    * 
    * @return <code>true</code> if the authentication should be tried again.
@@ -51,7 +75,7 @@ public class AuthUtil {
   public static boolean handleAuthException(
       GitAPIException ex,
       String hostName,
-      UserCredentials userCredentials,
+      UserAndPasswordCredentials userCredentials, // TODO: I think we need to change this
       AuthExceptionMessagePresenter excMessPresenter,
       boolean retryLoginHere) {
     
@@ -78,27 +102,17 @@ public class AuthUtil {
         loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
             + " " + userCredentials.getUsername();
       }
-      if (retryLoginHere) {
-        // Request new credentials.
-        UserCredentials loadNewCredentials = requestNewCredentials(hostName, loginMessage);
-        tryAgainOutside = loadNewCredentials != null;
-      } else {
-        tryAgainOutside = true;
-      }
+      tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
     } else if (lowercaseMsg.contains("not permitted")) {
       // The user doesn't have permissions.
       ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
           .showWarningMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
-      if (retryLoginHere) {
-        // Request new credentials.
-        UserCredentials loadNewCredentials = requestNewCredentials(
-            hostName,
-            translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) + " "
-                + userCredentials.getUsername());
-        tryAgainOutside = loadNewCredentials != null;
-      } else {
-        tryAgainOutside = true;
-      }
+      tryAgainOutside = shouldTryAgainOutside(
+          hostName,
+          retryLoginHere,
+          translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) 
+              + " "
+              + userCredentials.getUsername());
     } else if (lowercaseMsg.contains("origin: not found")
         || lowercaseMsg.contains("no value for key remote.origin.url found in configuration")) {
       // No remote linked with the local.
@@ -128,16 +142,26 @@ public class AuthUtil {
     
     return tryAgainOutside;
   }
-  
+
   /**
-   * Opens a login dialog to update the credentials
    * 
-   * @param hostName     Host name.
-   * @param loginMessage Login message.
    * 
-   * @return the new credentials or <code>null</code> if the user canceled.
+   * @param hostName
+   * @param retryLoginHere
+   * @param loginMessage
+   * 
+   * @return
    */
-  private static UserCredentials requestNewCredentials(String hostName, String loginMessage) {
-    return new LoginDialog(hostName, loginMessage).getUserCredentials();
+  private static boolean shouldTryAgainOutside(String hostName, boolean retryLoginHere, String loginMessage) {
+    boolean tryAgainOutside = false;
+    if (retryLoginHere) {
+      // Request new credentials.
+      LoginDialog loginDlg = new LoginDialog(hostName, loginMessage);
+      tryAgainOutside = loginDlg.getCredentials() != null;
+    } else {
+      tryAgainOutside = true;
+    }
+    return tryAgainOutside;
   }
+  
 }
