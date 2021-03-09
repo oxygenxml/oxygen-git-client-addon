@@ -212,7 +212,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Commit from second repo
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
@@ -236,7 +236,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.setBranch("master");
     
     // Pull to create conflict
-    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     GitControllerBase mock = new GitController(GitAccess.getInstance());
@@ -299,7 +299,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Commit test.txt from second repo
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
@@ -327,7 +327,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     
     // Pull to create conflict o text.txt
-    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     GitControllerBase mock = new GitController(GitAccess.getInstance());
@@ -390,7 +390,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Commit test.txt from second repo
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
@@ -414,7 +414,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.setBranch("master");
     
     // Pull to create conflict o text.txt
-    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     GitControllerBase mock = new GitController(GitAccess.getInstance());
@@ -475,7 +475,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Change file on the new branch
     gitAccess.createBranchFromLocalBranch(

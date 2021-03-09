@@ -68,7 +68,7 @@ public class FlatView2Test extends FlatViewTestBase {
       // Create a new file and push it.
       String fileName = "test.txt";
       File file = commitNewFile(localTestRepository, fileName, "content");
-      PushResponse push = gitAccess.push("", "");
+      PushResponse push = push("", "");
       assertEquals("status: OK message null", push.toString());
 
       // Create lock files
@@ -83,11 +83,11 @@ public class FlatView2Test extends FlatViewTestBase {
       setFileContent(file, "modified");
       gitAccess.add(new FileStatus(GitChangeType.MODIFIED, fileName));
       gitAccess.commit("modified");
-      gitAccess.push("", "");
+      push("", "");
       assertEquals("status: OK message null", push.toString());
 
       // Pull should throw "Lock failed" error
-      PullResponse pullResponse = gitAccess.pull("", "", PullType.MERGE_FF, false);
+      PullResponse pullResponse = pull("", "", PullType.MERGE_FF, false);
       assertEquals(PullStatus.LOCK_FAILED, pullResponse.getStatus());
       assertTrue(showErrorMessageCalled[0]);
       Future<?> execute = ((GitController) stagingPanel.getGitController()).pull();
@@ -131,7 +131,7 @@ public class FlatView2Test extends FlatViewTestBase {
     
     gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //----------------- REPO 2
     gitAccess.setRepositorySynchronously(localTestRepository_2);
@@ -142,14 +142,14 @@ public class FlatView2Test extends FlatViewTestBase {
     sleep(400);
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE, false);
+    pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
@@ -161,7 +161,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
+    PullResponse pullResponse = pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
@@ -210,7 +210,7 @@ public class FlatView2Test extends FlatViewTestBase {
     
     gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //----------------- REPO 2
     gitAccess.setRepositorySynchronously(localTestRepository_2);
@@ -221,14 +221,14 @@ public class FlatView2Test extends FlatViewTestBase {
     sleep(400);
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE, false);
+    pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
@@ -240,7 +240,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
+    PullResponse pullResponse = pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     sleep(1000);
@@ -290,7 +290,7 @@ public class FlatView2Test extends FlatViewTestBase {
     
     gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //----------------- REPO 2
     gitAccess.setRepositorySynchronously(localTestRepository_2);
@@ -301,14 +301,14 @@ public class FlatView2Test extends FlatViewTestBase {
     sleep(400);
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE, false);
+    pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
@@ -320,7 +320,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
+    PullResponse pullResponse = pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     
@@ -382,7 +382,7 @@ public class FlatView2Test extends FlatViewTestBase {
     
     gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //----------------- REPO 2
     gitAccess.setRepositorySynchronously(localTestRepository_2);
@@ -392,14 +392,14 @@ public class FlatView2Test extends FlatViewTestBase {
     waitForScheduler();
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE, false);
+    pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
@@ -411,7 +411,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
+    PullResponse pullResponse = pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     
@@ -485,7 +485,7 @@ public class FlatView2Test extends FlatViewTestBase {
     
     gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
     gitAccess.commit("First commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //----------------- REPO 2
     gitAccess.setRepositorySynchronously(localTestRepository_2);
@@ -495,14 +495,14 @@ public class FlatView2Test extends FlatViewTestBase {
     waitForScheduler();
     
     assertFalse(secondRepoFile.exists());
-    gitAccess.pull("", "", PullType.REBASE, false);
+    pull("", "", PullType.REBASE, false);
     assertTrue(secondRepoFile.exists());
     
     // Modify file and commit and push
     setFileContent(secondRepoFile, "Second versions");
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit.");
-    gitAccess.push("", "");
+    push("", "");
     
     //--------------  REPO 1
     gitAccess.setRepositorySynchronously(localTestRepository_1);
@@ -514,7 +514,7 @@ public class FlatView2Test extends FlatViewTestBase {
     ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
     assertFalse(rebasePanel.isShowing());
     flushAWT();
-    PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
+    PullResponse pullResponse = pull("", "", PullType.REBASE, false);
     refreshSupport.call();
     waitForScheduler();
     assertEquals(PullStatus.CONFLICTS, pullResponse.getStatus());
@@ -580,7 +580,7 @@ public class FlatView2Test extends FlatViewTestBase {
 
       gitAccess.add(new FileStatus(GitChangeType.UNKNOWN, "test.txt"));
       gitAccess.commit("First commit.");
-      gitAccess.push("", "");
+      push("", "");
 
       //----------------- REPO 2
       gitAccess.setRepositorySynchronously(localTestRepository_2);
@@ -591,14 +591,14 @@ public class FlatView2Test extends FlatViewTestBase {
       sleep(400);
 
       assertFalse(secondRepoFile.exists());
-      gitAccess.pull("", "", PullType.REBASE, false);
+      pull("", "", PullType.REBASE, false);
       assertTrue(secondRepoFile.exists());
 
       // Modify file and commit and push
       setFileContent(secondRepoFile, "Second versions");
       gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
       gitAccess.commit("Second commit.");
-      gitAccess.push("", "");
+      push("", "");
 
       //--------------  REPO 1
       gitAccess.setRepositorySynchronously(localTestRepository_1);
@@ -610,7 +610,7 @@ public class FlatView2Test extends FlatViewTestBase {
       ConflictButtonsPanel rebasePanel = stagingPanel.getConflictButtonsPanel();
       assertFalse(rebasePanel.isShowing());
       flushAWT();
-      PullResponse pullResponse = gitAccess.pull("", "", PullType.REBASE, false);
+      PullResponse pullResponse = pull("", "", PullType.REBASE, false);
       refreshSupport.call();
       flushAWT();
       sleep(500);

@@ -284,7 +284,7 @@ public class GitController extends GitControllerBase {
     @Override
     protected Optional<PushPullEvent> doOperation(CredentialsBase userCredentials)
         throws  GitAPIException {
-      PushResponse response = gitAccess.push(userCredentials.getUsername(), userCredentials.getPassword());
+      PushResponse response = gitAccess.push(userCredentials);
       PushPullEvent event = null;
       if (Status.OK == response.getStatus()) {
         event = new PushPullEvent(GitOperation.PUSH, translator.getTranslation(Tags.PUSH_SUCCESSFUL));
@@ -365,8 +365,7 @@ public class GitController extends GitControllerBase {
           showRebaseInProgressDialog();
         } else {
           PullResponse response = gitAccess.pull(
-              userCredentials.getUsername(),
-              userCredentials.getPassword(),
+              userCredentials,
               pullType,
               OptionsManager.getInstance().getUpdateSubmodulesOnPull());
           event = treatPullResponse(response);

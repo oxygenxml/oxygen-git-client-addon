@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
@@ -17,6 +18,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.PullType;
@@ -136,7 +138,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
-		gitAccess.pull("", "", PullType.MERGE_FF, false);
+		pull("", "", PullType.MERGE_FF, false);
 		ObjectId commit = gitAccess.getCommit(Commit.MINE, "test.txt");
 		ObjectLoader open = gitAccess.getRepository().open(commit);
 		String actual = new String(open.getBytes());
@@ -151,7 +153,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 		
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		gitAccess.pull("", "", PullType.MERGE_FF, false);
+		pull("", "", PullType.MERGE_FF, false);
 		gitAccess.closeRepo();
 
 		gitAccess = GitAccess.getInstance();
@@ -164,7 +166,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 
 		gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
 		gitAccess.commit("conflict");
-		gitAccess.pull("", "", PullType.MERGE_FF, false);
+		pull("", "", PullType.MERGE_FF, false);
 
 		ObjectId commit = gitAccess.getCommit(Commit.MINE, "test.txt");
 		ObjectLoader open = gitAccess.getRepository().open(commit);
@@ -185,7 +187,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 		assertEquals(expected, actual);
 		gitAccess.addAll(gitAccess.getUnstagedFiles());
 		gitAccess.commit("pocpoc");
-		gitAccess.push("", "");
+		push("", "");
 		
 	}
 
@@ -204,7 +206,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
-		gitAccess.pull("", "", PullType.MERGE_FF, false);
+		pull("", "", PullType.MERGE_FF, false);
 		ObjectId commit = gitAccess.getCommit(Commit.THEIRS, "test.txt");
 		ObjectLoader open = gitAccess.getRepository().open(commit);
 		String actual = new String(open.getBytes());
@@ -296,7 +298,7 @@ public class GitAccessCommitFileContentTest extends TestCase {
 		out.close();
 		gitAccess.addAll(gitAccess.getUnstagedFiles());
 		gitAccess.commit(message);
-		gitAccess.push("", "");
+		push("", "");
 	}
 
 	@Override
@@ -318,4 +320,37 @@ public class GitAccessCommitFileContentTest extends TestCase {
 		
 		super.tearDown();
 	}
+	
+  /**
+   * Push changes.
+   * 
+   * @param username User name.
+   * @param password Password.
+   * 
+   * @return push response.
+   * 
+   * @throws GitAPIException 
+   */
+  protected final PushResponse push(String username, String password) throws GitAPIException {
+    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+  }
+  
+  /**
+   * Pull.
+   * 
+   * @param username          Username.
+   * @param password          Password.
+   * @param pullType          Pull type.
+   * @param updateSubmodules  <code>true</code> to update submodules.
+   * 
+   * @return Pull response.
+   * 
+   * @throws GitAPIException
+   */
+  protected PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
+    return GitAccess.getInstance().pull(
+        new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()),
+        pullType,
+        updateSubmodules);
+  }
 }

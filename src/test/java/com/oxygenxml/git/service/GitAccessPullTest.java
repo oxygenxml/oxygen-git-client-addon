@@ -83,7 +83,7 @@ public class GitAccessPullTest extends GitTestBase{
 
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 		OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
-		PullResponse response = gitAccess.pull("", "", PullType.MERGE_FF, false);
+		PullResponse response = pull("", "", PullType.MERGE_FF, false);
 		PullStatus actual = response.getStatus();
 		PullStatus expected = PullStatus.OK;
 		assertEquals(expected, actual);
@@ -95,7 +95,7 @@ public class GitAccessPullTest extends GitTestBase{
 
 	    gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
 	    OptionsManager.getInstance().saveSelectedRepository(SECOND_LOCAL_TEST_REPOSITORY);
-	    PullResponse response = gitAccess.pull("", "", PullType.REBASE, false);
+	    PullResponse response = pull("", "", PullType.REBASE, false);
 	    PullStatus actual = response.getStatus();
 	    PullStatus expected = PullStatus.OK;
 	    assertEquals(expected, actual);
@@ -105,7 +105,7 @@ public class GitAccessPullTest extends GitTestBase{
    public void testPullRebaseUpToDate() throws Exception {
      pushOneFileToRemote();
 
-     PullResponse response = gitAccess.pull("", "", PullType.REBASE, false);
+     PullResponse response = pull("", "", PullType.REBASE, false);
      PullStatus actual = response.getStatus();
      PullStatus expected = PullStatus.UP_TO_DATE;
      assertEquals(expected, actual);
@@ -119,7 +119,7 @@ public class GitAccessPullTest extends GitTestBase{
      File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test2.txt");
      file.createNewFile();
 
-     PullResponse response = gitAccess.pull("", "", PullType.REBASE, false);
+     PullResponse response = pull("", "", PullType.REBASE, false);
      PullStatus actual = response.getStatus();
      PullStatus expected = PullStatus.OK;
      assertEquals(expected, actual);
@@ -133,7 +133,7 @@ public class GitAccessPullTest extends GitTestBase{
 		File file = new File(SECOND_LOCAL_TEST_REPOSITORY + "/test2.txt");
 		file.createNewFile();
 
-		PullResponse response = gitAccess.pull("", "", PullType.MERGE_FF, false);
+		PullResponse response = pull("", "", PullType.MERGE_FF, false);
 		PullStatus actual = response.getStatus();
 		PullStatus expected = PullStatus.OK;
 		assertEquals(expected, actual);
@@ -154,12 +154,12 @@ public class GitAccessPullTest extends GitTestBase{
 		
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("conflict");
-		PushResponse pushResponse = gitAccess.push("", "");
+		PushResponse pushResponse = push("", "");
 		Status pushActual = pushResponse.getStatus();
 		Status pushExpected = Status.REJECTED_NONFASTFORWARD;
 		assertEquals(pushExpected, pushActual);
 		
-		PullResponse pullResponse = gitAccess.pull("", "", PullType.MERGE_FF, false);
+		PullResponse pullResponse = pull("", "", PullType.MERGE_FF, false);
 		PullStatus pullActual = pullResponse.getStatus();
 		PullStatus pullExpected = PullStatus.CONFLICTS;
 		assertEquals(pullExpected, pullActual);
@@ -200,6 +200,6 @@ public class GitAccessPullTest extends GitTestBase{
 		
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("file test added");
-		gitAccess.push("", "");
+		push("", "");
 	}
 }

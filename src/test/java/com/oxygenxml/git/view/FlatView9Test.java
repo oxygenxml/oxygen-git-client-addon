@@ -82,7 +82,7 @@ public class FlatView9Test extends FlatViewTestBase {
     waitForScheluerBetter();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     // >>> Push
-    GitAccess.getInstance().push("", "");
+    push("", "");
     waitForScheluerBetter();
     refreshSupport.call();
     waitForScheluerBetter();

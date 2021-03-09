@@ -96,7 +96,7 @@ public class GitAccessPushTest extends GitTestBase {
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("file test added");
 
-		gitAccess.push("", "");
+		push("", "");
 
 		assertEquals(firstLocalRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"),
 				remoteRepo.resolve(gitAccess.getLastLocalCommitInRepo().getName() + "^{commit}"));
@@ -116,7 +116,7 @@ public class GitAccessPushTest extends GitTestBase {
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("file test added");
-		gitAccess.push("", "");
+		push("", "");
 		
 		gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITPRY);
 		config = gitAccess.getRepository().getConfig();
@@ -128,7 +128,7 @@ public class GitAccessPushTest extends GitTestBase {
 
 		gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
 		gitAccess.commit("file poc");
-		PushResponse response = gitAccess.push("", "");
+		PushResponse response = push("", "");
 		Status actual = response.getStatus();
 		Status expected = Status.REJECTED_NONFASTFORWARD;
 		assertEquals(expected, actual);
@@ -153,7 +153,7 @@ public class GitAccessPushTest extends GitTestBase {
     gitAccess.commit("Primul");
     
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
-    gitAccess.pull("", "", PullType.MERGE_FF, false);
+    pull("", "", PullType.MERGE_FF, false);
     
     String branchName = "master";
     String remoteName = "origin";

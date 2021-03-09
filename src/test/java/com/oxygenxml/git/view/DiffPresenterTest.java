@@ -348,7 +348,7 @@ public class DiffPresenterTest extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First commit.");
     // Send it to remote/upstream.
-    gitAccess.push("", "");
+    push("", "");
     
     //----------------
     // LOCAL 2
@@ -359,7 +359,7 @@ public class DiffPresenterTest extends GitTestBase {
     gitAccess.setRepositorySynchronously(localTestRepository2);
     
     // Receive changes from remote/upstream.
-    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     
     //Create new file for second repository.
@@ -372,7 +372,7 @@ public class DiffPresenterTest extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("Second commit");
     // Send it to remote/upstream.
-    gitAccess.push("", "");
+    push("", "");
 
     //----------------
     // LOCAL 1

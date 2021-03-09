@@ -11,6 +11,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -23,6 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -63,6 +65,39 @@ public class GitCheckoutConflictTest extends TestCase {
   protected GitAccess gitAccess;
   private String[] shownWarningMess = new String[1];
   private String[] errMsg = new String[1];
+  
+  /**
+   * Push changes.
+   * 
+   * @param username User name.
+   * @param password Password.
+   * 
+   * @return push response.
+   * 
+   * @throws GitAPIException 
+   */
+  protected final PushResponse push(String username, String password) throws GitAPIException {
+    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+  }
+  
+  /**
+   * Pull.
+   * 
+   * @param username          Username.
+   * @param password          Password.
+   * @param pullType          Pull type.
+   * @param updateSubmodules  <code>true</code> to update submodules.
+   * 
+   * @return Pull response.
+   * 
+   * @throws GitAPIException
+   */
+  protected PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
+    return GitAccess.getInstance().pull(
+        new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()),
+        pullType,
+        updateSubmodules);
+  }
 
   @Override
   protected void setUp() throws Exception {
@@ -207,7 +242,7 @@ public class GitCheckoutConflictTest extends TestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Commit from second repo
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
@@ -231,7 +266,7 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.setBranch("master");
     
     // Pull to create conflict
-    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     GitControllerBase mock = new GitController(GitAccess.getInstance());
@@ -276,7 +311,7 @@ public class GitCheckoutConflictTest extends TestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Commit from second repo
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
@@ -300,7 +335,7 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.setBranch("master");
     
     // Pull to create conflict
-    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     // Simulate branch checkout from Git Staging
@@ -336,7 +371,7 @@ public class GitCheckoutConflictTest extends TestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Commit test.txt from second repo
     gitAccess.setRepositorySynchronously(SECOND_LOCAL_TEST_REPOSITORY);
@@ -364,7 +399,7 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     
     // Pull to create conflict o text.txt
-    PullResponse pullResp = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullResp.toString());
     
     // Simulate branch checkout from Git Staging
@@ -400,7 +435,7 @@ public class GitCheckoutConflictTest extends TestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Change file on the new branch
     gitAccess.createBranchFromLocalBranch(
@@ -458,7 +493,7 @@ public class GitCheckoutConflictTest extends TestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
   
     // Change file on the new branch
     gitAccess.createBranchFromLocalBranch(

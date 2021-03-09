@@ -73,7 +73,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First version.");
-    PushResponse push = gitAccess.push("", "");
+    PushResponse push = push("", "");
     assertEquals("status: OK message null", push.toString());
     
     gitAccess.setRepositorySynchronously(localTestRepository2);
@@ -81,7 +81,7 @@ public class FlatViewTest extends FlatViewTestBase {
     setFileContent(file2, "modified from 2nd local repo");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
-    gitAccess.push("", "");
+    push("", "");
     
     // Change back the repo.
     gitAccess.setRepositorySynchronously(localTestRepository);
@@ -143,7 +143,7 @@ public class FlatViewTest extends FlatViewTestBase {
     
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First version.");
-    PushResponse push = gitAccess.push("", "");
+    PushResponse push = push("", "");
     assertEquals("status: OK message null", push.toString());
     
     gitAccess.setRepositorySynchronously(localTestRepository2);
@@ -151,7 +151,7 @@ public class FlatViewTest extends FlatViewTestBase {
     setFileContent(file2, "modified from 2nd local repo");
     add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("modified from 2nd local repo");
-    gitAccess.push("", "");
+    push("", "");
     
     // Change back the repo.
     gitAccess.setRepositorySynchronously(localTestRepository);

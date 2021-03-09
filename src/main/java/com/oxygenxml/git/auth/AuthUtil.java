@@ -75,7 +75,7 @@ public class AuthUtil {
   public static boolean handleAuthException(
       GitAPIException ex,
       String hostName,
-      UserAndPasswordCredentials userCredentials, // TODO: I think we need to change this
+      CredentialsBase userCredentials,
       AuthExceptionMessagePresenter excMessPresenter,
       boolean retryLoginHere) {
     
@@ -94,25 +94,35 @@ public class AuthUtil {
     if (lowercaseMsg.contains("not authorized") || lowercaseMsg.contains("authentication not supported")) {
       // Authorization problems.
       String loginMessage = "";
-      if (userCredentials.getUsername() == null) {
-        // No credentials were used but they are required.
-        loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
+      if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
+        String username = ((UserAndPasswordCredentials) userCredentials).getUsername();
+        if (username == null) {
+          // No credentials were used but they are required.
+          loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
+        } else {
+          // Invalid credentials.
+          loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
+              + " " + username;
+        }
       } else {
-        // Invalid credentials.
-        loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-            + " " + userCredentials.getUsername();
+        // TODO:
+        loginMessage = "BAD TOKEN OR SOMETHING";
       }
       tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
     } else if (lowercaseMsg.contains("not permitted")) {
       // The user doesn't have permissions.
       ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
           .showWarningMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
-      tryAgainOutside = shouldTryAgainOutside(
-          hostName,
-          retryLoginHere,
-          translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) 
-              + " "
-              + userCredentials.getUsername());
+      String loginMessage = "";
+      if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
+        loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) 
+            + " "
+            + ((UserAndPasswordCredentials) userCredentials).getUsername();
+      } else if (userCredentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+        // TODO:
+        loginMessage = "BAD TOKEN OR SOMETHING";
+      }
+      tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
     } else if (lowercaseMsg.contains("origin: not found")
         || lowercaseMsg.contains("no value for key remote.origin.url found in configuration")) {
       // No remote linked with the local.

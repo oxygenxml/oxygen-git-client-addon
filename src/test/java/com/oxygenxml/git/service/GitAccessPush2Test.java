@@ -55,7 +55,7 @@ public class GitAccessPush2Test extends GitTestBase {
     
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
-    gitAccess.push("", "");
+    push("", "");
     
     gitAccess.checkoutRemoteBranchWithNewName("localBranch", "master");
     String detectedBranchName = gitAccess.getBranchInfo().getBranchName();
@@ -66,7 +66,7 @@ public class GitAccessPush2Test extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
     assertEquals(1, gitAccess.getPushesAhead());
-    gitAccess.push("", "");
+    push("", "");
     assertEquals(0, gitAccess.getPushesAhead());
 
     // The commit has made it to the remote repo
