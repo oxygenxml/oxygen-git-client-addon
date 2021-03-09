@@ -182,7 +182,7 @@ public class GitCloneTest extends GitTestBase {
     Repository repository = gitAccess.getRepository();
     record4Cleanup(repository);
     
-    Set<String> submodules = gitAccess.getSubmodules();
+    Set<String> submodules = gitAccess.getSubmoduleAccess().getSubmodules();
     assertEquals("[modules/submodule]", submodules.toString());
     
     gitAccess.setSubmodule("modules/submodule");

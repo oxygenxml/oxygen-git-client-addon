@@ -130,10 +130,10 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 			    fileObject = gitAccess.getCommit(Commit.BASE, path);
 			    break;
 			  case VersionIdentifier.CURRENT_SUBMODULE:
-			    fileObject = gitAccess.submoduleCompare(path, false);
+			    fileObject = gitAccess.getSubmoduleAccess().submoduleCompare(path, false);
 			    break;
 			  case VersionIdentifier.PREVIOUSLY_SUBMODULE:
-			    fileObject = gitAccess.submoduleCompare(path, true);
+			    fileObject = gitAccess.getSubmoduleAccess().submoduleCompare(path, true);
 			    break;
 			  default:
 	        // Probably an ID.

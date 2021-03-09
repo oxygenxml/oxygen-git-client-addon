@@ -127,7 +127,7 @@ public class DiscardAction extends AbstractAction {
       Set<File> foldersToRefresh,
       String selectedRepository) {
     try {
-      GitAccess.getInstance().discardSubmodule();
+      GitAccess.getInstance().getSubmoduleAccess().discardSubmodule();
       foldersToRefresh.add(new File(selectedRepository, submoduleDir.getFileLocation()));
     } catch (GitAPIException e1) {
       logger.error(e1, e1);

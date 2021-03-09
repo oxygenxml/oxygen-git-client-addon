@@ -328,6 +328,27 @@
 											<ignore></ignore>
 										</action>
 									</pluginExecution>
+									<pluginExecution>
+										<pluginExecutionFilter>
+											<groupId>
+												org.codehaus.mojo
+											</groupId>
+											<artifactId>
+												license-maven-plugin
+											</artifactId>
+											<versionRange>
+												[1.8,)
+											</versionRange>
+											<goals>
+												<goal>
+													download-licenses
+												</goal>
+											</goals>
+										</pluginExecutionFilter>
+										<action>
+											<ignore></ignore>
+										</action>
+									</pluginExecution>
 								</pluginExecutions>
 							</lifecycleMappingMetadata>
 						</configuration>

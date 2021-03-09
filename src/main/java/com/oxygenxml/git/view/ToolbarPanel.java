@@ -254,7 +254,7 @@ public class ToolbarPanel extends JPanel {
 	 * @return <code>true</code> if we have submodules.
 	 */
 	boolean gitRepoHasSubmodules() {
-    return !GitAccess.getInstance().getSubmodules().isEmpty();
+    return !GitAccess.getInstance().getSubmoduleAccess().getSubmodules().isEmpty();
   }
 	
 	/**

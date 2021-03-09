@@ -183,7 +183,7 @@ public class RefreshProjectTest extends TestCase {
     try {
       GitAccess gitAccessMock = PowerMockito.mock(GitAccess.class);
       Whitebox.setInternalState(GitAccess.class, "instance", gitAccessMock);
-      PowerMockito.doNothing().when(gitAccessMock).discardSubmodule();
+      PowerMockito.doNothing().when(gitAccessMock).getSubmoduleAccess().discardSubmodule();
       
       DiscardAction discardAction = new DiscardAction(
           new SelectedResourcesProvider() {

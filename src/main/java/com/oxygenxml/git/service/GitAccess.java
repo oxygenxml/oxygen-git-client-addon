@@ -544,7 +544,7 @@ public class GitAccess {
 		List<FileStatus> unstagedFiles = new ArrayList<>();
 		if (git != null) {
 			try {
-				Set<String> submodules = getSubmodules();
+				Set<String> submodules = getSubmoduleAccess().getSubmodules();
         addSubmodulesToUnstaged(unstagedFiles, submodules);
 				addUntrackedFilesToUnstaged(status, unstagedFiles, submodules);
         addModifiedFilesToUnstaged(status, unstagedFiles, submodules);
@@ -655,44 +655,11 @@ public class GitAccess {
     }
   }
 
- 
-
-	/**
-	 * Returns for the given submodule the SHA-1 commit id for the Index if the
-	 * given index boolean is <code>true</code> or the SHA-1 commit id for the HEAD
-	 * if the given index boolean is <code>false</code>
-	 * 
-	 * @param submodulePath - the path to get the submodule
-	 * @param index         - boolean to determine what commit id to return
-	 * @return the SHA-1 id
-	 */
-	public ObjectId submoduleCompare(String submodulePath, boolean index) {
-	  ObjectId objID = null;
-		try {
-			SubmoduleStatus submoduleStatus = git.submoduleStatus().addPath(submodulePath).call().get(submodulePath);
-			if (submoduleStatus != null) {
-			  objID = index ? submoduleStatus.getIndexId() : submoduleStatus.getHeadId();
-			}
-		} catch (GitAPIException e) {
-		  logger.error(e, e);
-		}
-		return objID;
-	}
-
-	/**
-	 * Returns a list with all the submodules name for the current repository
-	 * 
-	 * @return a list containing all the submodules
-	 */
-	public Set<String> getSubmodules() {
-		try {
-			if (git != null) {
-				return git.submoduleStatus().call().keySet();
-			}
-		} catch (GitAPIException e) {
-		  logger.error(e, e);
-		}
-		return new HashSet<>();
+  /**
+   * @return API for working with submodules.
+   */
+	public SubmoduleAccess getSubmoduleAccess() {
+	  return SubmoduleAccess.wrap(() -> git);
 	}
 
 	/**
@@ -714,10 +681,13 @@ public class GitAccess {
 		  if (submoduleRepository == null) {
 		    // The submodule wasn't updated.
 		    git.submoduleInit().call();
-		    git.submoduleUpdate().call();
+		    git.submoduleUpdate().setCredentialsProvider(createCredentialProvider()).call();
 
 		    submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		  }
+		  
+		  // Close the current repository.
+		  closeRepo();
 
 		  git = Git.wrap(submoduleRepository);
 		  
@@ -1493,7 +1463,7 @@ public class GitAccess {
 	 */
   private List<FileStatus> getStagedFiles(Status status) {
     List<FileStatus> stagedFiles = new ArrayList<>();
-    Set<String> submodules = getSubmodules();
+    Set<String> submodules = getSubmoduleAccess().getSubmodules();
 
     for (String fileName : status.getChanged()) {
       // File from INDEX, modified from HEAD
@@ -1789,14 +1759,7 @@ public class GitAccess {
 	  
 		AuthenticationInterceptor.install();
 		
-		String hostName = getHostName();
-    UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
-		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(
-		    gitCredentials.getUsername(),
-		    gitCredentials.getPassword(),
-				sshPassphrase,
-				hostName);
+		SSHCapableUserCredentialsProvider credentialsProvider = createCredentialProvider();
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
@@ -1832,6 +1795,22 @@ public class GitAccess {
     } 
 		logger.debug("End fetch");
 	}
+
+	/**
+	 * 
+	 * @return A credentials provider.
+	 */
+  private SSHCapableUserCredentialsProvider createCredentialProvider() {
+    String hostName = getHostName();
+    UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
+		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
+		SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(
+		    gitCredentials.getUsername(),
+		    gitCredentials.getPassword(),
+				sshPassphrase,
+				hostName);
+    return credentialsProvider;
+  }
 
 	/**
 	 * Replace with remote content. Useful when resolving a conflict using 'theirs'.
@@ -1978,16 +1957,6 @@ public class GitAccess {
     }
 	}
 
-	/**
-	 * Return the submodule head commit to the previously one
-	 * 
-	 * @throws GitAPIException when an error occurs while trying to discard the
-	 *                         submodule.
-	 */
-	public void discardSubmodule() throws GitAPIException {
-	  git.submoduleSync().call();
-	  git.submoduleUpdate().setStrategy(MergeStrategy.RECURSIVE).call();
-	}
 
 	/**
 	 * Locates the file with the given path in the index.
