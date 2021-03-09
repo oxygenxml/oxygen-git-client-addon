@@ -29,7 +29,7 @@
                         <h3>What's new in version X.Y.Z</h3>
                         <ol>
 			    <li>After a repository that contains submodules is cloned, all submodules are also automatically initialized and cloned.</li>
-			    <li>When pulling the remote changes for a repository that contains submodules, the submodules are updated as well by default.
+			    <li>When pulling the remote changes for a repository that contains submodules, the submodules are updated as well (by default).
 				    This behavior depends on the <i>Update all submodules after pulling changes from the remote repository</i> option
 				    from the <i>Git Client</i> preferences page in Oxygen.</li>
 		            <li>If a submodule appears as changed in the <i>Unstaged files</i> area, you can open it 
