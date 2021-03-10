@@ -56,7 +56,7 @@ public class AuthUtil {
             : ((PersonalAccessTokenInfo) credentials).getTokenValue(),
         credentialsType == CredentialsType.USER_AND_PASSWORD 
           ? ((UserAndPasswordCredentials) credentials).getPassword()
-            : null,
+            : "",
         OptionsManager.getInstance().getSshPassphrase(),
         credentials.getHost());
   }

@@ -345,11 +345,16 @@ public class OptionsManager {
    * @param credentials The credentials to be saved.
    */
   public void saveGitCredentials(CredentialsBase credentials) {
-    CredentialsType type = credentials.getType();
-    if (type == CredentialsType.USER_AND_PASSWORD) {
-      saveUserAndPasswordCredentials((UserAndPasswordCredentials) credentials);
-    } else if (type == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-      savePersonalAccessToken((PersonalAccessTokenInfo) credentials);
+    if (credentials != null) {
+      CredentialsType type = credentials.getType();
+      if (type == CredentialsType.USER_AND_PASSWORD) {
+        saveUserAndPasswordCredentials((UserAndPasswordCredentials) credentials);
+      } else if (type == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+        savePersonalAccessToken((PersonalAccessTokenInfo) credentials);
+      }
+    } else {
+      saveUserAndPasswordCredentials(null);
+      savePersonalAccessToken(null);
     }
   }
 
@@ -456,14 +461,16 @@ public class OptionsManager {
         }
       }
 
-      detectedCredentialsType = allCredentials.get(i).getType();
-      if (OxygenGitPlugin.getInstance() != null) {
-        StandalonePluginWorkspace saPluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-        UtilAccess utilAccess = saPluginWS.getUtilAccess();
-        if (detectedCredentialsType == CredentialsType.USER_AND_PASSWORD) {
-          decryptedPassword = utilAccess.decrypt(password);
-        } else if (detectedCredentialsType == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-          decryptedToken = utilAccess.decrypt(tokenValue);
+      if (!allCredentials.isEmpty()) {
+        detectedCredentialsType = allCredentials.get(i).getType();
+        if (OxygenGitPlugin.getInstance() != null) {
+          StandalonePluginWorkspace saPluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+          UtilAccess utilAccess = saPluginWS.getUtilAccess();
+          if (detectedCredentialsType == CredentialsType.USER_AND_PASSWORD) {
+            decryptedPassword = utilAccess.decrypt(password);
+          } else if (detectedCredentialsType == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+            decryptedToken = utilAccess.decrypt(tokenValue);
+          }
         }
       }
     }

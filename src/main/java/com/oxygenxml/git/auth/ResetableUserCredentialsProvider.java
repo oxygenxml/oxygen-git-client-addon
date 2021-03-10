@@ -129,7 +129,6 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
     } 
     if (!shouldCancelLogin) {
       for (CredentialItem credentialItem : items) { // NOSONAR
-        System.err.println(credentialItem.getClass());
         if (credentialItem instanceof CredentialItem.Username) {
           ((CredentialItem.Username) credentialItem).setValue(username);
           userCredentialsRequested = true;
