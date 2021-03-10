@@ -24,17 +24,17 @@ public class PersonalAccessTokenInfoList {
 	private List<PersonalAccessTokenInfo> personalAccessTokens = new ArrayList<>();
 	
 	/**
-   * @return the personal access token info items.
+   * @return a copy of the list containing personal access token info items.
    */
   public List<PersonalAccessTokenInfo> getPersonalAccessTokens() {
-    return personalAccessTokens;
+    return personalAccessTokens != null ? new ArrayList<>(personalAccessTokens) : null;
   }
 
   /**
    * @param personalAccessTokens the personal access token info items to set
    */
   public void setPersonalAccessTokens(List<PersonalAccessTokenInfo> personalAccessTokens) {
-    this.personalAccessTokens = personalAccessTokens;
+    this.personalAccessTokens = personalAccessTokens != null ? new ArrayList<>(personalAccessTokens) : null;
   }
 
   @Override

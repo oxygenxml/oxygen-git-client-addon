@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
@@ -155,6 +156,7 @@ public class LoginDialog extends OKCancelDialog {
 		// Basic authentication radio
 		ButtonGroup buttonGroup = new ButtonGroup();
 		basicAuthRadio = new JRadioButton(translator.getTranslation(Tags.BASIC_AUTHENTICATION));
+		basicAuthRadio.setFocusPainted(false);
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.gridx = 0;
     gbc.gridy ++;
@@ -169,6 +171,7 @@ public class LoginDialog extends OKCancelDialog {
     
     // Personal access token radio
     tokenAuthRadio = new JRadioButton(translator.getTranslation(Tags.PERSONAL_ACCESS_TOKEN));
+    tokenAuthRadio.setFocusPainted(false);
     gbc.insets = new Insets(0, 0, 0, 0);
     gbc.gridx = 0;
     gbc.gridy ++;
@@ -218,11 +221,19 @@ public class LoginDialog extends OKCancelDialog {
 	 * Update GUI.
 	 */
   private void updateGUI() {
-    Component[] components = userAndPasswordPanel.getComponents();
-    for (Component component : components) {
-      component.setEnabled(basicAuthRadio.isSelected());
-    }
-    tokenTextField.setEnabled(tokenAuthRadio.isSelected());
+    SwingUtilities.invokeLater(() -> {
+      Component[] components = userAndPasswordPanel.getComponents();
+      for (Component component : components) {
+        component.setEnabled(basicAuthRadio.isSelected());
+      }
+      tokenTextField.setEnabled(tokenAuthRadio.isSelected());
+
+      if (tokenTextField.isEnabled()) {
+        tokenTextField.requestFocus();
+      } else if (tfUsername.isEnabled()) {
+        tfUsername.requestFocus();
+      }
+    });
   }
 
 	/**

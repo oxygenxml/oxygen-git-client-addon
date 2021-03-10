@@ -387,6 +387,7 @@ public class OptionsManager {
           }
         }
         credentials.add(uc);
+        getOptions().getUserCredentialsList().setCredentials(credentials);
       } else {
         getOptions().getUserCredentialsList().setCredentials(Arrays.asList(uc));
       }
@@ -420,6 +421,7 @@ public class OptionsManager {
           }
         }
         personalAccessTokens.add(paTokenInfo);
+        getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(personalAccessTokens);
       } else {
         getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(Arrays.asList(paTokenInfo));
       }
