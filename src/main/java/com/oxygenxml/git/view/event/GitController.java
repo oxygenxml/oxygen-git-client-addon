@@ -17,7 +17,6 @@ import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitOperationScheduler;
