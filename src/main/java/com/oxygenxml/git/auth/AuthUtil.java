@@ -56,7 +56,7 @@ public class AuthUtil {
             : ((PersonalAccessTokenInfo) credentials).getTokenValue(),
         credentialsType == CredentialsType.USER_AND_PASSWORD 
           ? ((UserAndPasswordCredentials) credentials).getPassword()
-            : "",
+            : ((PersonalAccessTokenInfo) credentials).getTokenValue(),
         OptionsManager.getInstance().getSshPassphrase(),
         credentials.getHost());
   }
@@ -113,15 +113,11 @@ public class AuthUtil {
       // The user doesn't have permissions.
       ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
           .showWarningMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
-      String loginMessage = "";
+      String loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS); 
       if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
-        loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS) 
-            + " "
-            + ((UserAndPasswordCredentials) userCredentials).getUsername();
-      } else if (userCredentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-        // TODO:
-        loginMessage = "BAD TOKEN OR SOMETHING";
+        loginMessage += ", " + ((UserAndPasswordCredentials) userCredentials).getUsername();
       }
+      loginMessage += ".";
       tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
     } else if (lowercaseMsg.contains("origin: not found")
         || lowercaseMsg.contains("no value for key remote.origin.url found in configuration")) {
