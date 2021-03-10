@@ -404,12 +404,9 @@ public class OptionsManager {
       // Reset
       getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(null);
     } else {
-      String encryptedToken = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-          .getUtilAccess().encrypt(tokenInfo.getTokenValue());
-      PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(
-          tokenInfo.getHost(),
-          encryptedToken
-          );
+      StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      String encryptedToken = pluginWS.getUtilAccess().encrypt(tokenInfo.getTokenValue());
+      PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(tokenInfo.getHost(), encryptedToken);
       
       List<PersonalAccessTokenInfo> personalAccessTokens = 
           getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
@@ -461,7 +458,7 @@ public class OptionsManager {
         }
       }
 
-      if (!allCredentials.isEmpty()) {
+      if (i < allCredentials.size()) {
         detectedCredentialsType = allCredentials.get(i).getType();
         if (OxygenGitPlugin.getInstance() != null) {
           StandalonePluginWorkspace saPluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();

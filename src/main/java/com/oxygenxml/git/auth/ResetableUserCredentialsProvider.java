@@ -107,8 +107,9 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
             username = ((UserAndPasswordCredentials) credentials).getUsername();
             password = ((UserAndPasswordCredentials) credentials).getPassword();
           } else if (credentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-            // Use the personal access token as the name
+            // GitHub uses the username as token value, GitLab uses the password
             username = ((PersonalAccessTokenInfo) credentials).getTokenValue();
+            password = ((PersonalAccessTokenInfo) credentials).getTokenValue();
           }
         }
       } else {
