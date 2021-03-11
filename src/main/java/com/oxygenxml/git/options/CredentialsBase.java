@@ -7,8 +7,17 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class CredentialsBase {
   
+  /**
+   * Credentials type.
+   */
   public enum CredentialsType {
+    /**
+     * Username + password.
+     */
     USER_AND_PASSWORD,
+    /**
+     * Personal access token.
+     */
     PERSONAL_ACCESS_TOKEN
   }
 
