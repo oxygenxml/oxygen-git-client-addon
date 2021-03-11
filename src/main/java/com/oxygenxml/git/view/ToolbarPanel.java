@@ -39,7 +39,6 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
@@ -288,13 +287,12 @@ public class ToolbarPanel extends JPanel {
       if (firstRun) {
         loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
       } else {
+        loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
         CredentialsBase gitCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
         if (gitCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
-          loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-              + ((UserAndPasswordCredentials) gitCredentials).getUsername();
+          loginMessage += translator.getTranslation(Tags.CHECK_CREDENTIALS);
         } else {
-          // TODO
-          loginMessage = "INVALID TOKEN";
+          loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
         }
       }
 

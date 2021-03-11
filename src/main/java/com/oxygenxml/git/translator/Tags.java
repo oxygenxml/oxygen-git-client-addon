@@ -589,13 +589,23 @@ public class Tags {
 	 * The text displayed on the first row of the login dialog if there are no
 	 * credentials stored
 	 */
-	public static final String LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE = "Login_Dilaog_Credentials_Not_Found_Message";
+	public static final String NO_CREDENTIALS_FOUND = "No_credentials_found";
 
 	/**
 	 * The text displayed on the first row of the login dialog if the credentials
 	 * are invalid
 	 */
-	public static final String LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE = "Login_Dilaog_Credentials_Invalid_Message";
+	public static final String CHECK_CREDENTIALS = "Check_credentials";
+	
+	/**
+	 * "Invalid token value."
+	 */
+	public static final String CHECK_TOKEN_VALUE_AND_PERMISSIONS = "Check_token_value_and_permissions";
+	
+	/**
+	 * "Authentication failed"
+	 */
+	public static final String AUTHENTICATION_FAILED = "Authentication_failed";
 
 	/**
 	 * Local branch

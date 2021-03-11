@@ -46,6 +46,30 @@
         <val lang="ja_JP">Personal access token</val>
         <val lang="nl_NL">Personal access token</val>
     </key>
+    <key value="Check_token_value_and_permissions">
+        <comment>Authentication failure message when using a personal access token.</comment>
+        <val lang="en_US">Check token value and permissions.</val>
+        <val lang="de_DE">Check token value and permissions.</val>
+        <val lang="fr_FR">Check token value and permissions.</val>
+        <val lang="ja_JP">Check token value and permissions.</val>
+        <val lang="nl_NL">Check token value and permissions.</val>
+    </key>
+    <key value="Authentication_failed">
+        <comment>Authentication failure message.</comment>
+        <val lang="en_US">Authentication failed.</val>
+        <val lang="de_DE">Authentication failed.</val>
+        <val lang="fr_FR">Authentication failed.</val>
+        <val lang="ja_JP">Authentication failed.</val>
+        <val lang="nl_NL">Authentication failed.</val>
+    </key>
+    <key value="Check_credentials">
+        <comment>The text displayed on the first row of the login dialog if the credentials are invalid.</comment>
+        <val lang="en_US">Make sure the credentials are correct.</val>
+        <val lang="de_DE">Make sure the credentials are correct.</val>
+        <val lang="fr_FR">Make sure the credentials are correct.</val>
+        <val lang="ja_JP">Make sure the credentials are correct.</val>
+        <val lang="nl_NL">Make sure the credentials are correct.</val>
+    </key>
     <key value="Login_Dialog_Title">
         <comment>The text displayed on the title for the login dialog</comment>
         <val lang="en_US">Git authentication</val>
@@ -1765,21 +1789,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Wachtwoord: </val>
     </key>
-    <key value="Login_Dilaog_Credentials_Not_Found_Message">
+    <key value="No_credentials_found">
         <comment>The text displayed on the first row of the login dialog if there are no credentials stored</comment>
         <val lang="en_US">No credentials found.</val>
         <val lang="de_DE">Keine Zugangsdaten gefunden.</val>
         <val lang="fr_FR">Aucun identifiant trouvé.</val>
         <val lang="ja_JP">ja_JP_translation.</val>
         <val lang="nl_NL">Geen inloggegevens gevonden.</val>
-    </key>
-    <key value="Login_Dilaog_Credentials_Invalid_Message">
-        <comment>The text displayed on the first row of the login dialog if the credentials are invalid</comment>
-        <val lang="en_US">Invalid credentials for </val>
-        <val lang="de_DE">Ungültige Zugangsdaten für </val>
-        <val lang="fr_FR">Identifiants invalides pour </val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Ongeldige inloggegevens voor </val>
     </key>
     <key value="Toolbar_Panel_Information_Status_Up_To_Date">
         <comment>The text displayed on the right side of the toolbar buttons if the repository is up to date </comment>

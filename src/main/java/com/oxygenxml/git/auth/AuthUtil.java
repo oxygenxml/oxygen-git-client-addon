@@ -93,20 +93,13 @@ public class AuthUtil {
     String lowercaseMsg = ex.getMessage().toLowerCase();
     if (lowercaseMsg.contains("not authorized") || lowercaseMsg.contains("authentication not supported")) {
       // Authorization problems.
-      String loginMessage = "";
+      String loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
       if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
         String username = ((UserAndPasswordCredentials) userCredentials).getUsername();
-        if (username == null) {
-          // No credentials were used but they are required.
-          loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE);
-        } else {
-          // Invalid credentials.
-          loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-              + " " + username;
-        }
-      } else {
-        // TODO:
-        loginMessage = "BAD TOKEN OR SOMETHING";
+        loginMessage += username == null ? translator.getTranslation(Tags.NO_CREDENTIALS_FOUND)
+            : translator.getTranslation(Tags.CHECK_CREDENTIALS);
+      } else if (userCredentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+        loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
       }
       tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
     } else if (lowercaseMsg.contains("not permitted")) {

@@ -474,7 +474,7 @@ public class OptionsManager {
       }
     }
 
-    return detectedCredentialsType == CredentialsType.PERSONAL_ACCESS_TOKEN 
+    return detectedCredentialsType != null && detectedCredentialsType == CredentialsType.PERSONAL_ACCESS_TOKEN 
         ? new PersonalAccessTokenInfo(host, decryptedToken)
             : new UserAndPasswordCredentials(username, decryptedPassword, host);
   }
