@@ -683,7 +683,9 @@ public class GitAccess {
 		  if (submoduleRepository == null) {
 		    // The submodule wasn't updated.
 		    git.submoduleInit().call();
-		    git.submoduleUpdate().setCredentialsProvider(createCredentialProvider()).call();
+		    
+		    SSHCapableUserCredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
+        git.submoduleUpdate().setCredentialsProvider(credentialsProvider).call();
 
 		    submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
 		  }
@@ -1775,22 +1777,6 @@ public class GitAccess {
     } 
 		logger.debug("End fetch");
 	}
-
-	/**
-	 * 
-	 * @return A credentials provider.
-	 */
-  private SSHCapableUserCredentialsProvider createCredentialProvider() {
-    String hostName = getHostName();
-    UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
-		String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(
-		    gitCredentials.getUsername(),
-		    gitCredentials.getPassword(),
-				sshPassphrase,
-				hostName);
-    return credentialsProvider;
-  }
 
 	/**
 	 * Replace with remote content. Useful when resolving a conflict using 'theirs'.
