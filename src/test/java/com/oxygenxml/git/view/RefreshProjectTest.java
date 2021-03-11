@@ -16,6 +16,7 @@ import org.powermock.reflect.Whitebox;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
+import com.oxygenxml.git.service.SubmoduleAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
@@ -183,7 +184,11 @@ public class RefreshProjectTest extends TestCase {
     try {
       GitAccess gitAccessMock = PowerMockito.mock(GitAccess.class);
       Whitebox.setInternalState(GitAccess.class, "instance", gitAccessMock);
-      PowerMockito.doNothing().when(gitAccessMock).getSubmoduleAccess().discardSubmodule();
+      
+      SubmoduleAccess submoduleAccess = Mockito.mock(SubmoduleAccess.class);
+      Mockito.doNothing().when(submoduleAccess).discardSubmodule();
+      
+      PowerMockito.when(gitAccessMock.getSubmoduleAccess()).thenReturn(submoduleAccess);
       
       DiscardAction discardAction = new DiscardAction(
           new SelectedResourcesProvider() {

@@ -40,7 +40,7 @@ public class GitAccessTest extends TestCase {
    * @throws GitAPIException 
    */
   protected final PushResponse push(String username, String password) throws GitAPIException {
-    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", ""));
   }
   
   /**
