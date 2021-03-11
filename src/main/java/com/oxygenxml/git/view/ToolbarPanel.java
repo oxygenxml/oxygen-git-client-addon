@@ -36,8 +36,9 @@ import org.eclipse.jgit.util.StringUtils;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.options.CredentialsBase;
+import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
 import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
@@ -282,18 +283,21 @@ public class ToolbarPanel extends JPanel {
       }
     } catch (PrivateRepositoryException e) {
       String loginMessage = null;
+      String hostName = GitAccess.getInstance().getHostName();
       if (firstRun) {
         loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
       } else {
-        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(GitAccess.getInstance().getHostName());
-        loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-            + gitCredentials.getUsername();
+        loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
+        CredentialsBase gitCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
+        if (gitCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
+          loginMessage += translator.getTranslation(Tags.CHECK_CREDENTIALS);
+        } else {
+          loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
+        }
       }
 
-      UserCredentials userCredentials = new LoginDialog(
-          GitAccess.getInstance().getHostName(), 
-          loginMessage).getUserCredentials();
-      if (userCredentials != null) {
+      LoginDialog loginDlg = new LoginDialog(hostName, loginMessage);
+      if (loginDlg.getCredentials() != null) {
         // New credentials were specified. Try again.
         fetch(false);
       }

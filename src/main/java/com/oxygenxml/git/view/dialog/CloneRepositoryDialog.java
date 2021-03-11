@@ -55,6 +55,8 @@ import org.eclipse.jgit.transport.URIish;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.options.CredentialsBase;
+import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
@@ -181,10 +183,15 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
           // Invalid credentials
           String lowercaseMsg = cause.getMessage().toLowerCase();
           if (lowercaseMsg.contains("not authorized")) {
-            SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(
-                translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE)
-                + ": " 
-                + sourceUrl.getHost()));
+            String message = translator.getTranslation(Tags.AUTHENTICATION_FAILED + " ");
+            CredentialsBase creds = OptionsManager.getInstance().getGitCredentials(sourceUrl.getHost());
+            if (creds.getType() == CredentialsType.USER_AND_PASSWORD) {
+              message += translator.getTranslation(Tags.CHECK_CREDENTIALS);
+            } else if (creds.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+              message += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
+            }
+            final String fMsg = message;
+            SwingUtilities.invokeLater(() -> pluginWorkspace.showErrorMessage(fMsg));
             shouldBreak = true;
           }
         }

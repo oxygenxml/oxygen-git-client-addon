@@ -57,14 +57,14 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "original");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Primul");
-    instance.push("", "");
+    push("", "");
     
     
     //----------------
     // LOCAL 2
     //----------------
     instance.setRepositorySynchronously(local2Repository);
-    PullResponse pull = instance.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
     assertEquals("original", read(local2File.toURI().toURL()));
@@ -72,7 +72,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local2File, "changed in local 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Primul");
-    instance.push("", "");
+    push("", "");
 
     //----------------
     // LOCAL 1
@@ -109,7 +109,7 @@ public class GitPullCasesTest extends GitTestBase {
     // Commit.
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Another");
-    instance.push("", "");
+    push("", "");
     
     pc.pull().get();
     
@@ -147,14 +147,14 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "original");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Primul");
-    instance.push("", "");
+    push("", "");
     
     
     //----------------
     // LOCAL 2
     //----------------
     instance.setRepositorySynchronously(local2Repository);
-    PullResponse pull = instance.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
     assertEquals("original", read(local2File.toURI().toURL()));
@@ -162,7 +162,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local2File, "changed in local 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Al doilea");
-    instance.push("", "");
+    push("", "");
 
     //----------------
     // LOCAL 1
@@ -199,7 +199,7 @@ public class GitPullCasesTest extends GitTestBase {
     // Commit.
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Another");
-    instance.push("", "");
+    push("", "");
     
     pc.pull(PullType.REBASE).get();
     
@@ -242,7 +242,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "original");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Primul");
-    instance.push("", "");
+    push("", "");
     // Second change.
     setFileContent(local1File, "local1-changed");
     instance.commit("Al doilea");
@@ -252,7 +252,7 @@ public class GitPullCasesTest extends GitTestBase {
     // LOCAL 2
     //----------------
     instance.setRepositorySynchronously(local2Repository);
-    PullResponse pull = instance.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
     assertEquals("original", read(local2File.toURI().toURL()));
@@ -260,7 +260,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local2File, "changed in local 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Primul");
-    instance.push("", "");
+    push("", "");
   
     //----------------
     // LOCAL 1
@@ -297,7 +297,7 @@ public class GitPullCasesTest extends GitTestBase {
     // Commit.
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Another");
-    instance.push("", "");
+    push("", "");
     
     pc.pull().get();
     
@@ -331,14 +331,14 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(file, "1\n2\n3");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First commit");
-    gitAccess.push("", "");
+    push("", "");
     
     
     //----------------
     // LOCAL 2
     //----------------
     gitAccess.setRepositorySynchronously(local2Repository);
-    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
     assertEquals("1\n2\n3", read(local2File.toURI().toURL()));
@@ -346,7 +346,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local2File, "11\n2\n3");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Edited first line");
-    gitAccess.push("", "");
+    push("", "");
 
     //----------------
     // LOCAL 1
@@ -357,7 +357,7 @@ public class GitPullCasesTest extends GitTestBase {
     gitAccess.commit("Edited last line");
     
     // Now pull with rebase 
-    gitAccess.pull("", "", PullType.REBASE, false);
+    pull("", "", PullType.REBASE, false);
     sleep(200);
     
     File firstRepofile = new File( new File(local1Repository), "test.txt");
@@ -404,14 +404,14 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(file, "1\n2\n3");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("First commit");
-    gitAccess.push("", "");
+    push("", "");
     
     
     //----------------
     // LOCAL 2
     //----------------
     gitAccess.setRepositorySynchronously(local2Repository);
-    PullResponse pull = gitAccess.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
     assertEquals("1\n2\n3", read(local2File.toURI().toURL()));
@@ -419,7 +419,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local2File, "11\n2\n3");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Edited first line");
-    gitAccess.push("", "");
+    push("", "");
 
     //----------------
     // LOCAL 1
@@ -430,7 +430,7 @@ public class GitPullCasesTest extends GitTestBase {
     gitAccess.commit("Edited last line");
     
     // Now pull to merge
-    gitAccess.pull("", "", PullType.MERGE_FF, false);
+    pull("", "", PullType.MERGE_FF, false);
     sleep(200);
     
     File firstRepofile = new File( new File(local1Repository), "test.txt");
@@ -483,7 +483,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "original");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Primul");
-    instance.push("", "");
+    push("", "");
     
     
     //----------------
@@ -544,7 +544,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "original");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Primul");
-    instance.push("", "");
+    push("", "");
     
     
     //----------------
@@ -611,20 +611,20 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local1File, "original");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Primul");
-    instance.push("", "");
+    push("", "");
     
     File local1_2File = new File(local1Repository, "test_1_2.txt");
     setFileContent(local1_2File, "original 1 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test_1_2.txt"));
     instance.commit("Primul 1 2");
-    instance.push("", "");
+    push("", "");
     
     
     //----------------
     // LOCAL 2
     //----------------
     instance.setRepositorySynchronously(local2Repository);
-    PullResponse pull = instance.pull("", "", PullType.MERGE_FF, false);
+    PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
     assertEquals("original", read(local2File.toURI().toURL()));
@@ -632,7 +632,7 @@ public class GitPullCasesTest extends GitTestBase {
     setFileContent(local2File, "changed in local 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     instance.commit("Al doilea");
-    instance.push("", "");
+    push("", "");
 
     //----------------
     // LOCAL 1
@@ -704,7 +704,7 @@ public class GitPullCasesTest extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("Test commit.");
     // Send it to remote/upstream.
-    gitAccess.push("", "");
+    push("", "");
     
     //Create index.lock file in the local repository
     File indexFile = new File(localTestRepository, ".git/index.lock");

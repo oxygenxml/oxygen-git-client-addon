@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.oxygenxml.git.utils.Equaler;
 
 /**
- * Enitity for the JAXB to store the user credentials
+ * Entity for the JAXB to store the user credentials
  * 
  * @author Beniamin Savu
  *
@@ -24,18 +24,18 @@ public class UserCredentialsList {
 	 * List with the credentials
 	 */
 	@XmlElement(name = "credential")
-	private List<UserCredentials> credentials = new ArrayList<>();
+	private List<UserAndPasswordCredentials> credentials = new ArrayList<>();
 	/**
 	 * The list with user credentials. The actual list, not a copy.
 	 * 
 	 * @return The user credentials.
 	 */
-	public List<UserCredentials> getCredentials() {
-		return credentials;
+	public List<UserAndPasswordCredentials> getCredentials() {
+		return credentials != null ? new ArrayList<>(credentials) : null;
 	}
 
-	public void setCredentials(List<UserCredentials> credentials) {
-		this.credentials = credentials;
+	public void setCredentials(List<UserAndPasswordCredentials> credentials) {
+		this.credentials = credentials != null ? new ArrayList<>(credentials) : null;
 	}
 
 	@Override

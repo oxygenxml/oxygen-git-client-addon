@@ -6,7 +6,11 @@ import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
-import com.oxygenxml.git.options.UserCredentials;
+import com.oxygenxml.git.options.CredentialsBase;
+import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
+import com.oxygenxml.git.options.OptionsManager;
+import com.oxygenxml.git.options.PersonalAccessTokenInfo;
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.LoginDialog;
@@ -94,14 +98,28 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
         userCredentialsRequested 
         // The user hasn't already canceled a login session.
         && !shouldCancelLogin) {
-      LoginDialog loginDialog = new LoginDialog(
-          host,
-          username == null ? translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_NOT_FOUND_MESSAGE)
-              : translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_INVALID_MESSAGE) + " " + username);
+      
+      String loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
+      CredentialsBase creds = OptionsManager.getInstance().getGitCredentials(host);
+      if (creds.getType() == CredentialsType.USER_AND_PASSWORD) {
+        loginMessage += username == null ? translator.getTranslation(Tags.NO_CREDENTIALS_FOUND)
+            : translator.getTranslation(Tags.CHECK_CREDENTIALS);
+      } else if (creds.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+        loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
+      }
+      LoginDialog loginDialog = new LoginDialog(host, loginMessage);
       if (loginDialog.getResult() == OKCancelDialog.RESULT_OK) {
-        UserCredentials userCredentials = loginDialog.getUserCredentials();
-        username = userCredentials.getUsername();
-        password = userCredentials.getPassword();
+        CredentialsBase credentials = loginDialog.getCredentials();
+        if (credentials != null) {
+          if (credentials.getType() == CredentialsType.USER_AND_PASSWORD) {
+            username = ((UserAndPasswordCredentials) credentials).getUsername();
+            password = ((UserAndPasswordCredentials) credentials).getPassword();
+          } else if (credentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+            // GitHub uses the username as token value, GitLab uses the password
+            username = ((PersonalAccessTokenInfo) credentials).getTokenValue();
+            password = ((PersonalAccessTokenInfo) credentials).getTokenValue();
+          }
+        }
       } else {
         shouldCancelLogin = true;
       }

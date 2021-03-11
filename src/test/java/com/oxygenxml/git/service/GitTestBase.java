@@ -64,6 +64,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -74,6 +75,7 @@ import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 
 import junit.extensions.jfcunit.JFCTestCase;
@@ -716,7 +718,40 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    */
   protected final void pushOneFileToRemote(String repository, String fileName, String fileContent) throws Exception {
     commitOneFile(repository, fileName, fileContent);
-    GitAccess.getInstance().push("", "");
+    GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+  }
+  
+  /**
+   * Push changes.
+   * 
+   * @param username User name.
+   * @param password Password.
+   * 
+   * @return push response.
+   * 
+   * @throws GitAPIException 
+   */
+  protected final PushResponse push(String username, String password) throws GitAPIException {
+    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+  }
+  
+  /**
+   * Pull.
+   * 
+   * @param username          Username.
+   * @param password          Password.
+   * @param pullType          Pull type.
+   * @param updateSubmodules  <code>true</code> to update submodules.
+   * 
+   * @return Pull response.
+   * 
+   * @throws GitAPIException
+   */
+  protected PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
+    return GitAccess.getInstance().pull(
+        new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()),
+        pullType,
+        updateSubmodules);
   }
   
   /**

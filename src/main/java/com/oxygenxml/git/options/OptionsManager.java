@@ -3,6 +3,7 @@ package com.oxygenxml.git.options;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.OxygenGitPlugin;
+import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
 import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
 
@@ -25,6 +27,7 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Used to save and load different plugin options
@@ -306,30 +309,77 @@ public class OptionsManager {
 
     saveOptions();
   }
+  
+  /**
+   * Gets the user personal access token info item for a given host.
+   * 
+   * @param host The host.
+   * 
+   * @return the token info items. Never <code>null</code>.
+   */
+  public PersonalAccessTokenInfo getPersonalAccessTokenInfo(String host) {
+    String decryptedTokenValue = null;
+    if (host != null) {
+      String tokenVal = null;
+      List<PersonalAccessTokenInfo> tokens = getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
+      if (tokens != null) { 
+        for (PersonalAccessTokenInfo token : tokens) {
+          if (host.equals(token.getHost())) {
+            tokenVal = token.getTokenValue();
+            break;
+          }
+        }
+      }
+      if (OxygenGitPlugin.getInstance() != null) {
+        decryptedTokenValue = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
+            .getUtilAccess()
+            .decrypt(tokenVal);
+      }
+    }
+    return new PersonalAccessTokenInfo(host, decryptedTokenValue);
+  }
 
   /**
-   * Saves the user credentials for git push and pull
+   * Saves the user credentials.
    * 
-   * @param userCredentials
-   *          - the credentials to be saved
+   * @param credentials The credentials to be saved.
    */
-  public void saveGitCredentials(UserCredentials userCredentials) {
-    if (userCredentials == null) {
+  public void saveGitCredentials(CredentialsBase credentials) {
+    if (credentials != null) {
+      CredentialsType type = credentials.getType();
+      if (type == CredentialsType.USER_AND_PASSWORD) {
+        saveUserAndPasswordCredentials((UserAndPasswordCredentials) credentials);
+      } else if (type == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+        savePersonalAccessToken((PersonalAccessTokenInfo) credentials);
+      }
+    } else {
+      saveUserAndPasswordCredentials(null);
+      savePersonalAccessToken(null);
+    }
+  }
+
+  /**
+   * Save user and password credentials.
+   * 
+   * @param userAndPasswordCredentials User and password credentials.
+   */
+  private void saveUserAndPasswordCredentials(UserAndPasswordCredentials userAndPasswordCredentials) {
+    if (userAndPasswordCredentials == null) {
       // Reset
       getOptions().getUserCredentialsList().setCredentials(null);
     } else {
       String encryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-          .getUtilAccess().encrypt(userCredentials.getPassword());
+          .getUtilAccess().encrypt(userAndPasswordCredentials.getPassword());
       
-      UserCredentials uc = new UserCredentials();
+      UserAndPasswordCredentials uc = new UserAndPasswordCredentials();
       uc.setPassword(encryptedPassword);
-      uc.setUsername(userCredentials.getUsername());
-      uc.setHost(userCredentials.getHost());
+      uc.setUsername(userAndPasswordCredentials.getUsername());
+      uc.setHost(userAndPasswordCredentials.getHost());
 
-      List<UserCredentials> credentials = getOptions().getUserCredentialsList().getCredentials();
+      List<UserAndPasswordCredentials> credentials = getOptions().getUserCredentialsList().getCredentials();
       if (credentials != null) {
-        for (Iterator<UserCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
-          UserCredentials alreadyHere = iterator.next();
+        for (Iterator<UserAndPasswordCredentials> iterator = credentials.iterator(); iterator.hasNext();) {
+          UserAndPasswordCredentials alreadyHere = iterator.next();
           if (alreadyHere.getHost().equals(uc.getHost())) {
             // Replace.
             iterator.remove();
@@ -337,8 +387,43 @@ public class OptionsManager {
           }
         }
         credentials.add(uc);
+        getOptions().getUserCredentialsList().setCredentials(credentials);
       } else {
         getOptions().getUserCredentialsList().setCredentials(Arrays.asList(uc));
+      }
+    }
+    saveOptions();
+  }
+  
+  /**
+   * Save personal access token.
+   * 
+   * @param tokenInfo Personal access token info.
+   */
+  private void savePersonalAccessToken(PersonalAccessTokenInfo tokenInfo) {
+    if (tokenInfo == null) {
+      // Reset
+      getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(null);
+    } else {
+      StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+      String encryptedToken = pluginWS.getUtilAccess().encrypt(tokenInfo.getTokenValue());
+      PersonalAccessTokenInfo paTokenInfo = new PersonalAccessTokenInfo(tokenInfo.getHost(), encryptedToken);
+      
+      List<PersonalAccessTokenInfo> personalAccessTokens = 
+          getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
+      if (personalAccessTokens != null) {
+        for (Iterator<PersonalAccessTokenInfo> iterator = personalAccessTokens.iterator(); iterator.hasNext();) {
+          PersonalAccessTokenInfo alreadyHere = iterator.next();
+          if (alreadyHere.getHost().equals(paTokenInfo.getHost())) {
+            // Replace.
+            iterator.remove();
+            break;
+          }
+        }
+        personalAccessTokens.add(paTokenInfo);
+        getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(personalAccessTokens);
+      } else {
+        getOptions().getPersonalAccessTokensList().setPersonalAccessTokens(Arrays.asList(paTokenInfo));
       }
     }
     saveOptions();
@@ -351,29 +436,66 @@ public class OptionsManager {
    * 
    * @return the credentials. Never <code>null</code>.
    */
-  public UserCredentials getGitCredentials(String host) {
+  public CredentialsBase getGitCredentials(String host) {
     String username = null;
     String decryptedPassword = null;
+    String decryptedToken = null;
+    CredentialsType detectedCredentialsType = null;
     if (host != null) {
       String password = null;
-      List<UserCredentials> userCredentialsList = getOptions().getUserCredentialsList().getCredentials();
-      if (userCredentialsList != null) { 
-        for (UserCredentials credential : userCredentialsList) {
-          if (host.equals(credential.getHost())) {
-            username = credential.getUsername();
-            password = credential.getPassword();
-            break;
+      String tokenValue = null;
+      List<CredentialsBase> allCredentials = getAllCredentials();
+
+      int i;
+      for (i = 0; i < allCredentials.size(); i++) {
+        CredentialsBase credentialsItem = allCredentials.get(i);
+        if (host.equals(credentialsItem.getHost())) {
+          if (credentialsItem.getType() == CredentialsType.USER_AND_PASSWORD) {
+            username = ((UserAndPasswordCredentials) credentialsItem).getUsername();
+            password = ((UserAndPasswordCredentials) credentialsItem).getPassword();
+          } else if (credentialsItem.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+            tokenValue = ((PersonalAccessTokenInfo) credentialsItem).getTokenValue();
+          }
+          break;
+        }
+      }
+
+      if (i < allCredentials.size()) {
+        detectedCredentialsType = allCredentials.get(i).getType();
+        if (OxygenGitPlugin.getInstance() != null) {
+          StandalonePluginWorkspace saPluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+          UtilAccess utilAccess = saPluginWS.getUtilAccess();
+          if (detectedCredentialsType == CredentialsType.USER_AND_PASSWORD) {
+            decryptedPassword = utilAccess.decrypt(password);
+          } else if (detectedCredentialsType == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+            decryptedToken = utilAccess.decrypt(tokenValue);
           }
         }
       }
-      if (OxygenGitPlugin.getInstance() != null) {
-        decryptedPassword = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getUtilAccess()
-            .decrypt(password);
-      }
     }
 
-    return new UserCredentials(username, decryptedPassword, host);
+    return detectedCredentialsType != null && detectedCredentialsType == CredentialsType.PERSONAL_ACCESS_TOKEN 
+        ? new PersonalAccessTokenInfo(host, decryptedToken)
+            : new UserAndPasswordCredentials(username, decryptedPassword, host);
   }
+
+  /**
+   * @return All credentials: user + password ones, as well as tokens.
+   */
+  private List<CredentialsBase> getAllCredentials() {
+    List<CredentialsBase> allCredentials = new ArrayList<>();
+    List<UserAndPasswordCredentials> userAndPassCredentialsList = getOptions().getUserCredentialsList().getCredentials();
+    if (userAndPassCredentialsList != null) { 
+      allCredentials.addAll(userAndPassCredentialsList);
+    }
+    List<PersonalAccessTokenInfo> personalAccessTokens = 
+        getOptions().getPersonalAccessTokensList().getPersonalAccessTokens();
+    if (personalAccessTokens != null) {
+      allCredentials.addAll(personalAccessTokens);
+    }
+    return allCredentials;
+  }
+
 
   /**
    * Loads the last PREVIOUSLY_COMMITED_MESSAGES massages

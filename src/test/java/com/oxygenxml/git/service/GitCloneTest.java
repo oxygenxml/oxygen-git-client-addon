@@ -59,7 +59,7 @@ public class GitCloneTest extends GitTestBase {
       localTestFile.createNewFile();
       gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
       gitAccess.commit("");
-      gitAccess.push("", "");
+      push("", "");
       
 
       // Create a second branch ("slave")
@@ -71,7 +71,7 @@ public class GitCloneTest extends GitTestBase {
       localTestFile.createNewFile();
       gitAccess.add(new FileStatus(GitChangeType.ADD, "test2.txt"));
       gitAccess.commit("");
-      gitAccess.push("", "");
+      push("", "");
       
       // Check branches
       Collection<Ref> branches = gitAccess.listRemoteBranchesForURL(
@@ -148,7 +148,7 @@ public class GitCloneTest extends GitTestBase {
     gitAccess.setRepositorySynchronously(localTestRepositoryP);
     // A setup is performed on the first commit.
     gitAccess.commit("");
-    gitAccess.push("", "");
+    push("", "");
     
     // SUBMODULE repos
     String remoteTestRepositorySubModule = "target/test-resources/GitCloneTest/testCloneSubmodules-remoteCS-SubModule/";
@@ -167,7 +167,7 @@ public class GitCloneTest extends GitTestBase {
     
     gitAccess.setRepositorySynchronously(localTestRepositoryP);
     gitAccess.commit("Submodule add");
-    gitAccess.push("", "");
+    push("", "");
     
     File cloneDest = new File("target/test-resources/GitCloneTest/testCloneSubmodules-remoteCS-2");
     FileUtils.deleteDirectory(cloneDest);

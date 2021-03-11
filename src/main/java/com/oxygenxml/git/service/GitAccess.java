@@ -98,8 +98,9 @@ import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
+import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -189,11 +190,44 @@ public class GitAccess {
 		// Intercept all authentication requests.
     String host = url.getHost();
     AuthenticationInterceptor.bind(host);
-		UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(host);
-		String username = gitCredentials.getUsername();
-		String password = gitCredentials.getPassword();
+    
+		ProgressMonitor progressMonitor = createCloneProgressMonitor(progressDialog);
+		if (progressDialog != null) {
+		  progressDialog.setNote("Initializing...");
+		}
+		
+    CloneCommand cloneCommand = 
+		    Git.cloneRepository()
+		    .setCloneSubmodules(true)
+		    .setURI(url.toString())
+		    .setDirectory(directory)
+		    .setCredentialsProvider(AuthUtil.getCredentialsProvider(host))
+		    .setProgressMonitor(progressMonitor);
+		
+		fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+		try {
+		  if (branchName != null) {
+		    git = cloneCommand.setBranchesToClone(Arrays.asList(branchName)).setBranch(branchName).call();
+		  } else {
+		    git = cloneCommand.call();
+		  } 
+		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
+		} catch (GitAPIException ex)  {
+		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
+      throw ex;
+		}
+		
+	}
 
-		ProgressMonitor progressMonitor = new ProgressMonitor() {
+	/**
+	 * Create progress monitor for the clone operation.
+	 * 
+	 * @param progressDialog Progress dialog.
+	 * 
+	 * @return the progress monitor. Never <code>null</code>.
+	 */
+  private ProgressMonitor createCloneProgressMonitor(final ProgressDialog progressDialog) {
+    return new ProgressMonitor() {
 			String taskTitle;
 			float totalWork;
 			float currentWork = 0;
@@ -243,39 +277,7 @@ public class GitAccess {
 				this.totalWork = totalWork;
 			}
 		};
-		
-		if (progressDialog != null) {
-		  progressDialog.setNote("Initializing...");
-		}
-		
-		String pass = OptionsManager.getInstance().getSshPassphrase();
-		CloneCommand cloneCommand = 
-		    Git.cloneRepository()
-		    .setCloneSubmodules(true)
-		        .setURI(url.toString())
-		        .setDirectory(directory)
-		        .setCredentialsProvider(
-		            new SSHCapableUserCredentialsProvider(
-		                username,
-		                password, 
-		                pass,
-		                url.getHost()))
-		        .setProgressMonitor(progressMonitor);
-		
-		fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
-		try {
-		  if (branchName != null) {
-		    git = cloneCommand.setBranchesToClone(Arrays.asList(branchName)).setBranch(branchName).call();
-		  } else {
-		    git = cloneCommand.call();
-		  } 
-		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
-		} catch (GitAPIException ex)  {
-		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory), ex);
-      throw ex;
-		}
-		
-	}
+  }
 	
 	/**
    * Sets the Git repository asynchronously, on a new thread, and at the end updates the
@@ -862,19 +864,7 @@ public class GitAccess {
       logger.debug("START LISTING REMOTE BRANCHES FOR: " + repoURL);
     }
     do {
-      final UserCredentials[] gitCredentials = 
-          new UserCredentials[] {OptionsManager.getInstance().getGitCredentials(host)};
-      String username = gitCredentials[0].getUsername();
-      String password = gitCredentials[0].getPassword();
-      if (logger.isDebugEnabled()) {
-        logger.debug("Try login with user: " + username 
-            + " and a password that I won't tell you.");
-      }
-      SSHCapableUserCredentialsProvider credentialsProvider = new SSHCapableUserCredentialsProvider(
-          username,
-          password,
-          OptionsManager.getInstance().getSshPassphrase(),
-          host);
+      SSHCapableUserCredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(host);
       try {
         logger.debug("Now do list the remote branches...");
         remoteRefs = Git.lsRemoteRepository()
@@ -893,7 +883,7 @@ public class GitAccess {
         boolean retryLogin = AuthUtil.handleAuthException(
             ex,
             host,
-            new UserCredentials(
+            new UserAndPasswordCredentials(
                 credentialsProvider.getUsername(),
                 credentialsProvider.getPassword(),
                 host),
@@ -979,14 +969,13 @@ public class GitAccess {
 	/**
 	 * Pushes all the commits from the local repository to the remote repository
 	 * 
-	 * @param username Git username.
-	 * @param password Git password.
+	 * @param credentials The credentials. Can be user + password, token, etc.
 	 * 
 	 * @return a response.
 	 *          
 	 * @throws GitAPIException
 	 */
-	public PushResponse push(final String username, final String password)
+	public PushResponse push(CredentialsBase credentials)
 	    throws GitAPIException {
 
 	  AuthenticationInterceptor.install();
@@ -1020,12 +1009,7 @@ public class GitAccess {
       logger.debug(e, e);
     }
 	  
-    PushCommand pushCommand = git.push().setCredentialsProvider(
-        new SSHCapableUserCredentialsProvider(
-            username,
-            password,
-            OptionsManager.getInstance().getSshPassphrase(),
-            getHostName()));
+    PushCommand pushCommand = git.push().setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()));
     String localBranchName = getBranchInfo().getBranchName();
     String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
     if (upstreamBranch != null) {
@@ -1076,9 +1060,8 @@ public class GitAccess {
 	 * Pulls the files that are not on the local repository from the remote
 	 * repository
 	 * 
-	 * @param username Git username
-	 * @param password Git password
-	 * @param pullType One of ff, no-ff, ff-only, rebase.
+	 * @param credentials      Credentials.
+	 * @param pullType         One of ff, no-ff, ff-only, rebase.
 	 * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive"
 	 * 
 	 * @return The result, if successful.
@@ -1089,7 +1072,7 @@ public class GitAccess {
 	 *                                   the working copy so operation is aborted.
 	 * @throws GitAPIException other errors.
 	 */
-  public PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
+  public PullResponse pull(CredentialsBase credentials, PullType pullType, boolean updateSubmodules) throws GitAPIException {
 	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
 	  AuthenticationInterceptor.install();
 
@@ -1101,12 +1084,9 @@ public class GitAccess {
 		  // Call "Pull"
 		  Repository repository = git.getRepository();
 		  ObjectId oldHead = resolveHead(repository);
-		  String sshPassphrase = OptionsManager.getInstance().getSshPassphrase();
-		  SSHCapableUserCredentialsProvider credentialsProvider = 
-		      new SSHCapableUserCredentialsProvider(username, password, sshPassphrase, getHostName());
       PullCommand pullCmd = git.pull()
           .setRebase(PullType.REBASE == pullType)
-          .setCredentialsProvider(credentialsProvider);
+          .setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()));
       PullResult pullCommandResult = pullCmd.call();
 
 		  // Get fetch result
@@ -1759,7 +1739,7 @@ public class GitAccess {
 	  
 		AuthenticationInterceptor.install();
 		
-		SSHCapableUserCredentialsProvider credentialsProvider = createCredentialProvider();
+		SSHCapableUserCredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
 		try {
 			StoredConfig config = git.getRepository().getConfig();
 			Set<String> sections = config.getSections();
@@ -1839,11 +1819,9 @@ public class GitAccess {
 	      RepositoryState repositoryState = getRepository().getRepositoryState();
 	      if (repositoryState == RepositoryState.REBASING_MERGE) {
 	        git.rebase().setOperation(Operation.ABORT).call();
-	        UserCredentials gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
-	        String username = gitCredentials.getUsername();
-	        String password = gitCredentials.getPassword();
+	        CredentialsBase gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
 	        // EXM-47461 Should update submodules as well.
-	        pull(username, password, PullType.REBASE, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
+	        pull(gitCredentials, PullType.REBASE, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
 	      } else {
 	        AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
 	        git.clean().call();

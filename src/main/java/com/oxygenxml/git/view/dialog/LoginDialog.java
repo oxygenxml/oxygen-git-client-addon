@@ -1,23 +1,31 @@
 package com.oxygenxml.git.view.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserCredentials;
+import com.oxygenxml.git.options.PersonalAccessTokenInfo;
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -27,6 +35,14 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 @SuppressWarnings("java:S110")
 public class LoginDialog extends OKCancelDialog {
   /**
+   * GitHub host.
+   */
+  private static final String GITHUB_COM = "github.com";
+  /**
+   * Left inset for the inner panels.
+   */
+  private static final int INNER_PANELS_LEFT_INSET = 21;
+  /**
    * Dialog minimum height.
    */
   private static final int DLG_MIN_HEIGHT = 200;
@@ -35,6 +51,10 @@ public class LoginDialog extends OKCancelDialog {
    */
   private static final int DLG_MIN_WIDTH = 250;
   /**
+   * The translator for the messages that are displayed in this dialog
+   */
+  private static Translator translator = Translator.getInstance();
+  /**
    *  Logger for logging.
    */
   private static Logger logger = Logger.getLogger(LoginDialog.class); 
@@ -42,31 +62,38 @@ public class LoginDialog extends OKCancelDialog {
 	 * The host for which to enter the credentials
 	 */
 	private String host;
-
 	/**
 	 * The error message
 	 */
 	private String message;
-
 	/**
 	 * TextField for entering the username
 	 */
 	private JTextField tfUsername;
-
 	/**
 	 * TextField for entering the password
 	 */
 	private JPasswordField pfPassword;
-
 	/**
-	 * The new user credentials stored by this dialog
+	 * The new credentials stored by this dialog
 	 */
-	private UserCredentials userCredentials;
-
+	private CredentialsBase credentials;
 	/**
-	 * The translator for the messages that are displayed in this dialog
+	 * Basic (user + password) authentication radio button.
 	 */
-	private static Translator translator = Translator.getInstance();
+  private JRadioButton basicAuthRadio;
+  /**
+   * Personal access token authentication radio button.
+   */
+  private JRadioButton tokenAuthRadio;
+  /**
+   * Personal access token text field.
+   */
+  private JTextField tokenTextField;
+  /**
+   * Username and password panel.
+   */
+  private JPanel userAndPasswordPanel;
 
 	/**
 	 * Constructor.
@@ -75,13 +102,18 @@ public class LoginDialog extends OKCancelDialog {
 	 * @param loginMessage The login message.
 	 */
 	public LoginDialog(String host, String loginMessage) {
-		super((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
-		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE), true);
+		super(
+		    (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(),
+		    translator.getTranslation(Tags.LOGIN_DIALOG_TITLE),
+		    true);
+		
 		if (logger.isDebugEnabled()) {
 		  logger.debug(new Exception("LOGIN DIALOG WAS SHOWN..."));
 		}
+		
 		this.host = host;
 		this.message = loginMessage;
+		
 		createGUI();
 
 		this.setMinimumSize(new Dimension(DLG_MIN_WIDTH, DLG_MIN_HEIGHT));
@@ -101,86 +133,194 @@ public class LoginDialog extends OKCancelDialog {
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
+		// Info label
 		JLabel lblGitRemote = new JLabel(
-				"<html>" + message + "<br>" + translator.getTranslation(Tags.LOGIN_DIALOG) + " <b>" + host + "</b></html>");
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
+				"<html>" + message + "<br/>" 
+				    + translator.getTranslation(Tags.LOGIN_DIALOG_MAIN_LABEL) 
+				    + " <b>" + host + "</b>"
+				    + "."
+				    + "</html>");
+		gbc.insets = new Insets(
+		    0,
+		    0,
+		    UIConstants.COMPONENT_BOTTOM_PADDING,
+				0);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.gridwidth = 3;
 		panel.add(lblGitRemote, gbc);
-
-		JLabel lbUsername = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_USERNAME_LABEL));
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
+		
+		// Basic authentication radio
+		ButtonGroup buttonGroup = new ButtonGroup();
+		basicAuthRadio = new JRadioButton(translator.getTranslation(Tags.BASIC_AUTHENTICATION));
+		basicAuthRadio.setFocusPainted(false);
+		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.gridwidth = 1;
-		panel.add(lbUsername, gbc);
-
-		tfUsername = new JTextField();
-		tfUsername.setPreferredSize(new Dimension(250, tfUsername.getPreferredSize().height));
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		gbc.gridwidth = 2;
-		panel.add(tfUsername, gbc);
-
-		JLabel lbPassword = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_PASS_WORD_LABEL));
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		gbc.gridwidth = 1;
-		panel.add(lbPassword, gbc);
-
-		pfPassword = new JPasswordField();
-		pfPassword.setPreferredSize(new Dimension(250, pfPassword.getPreferredSize().height));
-		gbc.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, UIConstants.COMPONENT_LEFT_PADDING,
-				UIConstants.COMPONENT_BOTTOM_PADDING, UIConstants.COMPONENT_RIGHT_PADDING);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.gridx = 1;
-		gbc.gridy = 2;
-		gbc.gridwidth = 2;
-		panel.add(pfPassword, gbc);
+    gbc.gridy ++;
+    panel.add(basicAuthRadio, gbc);
+    buttonGroup.add(basicAuthRadio);
+    
+    // User + password
+    userAndPasswordPanel = createUserAndPasswordPanel();
+    gbc.gridy ++;
+    gbc.insets = new Insets(0, INNER_PANELS_LEFT_INSET, 0, 0);
+    panel.add(userAndPasswordPanel, gbc);
+    
+    // Personal access token radio
+    tokenAuthRadio = new JRadioButton(translator.getTranslation(Tags.PERSONAL_ACCESS_TOKEN));
+    tokenAuthRadio.setFocusPainted(false);
+    gbc.insets = new Insets(0, 0, 0, 0);
+    gbc.gridx = 0;
+    gbc.gridy ++;
+    panel.add(tokenAuthRadio, gbc);
+    buttonGroup.add(tokenAuthRadio);
+    
+    // Token field
+    tokenTextField = new JTextField();
+    gbc.insets = new Insets(
+        0,
+        INNER_PANELS_LEFT_INSET,
+        UIConstants.LAST_LINE_COMPONENT_BOTTOM_PADDING,
+        0);
+    gbc.gridx = 0;
+    gbc.gridy ++;
+    gbc.weightx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    panel.add(tokenTextField, gbc);
 
 		this.add(panel, BorderLayout.CENTER);
+		
+		ItemListener radioItemListener = e -> {
+		  if (e.getStateChange() == ItemEvent.SELECTED) {
+		    updateGUI();
+		  }
+		};
+    tokenAuthRadio.addItemListener(radioItemListener);
+		basicAuthRadio.addItemListener(radioItemListener);
+		
+		initGUI();
 	}
+	
+  /**
+   * Init GUI.
+   */
+  private void initGUI() {
+    setOkButtonText(translator.getTranslation(Tags.AUTHENTICATE));
+    
+    if (GITHUB_COM.equals(host)) {
+      tokenAuthRadio.doClick();
+    } else {
+      basicAuthRadio.doClick();
+    }
+  }
+
+	/**
+	 * Update GUI.
+	 */
+  private void updateGUI() {
+    SwingUtilities.invokeLater(() -> {
+      Component[] components = userAndPasswordPanel.getComponents();
+      for (Component component : components) {
+        component.setEnabled(basicAuthRadio.isSelected());
+      }
+      tokenTextField.setEnabled(tokenAuthRadio.isSelected());
+
+      if (tokenTextField.isEnabled()) {
+        tokenTextField.requestFocus();
+      } else if (tfUsername.isEnabled()) {
+        tfUsername.requestFocus();
+      }
+    });
+  }
+
+	/**
+	 * @return The username and password panel.
+	 */
+  private JPanel createUserAndPasswordPanel() {
+    JPanel userAndPassPanel = new JPanel(new GridBagLayout());
+    
+    // Username label
+		JLabel lbUsername = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_USERNAME_LABEL));
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(
+		    0,
+		    0,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        UIConstants.COMPONENT_RIGHT_PADDING);
+		c.anchor = GridBagConstraints.WEST;
+		c.weightx = 0;
+		c.weighty = 0;
+		c.gridx = 0;
+		c.gridy = 0;
+		userAndPassPanel.add(lbUsername, c);
+
+		// Username text field
+		tfUsername = new JTextField();
+		tfUsername.setPreferredSize(new Dimension(250, tfUsername.getPreferredSize().height));
+		c.insets = new Insets(
+        0,
+        0,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        0);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		c.gridx ++;
+		userAndPassPanel.add(tfUsername, c);
+
+		// Password label
+		JLabel lbPassword = new JLabel(translator.getTranslation(Tags.LOGIN_DIALOG_PASS_WORD_LABEL));
+		c.insets = new Insets(
+        0,
+        0,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        UIConstants.COMPONENT_RIGHT_PADDING);
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0;
+		c.gridx = 0;
+		c.gridy ++;
+		userAndPassPanel.add(lbPassword, c);
+
+		// Password text field
+		pfPassword = new JPasswordField();
+		pfPassword.setPreferredSize(new Dimension(250, pfPassword.getPreferredSize().height));
+		c.insets = new Insets(
+        0,
+        0,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        0);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		c.gridx ++;
+		userAndPassPanel.add(pfPassword, c);
+		
+		return userAndPassPanel;
+  }
 
 	@Override
 	protected void doOK() {
-		String username = tfUsername.getText().trim();
-		String password = new String(pfPassword.getPassword());
-		userCredentials = new UserCredentials(username, password, host);
-		OptionsManager.getInstance().saveGitCredentials(userCredentials);
+	  if (basicAuthRadio.isSelected()) {
+	    String username = tfUsername.getText().trim();
+	    String password = new String(pfPassword.getPassword());
+	    credentials = new UserAndPasswordCredentials(username, password, host);
+    } else {
+      String tokenValue = tokenTextField.getText().trim();
+      credentials = new PersonalAccessTokenInfo(host, tokenValue);
+    }
+	  
+	  OptionsManager.getInstance().saveGitCredentials(credentials);
+	  
 		super.doOK();
 	}
 
 	/**
-	 * @return The user credentials retreived from the user. <code>null</code> if the user canceled
+	 * @return The user credentials retrieved from the user. <code>null</code> if the user canceled
 	 * the dialog.
 	 */
-	public UserCredentials getUserCredentials() {
-		return userCredentials;
+	public CredentialsBase getCredentials() {
+		return credentials;
 	}
+	
 }

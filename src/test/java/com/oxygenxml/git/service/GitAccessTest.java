@@ -7,6 +7,7 @@ import java.util.concurrent.Future;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -14,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.view.event.GitController;
 
 import junit.framework.TestCase;
@@ -26,6 +28,20 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 public class GitAccessTest extends TestCase {
   
   String[] errMsg = new String[1];
+  
+  /**
+   * Push changes.
+   * 
+   * @param username User name.
+   * @param password Password.
+   * 
+   * @return push response.
+   * 
+   * @throws GitAPIException 
+   */
+  protected final PushResponse push(String username, String password) throws GitAPIException {
+    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+  }
   
   /**
    * @see junit.framework.TestCase.setUp()
@@ -64,7 +80,7 @@ public class GitAccessTest extends TestCase {
 
     GitAccess.getInstance().setGit(gitMock);
 
-    PushResponse pushResp = GitAccess.getInstance().push("", "");
+    PushResponse pushResp = push("", "");
     assertEquals("status: REJECTED_OTHER_REASON message Resolve_conflicts_first", pushResp.toString());
   }
   

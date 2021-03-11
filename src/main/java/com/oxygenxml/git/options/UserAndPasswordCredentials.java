@@ -12,12 +12,7 @@ import com.oxygenxml.git.utils.Equaler;
  */
 @XmlRootElement(name = "credential")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserCredentials {
-	/**
-	 * The host for which the username and password are validF
-	 */
-	@XmlElement(name = "host")
-	private String host = "";
+public class UserAndPasswordCredentials extends CredentialsBase {
 
 	/**
 	 * Git username
@@ -34,7 +29,9 @@ public class UserCredentials {
 	/**
 	 * Default constructor.
 	 */
-	public UserCredentials() {}
+	public UserAndPasswordCredentials() {
+	  super();
+	}
 
 	/**
 	 * Constructor.
@@ -43,8 +40,8 @@ public class UserCredentials {
 	 * @param password password.
 	 * @param host Host name.
 	 */
-	public UserCredentials(String username, String password, String host) {
-		this.host = host;
+	public UserAndPasswordCredentials(String username, String password, String host) {
+		super(host);
 		this.username = username;
 		this.password = password;
 	}
@@ -72,16 +69,10 @@ public class UserCredentials {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	/**
-	 * @return The host. Can be <code>null</code>.
-	 */
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
+	
+	@Override
+	public CredentialsType getType() {
+	  return CredentialsType.USER_AND_PASSWORD;
 	}
 
 	@Override
@@ -102,8 +93,8 @@ public class UserCredentials {
 	@Override
 	public boolean equals(Object obj) {
 	  boolean toReturn = false;
-	  if (obj instanceof UserCredentials) {
-	    UserCredentials creds = (UserCredentials) obj;
+	  if (obj instanceof UserAndPasswordCredentials) {
+	    UserAndPasswordCredentials creds = (UserAndPasswordCredentials) obj;
 	    toReturn = Equaler.verifyEquals(host, creds.getHost())
 	        && Equaler.verifyEquals(password, creds.getPassword())
 	        && Equaler.verifyEquals(username, creds.getUsername());

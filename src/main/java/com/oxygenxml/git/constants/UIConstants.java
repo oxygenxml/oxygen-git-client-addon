@@ -21,9 +21,13 @@ public class UIConstants {
  	/**
  	 * Bottom padding for components (in general).
  	 */
-	public static final int COMPONENT_BOTTOM_PADDING = 5;
-	/**
-	 * Left padding for components (in general).
+ 	public static final int COMPONENT_BOTTOM_PADDING = 5;
+ 	/**
+ 	 * Bottom padding for components on last line.
+ 	 */
+ 	public static final int LAST_LINE_COMPONENT_BOTTOM_PADDING = 10;
+ 	/**
+ 	 * Left padding for components (in general).
 	 */
 	public static final int COMPONENT_LEFT_PADDING = 3;
 	/**

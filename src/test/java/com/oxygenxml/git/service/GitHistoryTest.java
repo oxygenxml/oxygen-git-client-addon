@@ -310,7 +310,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       
       GitAccess.getInstance().setRepositorySynchronously(localRepository.getWorkTree().getAbsolutePath());
       
-      GitAccess.getInstance().push("Alex", "");
+      push("Alex", "");
       
       // Make the remote evolve.
       // Not sure why we need this sleep. Commit order is messed up with out it.
