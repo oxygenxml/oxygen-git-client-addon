@@ -338,8 +338,9 @@ public class BranchManagementPanel extends JPanel {
       
       // EXM-46684 Restore previous selection only if it still present in the model.
       if (selectionPath != null 
-          && branchList.contains(((GitTreeNode) selectionPath.getLastPathComponent()).getUserObject()))
-      branchesTree.setSelectionPath(selectionPath);
+          && branchList.contains(((GitTreeNode) selectionPath.getLastPathComponent()).getUserObject())) {
+        branchesTree.setSelectionPath(selectionPath);
+      }
     }
   }
 

@@ -27,6 +27,10 @@ import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
  */
 public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
   /**
+   * Maximum value for a color.
+   */
+  private static final int MAX_COLOR_VALUE_255 = 255;
+  /**
    * Alpha value for highlight color.
    */
   private static final float HIGHLIGHT_COLOR_ALPHA = (float) 0.1;
@@ -230,9 +234,9 @@ public class CommitHighlightPainter extends LayeredHighlighter.LayerPainter {
       // Bleach it a bit.
       Color c = getColor();
       Color bleached = new Color(
-          (float) c.getRed() / 255,
-          (float) c.getGreen() / 255,
-          (float) c.getBlue() / 255,
+          (float) c.getRed() / MAX_COLOR_VALUE_255,
+          (float) c.getGreen() / MAX_COLOR_VALUE_255,
+          (float) c.getBlue() / MAX_COLOR_VALUE_255,
           HIGHLIGHT_COLOR_ALPHA);
       g.setColor(bleached);
     }

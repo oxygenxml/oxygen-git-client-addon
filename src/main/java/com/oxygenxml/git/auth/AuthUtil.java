@@ -143,13 +143,13 @@ public class AuthUtil {
   }
 
   /**
+   * Should try again outside this class, in the caller class?
    * 
+   * @param hostName        Host name.
+   * @param retryLoginHere  True to retry login here in this class.
+   * @param loginMessage    The login failure message to show.
    * 
-   * @param hostName
-   * @param retryLoginHere
-   * @param loginMessage
-   * 
-   * @return
+   * @return <code>true</code> to try logging in outside of this class.
    */
   private static boolean shouldTryAgainOutside(String hostName, boolean retryLoginHere, String loginMessage) {
     boolean tryAgainOutside = false;
