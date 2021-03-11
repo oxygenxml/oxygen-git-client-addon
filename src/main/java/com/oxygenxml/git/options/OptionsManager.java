@@ -346,11 +346,14 @@ public class OptionsManager {
    */
   public void saveGitCredentials(CredentialsBase credentials) {
     if (credentials != null) {
+      // Keep only one type of credentials for a host
       CredentialsType type = credentials.getType();
       if (type == CredentialsType.USER_AND_PASSWORD) {
         saveUserAndPasswordCredentials((UserAndPasswordCredentials) credentials);
+        savePersonalAccessToken(null);
       } else if (type == CredentialsType.PERSONAL_ACCESS_TOKEN) {
         savePersonalAccessToken((PersonalAccessTokenInfo) credentials);
+        saveUserAndPasswordCredentials(null);
       }
     } else {
       saveUserAndPasswordCredentials(null);
