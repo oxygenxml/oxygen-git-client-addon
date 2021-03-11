@@ -33,7 +33,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
   /**
    * <code>true</code> to cancel the login (i.e. to stop showing the login dialog).
    */
-  private boolean shouldCancelLogin;
+  private boolean isUserCancelledLogin;
   /**
    * User name.
    */
@@ -54,7 +54,7 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
   /**
    * Flag to keep track if the credentials were previously created.
    */
-  private boolean userCredentialsRequested = false; 
+  private boolean isCredentialsPreviouslyRequested = false; 
 
   /**
    * Constructor.
@@ -93,38 +93,48 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
     if (logger.isDebugEnabled()) {
       logger.debug("Reset credentials provider for: " + uri.toString());
     }
-    if (
-        // The credentials were actually previously requested. 
-        userCredentialsRequested 
-        // The user hasn't already canceled a login session.
-        && !shouldCancelLogin) {
-      
-      String loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
-      CredentialsBase creds = OptionsManager.getInstance().getGitCredentials(host);
-      if (creds.getType() == CredentialsType.USER_AND_PASSWORD) {
-        loginMessage += username == null ? translator.getTranslation(Tags.NO_CREDENTIALS_FOUND)
-            : translator.getTranslation(Tags.CHECK_CREDENTIALS);
-      } else if (creds.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-        loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
-      }
-      LoginDialog loginDialog = new LoginDialog(host, loginMessage);
+    if (isCredentialsPreviouslyRequested && !isUserCancelledLogin) {
+      LoginDialog loginDialog = new LoginDialog(host, getLoginFailureMessage());
       if (loginDialog.getResult() == OKCancelDialog.RESULT_OK) {
-        CredentialsBase credentials = loginDialog.getCredentials();
-        if (credentials != null) {
-          if (credentials.getType() == CredentialsType.USER_AND_PASSWORD) {
-            username = ((UserAndPasswordCredentials) credentials).getUsername();
-            password = ((UserAndPasswordCredentials) credentials).getPassword();
-          } else if (credentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-            // GitHub uses the username as token value, GitLab uses the password
-            username = ((PersonalAccessTokenInfo) credentials).getTokenValue();
-            password = ((PersonalAccessTokenInfo) credentials).getTokenValue();
-          }
-        }
+        updateUsernameAndPassword(loginDialog.getCredentials());
       } else {
-        shouldCancelLogin = true;
+        isUserCancelledLogin = true;
       }
     }
     super.reset(uri);
+  }
+
+  /**
+   * @return the login failure message to show in the dialog.
+   */
+  private String getLoginFailureMessage() {
+    String loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
+    CredentialsBase creds = OptionsManager.getInstance().getGitCredentials(host);
+    if (creds.getType() == CredentialsType.USER_AND_PASSWORD) {
+      loginMessage += username == null ? translator.getTranslation(Tags.NO_CREDENTIALS_FOUND)
+          : translator.getTranslation(Tags.CHECK_CREDENTIALS);
+    } else if (creds.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+      loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
+    }
+    return loginMessage;
+  }
+
+  /**
+   * Update username and password, based on the credentials type.
+   * 
+   * @param credentials New credentials.
+   */
+  private void updateUsernameAndPassword(CredentialsBase credentials) {
+    if (credentials != null) {
+      if (credentials.getType() == CredentialsType.USER_AND_PASSWORD) {
+        username = ((UserAndPasswordCredentials) credentials).getUsername();
+        password = ((UserAndPasswordCredentials) credentials).getPassword();
+      } else if (credentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+        // GitHub uses the username as token value, GitLab uses the password
+        username = ((PersonalAccessTokenInfo) credentials).getTokenValue();
+        password = ((PersonalAccessTokenInfo) credentials).getTokenValue();
+      }
+    }
   }
   
   /**
@@ -136,23 +146,23 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
     if (logger.isDebugEnabled()) {
       logger.debug("Get credential items for: " + uri.toString());
     } 
-    if (!shouldCancelLogin) {
+    if (!isUserCancelledLogin) {
       for (CredentialItem credentialItem : items) { // NOSONAR
         if (credentialItem instanceof CredentialItem.Username) {
           ((CredentialItem.Username) credentialItem).setValue(username);
-          userCredentialsRequested = true;
+          isCredentialsPreviouslyRequested = true;
           continue;
         }
         if (credentialItem instanceof CredentialItem.Password) {
           ((CredentialItem.Password) credentialItem).setValue(password.toCharArray());
-          userCredentialsRequested = true;
+          isCredentialsPreviouslyRequested = true;
           continue;
         }
         if (credentialItem instanceof CredentialItem.StringType
             //$NON-NLS-1$
             && credentialItem.getPromptText().startsWith("Password:")) {
           ((CredentialItem.StringType) credentialItem).setValue(password);
-          userCredentialsRequested = true;
+          isCredentialsPreviouslyRequested = true;
           continue;
         }
         throw new UnsupportedCredentialItem(uri, credentialItem.getClass().getName()
@@ -176,6 +186,6 @@ public class ResetableUserCredentialsProvider extends UsernamePasswordCredential
    * @return <code>true</code> if the login re-trying should be canceled.
    */
   public boolean shouldCancelLogin() {
-    return shouldCancelLogin;
+    return isUserCancelledLogin;
   }
 }
