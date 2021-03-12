@@ -40,6 +40,7 @@
 				    disabled by deselecting the <i>Checkout branch</i> option in the <i>Create branch</i> dialog box.</li>
 			    <li>The <i>Git Staging</i> side-view now has a cleaner look.</li>
 			    <li>Added support for Dutch localization.</li>
+                <li>Fixed an exception that appeared when deleting a local branch in the Branch Manager view.</li>
                         </ol>
                     </div>
                     <div>
