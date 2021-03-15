@@ -221,13 +221,13 @@ public class LoginDialog extends OKCancelDialog {
 	 * Update GUI.
 	 */
   private void updateGUI() {
-    SwingUtilities.invokeLater(() -> {
-      Component[] components = userAndPasswordPanel.getComponents();
-      for (Component component : components) {
-        component.setEnabled(basicAuthRadio.isSelected());
-      }
-      tokenTextField.setEnabled(tokenAuthRadio.isSelected());
+    Component[] components = userAndPasswordPanel.getComponents();
+    for (Component component : components) {
+      component.setEnabled(basicAuthRadio.isSelected());
+    }
+    tokenTextField.setEnabled(tokenAuthRadio.isSelected());
 
+    SwingUtilities.invokeLater(() -> {
       if (tokenTextField.isEnabled()) {
         tokenTextField.requestFocus();
       } else if (tfUsername.isEnabled()) {

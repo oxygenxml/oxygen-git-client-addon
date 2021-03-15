@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -445,34 +446,19 @@ public class OptionsManager {
     String decryptedToken = null;
     CredentialsType detectedCredentialsType = null;
     if (host != null) {
-      String password = null;
-      String tokenValue = null;
-      List<CredentialsBase> allCredentials = getAllCredentials();
-
-      int i;
-      for (i = 0; i < allCredentials.size(); i++) {
-        CredentialsBase credentialsItem = allCredentials.get(i);
-        if (host.equals(credentialsItem.getHost())) {
-          if (credentialsItem.getType() == CredentialsType.USER_AND_PASSWORD) {
-            username = ((UserAndPasswordCredentials) credentialsItem).getUsername();
-            password = ((UserAndPasswordCredentials) credentialsItem).getPassword();
-          } else if (credentialsItem.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-            tokenValue = ((PersonalAccessTokenInfo) credentialsItem).getTokenValue();
-          }
-          break;
-        }
-      }
-
-      if (i < allCredentials.size()) {
-        detectedCredentialsType = allCredentials.get(i).getType();
-        if (OxygenGitPlugin.getInstance() != null) {
-          StandalonePluginWorkspace saPluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-          UtilAccess utilAccess = saPluginWS.getUtilAccess();
-          if (detectedCredentialsType == CredentialsType.USER_AND_PASSWORD) {
-            decryptedPassword = utilAccess.decrypt(password);
-          } else if (detectedCredentialsType == CredentialsType.PERSONAL_ACCESS_TOKEN) {
-            decryptedToken = utilAccess.decrypt(tokenValue);
-          }
+      Optional<CredentialsBase> credential = getAllCredentials().stream()
+          .filter(c -> c.getHost().equals(host))
+          .findFirst();
+      if (credential.isPresent()) {
+        CredentialsBase credentialsBase = credential.get();
+        StandalonePluginWorkspace saPluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+        UtilAccess utilAccess = saPluginWS.getUtilAccess();
+        detectedCredentialsType = credentialsBase.getType();
+        if (detectedCredentialsType == CredentialsType.USER_AND_PASSWORD) {
+          username = ((UserAndPasswordCredentials) credentialsBase).getUsername();
+          decryptedPassword = utilAccess.decrypt(((UserAndPasswordCredentials) credentialsBase).getPassword());
+        } else if (detectedCredentialsType == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+          decryptedToken = utilAccess.decrypt(((PersonalAccessTokenInfo) credentialsBase).getTokenValue());
         }
       }
     }
