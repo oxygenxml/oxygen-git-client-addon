@@ -84,6 +84,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
@@ -98,9 +99,7 @@ import com.oxygenxml.git.auth.AuthExceptionMessagePresenter;
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
-import com.oxygenxml.git.options.CredentialsBase;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -684,7 +683,7 @@ public class GitAccess {
 		    // The submodule wasn't updated.
 		    git.submoduleInit().call();
 		    
-		    SSHCapableUserCredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
+		    CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
         git.submoduleUpdate().setCredentialsProvider(credentialsProvider).call();
 
 		    submoduleRepository = SubmoduleWalk.getSubmoduleRepository(parentRepository, submodule);
@@ -885,10 +884,6 @@ public class GitAccess {
         boolean retryLogin = AuthUtil.handleAuthException(
             ex,
             host,
-            new UserAndPasswordCredentials(
-                credentialsProvider.getUsername(),
-                credentialsProvider.getPassword(),
-                host),
             excMessPresenter,
             !credentialsProvider.wasResetCalled());
         if (!retryLogin || credentialsProvider.shouldCancelLogin()) {
@@ -971,13 +966,13 @@ public class GitAccess {
 	/**
 	 * Pushes all the commits from the local repository to the remote repository
 	 * 
-	 * @param credentials The credentials. Can be user + password, token, etc.
+	 * @param credentialsProvider The credentials provider.
 	 * 
 	 * @return a response.
 	 *          
 	 * @throws GitAPIException
 	 */
-	public PushResponse push(CredentialsBase credentials)
+	public PushResponse push(CredentialsProvider credentialsProvider)
 	    throws GitAPIException {
 
 	  AuthenticationInterceptor.install();
@@ -1011,7 +1006,7 @@ public class GitAccess {
       logger.debug(e, e);
     }
 	  
-    PushCommand pushCommand = git.push().setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()));
+    PushCommand pushCommand = git.push().setCredentialsProvider(credentialsProvider);
     String localBranchName = getBranchInfo().getBranchName();
     String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
     if (upstreamBranch != null) {
@@ -1062,9 +1057,9 @@ public class GitAccess {
 	 * Pulls the files that are not on the local repository from the remote
 	 * repository
 	 * 
-	 * @param credentials      Credentials.
-	 * @param pullType         One of ff, no-ff, ff-only, rebase.
-	 * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive"
+	 * @param credentialsProvider Credentials provider.
+	 * @param pullType            One of ff, no-ff, ff-only, rebase.
+	 * @param updateSubmodules    <code>true</code> to execute the equivalent of a "git submodule update --recursive"
 	 * 
 	 * @return The result, if successful.
 	 *  
@@ -1074,7 +1069,10 @@ public class GitAccess {
 	 *                                   the working copy so operation is aborted.
 	 * @throws GitAPIException other errors.
 	 */
-  public PullResponse pull(CredentialsBase credentials, PullType pullType, boolean updateSubmodules) throws GitAPIException {
+  public PullResponse pull(
+      CredentialsProvider credentialsProvider,
+      PullType pullType,
+      boolean updateSubmodules) throws GitAPIException {
 	  PullResponse pullResponseToReturn = new PullResponse(PullStatus.OK, new HashSet<>());
 	  AuthenticationInterceptor.install();
 
@@ -1088,7 +1086,7 @@ public class GitAccess {
 		  ObjectId oldHead = resolveHead(repository);
       PullCommand pullCmd = git.pull()
           .setRebase(PullType.REBASE == pullType)
-          .setCredentialsProvider(AuthUtil.getCredentialsProvider(getHostName()));
+          .setCredentialsProvider(credentialsProvider);
       PullResult pullCommandResult = pullCmd.call();
 
 		  // Get fetch result
@@ -1805,9 +1803,9 @@ public class GitAccess {
 	      RepositoryState repositoryState = getRepository().getRepositoryState();
 	      if (repositoryState == RepositoryState.REBASING_MERGE) {
 	        git.rebase().setOperation(Operation.ABORT).call();
-	        CredentialsBase gitCredentials = OptionsManager.getInstance().getGitCredentials(getHostName());
 	        // EXM-47461 Should update submodules as well.
-	        pull(gitCredentials, PullType.REBASE, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
+	        CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
+	        pull(credentialsProvider, PullType.REBASE, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
 	      } else {
 	        AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
 	        git.clean().call();

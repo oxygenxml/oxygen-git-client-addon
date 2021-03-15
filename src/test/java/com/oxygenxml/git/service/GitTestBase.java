@@ -64,7 +64,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.oxygenxml.git.options.UserAndPasswordCredentials;
+import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
@@ -718,7 +718,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    */
   protected final void pushOneFileToRemote(String repository, String fileName, String fileContent) throws Exception {
     commitOneFile(repository, fileName, fileContent);
-    GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+    GitAccess.getInstance().push(
+        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()));
   }
   
   /**
@@ -732,7 +733,8 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    * @throws GitAPIException 
    */
   protected final PushResponse push(String username, String password) throws GitAPIException {
-    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+    return GitAccess.getInstance().push(
+        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()));
   }
   
   /**
@@ -749,7 +751,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
    */
   protected PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
     return GitAccess.getInstance().pull(
-        new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()),
+        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
         pullType,
         updateSubmodules);
   }

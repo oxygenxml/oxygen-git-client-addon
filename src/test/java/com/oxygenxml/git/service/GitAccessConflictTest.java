@@ -31,8 +31,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.options.OptionsManager;
-import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PanelRefresh;
@@ -75,7 +75,8 @@ public class GitAccessConflictTest {
    * @throws GitAPIException 
    */
   protected final PushResponse push(String username, String password) throws GitAPIException {
-    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()));
+    return GitAccess.getInstance().push(
+        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()));
   }
   
   /**
@@ -92,7 +93,7 @@ public class GitAccessConflictTest {
    */
   protected PullResponse pull(String username, String password, PullType pullType, boolean updateSubmodules) throws GitAPIException {
     return GitAccess.getInstance().pull(
-        new UserAndPasswordCredentials("", "", GitAccess.getInstance().getHostName()),
+        new SSHCapableUserCredentialsProvider("", "", "", GitAccess.getInstance().getHostName()),
         pullType,
         updateSubmodules);
   }

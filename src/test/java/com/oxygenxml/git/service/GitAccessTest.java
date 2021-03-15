@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.oxygenxml.git.options.UserAndPasswordCredentials;
+import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.view.event.GitController;
 
 import junit.framework.TestCase;
@@ -40,7 +40,8 @@ public class GitAccessTest extends TestCase {
    * @throws GitAPIException 
    */
   protected final PushResponse push(String username, String password) throws GitAPIException {
-    return GitAccess.getInstance().push(new UserAndPasswordCredentials("", "", ""));
+    return GitAccess.getInstance().push(
+        new SSHCapableUserCredentialsProvider("", "", "", ""));
   }
   
   /**

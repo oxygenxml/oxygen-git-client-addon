@@ -66,7 +66,6 @@ public class AuthUtil {
    * 
    * @param ex                The exception to handle.
    * @param hostName          The host name.
-   * @param userCredentials   The user credentials.
    * @param excMessPresenter  Exception message presenter.  
    * @param retryLoginHere    <code>true</code> to retry login here, in this method.
    * 
@@ -75,7 +74,6 @@ public class AuthUtil {
   public static boolean handleAuthException(
       GitAPIException ex,
       String hostName,
-      CredentialsBase userCredentials,
       AuthExceptionMessagePresenter excMessPresenter,
       boolean retryLoginHere) {
     
@@ -88,6 +86,8 @@ public class AuthUtil {
     while (cause.getCause() != null) {
       cause = cause.getCause();
     }
+    
+    CredentialsBase userCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
     
     boolean tryAgainOutside = false;
     String lowercaseMsg = ex.getMessage().toLowerCase();
