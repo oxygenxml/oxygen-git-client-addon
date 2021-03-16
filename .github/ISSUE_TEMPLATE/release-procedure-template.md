@@ -15,3 +15,4 @@ assignees: ''
 - [ ] Send e-mail to the users who agreed to be notified when what they requested has been implemented.
 - [ ] Update the forum threads where users requested things that have been implemented for the current release.
 - [ ] Promote the release on social media, oxygen-users list and DITA list.
+- [ ] Update internal version on Jenkins.
