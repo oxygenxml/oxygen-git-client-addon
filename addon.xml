@@ -34,6 +34,7 @@
 				    <a href="https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations">
 					    https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations
 				    </a>).
+			    </li>
 			    <li>After a repository that contains submodules is cloned, all submodules are also automatically initialized and cloned.</li>
 			    <li>When pulling the remote changes for a repository that contains submodules, the submodules are updated as well (by default).
 				    This behavior depends on the <i>Update all submodules after pulling changes from the remote repository</i> option
