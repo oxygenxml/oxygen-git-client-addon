@@ -41,7 +41,7 @@
 				    disabled by deselecting the <i>Checkout branch</i> option in the <i>Create branch</i> dialog box.</li>
 			    <li>The <i>Git Staging</i> side-view now has a cleaner look.</li>
 			    <li>Added support for Dutch localization.</li>
-			    <li>Various bug fixes.</li>
+			    <li>Various other bug fixes and smaller UX improvements.</li>
                         </ol>
                     </div>
                     <div>
