@@ -126,7 +126,12 @@ public class AuthUtil {
     } else if (ex.getCause() instanceof NoRemoteRepositoryException
         || lowercaseMsg.contains("invalid advertisement of")) {
       if (excMessPresenter != null) {
-        excMessPresenter.presentMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+        if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
+          excMessPresenter.presentMessage(translator.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY));
+        } else if (userCredentials.getType() == CredentialsType.PERSONAL_ACCESS_TOKEN) {
+          excMessPresenter.presentMessage(translator.getTranslation(Tags.CANNOT_REACH_HOST) + ". "
+              + translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS));
+        }
       } else {
         logger.error(ex, ex);
       }
