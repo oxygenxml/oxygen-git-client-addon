@@ -33,11 +33,11 @@ After cloning a repository, it will automatically be set as the current working 
 
 This Git client supports both **HTTPS** and **SSH** connections to **GitHub, GitLab, Bitbucket**, etc.
 
-To access the remote repository, you will need to provide your credentials (if not using unprotected SSH keys). If no credentials are found, the add-on will ask for them. If you have the _two-factor authentication_ enabled for GitHub, you must go to your GitHub account, **Settings > Developer settings > Personal access tokens > Generate new token**, and back in the **Git Staging** view in Oxygen, use the generated token value as the authentication password when asked for your credentials.
+To access the remote repository, you will need to provide your authentication details (if not using unprotected SSH keys). If no such information is found in the add-ons's settings, the add-on will ask for them. 
 
-If, for example, you have been using a GitHub account but you decide to switch to another GitHub account, you would need to reset your credentials so that you will be prompted for new ones. This is because we currently only store one set of credentials for each Git platform/server.
+If you have the _two-factor authentication_ enabled for GitHub, you must go to your GitHub account, **Settings > Developer settings > Personal access tokens > Generate new token**, and back in the **Git Staging** view in Oxygen, use the generated token value as the authentication password when asked for your credentials.
 
-To reset your credentials, go to the toolbar at the top of the _Git Staging_ side-view, click the settings icon (a cogwheel), and select **Reset all credentials**.
+If, for example, you have been using a GitHub account but you decide to switch to another GitHub account, you would need to reset your credentials so that you will be prompted for new ones. This is because we currently only store one set of credentials for each Git platform/server. To reset your credentials, go to the toolbar at the top of the _Git Staging_ side-view, click the settings icon (a cogwheel), and select **Reset all credentials**.
 
 ## Selecting a working copy
 
