@@ -158,10 +158,11 @@ The *Git Client* add-on contributes a preferences page to Oxygen. To access it, 
 - **When detecting a Git repository inside a newly opened project:**
   - **Always switch to the new working copy**
   - **Never switch to the new working copy**
-  - **Always ask**
+  - **Always ask** (default value)
   
   This determines what happens in regards to the current working copy when a project that contains a Git repository is opened in the **Project** side-view in Oxygen.
-- **Notify me about new commits in the remote repository** - When this option is selected, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository.
+- **Notify me about new commits in the remote repository** - When this option is selected, Oxygen will show notification messages when it detects that new commits have been pushed to the remote repository. By default this option is not selected.
+- **Update all submodules after pulling changes from the remote repository** - If this option is selected, when a repository is updated using the _Pull_ operation, all submodules are updated as well. This option is selected by default.
 
 ## Editor variables
 The Git Client contributes the following editor variables to Oxygen:
