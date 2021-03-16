@@ -6,7 +6,7 @@
         <xt:location
             href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/${project.version}/${project.build.finalName}-plugin.jar"/>
         <xt:version>${project.version}</xt:version>
-        <xt:oxy_version>20.1+</xt:oxy_version>
+        <xt:oxy_version>21.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
         <xt:name>Git Client</xt:name>
@@ -19,11 +19,12 @@
                 </head>
                 <body>
                     <div>
-                        <p>This add-on contributes a built-in Git client directly into Oxygen in the
-                            form of a <b>Git Staging</b> view that includes various actions that
-                            perform common Git commands, such as push, pull, change branch, commit,
-                            and more. It also includes a built-in tool for comparing and merging
-                            changes.</p>
+                        <p>This add-on installs a Git client in Oxygen. It contributes multiple side-views,
+				each one specialized in doing different Git operations, the main one being named <i>Git Staging</i>.
+				Using the Git Client add-on, various Git operations can be performed, such as committing changes into the local repository, 
+				pushing/pulling changes to/from the remote repository, creating, checking out and deleting branches,
+				showing the history of the repository resources and more. The add-on also includes a tool for comparing and merging changes.
+			</p>
                     </div>
 		    <div>
                         <h3>What's new in version 2.5.0</h3>
