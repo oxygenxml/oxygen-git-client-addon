@@ -29,6 +29,8 @@
 		    <div>
                         <h3>What's new in version 2.5.0</h3>
                         <ol>
+			    <li>Added a new field in the login dialog for authenticating using a personal access token. Note that from August 13, 2021, GitHub
+				    will no longer accept password-based authentication (https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/).
 			    <li>After a repository that contains submodules is cloned, all submodules are also automatically initialized and cloned.</li>
 			    <li>When pulling the remote changes for a repository that contains submodules, the submodules are updated as well (by default).
 				    This behavior depends on the <i>Update all submodules after pulling changes from the remote repository</i> option
