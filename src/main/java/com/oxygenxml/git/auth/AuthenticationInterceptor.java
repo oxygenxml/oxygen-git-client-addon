@@ -268,9 +268,13 @@ public class AuthenticationInterceptor {
 		installedAuthenticator.bind(hostName);
 	}
 	
-	 /**
-	  * @return <code>true</code> if the host is registered as a remote git repository.
-   */
+	/**
+	 * Check if the host is registered as a remote git repository.
+	 * 
+	 * @param hostName The host name.
+	 * 
+	 * @return <code>true</code> if the host is registered as a remote git repository.
+	 */
   public static boolean isBound(String hostName) {
     install();
 
