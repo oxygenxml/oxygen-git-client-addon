@@ -14,6 +14,7 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 
+import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 
@@ -186,6 +187,8 @@ public class GitCloneTest extends GitTestBase {
     assertEquals("[modules/submodule]", submodules.toString());
     
     gitAccess.setSubmodule("modules/submodule");
+    
+    assertTrue("The current host must be registered for auth.", AuthenticationInterceptor.isBound(gitAccess.getHostName()));;
     
     File module = new File(cloneDest, ".git/modules/modules/submodule");
     assertEquals(module.getAbsolutePath(), gitAccess.getRepository().getDirectory().getAbsolutePath());

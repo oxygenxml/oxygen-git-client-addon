@@ -694,6 +694,9 @@ public class GitAccess {
 
 		  git = Git.wrap(submoduleRepository);
 		  
+		  // Start intercepting authentication requests.
+		  AuthenticationInterceptor.bind(getHostName());
+		  
 		  fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true));
 		} catch (Exception e) {
 		  fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, submoduleDir, true), e);
