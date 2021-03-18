@@ -36,6 +36,7 @@ This Git client supports both **HTTPS** and **SSH** connections to **GitHub, Git
 To access the remote repository, you will need to provide your authentication details (if not using unprotected SSH keys). If no such information is found in the add-ons's settings, the add-on will ask for them.
 
 The Git Client add-on allows you to authenticate over HTTPS by using either a **basic authentication** method (username + password) or a **personal access token**.
+
 **Notes:**
 - The authentication using personal accees tokens has been tested with GitHub and GitLab.
 - Bitbucket uses a concept similar to personal access tokens, named _app passwords_. An app password must be provided as the password for _Basic authentication_, along with the correct username.
