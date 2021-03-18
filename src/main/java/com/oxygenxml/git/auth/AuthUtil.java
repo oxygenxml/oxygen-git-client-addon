@@ -105,7 +105,7 @@ public class AuthUtil {
     } else if (lowercaseMsg.contains("not permitted")) {
       // The user doesn't have permissions.
       ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-          .showWarningMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
+          .showErrorMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
       String loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_CREDENTIALS_DOESNT_HAVE_RIGHTS); 
       if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
         loginMessage += ", " + ((UserAndPasswordCredentials) userCredentials).getUsername();
