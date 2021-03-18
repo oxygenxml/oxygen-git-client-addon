@@ -10,7 +10,7 @@
         <comment>The old/previous commit tracked by a submodule.</comment>
         <val lang="en_US">Previously tracked commit</val>
         <val lang="de_DE">Previously tracked commit</val>
-        <val lang="fr_FR">Previously tracked commit</val>
+        <val lang="fr_FR">Commit précédemment suivi</val>
         <val lang="ja_JP">Previously tracked commit</val>
         <val lang="nl_NL">Previously tracked commit</val>
     </key>
@@ -18,7 +18,7 @@
         <comment>The new commit tracked by a submodule.</comment>
         <val lang="en_US">Currently tracked commit</val>
         <val lang="de_DE">Currently tracked commit</val>
-        <val lang="fr_FR">Currently tracked commit</val>
+        <val lang="fr_FR">Commit actuellement suivi</val>
         <val lang="ja_JP">Currently tracked commit</val>
         <val lang="nl_NL">Currently tracked commit</val>
     </key>
@@ -26,7 +26,7 @@
         <comment>Text for the OK button in the login dialog.</comment>
         <val lang="en_US">Authenticate</val>
         <val lang="de_DE">Authenticate</val>
-        <val lang="fr_FR">Authenticate</val>
+        <val lang="fr_FR">S'authentifier</val>
         <val lang="ja_JP">Authenticate</val>
         <val lang="nl_NL">Authenticate</val>
     </key>
@@ -34,7 +34,7 @@
         <comment>"Basic authentication" radio button text.</comment>
         <val lang="en_US">Basic authentication</val>
         <val lang="de_DE">Basic authentication</val>
-        <val lang="fr_FR">Basic authentication</val>
+        <val lang="fr_FR">Authentification de base</val>
         <val lang="ja_JP">Basic authentication</val>
         <val lang="nl_NL">Basic authentication</val>
     </key>
@@ -42,7 +42,7 @@
         <comment>"Personal access token" radio button text.</comment>
         <val lang="en_US">Personal access token</val>
         <val lang="de_DE">Personal access token</val>
-        <val lang="fr_FR">Personal access token</val>
+        <val lang="fr_FR">Jeton d'accès personnel</val>
         <val lang="ja_JP">Personal access token</val>
         <val lang="nl_NL">Personal access token</val>
     </key>
@@ -50,7 +50,7 @@
         <comment>Authentication failure message when using a personal access token.</comment>
         <val lang="en_US">Check the personal access token value and permissions.</val>
         <val lang="de_DE">Check the personal access token value and permissions.</val>
-        <val lang="fr_FR">Check the personal access token value and permissions.</val>
+        <val lang="fr_FR">Vérifiez la valeur du jeton d'accès personnel et les autorisations.</val>
         <val lang="ja_JP">Check the personal access token value and permissions.</val>
         <val lang="nl_NL">Check the personal access token value and permissions.</val>
     </key>
@@ -58,7 +58,7 @@
         <comment>Authentication failure message.</comment>
         <val lang="en_US">Authentication failed.</val>
         <val lang="de_DE">Authentication failed.</val>
-        <val lang="fr_FR">Authentication failed.</val>
+        <val lang="fr_FR">L'authentification a échoué.</val>
         <val lang="ja_JP">Authentication failed.</val>
         <val lang="nl_NL">Authentication failed.</val>
     </key>
@@ -66,7 +66,7 @@
         <comment>The text displayed on the first row of the login dialog if the credentials are invalid.</comment>
         <val lang="en_US">Make sure the credentials are correct.</val>
         <val lang="de_DE">Make sure the credentials are correct.</val>
-        <val lang="fr_FR">Make sure the credentials are correct.</val>
+        <val lang="fr_FR">Assurez-vous que les informations d'identification sont correctes.</val>
         <val lang="ja_JP">Make sure the credentials are correct.</val>
         <val lang="nl_NL">Make sure the credentials are correct.</val>
     </key>
@@ -74,7 +74,7 @@
         <comment>The text displayed on the title for the login dialog</comment>
         <val lang="en_US">Git authentication</val>
         <val lang="de_DE">Git authentication</val>
-        <val lang="fr_FR">Git authentication</val>
+        <val lang="fr_FR">Authentification Git</val>
         <val lang="ja_JP">Git authentication</val>
         <val lang="nl_NL">Git authentication</val>
     </key>
@@ -82,7 +82,7 @@
         <comment>The text displayed above the text fields</comment>
         <val lang="en_US">Enter the authentication details for</val>
         <val lang="de_DE">Enter the authentication details for</val>
-        <val lang="fr_FR">Enter the authentication details for</val>
+        <val lang="fr_FR">Entrez les détails d'authentification pour</val>
         <val lang="ja_JP">Enter the authentication details for</val>
         <val lang="nl_NL">Enter the authentication details for</val>
     </key>
@@ -91,7 +91,7 @@
             after pulling changes from the remote repository</comment>
         <val lang="en_US">Update all submodules after pulling changes from the remote repository</val>
         <val lang="de_DE">Update all submodules after pulling changes from the remote repository</val>
-        <val lang="fr_FR">Update all submodules after pulling changes from the remote repository</val>
+        <val lang="fr_FR">Mettre à jour tous les sous-modules après un pull des modifications sur le dépôt remote.</val>
         <val lang="ja_JP">Update all submodules after pulling changes from the remote repository</val>
         <val lang="nl_NL">Update all submodules after pulling changes from the remote repository</val>
     </key>
@@ -107,7 +107,7 @@
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">Resolve the conflicts before you switch branches.</val>
         <val lang="de_DE">Resolve the conflicts before you switch branches.</val>
-        <val lang="fr_FR">Resolve the conflicts before you switch branches.</val>
+        <val lang="fr_FR">Résolvez les conflits avant de changer de branche.</val>
         <val lang="ja_JP">Resolve the conflicts before you switch branches.</val>
         <val lang="nl_NL">Resolve the conflicts before you switch branches.</val>
     </key>
@@ -115,7 +115,7 @@
         <comment>"Staged files" label.</comment>
         <val lang="en_US">Staged files</val>
         <val lang="de_DE">Staged files</val>
-        <val lang="fr_FR">Staged files</val>
+        <val lang="fr_FR">Fichiers réservés</val>
         <val lang="ja_JP">Staged files</val>
         <val lang="nl_NL">Staged files</val>
     </key>
@@ -123,7 +123,7 @@
         <comment>"Unstaged files" label.</comment>
         <val lang="en_US">Unstaged files</val>
         <val lang="de_DE">Unstaged files</val>
-        <val lang="fr_FR">Unstaged files</val>
+        <val lang="fr_FR">Fichiers libérés</val>
         <val lang="ja_JP">Unstaged files</val>
         <val lang="nl_NL">Unstaged files</val>
     </key>
@@ -131,7 +131,7 @@
         <comment>The tooltip for the Change View button when the icon shows the list view icon</comment>
         <val lang="en_US">Switch to list view</val>
         <val lang="de_DE">Switch to list view</val>
-        <val lang="fr_FR">Switch to list view</val>
+        <val lang="fr_FR">Baculer sur la vue liste</val>
         <val lang="ja_JP">Switch to list view</val>
         <val lang="nl_NL">Switch to list view</val>
     </key>
@@ -139,7 +139,7 @@
         <comment>The message displayed when you pull while having conflicts</comment>
         <val lang="en_US">Cannot pull. Resolve the conflicts first.</val>
         <val lang="de_DE">Cannot pull. Resolve the conflicts first.</val>
-        <val lang="fr_FR">Cannot pull. Resolve the conflicts first.</val>
+        <val lang="fr_FR">Pull impossible. Résolvez d'abord les conflits.</val>
         <val lang="ja_JP">Cannot pull. Resolve the conflicts first.</val>
         <val lang="nl_NL">Kan geen pull doen. Deze conflicten moet u eerst oplossen.</val>
     </key>
@@ -147,7 +147,7 @@
         <comment>The message displayed when you push with conflicts</comment>
         <val lang="en_US">Resolve the conflicts first.</val>
         <val lang="de_DE">Resolve the conflicts first.</val>
-        <val lang="fr_FR">Resolve the conflicts first.</val>
+        <val lang="fr_FR">Résolvez d'abord les conflits.</val>
         <val lang="ja_JP">Resolve the conflicts first.</val>
         <val lang="nl_NL">Deze conflicten moet u eerst oplossen.</val>
     </key>
