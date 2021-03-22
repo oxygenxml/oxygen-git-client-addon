@@ -22,30 +22,6 @@
         <val lang="ja_JP">Currently tracked commit</val>
         <val lang="nl_NL">Currently tracked commit</val>
     </key>
-    <key value="Authenticate">
-        <comment>Text for the OK button in the login dialog.</comment>
-        <val lang="en_US">Authenticate</val>
-        <val lang="de_DE">Authenticate</val>
-        <val lang="fr_FR">S'authentifier</val>
-        <val lang="ja_JP">Authenticate</val>
-        <val lang="nl_NL">Authenticate</val>
-    </key>
-    <key value="Basic_authentication">
-        <comment>"Basic authentication" radio button text.</comment>
-        <val lang="en_US">Basic authentication</val>
-        <val lang="de_DE">Basic authentication</val>
-        <val lang="fr_FR">Authentification de base</val>
-        <val lang="ja_JP">Basic authentication</val>
-        <val lang="nl_NL">Basic authentication</val>
-    </key>
-    <key value="Personal_access_token">
-        <comment>"Personal access token" radio button text.</comment>
-        <val lang="en_US">Personal access token</val>
-        <val lang="de_DE">Personal access token</val>
-        <val lang="fr_FR">Jeton d'accès personnel</val>
-        <val lang="ja_JP">Personal access token</val>
-        <val lang="nl_NL">Personal access token</val>
-    </key>
     <key value="Check_token_value_and_permissions">
         <comment>Authentication failure message when using a personal access token.</comment>
         <val lang="en_US">Check the personal access token value and permissions.</val>
@@ -54,14 +30,6 @@
         <val lang="ja_JP">Check the personal access token value and permissions.</val>
         <val lang="nl_NL">Check the personal access token value and permissions.</val>
     </key>
-    <key value="Authentication_failed">
-        <comment>Authentication failure message.</comment>
-        <val lang="en_US">Authentication failed.</val>
-        <val lang="de_DE">Authentication failed.</val>
-        <val lang="fr_FR">L'authentification a échoué.</val>
-        <val lang="ja_JP">Authentication failed.</val>
-        <val lang="nl_NL">Authentication failed.</val>
-    </key>
     <key value="Check_credentials">
         <comment>The text displayed on the first row of the login dialog if the credentials are invalid.</comment>
         <val lang="en_US">Make sure the credentials are correct.</val>
@@ -69,22 +37,6 @@
         <val lang="fr_FR">Assurez-vous que les informations d'identification sont correctes.</val>
         <val lang="ja_JP">Make sure the credentials are correct.</val>
         <val lang="nl_NL">Make sure the credentials are correct.</val>
-    </key>
-    <key value="Login_Dialog_Title">
-        <comment>The text displayed on the title for the login dialog</comment>
-        <val lang="en_US">Git authentication</val>
-        <val lang="de_DE">Git authentication</val>
-        <val lang="fr_FR">Authentification Git</val>
-        <val lang="ja_JP">Git authentication</val>
-        <val lang="nl_NL">Git authentication</val>
-    </key>
-    <key value="Login_Dialog_Main_Label">
-        <comment>The text displayed above the text fields</comment>
-        <val lang="en_US">Enter the authentication details for</val>
-        <val lang="de_DE">Enter the authentication details for</val>
-        <val lang="fr_FR">Entrez les détails d'authentification pour</val>
-        <val lang="ja_JP">Enter the authentication details for</val>
-        <val lang="nl_NL">Enter the authentication details for</val>
     </key>
     <key value = "Update_submodules_on_pull">
         <comment>An option that controls whether we automatically update submodules 
@@ -111,22 +63,6 @@
         <val lang="ja_JP">Resolve the conflicts before you switch branches.</val>
         <val lang="nl_NL">Resolve the conflicts before you switch branches.</val>
     </key>
-    <key value="Staged_files">
-        <comment>"Staged files" label.</comment>
-        <val lang="en_US">Staged files</val>
-        <val lang="de_DE">Staged files</val>
-        <val lang="fr_FR">Fichiers réservés</val>
-        <val lang="ja_JP">Staged files</val>
-        <val lang="nl_NL">Staged files</val>
-    </key>
-    <key value="Unstaged_files">
-        <comment>"Unstaged files" label.</comment>
-        <val lang="en_US">Unstaged files</val>
-        <val lang="de_DE">Unstaged files</val>
-        <val lang="fr_FR">Fichiers libérés</val>
-        <val lang="ja_JP">Unstaged files</val>
-        <val lang="nl_NL">Unstaged files</val>
-    </key>
     <key value="Change_To_List_View">
         <comment>The tooltip for the Change View button when the icon shows the list view icon</comment>
         <val lang="en_US">Switch to list view</val>
@@ -134,6 +70,70 @@
         <val lang="fr_FR">Baculer sur la vue liste</val>
         <val lang="ja_JP">Switch to list view</val>
         <val lang="nl_NL">Switch to list view</val>
+    </key>
+    <key value="Staged_files">
+        <comment>"Staged files" label.</comment>
+        <val lang="en_US">Staged files</val>
+        <val lang="de_DE">Staged files</val>
+        <val lang="fr_FR">Fichiers réservés</val>
+        <val lang="ja_JP">Staged files</val>
+        <val lang="nl_NL">Geënsceneerde bestanden</val>
+    </key>
+    <key value="Unstaged_files">
+        <comment>"Unstaged files" label.</comment>
+        <val lang="en_US">Unstaged files</val>
+        <val lang="de_DE">Unstaged files</val>
+        <val lang="fr_FR">Fichiers libérés</val>
+        <val lang="ja_JP">Unstaged files</val>
+        <val lang="nl_NL">Niet-geënsceneerde bestanden</val>
+    </key>
+    <key value="Login_Dialog_Main_Label">
+        <comment>The text displayed above the text fields</comment>
+        <val lang="en_US">Enter the authentication details for</val>
+        <val lang="de_DE">Enter the authentication details for</val>
+        <val lang="fr_FR">Entrez les détails d'authentification pour</val>
+        <val lang="ja_JP">Enter the authentication details for</val>
+        <val lang="nl_NL">Voer de verificatiegegevens in voor</val>
+    </key>
+    <key value="Authenticate">
+        <comment>Text for the OK button in the login dialog.</comment>
+        <val lang="en_US">Authenticate</val>
+        <val lang="de_DE">Authenticate</val>
+        <val lang="fr_FR">S'authentifier</val>
+        <val lang="ja_JP">Authenticate</val>
+        <val lang="nl_NL">Authenticeren</val>
+    </key>
+    <key value="Basic_authentication">
+        <comment>"Basic authentication" radio button text.</comment>
+        <val lang="en_US">Basic authentication</val>
+        <val lang="de_DE">Basic authentication</val>
+        <val lang="fr_FR">Authentification de base</val>
+        <val lang="ja_JP">Basic authentication</val>
+        <val lang="nl_NL">Basic authenticatie</val>
+    </key>
+    <key value="Personal_access_token">
+        <comment>"Personal access token" radio button text.</comment>
+        <val lang="en_US">Personal access token</val>
+        <val lang="de_DE">Personal access token</val>
+        <val lang="fr_FR">Jeton d'accès personnel</val>
+        <val lang="ja_JP">Personal access token</val>
+        <val lang="nl_NL">Persoonlijk toegangs token</val>
+    </key>
+    <key value="Authentication_failed">
+        <comment>Authentication failure message.</comment>
+        <val lang="en_US">Authentication failed.</val>
+        <val lang="de_DE">Authentication failed.</val>
+        <val lang="fr_FR">L'authentification a échoué.</val>
+        <val lang="ja_JP">Authentication failed.</val>
+        <val lang="nl_NL">Authenticatie mislukt.</val>
+    </key>
+    <key value="Login_Dialog_Title">
+        <comment>The text displayed on the title for the login dialog</comment>
+        <val lang="en_US">Git authentication</val>
+        <val lang="de_DE">Git authentication</val>
+        <val lang="fr_FR">Authentification Git</val>
+        <val lang="ja_JP">Git authentication</val>
+        <val lang="nl_NL">Git authenticatie</val>
     </key>
     <key value="Pull_when_repo_in_conflict">
         <comment>The message displayed when you pull while having conflicts</comment>
