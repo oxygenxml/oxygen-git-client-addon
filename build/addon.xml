@@ -4,9 +4,9 @@
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension" id="com.oxygenxml.git">
         <xt:location
-            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.4.0/oxygen-git-client-2.4.0-plugin.jar"/>
-        <xt:version>2.4.0</xt:version>
-        <xt:oxy_version>20.1+</xt:oxy_version>
+            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.5.0/oxygen-git-client-2.5.0-plugin.jar"/>
+        <xt:version>2.5.0</xt:version>
+        <xt:oxy_version>21.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
         <xt:name>Git Client</xt:name>
@@ -19,11 +19,38 @@
                 </head>
                 <body>
                     <div>
-                        <p>This add-on contributes a built-in Git client directly into Oxygen in the
-                            form of a <b>Git Staging</b> view that includes various actions that
-                            perform common Git commands, such as push, pull, change branch, commit,
-                            and more. It also includes a built-in tool for comparing and merging
-                            changes.</p>
+                        <p>This add-on installs a built-in Git Client in Oxygen. It contributes multiple side-views,
+				each one specialized for various Git operations. The main one is called the <i>Git Staging</i> view.
+				Using the Git Client add-on, various Git operations can be performed, such as committing changes into the local repository, 
+				pushing/pulling changes to/from the remote repository, creating, checking out and deleting branches,
+				showing the history of the repository resources, and more. The add-on also includes a built-in tool for comparing and merging changes.
+			</p>
+                    </div>
+		    <div>
+                        <h3>What's new in version 2.5.0</h3>
+                        <ol>
+			    <li>Added a new field in the login dialog box for authentication using a personal access token. Note that from August 13, 2021, GitHub
+				    will no longer accept password-based authentication (
+				    <a href="https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations">
+					    https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations
+				    </a>).
+			    </li>
+			    <li>After a repository that contains submodules is cloned, all submodules are also automatically initialized and cloned.</li>
+			    <li>When pulling the remote changes for a repository that contains submodules, the submodules are updated as well (by default).
+				    This behavior depends on the <i>Update all submodules after pulling changes from the remote repository</i> option
+				    from the <i>Git Client</i> preferences page in Oxygen.</li>
+		            <li>If a submodule appears as changed in the <i>Unstaged files</i> area, you can open it 
+				    using the <i>Open</i> action from the contextual menu.</li>
+			    <li>The tooltip shown for a modified submodule from the <i>Ustanged files</i> area now presents information about 
+				    the currently and previously tracked commits.</li>
+		            <li>Branches created from other local branches are now automatically checked out. This behavior can be
+				    disabled by deselecting the <i>Checkout branch</i> option in the <i>Create branch</i> dialog box.</li>
+			    <li>The <i>Git Staging</i> side-view has been slightly redesigned and now has a cleaner look.</li>
+			    <li>Added support for Dutch localization.</li>
+			    <li>Fixed an issue where debugging the Git Client using Apache Log4j did not work.</li>
+			    <li>Fixed an issue where opening submodules that required authentication was not possible.</li>
+			    <li>Fixed various other bugs and added several small UX improvements.</li>
+                        </ol>
                     </div>
                     <div>
                         <h3>What's new in version 2.4.0</h3>
@@ -31,14 +58,12 @@
                             <li>Added an "Abort merge" button for when conflicts result after a 
                             	<i>Pull (merge)</i> operation. It allows you to abort the current
                              	conflict resolution process.</li>
-			    <li>Added a quick find filter to the Git History view.</li>
                             <li>Added a set of options in the Git Client preferences page that
                             	can be used to decide whether to always switch to a newly detected working copy
                             	from a project, to never switch, or to always ask.</li>
                             <li>Added a "Preferences" action in the Settings menu that acts as a shortcut
                             	to the Git Client preferences page.</li>
-		            <li>Fixed an issue where pushing to a remote branch with a name different than
-				the one of the local branch did not work.</li>
+		            <li>Fixed an issue where pushing to a remote branch did not work when local and upstream branch had diffenrent names.</li>
                             <li>Integrated numerous other bug fixes, UI improvements, and speed improvements.</li>
 			    <li>The JGit component included in the Git Client was updated to version 5.10.0.</li>
                         </ol>
