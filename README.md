@@ -17,8 +17,8 @@ To install the add-on, follow these instructions:
 **Result:** A **Git Staging** view will now be available in Oxygen. If it is not visible, go to **Window > Show View** and select **Git Staging**. This view acts as a basic Git client integrated directly in Oxygen, and it provides support for committing changes to a Git repository, comparing and merging changes, resolving conflicts, and other Git commands.
 
 The add-on can also be installed using the following alternative installation procedure:
-1. Go to the [Releases page](https://github.com/oxygenxml/oxygen-git-plugin/releases/latest) and download the `git.support-{version}-plugin.jar` file.
-2. Unzip it inside `{oXygenInstallDir}/plugins`. Make sure you don't create any intermediate folders. After unzipping the archive, the file system should look like this: `{oXygenInstallDir}/plugins/git.support-x.y.z`, and inside this folder, there should be a `plugin.xml`file.
+1. Go to the [Releases page](https://github.com/oxygenxml/oxygen-git-plugin/releases/latest) and download the `oxygen-git-client-{version}-plugin.jar` file.
+2. Unzip it inside `{oXygenInstallDir}/plugins`. Make sure you don't create any intermediate folders. After unzipping the archive, the file system should look like this: `{oXygenInstallDir}/plugins/oxygen-git-client-{version}`, and inside this folder, there should be a `plugin.xml`file.
 
 ## Cloning a repository
 
