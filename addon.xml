@@ -27,6 +27,12 @@
 			</p>
                     </div>
 		    <div>
+                        <h3>What's new in version 2.6.0 (not yet released)</h3>
+                        <ol>
+                            <li>The JGit component included in the Git Client was updated to version 5.11.0.</li>
+                        </ol>
+                    </div>
+		    <div>
                         <h3>What's new in version 2.5.0</h3>
                         <ol>
 			    <li>Added a new field in the login dialog box for authentication using a personal access token. Note that from August 13, 2021, GitHub
