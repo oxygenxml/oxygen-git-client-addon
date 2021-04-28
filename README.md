@@ -38,7 +38,7 @@ To access the remote repository, you will need to provide your authentication de
 The Git Client add-on allows you to authenticate over HTTPS by using either a **basic authentication** method (username + password) or a **personal access token**.
 
 **Notes:**
-- The authentication using personal accees tokens has been tested with GitHub and GitLab.
+- The authentication using personal access tokens has been tested with GitHub and GitLab.
 - Bitbucket uses a concept similar to personal access tokens, named _app passwords_. An app password must be provided as the password for _Basic authentication_, along with the correct username.
 - As of August 13, 2021, GitHub will no longer accept password-based authentication.
 
@@ -74,7 +74,7 @@ For each commit in the history table, the following actions are available:
 - **Reset "\[branch_name\]" to this commit**: Used to undo changes by moving the HEAD of the current branch to the selected commit.
 
 The **Git History** view presents all the affected resources for each commit in a list, in the bottom-right area. It includes a text filter field at the top that you can use to conduct searches (i.e. by Date, Author, or Commit ID). For each resource, the following actions are available in the contextual menu:
-- **Open** (available for added and modifed resources): This action opens the selected resource.
+- **Open** (available for added and modified resources): This action opens the selected resource.
 - **Open previous version** (available for deleted resources): This action opens the version of the selected resource from before its deletion.
 - **Compare with previous version** (available for modified resources): This action compares the selected version of the selected resource with the previous one using the **Oxygen Diff Files** tool.
 - **Compare with working copy version** (available for modified resources): This action compares the selected version of the selected resource with the current one using the **Oxygen Diff Files** tool.
@@ -90,7 +90,7 @@ This action is also available in the contextual menu of the current editor and o
 
 In the **Unstaged files** area, you will see all the modifications that have occurred in your working copy (files that have been modified, new files, and deleted files) and are **not** part of the next commit.
 - Various actions are available in the contextual menu (**Open**, **Open in compare editor**, **Stage**, **Discard**, **Show history**, **Show blame**, and more).
-- You can stage files (i.e. move them to the *Staged files* area) using the actions from the toolbar found above the top-right corner of this area. You can can choose between staging all the files, by clicking the **Stage all** button (double arrow icon), and staging specific files, by selecting them and clicking the **Stage selected** button (single arrow icon).
+- You can stage files (i.e. move them to the *Staged files* area) using the actions from the toolbar found above the top-right corner of this area. You can choose between staging all the files, by clicking the **Stage all** button (double arrow icon), and staging specific files, by selecting them and clicking the **Stage selected** button (single arrow icon).
 - You can switch between the list view and the tree view by clicking on the **Switch to tree/list view** button positioned to the right of the staging buttons.
 
 ## Staged files area
@@ -119,7 +119,7 @@ To bring the changes from the remote repository into your local repository, use 
 
 **Note:** When pushing a local branch that does not have a corresponding remote branch, a remote branch will automatically be created with the same name as the local branch.
 
-## File conflicts solving flow
+## File conflict solving workflow
 
 After editing a file, committing it to the local repository, and trying to push it to the remote repository, if a warning appears about not being up-to-date with the repository, follow these steps:
 
