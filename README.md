@@ -42,7 +42,7 @@ The Git Client add-on allows you to authenticate over HTTPS by using either a **
 - Bitbucket uses a concept similar to personal access tokens, named _app passwords_. An app password must be provided as the password for _Basic authentication_, along with the correct username.
 - As of August 13, 2021, GitHub will no longer accept password-based authentication.
 
-If you have the **two-factor authentication (2FA)** enabled for GitHub or GitLab, to authenticate over HTTPS, you must generate a personal access token for you profile, and back in the _Git Staging_ view in Oxygen, use the generated token value as the authentication password when asked for your credentials.
+If you have the **two-factor authentication (2FA)** enabled for GitHub or GitLab, to authenticate over HTTPS, you must generate a personal access token for your profile, and back in the _Git Staging_ view in Oxygen, use the generated token value as the authentication password when asked for your credentials.
 
 If, for example, you have been using a GitHub account but you decide to switch to another GitHub account, you would need to reset your credentials so that you will be prompted for new ones. This is because we currently only store one set of credentials for each Git platform/server. To reset your credentials, go to the toolbar at the top of the _Git Staging_ side-view, click the settings icon (a cogwheel), and select **Reset all credentials**.
 
