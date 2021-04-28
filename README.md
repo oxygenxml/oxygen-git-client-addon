@@ -33,7 +33,7 @@ After cloning a repository, it will automatically be set as the current working 
 
 This Git client supports both **HTTPS** and **SSH** connections to **GitHub, GitLab, Bitbucket**, etc.
 
-To access the remote repository, you will need to provide your authentication details (if not using unprotected SSH keys). If no such information is found in the add-ons's settings, the add-on will ask for them.
+To access the remote repository, you will need to provide your authentication details (if not using unprotected SSH keys). If no such information is found in the add-on's settings, the add-on will ask for them.
 
 The Git Client add-on allows you to authenticate over HTTPS by using either a **basic authentication** method (username + password) or a **personal access token**.
 
