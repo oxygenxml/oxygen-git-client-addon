@@ -492,7 +492,9 @@ public class GitAccess {
 	
 	/**
    * Makes a diff between the files from the last commit and the files from the
-   * working directory. If there are diffs, they will be saved and returned.
+   * working directory. If there are diffs, they will be saved and returned.<br><br>
+   * 
+   * NOTE: if the staged files are also needed, use {@link #getStatus()} method instead.
    * 
    * @return - A list with all unstaged files
    */
@@ -1401,7 +1403,9 @@ public class GitAccess {
 	}
 	
 	 /**
-   * Gets all the files from the index.
+   * Gets all the files from the index.<br><br>
+   * 
+   * NOTE: if the unstaged files are also needed, use {@link #getStatus()} method instead.
    * 
    * @return A set containing all the staged file names
    */

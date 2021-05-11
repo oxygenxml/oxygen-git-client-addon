@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.editorvars.GitEditorVariablesResolver;
@@ -162,7 +161,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
   		      new org.eclipse.jgit.transport.sshd.SshdSessionFactory(null, new ResolvingProxyDataFactory()));
 		  }
 		  
-		  AuthenticationInterceptor.install();
+//		  AuthenticationInterceptor.install();
 
 			BlameManager.getInstance().install(gitController);
 			
