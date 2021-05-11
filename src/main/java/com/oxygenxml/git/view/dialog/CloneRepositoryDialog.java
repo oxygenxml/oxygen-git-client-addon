@@ -183,7 +183,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
           // Invalid credentials
           String lowercaseMsg = cause.getMessage().toLowerCase();
           if (lowercaseMsg.contains("not authorized")) {
-            String message = translator.getTranslation(Tags.AUTHENTICATION_FAILED + " ");
+            String message = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
             CredentialsBase creds = OptionsManager.getInstance().getGitCredentials(sourceUrl.getHost());
             if (creds.getType() == CredentialsType.USER_AND_PASSWORD) {
               message += translator.getTranslation(Tags.CHECK_CREDENTIALS);
