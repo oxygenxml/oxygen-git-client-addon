@@ -20,6 +20,7 @@ The add-on can also be installed using the following alternative procedure:
 1. Go to the [Releases page](https://github.com/oxygenxml/oxygen-git-plugin/releases/latest) and download the `oxygen-git-client-{version}-plugin.jar` file.
 2. Unzip it inside `{oXygenInstallDir}/plugins`. Make sure you don't create any intermediate folders. After unzipping the archive, the file system should look like this: `{oXygenInstallDir}/plugins/oxygen-git-client-{version}`, and inside this folder, there should be a `plugin.xml`file.
 
+## About
 For more information about this add-on, read the [Git Client Add-on topic](https://www.oxygenxml.com/doc/ug-editor/topics/git-addon.html) from Oxygen's user guide.
 
 ## Copyright and License
