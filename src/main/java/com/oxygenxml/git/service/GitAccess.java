@@ -206,7 +206,7 @@ public class GitAccess {
 		fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, directory));
 		try {
 		  if (branchName != null) {
-		    git = cloneCommand.setBranchesToClone(Arrays.asList(branchName)).setBranch(branchName).call();
+		    git = cloneCommand.setBranch(branchName).call();
 		  } else {
 		    git = cloneCommand.call();
 		  } 

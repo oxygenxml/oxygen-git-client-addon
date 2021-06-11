@@ -2,14 +2,18 @@ package com.oxygenxml.git.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.SubmoduleAddCommand;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
@@ -106,11 +110,14 @@ public class GitCloneTest extends GitTestBase {
           null,
           "refs/heads/slave");
       assertEquals("slave", gitAccess.getRepository().getBranch());
+      // EXM-47079 Test the fetch value
+      StoredConfig config = gitAccess.getRepository().getConfig();
+      String value = config.getString(ConfigConstants.CONFIG_REMOTE_SECTION, Constants.DEFAULT_REMOTE_NAME, ConfigConstants.CONFIG_FETCH_SECTION);
+      assertEquals("+refs/heads/*:refs/remotes/origin/*", value);
       
       // Check what we have in the destination folder
-      files = new ArrayList<>();
-      FileSystemUtil.listRecursively(new File[] {cloneDest2}, false, null, files);
-      assertEquals(12, files.size());
+      files = Arrays.asList(cloneDest2.listFiles(File::isFile));
+      assertEquals(1, files.size());
       assertTrue(files.toString().contains("test.txt"));
       // The second file shouldn't be here. Only on "master", because
       // "slave" was created earlier than when "test2.txt" was pushed. 
