@@ -1,14 +1,20 @@
 package com.oxygenxml.git.view.branches;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.transport.RefSpec;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -168,4 +174,68 @@ public class BranchesUtil {
     return getLocalBranches().stream().anyMatch((String branch) -> branch.equalsIgnoreCase(branchName));
   }
 
+  /**
+   * Rewrites a +refs/heads/hot:refs/remotes/origin/hot to a wildcard variant:
+   * +refs/heads/*:refs/remotes/origin/*
+   * 
+   * @param refSpecString A ref spec.
+   * 
+   * @return A wildcard variant of the given refspec, if the the refspec does not contain wildcards.
+   */
+  public static Optional<String> fixupFetch(String refSpecString) {
+    RefSpec refSpec = new RefSpec(refSpecString);
+
+    if (refSpec.getSource() != null &&
+        refSpec.getDestination() != null &&
+        !refSpec.isWildcard()) {
+      int lastIndexOf = refSpec.getSource().lastIndexOf("/");
+      String newSource = refSpec.getSource().substring(0, lastIndexOf) + "/*";
+      lastIndexOf = refSpec.getDestination().lastIndexOf("/");
+      String newDestination = refSpec.getDestination().substring(0, lastIndexOf) + "/*";
+
+
+      final StringBuilder r = new StringBuilder();
+      if (refSpec.isForceUpdate()) {
+        r.append('+');
+      }
+      r.append(newSource);
+      r.append(':');
+      r.append(newDestination);
+      
+      return Optional.of(r.toString());
+    }
+    
+    return Optional.empty();
+  }
+  
+  /**
+   * Rewrites a +refs/heads/hot:refs/remotes/origin/hot to a wildcard variant:
+   * +refs/heads/*:refs/remotes/origin/*
+   * 
+   * @param config A git configuration.
+   * 
+   * @throws IOException Unable to save the new fetch value.
+   */
+  public static void fixupFetchInConfig(StoredConfig config) throws IOException {
+    String value = config.getString(ConfigConstants.CONFIG_REMOTE_SECTION, Constants.DEFAULT_REMOTE_NAME, ConfigConstants.CONFIG_FETCH_SECTION);
+    
+    Optional<String> fixupFetch = fixupFetch(value);
+    if (fixupFetch.isPresent()) {
+      config.setString(
+          ConfigConstants.CONFIG_REMOTE_SECTION, 
+          Constants.DEFAULT_REMOTE_NAME, 
+          ConfigConstants.CONFIG_FETCH_SECTION, 
+          fixupFetch.get());
+      
+      try {
+        config.save();
+      } catch (IOException ex) {
+        throw new IOException("Failed to update fetch configuration to use wildcards. "
+            + "Changes in the remote branch will not be visible. "
+            + "Edit the .git/config file and replace " + value + " with " + fixupFetch.get(), ex);
+      }
+    }
+  }
+  
+  
 }

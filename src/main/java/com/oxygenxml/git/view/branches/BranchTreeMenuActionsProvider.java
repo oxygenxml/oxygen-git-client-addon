@@ -121,6 +121,8 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         ctrl.asyncTask(
             () -> {
+              BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
+              
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
               return null;
@@ -129,7 +131,7 @@ public class BranchTreeMenuActionsProvider {
               if (ex instanceof CheckoutConflictException) {
                 logger.debug(ex, ex);
                 BranchesUtil.showBranchSwitchErrorMessage();
-              } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
+              } else {
                 PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
               }
             });
@@ -158,13 +160,15 @@ public class BranchTreeMenuActionsProvider {
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(
               () -> {
+                BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
                 ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath);
+                
                 return null;
               },
               ex -> {
                 if (ex instanceof CheckoutConflictException) {
                   treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
-                } else if (ex instanceof GitAPIException) {
+                } else {
                   PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
                 }
               });
