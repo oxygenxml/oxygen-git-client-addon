@@ -121,10 +121,10 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         ctrl.asyncTask(
             () -> {
-              BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
-              
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
+              
+              BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
               return null;
             },
             ex -> {
@@ -160,8 +160,8 @@ public class BranchTreeMenuActionsProvider {
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(
               () -> {
-                BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
                 ctrl.getGitAccess().checkoutRemoteBranchWithNewName(dialog.getBranchName(), branchPath);
+                BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
                 
                 return null;
               },

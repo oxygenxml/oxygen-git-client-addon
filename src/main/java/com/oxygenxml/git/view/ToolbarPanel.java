@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -431,11 +432,13 @@ public class ToolbarPanel extends JPanel {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
             GitAccess.getInstance().setBranch(branchName);
+            
+            BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
           } catch (CheckoutConflictException ex) {
             logger.debug(ex, ex);
             restoreCurrentBranchSelectionInMenu();
             BranchesUtil.showBranchSwitchErrorMessage();
-          } catch (GitAPIException | JGitInternalException ex) {
+          } catch (GitAPIException | JGitInternalException | IOException | NoRepositorySelected ex) {
             restoreCurrentBranchSelectionInMenu();
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
