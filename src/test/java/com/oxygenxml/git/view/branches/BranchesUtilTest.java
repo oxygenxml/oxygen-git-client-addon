@@ -95,7 +95,7 @@ public class BranchesUtilTest extends TestCase {
     assertNotNull(expected);
     assertEquals("Failed to update fetch configuration to use wildcards. "
         + "Changes in the remote branch will not be visible. "
-        + "Edit the .git/config file and replace +refs/heads/hot:refs/remotes/origin/hot with +refs/heads/*:refs/remotes/origin/*", 
+        + "To fix this, please edit the .git/config file and replace +refs/heads/hot:refs/remotes/origin/hot with +refs/heads/*:refs/remotes/origin/*", 
         expected.getMessage());
   }
 

@@ -232,7 +232,7 @@ public class BranchesUtil {
       } catch (IOException ex) {
         throw new IOException("Failed to update fetch configuration to use wildcards. "
             + "Changes in the remote branch will not be visible. "
-            + "Edit the .git/config file and replace " + value + " with " + fixupFetch.get(), ex);
+            + "To fix this, please edit the .git/config file and replace " + value + " with " + fixupFetch.get(), ex);
       }
     }
   }
