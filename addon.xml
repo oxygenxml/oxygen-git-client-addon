@@ -27,8 +27,10 @@
 			</p>
                     </div>
 		    <div>
-                        <h3>What's new in version 2.6.0 (not yet released)</h3>
+                        <h3>What's new in version 2.5.1</h3>
                         <ol>
+		            <li>Fixed a configuration problem caused by the selection of a branch to checkout when cloning a repository.
+				Because of this, remote changes could not be detected.</li>
                             <li>The JGit component included in the Git Client was updated to version 5.11.0.</li>
                         </ol>
                     </div>
