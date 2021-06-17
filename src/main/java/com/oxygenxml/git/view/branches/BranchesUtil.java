@@ -188,9 +188,9 @@ public class BranchesUtil {
     if (refSpec.getSource() != null &&
         refSpec.getDestination() != null &&
         !refSpec.isWildcard()) {
-      int lastIndexOf = refSpec.getSource().lastIndexOf("/");
+      int lastIndexOf = refSpec.getSource().lastIndexOf('/');
       String newSource = refSpec.getSource().substring(0, lastIndexOf) + "/*";
-      lastIndexOf = refSpec.getDestination().lastIndexOf("/");
+      lastIndexOf = refSpec.getDestination().lastIndexOf('/');
       String newDestination = refSpec.getDestination().substring(0, lastIndexOf) + "/*";
 
 
