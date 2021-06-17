@@ -31,6 +31,7 @@ import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.view.ChangesPanel;
 import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
+import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.history.HistoryPanel;
@@ -127,8 +128,11 @@ public class PanelRefresh implements GitRefreshSupport {
 	        if (historyPanel != null && historyPanel.isShowing()) {
 	          historyPanel.refresh();
 	        }
+	        
+	        // EXM-47079 Rewrite the fetch property with wildcards.
+	        BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
 	      }
-	    } catch (NoRepositorySelected e) {
+	    } catch (NoRepositorySelected | IOException e) {
 	      logger.debug(e, e);
 	    }
 	  }
