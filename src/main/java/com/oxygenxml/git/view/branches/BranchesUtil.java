@@ -183,28 +183,30 @@ public class BranchesUtil {
    * @return A wildcard variant of the given refspec, if the the refspec does not contain wildcards.
    */
   public static Optional<String> fixupFetch(String refSpecString) {
-    RefSpec refSpec = new RefSpec(refSpecString);
+    if (refSpecString != null) {
+      RefSpec refSpec = new RefSpec(refSpecString);
 
-    if (refSpec.getSource() != null &&
-        refSpec.getDestination() != null &&
-        !refSpec.isWildcard()) {
-      int lastIndexOf = refSpec.getSource().lastIndexOf("/");
-      String newSource = refSpec.getSource().substring(0, lastIndexOf) + "/*";
-      lastIndexOf = refSpec.getDestination().lastIndexOf("/");
-      String newDestination = refSpec.getDestination().substring(0, lastIndexOf) + "/*";
+      if (refSpec.getSource() != null &&
+          refSpec.getDestination() != null &&
+          !refSpec.isWildcard()) {
+        int lastIndexOf = refSpec.getSource().lastIndexOf("/");
+        String newSource = refSpec.getSource().substring(0, lastIndexOf) + "/*";
+        lastIndexOf = refSpec.getDestination().lastIndexOf("/");
+        String newDestination = refSpec.getDestination().substring(0, lastIndexOf) + "/*";
 
 
-      final StringBuilder r = new StringBuilder();
-      if (refSpec.isForceUpdate()) {
-        r.append('+');
+        final StringBuilder r = new StringBuilder();
+        if (refSpec.isForceUpdate()) {
+          r.append('+');
+        }
+        r.append(newSource);
+        r.append(':');
+        r.append(newDestination);
+
+        return Optional.of(r.toString());
       }
-      r.append(newSource);
-      r.append(':');
-      r.append(newDestination);
-      
-      return Optional.of(r.toString());
     }
-    
+
     return Optional.empty();
   }
   
