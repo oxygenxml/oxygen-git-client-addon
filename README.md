@@ -11,7 +11,7 @@ To install the add-on, follow these instructions:
 1. Go to **Help > Install new add-ons...** to open an add-on selection dialog box.
 2. Enter or paste https://www.oxygenxml.com/InstData/Addons/default/updateSite.xml in the **Show add-ons from** field.
 3. Select the **Git Client** add-on and click **Next**.
-4. Read the end-user license agreement. Then select the **I accept all terms of the end-user license agreement** option and click **Finish**.
+4. Read the end-user license agreement. Then select the **I accept all terms of the end-user license agreement** option and click **Install**.
 5. Restart the application.
 
 **Result:** A **Git Staging** view will now be available in Oxygen. If it is not visible, go to **Window > Show View** and select **Git Staging**. This view acts as a basic Git client integrated directly in Oxygen, and it provides support for committing changes to a Git repository, comparing and merging changes, resolving conflicts, and other Git commands.
