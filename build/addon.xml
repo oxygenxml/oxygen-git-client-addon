@@ -4,8 +4,8 @@
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension" id="com.oxygenxml.git">
         <xt:location
-            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.5.1/oxygen-git-client-2.5.1-plugin.jar"/>
-        <xt:version>2.5.1</xt:version>
+            href="https://github.com/oxygenxml/Oxygen-Git-Plugin/releases/download/2.5.2/oxygen-git-client-2.5.2-plugin.jar"/>
+        <xt:version>2.5.2</xt:version>
         <xt:oxy_version>21.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft</xt:author>
@@ -25,6 +25,12 @@
 				pushing/pulling changes to/from the remote repository, creating, checking out and deleting branches,
 				showing the history of the repository resources, and more. The add-on also includes a built-in tool for comparing and merging changes.
 			</p>
+                    </div>
+                    <div>
+                        <h3>What's new in version 2.5.2</h3>
+                        <ol>
+                            <li>The JGit component included in the Git Client was updated to version 5.12.0. This fixes the ssh without passphrase authentication which was broken in the previous 2.5.1 release.</li>
+                        </ol>
                     </div>
 		    <div>
                         <h3>What's new in version 2.5.1</h3>
