@@ -61,7 +61,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.UndoSupportInstaller;
+import com.oxygenxml.git.view.UndoRedoSupportInstaller;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -521,7 +521,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
 
 		// Destination path combo
 		destinationPathCombo = new JComboBox<>();
-		UndoSupportInstaller.installUndoManager(((JTextComponent) destinationPathCombo.getEditor().getEditorComponent()));
+		UndoRedoSupportInstaller.installManager(((JTextComponent) destinationPathCombo.getEditor().getEditorComponent()));
 		destinationPathCombo.setEditable(true);
 		List<String> destinationPaths = OptionsManager.getInstance().getDestinationPaths();
 		if (!destinationPaths.isEmpty()) {

@@ -21,8 +21,8 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.OxygenGitPlugin;
 import com.oxygenxml.git.options.CredentialsBase.CredentialsType;
-import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

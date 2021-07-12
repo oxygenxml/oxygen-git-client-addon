@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.oxygenxml.git.OxygenGitOptionPagePluginExtension.WhenRepoDetectedInProject;
 import com.oxygenxml.git.utils.Equaler;
-import com.oxygenxml.git.view.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 /**
  * Entity for the JAXB to store the plugin options

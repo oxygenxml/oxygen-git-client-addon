@@ -27,24 +27,24 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
-import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.StagingPanel;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
-import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.history.HistoryPanel;
-import com.oxygenxml.git.watcher.RepositoryChangeWatcher;
+import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.staging.StagingPanel;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.ecss.extensions.api.AuthorAccess;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -264,7 +264,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 			logger.fatal(t, t);
 		}
 		
-		RepositoryChangeWatcher watcher = RepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, gitController);
+		RemoteRepositoryChangeWatcher watcher = RemoteRepositoryChangeWatcher.createWatcher(pluginWorkspaceAccess, gitController);
 		gitRefreshSupport = new PanelRefresh(watcher);
 	  
 		UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();

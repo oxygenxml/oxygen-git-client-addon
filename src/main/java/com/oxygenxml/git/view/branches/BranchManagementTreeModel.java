@@ -8,8 +8,8 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.util.TreeUtil;
 
 /**
  * The tree model for the branches.

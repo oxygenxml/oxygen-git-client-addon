@@ -18,8 +18,8 @@ import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
-import com.oxygenxml.git.view.renderer.RendererUtil;
-import com.oxygenxml.git.view.renderer.RenderingInfo;
+import com.oxygenxml.git.view.util.RendererUtil;
+import com.oxygenxml.git.view.util.RenderingInfo;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.ColorTheme;
@@ -82,11 +82,9 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     if (((DefaultMutableTreeNode) value).getParent() == null) {
       icon = Icons.getIcon(Icons.LOCAL_REPO);
     } else {
-      RenderingInfo renderingInfo = RendererUtil.getRenderingInfo(path);
-      if (renderingInfo != null) {
-        icon = renderingInfo.getIcon();
-        text = renderingInfo.getTooltip();
-      }
+      RenderingInfo renderingInfo = getRenderingInfo(path);
+      icon = renderingInfo.getIcon();
+      text = renderingInfo.getTooltip();
     }
 
     if (label != null) {
@@ -111,6 +109,26 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     }
 
     return label;
+  }
+  
+  /**
+   * Get the rendering info (such as icon) for the given branch.
+   * 
+   * @param branchPath The string path to the branch.
+   * 
+   * @return The rendering info.
+   */
+  private RenderingInfo getRenderingInfo(String branchPath) {
+    RenderingInfo renderingInfo = null;
+    if (branchPath.equals(Constants.R_HEADS)) {
+      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.LOCAL), BranchManagementConstants.LOCAL);
+    } else if (branchPath.equals(Constants.R_REMOTES)) {
+      renderingInfo = new RenderingInfo(Icons.getIcon(Icons.REMOTE), BranchManagementConstants.REMOTE);
+    } else {
+      String[] split = branchPath.split("/");
+      renderingInfo = new RenderingInfo(null, split[split.length - 1]);
+    }
+    return renderingInfo;
   }
 
   /**
@@ -146,6 +164,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       super.paint(g);
     }
   }
+  
   /**
    * Paints the border for the selected node.
    * 

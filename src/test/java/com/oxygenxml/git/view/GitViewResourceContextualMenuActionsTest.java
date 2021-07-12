@@ -14,8 +14,9 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PopupMenuSerializer;
-import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.staging.GitResourceContextualMenu;
+import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 /**
  * Test cases for the actions from the contextual menu of the staged/unstaged resources.
@@ -38,7 +39,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_1() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -85,7 +86,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_2() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -133,7 +134,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_3() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -181,7 +182,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_4() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -236,7 +237,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     // Bind the local repository to the remote one.
     bindLocalToRemote(localRepo , remoteRepo);
     
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -292,7 +293,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     // Bind the local repository to the remote one.
     bindLocalToRemote(localRepo , remoteRepo);
     
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -349,7 +350,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     // Bind the local repository to the remote one.
     bindLocalToRemote(localRepo , remoteRepo);
     
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -398,7 +399,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_8() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -448,7 +449,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_9() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -499,7 +500,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_10() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -550,7 +551,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_11() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -597,7 +598,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_12() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -645,7 +646,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_13() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -693,7 +694,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_14() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -743,7 +744,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_15() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -794,7 +795,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_16() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -845,7 +846,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_17() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -895,7 +896,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_18() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -946,7 +947,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_19() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -994,7 +995,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
    */
   @Test
   public void testActionsEnablingState_20() throws Exception {
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {
@@ -1049,7 +1050,7 @@ public class GitViewResourceContextualMenuActionsTest extends GitTestBase {
     // Bind the local repository to the remote one.
     bindLocalToRemote(localRepo , remoteRepo);
     
-    GitViewResourceContextualMenu menu = new GitViewResourceContextualMenu(
+    GitResourceContextualMenu menu = new GitResourceContextualMenu(
         new SelectedResourcesProvider() {
           @Override
           public List<FileStatus> getOnlySelectedLeaves() {

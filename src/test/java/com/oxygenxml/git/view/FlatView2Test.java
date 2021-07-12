@@ -26,6 +26,8 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.staging.ConflictButtonsPanel;
+import com.oxygenxml.git.view.staging.FlatViewTestBase;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

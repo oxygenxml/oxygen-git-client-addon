@@ -24,12 +24,12 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
+import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 
 /**
  * UI level tests for history.

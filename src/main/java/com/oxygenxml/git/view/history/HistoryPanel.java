@@ -67,14 +67,14 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.utils.TreeUtil;
 import com.oxygenxml.git.view.FilterTextField;
-import com.oxygenxml.git.view.HiDPIUtil;
-import com.oxygenxml.git.view.StagingResourcesTableModel;
-import com.oxygenxml.git.view.dialog.UIUtil;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
+import com.oxygenxml.git.view.util.HiDPIUtil;
+import com.oxygenxml.git.view.util.TreeUtil;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

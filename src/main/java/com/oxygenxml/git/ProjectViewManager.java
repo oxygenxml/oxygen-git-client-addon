@@ -9,7 +9,7 @@ import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.utils.FileHelper;
-import com.oxygenxml.git.view.dialog.UIUtil;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;

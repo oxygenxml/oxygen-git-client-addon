@@ -21,7 +21,7 @@ import javax.swing.text.Document;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.dialog.UIUtil;
+import com.oxygenxml.git.view.util.UIUtil;
 
 /**
  * Search field with hint.

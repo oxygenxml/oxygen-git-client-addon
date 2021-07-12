@@ -19,8 +19,9 @@ import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.SubmoduleAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.utils.PanelRefresh;
-import com.oxygenxml.git.view.ChangesPanel.SelectedResourcesProvider;
+import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.staging.DiscardAction;
+import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;

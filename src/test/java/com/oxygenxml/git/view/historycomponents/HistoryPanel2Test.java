@@ -13,9 +13,9 @@ import org.junit.Test;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.StagingResourcesTableModel;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
+import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 
 /**
  * UI level tests for history.

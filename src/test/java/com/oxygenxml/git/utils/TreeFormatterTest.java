@@ -12,6 +12,7 @@ import javax.swing.tree.TreePath;
 import org.junit.Test;
 
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.util.TreeUtil;
 
 public class TreeFormatterTest {
 

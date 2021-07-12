@@ -14,6 +14,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.staging.StagingPanel;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 

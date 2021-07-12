@@ -28,13 +28,13 @@ import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.utils.PanelRefresh;
 import com.oxygenxml.git.view.GitTreeNode;
-import com.oxygenxml.git.view.ToolbarPanel;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.refresh.PanelRefresh;
+import com.oxygenxml.git.view.staging.ToolbarPanel;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
