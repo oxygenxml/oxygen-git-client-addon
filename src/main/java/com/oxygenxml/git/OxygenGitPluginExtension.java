@@ -146,6 +146,30 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
    */
   private BranchManagementPanel branchManagementPanel;
   
+  /**
+   * Customize the menus and add some Git actions.
+   */
+  private MenusAndToolbarsContributorCustomizer menusAndToolbarsCustomizer = new MenusAndToolbarsContributorCustomizer() {
+    EditorPageMenuGitActionsProvider editorPageActionsProvider = 
+        new EditorPageMenuGitActionsProvider(OxygenGitPluginExtension.this);
+    @Override
+    public void customizeAuthorPopUpMenu(JPopupMenu popUp, AuthorAccess authorAccess) {
+      URL editorURL = authorAccess.getEditorAccess().getEditorLocation();
+      List<AbstractAction> actions = editorPageActionsProvider.getActionsForCurrentEditorPage(editorURL);
+      if (!actions.isEmpty()) {
+        UIUtil.addGitActions(popUp, actions);
+      }
+    }
+    @Override
+    public void customizeTextPopUpMenu(JPopupMenu popUp, WSTextEditorPage textPage) {
+      URL editorURL = textPage.getParentEditor().getEditorLocation();
+      List<AbstractAction> actions = editorPageActionsProvider.getActionsForCurrentEditorPage(editorURL);
+      if (!actions.isEmpty()) {
+        UIUtil.addGitActions(popUp, actions);
+      }
+    }
+  };
+  
 	/**
 	 * @see WorkspaceAccessPluginExtension#applicationStarted(StandalonePluginWorkspace)
 	 */
@@ -173,51 +197,35 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           OxygenGitPluginExtension.this);
       ProjectViewManager.addPopUpMenuCustomizer(projectMenuGitActionsProvider);
       
-      // Add Git actions to the contexual menu of the current editor page
-      EditorPageMenuGitActionsProvider editorPageActionsProvider = 
-          new EditorPageMenuGitActionsProvider(OxygenGitPluginExtension.this);
-      pluginWorkspaceAccess.addMenusAndToolbarsContributorCustomizer(new MenusAndToolbarsContributorCustomizer() {
-        @Override
-        public void customizeAuthorPopUpMenu(JPopupMenu popUp, AuthorAccess authorAccess) {
-          URL editorURL = authorAccess.getEditorAccess().getEditorLocation();
-          List<AbstractAction> actions = editorPageActionsProvider.getActionsForCurrentEditorPage(editorURL);
-          if (!actions.isEmpty()) {
-            UIUtil.addGitActions(popUp, actions);
-          }
-        }
-        @Override
-        public void customizeTextPopUpMenu(JPopupMenu popUp, WSTextEditorPage textPage) {
-          URL editorURL = textPage.getParentEditor().getEditorLocation();
-          List<AbstractAction> actions = editorPageActionsProvider.getActionsForCurrentEditorPage(editorURL);
-          if (!actions.isEmpty()) {
-            UIUtil.addGitActions(popUp, actions);
-          }
-        }
-      });
+      // Add Git actions to the contextual menu of the current editor page
+      pluginWorkspaceAccess.addMenusAndToolbarsContributorCustomizer(menusAndToolbarsCustomizer);
 
+      // Customize the contributed side-views
 			pluginWorkspaceAccess.addViewComponentCustomizer(
 			    viewInfo -> {
-			      gitController.addGitListener(new GitEventAdapter() {
-			        private Timer cursorTimer = new Timer(
-			            1000,
-			            e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(
-			                Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
-			        
-			        @Override
-			        public void operationAboutToStart(GitEventInfo info) {
-			          cursorTimer.restart();
-			        }
-			        @Override
-			        public void operationSuccessfullyEnded(GitEventInfo info) {
-			          cursorTimer.stop();
-			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-			        }
-			        @Override
-			        public void operationFailed(GitEventInfo info, Throwable t) {
-			          cursorTimer.stop();
-			          SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
-			        }
-			      });
+			      gitController.addGitListener(
+			          // Set the proper cursor when operations start and end.
+			          new GitEventAdapter() {
+			            private Timer cursorTimer = new Timer(
+			                1000,
+			                e -> SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(
+			                    Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))));
+
+			            @Override
+			            public void operationAboutToStart(GitEventInfo info) {
+			              cursorTimer.restart();
+			            }
+			            @Override
+			            public void operationSuccessfullyEnded(GitEventInfo info) {
+			              cursorTimer.stop();
+			              SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+			            }
+			            @Override
+			            public void operationFailed(GitEventInfo info, Throwable t) {
+			              cursorTimer.stop();
+			              SwingUtilities.invokeLater(() -> viewInfo.getComponent().setCursor(Cursor.getDefaultCursor()));
+			            }
+			          });
 			      
             // The constants' values are defined in plugin.xml
             if (GIT_STAGING_VIEW.equals(viewInfo.getViewID())) {
@@ -271,7 +279,11 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
 	private void customizeGitStagingView(ViewInfo viewInfo) {
     boolean shouldRecreateStagingPanel = stagingPanel == null;
     if (shouldRecreateStagingPanel) {
-      stagingPanel = new StagingPanel(gitRefreshSupport, gitController, OxygenGitPluginExtension.this, OxygenGitPluginExtension.this);
+      stagingPanel = new StagingPanel(
+          gitRefreshSupport,
+          gitController,
+          OxygenGitPluginExtension.this,
+          OxygenGitPluginExtension.this);
       gitRefreshSupport.setStagingPanel(stagingPanel);
     }
     viewInfo.setComponent(stagingPanel);
