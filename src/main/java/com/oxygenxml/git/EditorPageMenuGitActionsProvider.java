@@ -50,12 +50,14 @@ public class EditorPageMenuGitActionsProvider {
     this.historyCtrl = historyController;
     
     StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-    pluginWS.addViewComponentCustomizer(
-        viewInfo -> {
-          if (OxygenGitPluginExtension.GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
-            gitHistoryViewInfo = viewInfo;
-          }
-        });
+    if (pluginWS != null) {
+      pluginWS.addViewComponentCustomizer(
+          viewInfo -> {
+            if (OxygenGitPluginExtension.GIT_HISTORY_VIEW.equals(viewInfo.getViewID())) {
+              gitHistoryViewInfo = viewInfo;
+            }
+          });
+    }
   }
 
   /**
