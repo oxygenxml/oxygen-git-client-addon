@@ -127,7 +127,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 public class GitAccess {
   
   /**
-   * The default name for the first branch created: "main" 
+   * The default name for the first branch created:"main" 
    */
   public static final String DEFAULT_BRANCH_NAME = "main";
   

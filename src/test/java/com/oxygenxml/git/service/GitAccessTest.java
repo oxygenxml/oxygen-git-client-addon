@@ -128,7 +128,7 @@ public class GitAccessTest extends TestCase {
    * 
    * @throws Exception
    */
-  public void testCreateNewRepositoryName() throws Exception {
+  public void testDefaultBranchName() throws Exception {
     File newRepoDirectory = new File("src/test/resources/newRepo");
 
     try {
