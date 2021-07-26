@@ -1,5 +1,6 @@
 package com.oxygenxml.git.service;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.Future;
@@ -119,4 +120,29 @@ public class GitAccessTest extends TestCase {
     assertEquals("Pull_when_repo_in_conflict", errMsg[0]);
   }
   
+  /**
+   * <p><b>Description:</b> Use "main" instead of "master" as the name of the default branch</p>
+   * <p><b>Bug ID:</b> EXM-47940</p>
+   * 
+   * @author gabriel_nedianu
+   * 
+   * @throws Exception
+   */
+  public void testDefaultBranchName() throws Exception {
+    File newRepoDirectory = new File("src/test/resources/newRepo");
+
+    try {
+      newRepoDirectory.mkdir();
+
+      GitAccess.getInstance().createNewRepository(newRepoDirectory.getAbsolutePath());
+      Repository newRepository = GitAccess.getInstance().getRepository();
+
+      assertEquals(GitAccess.DEFAULT_BRANCH_NAME, newRepository.getBranch());
+
+    } finally {
+      org.apache.commons.io.FileUtils.deleteDirectory(newRepoDirectory);
+    }
+
+  }
+
 }

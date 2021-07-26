@@ -125,6 +125,12 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author Beniamin Savu
  */
 public class GitAccess {
+  
+  /**
+   * The default name for the first branch created:"main" 
+   */
+  public static final String DEFAULT_BRANCH_NAME = "main";
+  
   /**
    * The length of the short commit ID.
    */
@@ -463,7 +469,7 @@ public class GitAccess {
 	  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     closeRepo();
     try {
-      git = Git.init().setBare(false).setDirectory(wc).call();
+      git = Git.init().setInitialBranch(DEFAULT_BRANCH_NAME).setBare(false).setDirectory(wc).call();
       fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     } catch (GitAPIException e) {
       fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc), e);

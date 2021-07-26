@@ -195,6 +195,7 @@ public class FileStatusDialog extends OKCancelDialog {
    */
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
     FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
+    dialog.setResizable(true);
     dialog.setVisible(true);
   }
   
