@@ -26,4 +26,9 @@ public class GitEditorVariablesNames {
    * The short name of the current branch (e.g. "dev").
    */
   public static final String SHORT_BRANCH_NAME_EDITOR_VAR = "${git(short_branch_name)}";
+
+  /**
+   * The URL to the working copy directory.
+   */
+  public static final String WORKING_COPY_URL_EDITOR_VAR = "${git(working_copy_url)}";
 }

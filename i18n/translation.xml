@@ -358,6 +358,14 @@
         <val lang="ja_JP">The path of the current working copy directory.</val>
         <val lang="nl_NL">Het pad van de huidige werkkopiemap.</val>
     </key>
+    <key value="Working_copy_url_description">
+        <comment>"Description for the working_copy_url editor variable."</comment>
+        <val lang="en_US">The URL of the current working copy directory.</val>
+        <val lang="de_DE">The URL of the current working copy directory.</val>
+        <val lang="fr_FR">L'URL du répertoire de copie de travail actuel.</val>
+        <val lang="ja_JP">The URL of the current working copy directory.</val>
+        <val lang="nl_NL">De URL van de huidige werkkopie directory.</val>
+    </key>
     <key value="File">
         <comment>"Displays the translation for "File"."</comment>
         <val lang="en_US">File</val>

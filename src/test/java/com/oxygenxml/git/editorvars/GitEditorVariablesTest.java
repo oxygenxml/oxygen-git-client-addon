@@ -84,5 +84,18 @@ public class GitEditorVariablesTest extends GitTestBase {
         null);
     assertEquals("- " + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath() + " -", actual);
   }
+  
+  /**
+   * Tests the replacement of the editor variable for the working copy URL.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testWorkingCopyURLEditorVariable() throws Exception {
+    String actual = editorVariablesResolver.resolveEditorVariables(
+        "- " + GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR + " -",
+        null);
+    assertEquals("- " + new File(LOCAL_TEST_REPOSITORY).toURI().toURL().toString() + " -", actual);
+  }
 
 }

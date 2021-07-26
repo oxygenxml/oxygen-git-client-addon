@@ -46,6 +46,10 @@ public class Tags {
    */
   public static final String WORKING_COPY_PATH_DESCRIPTION = "Working_copy_path_description";
   /**
+   * Description for the working_copy_url editor variable.
+   */
+  public static final String WORKING_COPY_URL_DESCRIPTION = "Working_copy_url_description";
+  /**
    * Uncommitted changes.
    */
   public static final String UNCOMMITTED_CHANGES = "Uncommitted_changes";

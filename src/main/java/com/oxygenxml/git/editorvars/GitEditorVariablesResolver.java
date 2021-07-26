@@ -1,14 +1,5 @@
 package com.oxygenxml.git.editorvars;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -16,9 +7,17 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
-
+import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.util.EditorVariableDescription;
 import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Resolver for Git-related editor variables.
@@ -30,11 +29,11 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * Translator instance.
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator   translator = Translator.getInstance();
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(GitEditorVariablesResolver.class);
+  private static final Logger       logger = Logger.getLogger(GitEditorVariablesResolver.class);
   /**
    * Editor variable name to resolved value.
    */
@@ -43,7 +42,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * Git event listener.
    */
-  private GitEventAdapter gitEventListener = new GitEventAdapter() {
+  private final GitEventAdapter gitEventListener = new GitEventAdapter() {
     @Override
     public void operationSuccessfullyEnded(GitEventInfo info) {
       if (info.getGitOperation() == GitOperation.OPEN_WORKING_COPY) {
@@ -57,7 +56,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * Git operations controller.
    */
-  private GitControllerBase gitController;
+  private final GitControllerBase gitController;
   
   /**
    * Constructor.
@@ -112,10 +111,27 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
               GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
               wcPath);
         }
+        
+     // Working copy URL
+        if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR)) {
+          String wcURL = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR);
+          if (wcURL == null) {
+            if (workingCopy == null) {
+              workingCopy = gitController.getGitAccess().getWorkingCopy();
+            }
+            wcURL = workingCopy.getAbsoluteFile().toURI().toURL().toString();
+            editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR, wcURL);
+          }
+          contentWithEditorVariables = contentWithEditorVariables.replace(
+              GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR,
+              wcURL);
+        } 
     } catch (NoRepositorySelected e) {
       if (logger.isDebugEnabled()) {
         logger.debug(e.getMessage(), e);
       }
+    } catch (MalformedURLException e) {
+      logger.debug(e.getMessage(), e);
     }
     return contentWithEditorVariables;
   }
@@ -185,6 +201,10 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
         new EditorVariableDescription(
             GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
             translator.getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
+    list.add(
+       new EditorVariableDescription(
+            GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR,
+            translator.getTranslation(Tags.WORKING_COPY_URL_DESCRIPTION)));
     return list;
   }
   

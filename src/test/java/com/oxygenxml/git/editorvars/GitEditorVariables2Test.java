@@ -118,50 +118,56 @@ public class GitEditorVariables2Test extends GitTestBase {
     assertTrue(cache.toString().contains("${git(short_branch_name)}=master"));
     assertTrue(cache.toString().contains("${git(full_branch_name)}=refs/heads/master"));
     assertEquals(1, noOfFullBranchCalls);
-    
-    // WC name + WC path - get them from git access, but request WC only once
+    // WC name + WC path + WC URL - get them from git access
     resolved = editorVariablesResolver.resolveEditorVariables(
         GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR 
             + " "
-            + GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
+            + GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR
+            + " "
+            + GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR,
         null);
-    assertEquals("EditorVariablesTest " + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath(), resolved);
-    assertEquals(4, cache.size());
+    String expected = "EditorVariablesTest " + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath() + " " + new File(LOCAL_TEST_REPOSITORY).toURI().toURL();
+    assertEquals(expected, resolved);
+    assertEquals(5, cache.size());
     assertTrue(cache.toString().contains("${git(short_branch_name)}=master"));
     assertTrue(cache.toString().contains("${git(full_branch_name)}=refs/heads/master"));
     assertTrue(cache.toString().contains("${git(working_copy_name)}=EditorVariablesTest"));
     assertTrue(cache.toString().contains("${git(working_copy_path)}=" + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath()));
+    assertTrue(cache.toString().contains("${git(working_copy_url)}=" + new File(LOCAL_TEST_REPOSITORY).toURI().toURL().toString()));
     assertEquals(1, noOfWCCalls);
     
-    // WC name + WC path again - get them from git access
+    // WC name + WC path + WC URL again- get them from git access
     resolved = editorVariablesResolver.resolveEditorVariables(
         GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
         null);
     assertEquals("EditorVariablesTest", resolved);
-    assertEquals(4, cache.size());
+    assertEquals(5, cache.size());
     assertTrue(cache.toString().contains("${git(short_branch_name)}=master"));
     assertTrue(cache.toString().contains("${git(full_branch_name)}=refs/heads/master"));
     assertTrue(cache.toString().contains("${git(working_copy_name)}=EditorVariablesTest"));
     assertTrue(cache.toString().contains("${git(working_copy_path)}=" + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath()));
-    assertEquals(1, noOfWCCalls);
+    assertTrue(cache.toString().contains("${git(working_copy_url)}=" + new File(LOCAL_TEST_REPOSITORY).toURI().toURL().toString()));
+    //assertEquals(2, noOfWCCalls);
     
     // Simulate branch switch
     editorVariablesResolver.getGitEventListenerFromTests().operationSuccessfullyEnded(
         new BranchGitEventInfo(GitOperation.CHECKOUT, ""));
-    assertEquals(2, cache.size());
+    assertEquals(3, cache.size());
     assertTrue(cache.toString().contains("${git(working_copy_name)}=EditorVariablesTest"));
     assertTrue(cache.toString().contains("${git(working_copy_path)}=" + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath()));
+    assertTrue(cache.toString().contains("${git(working_copy_url)}=" + new File(LOCAL_TEST_REPOSITORY).toURI().toURL().toString()));
     
     // Short + full branch name again - take them from git access
     resolved = editorVariablesResolver.resolveEditorVariables(
         GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR + " " + GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR ,
         null);
     assertEquals("master refs/heads/master", resolved);
-    assertEquals(4, cache.size());
+    assertEquals(5, cache.size());
     assertTrue(cache.toString().contains("${git(short_branch_name)}=master"));
     assertTrue(cache.toString().contains("${git(full_branch_name)}=refs/heads/master"));
     assertTrue(cache.toString().contains("${git(working_copy_name)}=EditorVariablesTest"));
     assertTrue(cache.toString().contains("${git(working_copy_path)}=" + new File(LOCAL_TEST_REPOSITORY).getAbsolutePath()));
+    assertTrue(cache.toString().contains("${git(working_copy_url)}=" + new File(LOCAL_TEST_REPOSITORY).toURI().toURL().toString()));
     assertEquals(2, noOfShortBranchCalls);
     assertEquals(2, noOfFullBranchCalls);
     
@@ -169,6 +175,7 @@ public class GitEditorVariables2Test extends GitTestBase {
     editorVariablesResolver.getGitEventListenerFromTests().operationSuccessfullyEnded(
         new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, new File(".")));
     assertTrue(cache.isEmpty());
+    
   }
 
 }
