@@ -463,7 +463,7 @@ public class GitAccess {
 	  fireOperationAboutToStart(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     closeRepo();
     try {
-      git = Git.init().setBare(false).setDirectory(wc).call();
+      git = Git.init().setInitialBranch("main").setBare(false).setDirectory(wc).call();
       fireOperationSuccessfullyEnded(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc));
     } catch (GitAPIException e) {
       fireOperationFailed(new WorkingCopyGitEventInfo(GitOperation.OPEN_WORKING_COPY, wc), e);

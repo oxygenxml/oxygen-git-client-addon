@@ -1,5 +1,7 @@
 package com.oxygenxml.git.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.Future;
@@ -119,4 +121,21 @@ public class GitAccessTest extends TestCase {
     assertEquals("Pull_when_repo_in_conflict", errMsg[0]);
   }
   
+  public void testCreateNewRepositoryName() throws IOException, NoRepositorySelected, GitAPIException {
+    File newRepoDirectory = new File("src/test/resources/newRepo");
+
+    try {
+      newRepoDirectory.mkdir();
+
+      GitAccess.getInstance().createNewRepository(newRepoDirectory.getAbsolutePath());
+      Repository newRepository = GitAccess.getInstance().getRepository();
+
+      assertEquals("main", newRepository.getBranch());
+
+    } finally {
+      org.apache.commons.io.FileUtils.deleteDirectory(newRepoDirectory);
+    }
+
+  }
+
 }
