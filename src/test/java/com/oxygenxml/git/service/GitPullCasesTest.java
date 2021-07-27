@@ -364,7 +364,7 @@ public class GitPullCasesTest extends GitTestBase {
     assertEquals("11\n2\n33", read(firstRepofile.toURI().toURL()));
     
     Git git = GitAccess.getInstance().getGit();
-    Iterable<RevCommit> commits = git.log().add(local1Repo.resolve("refs/heads/master")).call();
+    Iterable<RevCommit> commits = git.log().add(local1Repo.resolve("refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME)).call();
     StringBuilder sb = new StringBuilder("Commits from last to first:\n");
     for (RevCommit commit : commits) {
       sb.append("    ").append(commit.getFullMessage()).append("\n");
@@ -437,7 +437,7 @@ public class GitPullCasesTest extends GitTestBase {
     assertEquals("11\n2\n33", read(firstRepofile.toURI().toURL()));
     
     Git git = GitAccess.getInstance().getGit();
-    Iterable<RevCommit> commits = git.log().add(local1Repo.resolve("refs/heads/master")).call();
+    Iterable<RevCommit> commits = git.log().add(local1Repo.resolve("refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME)).call();
     StringBuilder sb = new StringBuilder("Commits from last to first:\n");
     for (RevCommit commit : commits) {
       sb.append("    ").append(commit.getFullMessage()).append("\n");
@@ -451,7 +451,7 @@ public class GitPullCasesTest extends GitTestBase {
     }
     assertEquals(
         "Commits from last to first:\n" + 
-        "    Merge branch 'master' of " + repoURI + "\n" + 
+        "    Merge branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of " + repoURI + "\n" + 
         "    Edited last line\n" + 
         "    Edited first line\n" + 
         "    First commit\n" + 

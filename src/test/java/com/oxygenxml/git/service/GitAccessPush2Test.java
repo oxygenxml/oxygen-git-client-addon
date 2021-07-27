@@ -57,10 +57,10 @@ public class GitAccessPush2Test extends GitTestBase {
     gitAccess.commit("file test added");
     push("", "");
     
-    gitAccess.checkoutRemoteBranchWithNewName("localBranch", "master");
+    gitAccess.checkoutRemoteBranchWithNewName("localBranch", GitAccess.DEFAULT_BRANCH_NAME);
     String detectedBranchName = gitAccess.getBranchInfo().getBranchName();
     assertEquals("localBranch", detectedBranchName);
-    assertEquals("origin/master", gitAccess.getUpstreamBranchShortNameFromConfig(detectedBranchName));
+    assertEquals("origin/" + GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getUpstreamBranchShortNameFromConfig(detectedBranchName));
     
     setFileContent(file, "NEW TEXT CONTENT");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));

@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.staging.ToolbarPanel;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
@@ -77,7 +76,7 @@ public class FlatView7Test extends FlatViewTestBase {
         "Push_to_create_and_track_remote_branch",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
+        "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
         toolbarPanel.getBranchSplitMenuButton().getToolTipText());
     
     // Push to create the remote branch
@@ -98,7 +97,7 @@ public class FlatView7Test extends FlatViewTestBase {
         + "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
         toolbarPanel.getBranchSplitMenuButton().getToolTipText());
     
-    gitAccess.setBranch("master");
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     flushAWT();
     
     // Commit a new file locally
@@ -122,7 +121,7 @@ public class FlatView7Test extends FlatViewTestBase {
         "Push_to.\nOne_commit_ahead",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>master</b>.<br>Upstream_branch <b>origin/master</b>.<br>"
+        "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
         + "One_commit_behind<br>One_commit_ahead</html>",
         toolbarPanel.getBranchSplitMenuButton().getToolTipText());
     
@@ -146,7 +145,7 @@ public class FlatView7Test extends FlatViewTestBase {
         "Push_to.\nCommits_ahead",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>master</b>.<br>Upstream_branch <b>origin/master</b>.<br>"
+        "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
         + "Commits_behind<br>Commits_ahead</html>",
         toolbarPanel.getBranchSplitMenuButton().getToolTipText());
   }

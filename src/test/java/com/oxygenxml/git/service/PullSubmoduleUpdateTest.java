@@ -75,7 +75,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     try (
         Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(mainRepo, submoduleName);
         Git git = new Git(submoduleRepository)) {
-        git.checkout().setName("master").setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM).call();
+        git.checkout().setName(GitAccess.DEFAULT_BRANCH_NAME).setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM).call();
         git.pull().call();
     }
     

@@ -68,10 +68,10 @@ public class GitCloneTest extends GitTestBase {
       
 
       // Create a second branch ("slave")
-      RefSpec spec = new RefSpec("refs/heads/master:refs/heads/slave");
+      RefSpec spec = new RefSpec("refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + ":refs/heads/slave");
       gitAccess.getGit().push().setRefSpecs(spec).call();
       
-      // Commit another file on "master"
+      // Commit another file on main
       localTestFile = new File(localDir, "test2.txt");
       localTestFile.createNewFile();
       gitAccess.add(new FileStatus(GitChangeType.ADD, "test2.txt"));
@@ -83,7 +83,7 @@ public class GitCloneTest extends GitTestBase {
           new URIish(remoteRepo.getWorkTree().toURI().toURL()), null);
       assertEquals(2, branches.size());
       Ref[] branchesArray = branches.toArray(new Ref[0]);
-      assertEquals("refs/heads/master", branchesArray[0].getName());
+      assertEquals("refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME , branchesArray[0].getName());
       assertEquals("refs/heads/slave", branchesArray[1].getName());
       
       // Now clone the repository and checkout the default branch.
@@ -93,7 +93,7 @@ public class GitCloneTest extends GitTestBase {
           cloneDest,
           null,
           null);
-      assertEquals("master", gitAccess.getRepository().getBranch());
+      assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
       
       // Check what we have in the destination folder
       List<File> files = new ArrayList<>();

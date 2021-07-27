@@ -26,8 +26,8 @@ import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.GitController;
+import com.oxygenxml.git.view.event.PullType;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -416,7 +416,7 @@ public class DiffPresenterTest extends GitTestBase {
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
-    assertTrue(read(localFile1.toURI().toURL()).startsWith("<<<<<<< Upstream, based on branch 'master' of file:"));
+    assertTrue(read(localFile1.toURI().toURL()).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
 
     leftDiff = null;
     rightDiff = null;

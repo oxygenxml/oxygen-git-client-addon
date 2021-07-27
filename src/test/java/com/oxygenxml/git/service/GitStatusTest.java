@@ -20,6 +20,7 @@ public class GitStatusTest extends GitTestBase {
   private final static String REMOTE_TEST_REPOSITORY = "target/test-resources/GitStatusTest/remote";
   protected GitAccess gitAccess;
 
+  @Override
   @Before
   public void setUp() throws Exception {
     super.setUp();
@@ -47,7 +48,7 @@ public class GitStatusTest extends GitTestBase {
     remoteConfig.addFetchRefSpec(spec1);
     remoteConfig.update(config);
     
-    String branchName = "master";
+    String branchName = GitAccess.DEFAULT_BRANCH_NAME;
     String remoteName = "origin";
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);

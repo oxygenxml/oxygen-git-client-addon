@@ -35,6 +35,7 @@ public class BranchManagementTest extends GitTestBase{
   private Repository remoteRepository;
   private Repository localRepository;
   
+  @Override
   @Before
   public void setUp() throws Exception {
     
@@ -117,10 +118,10 @@ public class BranchManagementTest extends GitTestBase{
         "  refs/heads/\n" + 
         "    refs/heads/LocalBranch\n" + 
         "    refs/heads/LocalBranch2\n" + 
-        "    refs/heads/master\n" + 
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
-        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "      refs/remotes/origin/RemoteBranch\n" + 
         "      refs/remotes/origin/RemoteBranch2\n" + 
         "",
@@ -162,7 +163,7 @@ public class BranchManagementTest extends GitTestBase{
         "  refs/heads/\n" + 
         "    refs/heads/LocalBranch\n" + 
         "    refs/heads/LocalBranch2\n" + 
-        "    refs/heads/master\n" + 
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "",
         actualTree.toString());
   }
@@ -206,7 +207,7 @@ public class BranchManagementTest extends GitTestBase{
         "localRepository\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
-        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "      refs/remotes/origin/RemoteBranch\n" + 
         "      refs/remotes/origin/RemoteBranch2\n" + 
         "",
@@ -247,7 +248,7 @@ public class BranchManagementTest extends GitTestBase{
         "localRepository\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
-        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "",
         actualTree.toString());
   }
@@ -305,7 +306,7 @@ public class BranchManagementTest extends GitTestBase{
     assertEquals(
         "localRepository\n" + 
         "  refs/heads/\n" + 
-        "    refs/heads/master\n",
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n",
         actualTree.toString());
     
     branchManagementPanel.filterTree("h2");
@@ -380,7 +381,7 @@ public class BranchManagementTest extends GitTestBase{
         "localRepository\n" + 
             "  refs/remotes/\n" + 
             "    refs/remotes/origin/\n" + 
-            "      refs/remotes/origin/master\n",
+            "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n",
         actualTree.toString());
     
     branchManagementPanel.filterTree("ch2");
@@ -404,7 +405,7 @@ public class BranchManagementTest extends GitTestBase{
         "localRepository\n" + 
             "  refs/remotes/\n" + 
             "    refs/remotes/origin/\n" + 
-            "      refs/remotes/origin/master\n" + 
+            "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
             "      refs/remotes/origin/RemoteBranch\n" + 
             "      refs/remotes/origin/RemoteBranch2\n",
         actualTree.toString());
@@ -464,10 +465,10 @@ public class BranchManagementTest extends GitTestBase{
     assertEquals(
         "localRepository\n" + 
         "  refs/heads/\n" + 
-        "    refs/heads/master\n" + 
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
-        "      refs/remotes/origin/master\n",
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n",
         actualTree.toString());
     
     branchManagementPanel.filterTree("Branch");

@@ -263,8 +263,8 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     
     // Pull to create conflict
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
@@ -290,7 +290,7 @@ public class GitCheckoutConflictTest extends TestCase {
     }
     sleep(500);
     
-    assertEquals("master", gitAccess.getRepository().getBranch());
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_when_repo_in_conflict_error_msg", errMsg[0]);
   }
@@ -332,8 +332,8 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     
     // Pull to create conflict
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
@@ -350,7 +350,7 @@ public class GitCheckoutConflictTest extends TestCase {
     newBranchItem.getAction().actionPerformed(null);
     sleep(600);
     
-    assertEquals("master", gitAccess.getRepository().getBranch());
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_when_repo_in_conflict_error_msg", errMsg[0]);
   }
@@ -392,8 +392,8 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     gitAccess.commit("commit on nnew branch");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     
     // change file.txt to create checkout conflict
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "new changes");;
@@ -414,7 +414,7 @@ public class GitCheckoutConflictTest extends TestCase {
     newBranchItem.getAction().actionPerformed(null);
     sleep(600);
     
-    assertEquals("master", gitAccess.getRepository().getBranch());
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_when_repo_in_conflict_error_msg", errMsg[0]);
   }
@@ -447,8 +447,8 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit 2");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
@@ -472,7 +472,7 @@ public class GitCheckoutConflictTest extends TestCase {
     }
     sleep(500);
     
-    assertEquals("master", gitAccess.getRepository().getBranch());
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
   }
@@ -505,8 +505,8 @@ public class GitCheckoutConflictTest extends TestCase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit 2");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
@@ -526,7 +526,7 @@ public class GitCheckoutConflictTest extends TestCase {
     newBranchItem.getAction().actionPerformed(null);
     sleep(600);
     
-    assertEquals("master", gitAccess.getRepository().getBranch());
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
   }

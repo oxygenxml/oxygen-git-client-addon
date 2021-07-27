@@ -44,6 +44,7 @@ public class BranchActionsTest extends GitTestBase {
   private Repository remoteRepository;
   private Repository localRepository;
   
+  @Override
   @Before
   public void setUp() throws Exception {
     
@@ -78,7 +79,7 @@ public class BranchActionsTest extends GitTestBase {
     gitAccess.fetch();
     
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
-    assertEquals("master", initialBranchName);
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
     
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
@@ -143,7 +144,7 @@ public class BranchActionsTest extends GitTestBase {
       gitAccess.fetch();
 
       String initialBranchName = gitAccess.getBranchInfo().getBranchName();
-      assertEquals("master", initialBranchName);
+      assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
 
       GitControllerBase mock = new GitController(GitAccess.getInstance());
       BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
@@ -196,7 +197,7 @@ public class BranchActionsTest extends GitTestBase {
               "    refs/heads/LocalBranch\n" +
               "    refs/heads/LocalBranch2\n" +
               "    refs/heads/LocalBranchCopy\n" +
-              "    refs/heads/master\n",
+              "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n",
               actualTree.toString());
 
       assertEquals("LocalBranchCopy", gitAccess.getBranchInfo().getBranchName());
@@ -228,7 +229,7 @@ public class BranchActionsTest extends GitTestBase {
       gitAccess.fetch();
 
       String initialBranchName = gitAccess.getBranchInfo().getBranchName();
-      assertEquals("master", initialBranchName);
+      assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
 
       GitControllerBase mock = new GitController(GitAccess.getInstance());
       BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
@@ -281,7 +282,7 @@ public class BranchActionsTest extends GitTestBase {
               "    refs/heads/LocalBranch\n" +
               "    refs/heads/LocalBranch2\n" +
               "    refs/heads/LocalBranchCopy\n" +
-              "    refs/heads/master\n",
+              "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n",
               actualTree.toString());
 
       assertEquals(initialBranchName, gitAccess.getBranchInfo().getBranchName());
@@ -308,7 +309,7 @@ public class BranchActionsTest extends GitTestBase {
     gitAccess.fetch();
     
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
-    assertEquals("master", initialBranchName);
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
     
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
@@ -348,7 +349,7 @@ public class BranchActionsTest extends GitTestBase {
         "localRepository\n" + 
         "  refs/heads/\n" + 
         "    refs/heads/LocalBranch2\n" +
-        "    refs/heads/master\n",
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n",
         actualTree.toString());
   }
   
@@ -376,7 +377,7 @@ public class BranchActionsTest extends GitTestBase {
     gitAccess.fetch();
     
     String initialBranchName = gitAccess.getBranchInfo().getBranchName();
-    assertEquals("master", initialBranchName);
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
     
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
@@ -422,7 +423,7 @@ public class BranchActionsTest extends GitTestBase {
         "    refs/heads/RemoteBranch2Copy\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
-        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "      refs/remotes/origin/RemoteBranch\n" + 
         "      refs/remotes/origin/RemoteBranch2\n" + 
         "",
@@ -469,7 +470,7 @@ public class BranchActionsTest extends GitTestBase {
         "    refs/heads/RemoteBranchCopy\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
-        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "      refs/remotes/origin/RemoteBranch\n" + 
         "      refs/remotes/origin/RemoteBranch2\n" + 
         "",

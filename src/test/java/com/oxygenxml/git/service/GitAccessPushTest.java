@@ -35,7 +35,8 @@ public class GitAccessPushTest extends GitTestBase {
 	private Repository secondLocalRepo;
 	private GitAccess gitAccess;
 
-	@Before
+	@Override
+  @Before
 	public void setUp() throws Exception {
 	  super.setUp();
 	  
@@ -155,7 +156,7 @@ public class GitAccessPushTest extends GitTestBase {
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
     pull("", "", PullType.MERGE_FF, false);
     
-    String branchName = "master";
+    String branchName = GitAccess.DEFAULT_BRANCH_NAME;
     String remoteName = "origin";
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
@@ -165,7 +166,8 @@ public class GitAccessPushTest extends GitTestBase {
 	}
 
 
-	@After
+	@Override
+  @After
 	public void tearDown() throws Exception {
 		gitAccess.closeRepo();
 		firstLocalRepo.close();

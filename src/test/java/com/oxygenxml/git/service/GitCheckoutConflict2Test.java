@@ -232,8 +232,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     
     // Pull to create conflict
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
@@ -277,7 +277,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     }
     sleep(500);
     
-    assertEquals("master", gitAccess.getRepository().getBranch());
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Cannot_checkout_new_branch_when_having_conflicts", errMsg[0]);
   }
@@ -319,8 +319,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     gitAccess.commit("commit on nnew branch");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     
     // change file.txt to create checkout conflict
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "new changes");;
@@ -368,7 +368,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     }
     sleep(500);
     
-    assertEquals("master", gitAccess.getRepository().getBranch());
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Cannot_checkout_new_branch_when_having_conflicts", errMsg[0]);
   }
@@ -410,8 +410,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     gitAccess.commit("commit on nnew branch");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     
     // Pull to create conflict o text.txt
     PullResponse pullResp = pull("", "", PullType.MERGE_FF, false);
@@ -486,8 +486,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
     
-    // move to master
-    gitAccess.setBranch("master");
+    // move to main branch
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
@@ -529,7 +529,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     }
     sleep(500);
     
-    assertEquals("master", gitAccess.getRepository().getBranch());
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Cannot_checkout_new_branch_because_uncommitted_changes", errMsg[0]);
   }

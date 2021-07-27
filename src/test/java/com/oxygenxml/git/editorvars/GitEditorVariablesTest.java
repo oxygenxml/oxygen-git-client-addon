@@ -22,6 +22,7 @@ public class GitEditorVariablesTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/EditorVariablesTest";
   private EditorVariablesResolver editorVariablesResolver = new GitEditorVariablesResolver(new GitController(GitAccess.getInstance()));
 
+  @Override
   @Before
   public void setUp() throws Exception {
     super.setUp();
@@ -42,7 +43,7 @@ public class GitEditorVariablesTest extends GitTestBase {
     String actual = editorVariablesResolver.resolveEditorVariables(
         "- " + GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR + " -",
         null);
-    assertEquals("- master -", actual);
+    assertEquals("- " + GitAccess.DEFAULT_BRANCH_NAME + " -", actual);
   }
 
   /**
@@ -56,7 +57,7 @@ public class GitEditorVariablesTest extends GitTestBase {
     String actual = editorVariablesResolver.resolveEditorVariables(
         "- " + GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR + " -",
         null);
-    assertEquals("- refs/heads/master -", actual);
+    assertEquals("- refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + " -", actual);
   }
 
   /**

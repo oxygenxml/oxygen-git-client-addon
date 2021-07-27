@@ -1,6 +1,5 @@
 package com.oxygenxml.git.service;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.Future;
@@ -27,9 +26,9 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * Test cases for {@link GitAccess}.
  */
 public class GitAccessTest extends TestCase {
-  
+
   String[] errMsg = new String[1];
-  
+
   /**
    * Push changes.
    * 
@@ -38,13 +37,12 @@ public class GitAccessTest extends TestCase {
    * 
    * @return push response.
    * 
-   * @throws GitAPIException 
+   * @throws GitAPIException
    */
   protected final PushResponse push(String username, String password) throws GitAPIException {
-    return GitAccess.getInstance().push(
-        new SSHCapableUserCredentialsProvider("", "", "", ""));
+    return GitAccess.getInstance().push(new SSHCapableUserCredentialsProvider("", "", "", ""));
   }
-  
+
   /**
    * @see junit.framework.TestCase.setUp()
    */
@@ -61,13 +59,18 @@ public class GitAccessTest extends TestCase {
       }
     }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
-    
+
     errMsg[0] = "";
   }
 
   /**
-   * <p><b>Description:</b> better message when trying to push while having a conflict.</p>
-   * <p><b>Bug ID:</b> EXM-47439</p>
+   * <p>
+   * <b>Description:</b> better message when trying to push while having a
+   * conflict.
+   * </p>
+   * <p>
+   * <b>Bug ID:</b> EXM-47439
+   * </p>
    *
    * @author sorin_carbunaru
    *
@@ -85,10 +88,15 @@ public class GitAccessTest extends TestCase {
     PushResponse pushResp = push("", "");
     assertEquals("status: REJECTED_OTHER_REASON message Resolve_conflicts_first", pushResp.toString());
   }
-  
+
   /**
-   * <p><b>Description:</b> better message when trying to pull while having a conflict.</p>
-   * <p><b>Bug ID:</b> EXM-47439</p>
+   * <p>
+   * <b>Description:</b> better message when trying to pull while having a
+   * conflict.
+   * </p>
+   * <p>
+   * <b>Bug ID:</b> EXM-47439
+   * </p>
    *
    * @author sorin_carbunaru
    *
@@ -104,45 +112,20 @@ public class GitAccessTest extends TestCase {
     Mockito.when(repoMock.getRepositoryState()).thenReturn(RepositoryState.MERGING);
     Mockito.when(repoMock.getConfig()).thenReturn(configMock);
     Mockito.when(gitMock.getRepository()).thenReturn(repoMock);
-    
+
     Mockito.when(statusMock.getConflicting()).thenReturn(new HashSet<>(Arrays.asList("string1")));
     Mockito.when(statusCmdMock.call()).thenReturn(statusMock);
     Mockito.when(gitMock.status()).thenReturn(statusCmdMock);
-    
+
     GitAccess.getInstance().setGit(gitMock);
 
     GitController gitCtrl = new GitController(GitAccess.getInstance());
     Future<?> pullResp = gitCtrl.pull();
     pullResp.get();
-    
+
     Thread.sleep(300);
-    
+
     assertEquals("Pull_when_repo_in_conflict", errMsg[0]);
-  }
-  
-  /**
-   * <p><b>Description:</b> Use "main" instead of "master" as the name of the default branch</p>
-   * <p><b>Bug ID:</b> EXM-47940</p>
-   * 
-   * @author gabriel_nedianu
-   * 
-   * @throws Exception
-   */
-  public void testDefaultBranchName() throws Exception {
-    File newRepoDirectory = new File("src/test/resources/newRepo");
-
-    try {
-      newRepoDirectory.mkdir();
-
-      GitAccess.getInstance().createNewRepository(newRepoDirectory.getAbsolutePath());
-      Repository newRepository = GitAccess.getInstance().getRepository();
-
-      assertEquals(GitAccess.DEFAULT_BRANCH_NAME, newRepository.getBranch());
-
-    } finally {
-      org.apache.commons.io.FileUtils.deleteDirectory(newRepoDirectory);
-    }
-
   }
 
 }

@@ -174,7 +174,7 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
     //=======================
     // Change branch.
     //=======================
-    GitAccess.getInstance().setBranch("master");
+    GitAccess.getInstance().setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     
     // History panel uses the scheduler to perform the change.
     ScheduledFuture<?> schedule = GitOperationScheduler.getInstance().schedule(() -> {});
