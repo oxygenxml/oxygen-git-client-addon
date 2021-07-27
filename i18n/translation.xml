@@ -1981,4 +1981,12 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Kan geen pull doen. Uw niet-bewaarde, lokale wijzigingen in de volgende bestanden zouden door het samenvoegen worden overschreven:</val>
     </key>
+	<key value="Push_Failed_Transport_Exception">
+        <comment>The text is displayed when you try to push to remote repository but no internet</comment>
+        <val lang="en_US">Check your Internet connection! </val>
+        <val lang="de_DE">Bitte prüfen Sie Ihre Internetverbindung!</val>
+        <val lang="fr_FR"> </val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL"></val>
+    </key>
 </translation>
