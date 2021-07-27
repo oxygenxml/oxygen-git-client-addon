@@ -984,84 +984,91 @@ public class GitAccess {
 	 * @throws GitAPIException
 	 */
 	public PushResponse push(CredentialsProvider credentialsProvider)
-	    throws GitAPIException {
+			throws GitAPIException {
 
-	  AuthenticationInterceptor.install();
-	  
-	  PushResponse response = new PushResponse();
-	  
-	  Repository repo = git.getRepository();
-    RepositoryState repoState = repo.getRepositoryState();
-	  if (repoState == RepositoryState.MERGING
-	      || repoState == RepositoryState.REBASING
-        || repoState == RepositoryState.REBASING_MERGE
-        || repoState == RepositoryState.REBASING_REBASING) {
-	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-	    response.setMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-	    return response;
-	  }
-	  
-	  if (getPullsBehind() > 0) {
-	    response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD);
-	    response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
-	    return response;
-	  }
-	  
-    try {
-      if (getPushesAhead() == 0) {
-        response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
-        response.setMessage(translator.getTranslation(Tags.PUSH_UP_TO_DATE));
-        return response;
-      }
-    } catch (RepoNotInitializedException e) {
-      logger.debug(e, e);
-    }
-	  
-    PushCommand pushCommand = git.push().setCredentialsProvider(credentialsProvider);
-    String localBranchName = getBranchInfo().getBranchName();
-    String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
-    if (upstreamBranch != null) {
-      pushCommand.setRefSpecs(
-          Arrays.asList(
-              new RefSpec(localBranchName + ":" + upstreamBranch.substring(upstreamBranch.indexOf('/') + 1))));
-    }
-    Iterable<PushResult> pushResults = pushCommand.call();
-    
-	  logger.debug("Push Ended");
-	  
-	  Iterator<PushResult> results = pushResults.iterator();
-	  while (results.hasNext()) {
-	    PushResult result = results.next();
-	    for (RemoteRefUpdate info : result.getRemoteUpdates()) {
-	      try {
-          if (getRemoteFromConfig(localBranchName) == null) {
-            repo.getConfig().setString(
-                ConfigConstants.CONFIG_BRANCH_SECTION,
-                localBranchName,
-                ConfigConstants.CONFIG_KEY_REMOTE,
-                Constants.DEFAULT_REMOTE_NAME);
-            repo.getConfig().setString(
-                ConfigConstants.CONFIG_BRANCH_SECTION,
-                localBranchName,
-                ConfigConstants.CONFIG_KEY_MERGE,
-                info.getRemoteName());
-            repo.getConfig().save();
-          }
-        } catch (NoRepositorySelected | IOException ex) {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-        } 
-	      
-	      response.setStatus(info.getStatus());
-	      response.setMessage(info.getMessage());
-	      
-	      return response; // NOSONAR
-	    }
-	  }
-	  
-	  response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-    response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
+		AuthenticationInterceptor.install();
 
-	  return response;
+		PushResponse response = new PushResponse();
+
+		Repository repo = git.getRepository();
+		RepositoryState repoState = repo.getRepositoryState();
+		if (repoState == RepositoryState.MERGING
+				|| repoState == RepositoryState.REBASING
+				|| repoState == RepositoryState.REBASING_MERGE
+				|| repoState == RepositoryState.REBASING_REBASING) {
+			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+			response.setMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+			return response;
+		}
+
+		if (getPullsBehind() > 0) {
+			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD);
+			response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
+			return response;
+		}
+
+		try {
+			if (getPushesAhead() == 0) {
+				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
+				response.setMessage(translator.getTranslation(Tags.PUSH_UP_TO_DATE));
+				return response;
+			}
+		} catch (RepoNotInitializedException e) {
+			logger.debug(e, e);
+		}
+
+		try {
+			PushCommand pushCommand = git.push().setCredentialsProvider(credentialsProvider);
+			String localBranchName = getBranchInfo().getBranchName();
+			String upstreamBranch = getUpstreamBranchShortNameFromConfig(localBranchName);
+			if (upstreamBranch != null) {
+				pushCommand.setRefSpecs(
+						Arrays.asList(
+								new RefSpec(localBranchName + ":" + upstreamBranch.substring(upstreamBranch.indexOf('/') + 1))));
+			}
+			Iterable<PushResult> pushResults = pushCommand.call();
+
+			logger.debug("Push Ended");
+
+			Iterator<PushResult> results = pushResults.iterator();
+			while (results.hasNext()) {
+				PushResult result = results.next();
+				for (RemoteRefUpdate info : result.getRemoteUpdates()) {
+					try {
+						if (getRemoteFromConfig(localBranchName) == null) {
+							repo.getConfig().setString(
+									ConfigConstants.CONFIG_BRANCH_SECTION,
+									localBranchName,
+									ConfigConstants.CONFIG_KEY_REMOTE,
+									Constants.DEFAULT_REMOTE_NAME);
+							repo.getConfig().setString(
+									ConfigConstants.CONFIG_BRANCH_SECTION,
+									localBranchName,
+									ConfigConstants.CONFIG_KEY_MERGE,
+									info.getRemoteName());
+							repo.getConfig().save();
+						}
+					} catch (NoRepositorySelected | IOException ex) {
+						PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+					} 
+
+					response.setStatus(info.getStatus());
+					response.setMessage(info.getMessage());
+
+					return response; // NOSONAR
+				}
+			}
+			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+			response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
+		}catch(TransportException e)
+		{
+			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
+			response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION));
+		}
+
+
+
+		return response;
 	}
 
 	/**

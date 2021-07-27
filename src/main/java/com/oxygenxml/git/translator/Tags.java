@@ -337,7 +337,11 @@ public class Tags {
 	 * The massage displayed when your push fails
 	 */
 	public static final String PUSH_FAILED_UNKNOWN = "Push_Failed_Unknown";
-
+    
+	/**
+	 * The message displayed when your push fails and it is because of a transport exceptiion
+	 */
+	public static final String PUSH_FAILED_TRANSPORT_EXCEPTION = "Push_Failed_INTERNET_PROBLEM";
 	/**
 	 * The massage displayed when you push with no changes
 	 */
