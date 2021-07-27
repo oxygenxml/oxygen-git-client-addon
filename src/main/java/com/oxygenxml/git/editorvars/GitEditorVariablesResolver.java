@@ -1,16 +1,5 @@
 package com.oxygenxml.git.editorvars;
 
-import com.oxygenxml.git.service.GitControllerBase;
-import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.view.event.GitEventInfo;
-import com.oxygenxml.git.view.event.GitOperation;
-import org.apache.log4j.Logger;
-import ro.sync.exml.workspace.api.util.EditorVariableDescription;
-import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -18,6 +7,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+import com.oxygenxml.git.service.GitControllerBase;
+import com.oxygenxml.git.service.GitEventAdapter;
+import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.event.GitEventInfo;
+import com.oxygenxml.git.view.event.GitOperation;
+
+import ro.sync.exml.workspace.api.util.EditorVariableDescription;
+import ro.sync.exml.workspace.api.util.EditorVariablesResolver;
 
 /**
  * Resolver for Git-related editor variables.
@@ -73,65 +75,95 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    */
   @Override
   public String resolveEditorVariables(String contentWithEditorVariables, String currentEditedFileURL) {
-    // Branch names (short or full)
+    contentWithEditorVariables = resolveBranchEditorVariables(contentWithEditorVariables);
+    try {
+      contentWithEditorVariables = resolveWorkingCopyEditorVariables(contentWithEditorVariables);
+    } catch (NoRepositorySelected e) {
+      logger.error(e.getMessage(), e);
+    }
+    return contentWithEditorVariables;
+  }
+
+  /**
+   * Resolve the working-copy-related editor variables.
+   * 
+   * @param contentWithEditorVariables The initial content.
+   * 
+   * @return the updated content.
+   * 
+   * @throws NoRepositorySelected 
+   */
+  private String resolveWorkingCopyEditorVariables(String contentWithEditorVariables) throws NoRepositorySelected {
+    File workingCopy = null;
+
+    // Working copy name
+    if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR)) {
+      String wcName = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR);
+      if (wcName == null) {
+        workingCopy = gitController.getGitAccess().getWorkingCopy();
+        wcName = workingCopy.getName();
+        editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR, wcName);
+      }
+      contentWithEditorVariables = contentWithEditorVariables.replace(
+          GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
+          wcName);
+    }
+
+    // Working copy path
+    if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR)) {
+      String wcPath = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR);
+      if (wcPath == null) {
+        if (workingCopy == null) {
+          workingCopy = gitController.getGitAccess().getWorkingCopy();
+        }
+        wcPath = workingCopy.getAbsolutePath();
+        editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR, wcPath);
+      }
+      contentWithEditorVariables = contentWithEditorVariables.replace(
+          GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
+          wcPath);
+    }
+
+    // Working copy URL
+    if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR)) {
+      String wcURL = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR);
+      if (wcURL == null) {
+        if (workingCopy == null) {
+          workingCopy = gitController.getGitAccess().getWorkingCopy();
+        }
+        try {
+          wcURL = workingCopy.getAbsoluteFile().toURI().toURL().toString();
+          editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR, wcURL);
+        } catch (MalformedURLException e) {
+          logger.error(e.getMessage(), e);
+        }
+      }
+      if  (wcURL != null) {
+        contentWithEditorVariables = contentWithEditorVariables.replace(
+            GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR,
+            wcURL);
+      }
+    } 
+    return contentWithEditorVariables;
+  }
+
+  /**
+   * Resolve the branch-related editor variables.
+   * 
+   * @param contentWithEditorVariables the initial content.
+   * 
+   * @return the content after expanding the editor variables.
+   */
+  private String resolveBranchEditorVariables(String contentWithEditorVariables) {
     if (contentWithEditorVariables.contains(GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR)) {
       contentWithEditorVariables = resolveShortBranchName(contentWithEditorVariables);
     }
     if (contentWithEditorVariables.contains(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR)) {
-      contentWithEditorVariables = resolveFullBranchName(contentWithEditorVariables);
-    }
-
-    try {
-        File workingCopy = null;
-
-        // Working copy name
-        if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR)) {
-          String wcName = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR);
-          if (wcName == null) {
-            workingCopy = gitController.getGitAccess().getWorkingCopy();
-            wcName = workingCopy.getName();
-            editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR, wcName);
-          }
-          contentWithEditorVariables = contentWithEditorVariables.replace(
-              GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
-              wcName);
-        }
-
-        // Working copy path
-        if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR)) {
-          String wcPath = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR);
-          if (wcPath == null) {
-            if (workingCopy == null) {
-              workingCopy = gitController.getGitAccess().getWorkingCopy();
-            }
-            wcPath = workingCopy.getAbsolutePath();
-            editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR, wcPath);
-          }
-          contentWithEditorVariables = contentWithEditorVariables.replace(
-              GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
-              wcPath);
-        }
-        
-     // Working copy URL
-        if (contentWithEditorVariables.contains(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR)) {
-          String wcURL = editorVarsCache.get(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR);
-          if (wcURL == null) {
-            if (workingCopy == null) {
-              workingCopy = gitController.getGitAccess().getWorkingCopy();
-            }
-            wcURL = workingCopy.getAbsoluteFile().toURI().toURL().toString();
-            editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR, wcURL);
-          }
-          contentWithEditorVariables = contentWithEditorVariables.replace(
-              GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR,
-              wcURL);
-        } 
-    } catch (NoRepositorySelected e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e.getMessage(), e);
+      try {
+        contentWithEditorVariables = resolveFullBranchName(contentWithEditorVariables);
+      } catch (IOException | NoRepositorySelected e) {
+        logger.error(e.getMessage(), e);
       }
-    } catch (MalformedURLException e) {
-      logger.debug(e.getMessage(), e);
     }
     return contentWithEditorVariables;
   }
@@ -142,22 +174,19 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
    * @param contentWithEditorVariables The original content.
    * 
    * @return the updated content.
+   * 
+   * @throws NoRepositorySelected 
+   * @throws IOException 
    */
-  private String resolveFullBranchName(String contentWithEditorVariables) {
-    try {
-      String branch = editorVarsCache.get(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
-      if (branch == null) {
-        branch = gitController.getGitAccess().getRepository().getFullBranch();
-        editorVarsCache.put(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR, branch);
-      }
-      contentWithEditorVariables = contentWithEditorVariables.replace(
-          GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
-          branch);
-    } catch (NoRepositorySelected | IOException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e.getMessage(), e);
-      }
+  private String resolveFullBranchName(String contentWithEditorVariables) throws IOException, NoRepositorySelected {
+    String branch = editorVarsCache.get(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR);
+    if (branch == null) {
+      branch = gitController.getGitAccess().getRepository().getFullBranch();
+      editorVarsCache.put(GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR, branch);
     }
+    contentWithEditorVariables = contentWithEditorVariables.replace(
+        GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
+        branch);
     return contentWithEditorVariables;
   }
 
