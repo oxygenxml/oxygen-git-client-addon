@@ -33,7 +33,7 @@ public class GitStatusTest extends GitTestBase {
     
     /*
      * Newly initialized repositories have a peculiarity in that no branch has yet been created. 
-     * Though there is a HEAD (the pointer to the current branch) that references a branch, (named master by default) this very branch does not exist.
+     * Though there is a HEAD (the pointer to the current branch) that references a branch, (named "main" by default) this very branch does not exist.
      * Usually, nothing to be worried about as with the first commit, the missing branch will be created. 
      */
     commitOneFile(REMOTE_TEST_REPOSITORY, "remote.txt", "remote");

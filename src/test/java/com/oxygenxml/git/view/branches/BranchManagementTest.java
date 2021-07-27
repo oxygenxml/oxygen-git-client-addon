@@ -215,7 +215,7 @@ public class BranchManagementTest extends GitTestBase{
   }
   
   /**
-   * <p><b>Description:</b> Tests the structure of a tree with only master remote branch.</p>
+   * <p><b>Description:</b> Tests the structure of a tree with only main remote branch.</p>
    * <p><b>Bug ID:</b> EXM-41701</p>
    *
    * @author bogdan_draghici
@@ -223,7 +223,7 @@ public class BranchManagementTest extends GitTestBase{
    * @throws Exception
    */
   @Test
-  public void testBranchesTreeStructureRemoteMasterOnly() throws Exception {
+  public void testBranchesTreeStructureRemoteMainOnly() throws Exception {
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
     File file = new File(REMOTE_TEST_REPOSITORY + "remote.txt");
     file.createNewFile();

@@ -194,9 +194,9 @@ public class GitHistoryActionsTest extends GitTestBase {
       System.out.println(dump);
   
       String expected = 
-          "[ Merge branch 'master' , 19 Nov 2019 , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2, 3] ]\n" + 
+          "[ Merge branch 'main' , 19 Nov 2019 , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2, 3] ]\n" + 
           "[ Change file1.txt on Feature branch. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [4] ]\n" + 
-          "[ Delete file2.txt master branch. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+          "[ Delete file2.txt main branch. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
           "[ First commit. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n" + 
           "";
   
