@@ -298,7 +298,7 @@ public class BranchManagementTest extends GitTestBase{
         "    refs/heads/LocalBranch2\n",
         actualTree.toString());
     
-    branchManagementPanel.filterTree("as");
+    branchManagementPanel.filterTree("in");
     flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
@@ -372,7 +372,7 @@ public class BranchManagementTest extends GitTestBase{
             "      refs/remotes/origin/RemoteBranch2\n",
         actualTree.toString());
     
-    branchManagementPanel.filterTree("ter");
+    branchManagementPanel.filterTree("ain");
     flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
@@ -405,7 +405,6 @@ public class BranchManagementTest extends GitTestBase{
         "localRepository\n" + 
             "  refs/remotes/\n" + 
             "    refs/remotes/origin/\n" + 
-            "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
             "      refs/remotes/origin/RemoteBranch\n" + 
             "      refs/remotes/origin/RemoteBranch2\n",
         actualTree.toString());
@@ -457,7 +456,7 @@ public class BranchManagementTest extends GitTestBase{
         "localRepository\n",
         actualTree.toString());
     
-    branchManagementPanel.filterTree("as");
+    branchManagementPanel.filterTree("ai");
     flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
@@ -529,7 +528,7 @@ public class BranchManagementTest extends GitTestBase{
         "",
         actualTree.toString());
     
-    branchManagementPanel.filterTree("te");
+    branchManagementPanel.filterTree("ai");
     flushAWT();
     root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     actualTree = new StringBuilder();
@@ -537,12 +536,10 @@ public class BranchManagementTest extends GitTestBase{
     assertEquals(
         "localRepository\n" + 
         "  refs/heads/\n" + 
-        "    refs/heads/master\n" + 
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
-        "      refs/remotes/origin/master\n" + 
-        "      refs/remotes/origin/RemoteBranch\n" + 
-        "      refs/remotes/origin/RemoteBranch2\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "",
         actualTree.toString());
     
@@ -556,10 +553,10 @@ public class BranchManagementTest extends GitTestBase{
         "  refs/heads/\n" + 
         "    refs/heads/LocalBranch\n" + 
         "    refs/heads/LocalBranch2\n" + 
-        "    refs/heads/master\n" + 
+        "    refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "  refs/remotes/\n" + 
         "    refs/remotes/origin/\n" + 
-        "      refs/remotes/origin/master\n" + 
+        "      refs/remotes/origin/" + GitAccess.DEFAULT_BRANCH_NAME + "\n" + 
         "      refs/remotes/origin/RemoteBranch\n" + 
         "      refs/remotes/origin/RemoteBranch2\n" + 
         "",
