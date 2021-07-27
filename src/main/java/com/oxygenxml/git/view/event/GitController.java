@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -203,6 +204,9 @@ public class GitController extends GitControllerBase {
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
             translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
+      }catch(TransportException e)
+      {
+    	  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage( translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION), e);
       } catch (GitAPIException e) {
         // Exception handling.
         boolean shouldTryAgain = AuthUtil.handleAuthException(

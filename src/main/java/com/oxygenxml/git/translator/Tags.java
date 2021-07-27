@@ -339,9 +339,9 @@ public class Tags {
 	public static final String PUSH_FAILED_UNKNOWN = "Push_Failed_Unknown";
     
 	/**
-	 * The message displayed when your push fails and it is because of a transport exceptiion
+	 * The message displayed when your push fails and it is because of a transport exception
 	 */
-	public static final String PUSH_FAILED_TRANSPORT_EXCEPTION = "Push_Failed_INTERNET_PROBLEM";
+	public static final String PUSH_FAILED_TRANSPORT_EXCEPTION = "Push failed because of internet problem";
 	/**
 	 * The massage displayed when you push with no changes
 	 */
