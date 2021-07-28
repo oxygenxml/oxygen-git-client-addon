@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolTip;
+import javax.swing.ListModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -145,6 +146,19 @@ public class FileStatusDialog extends OKCancelDialog {
         model.addElement(listElement);
       }
       JList<String> filesInConflictList = new JList<>(model);
+      
+      ListModel<String> filesInConflictModel = filesInConflictList.getModel();
+
+      for(int i=0; i < filesInConflictModel.getSize(); i++){
+          Object textAtIndexI  = filesInConflictModel.getElementAt(i); 
+          JLabel textLabelWithTheError = new JLabel();
+          textLabelWithTheError.setText(textAtIndexI.toString());
+          JToolTip toolTipForFiles = new JToolTip();
+          toolTipForFiles.setTipText(textLabelWithTheError.getText());
+          textLabelWithTheError.add(toolTipForFiles);
+          
+      }
+      
       filesInConflictList.setPreferredSize(new Dimension(250, 50));
       JScrollPane scollPane = new JScrollPane(filesInConflictList);
       gbc.anchor = GridBagConstraints.WEST;
@@ -196,13 +210,6 @@ public class FileStatusDialog extends OKCancelDialog {
    */
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
 	  FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
-	  StringBuilder toolTipConflictFiles= new StringBuilder();
-	  for (String string : conflictFiles) {
-		  toolTipConflictFiles.append(string+" \n ");
-	  }
-	  JToolTip toolTipForFiles = new JToolTip();
-	  toolTipForFiles.setTipText(toolTipConflictFiles.toString());
-	  dialog.add(toolTipForFiles);
 	  dialog.setResizable(true);
 	  dialog.setVisible(true);
   }
