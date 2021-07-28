@@ -198,7 +198,7 @@ public class FileStatusDialog extends OKCancelDialog {
 	  FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
 	  StringBuilder toolTipConflictFiles= new StringBuilder();
 	  for (String string : conflictFiles) {
-		  toolTipConflictFiles.append(string+"\n");
+		  toolTipConflictFiles.append(string+" \n ");
 	  }
 	  JToolTip toolTipForFiles = new JToolTip();
 	  toolTipForFiles.setTipText(toolTipConflictFiles.toString());
