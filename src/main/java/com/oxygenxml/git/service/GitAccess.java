@@ -936,18 +936,13 @@ public class GitAccess {
 	 */
 	public void createBranchFromLocalBranch(
 	    String newBranchName,
-	    String sourceBranch,
-	    boolean isCheckoutNewBranch) throws GitAPIException {
+	    String sourceBranch) throws GitAPIException {
 	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
 	  try {
       git.branchCreate()
         .setName(newBranchName)
         .setStartPoint(sourceBranch)
         .call();
-      
-      if (isCheckoutNewBranch) {
-        setBranch(newBranchName);
-      }
       
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
     } catch (GitAPIException e) {
