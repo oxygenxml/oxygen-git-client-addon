@@ -151,9 +151,14 @@ public class FileStatusDialog extends OKCancelDialog {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
             boolean cellHasFocus) {
-          // TODO: set absolute path as tooltip
+          // All the "value" obejcts that come as param are filepaths relative to the current working copy.
+          // e.g. "file.xml" means the file is inside the working copy
+          //      "subfolder/file.xml" means the file is in "WC/subfolder"
+          // We can get the WC using com.oxygenxml.git.service.GitAccess.getWorkingCopy()
+          // We can then use this value to build the absolute path of each file.
+          
+          // TODO: set the computed absolute path as tooltip
           setToolTipText((String) value);
-          // TODO: set relative path as label
           return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         }
       });
