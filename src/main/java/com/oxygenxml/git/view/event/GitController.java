@@ -204,10 +204,10 @@ public class GitController extends GitControllerBase {
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
             translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
-	} catch (TransportException e) {
-		PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.PUSH_FAILED) + " "
-				+ translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION), e);
-	} catch (GitAPIException e) {
+      } catch (TransportException e) {
+    	  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.PUSH_FAILED) + ". "
+    			  + translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION), e);
+      } catch (GitAPIException e) {
         // Exception handling.
         boolean shouldTryAgain = AuthUtil.handleAuthException(
             e,
