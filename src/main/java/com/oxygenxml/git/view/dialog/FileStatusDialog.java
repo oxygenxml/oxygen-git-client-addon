@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.dialog;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -8,6 +9,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -16,8 +18,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JToolTip;
-import javax.swing.ListModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -76,7 +76,7 @@ public class FileStatusDialog extends OKCancelDialog {
   /**
    * Constructor.
    * 
-   * @param iconPath         Icont path.
+   * @param iconPath         Icon path.
    * @param title            Dialog title.
    * @param targetFiles      Files that relate to the message. May be <code>null</code>.
    * @param message          An information message. May be <code>null</code>.
@@ -101,6 +101,7 @@ public class FileStatusDialog extends OKCancelDialog {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		
+		// Icon
 		JLabel iconLabel = new JLabel();
     URL iconURL =  PluginWorkspaceProvider.class.getResource(iconPath);
     if (iconURL != null) {
@@ -108,14 +109,12 @@ public class FileStatusDialog extends OKCancelDialog {
       Icon icon = (Icon) imageUtilities.loadIcon(iconURL);
       iconLabel.setIcon(icon);
     }
-		
 		gbc.insets = new Insets(
 		    UIConstants.COMPONENT_TOP_PADDING, 
 		    UIConstants.COMPONENT_LEFT_PADDING,
 				UIConstants.COMPONENT_BOTTOM_PADDING, 
 				10);
 		gbc.anchor = GridBagConstraints.NORTHWEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.gridx = 0;
@@ -123,6 +122,7 @@ public class FileStatusDialog extends OKCancelDialog {
 		gbc.gridheight = 2;
 		panel.add(iconLabel, gbc);
 		
+		// Message
     if (message != null) {
       JTextArea textArea = UIUtil.createMessageArea("");
       textArea.setDocument(new CustomWrapDocument());
@@ -131,36 +131,35 @@ public class FileStatusDialog extends OKCancelDialog {
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.weightx = 1;
-      gbc.weighty = 1;
       gbc.gridx = 1;
       gbc.gridheight = 1;
       panel.add(textArea, gbc);
+      
       gbc.gridy++;
     }
     
+    // Files
     if (targetFiles != null) {
-      // populating the JList with the conflict files
       Collections.sort(targetFiles, String.CASE_INSENSITIVE_ORDER);
       DefaultListModel<String> model = new DefaultListModel<>();
       for (String listElement : targetFiles) {
         model.addElement(listElement);
       }
-      JList<String> filesInConflictList = new JList<>(model);
       
-      ListModel<String> filesInConflictModel = filesInConflictList.getModel();
-
-      for(int i=0; i < filesInConflictModel.getSize(); i++){
-          Object textAtIndexI  = filesInConflictModel.getElementAt(i); 
-          JLabel textLabelWithTheError = new JLabel();
-          textLabelWithTheError.setText(textAtIndexI.toString());
-          JToolTip toolTipForFiles = new JToolTip();
-          toolTipForFiles.setTipText(textLabelWithTheError.getText());
-          textLabelWithTheError.add(toolTipForFiles);
-          
-      }
+      JList<String> filesList = new JList<>(model);
+      filesList.setCellRenderer(new DefaultListCellRenderer() {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+            boolean cellHasFocus) {
+          // TODO: set absolute path as tooltip
+          setToolTipText((String) value);
+          // TODO: set relative path as label
+          return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        }
+      });
       
-      filesInConflictList.setPreferredSize(new Dimension(250, 50));
-      JScrollPane scollPane = new JScrollPane(filesInConflictList);
+      JScrollPane scollPane = new JScrollPane(filesList);
+      scollPane.setPreferredSize(new Dimension(300, 100));
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.BOTH;
       gbc.weightx = 1;
@@ -193,9 +192,9 @@ public class FileStatusDialog extends OKCancelDialog {
     }
     
     getContentPane().add(panel);
+    setResizable(false);
     pack();
-		setResizable(false);
-		
+    
 		if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
 		  setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		}
@@ -211,6 +210,7 @@ public class FileStatusDialog extends OKCancelDialog {
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
 	  FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
 	  dialog.setResizable(true);
+	  dialog.setMinimumSize(new Dimension(300, 150));
 	  dialog.setVisible(true);
   }
   
