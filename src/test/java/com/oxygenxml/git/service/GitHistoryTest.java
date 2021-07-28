@@ -167,14 +167,14 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
       
-      GitAccess.getInstance().setBranch("master");
+      GitAccess.getInstance().setBranch("main");
   
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
       String dump = dumpHistory(commitsCharacteristics);
   
       String expected = 
-          "[ Changed on master branch. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Changed on main branch. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
           "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
           "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [5] ]\n" + 
@@ -194,7 +194,7 @@ public class GitHistoryTest extends HistoryPanelTestBase {
       branchMap.forEach((k,v ) -> {mapDump.append(getAssertableID(k)).append(" -> ").append(v.toString()).append("\n");});
       assertEquals(
           "6 -> [feature]\n" + 
-          "1 -> [master]\n" + 
+          "1 -> [main]\n" + 
           "", mapDump.toString());
   
   
@@ -238,16 +238,16 @@ public class GitHistoryTest extends HistoryPanelTestBase {
     try {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
       
-      GitAccess.getInstance().setBranch("master");
+      GitAccess.getInstance().setBranch("main");
       
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
       String dump = dumpHistory(commitsCharacteristics);
   
       String expected = 
-          "[ Another commit on master. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Another commit on main. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
           "[ Merge branch 'feature' , {date} , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3, 4] ]\n" + 
-          "[ Changed on master branch. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [5] ]\n" + 
+          "[ Changed on main branch. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [5] ]\n" + 
           "[ Changed on feature branch. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , [6] ]\n" + 
           "[ Feature branch commit. , {date} , Alex <alex_jitianu@sync.ro> , 6 , AlexJitianu , [5] ]\n" + 
           "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 5 , AlexJitianu , [7] ]\n" + 

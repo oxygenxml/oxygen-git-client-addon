@@ -33,8 +33,8 @@
         <change path="f2/file2.txt" type="change">2-changed-feature-branch</change>
     </changeSet>
     
-    <changeSet message="Changed on master branch." branch="master">
-        <change path="f1/file1.txt" type="change">1 changed on master branch.</change>
+    <changeSet message="Changed on main branch." branch="main">
+        <change path="f1/file1.txt" type="change">1 changed on main branch.</change>
     </changeSet>
     
     

@@ -31,11 +31,11 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
   /**
    * Translator instance.
    */
-  private static final Translator   translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    * Logger for logging.
    */
-  private static final Logger       logger = Logger.getLogger(GitEditorVariablesResolver.class);
+  private static final Logger LOGGER = Logger.getLogger(GitEditorVariablesResolver.class);
   /**
    * Editor variable name to resolved value.
    */
@@ -79,7 +79,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
     try {
       contentWithEditorVariables = resolveWorkingCopyEditorVariables(contentWithEditorVariables);
     } catch (NoRepositorySelected e) {
-      logger.error(e.getMessage(), e);
+      LOGGER.error(e.getMessage(), e);
     }
     return contentWithEditorVariables;
   }
@@ -135,7 +135,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
           wcURL = workingCopy.getAbsoluteFile().toURI().toURL().toString();
           editorVarsCache.put(GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR, wcURL);
         } catch (MalformedURLException e) {
-          logger.error(e.getMessage(), e);
+          LOGGER.error(e.getMessage(), e);
         }
       }
       if  (wcURL != null) {
@@ -162,7 +162,7 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
       try {
         contentWithEditorVariables = resolveFullBranchName(contentWithEditorVariables);
       } catch (IOException | NoRepositorySelected e) {
-        logger.error(e.getMessage(), e);
+        LOGGER.error(e.getMessage(), e);
       }
     }
     return contentWithEditorVariables;
@@ -217,23 +217,23 @@ public class GitEditorVariablesResolver extends EditorVariablesResolver {
     list.add(
         new EditorVariableDescription(
             GitEditorVariablesNames.SHORT_BRANCH_NAME_EDITOR_VAR,
-            translator.getTranslation(Tags.SHORT_BRANCH_NAME_DESCRIPTION)));
+            TRANSLATOR.getTranslation(Tags.SHORT_BRANCH_NAME_DESCRIPTION)));
     list.add(
         new EditorVariableDescription(
             GitEditorVariablesNames.FULL_BRANCH_NAME_EDITOR_VAR,
-            translator.getTranslation(Tags.FULL_BRANCH_NAME_DESCRIPTION)));
+            TRANSLATOR.getTranslation(Tags.FULL_BRANCH_NAME_DESCRIPTION)));
     list.add(
         new EditorVariableDescription(
             GitEditorVariablesNames.WORKING_COPY_NAME_EDITOR_VAR,
-            translator.getTranslation(Tags.WORKING_COPY_NAME_DESCRIPTION)));
+            TRANSLATOR.getTranslation(Tags.WORKING_COPY_NAME_DESCRIPTION)));
     list.add(
         new EditorVariableDescription(
             GitEditorVariablesNames.WORKING_COPY_PATH_EDITOR_VAR,
-            translator.getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
+            TRANSLATOR.getTranslation(Tags.WORKING_COPY_PATH_DESCRIPTION)));
     list.add(
        new EditorVariableDescription(
             GitEditorVariablesNames.WORKING_COPY_URL_EDITOR_VAR,
-            translator.getTranslation(Tags.WORKING_COPY_URL_DESCRIPTION)));
+            TRANSLATOR.getTranslation(Tags.WORKING_COPY_URL_DESCRIPTION)));
     return list;
   }
   

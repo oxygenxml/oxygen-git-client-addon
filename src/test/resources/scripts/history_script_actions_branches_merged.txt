@@ -8,11 +8,11 @@
         <change path="file1.txt" type="change">3</change>
     </changeSet>
     
-    <changeSet message="Delete file2.txt master branch." branch="master">
-        <change path="file2.txt" type="delete">1 changed on master branch.</change>
+    <changeSet message="Delete file2.txt main branch." branch="main">
+        <change path="file2.txt" type="delete">1 changed on main branch.</change>
     </changeSet>
     
-    <changeSet message="Merge branch 'master'" branch="feature" mergeBranch="master">
+    <changeSet message="Merge branch 'main'" branch="feature" mergeBranch="main">
     </changeSet>
     
 </script>

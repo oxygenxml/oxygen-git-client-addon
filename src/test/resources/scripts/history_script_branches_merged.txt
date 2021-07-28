@@ -33,15 +33,15 @@
         <change path="f2/file2.txt" type="change">2-changed-feature-branch</change>
     </changeSet>
     
-    <changeSet message="Changed on master branch." branch="master">
-        <change path="f1/file1.txt" type="change">1 changed on master branch.</change>
+    <changeSet message="Changed on main branch." branch="main">
+        <change path="f1/file1.txt" type="change">1 changed on main branch.</change>
     </changeSet>
     
-    <changeSet message="Merge branch 'feature'" branch="master" mergeBranch="feature">
+    <changeSet message="Merge branch 'feature'" branch="main" mergeBranch="feature">
     </changeSet>
     
-    <changeSet message="Another commit on master." branch="master">
-        <change path="f1/file1.txt" type="change">2 changed on master branch.</change>
+    <changeSet message="Another commit on main." branch="main">
+        <change path="f1/file1.txt" type="change">2 changed on main branch.</change>
     </changeSet>
     
     <changeSet message="Anotehr commit of feature branch." branch="feature">

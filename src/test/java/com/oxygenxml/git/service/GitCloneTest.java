@@ -58,7 +58,7 @@ public class GitCloneTest extends GitTestBase {
       GitAccess gitAccess = GitAccess.getInstance();
       gitAccess.setRepositorySynchronously(localRepoLoc);
 
-      // Push a file in order to create the remote master branch
+      // Push a file in order to create the remote main branch
       localDir.mkdirs();
       File localTestFile = new File(localDir, "test.txt");
       localTestFile.createNewFile();
@@ -87,7 +87,7 @@ public class GitCloneTest extends GitTestBase {
       assertEquals("refs/heads/slave", branchesArray[1].getName());
       
       // Now clone the repository and checkout the default branch.
-      // Should be "master"
+      // Should be "main"
       gitAccess.clone(
           new URIish(remoteRepo.getDirectory().toURI().toURL()),
           cloneDest,
@@ -100,7 +100,7 @@ public class GitCloneTest extends GitTestBase {
       FileSystemUtil.listRecursively(new File[] {cloneDest}, false, null, files);
       assertEquals(14, files.size());
       assertTrue(files.toString().contains("test.txt"));
-      // Only the "master" branch should have this
+      // Only the "main" branch should have this
       assertTrue(files.toString().contains("test2.txt"));
       
       // Now clone the repository and checkout the "slave" branch
@@ -119,7 +119,7 @@ public class GitCloneTest extends GitTestBase {
       files = Arrays.asList(cloneDest2.listFiles(File::isFile));
       assertEquals(1, files.size());
       assertTrue(files.toString().contains("test.txt"));
-      // The second file shouldn't be here. Only on "master", because
+      // The second file shouldn't be here. Only on "main", because
       // "slave" was created earlier than when "test2.txt" was pushed. 
       assertFalse(files.toString().contains("test2.txt"));
       

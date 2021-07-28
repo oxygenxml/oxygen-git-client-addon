@@ -451,7 +451,7 @@ public class GitPullCasesTest extends GitTestBase {
     }
     assertEquals(
         "Commits from last to first:\n" + 
-        "    Merge branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of " + repoURI + "\n" + 
+        "    Merge branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of " + repoURI + " into main\n" + 
         "    Edited last line\n" + 
         "    Edited first line\n" + 
         "    First commit\n" + 

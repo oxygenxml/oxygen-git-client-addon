@@ -121,7 +121,7 @@ public class GitAccessConflictTest {
     remoteConfig.update(config);
     config.save();
     
-    String branchName = "master";
+    String branchName = "main";
     String remoteName = "origin";
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
