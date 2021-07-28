@@ -16,6 +16,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToolTip;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -194,9 +195,16 @@ public class FileStatusDialog extends OKCancelDialog {
    * @param message       The message.
    */
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
-    FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
-    dialog.setResizable(true);
-    dialog.setVisible(true);
+	  FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
+	  StringBuilder toolTipConflictFiles= new StringBuilder();
+	  for (String string : conflictFiles) {
+		  toolTipConflictFiles.append(string+"\n");
+	  }
+	  JToolTip toolTipForFiles = new JToolTip();
+	  toolTipForFiles.setTipText(toolTipConflictFiles.toString());
+	  dialog.add(toolTipForFiles);
+	  dialog.setResizable(true);
+	  dialog.setVisible(true);
   }
   
   /**
