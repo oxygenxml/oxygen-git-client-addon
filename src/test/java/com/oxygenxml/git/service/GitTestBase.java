@@ -160,7 +160,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     remoteConfig.addURI(new URIish(remoteRepo.getDirectory().toURI().toURL()));
     remoteConfig.addFetchRefSpec(new RefSpec("+refs/heads/*:refs/remotes/origin/*"));
     
-    String branchName = "master";
+    String branchName = "main";
     String remoteName = "origin";
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);

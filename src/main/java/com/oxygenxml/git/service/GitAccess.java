@@ -930,24 +930,18 @@ public class GitAccess {
 	 * 
 	 * @param newBranchName The name for the new branch.
 	 * @param sourceBranch The full path for the local branch from which to create the new branch.
-	 * @param isCheckoutNewBranch <code>true</code> to checkout the new branch.
 	 * 
 	 * @throws GitAPIException 
 	 */
 	public void createBranchFromLocalBranch(
 	    String newBranchName,
-	    String sourceBranch,
-	    boolean isCheckoutNewBranch) throws GitAPIException {
+	    String sourceBranch) throws GitAPIException {
 	  fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
 	  try {
       git.branchCreate()
         .setName(newBranchName)
         .setStartPoint(sourceBranch)
         .call();
-      
-      if (isCheckoutNewBranch) {
-        setBranch(newBranchName);
-      }
       
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.CREATE_BRANCH, newBranchName));
     } catch (GitAPIException e) {

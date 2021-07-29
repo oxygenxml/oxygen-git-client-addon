@@ -44,6 +44,7 @@ import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepoNotInitializedException;
@@ -51,9 +52,11 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
@@ -65,6 +68,7 @@ import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -429,10 +433,37 @@ public class ToolbarPanel extends JPanel {
     return new AbstractAction(branchName) {
       @Override
       public void actionPerformed(ActionEvent e) {
+        RepositoryState repoState = null;
+        try {
+          repoState = GitAccess.getInstance().getRepository().getRepositoryState();
+        } catch (NoRepositorySelected e1) {
+          logger.error(e1, e1);
+        }
+        GitStatus status = GitAccess.getInstance().getStatus();
+        boolean repoHasUncommittedChanges = !status.getUnstagedFiles().isEmpty() 
+            || !status.getStagedFiles().isEmpty();
+        if(repoHasUncommittedChanges && !RepoUtil.isRepoMergingOrRebasing(repoState)) {
+          int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
+              "Would you like to take changes with you ?",
+               "Yes, take them with me",
+               "No, let me commit");
+         if(answer == OKCancelDialog.RESULT_OK ) {
+           tryCheckingOutBranch(e);
+         }
+        } else {
+          tryCheckingOutBranch(e);
+        }
+      }
+      
+      /**
+       * The action performed for this Abstract Action
+       * 
+       * @param e Action Event
+       */
+      private void tryCheckingOutBranch(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> {
           try {
             GitAccess.getInstance().setBranch(branchName);
-            
             BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
           } catch (CheckoutConflictException ex) {
             logger.debug(ex, ex);

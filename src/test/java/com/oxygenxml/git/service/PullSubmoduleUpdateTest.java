@@ -71,7 +71,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
    * @throws Exception If it fails.
    */
   private void updateSubmoduleToBranchHead(Repository mainRepo, String submoduleName) throws Exception {
-    // Update submodule to "master" branch head.
+    // Update submodule to "main" branch head.
     try (
         Repository submoduleRepository = SubmoduleWalk.getSubmoduleRepository(mainRepo, submoduleName);
         Git git = new Git(submoduleRepository)) {

@@ -32,7 +32,8 @@ public class GitAccessPullTest extends GitTestBase{
 	private Repository remoteRepo;
 	protected GitAccess gitAccess;
 
-	@Before
+	@Override
+  @Before
 	public void setUp() throws Exception {
 	  super.setUp();
 	  
@@ -56,7 +57,7 @@ public class GitAccessPullTest extends GitTestBase{
 		remoteConfig.update(config);
 		config.save();
 		
-    String branchName = "master";
+    String branchName = "main";
     String remoteName = "origin";
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName,  ConfigConstants.CONFIG_KEY_REMOTE, remoteName);
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
@@ -165,7 +166,8 @@ public class GitAccessPullTest extends GitTestBase{
 		assertEquals(pullExpected, pullActual);
 	}
 	
-	@After
+	@Override
+  @After
 	public void tearDown() throws Exception {
 	  super.tearDown();
 
