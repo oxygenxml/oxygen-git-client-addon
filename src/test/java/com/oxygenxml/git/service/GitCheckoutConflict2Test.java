@@ -226,8 +226,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     // Change file on the new branch
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
-        gitAccess.getGit().getRepository().getFullBranch(),
-        true);
+        gitAccess.getGit().getRepository().getFullBranch());
+    gitAccess.setBranch("new_branch");
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/test.txt"), "altfel");;
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
@@ -313,8 +313,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     // Change file.txt file on the new branch
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
-        gitAccess.getGit().getRepository().getFullBranch(),
-        true);
+        gitAccess.getGit().getRepository().getFullBranch());
+    gitAccess.setBranch("new_branch");
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "altfel");;
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     gitAccess.commit("commit on nnew branch");
@@ -404,8 +404,8 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     // Change file.txt file on the new branch
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
-        gitAccess.getGit().getRepository().getFullBranch(),
-        true);
+        gitAccess.getGit().getRepository().getFullBranch());
+    gitAccess.setBranch("new_branch");
     writeToFile(new File(SECOND_LOCAL_TEST_REPOSITORY + "/file.txt"), "altfel");;
     gitAccess.add(new FileStatus(GitChangeType.ADD, "file.txt"));
     gitAccess.commit("commit on nnew branch");
@@ -480,8 +480,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     // Change file on the new branch
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
-        gitAccess.getGit().getRepository().getFullBranch(),
-        true);
+        gitAccess.getGit().getRepository().getFullBranch());
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "altfel");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");

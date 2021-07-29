@@ -930,7 +930,6 @@ public class GitAccess {
 	 * 
 	 * @param newBranchName The name for the new branch.
 	 * @param sourceBranch The full path for the local branch from which to create the new branch.
-	 * @param isCheckoutNewBranch <code>true</code> to checkout the new branch.
 	 * 
 	 * @throws GitAPIException 
 	 */
