@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.branches;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,6 +73,25 @@ public class BranchesUtil {
     return branchList;
   }
 
+  
+  /**
+   * Creates a list with local branches short names for the current repository.
+   * 
+   * @return The list of remote branches.
+   * 
+   * @throws NoRepositorySelected
+   */
+  public static List<String> getRemoteBranches() throws NoRepositorySelected {
+    List<String> branchList = new ArrayList<>();
+    Repository repository = GitAccess.getInstance().getRepository();
+    if (repository != null) {
+      List<Ref> branches = new ArrayList<>(GitAccess.getInstance().getRemoteBrachListForCurrentRepo());
+      branchList = branches.stream().map(Ref::getName).collect(Collectors.toList());
+    }
+    return branchList;
+  }
+
+  
   /**
    * Creates the path to a branch without having its type node, starting from the
    * full path of the node that contains the branch.

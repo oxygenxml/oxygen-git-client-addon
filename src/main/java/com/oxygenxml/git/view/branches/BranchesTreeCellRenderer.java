@@ -1,25 +1,5 @@
 package com.oxygenxml.git.view.branches;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JTree;
-import javax.swing.border.EmptyBorder;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Constants;
-
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -27,9 +7,21 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.Constants;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.ColorTheme;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Renderer for the nodes icon in the branches tree, based on the path to the
@@ -60,6 +52,10 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * Supplies the current branch.
    */
   private final Supplier<String> currentBranchNameSupplier;
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = LogManager.getLogger(BranchesTreeCellRenderer.class.getName());
 
   /**
    * Constructor.
@@ -98,34 +94,43 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     try {
       localBranches = new HashSet<>(BranchesUtil.getLocalBranches());
     } catch (NoRepositorySelected e1) {
-     localBranches = null;
+      localBranches = null;
+    }
+    
+    Set<String> remoteBranches;
+    try {
+      remoteBranches = new HashSet<>(BranchesUtil.getRemoteBranches());
+    } catch (NoRepositorySelected e1) {
+      remoteBranches = null;
     }
 
     if (label != null) {
       label.setIcon(icon);
       if (!text.isEmpty()) {
         label.setText(text);
-        if(localBranches != null && localBranches.contains(text)) {          
+       
+        if((localBranches != null && localBranches.contains(text)) ||
+            (remoteBranches != null && remoteBranches.contains(path))
+            ) {          
           try {   
             StringBuilder toolTipText = new StringBuilder();
             toolTipText.append("<html><p>")
                        .append(Tags.AUTHOR)
                        .append(": ")  
-                       .append(GitAccess.getInstance().getLatestCommitForBranch(text).getAuthorIdent().getName())
+                       .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getName())
                        .append(" ")
-                       .append(GitAccess.getInstance().getLatestCommitForBranch(text).getAuthorIdent().getEmailAddress())
+                       .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getEmailAddress())
                        .append("<br>")
                        .append(Tags.DATE)
                        .append(": ")
-                       .append(GitAccess.getInstance().getLatestCommitForBranch(text).getAuthorIdent().getWhen())
+                       .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getWhen())
                        .append("</p></html>");
             label.setToolTipText(toolTipText.toString());
-        } catch (GitAPIException | IOException e) {
-             e.printStackTrace();
-          }
-        }         
-     }
-
+        } catch (Exception e) {
+             LOGGER.debug(e, e);
+          } 
+        }
+      }
       Font font = label.getFont();
       label.setFont(font.deriveFont(Font.PLAIN));
       label.setBorder(new EmptyBorder(0, 5, 0, 0));
