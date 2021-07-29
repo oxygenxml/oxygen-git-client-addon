@@ -13,11 +13,14 @@ import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 
@@ -122,9 +125,17 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         ctrl.asyncTask(() -> {
 
-          if (!GitAccess.getInstance().getStatus().getUnstagedFiles().isEmpty()) {
+          RepositoryState repoState = null;
+          try {
+            repoState = GitAccess.getInstance().getRepository().getRepositoryState();
+          } catch (NoRepositorySelected e1) {
+            logger.error(e1, e1);
+          }
+          if (RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
             int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
-                "Would you like to take changes with you ?", "Yes, take them with me", "No, let me commit");
+                "Would you like to take changes with you ?",
+                "Yes, take them with me",
+                "No, let me commit");
             if (answer == OKCancelDialog.RESULT_OK) {
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
@@ -202,12 +213,18 @@ public class BranchTreeMenuActionsProvider {
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(() -> {
             ctrl.getGitAccess().createBranchFromLocalBranch(dialog.getBranchName(), nodePath);
-            
+
             if (!dialog.shouldCheckoutNewBranch()) {
-                return null;
+              return null;
             }
-            
-            if (!GitAccess.getInstance().getStatus().getUnstagedFiles().isEmpty()) {
+
+            RepositoryState repoState = null;
+            try {
+              repoState = GitAccess.getInstance().getRepository().getRepositoryState();
+            } catch (NoRepositorySelected e1) {
+              logger.error(e1, e1);
+            }
+            if (RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
               int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
                   "Would you like to take changes with you ?",
                   "Yes, take them with me",

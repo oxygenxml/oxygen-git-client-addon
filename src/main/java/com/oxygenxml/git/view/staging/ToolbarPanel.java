@@ -44,7 +44,6 @@ import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
-import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepoNotInitializedException;
@@ -439,10 +438,7 @@ public class ToolbarPanel extends JPanel {
         } catch (NoRepositorySelected e1) {
           logger.error(e1, e1);
         }
-        GitStatus status = GitAccess.getInstance().getStatus();
-        boolean repoHasUncommittedChanges = !status.getUnstagedFiles().isEmpty() 
-            || !status.getStagedFiles().isEmpty();
-        if(repoHasUncommittedChanges && !RepoUtil.isRepoMergingOrRebasing(repoState)) {
+        if(RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
           int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
               "Would you like to take changes with you ?",
                "Yes, take them with me",

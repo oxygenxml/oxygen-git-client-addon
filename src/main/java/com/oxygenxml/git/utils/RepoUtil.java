@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -68,6 +69,23 @@ public class RepoUtil {
          || repoState == RepositoryState.REBASING_REBASING;
    }
    return toReturn;
+ }
+ 
+ /**
+  * Verify if the Repo is nonmerging and nonrebasing and has uncommitted changes
+  * 
+  * @param repoState The repo state
+  * 
+  * @return <code>true</code> if the repository is not merging, not rebasing and with Uncommited Changes 
+  */
+ public static boolean isNonMergingAndNonRebasingRepoWithUncommittedChanges(RepositoryState repoState) {
+   
+   GitStatus status = GitAccess.getInstance().getStatus();
+   boolean repoHasUncommittedChanges = !status.getUnstagedFiles().isEmpty() 
+       || !status.getStagedFiles().isEmpty();
+   
+   return repoHasUncommittedChanges && !RepoUtil.isRepoMergingOrRebasing(repoState);
+     
  }
   
   /**

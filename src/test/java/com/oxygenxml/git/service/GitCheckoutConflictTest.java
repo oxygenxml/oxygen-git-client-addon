@@ -1,6 +1,5 @@
 package com.oxygenxml.git.service;
 
-import java.awt.Component;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import java.io.File;
@@ -303,16 +302,12 @@ public class GitCheckoutConflictTest extends TestCase {
     }
     sleep(500);
     
-    // TODO: recursively look for the OK button
+    // Recursively look for the OK button
     Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
-    Component[] components = focusedWindow.getComponents();
-    for (Component component : components) {
-      System.err.println(component);
-    }
-    assertNotNull(focusedWindow);
     
-//    okBtn.doClick();
-//    sleep(500);
+    JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+    yesButton.doClick();
+    sleep(500);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
@@ -494,7 +489,7 @@ public class GitCheckoutConflictTest extends TestCase {
         break;
       }
     }
-    sleep(500);
+    sleep(1500);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
@@ -550,16 +545,13 @@ public class GitCheckoutConflictTest extends TestCase {
       newBranchItem.setSelected(true);
       newBranchItem.getAction().actionPerformed(null);
     });
-    sleep(600);
+    sleep(1000);
     
-    //  TODO: the same as above
-    Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
-    assertTrue(focusOwner instanceof JButton);
-    JButton okBtn = (JButton) focusOwner;
-    assertEquals("Yes, take them with me", okBtn.getText());
-    okBtn.doClick();
-    sleep(500);
+    Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
     
+    JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+    yesButton.doClick();
+    sleep(2000);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     

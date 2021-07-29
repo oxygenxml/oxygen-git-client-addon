@@ -1,7 +1,11 @@
 package com.oxygenxml.git.service;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.io.File;
 import java.io.PrintWriter;
+
+import javax.swing.JButton;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -65,5 +69,34 @@ public class TestUtil {
       git.add().addFilepattern(fileName).call();
       return git.commit().setMessage("New file: " + fileName).call();
     }
+  }
+  
+  /**
+   * Search for a button that contains a specific text
+   * 
+   * @param container The container with components
+   * @param buttonText The text that button should contain
+   * 
+   * @return a JButton or null if not found
+   */
+  public static JButton findButton(Container container, String buttonText) {
+    Component[] components = container.getComponents();
+
+    for (Component component : components) {
+      
+      if (component instanceof JButton) {
+        if( ((JButton) component).getText().contains(buttonText) ) {
+          return (JButton) component;
+        }
+      }
+
+      if (component instanceof Container) {
+        JButton buttonSearched = findButton((Container) component, buttonText);
+        if (buttonSearched != null) {
+          return buttonSearched;
+        }
+      }
+    }
+    return null;
   }
 }
