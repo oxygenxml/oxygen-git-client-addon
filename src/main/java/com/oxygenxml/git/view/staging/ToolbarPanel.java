@@ -44,6 +44,7 @@ import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepoNotInitializedException;
@@ -51,6 +52,7 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
@@ -431,7 +433,16 @@ public class ToolbarPanel extends JPanel {
     return new AbstractAction(branchName) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if(!GitAccess.getInstance().getStatus().getUnstagedFiles().isEmpty()) {
+        RepositoryState repoState = null;
+        try {
+          repoState = GitAccess.getInstance().getRepository().getRepositoryState();
+        } catch (NoRepositorySelected e1) {
+          logger.error(e1, e1);
+        }
+        GitStatus status = GitAccess.getInstance().getStatus();
+        boolean repoHasUncommittedChanges = !status.getUnstagedFiles().isEmpty() 
+            || !status.getStagedFiles().isEmpty();
+        if(repoHasUncommittedChanges && !RepoUtil.isRepoMergingOrRebasing(repoState)) {
           int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
               "Would you like to take changes with you ?",
                "Yes, take them with me",

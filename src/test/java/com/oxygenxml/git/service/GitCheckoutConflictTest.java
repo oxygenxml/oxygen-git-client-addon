@@ -1,13 +1,19 @@
 package com.oxygenxml.git.service;
 
+import java.awt.Component;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
@@ -25,6 +31,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
@@ -38,6 +45,7 @@ import com.oxygenxml.git.view.staging.ToolbarPanel;
 
 import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
@@ -200,6 +208,11 @@ public class GitCheckoutConflictTest extends TestCase {
       }
     }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
     errMsg[0] = "";
+    
+    ImageUtilities imageUtilities = Mockito.mock(ImageUtilities.class);
+    // Dummy icon
+    Mockito.doReturn(Icons.getIcon(Icons.AMEND_COMMIT)).when(imageUtilities).loadIcon((URL)Mockito.any());
+    Mockito.when(pluginWSMock.getImageUtilities()).thenReturn(imageUtilities);
   }
   
   @Override
@@ -228,7 +241,7 @@ public class GitCheckoutConflictTest extends TestCase {
   
   /**
    * <p><b>Description:</b> try to switch branch from Git Branch Manager when repo is in conflict state.
-   * The branch witch also generates a checkout conflict.</p>
+   * The branch switch also generates a checkout conflict.</p>
    * <p><b>Bug ID:</b> EXM-47439</p>
    *
    * @author sorin_carbunaru
@@ -284,11 +297,22 @@ public class GitCheckoutConflictTest extends TestCase {
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(node);
     for (AbstractAction abstractAction : actionsForNode) {
       if(abstractAction.getValue(AbstractAction.NAME).equals(Tags.CHECKOUT)) {
-        abstractAction.actionPerformed(null);
+        SwingUtilities.invokeLater(() -> abstractAction.actionPerformed(null));
         break;
       }
     }
     sleep(500);
+    
+    // TODO: recursively look for the OK button
+    Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+    Component[] components = focusedWindow.getComponents();
+    for (Component component : components) {
+      System.err.println(component);
+    }
+    assertNotNull(focusedWindow);
+    
+//    okBtn.doClick();
+//    sleep(500);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
@@ -510,8 +534,8 @@ public class GitCheckoutConflictTest extends TestCase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
-    GitControllerBase mock = new GitController(GitAccess.getInstance());
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    GitControllerBase gitCtrl = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
     sleep(500);
    
@@ -522,9 +546,20 @@ public class GitCheckoutConflictTest extends TestCase {
     SplitMenuButton branchSplitMenuButton = toolbarPanel.getBranchSplitMenuButton();
     
     JRadioButtonMenuItem newBranchItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(1);
-    newBranchItem.setSelected(true);
-    newBranchItem.getAction().actionPerformed(null);
+    SwingUtilities.invokeLater(() -> {
+      newBranchItem.setSelected(true);
+      newBranchItem.getAction().actionPerformed(null);
+    });
     sleep(600);
+    
+    //  TODO: the same as above
+    Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+    assertTrue(focusOwner instanceof JButton);
+    JButton okBtn = (JButton) focusOwner;
+    assertEquals("Yes, take them with me", okBtn.getText());
+    okBtn.doClick();
+    sleep(500);
+    
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
