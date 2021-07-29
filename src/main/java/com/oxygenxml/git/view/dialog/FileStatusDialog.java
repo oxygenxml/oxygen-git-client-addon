@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.File;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,7 @@ import javax.swing.text.DefaultStyledDocument;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -151,14 +153,12 @@ public class FileStatusDialog extends OKCancelDialog {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
             boolean cellHasFocus) {
-          // All the "value" obejcts that come as param are filepaths relative to the current working copy.
-          // e.g. "file.xml" means the file is inside the working copy
-          //      "subfolder/file.xml" means the file is in "WC/subfolder"
-          // We can get the WC using com.oxygenxml.git.service.GitAccess.getWorkingCopy()
-          // We can then use this value to build the absolute path of each file.
-          
-          // TODO: set the computed absolute path as tooltip
-          setToolTipText((String) value);
+          try {
+            File absoluteFile = new File(com.oxygenxml.git.service.GitAccess.getInstance().getWorkingCopy().getAbsoluteFile(),(String) value);
+            setToolTipText(absoluteFile.toString());
+          } catch (NoRepositorySelected e) {
+            e.printStackTrace();
+          }
           return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         }
       });
