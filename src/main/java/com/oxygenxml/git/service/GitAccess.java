@@ -2295,4 +2295,23 @@ public class GitAccess {
 	  revWalk.sort(RevSort.COMMIT_TIME_DESC);
 	  return revWalk.next();
 	}
+	
+
+	/**
+   * Get latest commit on the branch with given name.
+   * 
+   * @param branchNAme name of the target branch.
+   * 
+   * @return the latest commit.
+   * 
+   * @throws GitAPIException 
+   * @throws IOException 
+   */
+  public RevCommit getLatestCommitForBranch (String branchNAme) throws GitAPIException, IOException {
+    Repository repo = git.getRepository();
+    RevWalk revWalk = (RevWalk) git.log().add(repo.resolve(branchNAme)).call();
+    revWalk.sort(RevSort.COMMIT_TIME_DESC);
+    return revWalk.next();
+  }
+
 }

@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -14,9 +17,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
@@ -27,7 +34,7 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
 /**
  * Renderer for the nodes icon in the branches tree, based on the path to the
  * node.
- * 
+ *
  * @author Bogdan Draghici
  *
  */
@@ -48,21 +55,21 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   /**
    * Tells us if the context menu is showing.
    */
-  private BooleanSupplier isContextMenuShowing;
+  private final BooleanSupplier isContextMenuShowing;
   /**
    * Supplies the current branch.
    */
-  private Supplier<String> currentBranchNameSupplier;
-  
+  private final Supplier<String> currentBranchNameSupplier;
+
   /**
    * Constructor.
-   * 
+   *
    * @param isContextMenuShowing Tells us if the context menu is showing.
    * @param currentBranchNameSupplier Gives us the current branch name.
    */
   public BranchesTreeCellRenderer(
-      BooleanSupplier isContextMenuShowing,
-      Supplier<String> currentBranchNameSupplier) {
+          BooleanSupplier isContextMenuShowing,
+          Supplier<String> currentBranchNameSupplier) {
     this.isContextMenuShowing = isContextMenuShowing;
     this.currentBranchNameSupplier = currentBranchNameSupplier;
   }
@@ -72,10 +79,10 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    */
   @Override
   public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
-      int row, boolean hasFocus) {
+                                                int row, boolean hasFocus) {
 
     JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-    
+
     Icon icon = null;
     String text = "";
     String path = value.toString();
@@ -86,13 +93,39 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       icon = renderingInfo.getIcon();
       text = renderingInfo.getTooltip();
     }
+    
+    Set<String> localBranches;
+    try {
+      localBranches = new HashSet<>(BranchesUtil.getLocalBranches());
+    } catch (NoRepositorySelected e1) {
+     localBranches = null;
+    }
 
     if (label != null) {
       label.setIcon(icon);
       if (!text.isEmpty()) {
         label.setText(text);
-      }
-      
+        if(localBranches != null && localBranches.contains(text)) {          
+          try {   
+            StringBuilder toolTipText = new StringBuilder();
+            toolTipText.append("<html><p>")
+                       .append(Tags.AUTHOR)
+                       .append(": ")  
+                       .append(GitAccess.getInstance().getLatestCommitForBranch(text).getAuthorIdent().getName())
+                       .append(" ")
+                       .append(GitAccess.getInstance().getLatestCommitForBranch(text).getAuthorIdent().getEmailAddress())
+                       .append("<br>")
+                       .append(Tags.DATE)
+                       .append(": ")
+                       .append(GitAccess.getInstance().getLatestCommitForBranch(text).getAuthorIdent().getWhen())
+                       .append("</p></html>");
+            label.setToolTipText(toolTipText.toString());
+        } catch (GitAPIException | IOException e) {
+             e.printStackTrace();
+          }
+        }         
+     }
+
       Font font = label.getFont();
       label.setFont(font.deriveFont(Font.PLAIN));
       label.setBorder(new EmptyBorder(0, 5, 0, 0));
@@ -101,7 +134,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
         label.setFont(font.deriveFont(Font.BOLD));
         label.setBorder(new RoundedLineBorder(label.getForeground(), 1, CURRENT_BRANCH_BORDER_CRONER_SIZE, true));
       }
-      
+
       // Active/inactive table selection
       if (sel) {
         setSelectionColors(tree);
@@ -110,12 +143,12 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
 
     return label;
   }
-  
+
   /**
    * Get the rendering info (such as icon) for the given branch.
-   * 
+   *
    * @param branchPath The string path to the branch.
-   * 
+   *
    * @return The rendering info.
    */
   private RenderingInfo getRenderingInfo(String branchPath) {
@@ -133,21 +166,21 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
 
   /**
    * Set selection background and border colors.
-   * 
+   *
    * @param tree The tree.
    */
   private void setSelectionColors(JTree tree) {
     if (tree.hasFocus()) {
       ColorTheme colorTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme();
-      setBorderSelectionColor(colorTheme.isDarkTheme() ? defaultSelectionColor 
-          : defaultBorderSelectionColor);
+      setBorderSelectionColor(colorTheme.isDarkTheme() ? defaultSelectionColor
+              : defaultBorderSelectionColor);
       setBackgroundSelectionColor(defaultSelectionColor);
     } else if (!isContextMenuShowing.getAsBoolean()) {
       setBorderSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
       setBackgroundSelectionColor(RendererUtil.getInactiveSelectionColor(tree, defaultSelectionColor));
     }
   }
-  
+
   /**
    * Paints the node, and in case it is also selected, take care not to draw the dashed rectangle border.
    * @see com.oxygenxml.git.view.branches.BranchesTreeCellRenderer.paint(Graphics)
@@ -159,15 +192,15 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
       hasFocus = false;
       super.paint(g);
-      paintBorder(g, 0, 0, getWidth(), getHeight());      
+      paintBorder(g, 0, 0, getWidth(), getHeight());
     } else {
       super.paint(g);
     }
   }
-  
+
   /**
    * Paints the border for the selected node.
-   * 
+   *
    * @param g Graphics.
    * @param x X coordinate.
    * @param y Y coordinate.
@@ -177,8 +210,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   private void paintBorder(Graphics g, int x, int y, int w, int h) {
     Color bsColor = getBorderSelectionColor();
     if (bsColor != null && selected) {
-        g.setColor(bsColor);
-        g.drawRect(x, y, w - 1, h - 1);
+      g.setColor(bsColor);
+      g.drawRect(x, y, w - 1, h - 1);
     }
   }
 }

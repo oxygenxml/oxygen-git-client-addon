@@ -257,14 +257,13 @@ public class BranchManagementPanel extends JPanel {
    */
   private void createBranchesTree() {
     branchesTree = new Tree(new BranchManagementTreeModel(null, allBranches));
+    ToolTipManager.sharedInstance().registerComponent(branchesTree);
     branchesTree.setCellRenderer(new BranchesTreeCellRenderer(() -> isContextMenuShowing, () -> currentBranchName));
     branchesTree.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     branchesTree.setDragEnabled(false);
     branchesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     branchesTree.setLargeModel(true);
     branchesTree.setVisible(false);
-    
-    ToolTipManager.sharedInstance().registerComponent(branchesTree);
   }
 
   /**
