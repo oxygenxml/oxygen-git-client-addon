@@ -64,9 +64,4 @@ public enum GitOperation {
    * Push changes to upstream.
    */
   PUSH;
-
-  boolean compareTo(Class<GitOperation> class1) {
-    // TODO Auto-generated method stub
-    return false;
-  }
 }

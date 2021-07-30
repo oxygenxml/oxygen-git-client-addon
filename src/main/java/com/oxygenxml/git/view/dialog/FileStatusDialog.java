@@ -23,8 +23,11 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -40,6 +43,30 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  */
 @SuppressWarnings("java:S110")
 public class FileStatusDialog extends OKCancelDialog {
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(FileStatusDialog.class.getName());
+  
+  /**
+   * The preferred width of the scroll pane for the files list.
+   */
+  private static final int FILES_SCROLLPANE_PREFERRED_WIDTH = 300;
+  
+  /**
+   * The preferred eight of the scroll pane for the files list.
+   */
+  private static final int FILES_SCROLLPANE_PREFERRED_HEIGHT = 100;
+  
+  /**
+   * Minimum width.
+   */
+  private static final int WARN_MESSAGE_DLG_MINIMUM_WIDTH = 300;
+  
+  /**
+   * Minimum height.
+   */
+  private static final int WARN_MESSAGE_DLG_MINIMUM_HEIGHT = 150;
   
   /**
    * Document with custom wrapping.
@@ -151,20 +178,20 @@ public class FileStatusDialog extends OKCancelDialog {
       JList<String> filesList = new JList<>(model);
       filesList.setCellRenderer(new DefaultListCellRenderer() {
         @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-            boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
           try {
-            File absoluteFile = new File(com.oxygenxml.git.service.GitAccess.getInstance().getWorkingCopy().getAbsoluteFile(),(String) value);
+            File workingCopyAbsolute = GitAccess.getInstance().getWorkingCopy().getAbsoluteFile();
+            File absoluteFile = new File(workingCopyAbsolute, (String) value); // NOSONAR: no vulnerability here
             setToolTipText(absoluteFile.toString());
           } catch (NoRepositorySelected e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
           }
           return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         }
       });
       
       JScrollPane scollPane = new JScrollPane(filesList);
-      scollPane.setPreferredSize(new Dimension(300, 100));
+      scollPane.setPreferredSize(new Dimension(FILES_SCROLLPANE_PREFERRED_WIDTH, FILES_SCROLLPANE_PREFERRED_HEIGHT));
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.BOTH;
       gbc.weightx = 1;
@@ -215,7 +242,7 @@ public class FileStatusDialog extends OKCancelDialog {
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
 	  FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
 	  dialog.setResizable(true);
-	  dialog.setMinimumSize(new Dimension(300, 150));
+	  dialog.setMinimumSize(new Dimension(WARN_MESSAGE_DLG_MINIMUM_WIDTH, WARN_MESSAGE_DLG_MINIMUM_HEIGHT));
 	  dialog.setVisible(true);
   }
   
