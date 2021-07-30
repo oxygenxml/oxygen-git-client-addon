@@ -160,8 +160,9 @@ public class GitController extends GitControllerBase {
 
     /**
      * Executes the command. If authentication is to be tried again, the method will be called recursively.
+     * 
      */
-    private void executeCommand() {
+    private void executeCommand(){
       String hostName = gitAccess.getHostName();
       CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(hostName);
       Optional<PushPullEvent> event = Optional.empty();
@@ -205,8 +206,12 @@ public class GitController extends GitControllerBase {
             e.getConflictingPaths(),
             translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
       } catch (TransportException e) {
-    	  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.PUSH_FAILED) + ". "
-    			  + translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION), e);
+        try {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(getOperation()+translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION)+gitAccess.getRemoteURLFromConfig(), e);
+        } catch (NoRepositorySelected e1) {
+
+          logger.error(e1, e1);
+        }
       } catch (GitAPIException e) {
         // Exception handling.
         boolean shouldTryAgain = AuthUtil.handleAuthException(
