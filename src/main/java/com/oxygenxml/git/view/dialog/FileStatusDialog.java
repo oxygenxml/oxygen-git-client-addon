@@ -49,6 +49,26 @@ public class FileStatusDialog extends OKCancelDialog {
   private static final Logger logger = Logger.getLogger(FileStatusDialog.class.getName());
   
   /**
+   * The preferred width of the scroll pane for the files list.
+   */
+  private static final int FILES_SCROLLPANE_PREFERRED_WIDTH = 300;
+  
+  /**
+   * The preferred eight of the scroll pane for the files list.
+   */
+  private static final int FILES_SCROLLPANE_PREFERRED_HEIGHT = 100;
+  
+  /**
+   * Minimum width.
+   */
+  private static final int WARN_MESSAGE_DLG_MINIMUM_WIDTH = 300;
+  
+  /**
+   * Minimum height.
+   */
+  private static final int WARN_MESSAGE_DLG_MINIMUM_HEIGHT = 150;
+  
+  /**
    * Document with custom wrapping.
    */
   private static class CustomWrapDocument extends DefaultStyledDocument {
@@ -170,7 +190,7 @@ public class FileStatusDialog extends OKCancelDialog {
       });
       
       JScrollPane scollPane = new JScrollPane(filesList);
-      scollPane.setPreferredSize(new Dimension(300, 100));
+      scollPane.setPreferredSize(new Dimension(FILES_SCROLLPANE_PREFERRED_WIDTH, FILES_SCROLLPANE_PREFERRED_HEIGHT));
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.BOTH;
       gbc.weightx = 1;
@@ -221,7 +241,7 @@ public class FileStatusDialog extends OKCancelDialog {
   public static void showWarningMessage(String title, List<String> conflictFiles, String message) {
 	  FileStatusDialog dialog = new FileStatusDialog(Icons.WARNING_ICON,title, conflictFiles, message, null, null, null);
 	  dialog.setResizable(true);
-	  dialog.setMinimumSize(new Dimension(300, 150));
+	  dialog.setMinimumSize(new Dimension(WARN_MESSAGE_DLG_MINIMUM_WIDTH, WARN_MESSAGE_DLG_MINIMUM_HEIGHT));
 	  dialog.setVisible(true);
   }
   
