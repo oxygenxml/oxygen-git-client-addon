@@ -211,42 +211,55 @@ public class BranchTreeMenuActionsProvider {
         CreateBranchDialog dialog = new CreateBranchDialog(translator.getTranslation(Tags.CREATE_BRANCH), null, false);
 
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-          ctrl.asyncTask(() -> {
-            ctrl.getGitAccess().createBranchFromLocalBranch(dialog.getBranchName(), nodePath);
+          ctrl.asyncTask(
+              () -> doCreateBranch(nodePath, dialog.getBranchName(), dialog.shouldCheckoutNewBranch()),
+              ex -> {
+                if (ex instanceof CheckoutConflictException) {
+                  treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
+                } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
+                  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+                }
+              });
+        }
+      }
+      
+      /**
+       * Do create the new branch. 
+       *  
+       * @param nodePath         A string that contains the full path to the node that represents the branch.
+       * @param branchName       The name of the new branch.
+       * @param isCheckoutBranch <code>true</code> to also checkout the branch.
+       * 
+       * @return <code>null</code>.
+       * 
+       * @throws GitAPIException 
+       */
+      private Object doCreateBranch(String nodePath, String branchName, boolean isCheckoutBranch) throws GitAPIException {
+        ctrl.getGitAccess().createBranchFromLocalBranch(branchName, nodePath);
 
-            if (!dialog.shouldCheckoutNewBranch()) {
-              return null;
-            }
-
-            RepositoryState repoState = null;
-            try {
-              repoState = GitAccess.getInstance().getRepository().getRepositoryState();
-            } catch (NoRepositorySelected e1) {
-              logger.error(e1, e1);
-            }
-            if (RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
-              int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
-                  "Would you like to take changes with you ?",
-                  "Yes, take them with me",
-                  "No, let me commit");
-              if (answer == OKCancelDialog.RESULT_OK) {
-                ctrl.getGitAccess().setBranch(dialog.getBranchName());
-              }
-            } else {
-              ctrl.getGitAccess().setBranch(dialog.getBranchName());
-            }
-
-            return null;
-          }, ex -> {
-            if (ex instanceof CheckoutConflictException) {
-              treatCheckoutConflictForNewlyCreatedBranche((CheckoutConflictException) ex);
-            } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-            }
-          });
-
+        if (!isCheckoutBranch) {
+          return null;
         }
 
+        RepositoryState repoState = null;
+        try {
+          repoState = GitAccess.getInstance().getRepository().getRepositoryState();
+        } catch (NoRepositorySelected e1) {
+          logger.error(e1, e1);
+        }
+        if (RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
+          int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
+              "Would you like to take changes with you ?",
+              "Yes, take them with me",
+              "No, let me commit");
+          if (answer == OKCancelDialog.RESULT_OK) {
+            ctrl.getGitAccess().setBranch(branchName);
+          }
+        } else {
+          ctrl.getGitAccess().setBranch(branchName);
+        }
+
+        return null;
       }
     };
   }
