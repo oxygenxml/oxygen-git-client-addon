@@ -23,8 +23,11 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -40,6 +43,10 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  */
 @SuppressWarnings("java:S110")
 public class FileStatusDialog extends OKCancelDialog {
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(FileStatusDialog.class.getName());
   
   /**
    * Document with custom wrapping.
@@ -151,13 +158,12 @@ public class FileStatusDialog extends OKCancelDialog {
       JList<String> filesList = new JList<>(model);
       filesList.setCellRenderer(new DefaultListCellRenderer() {
         @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-            boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
           try {
-            File absoluteFile = new File(com.oxygenxml.git.service.GitAccess.getInstance().getWorkingCopy().getAbsoluteFile(),(String) value);
+            File absoluteFile = new File(GitAccess.getInstance().getWorkingCopy().getAbsoluteFile(), (String) value);
             setToolTipText(absoluteFile.toString());
           } catch (NoRepositorySelected e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
           }
           return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         }
