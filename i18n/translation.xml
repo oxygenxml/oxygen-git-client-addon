@@ -1983,9 +1983,9 @@
     </key>
 	<key value="Push_Failed_Transport_Exception">
         <comment>The text is displayed when you try to push to remote repository but no internet</comment>
-        <val lang="en_US">. Unable to access remote repository at: </val>
-        <val lang="de_DE">. Unable to access remote repository at: </val>
-        <val lang="fr_FR">. Unable to access remote repository at: </val>
+        <val lang="en_US">Unable to access remote repository at: </val>
+        <val lang="de_DE">Unable to access remote repository at: </val>
+        <val lang="fr_FR">Unable to access remote repository at: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL"></val>
     </key>
