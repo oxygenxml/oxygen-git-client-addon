@@ -441,52 +441,52 @@ public class ToolbarPanel extends JPanel {
         if(RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
           int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
               "Would you like to take changes with you ?",
-               "Yes, take them with me",
-               "No, let me commit");
-         if(answer == OKCancelDialog.RESULT_OK ) {
-           tryCheckingOutBranch(e);
-         }
+              "Yes, take them with me",
+              "No, let me commit");
+          if(answer == OKCancelDialog.RESULT_OK ) {
+            tryCheckingOutBranch(branchName);
+          }
         } else {
-          tryCheckingOutBranch(e);
-        }
-      }
-      
-      /**
-       * The action performed for this Abstract Action
-       * 
-       * @param e Action Event
-       */
-      private void tryCheckingOutBranch(ActionEvent e) {
-        GitOperationScheduler.getInstance().schedule(() -> {
-          try {
-            GitAccess.getInstance().setBranch(branchName);
-            BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
-          } catch (CheckoutConflictException ex) {
-            logger.debug(ex, ex);
-            restoreCurrentBranchSelectionInMenu();
-            BranchesUtil.showBranchSwitchErrorMessage();
-          } catch (GitAPIException | JGitInternalException | IOException | NoRepositorySelected ex) {
-            restoreCurrentBranchSelectionInMenu();
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-          }
-        });
-      }
-
-      /**
-       * Restore current branch selection in branches menu.
-       */
-      private void restoreCurrentBranchSelectionInMenu() {
-        String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-        Component[] menuComponents = branchesSplitMenuButton.getMenuComponents();
-        for (Component component : menuComponents) {
-          JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) component;
-          if (menuItem.getText().equals(currentBranchName)) {
-            menuItem.setSelected(true);
-            break;
-          }
+          tryCheckingOutBranch(branchName);
         }
       }
     };
+  }
+  
+  /**
+   * The action performed for this Abstract Action
+   * 
+   * @param branchName Branch name.
+   */
+  private void tryCheckingOutBranch(String branchName) {
+    GitOperationScheduler.getInstance().schedule(() -> {
+      try {
+        GitAccess.getInstance().setBranch(branchName);
+        BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
+      } catch (CheckoutConflictException ex) {
+        logger.debug(ex, ex);
+        restoreCurrentBranchSelectionInMenu();
+        BranchesUtil.showBranchSwitchErrorMessage();
+      } catch (GitAPIException | JGitInternalException | IOException | NoRepositorySelected ex) {
+        restoreCurrentBranchSelectionInMenu();
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+      }
+    });
+  }
+
+  /**
+   * Restore current branch selection in branches menu.
+   */
+  private void restoreCurrentBranchSelectionInMenu() {
+    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+    Component[] menuComponents = branchesSplitMenuButton.getMenuComponents();
+    for (Component component : menuComponents) {
+      JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) component;
+      if (menuItem.getText().equals(currentBranchName)) {
+        menuItem.setSelected(true);
+        break;
+      }
+    }
   }
 
   /**
