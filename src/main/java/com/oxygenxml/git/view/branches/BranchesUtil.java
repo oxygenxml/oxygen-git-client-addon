@@ -1,21 +1,28 @@
 package com.oxygenxml.git.view.branches;
 
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.RepoUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.eclipse.jgit.lib.*;
-import org.eclipse.jgit.transport.RefSpec;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.transport.RefSpec;
+
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * This class contains some utility functions for the branches.
@@ -69,7 +76,8 @@ public class BranchesUtil {
    * Creates a list with remote branches path for the current repository.
    * 
    * @return The list of remote branches.
-   *
+   * 
+   * @throws NoRepositorySelected when no repo is selected.
    */
   public static List<String> getRemoteBranches() throws NoRepositorySelected {
     List<String> branchList = new ArrayList<>();

@@ -1,5 +1,25 @@
 package com.oxygenxml.git.view.branches;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.io.IOException;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JTree;
+import javax.swing.border.EmptyBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Constants;
+
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -7,21 +27,9 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.eclipse.jgit.lib.Constants;
+
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.ColorTheme;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 /**
  * Renderer for the nodes icon in the branches tree, based on the path to the
@@ -64,8 +72,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * @param currentBranchNameSupplier Gives us the current branch name.
    */
   public BranchesTreeCellRenderer(
-          BooleanSupplier isContextMenuShowing,
-          Supplier<String> currentBranchNameSupplier) {
+      BooleanSupplier isContextMenuShowing,
+      Supplier<String> currentBranchNameSupplier) {
     this.isContextMenuShowing = isContextMenuShowing;
     this.currentBranchNameSupplier = currentBranchNameSupplier;
   }
@@ -74,8 +82,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * @see DefaultTreeCellRenderer.getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean)
    */
   @Override
-  public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
-                                                int row, boolean hasFocus) {
+  public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
     JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
@@ -90,47 +97,32 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       text = renderingInfo.getTooltip();
     }
     
-    Set<String> localBranches;
-    try {
-      localBranches = new HashSet<>(BranchesUtil.getLocalBranches());
-    } catch (NoRepositorySelected e1) {
-      localBranches = null;
-    }
-    
-    Set<String> remoteBranches;
-    try {
-      remoteBranches = new HashSet<>(BranchesUtil.getRemoteBranches());
-    } catch (NoRepositorySelected e1) {
-      remoteBranches = null;
-    }
-
     if (label != null) {
       label.setIcon(icon);
       if (!text.isEmpty()) {
         label.setText(text);
-       
-        if((localBranches != null && localBranches.contains(text)) ||
-            (remoteBranches != null && remoteBranches.contains(path))
-            ) {          
-          try {   
+
+        try {
+          if(BranchesUtil.getLocalBranches().contains(text) || BranchesUtil.getRemoteBranches().contains(path)) {
             StringBuilder toolTipText = new StringBuilder();
             toolTipText.append("<html><p>")
-                       .append(Tags.AUTHOR)
-                       .append(": ")  
-                       .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getName())
-                       .append(" ")
-                       .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getEmailAddress())
-                       .append("<br>")
-                       .append(Tags.DATE)
-                       .append(": ")
-                       .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getWhen())
-                       .append("</p></html>");
+                .append(Tags.AUTHOR)
+                .append(": ")  
+                .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getName())
+                .append(" ")
+                .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getEmailAddress())
+                .append("<br>")
+                .append(Tags.DATE)
+                .append(": ")
+                .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getWhen())
+                .append("</p></html>");
             label.setToolTipText(toolTipText.toString());
-        } catch (Exception e) {
-             LOGGER.debug(e, e);
-          } 
-        }
+          }
+        } catch (GitAPIException | IOException | NoRepositorySelected e) {
+          LOGGER.error(e, e);
+        } 
       }
+      
       Font font = label.getFont();
       label.setFont(font.deriveFont(Font.PLAIN));
       label.setBorder(new EmptyBorder(0, 5, 0, 0));
