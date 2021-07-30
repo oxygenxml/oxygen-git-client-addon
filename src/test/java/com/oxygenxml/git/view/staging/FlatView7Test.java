@@ -76,7 +76,7 @@ public class FlatView7Test extends FlatViewTestBase {
         "Push_to_create_and_track_remote_branch",
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
-        "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
+        "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
         toolbarPanel.getBranchSplitMenuButton().getToolTipText());
     
     // Push to create the remote branch
