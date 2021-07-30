@@ -593,11 +593,11 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
     gitAccess.createBranch(LOCAL_BRANCH_NAME2);
     try (RevWalk walk = new RevWalk(gitAccess.getRepository())) {
-      List<Ref> listOfLocalBranches = gitAccess.getLocalBranchList();
-      for (Ref listOfLocalBranch : listOfLocalBranches) {
-        Ref tracking = gitAccess.getRepository().exactRef(listOfLocalBranch.getName());
+      List<Ref> localBranches = gitAccess.getLocalBranchList();
+      for (Ref localBranch : localBranches) {
+        Ref tracking = gitAccess.getRepository().exactRef(localBranch.getName());
         RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
-        lastCommitDetailsForAllBranchesMap.put(listOfLocalBranch.getName(), trackingCommit.getAuthorIdent().getWhen());
+        lastCommitDetailsForAllBranchesMap.put(localBranch.getName(), trackingCommit.getAuthorIdent().getWhen());
       }
     }
     
@@ -616,11 +616,11 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
     try (RevWalk walk = new RevWalk(gitAccess.getRepository())) {
-      List<Ref> listOfRemoteBranches = gitAccess.getRemoteBrachListForCurrentRepo();
-      for (Ref listOfRemoteBranch : listOfRemoteBranches) {
-        Ref tracking = gitAccess.getRepository().exactRef(listOfRemoteBranch.getName());
+      List<Ref> remoteBranches = gitAccess.getRemoteBrachListForCurrentRepo();
+      for (Ref remoteBranch : remoteBranches) {
+        Ref tracking = gitAccess.getRepository().exactRef(remoteBranch.getName());
         RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
-        lastCommitDetailsForAllBranchesMap.put(listOfRemoteBranch.getName(), trackingCommit.getAuthorIdent().getWhen());
+        lastCommitDetailsForAllBranchesMap.put(remoteBranch.getName(), trackingCommit.getAuthorIdent().getWhen());
       }
     }
      
@@ -629,18 +629,16 @@ public class BranchManagementTest extends GitTestBase{
     flushAWT();
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
-    StringBuilder actualTree = new StringBuilder();
-    serializeTree(actualTree, root);
     GitTreeNode leaf = (GitTreeNode) root.getFirstLeaf();
     
-    JLabel testLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, root, false, true, root.isLeaf(), 0, true);
-    assertNull(testLabel.getToolTipText());
+    JLabel toolTipLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, root, false, true, root.isLeaf(), 0, true);
+    assertNull(toolTipLabel.getToolTipText());
     
     //  Tests the tool tips for all branches
     for (int i = 0; i < root.getLeafCount(); i++) {
-      testLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, leaf, false, true, leaf.isLeaf(), 0, true);
-      assertTrue(testLabel.getToolTipText().contains(AUTHOR_DETAILS));
-      assertTrue(testLabel.getToolTipText().contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
+      toolTipLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, leaf, false, true, leaf.isLeaf(), 0, true);
+      assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_DETAILS));
+      assertTrue(toolTipLabel.getToolTipText().contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
       leaf = (GitTreeNode) leaf.getNextLeaf();
     }
   }
