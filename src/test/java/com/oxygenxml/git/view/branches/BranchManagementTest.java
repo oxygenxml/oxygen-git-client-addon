@@ -584,10 +584,11 @@ public class BranchManagementTest extends GitTestBase{
   public void testBranchesTreeToolTipBranches() throws Exception {
     final String AUTHOR_DETAILS = "Author: AlexJitianu alex_jitianu@sync.ro";
     Map<String, Date> lastCommitDetailsForAllBranchesMap = new HashMap<>();
+    
+    // Local repo
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
     setFileContent(file, "local content");
-    //Make the first commit for the local repository and create a branch for it.
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     gitAccess.commit("First local commit.");
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
@@ -601,18 +602,17 @@ public class BranchManagementTest extends GitTestBase{
       }
     }
     
+    // Remote repo
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
     file = new File(REMOTE_TEST_REPOSITORY + "remote1.txt");
     file.createNewFile();
     setFileContent(file, "remote content");
-    
-    //  Make the first commit for the remote repository and create a branch for it.
     gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
     gitAccess.commit("First remote commit.");
-
     gitAccess.createBranch(REMOTE_BRANCH_NAME1);
     gitAccess.createBranch(REMOTE_BRANCH_NAME2);
     
+    // Local repo again
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
     try (RevWalk walk = new RevWalk(gitAccess.getRepository())) {
@@ -627,6 +627,7 @@ public class BranchManagementTest extends GitTestBase{
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitControllerBase.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
+    
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     GitTreeNode leaf = (GitTreeNode) root.getFirstLeaf();
