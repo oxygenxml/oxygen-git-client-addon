@@ -553,7 +553,6 @@ public class GitCheckoutConflictTest extends TestCase {
     JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
     yesButton.doClick();
     sleep(1000);
-    System.err.println(yesButton.getText());
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);

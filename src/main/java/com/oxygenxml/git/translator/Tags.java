@@ -341,7 +341,7 @@ public class Tags {
 	/**
 	 * The message displayed when your push fails and it is because of a transport exception
 	 */
-	public static final String PUSH_FAILED_TRANSPORT_EXCEPTION = ". Unable to access remote repository at: ";
+	public static final String PUSH_FAILED_TRANSPORT_EXCEPTION = "Push_Failed_Transport_Exception";
 	
 	/**
 	 * The massage displayed when you push with no changes

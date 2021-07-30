@@ -1,9 +1,12 @@
 package com.oxygenxml.git.service;
 
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -37,6 +40,7 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.refresh.PanelRefresh;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
@@ -169,6 +173,11 @@ public class GitCheckoutConflict2Test extends GitTestBase {
       }
     }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
     errMsg[0] = "";
+    
+    ImageUtilities imageUtilities = Mockito.mock(ImageUtilities.class);
+    // Dummy icon
+    Mockito.doReturn(null).when(imageUtilities).loadIcon((URL)Mockito.any());
+    Mockito.when(pluginWSMock.getImageUtilities()).thenReturn(imageUtilities);
   }
   
   @Override
@@ -490,11 +499,11 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     
-    GitControllerBase mock = new GitController(GitAccess.getInstance());
-    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    GitControllerBase gitCtrl = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
     sleep(500);
-    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(gitCtrl);
    
     // Simulate branch checkout from Git Branch Manager view
     GitTreeNode node = new GitTreeNode(
@@ -504,9 +513,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(node);
     for (AbstractAction abstractAction : actionsForNode) {
       if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.CREATE_BRANCH) + "...")) {
-        SwingUtilities.invokeLater(() -> {
-          abstractAction.actionPerformed(null);
-        });
+        SwingUtilities.invokeLater(() -> abstractAction.actionPerformed(null));
         flushAWT();
 
         JDialog createBranchDialog = findDialog(translator.getTranslation(Tags.CREATE_BRANCH));
@@ -515,18 +522,29 @@ public class GitCheckoutConflict2Test extends GitTestBase {
         checkoutBranchCheckBox.setSelected(true);
         flushAWT();
 
-        JTextField branchNameTextField = findComponentNearJLabel(createBranchDialog,
-            translator.getTranslation(Tags.BRANCH_NAME) + ": ", JTextField.class);
+        JTextField branchNameTextField = findComponentNearJLabel(
+            createBranchDialog,
+            translator.getTranslation(Tags.BRANCH_NAME) + ": ",
+            JTextField.class);
         branchNameTextField.setText("a_new_day");
+        
         JButton okButton = findFirstButton(createBranchDialog, "Create");
         if (okButton != null) {
           okButton.setEnabled(true);
-          okButton.doClick();
+          SwingUtilities.invokeLater(() -> okButton.doClick());
+          flushAWT();
         }
         break;
       }
     }
-    sleep(500);
+    
+    sleep(1000);
+    
+    Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+    
+    JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+    yesButton.doClick();
+    sleep(1000);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
