@@ -1,16 +1,21 @@
 package com.oxygenxml.git.view;
 
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.io.File;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.event.GitController;
@@ -31,6 +36,7 @@ public class ToolbarPanelTest extends GitTestBase {
   private Repository remoteRepository;
   private Repository localRepository;
 
+  @Override
   @Before
   public void setUp() throws Exception {
     super.setUp();
@@ -109,17 +115,29 @@ public class ToolbarPanelTest extends GitTestBase {
       // Try to switch to another branch
       SplitMenuButton branchSplitMenuButton = stagingPanel.getToolbarPanel().getBranchSplitMenuButton();
       branchSplitMenuButton.setPopupMenuVisible(true);
-      JRadioButtonMenuItem firstItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(0);
-      firstItem.setSelected(true);
-      firstItem.getAction().actionPerformed(null);
+      final JRadioButtonMenuItem firstItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(0);
+      
+      SwingUtilities.invokeLater(() -> {
+        firstItem.setSelected(true);
+        firstItem.getAction().actionPerformed(null);
+      });
+      
+      sleep(500);
+      Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+      
+      JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+      yesButton.doClick();
+      
+      sleep(500);
+      
       branchSplitMenuButton.setPopupMenuVisible(false);
       flushAWT();
       
       // The switch should have failed, and the selected branch shouldn't have changed
       branchSplitMenuButton.setPopupMenuVisible(true);
       flushAWT();
-      firstItem = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(0);
-      assertFalse(firstItem.isSelected());
+      JRadioButtonMenuItem firstItem2 = (JRadioButtonMenuItem) branchSplitMenuButton.getMenuComponent(0);
+      assertFalse(firstItem2.isSelected());
       
     } finally {
       frame.setVisible(false);
