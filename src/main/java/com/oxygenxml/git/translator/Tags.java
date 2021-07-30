@@ -1235,4 +1235,23 @@ public class Tags {
    * The previous commit tracked by a submodule.
    */
   public static final String SUBMODULE_PREVIOUS_TRACKED_COMMIT = "Submodule_previous_tracked_commit";
+  
+  /**
+   * The tile of the question dialog when you switch between branches with unstaged files 
+   */
+  public static final String UNSTAGED_FILES_QUESTION_TILE = "Unstaged_Files_Question_Title";
+  /**
+   * The message in the question dialog when you switch between branches with unstaged files
+   */
+  public static final String UNSTAGED_FILES_QUESTION_MESSAGE = "Unstaged_Files_Question_Message";
+  /**
+   * The message on the ok button of the question dialog when you switch between branches with unstaged files 
+   */
+  public static final String UNSTAGED_FILES_QUESTION_OK_BUTTON_NAME = "Unstaged_Files_Question_Ok_Button_Name";
+  /**
+   * The message on the cancel button of the question dialog when you switch between branches with unstaged files 
+   */
+  public static final String UNSTAGED_FILES_QUESTION_CANCEL_BUTTON_NAME = "Unstaged_Files_Question_Cancel_Button_Name";
+  
+  
 }

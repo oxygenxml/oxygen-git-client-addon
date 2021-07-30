@@ -1989,5 +1989,37 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL"></val>
     </key>
-
+    <key value="Unstaged_Files_Question_Title">
+        <comment>The tile of the question dialog when you switch between branches with unstaged files</comment>
+        <val lang="en_US">Swithcing branches with changes unstaged</val>
+        <val lang="de_DE">Swithcing branches with changes unstaged</val>
+        <val lang="fr_FR">Swithcing branches with changes unstaged</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Unstaged_Files_Question_Message">
+        <comment>The message in the question dialog when you switch between branches with unstaged files</comment>
+        <val lang="en_US">Would you like to take changes with you ?</val>
+        <val lang="de_DE">Would you like to take changes with you ? </val>
+        <val lang="fr_FR">Would you like to take changes with you ? </val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Unstaged_Files_Question_Ok_Button_Name">
+        <comment>The message on the ok button of the question dialog when you switch between branches with unstaged files</comment>
+        <val lang="en_US">Yes, take them with me</val>
+        <val lang="de_DE">Yes, take them with me</val>
+        <val lang="fr_FR">Yes, take them with me </val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL"></val>
+    </key>
+    <key value="Unstaged_Files_Question_Cancel_Button_Name">
+        <comment>The message on the cancel button of the question dialog when you switch between branches with unstaged files</comment>
+        <val lang="en_US">Yes, take them with me</val>
+        <val lang="de_DE">Yes, take them with me</val>
+        <val lang="fr_FR">Yes, take them with me</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL"></val>
+    </key>
+    
 </translation>
