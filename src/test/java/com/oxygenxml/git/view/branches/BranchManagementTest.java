@@ -1,12 +1,20 @@
 package com.oxygenxml.git.view.branches;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -419,7 +427,7 @@ public class BranchManagementTest extends GitTestBase{
    * @throws Exception
    */
   @Test
-  public void testBranchesTreeFilterAllBranches() throws Exception{
+  public void testBranchesTreeFilterAllBranches() throws Exception {
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
     setFileContent(file, "local content");
@@ -561,5 +569,79 @@ public class BranchManagementTest extends GitTestBase{
         "      refs/remotes/origin/RemoteBranch2\n" + 
         "",
         actualTree.toString());
+  }
+  
+  
+  /**
+   * <p><b>Description:</b> Tests the tool tips for branches on a tree with both local and remote branches.</p>
+   * <p><b>Bug ID:</b> EXM-46438</p>
+   * 
+   * @author Alex Smarandache
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testBranchesTreeToolTipBranches() throws Exception {
+    final String AUTHOR_DETAILS = "Author: AlexJitianu alex_jitianu@sync.ro";
+    Map<String, Date> lastCommitDetailsForAllBranchesMap = new HashMap<>();
+    File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    //Make the first commit for the local repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.createBranch(LOCAL_BRANCH_NAME2);
+    try (RevWalk walk = new RevWalk(gitAccess.getRepository())) {
+      List<Ref> listOfLocalBranches = gitAccess.getLocalBranchList();
+      for (Ref listOfLocalBranch : listOfLocalBranches) {
+        Ref tracking = gitAccess.getRepository().exactRef(listOfLocalBranch.getName());
+        RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
+        lastCommitDetailsForAllBranchesMap.put(listOfLocalBranch.getName(), trackingCommit.getAuthorIdent().getWhen());
+      }
+    }
+    
+    gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
+    file = new File(REMOTE_TEST_REPOSITORY + "remote1.txt");
+    file.createNewFile();
+    setFileContent(file, "remote content");
+    
+    //  Make the first commit for the remote repository and create a branch for it.
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
+    gitAccess.commit("First remote commit.");
+
+    gitAccess.createBranch(REMOTE_BRANCH_NAME1);
+    gitAccess.createBranch(REMOTE_BRANCH_NAME2);
+    
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
+    gitAccess.fetch();
+    try (RevWalk walk = new RevWalk(gitAccess.getRepository())) {
+      List<Ref> listOfRemoteBranches = gitAccess.getRemoteBrachListForCurrentRepo();
+      for (Ref listOfRemoteBranch : listOfRemoteBranches) {
+        Ref tracking = gitAccess.getRepository().exactRef(listOfRemoteBranch.getName());
+        RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
+        lastCommitDetailsForAllBranchesMap.put(listOfRemoteBranch.getName(), trackingCommit.getAuthorIdent().getWhen());
+      }
+    }
+     
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitControllerBase.class));
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    JTree tree = branchManagementPanel.getTree();
+    GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    StringBuilder actualTree = new StringBuilder();
+    serializeTree(actualTree, root);
+    GitTreeNode leaf = (GitTreeNode) root.getFirstLeaf();
+    
+    JLabel testLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, root, false, true, root.isLeaf(), 0, true);
+    assertNull(testLabel.getToolTipText());
+    
+    //  Tests the tool tips for all branches
+    for (int i = 0; i < root.getLeafCount(); i++) {
+      testLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, leaf, false, true, leaf.isLeaf(), 0, true);
+      assertTrue(testLabel.getToolTipText().contains(AUTHOR_DETAILS));
+      assertTrue(testLabel.getToolTipText().contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
+      leaf = (GitTreeNode) leaf.getNextLeaf();
+    }
   }
 }
