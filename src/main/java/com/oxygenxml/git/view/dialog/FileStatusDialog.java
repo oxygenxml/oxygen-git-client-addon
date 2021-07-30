@@ -180,7 +180,8 @@ public class FileStatusDialog extends OKCancelDialog {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
           try {
-            File absoluteFile = new File(GitAccess.getInstance().getWorkingCopy().getAbsoluteFile(), (String) value);
+            File workingCopyAbsolute = GitAccess.getInstance().getWorkingCopy().getAbsoluteFile();
+            File absoluteFile = new File(workingCopyAbsolute, (String) value); // NOSONAR: no vulnerability here
             setToolTipText(absoluteFile.toString());
           } catch (NoRepositorySelected e) {
             logger.error(e.getMessage(), e);
