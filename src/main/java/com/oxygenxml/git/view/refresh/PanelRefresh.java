@@ -125,7 +125,11 @@ public class PanelRefresh implements GitRefreshSupport {
 	          }
 	        }
 	        if(branchesPanel != null && branchesPanel.isShowing()) {
-	          branchesPanel.showBranches();;
+	          if(isAfterRestart) {
+	            branchesPanel.showBranches();
+	          } else {
+	            branchesPanel.refreshBranches();
+	          }
 	        }
 	        if (historyPanel != null && historyPanel.isShowing()) {
 	          historyPanel.refresh();
