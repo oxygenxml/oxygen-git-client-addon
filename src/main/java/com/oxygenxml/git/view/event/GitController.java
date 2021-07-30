@@ -207,7 +207,19 @@ public class GitController extends GitControllerBase {
             translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
       } catch (TransportException e) {
         try {
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(getOperation()+translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION)+gitAccess.getRemoteURLFromConfig(), e);
+         
+          if(getOperation().compareTo(GitOperation.PUSH)==0)
+          {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.PUSH_FAILED)
+                +translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION)+gitAccess.getRemoteURLFromConfig(), e);
+
+          }
+          else
+          {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.PULL_FAILED)
+                +translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION)+gitAccess.getRemoteURLFromConfig(), e);
+
+          }
         } catch (NoRepositorySelected e1) {
 
           logger.error(e1, e1);
