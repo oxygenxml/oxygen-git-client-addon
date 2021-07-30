@@ -300,14 +300,9 @@ public class GitCheckoutConflictTest extends TestCase {
         break;
       }
     }
+    
     sleep(500);
     
-    // Recursively look for the OK button
-    Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
-    
-    JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
-    yesButton.doClick();
-    sleep(500);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
@@ -474,7 +469,7 @@ public class GitCheckoutConflictTest extends TestCase {
     GitControllerBase mock = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
     branchManagementPanel.refreshBranches();
-    sleep(500);
+    sleep(1000);
     BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
    
     // Simulate branch checkout from Git Branch Manager view
@@ -489,7 +484,13 @@ public class GitCheckoutConflictTest extends TestCase {
         break;
       }
     }
-    sleep(1500);
+    sleep(1000);
+    
+    Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+    
+    JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+    yesButton.doClick();
+    sleep(1000);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
@@ -532,7 +533,7 @@ public class GitCheckoutConflictTest extends TestCase {
     GitControllerBase gitCtrl = new GitController(GitAccess.getInstance());
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(gitCtrl);
     branchManagementPanel.refreshBranches();
-    sleep(500);
+    sleep(1000);
    
     // Simulate branch checkout from Git Staging
     ToolbarPanel toolbarPanel = new ToolbarPanel(new GitController(gitAccess), refreshSupport, null, null);
@@ -551,8 +552,8 @@ public class GitCheckoutConflictTest extends TestCase {
     
     JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
     yesButton.doClick();
-    sleep(2000);
-    
+    sleep(1000);
+    System.err.println(yesButton.getText());
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
     
     assertEquals("Branch_switch_checkout_conflict_error_msg", errMsg[0]);
