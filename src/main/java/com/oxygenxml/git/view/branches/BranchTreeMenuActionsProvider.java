@@ -132,10 +132,7 @@ public class BranchTreeMenuActionsProvider {
             logger.error(e1, e1);
           }
           if (RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
-            int answer = FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.SWITCH_BRANCH),
-                translator.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
-                translator.getTranslation(Tags.MOVE_CHANGES),
-                translator.getTranslation(Tags.CANCEL));
+            int answer = showUncommittedChangesWhenChangingBranchMsg();
             if (answer == OKCancelDialog.RESULT_OK) {
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
@@ -248,10 +245,7 @@ public class BranchTreeMenuActionsProvider {
           logger.error(e1, e1);
         }
         if (RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
-          int answer = FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.SWITCH_BRANCH),
-              translator.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
-              translator.getTranslation(Tags.MOVE_CHANGES),
-              translator.getTranslation(Tags.CANCEL));
+          int answer = showUncommittedChangesWhenChangingBranchMsg();
           if (answer == OKCancelDialog.RESULT_OK) {
             ctrl.getGitAccess().setBranch(branchName);
           }
@@ -300,6 +294,18 @@ public class BranchTreeMenuActionsProvider {
         }
       }
     };
+  }
+  
+  /**
+   * Show a message when there are uncommitted changes and we try to switch repo.
+   * 
+   * @return The option chosen by the user. OKCancelDialog#RESULT_OK or OKCancelDialog#RESULT_CANCEL.
+   */
+  private int showUncommittedChangesWhenChangingBranchMsg() {
+    return FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.SWITCH_BRANCH),
+        translator.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
+        translator.getTranslation(Tags.MOVE_CHANGES),
+        translator.getTranslation(Tags.CANCEL));
   }
 
 }
