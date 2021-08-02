@@ -8,11 +8,11 @@
     </languageList>
     <key value="Switch_branch">
         <comment>"Switch branch" label.</comment>
-        <val lang="en_US">Switch branches</val>
-        <val lang="de_DE">Switch branches</val>
-        <val lang="fr_FR">Switch branches</val>
-        <val lang="ja_JP">Switch branches</val>
-        <val lang="nl_NL">Switch branches</val>
+        <val lang="en_US">Switch branch</val>
+        <val lang="de_DE">Switch branch</val>
+        <val lang="fr_FR">Switch branch</val>
+        <val lang="ja_JP">Switch branch</val>
+        <val lang="nl_NL">Switch branch</val>
     </key>
     <key value="Uncommitted_changes_when_switching_branches">
         <comment>The message in the question dialog shown when you switch branches 
