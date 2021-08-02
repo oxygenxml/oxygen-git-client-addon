@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.staging;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FontMetrics;
 import java.util.function.BooleanSupplier;
 
 import javax.swing.Icon;
@@ -11,6 +12,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.utils.FileHelper;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
 
@@ -53,6 +55,9 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
       }
     } else if (value instanceof FileStatus) {
       String location = ((FileStatus) value).getFileLocation();
+      
+      FontMetrics metrics = getFontMetrics(getFont());
+      location = FileHelper.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
       labelText = location;
       
       String description = ((FileStatus) value).getDescription();

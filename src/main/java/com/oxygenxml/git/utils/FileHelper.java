@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -17,6 +19,7 @@ import org.eclipse.jgit.lib.Repository;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 
+import ro.sync.basic.util.BasicTextUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
@@ -378,5 +381,75 @@ public class FileHelper {
     } else if (projectDirPath.startsWith(repoPath)) {
       projectManager.refreshFolders(new File[] { new File(projectDirPath) });
     }
+  }
+  
+  /**
+   * Method used to truncate the given text according with the given width
+   * and considering the font metrics.
+   * 
+   * @param text The original text that needs to be truncated.
+   * @param fontMetrics The font metrics used to compute the string widths.
+   * @param width The maximum allowed width, in pixels.
+   * @return The truncated text.
+   */
+  public static String truncateText(String text, java.awt.FontMetrics fontMetrics, int width) {
+    if (text == null || width <= 0) {
+      // Avoid NPEs.
+      return text;
+    }
+    StringBuilder buf = new StringBuilder();
+    if (fontMetrics.stringWidth(text) <= width) {
+      buf.append(text);
+    } else {
+      String separator = "/";
+      if (text.indexOf('\\') != -1) {
+        // There is a Windows like path.
+        separator = "\\";
+      }
+      
+      boolean startsWithSeparator = text.indexOf(separator) == 0;
+      
+      StringTokenizer stk = new StringTokenizer(text, separator, false);
+      Vector tokens = new Vector();
+      while (stk.hasMoreTokens()) {
+        tokens.add(stk.nextToken());
+      }
+      int maxTokens = tokens.size();
+      
+      if (maxTokens <= 2) {
+        buf.append(text);
+      } else {
+        if (startsWithSeparator) {
+          buf.append(separator);
+        }
+        buf.append(tokens.get(0));
+        buf.append(separator);
+        buf.append("...");
+        
+        StringBuilder secondBuf = new StringBuilder();
+        
+        for (int i = maxTokens - 1; i >= 2; i--) {
+          String token = (String) tokens.get(i);
+          if (fontMetrics.stringWidth(buf.toString() + secondBuf.toString() + token) < width) {
+            secondBuf.insert(0, token);
+            secondBuf.insert(0, separator);
+          } else {
+            break;
+          }
+        }
+        
+        if (secondBuf.length() == 0) {
+          buf.append(separator);
+          int aproxNumberOfCharsInWidth = width / fontMetrics.charWidth('w');
+          buf.append(BasicTextUtil.getSomeTextAtEnd(
+              (String) tokens.get(maxTokens - 1), 
+              Math.max(aproxNumberOfCharsInWidth - buf.length(), 0)));
+        } else {
+          buf.append(secondBuf);
+        }
+      }
+    }
+    
+    return buf.toString();
   }
 }
