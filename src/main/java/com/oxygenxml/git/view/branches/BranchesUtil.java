@@ -40,7 +40,7 @@ public class BranchesUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = LogManager.getLogger(BranchesUtil.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(BranchesUtil.class.getName());
   
   /**
     * Constructor.
@@ -143,7 +143,7 @@ public class BranchesUtil {
     try {
       state = GitAccess.getInstance().getRepository().getRepositoryState();
     } catch (NoRepositorySelected e2) {
-      logger.debug(e2, e2);
+      LOGGER.debug(e2, e2);
     }
 
     if (state != null) {
@@ -170,7 +170,7 @@ public class BranchesUtil {
     try {
       repoState = GitAccess.getInstance().getRepository().getRepositoryState();
     } catch (NoRepositorySelected e1) {
-      logger.error(e1, e1);
+      LOGGER.error(e1, e1);
     }
     String msg = 
         RepoUtil.isRepoMergingOrRebasing(repoState) 

@@ -150,8 +150,15 @@ public class Tags {
    * Option text for notifying when there are new commits upstream.
    */
   public static final String NOTIFY_ON_NEW_COMMITS = "Notify_on_new_commits";
-  
-  /**
+	/**
+	 * Option text for notifying when there are conflict markers in selected files.
+	 */
+	public static final String NOTIFY_ON_CONFLICT_MARKERS = "Notify_on_conflict_markers";
+	/**
+	 * The message displayed to the user when conflict markers are detected.
+	 */
+	public static final String CONFLICT_MARKERS_MESSAGE = "Conflict_markers_message";
+	/**
    * There is a new commit in the remote repository that has not been pulled.
    */
   public static final String NEW_COMMIT_UPSTREAM = "New_commit_upstream";

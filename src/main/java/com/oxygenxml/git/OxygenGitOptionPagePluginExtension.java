@@ -61,6 +61,10 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   private JCheckBox notifyAboutRemoteCommitsCheckBox;
   /**
+   * CheckBox for the option to notify the user about conflict markers.
+   */
+  private JCheckBox notifyAboutWarningConflictMarkers;
+  /**
    * The OptionsManager instance
    */
   private static OptionsManager optionsManager = OptionsManager.getInstance();
@@ -116,7 +120,17 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     c.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
     updateSubmodulesOnPull = new JCheckBox(translator.getTranslation(Tags.UPDATE_SUBMODULES_ON_PULL));
     mainPanel.add(updateSubmodulesOnPull, c);
-    
+
+    // Option for conflict markers warning message
+    c.gridx = 0;
+    c.gridy ++;
+    c.weightx = 0;
+    c.weighty = 0;
+    c.anchor = GridBagConstraints.LINE_START;
+    c.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
+    notifyAboutWarningConflictMarkers = new JCheckBox(translator.getTranslation(Tags.NOTIFY_ON_CONFLICT_MARKERS));
+    mainPanel.add(notifyAboutWarningConflictMarkers, c);
+
     // Empty panel to take up the rest of the space
     c.gridx = 0;
     c.gridy ++;
@@ -141,6 +155,9 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     
     boolean updateSubmodules = optionsManager.getUpdateSubmodulesOnPull();
     updateSubmodulesOnPull.setSelected(updateSubmodules);
+
+    boolean notifyContainsConflictMarkers = optionsManager.notifyAboutConflictMarkers();
+    notifyAboutWarningConflictMarkers.setSelected(notifyContainsConflictMarkers);
     
     WhenRepoDetectedInProject whatToDo = optionsManager.getWhenRepoDetectedInProject();
     switch (whatToDo) {
@@ -193,7 +210,8 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void apply(PluginWorkspace pluginWorkspace) {
     optionsManager.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
     optionsManager.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
-    
+    optionsManager.setNotifyAboutConflictMarkers(notifyAboutWarningConflictMarkers.isSelected());
+
     WhenRepoDetectedInProject whatToDo = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
     if (autoSwitchToWCRadio.isSelected()) {
       whatToDo = WhenRepoDetectedInProject.AUTO_SWITCH_TO_WC;
@@ -212,6 +230,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void restoreDefaults() {
     notifyAboutRemoteCommitsCheckBox.setSelected(false);
     updateSubmodulesOnPull.setSelected(true);
+    notifyAboutWarningConflictMarkers.setSelected(true);
     askToSwitchToWCRadio.setSelected(true);
   }
 

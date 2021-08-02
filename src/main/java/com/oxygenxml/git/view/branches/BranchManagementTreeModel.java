@@ -23,12 +23,12 @@ public class BranchManagementTreeModel extends DefaultTreeModel {
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static Logger logger = Logger.getLogger(BranchManagementTreeModel.class);
+  private static final Logger LOGGER = Logger.getLogger(BranchManagementTreeModel.class);
 
   /**
    * The branches in the model for the current repository.
    */
-  private List<String> branches = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> branches = Collections.synchronizedList(new ArrayList<>());
 
   /**
    * Constructor.

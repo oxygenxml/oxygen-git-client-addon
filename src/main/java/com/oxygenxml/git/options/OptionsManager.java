@@ -733,5 +733,20 @@ public class OptionsManager {
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
     getOptions().setUpdateSubmodulesOnPull(updateSubmodules);
   }
- 
+
+  /**
+   * Sets to notify user if exists conflict markers.
+   *
+   * @param notifyUser <code>true</code> to notify user if exists conflict markers.
+   */
+  public void setNotifyAboutConflictMarkers(boolean notifyUser) {
+    getOptions().notifyAboutConflictMarkers(notifyUser);
+  }
+
+  /**
+   * @return <code>true</code> to notify user if exists conflict markers.
+   */
+  public boolean notifyAboutConflictMarkers() {
+    return getOptions().notifyAboutConflictMarkers();
+  }
 }
