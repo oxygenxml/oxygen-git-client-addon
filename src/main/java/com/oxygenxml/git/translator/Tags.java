@@ -1235,4 +1235,16 @@ public class Tags {
    * The previous commit tracked by a submodule.
    */
   public static final String SUBMODULE_PREVIOUS_TRACKED_COMMIT = "Submodule_previous_tracked_commit";
+  /**
+   * The tile of the question dialog shown when you try to switch branches and you have uncommitted changes. 
+   */
+  public static final String SWITCH_BRANCH = "Switch_branch";
+  /**
+   * The message in the question dialog shown when you try to switch branches and you have uncommitted changes. 
+   */
+  public static final String UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES = "Uncommitted_changes_when_switching_branches";
+  /**
+   * The message on the OK button of the question dialog shown when you try to switch branches and you have uncommitted changes.
+   */
+  public static final String MOVE_CHANGES = "Move_changes";
 }

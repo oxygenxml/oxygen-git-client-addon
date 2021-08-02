@@ -6,6 +6,37 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value="Switch_branch">
+        <comment>"Switch branch" label.</comment>
+        <val lang="en_US">Switch branches</val>
+        <val lang="de_DE">Switch branches</val>
+        <val lang="fr_FR">Switch branches</val>
+        <val lang="ja_JP">Switch branches</val>
+        <val lang="nl_NL">Switch branches</val>
+    </key>
+    <key value="Uncommitted_changes_when_switching_branches">
+        <comment>The message in the question dialog shown when you switch branches 
+        	and you have uncommitted changes.</comment>
+        <val lang="en_US">You have uncommitted changes on the current branch.
+        	Would you like to move these changes to the new branch?</val>
+        <val lang="de_DE">You have uncommitted changes on the current branch.
+        	Would you like to move these changes to the new branch?</val>
+        <val lang="fr_FR">You have uncommitted changes on the current branch.
+        	Would you like to move these changes to the new branch?</val>
+        <val lang="ja_JP">You have uncommitted changes on the current branch.
+        	Would you like to move these changes to the new branch?</val>
+        <val lang="nl_NL">You have uncommitted changes on the current branch.
+        	Would you like to move these changes to the new branch?</val>
+    </key>
+    <key value="Move_changes">
+        <comment>The message on the OK button of the question dialog shown
+         when you try to switch branches and having uncommitted changes.</comment>
+        <val lang="en_US">Move changes</val>
+        <val lang="de_DE">Move changes</val>
+        <val lang="fr_FR">Move changes</val>
+        <val lang="ja_JP">Move changes</val>
+        <val lang="nl_NL">Move changes</val>
+    </key>
     <key value="Unable_to_access_repo">
         <comment>The text is displayed when you try to push to remote repository but no internet</comment>
         <val lang="en_US">Unable to access remote repository at:</val>
