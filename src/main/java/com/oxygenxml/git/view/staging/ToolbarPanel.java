@@ -439,10 +439,10 @@ public class ToolbarPanel extends JPanel {
           logger.error(e1, e1);
         }
         if(RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
-          int answer = FileStatusDialog.showQuestionMessage("Swithcing branches with changes unstaged",
-              "Would you like to take changes with you ?",
-              "Yes, take them with me",
-              "No, let me commit");
+          int answer = FileStatusDialog.showQuestionMessage(Translator.getInstance().getTranslation(Tags.SWITCH_BRANCH),
+              Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
+              Translator.getInstance().getTranslation(Tags.MOVE_CHANGES),
+              Translator.getInstance().getTranslation(Tags.CANCEL));
           if(answer == OKCancelDialog.RESULT_OK ) {
             tryCheckingOutBranch(branchName);
           }
