@@ -68,6 +68,8 @@ public class FlatView7Test extends FlatViewTestBase {
     
     ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
     toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
     
     assertEquals(
         "Cannot_pull\nNo_remote_branch.",
