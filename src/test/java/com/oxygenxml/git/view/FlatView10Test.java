@@ -128,6 +128,7 @@ public class FlatView10Test extends FlatViewTestBase {
     // Restart merge
     GitAccess.getInstance().restartMerge();
     flushAWT();
+    sleep(200);
     
     abortMergeButtonPanel = stagingPanel.getConflictButtonsPanel();
     assertTrue(abortMergeButtonPanel.isShowing());
