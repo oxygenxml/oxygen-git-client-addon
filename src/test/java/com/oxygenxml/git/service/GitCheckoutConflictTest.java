@@ -34,6 +34,7 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
@@ -55,12 +56,19 @@ import ro.sync.exml.workspace.api.util.XMLUtilAccess;
  * Test cases for checkout conflicts.
  */
 public class GitCheckoutConflictTest extends TestCase {
+  
+  /**
+   * i18n
+   */
+  protected static final Translator translator = Translator.getInstance();
+  
   PanelRefresh refreshSupport = new PanelRefresh(null) {
     @Override
     protected int getScheduleDelay() {
       // Execute refresh events immediately from tests.
       return 1;
     }
+    
   };
   
   protected final static String FIRST_LOCAL_TEST_REPOSITPRY = "target/test-resources/GitAccessConflictTest/local";
@@ -488,7 +496,7 @@ public class GitCheckoutConflictTest extends TestCase {
     
     Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
     
-    JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+    JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
     yesButton.doClick();
     sleep(1000);
     
@@ -550,7 +558,7 @@ public class GitCheckoutConflictTest extends TestCase {
     
     Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
     
-    JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+    JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
     yesButton.doClick();
     sleep(1000);
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());

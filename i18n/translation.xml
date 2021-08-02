@@ -18,15 +18,15 @@
         <comment>The message in the question dialog shown when you switch branches 
         	and you have uncommitted changes.</comment>
         <val lang="en_US">You have uncommitted changes on the current branch.
-        	Would you like to move these changes to the new branch?</val>
+        	\nWould you like to move these changes to the new branch?</val>
         <val lang="de_DE">You have uncommitted changes on the current branch.
-        	Would you like to move these changes to the new branch?</val>
+        	\nWould you like to move these changes to the new branch?</val>
         <val lang="fr_FR">You have uncommitted changes on the current branch.
-        	Would you like to move these changes to the new branch?</val>
+        	\nWould you like to move these changes to the new branch?</val>
         <val lang="ja_JP">You have uncommitted changes on the current branch.
-        	Would you like to move these changes to the new branch?</val>
+        	\nWould you like to move these changes to the new branch?</val>
         <val lang="nl_NL">You have uncommitted changes on the current branch.
-        	Would you like to move these changes to the new branch?</val>
+        	\nWould you like to move these changes to the new branch?</val>
     </key>
     <key value="Move_changes">
         <comment>The message on the OK button of the question dialog shown

@@ -18,6 +18,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
 
@@ -125,7 +126,7 @@ public class ToolbarPanelTest extends GitTestBase {
       sleep(500);
       Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
       
-      JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+      JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
       yesButton.doClick();
       
       sleep(500);
