@@ -542,7 +542,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     
     Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
     
-    JButton yesButton = TestUtil.findButton(focusedWindow, "Yes");
+    JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
     yesButton.doClick();
     sleep(1000);
     
