@@ -6,6 +6,14 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value="Unable_to_access_repo">
+        <comment>The text is displayed when you try to push to remote repository but no internet</comment>
+        <val lang="en_US">Unable to access remote repository at:</val>
+        <val lang="de_DE">Unable to access remote repository at:</val>
+        <val lang="fr_FR">Unable to access remote repository at:</val>
+        <val lang="ja_JP">Unable to access remote repository at:</val>
+        <val lang="nl_NL">Unable to access remote repository at:</val>
+    </key>
     <key value = "Submodule_previous_tracked_commit">
         <comment>The old/previous commit tracked by a submodule.</comment>
         <val lang="en_US">Previously tracked commit</val>
@@ -1980,14 +1988,6 @@
         <val lang="fr_FR">Impossible d'effectuer le pull. Vos modifications locales hors commit effectuées sur les fichiers suivants seraient écrasées par la fusion: </val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Kan geen pull doen. Uw niet-bewaarde, lokale wijzigingen in de volgende bestanden zouden door het samenvoegen worden overschreven:</val>
-    </key>
-	<key value="Push_Failed_Transport_Exception">
-        <comment>The text is displayed when you try to push to remote repository but no internet</comment>
-        <val lang="en_US">Unable to access remote repository at: </val>
-        <val lang="de_DE">Unable to access remote repository at: </val>
-        <val lang="fr_FR">Unable to access remote repository at: </val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL"></val>
     </key>
 
 </translation>

@@ -339,9 +339,9 @@ public class Tags {
 	public static final String PUSH_FAILED_UNKNOWN = "Push_Failed_Unknown";
     
 	/**
-	 * The message displayed when your push fails and it is because of a transport exception
+	 * The message displayed when your push/pull fails and it is because of a transport exception.
 	 */
-	public static final String PUSH_FAILED_TRANSPORT_EXCEPTION = "Push_Failed_Transport_Exception";
+	public static final String UNABLE_TO_ACCESS_REPO = "Unable_to_access_repo";
 	
 	/**
 	 * The massage displayed when you push with no changes

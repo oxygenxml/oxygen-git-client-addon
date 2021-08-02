@@ -31,6 +31,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -206,23 +207,7 @@ public class GitController extends GitControllerBase {
             e.getConflictingPaths(),
             translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
       } catch (TransportException e) {
-        try {
-
-          if (getOperation() == GitOperation.PUSH ) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.PUSH_FAILED)+". "
-                + translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION) + gitAccess.getRemoteURLFromConfig(),
-                e);
-
-          } else {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.PULL_FAILED)+". "
-                + translator.getTranslation(Tags.PUSH_FAILED_TRANSPORT_EXCEPTION) + gitAccess.getRemoteURLFromConfig(),
-                e);
-
-          }
-        } catch (NoRepositorySelected e1) {
-
-          logger.error(e1, e1);
-        }
+        treatTransportException(e);
       } catch (GitAPIException e) {
         // Exception handling.
         boolean shouldTryAgain = AuthUtil.handleAuthException(
@@ -243,19 +228,62 @@ public class GitController extends GitControllerBase {
         logger.error(e, e);
       } finally {
         if (notifyFinish) {
-          PushPullEvent toFire = null;
-          if (event.isPresent()) {
-            toFire = event.get();
-          } else {
-            toFire = new PushPullEvent(getOperation(), "");
-          }
-
-          if (toFire.getCause() != null) {
-            listeners.fireOperationFailed(toFire, toFire.getCause());
-          } else {
-            listeners.fireOperationSuccessfullyEnded(toFire);
-          }
+          notifyListeners(event);
         }
+      }
+    }
+
+    /**
+     * Notify listeners.
+     * 
+     * @param event The event that happened.
+     */
+    private void notifyListeners(Optional<PushPullEvent> event) {
+      PushPullEvent toFire = null;
+      if (event.isPresent()) {
+        toFire = event.get();
+      } else {
+        toFire = new PushPullEvent(getOperation(), "");
+      }
+
+      if (toFire.getCause() != null) {
+        listeners.fireOperationFailed(toFire, toFire.getCause());
+      } else {
+        listeners.fireOperationSuccessfullyEnded(toFire);
+      }
+    }
+
+    /**
+     * Treat transport exception.
+     * 
+     * @param e The exception.
+     */
+    private void treatTransportException(TransportException e) {
+      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
+      
+      String remoteURL = null;
+      try {
+        remoteURL = gitAccess.getRemoteURLFromConfig();
+      } catch (NoRepositorySelected e1) {
+        logger.error(e1, e1);
+      }
+      
+      String unableToAccessRepoMsg = translator.getTranslation(Tags.UNABLE_TO_ACCESS_REPO) + " " + remoteURL;
+      
+      if (getOperation() == GitOperation.PUSH ) {
+        pluginWS.showErrorMessage(
+            translator.getTranslation(Tags.PUSH_FAILED)
+                + ". "
+                + unableToAccessRepoMsg,
+            e);
+
+      } else {
+        pluginWS.showErrorMessage(
+            translator.getTranslation(Tags.PULL_FAILED)
+                + ". "
+                + unableToAccessRepoMsg,
+            e);
+
       }
     }
 
