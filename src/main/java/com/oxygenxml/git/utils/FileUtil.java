@@ -508,17 +508,15 @@ public class FileUtil {
    *
    * @param allSelectedResources the files.
    * @param workingCopy          the working copy.
-   * @param utilAccess           the UtilAccess.
    *
    * @return <code>true</code> if there's at least a file that contains at least a conflict marker.
    */
   public static boolean containsConflictMarkers(
           final List<FileStatus> allSelectedResources,
-          final File workingCopy,
-          final UtilAccess utilAccess) {
+          final File workingCopy) {
     return allSelectedResources.stream()
             .parallel()
-            .anyMatch(file -> containsConflictMarkers(file, workingCopy, utilAccess));
+            .anyMatch(file -> containsConflictMarkers(file, workingCopy));
   }
 
   /**
@@ -531,9 +529,9 @@ public class FileUtil {
    */
   private static boolean containsConflictMarkers(
           final FileStatus fileStatus,
-          final File workingCopy,
-          final UtilAccess utilAccess) {
+          final File workingCopy) {
     boolean toReturn = false;
+    UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     File currentFile = new File(workingCopy, FilenameUtils.getName(fileStatus.getFileLocation())); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
     try (BufferedReader reader =  new BufferedReader(utilAccess.createReader(currentFile.toURI().toURL(), StandardCharsets.UTF_8.toString()))) {
       String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));

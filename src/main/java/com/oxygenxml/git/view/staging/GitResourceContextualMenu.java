@@ -274,7 +274,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
       public void actionPerformed(ActionEvent e) {
         try {
           if(OptionsManager.getInstance().shouldNotifyConflictMarkers()
-                  && FileUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy(), PLUGIN_WS.getUtilAccess())) {
+                  && FileUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy())) {
             GitResourceContextualMenu.PLUGIN_WS.showWarningMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE));
           } else {
             gitCtrl.asyncAddToIndex(allSelectedResources);

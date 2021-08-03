@@ -75,15 +75,15 @@ public class FileHelperTest {
 		List<FileStatus> files = new ArrayList<>();
 
 		files.add(file1);
-		assertTrue(FileUtil.containsConflictMarkers(files, workingCopy, pluginWorkspace.getUtilAccess()));
+		assertTrue(FileUtil.containsConflictMarkers(files, workingCopy));
 		files.add(file2);
-		assertTrue(FileUtil.containsConflictMarkers(files, workingCopy, pluginWorkspace.getUtilAccess()));
+		assertTrue(FileUtil.containsConflictMarkers(files, workingCopy));
 		files.add(file3);
-		assertTrue(FileUtil.containsConflictMarkers(files, workingCopy, pluginWorkspace.getUtilAccess()));
+		assertTrue(FileUtil.containsConflictMarkers(files, workingCopy));
 		files.remove(0);
-		assertTrue(FileUtil.containsConflictMarkers(files, workingCopy, pluginWorkspace.getUtilAccess()));
+		assertTrue(FileUtil.containsConflictMarkers(files, workingCopy));
 		files.remove(1);
-		assertFalse(FileUtil.containsConflictMarkers(files, workingCopy, pluginWorkspace.getUtilAccess()));
+		assertFalse(FileUtil.containsConflictMarkers(files, workingCopy));
 	}
 
 	@Test
