@@ -23,7 +23,6 @@ import com.jidesoft.swing.JideToggleButton;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.staging.CommitAndStatusPanel;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 
 /**

@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.staging.ChangesPanel;
 import com.oxygenxml.git.view.staging.ChangesPanel.ResourcesViewMode;
 import com.oxygenxml.git.view.util.TreeUtil;
 
@@ -22,6 +21,7 @@ import com.oxygenxml.git.view.util.TreeUtil;
 */
 public class TreeView3Test extends FlatViewTestBase {
   
+  @Override
   @Before
   public void setUp() throws Exception {
     super.setUp();

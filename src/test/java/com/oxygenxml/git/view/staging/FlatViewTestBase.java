@@ -21,11 +21,6 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.HistoryController;
-import com.oxygenxml.git.view.staging.ChangesPanel;
-import com.oxygenxml.git.view.staging.StagingPanel;
-import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
-import com.oxygenxml.git.view.staging.StagingResourcesTreeModel;
-import com.oxygenxml.git.view.staging.ToolbarPanel;
 
 /**
 * Base for the test classes related to the actions performed
