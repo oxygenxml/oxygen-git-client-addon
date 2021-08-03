@@ -65,43 +65,46 @@ public class FileHelper {
    *            the given list of directories is 
    *            <code>null</code> or empty.
    */
-  public static File getCommonDir(Set<File> dirs) {
-    File commonAncestor = null;
-    
-    if (dirs != null && !dirs.isEmpty()) {
-      int k = 0;
-      String[][] folders = new String[dirs.size()][];
-      for (Iterator<File> iter = dirs.iterator(); iter.hasNext();) {
-        folders[k] = iter.next().getAbsolutePath().split(Pattern.quote(File.separator));
-        k++;
-      }
+	public static File getCommonDir(Set<File> dirs) {
+	  File commonAncestor = null;
 
-      StringBuilder commonPathBuilder = new StringBuilder();
-      for (int j = 0; j < folders[0].length; j++) {
-        String thisFolder = folders[0][j]; 
-        boolean allMatched = true;
-        for (int i = 1; i < folders.length && allMatched; i++) {
-          String[] currentLine = folders[i];
-          if (j >= currentLine.length) {
-            // The first line contains more tokens than the current one.
-            allMatched = false;
-            break;
-          } else {
-            allMatched &= currentLine[j].equals(thisFolder);
-          }
-        }
-        if (allMatched) {
-          commonPathBuilder.append(thisFolder).append("/");
-        } else {
-          break;
-        }
-      }
-      
-      commonAncestor = new File(commonPathBuilder.toString());
-    }
-    
-    return commonAncestor;
-  }
+	  // Quick check
+	  if (dirs == null || dirs.isEmpty()) {
+	    return null;
+	  }
+	  
+	  int k = 0;
+	  String[][] folders = new String[dirs.size()][];
+	  for (Iterator<File> iter = dirs.iterator(); iter.hasNext();) {
+	    folders[k] = iter.next().getAbsolutePath().split(Pattern.quote(File.separator));
+	    k++;
+	  }
+
+	  StringBuilder commonPathBuilder = new StringBuilder();
+	  for (int j = 0; j < folders[0].length; j++) {
+	    String thisFolder = folders[0][j]; 
+	    boolean allMatched = true;
+	    for (int i = 1; i < folders.length && allMatched; i++) {
+	      String[] currentLine = folders[i];
+	      if (j >= currentLine.length) {
+	        // The first line contains more tokens than the current one.
+	        allMatched = false;
+	        break;
+	      } else {
+	        allMatched &= currentLine[j].equals(thisFolder);
+	      }
+	    }
+	    if (allMatched) {
+	      commonPathBuilder.append(thisFolder).append("/");
+	    } else {
+	      break;
+	    }
+	  }
+
+	  commonAncestor = new File(commonPathBuilder.toString());
+
+	  return commonAncestor;
+	}
 	
 	/**
 	 * Makes sure the path uses just the / separator.
