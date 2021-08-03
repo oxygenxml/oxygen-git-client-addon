@@ -1,21 +1,26 @@
 package com.oxygenxml.git.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import org.apache.log4j.Logger;
 import org.apache.xerces.jaxp.SAXParserFactoryImpl;
 import org.eclipse.jgit.api.Git;
@@ -34,6 +39,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Utility methods for detecting a Git repository and repository related issues.
@@ -43,7 +49,7 @@ public class RepoUtil {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(RepoUtil.class);
+  private static final Logger LOGGER = Logger.getLogger(RepoUtil.class);
 
   /**
    * Hidden constructor.
@@ -167,8 +173,8 @@ public class RepoUtil {
       
       repoDir = detectRepoDownwards(projectDir, handler.getPaths());
     } catch (ParserConfigurationException | SAXException | IOException e1) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e1, e1);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e1, e1);
       }
     }
 
@@ -217,7 +223,7 @@ public class RepoUtil {
           try {
             file = new File(new URL(path).toURI());
           } catch (MalformedURLException | URISyntaxException e) {
-            logger.error(e, e);
+            LOGGER.error(e, e);
           }
         } else  if (".".equals(path)) {
           file = projectDir;
@@ -316,7 +322,7 @@ public class RepoUtil {
         .append("\n");
       appendCommitDetails(b, submoduleRepository.parseCommit(submoduleStatus.getIndexId()));
     } catch (IOException e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
     
     return b.toString();
@@ -333,5 +339,65 @@ public class RepoUtil {
     b.append(Translator.getInstance().getTranslation(Tags.COMMIT_MESSAGE_LABEL)).append(": " + parseCommit.getFullMessage()).append("\n");
     b.append(Translator.getInstance().getTranslation(Tags.DATE)).append(": ")
     .append(new SimpleDateFormat("d MMM yyyy HH:mm").format(parseCommit.getAuthorIdent().getWhen())).append("\n");
+  }
+
+  /**
+   * Checks if we have just one resource and if it's a resource that is committed in the repository.
+   *
+   * @param allSelectedResources A set of resources.
+   *
+   * @return <code>true</code> if we have just one resource in the set and that resource is one with history.
+   */
+  public static boolean shouldEnableBlameAndHistory(final List<FileStatus> allSelectedResources) {
+    boolean hasHistory = false;
+    if (allSelectedResources.size() == 1) {
+      GitChangeType changeType = allSelectedResources.get(0).getChangeType();
+      hasHistory =
+              changeType == GitChangeType.CHANGED ||
+                      changeType == GitChangeType.CONFLICT ||
+                      changeType == GitChangeType.MODIFIED;
+    }
+    return hasHistory;
+  }
+
+  /**
+   * Check if there is at least a file in the given collection that contains conflict markers.
+   *
+   * @param allSelectedResources the files.
+   * @param workingCopy          the working copy.
+   * @param utilAccess           the UtilAccess.
+   *
+   * @return <code>true</code> if there's at least a file that contains at least a conflict marker.
+   */
+  public static boolean containsConflictMarkers(
+          final List<FileStatus> allSelectedResources,
+          final File workingCopy,
+          final UtilAccess utilAccess) {
+    return allSelectedResources.stream()
+            .parallel()
+            .anyMatch(file -> RepoUtil.containsConflictMarkers(file, workingCopy, utilAccess));
+  }
+
+  /**
+   * Check if a file contains conflict markers.
+   *
+   * @param fileStatus  the file status.
+   * @param workingCopy the working copy.
+   *
+   * @return <code>True</code> if the file contains at least a conflict marker.
+   */
+  private static boolean containsConflictMarkers(
+          final FileStatus fileStatus,
+          final File workingCopy,
+          final UtilAccess utilAccess) {
+    boolean toReturn = false;
+    File currentFile = new File(workingCopy, fileStatus.getFileLocation()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+    try (BufferedReader reader =  new BufferedReader(utilAccess.createReader(currentFile.toURI().toURL(), StandardCharsets.UTF_8.toString()))) {
+      String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+      toReturn = (content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
+    } catch (IOException ex) {
+      LOGGER.error(ex, ex);
+    }
+    return toReturn;
   }
 }
