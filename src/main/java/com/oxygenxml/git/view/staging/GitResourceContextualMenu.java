@@ -1,7 +1,9 @@
 package com.oxygenxml.git.view.staging;
 
 import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,10 +12,10 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import com.oxygenxml.git.options.OptionsManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 
+import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;
@@ -68,7 +70,8 @@ public class GitResourceContextualMenu extends JPopupMenu {
   /**
    * The Standalone Plugin Workspace;
    */
-  private final StandalonePluginWorkspace pluginWS;
+  private static final StandalonePluginWorkspace pluginWS = 
+      (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
   /**
    * Show differences action.
    */
@@ -130,7 +133,6 @@ public class GitResourceContextualMenu extends JPopupMenu {
     this.gitCtrl = gitController;
     this.historyController = historyController;
     this.repoState = repoState;
-    pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     populateMenu(selResProvider, isStage);
   }
   
@@ -199,6 +201,8 @@ public class GitResourceContextualMenu extends JPopupMenu {
 					case REMOVED:
 						selectionContainsDeletions = true;
 						break;
+					default:
+					  break;
 				}
 			}
 		}
@@ -278,7 +282,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
       public void actionPerformed(ActionEvent e) {
         try {
           if(OptionsManager.getInstance().shouldNotifyConflictMarkers()
-                  && containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy(), pluginWS.getUtilAccess())) {
+                  && containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy())) {
             pluginWS.showWarningMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE));
           } else {
             gitCtrl.asyncAddToIndex(allSelectedResources);
@@ -315,7 +319,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
     discardAction = new DiscardAction(selResProvider, gitCtrl);
     
     if(!forStagedRes) {
-   // Show history
+      // Show history
       historyAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.SHOW_HISTORY)) {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -350,38 +354,43 @@ public class GitResourceContextualMenu extends JPopupMenu {
   }
 
 	/**
-	 * @param allSelectedResources a list of FileStatus.
+	 * Check if there is at least a file in the given collection that contains conflict markers. 
+	 *
+	 * @param allSelectedResources the files..
 	 * @param workingCopy          the working copy.
 	 * @param utilAccess           the UtilAccess.
 	 *
-	 * @return <code>true</code> if the conflicted files contains at least a conflict marker.
+	 * @return <code>true</code> if there's at least a file that contains at least a conflict marker.
 	 *
 	 */
-  protected static boolean containsConflictMarkers(final List<FileStatus> allSelectedResources,
-      final File workingCopy, final UtilAccess utilAccess) {
+  static boolean containsConflictMarkers(
+      final List<FileStatus> allSelectedResources,
+      final File workingCopy) {
     return allSelectedResources.stream()
         .parallel()
-        .anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT 
-            && GitResourceContextualMenu.hasConflictMarker(file, workingCopy, utilAccess));
+        .anyMatch(file -> GitResourceContextualMenu.containsConflictMarkers(file, workingCopy));
   }
 
 	/**
+	 * Check if a file contains conflict markers.
+	 * 
 	 * @param fileStatus  the file status.
 	 * @param workingCopy the working copy.
-	 * @param utilAccess           the UtilAccess.
+	 * @param utilAccess  the UtilAccess.
 	 *
 	 * @return <code>True</code> if the file contains at least a conflict marker.
 	 */
-  private static boolean hasConflictMarker(final FileStatus fileStatus, final File workingCopy, final UtilAccess utilAccess)  {
-    boolean toReturn;
-		File currentFile = new File(workingCopy, fileStatus.getFileLocation());
-		
+  private static boolean containsConflictMarkers(
+      final FileStatus fileStatus,
+      final File workingCopy) {
+    boolean toReturn = false;
+    UtilAccess utilAccess = pluginWS.getUtilAccess();
+		File currentFile = new File(workingCopy, fileStatus.getFileLocation()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
 		try (BufferedReader reader = (BufferedReader) utilAccess.createReader(currentFile.toURI().toURL(), StandardCharsets.UTF_8.toString())) {
 			String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 			toReturn = (content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
-		} catch (IOException exception) {
-			LOGGER.error(exception, exception);
-			toReturn = false;
+		} catch (IOException ex) {
+			LOGGER.error(ex, ex);
 		}
 		return toReturn;
   }
