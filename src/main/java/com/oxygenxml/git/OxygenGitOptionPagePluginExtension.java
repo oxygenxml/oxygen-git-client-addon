@@ -63,15 +63,15 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   /**
    * CheckBox for the option to notify the user about conflict markers.
    */
-  private JCheckBox notifyAboutWarningConflictMarkers;
+  private JCheckBox notifyAboutConflictMarkers;
   /**
    * The OptionsManager instance
    */
-  private static OptionsManager optionsManager = OptionsManager.getInstance();
+  private static final OptionsManager OPTIONS_MANAGER = OptionsManager.getInstance();
   /**
    * The Translator instance
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    * Automatically switch to the new working copy when detecting a repo inside a project.
    */
@@ -93,52 +93,42 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     JPanel mainPanel = new JPanel(new GridBagLayout());
     
     // Repo detected in project settings
-    GridBagConstraints c = new GridBagConstraints();
-    c.gridx = 0;
-    c.gridy = 0;
-    c.weightx = 0;
-    c.weighty = 0;
-    c.anchor = GridBagConstraints.LINE_START;
-    mainPanel.add(createRepoDetectedInProjectSettingsPanel(), c);
+    GridBagConstraints constraints = new GridBagConstraints();
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.weightx = 0;
+    constraints.weighty = 0;
+    constraints.anchor = GridBagConstraints.LINE_START;
+    mainPanel.add(createRepoDetectedInProjectSettingsPanel(), constraints);
     
     // Option that notifies us when commits are detected in the remote branch
-    c.gridx = 0;
-    c.gridy ++;
-    c.weightx = 0;
-    c.weighty = 0;
-    c.anchor = GridBagConstraints.LINE_START;
-    c.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
-    notifyAboutRemoteCommitsCheckBox = new JCheckBox(translator.getTranslation(Tags.NOTIFY_ON_NEW_COMMITS));
-    mainPanel.add(notifyAboutRemoteCommitsCheckBox, c);
+    constraints.gridx = 0;
+    constraints.gridy ++;
+    constraints.weightx = 0;
+    constraints.weighty = 0;
+    constraints.anchor = GridBagConstraints.LINE_START;
+    constraints.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
+    notifyAboutRemoteCommitsCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.NOTIFY_ON_NEW_COMMITS));
+    mainPanel.add(notifyAboutRemoteCommitsCheckBox, constraints);
     
     // Option that notifies us when commits are detected in the remote branch
-    c.gridx = 0;
-    c.gridy ++;
-    c.weightx = 0;
-    c.weighty = 0;
-    c.anchor = GridBagConstraints.LINE_START;
-    c.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
-    updateSubmodulesOnPull = new JCheckBox(translator.getTranslation(Tags.UPDATE_SUBMODULES_ON_PULL));
-    mainPanel.add(updateSubmodulesOnPull, c);
+    constraints.gridy ++;
+    updateSubmodulesOnPull = new JCheckBox(TRANSLATOR.getTranslation(Tags.UPDATE_SUBMODULES_ON_PULL));
+    mainPanel.add(updateSubmodulesOnPull, constraints);
 
     // Option for conflict markers warning message
-    c.gridx = 0;
-    c.gridy ++;
-    c.weightx = 0;
-    c.weighty = 0;
-    c.anchor = GridBagConstraints.LINE_START;
-    c.insets = new Insets(NESTED_OPTION_INSET, 0, 0, 0);
-    notifyAboutWarningConflictMarkers = new JCheckBox(translator.getTranslation(Tags.NOTIFY_ON_CONFLICT_MARKERS));
-    mainPanel.add(notifyAboutWarningConflictMarkers, c);
+    constraints.gridy ++;
+    notifyAboutConflictMarkers = new JCheckBox(TRANSLATOR.getTranslation(Tags.NOTIFY_ON_CONFLICT_MARKERS));
+    mainPanel.add(notifyAboutConflictMarkers, constraints);
 
     // Empty panel to take up the rest of the space
-    c.gridx = 0;
-    c.gridy ++;
-    c.gridwidth = 3;
-    c.weightx = 1;
-    c.weighty = 1;
-    c.fill = GridBagConstraints.BOTH;
-    mainPanel.add(new JPanel(), c);
+    constraints.gridx = 0;
+    constraints.gridy ++;
+    constraints.gridwidth = 3;
+    constraints.weightx = 1;
+    constraints.weighty = 1;
+    constraints.fill = GridBagConstraints.BOTH;
+    mainPanel.add(new JPanel(), constraints);
 
     //Set the initial state of the option.
     setOptionsInitialStates();
@@ -150,16 +140,16 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    * Set the initial states of the options.
    */
   private void setOptionsInitialStates() {
-    boolean notifyOnNewRemoteCommits = optionsManager.isNotifyAboutNewRemoteCommits();
+    boolean notifyOnNewRemoteCommits = OPTIONS_MANAGER.isNotifyAboutNewRemoteCommits();
     notifyAboutRemoteCommitsCheckBox.setSelected(notifyOnNewRemoteCommits);
     
-    boolean updateSubmodules = optionsManager.getUpdateSubmodulesOnPull();
+    boolean updateSubmodules = OPTIONS_MANAGER.getUpdateSubmodulesOnPull();
     updateSubmodulesOnPull.setSelected(updateSubmodules);
 
-    boolean notifyContainsConflictMarkers = optionsManager.notifyAboutConflictMarkers();
-    notifyAboutWarningConflictMarkers.setSelected(notifyContainsConflictMarkers);
+    boolean shouldNotifyConflictMarkers = OPTIONS_MANAGER.shouldNotifyConflictMarkers();
+    notifyAboutConflictMarkers.setSelected(shouldNotifyConflictMarkers);
     
-    WhenRepoDetectedInProject whatToDo = optionsManager.getWhenRepoDetectedInProject();
+    WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
     switch (whatToDo) {
       case ASK_TO_SWITCH_TO_WC:
         askToSwitchToWCRadio.setSelected(true);
@@ -184,19 +174,19 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   private JPanel createRepoDetectedInProjectSettingsPanel() {
     JPanel repoInProjectSettingsPanel = new JPanel(new GridLayout(4, 1));
     
-    JLabel label = new JLabel(translator.getTranslation(Tags.WHEN_DETECTING_REPO_IN_PROJECT));
+    JLabel label = new JLabel(TRANSLATOR.getTranslation(Tags.WHEN_DETECTING_REPO_IN_PROJECT));
     repoInProjectSettingsPanel.add(label);
     
     ButtonGroup buttonGroup = new ButtonGroup();
-    autoSwitchToWCRadio = new JRadioButton(translator.getTranslation(Tags.ALWAYS_SWITCH_TO_DETECTED_WORKING_COPY));
+    autoSwitchToWCRadio = new JRadioButton(TRANSLATOR.getTranslation(Tags.ALWAYS_SWITCH_TO_DETECTED_WORKING_COPY));
     buttonGroup.add(autoSwitchToWCRadio);
     repoInProjectSettingsPanel.add(autoSwitchToWCRadio);
     
-    doNothingRadio = new JRadioButton(translator.getTranslation(Tags.NEVER_SWITCH_TO_DETECTED_WORKING_COPY));
+    doNothingRadio = new JRadioButton(TRANSLATOR.getTranslation(Tags.NEVER_SWITCH_TO_DETECTED_WORKING_COPY));
     buttonGroup.add(doNothingRadio);
     repoInProjectSettingsPanel.add(doNothingRadio);
     
-    askToSwitchToWCRadio = new JRadioButton(translator.getTranslation(Tags.ASK_SWITCH_TO_DETECTED_WORKING_COPY));
+    askToSwitchToWCRadio = new JRadioButton(TRANSLATOR.getTranslation(Tags.ASK_SWITCH_TO_DETECTED_WORKING_COPY));
     buttonGroup.add(askToSwitchToWCRadio);
     repoInProjectSettingsPanel.add(askToSwitchToWCRadio);
     
@@ -208,9 +198,9 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   @Override
   public void apply(PluginWorkspace pluginWorkspace) {
-    optionsManager.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
-    optionsManager.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
-    optionsManager.setNotifyAboutConflictMarkers(notifyAboutWarningConflictMarkers.isSelected());
+    OPTIONS_MANAGER.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
+    OPTIONS_MANAGER.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
+    OPTIONS_MANAGER.setShouldNotifyConflictMarkers(notifyAboutConflictMarkers.isSelected());
 
     WhenRepoDetectedInProject whatToDo = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
     if (autoSwitchToWCRadio.isSelected()) {
@@ -218,9 +208,9 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     } else if (doNothingRadio.isSelected()) {
       whatToDo = WhenRepoDetectedInProject.DO_NOTHING;
     }
-    optionsManager.setWhenRepoDetectedInProject(whatToDo);
+    OPTIONS_MANAGER.setWhenRepoDetectedInProject(whatToDo);
     
-    optionsManager.saveOptions();
+    OPTIONS_MANAGER.saveOptions();
   }
 
   /**
@@ -230,7 +220,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void restoreDefaults() {
     notifyAboutRemoteCommitsCheckBox.setSelected(false);
     updateSubmodulesOnPull.setSelected(true);
-    notifyAboutWarningConflictMarkers.setSelected(true);
+    notifyAboutConflictMarkers.setSelected(true);
     askToSwitchToWCRadio.setSelected(true);
   }
 
@@ -239,7 +229,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   @Override
   public String getTitle() {
-    return translator.getTranslation(Tags.GIT_CLIENT);
+    return TRANSLATOR.getTranslation(Tags.GIT_CLIENT);
   }
   
   /**

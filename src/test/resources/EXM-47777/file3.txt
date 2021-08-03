@@ -1,0 +1,5 @@
+<<<<<<< HEAD
+bum
+=======
+for one
+>>>>>>> add923fd7c0b7cfbd7b4436ed7429016cea1b8c6

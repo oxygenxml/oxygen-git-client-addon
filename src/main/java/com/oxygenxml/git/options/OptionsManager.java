@@ -737,16 +737,16 @@ public class OptionsManager {
   /**
    * Sets to notify user if exists conflict markers.
    *
-   * @param notifyUser <code>true</code> to notify user if exists conflict markers.
+   * @param shouldNotifyConflictMarkers <code>true</code> to notify user if exists conflict markers.
    */
-  public void setNotifyAboutConflictMarkers(boolean notifyUser) {
-    getOptions().notifyAboutConflictMarkers(notifyUser);
+  public void setShouldNotifyConflictMarkers(boolean shouldNotifyConflictMarkers) {
+    getOptions().setShouldNotifyConflictMarkers(shouldNotifyConflictMarkers);
   }
 
   /**
    * @return <code>true</code> to notify user if exists conflict markers.
    */
-  public boolean notifyAboutConflictMarkers() {
-    return getOptions().notifyAboutConflictMarkers();
+  public boolean shouldNotifyConflictMarkers() {
+    return getOptions().setShouldNotifyConflictMarkers();
   }
 }
