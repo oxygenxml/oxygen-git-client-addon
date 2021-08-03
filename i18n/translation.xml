@@ -6,7 +6,20 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
-
+	
+	<key value="Branch_switch_checkout_conflict_error_msg">
+        <comment>The the message displayed when branch selection fails</comment>
+        <val lang="en_US">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
+        <val lang="de_DE">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
+        <val lang="fr_FR">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
+        <val lang="ja_JP">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
+        <val lang="nl_NL">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches..</val>
+    </key>
     <key value = "Notify_on_conflict_markers">
         <comment> The text for notifying when there are conflict markers in selected files.</comment>
         <val lang="en_US">Warn if files contain conflict markers when marking them as resolved</val>
@@ -267,14 +280,6 @@
         <val lang="fr_FR">Impossible de joindre le dépôt remote</val>
         <val lang="ja_JP">Cannot reach remote repository</val>
         <val lang="nl_NL">Kan externe repository niet bereiken</val>
-    </key>
-    <key value="Branch_switch_checkout_conflict_error_msg">
-        <comment>The the message displayed when branch selection fails</comment>
-        <val lang="en_US">Commit or discard your local changes before you switch branches.</val>
-        <val lang="de_DE">Commit or discard your local changes before you switch branches.</val>
-        <val lang="fr_FR">Effectuez un commit ou abandonnez vos modifications locales avant de changer de branche.</val>
-        <val lang="ja_JP">Commit or discard your local changes before you switch branches.</val>
-        <val lang="nl_NL">Commit of annuleer uw lokale wijzigingen voordat u van branch wisselt.</val>
     </key>
     <key value="Hover_for_details">
         <comment>Message suggesting to hover for more information.</comment>
