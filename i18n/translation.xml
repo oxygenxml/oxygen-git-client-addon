@@ -22,19 +22,19 @@
     </key>
     <key value = "Notify_on_conflict_markers">
         <comment> The text for notifying when there are conflict markers in selected files.</comment>
-        <val lang="en_US">Warn if files contain conflict markers when marking them as resolved</val>
-        <val lang="de_DE">Warn if files contain conflict markers when marking them as resolved</val>
-        <val lang="fr_FR">Warn if files contain conflict markers when marking them as resolved</val>
-        <val lang="ja_JP">Warn if files contain conflict markers when marking them as resolved</val>
-        <val lang="nl_NL">Warn if files contain conflict markers when marking them as resolved</val>
+        <val lang="en_US">Display warning if files contain conflict markers when trying to mark as resolved</val>
+        <val lang="de_DE">Display warning if files contain conflict markers when trying to mark as resolved</val>
+        <val lang="fr_FR">Display warning if files contain conflict markers when trying to mark as resolved</val>
+        <val lang="ja_JP">Display warning if files contain conflict markers when trying to mark as resolved</val>
+        <val lang="nl_NL">Display warning if files contain conflict markers when trying to mark as resolved</val>
     </key>
     <key value = "Conflict_markers_message">
         <comment> The message displayed to the user when conflict markers are detected.</comment>
-        <val lang="en_US">There are conflict markers inside the file.</val>
-        <val lang="de_DE">There are conflict markers inside the file.</val>
-        <val lang="fr_FR">There are conflict markers inside the file.</val>
-        <val lang="ja_JP">There are conflict markers inside the file.</val>
-        <val lang="nl_NL">There are conflict markers inside the file.</val>
+        <val lang="en_US">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
+        <val lang="de_DE">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
+        <val lang="fr_FR">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
+        <val lang="ja_JP">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
+        <val lang="nl_NL">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
     </key>
     <key value="Switch_branch">
         <comment>"Switch branch" label.</comment>

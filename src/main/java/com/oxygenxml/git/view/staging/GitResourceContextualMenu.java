@@ -7,6 +7,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 
@@ -27,11 +28,11 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
- * Contextual menu shown for staged/unstaged resources from the Git view 
+ * Contextual menu shown for staged/unstaged resources from the Git view
  * (either tree or list rendering).
- * 
+ *
  * @author Beniamin Savu
- * 
+ *
  */
 public class GitResourceContextualMenu extends JPopupMenu {
 	/**
@@ -52,7 +53,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 	 * The git API, containg the commands
 	 */
 	private static final GitAccess GIT_ACCESS = GitAccess.getInstance();
-	
+
 	/**
 	 * Repository state.
 	 */
@@ -72,7 +73,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
    */
   private AbstractAction showDiffAction;
   /**
-   * Open action.  
+   * Open action.
    */
   private AbstractAction openAction;
   /**
@@ -107,12 +108,12 @@ public class GitResourceContextualMenu extends JPopupMenu {
 	 * Show blame action.
 	 */
 	private AbstractAction blameAction;
-	
-	
+
+
   /**
    * Constructor.
-   * 
-   * @param selResProvider        Provides the resources that will be processed by the menu's actions. 
+   *
+   * @param selResProvider        Provides the resources that will be processed by the menu's actions.
    * @param gitController         Git controller.
    * @param historyController     History interface.
    * @param isStage               <code>true</code> if we create the menu for the staged resources,
@@ -130,18 +131,18 @@ public class GitResourceContextualMenu extends JPopupMenu {
     this.repoState = repoState;
     populateMenu(selResProvider, isStage);
   }
-  
+
 
 	/**
 	 * Populates the contextual menu for the selected files.
-	 * 
+	 *
 	 * @param selResProvider   Provides the resources that will be processed by the menu's actions.
 	 * @param forStagedRes     <code>true</code> if the contextual menu is created for staged files.
 	 */
 	private void populateMenu(
-	    final SelectedResourcesProvider selResProvider, 
+	    final SelectedResourcesProvider selResProvider,
 	    final boolean forStagedRes) {
-	  
+
 	  if (selResProvider.getAllSelectedResources().isEmpty() && !RepoUtil.isRepoMergingOrRebasing(repoState)) {
       return;
     }
@@ -150,7 +151,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
 
 		createAllActions(allSelectedResources, selectedLeaves, selResProvider, forStagedRes);
-		
+
 		// Resolve Conflict
 		JMenu resolveConflict = new JMenu();
 		resolveConflict.setText(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICT));
@@ -176,7 +177,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 			this.add(historyAction);
 			blameAction.setEnabled(FileUtil.shouldEnableBlameAndHistory(allSelectedResources));
 			this.add(blameAction);
-		} 
+		}
 
 		boolean allSelResHaveSameChangeType = true;
 		boolean selectionContainsConflicts = false;
@@ -201,7 +202,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 				}
 			}
 		}
-		
+
 		// Enable/disable the actions
 		showDiffAction.setEnabled(selectedLeaves.size() == 1);
 		openAction.setEnabled(!selectionContainsDeletions && !allSelectedResources.isEmpty());
@@ -273,9 +274,19 @@ public class GitResourceContextualMenu extends JPopupMenu {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
-          if(OptionsManager.getInstance().shouldNotifyConflictMarkers()
+          boolean shouldWarnAboutConflictMarkers = OptionsManager.getInstance().shouldNotifyConflictMarkers();
+          if(shouldWarnAboutConflictMarkers
                   && FileUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy())) {
-            GitResourceContextualMenu.PLUGIN_WS.showWarningMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE));
+						int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+										TRANSLATOR.getTranslation(Tags.MARK_RESOLVED),
+										TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE),
+										TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY),
+										TRANSLATOR.getTranslation(Tags.CLOSE)
+										
+						);
+						if(answer == FileStatusDialog.RESULT_OK) {
+						  gitCtrl.asyncAddToIndex(allSelectedResources);
+						}
           } else {
             gitCtrl.asyncAddToIndex(allSelectedResources);
           }
