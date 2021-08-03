@@ -30,7 +30,7 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.GitAddonSystemProperties;
 import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.view.blame.BlameManager;
@@ -300,7 +300,7 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           
           if (operation == GitOperation.CHECKOUT) {
             try {
-              FileHelper.refreshProjectView();
+              FileUtil.refreshProjectView();
             } catch (NoRepositorySelected e) {
               logger.debug(e, e);
             }

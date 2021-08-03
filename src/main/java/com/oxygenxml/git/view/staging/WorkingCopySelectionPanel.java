@@ -40,7 +40,7 @@ import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
@@ -214,7 +214,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 				File directory = ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).chooseDirectory();
 				if (directory != null) {
 					String directoryPath = directory.getAbsolutePath();
-					if (FileHelper.isGitRepository(directoryPath) && directoryPath != null) {
+					if (FileUtil.isGitRepository(directoryPath) && directoryPath != null) {
 						// adds the directory path to the combo box if it doesn't already exist
 					  OptionsManager.getInstance().addRepository(directoryPath);
 					  
@@ -463,7 +463,7 @@ public class WorkingCopySelectionPanel extends JPanel {
         if (!inhibitRepoUpdate) {
           inhibitRepoUpdate = true;
           try {
-            if (FileHelper.isGitSubmodule(absolutePath)) {
+            if (FileUtil.isGitSubmodule(absolutePath)) {
               // An ugly hack to select the path in the combo without keeping it
               // in the model. We want to avoid adding it in the model because 
               // this path is not exactly an working copy (no .git in it)

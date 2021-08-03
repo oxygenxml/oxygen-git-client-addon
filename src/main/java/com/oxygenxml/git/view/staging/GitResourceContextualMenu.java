@@ -17,6 +17,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.history.HistoryController;
@@ -171,9 +172,9 @@ public class GitResourceContextualMenu extends JPopupMenu {
 
 	if (!forStagedRes) {
 			addSeparator();
-			historyAction.setEnabled(RepoUtil.shouldEnableBlameAndHistory(allSelectedResources));
+			historyAction.setEnabled(FileUtil.shouldEnableBlameAndHistory(allSelectedResources));
 			this.add(historyAction);
-			blameAction.setEnabled(RepoUtil.shouldEnableBlameAndHistory(allSelectedResources));
+			blameAction.setEnabled(FileUtil.shouldEnableBlameAndHistory(allSelectedResources));
 			this.add(blameAction);
 		} 
 
@@ -273,7 +274,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
       public void actionPerformed(ActionEvent e) {
         try {
           if(OptionsManager.getInstance().shouldNotifyConflictMarkers()
-                  && RepoUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy(), PLUGIN_WS.getUtilAccess())) {
+                  && FileUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy(), PLUGIN_WS.getUtilAccess())) {
             GitResourceContextualMenu.PLUGIN_WS.showWarningMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE));
           } else {
             gitCtrl.asyncAddToIndex(allSelectedResources);

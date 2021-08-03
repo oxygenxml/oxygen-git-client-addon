@@ -1,9 +1,12 @@
 package com.oxygenxml.git.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -11,16 +14,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * An utility class for files
@@ -28,7 +36,7 @@ import ro.sync.exml.workspace.api.standalone.project.ProjectController;
  * @author Beniamin Savu
  *
  */
-public class FileHelper {
+public class FileUtil {
   
   /**
    * Archive extensions.
@@ -47,14 +55,14 @@ public class FileHelper {
   /**
    * Hidden constructor.
    */
-  private FileHelper() {
+  private FileUtil() {
     // Nothing
   }
 
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(FileHelper.class);
+	private static final Logger LOGGER = Logger.getLogger(FileUtil.class);
 	
 	/**
    * Get the common ancestor for a list of directories.
@@ -212,8 +220,8 @@ public class FileHelper {
 		try {
 			url = file.toURI().toURL();
 		} catch (MalformedURLException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(e, e);
 			}
 		}
 		return url;
@@ -232,12 +240,12 @@ public class FileHelper {
 	 */
 	public static String getPath(File file) throws NoRepositorySelected {
 	  String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-    selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+    selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
 
-    String fileInWorkPath = FileHelper.rewriteSeparator(file.getAbsolutePath());
+    String fileInWorkPath = FileUtil.rewriteSeparator(file.getAbsolutePath());
     if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Notify " + fileInWorkPath);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Notify " + fileInWorkPath);
       }
 
       return fileInWorkPath.substring(selectedRepositoryPath.length () + 1);
@@ -282,7 +290,7 @@ public class FileHelper {
     boolean isGit = false;
     File temp = file;
     while (temp.getParent() != null && !isGit) {
-      if (FileHelper.isGitRepository(temp.getPath())) {
+      if (FileUtil.isGitRepository(temp.getPath())) {
         isGit = true;
       }
       temp = temp.getParentFile();
@@ -474,6 +482,66 @@ public class FileHelper {
       }
     }
     return str;
+  }
+  
+  /**
+   * Checks if we have just one resource and if it's a resource that is committed in the repository.
+   *
+   * @param allSelectedResources A set of resources.
+   *
+   * @return <code>true</code> if we have just one resource in the set and that resource is one with history.
+   */
+  public static boolean shouldEnableBlameAndHistory(final List<FileStatus> allSelectedResources) {
+    boolean hasHistory = false;
+    if (allSelectedResources.size() == 1) {
+      GitChangeType changeType = allSelectedResources.get(0).getChangeType();
+      hasHistory =
+              changeType == GitChangeType.CHANGED ||
+                      changeType == GitChangeType.CONFLICT ||
+                      changeType == GitChangeType.MODIFIED;
+    }
+    return hasHistory;
+  }
+
+  /**
+   * Check if there is at least a file in the given collection that contains conflict markers.
+   *
+   * @param allSelectedResources the files.
+   * @param workingCopy          the working copy.
+   * @param utilAccess           the UtilAccess.
+   *
+   * @return <code>true</code> if there's at least a file that contains at least a conflict marker.
+   */
+  public static boolean containsConflictMarkers(
+          final List<FileStatus> allSelectedResources,
+          final File workingCopy,
+          final UtilAccess utilAccess) {
+    return allSelectedResources.stream()
+            .parallel()
+            .anyMatch(file -> containsConflictMarkers(file, workingCopy, utilAccess));
+  }
+
+  /**
+   * Check if a file contains conflict markers.
+   *
+   * @param fileStatus  the file status.
+   * @param workingCopy the working copy.
+   *
+   * @return <code>True</code> if the file contains at least a conflict marker.
+   */
+  private static boolean containsConflictMarkers(
+          final FileStatus fileStatus,
+          final File workingCopy,
+          final UtilAccess utilAccess) {
+    boolean toReturn = false;
+    File currentFile = new File(workingCopy, FilenameUtils.getName(fileStatus.getFileLocation())); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
+    try (BufferedReader reader =  new BufferedReader(utilAccess.createReader(currentFile.toURI().toURL(), StandardCharsets.UTF_8.toString()))) {
+      String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+      toReturn = (content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
+    } catch (IOException ex) {
+      LOGGER.error(ex, ex);
+    }
+    return toReturn;
   }
   
 }

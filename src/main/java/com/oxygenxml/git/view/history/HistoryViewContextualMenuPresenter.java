@@ -30,7 +30,7 @@ import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.history.actions.CreateBranchFromCommitAction;
 import com.oxygenxml.git.view.history.actions.ResetBranchToCommitAction;
@@ -564,7 +564,7 @@ public class HistoryViewContextualMenuPresenter {
     } else if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(revisionID)) {
       fileURL = GitRevisionURLHandler.encodeURL(revisionID, fileStatus.getFileLocation());
     } else {
-      fileURL = FileHelper.getFileURL(fileStatus.getFileLocation());
+      fileURL = FileUtil.getFileURL(fileStatus.getFileLocation());
     }
     
     return Optional.ofNullable(fileURL);

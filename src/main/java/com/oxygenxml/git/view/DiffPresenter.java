@@ -31,7 +31,7 @@ import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -123,7 +123,7 @@ public class DiffPresenter {
 	          VersionIdentifier.INDEX_OR_LAST_COMMIT, 
 	          fileStatus.getFileLocation());
 	    } else {
-	      url = FileHelper.getFileURL(fileStatus.getFileLocation());  
+	      url = FileUtil.getFileURL(fileStatus.getFileLocation());
 	    }
 	  } catch (MalformedURLException | NoRepositorySelected e) {
 	    // Shouldn't rreally happen
@@ -180,7 +180,7 @@ public class DiffPresenter {
 	 */
 	private static void showDiffViewForModified(String path) throws NoRepositorySelected {
 	  // The local (WC) version.
-		URL fileURL = FileHelper.getFileURL(path);
+		URL fileURL = FileUtil.getFileURL(path);
 		URL lastCommitedFileURL = null;
 
 		try {
@@ -204,7 +204,7 @@ public class DiffPresenter {
    */
   private static void showDiffIndexWithHead(String path) throws NoRepositorySelected {    
     // The local (WC) version.
-    URL leftSideURL = FileHelper.getFileURL(path);
+    URL leftSideURL = FileUtil.getFileURL(path);
     URL rightSideURL = null;
 
     try {
@@ -385,7 +385,7 @@ public class DiffPresenter {
         filePath, 
         commitId);
     
-    URL left = FileHelper.getFileURL(localFilePath);
+    URL left = FileUtil.getFileURL(localFilePath);
     URL right = GitRevisionURLHandler.encodeURL(commitId, filePath);
     
     showDiffFrame(left, right, null, filePath);

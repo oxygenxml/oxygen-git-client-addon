@@ -66,7 +66,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.Equaler;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -318,11 +318,11 @@ public class HistoryPanel extends JPanel {
       localFile = pluginWS.getUtilAccess().locateFile(editorLocation);
       if (localFile != null) {
         String fileInWorkPath = localFile.toString();
-        fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
+        fileInWorkPath = FileUtil.rewriteSeparator(fileInWorkPath);
 
         try {
           String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-          selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+          selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
 
           if (isShowing() && fileInWorkPath.startsWith(selectedRepositoryPath)) {
             refresh();

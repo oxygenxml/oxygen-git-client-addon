@@ -24,7 +24,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.history.HistoryController;
@@ -207,7 +207,7 @@ public class ProjectMenuGitActionsProvider {
           List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
           boolean wasDiffShown = false;
           if (!gitFiles.isEmpty()) {
-            String selectedFilePath = FileHelper.rewriteSeparator(selFile.getAbsolutePath());
+            String selectedFilePath = FileUtil.rewriteSeparator(selFile.getAbsolutePath());
             for (FileStatus fileStatus : gitFiles) {
               if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
                 SwingUtilities.invokeLater(() -> DiffPresenter.showDiff(fileStatus, gitCtrl));
@@ -247,7 +247,7 @@ public class ProjectMenuGitActionsProvider {
           List<FileStatus> gitFiles = getStagedAndUnstagedFiles();
           boolean canCommit = false;
           for (File selFile : selectedFiles) {
-            String selectedFilePath = FileHelper.rewriteSeparator(selFile.getAbsolutePath());
+            String selectedFilePath = FileUtil.rewriteSeparator(selFile.getAbsolutePath());
             for (FileStatus fileStatus : gitFiles) {
               if (selectedFilePath.endsWith(fileStatus.getFileLocation())) {
                 canCommit = true;
@@ -292,7 +292,7 @@ public class ProjectMenuGitActionsProvider {
    * @param repository The current repository.
    */
   private void stageFiles(String repository) {
-    repository = FileHelper.rewriteSeparator(repository);
+    repository = FileUtil.rewriteSeparator(repository);
     
     List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
     Set<String> allSelectedFiles = ProjectViewManager.getSelectedFilesDeep();
@@ -325,7 +325,7 @@ public class ProjectMenuGitActionsProvider {
         String ext = Files.getFileExtension(selectedFiles[0].getName());
         isNonBinaryFile = selFileURL != null 
             && !pluginWS.getUtilAccess().isUnhandledBinaryResourceURL(selFileURL)
-            && !FileHelper.isArchiveExtension(ext);
+            && !FileUtil.isArchiveExtension(ext);
       }
     }
     return isNonBinaryFile;

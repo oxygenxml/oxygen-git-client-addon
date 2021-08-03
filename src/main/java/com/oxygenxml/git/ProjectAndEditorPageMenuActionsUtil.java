@@ -11,7 +11,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.history.HistoryController;
@@ -105,7 +105,7 @@ public class ProjectAndEditorPageMenuActionsUtil {
     try { //NOSONAR: keep the try here
       String relativeFilePath = RepoUtil.getFilePathRelativeToRepo(file, repository);
       BlameManager.getInstance().doBlame(
-          FileHelper.rewriteSeparator(relativeFilePath),
+          FileUtil.rewriteSeparator(relativeFilePath),
           historyCtrl);
     } catch (IOException | GitAPIException e1) {
       logger.error(e1, e1);
@@ -134,7 +134,7 @@ public class ProjectAndEditorPageMenuActionsUtil {
         if (relativeFilePath.isEmpty()) {
           historyCtrl.showRepositoryHistory();
         } else {
-          historyCtrl.showResourceHistory(FileHelper.rewriteSeparator(relativeFilePath));
+          historyCtrl.showResourceHistory(FileUtil.rewriteSeparator(relativeFilePath));
         }
       }
     } catch (IOException e) {

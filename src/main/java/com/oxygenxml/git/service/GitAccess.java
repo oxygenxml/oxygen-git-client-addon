@@ -104,7 +104,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.BranchGitEventInfo;
@@ -1308,7 +1308,7 @@ public class GitAccess {
       }
       // Refresh the Project view
       StandalonePluginWorkspace wsAccess = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-      wsAccess.getProjectManager().refreshFolders(new File[] { FileHelper.getCommonDir(pulledFilesParentDirs) });
+      wsAccess.getProjectManager().refreshFolders(new File[] { FileUtil.getCommonDir(pulledFilesParentDirs) });
     } catch (IOException e) {
       logger.error(e, e);
     }

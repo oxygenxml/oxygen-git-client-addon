@@ -19,7 +19,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import ro.sync.exml.editor.EditorPageConstants;
@@ -100,7 +100,7 @@ public class OpenAction extends AbstractAction {
           fileLocation);
     } else {
       // We must open a local copy.
-      fileURL = FileHelper.getFileURL(fileLocation);  
+      fileURL = FileUtil.getFileURL(fileLocation);
     }
 
     boolean isProjectExt = false;

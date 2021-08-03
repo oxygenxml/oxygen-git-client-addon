@@ -8,7 +8,7 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -65,7 +65,7 @@ public class ProjectViewManager {
     StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     File[] selectedFiles = pluginWS.getProjectManager().getSelectedFiles();
     for (int i = 0; i < selectedFiles.length; i++) {
-      isGit = FileHelper.isFromGitRepo(new File(selectedFiles[i].getAbsolutePath()));
+      isGit = FileUtil.isFromGitRepo(new File(selectedFiles[i].getAbsolutePath()));
       if (!isGit) {
         // If one of the selected project files does not pertain to a Git repository,
         // it means that the project is not a Git one
@@ -86,7 +86,7 @@ public class ProjectViewManager {
 	  StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
 	  File[] selectedFiles = pluginWS.getProjectManager().getSelectedFiles();
 	  for (int i = 0; i < selectedFiles.length; i++) {
-	    files.addAll(FileHelper.getAllFilesFromPath(selectedFiles[i].getAbsolutePath()));
+	    files.addAll(FileUtil.getAllFilesFromPath(selectedFiles[i].getAbsolutePath()));
 	  }
 
 	  return files;

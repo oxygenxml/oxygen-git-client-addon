@@ -20,7 +20,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -104,7 +104,7 @@ public class DiscardAction extends AbstractAction {
       
       // Also refresh the common folder of all the individual discarded files
       if (!deletedFilesParentDirs.isEmpty()) {
-        foldersToRefresh.add(FileHelper.getCommonDir(deletedFilesParentDirs));
+        foldersToRefresh.add(FileUtil.getCommonDir(deletedFilesParentDirs));
       }
       
       // Execute Git command

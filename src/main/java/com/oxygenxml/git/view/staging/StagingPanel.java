@@ -31,7 +31,7 @@ import com.oxygenxml.git.service.GitEventListener;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
 import com.oxygenxml.git.view.event.GitController;
@@ -302,11 +302,11 @@ public class StagingPanel extends JPanel {
       locateFile = pluginWS.getUtilAccess().locateFile(editorLocation);
       if (locateFile != null) {
         String fileInWorkPath = locateFile.toString();
-        fileInWorkPath = FileHelper.rewriteSeparator(fileInWorkPath);
+        fileInWorkPath = FileUtil.rewriteSeparator(fileInWorkPath);
 
         try {
           String selectedRepositoryPath = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-          selectedRepositoryPath = FileHelper.rewriteSeparator(selectedRepositoryPath);
+          selectedRepositoryPath = FileUtil.rewriteSeparator(selectedRepositoryPath);
 
           if (fileInWorkPath.startsWith(selectedRepositoryPath)) {
             if (logger.isDebugEnabled()) {

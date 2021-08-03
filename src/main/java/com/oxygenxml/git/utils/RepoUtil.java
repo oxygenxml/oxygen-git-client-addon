@@ -1,26 +1,21 @@
 package com.oxygenxml.git.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
 import org.apache.log4j.Logger;
 import org.apache.xerces.jaxp.SAXParserFactoryImpl;
 import org.eclipse.jgit.api.Git;
@@ -39,7 +34,6 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Utility methods for detecting a Git repository and repository related issues.
@@ -106,7 +100,7 @@ public class RepoUtil {
   public static String getRepositoryForFile(File file) {
     String repository = null;
     while (repository == null && file.getParent() != null) {
-      if (FileHelper.isGitRepository(file.getPath())) {
+      if (FileUtil.isGitRepository(file.getPath())) {
         repository = file.getAbsolutePath();
       }
       file = file.getParentFile();
@@ -198,7 +192,7 @@ public class RepoUtil {
     // Look into the ancestors for a Git repository.
     File candidate = directory;
     while (candidate != null 
-        && !FileHelper.isGitRepository(candidate)) {
+        && !FileUtil.isGitRepository(candidate)) {
       candidate = candidate.getParentFile();
     }
     
@@ -219,7 +213,7 @@ public class RepoUtil {
     if (projectDir != null) {
       for (String path : referedProjectPaths) {
         File file = null;
-        if (FileHelper.isURL(path)) {
+        if (FileUtil.isURL(path)) {
           try {
             file = new File(new URL(path).toURI());
           } catch (MalformedURLException | URISyntaxException e) {
@@ -253,7 +247,7 @@ public class RepoUtil {
   private static File detectRepositoryDownwards(File file) {
     File repoDir = null;
     if (file != null) {
-      if (FileHelper.isGitRepository(file)) {
+      if (FileUtil.isGitRepository(file)) {
         repoDir = file;
       } else if (file.isDirectory()) {
         File[] listFiles = file.listFiles();
@@ -341,63 +335,4 @@ public class RepoUtil {
     .append(new SimpleDateFormat("d MMM yyyy HH:mm").format(parseCommit.getAuthorIdent().getWhen())).append("\n");
   }
 
-  /**
-   * Checks if we have just one resource and if it's a resource that is committed in the repository.
-   *
-   * @param allSelectedResources A set of resources.
-   *
-   * @return <code>true</code> if we have just one resource in the set and that resource is one with history.
-   */
-  public static boolean shouldEnableBlameAndHistory(final List<FileStatus> allSelectedResources) {
-    boolean hasHistory = false;
-    if (allSelectedResources.size() == 1) {
-      GitChangeType changeType = allSelectedResources.get(0).getChangeType();
-      hasHistory =
-              changeType == GitChangeType.CHANGED ||
-                      changeType == GitChangeType.CONFLICT ||
-                      changeType == GitChangeType.MODIFIED;
-    }
-    return hasHistory;
-  }
-
-  /**
-   * Check if there is at least a file in the given collection that contains conflict markers.
-   *
-   * @param allSelectedResources the files.
-   * @param workingCopy          the working copy.
-   * @param utilAccess           the UtilAccess.
-   *
-   * @return <code>true</code> if there's at least a file that contains at least a conflict marker.
-   */
-  public static boolean containsConflictMarkers(
-          final List<FileStatus> allSelectedResources,
-          final File workingCopy,
-          final UtilAccess utilAccess) {
-    return allSelectedResources.stream()
-            .parallel()
-            .anyMatch(file -> RepoUtil.containsConflictMarkers(file, workingCopy, utilAccess));
-  }
-
-  /**
-   * Check if a file contains conflict markers.
-   *
-   * @param fileStatus  the file status.
-   * @param workingCopy the working copy.
-   *
-   * @return <code>True</code> if the file contains at least a conflict marker.
-   */
-  private static boolean containsConflictMarkers(
-          final FileStatus fileStatus,
-          final File workingCopy,
-          final UtilAccess utilAccess) {
-    boolean toReturn = false;
-    File currentFile = new File(workingCopy, fileStatus.getFileLocation()); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
-    try (BufferedReader reader =  new BufferedReader(utilAccess.createReader(currentFile.toURI().toURL(), StandardCharsets.UTF_8.toString()))) {
-      String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-      toReturn = (content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
-    } catch (IOException ex) {
-      LOGGER.error(ex, ex);
-    }
-    return toReturn;
-  }
 }

@@ -12,7 +12,7 @@ import javax.swing.AbstractAction;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.history.HistoryController;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -75,7 +75,7 @@ public class EditorPageMenuGitActionsProvider {
 		  return Collections.emptyList();
 	  }
 
-	  boolean isFromGitRepo = FileHelper.isFromGitRepo(file);
+	  boolean isFromGitRepo = FileUtil.isFromGitRepo(file);
 	  if (isFromGitRepo) {
 
 		  GitOperationScheduler gitOpScheduler = GitOperationScheduler.getInstance();

@@ -19,7 +19,7 @@ import com.oxygenxml.git.service.Commit;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
-import com.oxygenxml.git.utils.FileHelper;
+import com.oxygenxml.git.utils.FileUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.UtilAccess;
@@ -179,7 +179,7 @@ public class GitRevisionURLHandler extends URLStreamHandler {
 		public OutputStream getOutputStream() throws IOException {
 			if (VersionIdentifier.MINE.equals(currentHost) || VersionIdentifier.MINE_RESOLVED.equals(currentHost)) {
         try {
-          URL fileContent = FileHelper.getFileURL(path);
+          URL fileContent = FileUtil.getFileURL(path);
           return fileContent.openConnection().getOutputStream();
         } catch (NoWorkTreeException | NoRepositorySelected e) {
           throw new IOException(e);
