@@ -457,14 +457,17 @@ public class FileHelper {
    * 
    * @param str The original string.
    * @param maxLen The max length where to trim the string.
+   * 
    * @return The trimmed text.
    */
   public static String getSomeTextAtEnd(String str, int maxLen) {
     int strLen = str != null ? str.length() : 0;
     if (str != null && strLen > maxLen) {
       str = str.substring(strLen - maxLen, strLen);
-      if (str.length() > 3) {
-        str = "..." + str.substring(3);
+      String threeDots = "...";
+      int threeDotsLength = threeDots.length();
+      if (str.length() > threeDotsLength) {
+        str = threeDots + str.substring(threeDotsLength);
       }
     }
     return str;

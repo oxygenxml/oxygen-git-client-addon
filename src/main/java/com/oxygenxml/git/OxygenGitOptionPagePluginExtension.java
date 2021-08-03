@@ -124,7 +124,7 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     // Empty panel to take up the rest of the space
     constraints.gridx = 0;
     constraints.gridy ++;
-    constraints.gridwidth = 3;
+    constraints.gridwidth = 3; // NOSONAR checkstyle:MagicNumberCheckSyncro
     constraints.weightx = 1;
     constraints.weighty = 1;
     constraints.fill = GridBagConstraints.BOTH;

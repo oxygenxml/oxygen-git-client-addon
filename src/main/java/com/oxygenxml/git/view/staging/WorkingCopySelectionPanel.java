@@ -64,6 +64,21 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 * Logger for logging.
 	 */
 	private static Logger logger = Logger.getLogger(WorkingCopySelectionPanel.class);
+	
+	/**
+   * Clear history.
+   */
+  private static final String CLEAR_HISTORY_ENTRY = "CLEAR_HISTORY";
+  
+  /**
+   * The git API, containing the commands
+   */
+  private static GitAccess gitAccess = GitAccess.getInstance();
+
+  /**
+   * The translator for the messages that are displayed in this panel
+   */
+  private static Translator translator = Translator.getInstance();
 
 	/**
 	 * A combo box for the user to change his working copy
@@ -76,20 +91,11 @@ public class WorkingCopySelectionPanel extends JPanel {
 	 */
 	private JButton browseButton;
 
-	/**
-	 * The git API, containing the commands
-	 */
-	private GitAccess gitAccess = GitAccess.getInstance();
-
-	/**
-	 * The translator for the messages that are displayed in this panel
-	 */
-	private static Translator translator = Translator.getInstance();
-	
-	/**
-	 * Clear history.
-	 */
-	private static final String CLEAR_HISTORY_ENTRY = "CLEAR_HISTORY";
+ /**
+   * <code>true</code> to inhibit repository update when the selection changes in the combo.
+   * <code>false</code> to update the repository when the selection changes in the combo.
+   */
+  private boolean inhibitRepoUpdate = false;
 	
   /**
    * Constructor.
@@ -110,14 +116,6 @@ public class WorkingCopySelectionPanel extends JPanel {
     });
 	}
 
-	public JComboBox<String> getWorkingCopyCombo() {
-		return workingCopyCombo;
-	}
-
-	public JButton getBrowseButton() {
-		return browseButton;
-	}
-
 	/**
 	 * Creates the components and adds listeners to some of them. Basically this
 	 * creates the panel
@@ -136,12 +134,6 @@ public class WorkingCopySelectionPanel extends JPanel {
 		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.WORKINGCOPY_PANEL_HEIGHT));
 	}
 	
-	/**
-	 * <code>true</code> to inhibit repository update when the selection changes in the combo.
-	 * <code>false</code> to update the repository when the selection changes in the combo.
-	 */
-	private boolean inhibitRepoUpdate = false;
-
 	/**
 	 * Adds a state change listener on the working copy selector combo box. When a
 	 * new working copy is selected this listener will execute
@@ -299,7 +291,7 @@ public class WorkingCopySelectionPanel extends JPanel {
 	}
 
 	/**
-	 * Load the recorded workinf copy locations into the combo.
+	 * Load the recorded working copy locations into the combo.
 	 */
   void initializeWorkingCopyCombo() {
     if (workingCopyCombo.getModel().getSize() == 0) {
@@ -503,5 +495,19 @@ public class WorkingCopySelectionPanel extends JPanel {
       }
     }
 	}
-	
+
+	/**
+	 * @return the working copy combo.
+	 */
+	public JComboBox<String> getWorkingCopyCombo() {
+	  return workingCopyCombo;
+	}
+
+	/**
+	 * @return the "Browse" button.
+	 */
+	public JButton getBrowseButton() {
+	  return browseButton;
+	}
+
 }
