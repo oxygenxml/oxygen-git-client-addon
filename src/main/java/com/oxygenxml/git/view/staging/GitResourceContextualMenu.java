@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.staging;
 
 import java.awt.event.ActionEvent;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Contextual menu shown for staged/unstaged resources from the Git view 
@@ -62,8 +64,53 @@ public class GitResourceContextualMenu extends JPopupMenu {
 	/**
 	 * History interface.
 	 */
-    private final HistoryController historyController;
-
+  private final HistoryController historyController;
+  /**
+   * The Standalone Plugin Workspace;
+   */
+  private final StandalonePluginWorkspace pluginWS;
+  /**
+   * Show differences action.
+   */
+  private AbstractAction showDiffAction;
+  /**
+   * Open action.  
+   */
+  private AbstractAction openAction;
+  /**
+   * Stage - Unstage action.
+   */
+  private AbstractAction stageUnstageAction;
+  /**
+   * Resolve using mine action.
+   */
+	private AbstractAction resolveUsingMineAction;
+	/**
+	 * Resolve using theirs action.
+	 */
+	private AbstractAction resolveUsingTheirsAction;
+	/**
+	 * Mark resolved action.
+	 */
+	private AbstractAction markResolvedAction;
+	/**
+	 * Restart merge action.
+	 */
+	private AbstractAction restartMergeAction;
+	/**
+	 * Discard action.
+	 */
+	private AbstractAction discardAction;
+	/**
+	 * History action.
+	 */
+	private AbstractAction historyAction;
+	/**
+	 * Show blame action.
+	 */
+	private AbstractAction blameAction;
+	
+	
   /**
    * Constructor.
    * 
@@ -83,8 +130,10 @@ public class GitResourceContextualMenu extends JPopupMenu {
     this.gitCtrl = gitController;
     this.historyController = historyController;
     this.repoState = repoState;
+    pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
     populateMenu(selResProvider, isStage);
   }
+  
 
 	/**
 	 * Populates the contextual menu for the selected files.
@@ -99,94 +148,12 @@ public class GitResourceContextualMenu extends JPopupMenu {
 	  if (selResProvider.getAllSelectedResources().isEmpty() && !RepoUtil.isRepoMergingOrRebasing(repoState)) {
       return;
     }
-	  
-	  final StandalonePluginWorkspace pluginWS = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
 
 		final List<FileStatus> allSelectedResources = selResProvider.getAllSelectedResources();
 		final List<FileStatus> selectedLeaves = selResProvider.getOnlySelectedLeaves();
 
-		// "Open in compare editor" action
-		AbstractAction showDiffAction = new AbstractAction(
-						TRANSLATOR.getTranslation(Tags.OPEN_IN_COMPARE)) {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DiffPresenter.showDiff(selectedLeaves.get(0), gitCtrl);
-			}
-		};
-
-		// "Open" action
-		AbstractAction openAction = new OpenAction(selResProvider);
-
-		// "Stage"/"Unstage" actions
-		AbstractAction stageUnstageAction = new StageUnstageResourceAction(
-						allSelectedResources,
-						// If this contextual menu is built for a staged resource,
-						// then the action should be unstage.
-						!forStagedRes,
-						gitCtrl);
-
-		// Resolve using "mine"
-		AbstractAction resolveUsingMineAction = new AbstractAction(
-						TRANSLATOR.getTranslation(Tags.RESOLVE_USING_MINE)) {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				gitCtrl.asyncResolveUsingMine(allSelectedResources);
-			}
-		};
-
-		// Resolve using "theirs"
-		AbstractAction resolveUsingTheirsAction = new AbstractAction(
-						TRANSLATOR.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				gitCtrl.asyncResolveUsingTheirs(allSelectedResources);
-			}
-		};
-
-
-		// "Mark resolved" action
-		AbstractAction markResolvedAction = new AbstractAction(
-						TRANSLATOR.getTranslation(Tags.MARK_RESOLVED)) {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					if(OptionsManager.getInstance().shouldNotifyConflictMarkers()
-									&& containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy())) {
-						pluginWS.showWarningMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE));
-					} else {
-						gitCtrl.asyncAddToIndex(allSelectedResources);
-					}
-				} catch (Exception err) {
-					LOGGER.error(err, err);
-				}
-			}
-		};
-
-
-		// "Restart Merge" action
-		AbstractAction restartMergeAction = new AbstractAction(
-						TRANSLATOR.getTranslation(Tags.RESTART_MERGE)) {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String[] options = new String[] {
-								"   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
-								"   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
-				int[] optionIds = new int[] { 0, 1 };
-				int result = pluginWS.showConfirmDialog(
-								TRANSLATOR.getTranslation(Tags.RESTART_MERGE),
-								TRANSLATOR.getTranslation(Tags.RESTART_MERGE_CONFIRMATION),
-								options,
-								optionIds);
-				if (result == optionIds[0]) {
-					GIT_ACCESS.restartMerge();
-				}
-			}
-		};
-
-
-		// "Discard" action
-		AbstractAction discardAction = new DiscardAction(selResProvider, gitCtrl);
-
+		createAllActions(allSelectedResources, selectedLeaves, pluginWS, selResProvider, forStagedRes);
+		
 		// Resolve Conflict
 		JMenu resolveConflict = new JMenu();
 		resolveConflict.setText(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICT));
@@ -206,26 +173,13 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		this.add(resolveConflict);
 		this.add(discardAction);
 
-		if (!forStagedRes) {
+	if (!forStagedRes) {
 			addSeparator();
-
-			// Show history
-			AbstractAction historyAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.SHOW_HISTORY)) {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (!allSelectedResources.isEmpty()) {
-						historyController.showResourceHistory(allSelectedResources.get(0).getFileLocation());
-					}
-				}
-			};
 			historyAction.setEnabled(shouldEnableBlameAndHistory(allSelectedResources));
 			this.add(historyAction);
-
-			// Show blame
-			AbstractAction blameAction = new ShowBlameForUnstagedResourceAction(historyController, selResProvider);
 			blameAction.setEnabled(shouldEnableBlameAndHistory(allSelectedResources));
 			this.add(blameAction);
-		}
+		} 
 
 		boolean allSelResHaveSameChangeType = true;
 		boolean selectionContainsConflicts = false;
@@ -235,7 +189,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 			GitChangeType firstChangeType = allSelectedResources.get(0).getChangeType();
 			for (FileStatus file : allSelectedResources) {
 				GitChangeType changeType = file.getChangeType();
-				allSelResHaveSameChangeType = (changeType != firstChangeType) ? false: allSelResHaveSameChangeType;
+				allSelResHaveSameChangeType = changeType == firstChangeType && allSelResHaveSameChangeType;
 				switch (changeType) {
 					case CONFLICT:
 						selectionContainsConflicts = true;
@@ -263,6 +217,120 @@ public class GitResourceContextualMenu extends JPopupMenu {
 
 
 	/**
+	 * Creates actions for contextual menu.
+	 * 
+	 * @param allSelectedResources  A list with all selected resources.
+	 * @param selectedLeaves        A list of FileStatus with selected leaves. 
+	 * @param pluginWS              The plugin workspace.
+	 * @param selResProvider        Provides the resources that will be processed by the menu's actions.
+   * @param forStagedRes          <code>true</code> if the contextual menu is created for staged files.
+	 */
+	private void createAllActions(
+	    final List<FileStatus> allSelectedResources,
+	    final List<FileStatus> selectedLeaves,
+	    StandalonePluginWorkspace pluginWS,
+	    final SelectedResourcesProvider selResProvider, 
+      final boolean forStagedRes
+	    ) {
+	// "Open in compare editor" action
+    showDiffAction = new AbstractAction(
+            TRANSLATOR.getTranslation(Tags.OPEN_IN_COMPARE)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        DiffPresenter.showDiff(selectedLeaves.get(0), gitCtrl);
+      }
+    };
+
+    // "Open" action
+    openAction = new OpenAction(selResProvider);
+
+    // "Stage"/"Unstage" actions
+    stageUnstageAction = new StageUnstageResourceAction(
+            allSelectedResources,
+            // If this contextual menu is built for a staged resource,
+            // then the action should be unstage.
+            !forStagedRes,
+            gitCtrl);
+
+    // Resolve using "mine"
+    resolveUsingMineAction = new AbstractAction(
+            TRANSLATOR.getTranslation(Tags.RESOLVE_USING_MINE)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        gitCtrl.asyncResolveUsingMine(allSelectedResources);
+      }
+    };
+
+    // Resolve using "theirs"
+    resolveUsingTheirsAction = new AbstractAction(
+            TRANSLATOR.getTranslation(Tags.RESOLVE_USING_THEIRS)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        gitCtrl.asyncResolveUsingTheirs(allSelectedResources);
+      }
+    };
+
+
+    // "Mark resolved" action
+    markResolvedAction = new AbstractAction(
+            TRANSLATOR.getTranslation(Tags.MARK_RESOLVED)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          if(OptionsManager.getInstance().shouldNotifyConflictMarkers()
+                  && containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy(), pluginWS.getUtilAccess())) {
+            pluginWS.showWarningMessage(TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE));
+          } else {
+            gitCtrl.asyncAddToIndex(allSelectedResources);
+          }
+        } catch (Exception err) {
+          LOGGER.error(err, err);
+        }
+      }
+    };
+
+
+    // "Restart Merge" action
+    restartMergeAction = new AbstractAction(
+            TRANSLATOR.getTranslation(Tags.RESTART_MERGE)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String[] options = new String[] {
+                "   " + TRANSLATOR.getTranslation(Tags.YES) + "   ",
+                "   " + TRANSLATOR.getTranslation(Tags.NO) + "   "};
+        int[] optionIds = new int[] { 0, 1 };
+        int result = pluginWS.showConfirmDialog(
+                TRANSLATOR.getTranslation(Tags.RESTART_MERGE),
+                TRANSLATOR.getTranslation(Tags.RESTART_MERGE_CONFIRMATION),
+                options,
+                optionIds);
+        if (result == optionIds[0]) {
+          GIT_ACCESS.restartMerge();
+        }
+      }
+    };
+
+
+    // "Discard" action
+    discardAction = new DiscardAction(selResProvider, gitCtrl);
+    
+    if(!forStagedRes) {
+   // Show history
+      historyAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.SHOW_HISTORY)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          if (!allSelectedResources.isEmpty()) {
+            historyController.showResourceHistory(allSelectedResources.get(0).getFileLocation());
+          }
+        }
+      };
+      
+      // "Blame" action
+      blameAction = new ShowBlameForUnstagedResourceAction(historyController, selResProvider);
+    }
+	}
+	
+	/**
 	 * Checks if we have just one resource and if it's a resource that is committed in the repository.
 	 * 
 	 * @param allSelectedResources A set of resources.
@@ -284,28 +352,31 @@ public class GitResourceContextualMenu extends JPopupMenu {
 	/**
 	 * @param allSelectedResources a list of FileStatus.
 	 * @param workingCopy          the working copy.
+	 * @param utilAccess           the UtilAccess.
 	 *
 	 * @return <code>true</code> if the conflicted files contains at least a conflict marker.
 	 *
 	 */
   protected static boolean containsConflictMarkers(final List<FileStatus> allSelectedResources,
-      final File workingCopy) {
+      final File workingCopy, final UtilAccess utilAccess) {
     return allSelectedResources.stream()
         .parallel()
         .anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT 
-            && GitResourceContextualMenu.hasConflictMarker(file, workingCopy));
+            && GitResourceContextualMenu.hasConflictMarker(file, workingCopy, utilAccess));
   }
 
 	/**
 	 * @param fileStatus  the file status.
 	 * @param workingCopy the working copy.
+	 * @param utilAccess           the UtilAccess.
 	 *
 	 * @return <code>True</code> if the file contains at least a conflict marker.
 	 */
-  private static boolean hasConflictMarker(final FileStatus fileStatus, final File workingCopy)  {
+  private static boolean hasConflictMarker(final FileStatus fileStatus, final File workingCopy, final UtilAccess utilAccess)  {
     boolean toReturn;
 		File currentFile = new File(workingCopy, fileStatus.getFileLocation());
-		try (BufferedReader reader = new BufferedReader(new FileReader(currentFile))) {
+		
+		try (BufferedReader reader = (BufferedReader) utilAccess.createReader(currentFile.toURI().toURL(), StandardCharsets.UTF_8.toString())) {
 			String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 			toReturn = (content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
 		} catch (IOException exception) {
