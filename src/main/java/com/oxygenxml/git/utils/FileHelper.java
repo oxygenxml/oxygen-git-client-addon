@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -19,7 +18,6 @@ import org.eclipse.jgit.lib.Repository;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 
-import ro.sync.basic.util.BasicTextUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
@@ -410,7 +408,7 @@ public class FileHelper {
       boolean startsWithSeparator = text.indexOf(separator) == 0;
       
       StringTokenizer stk = new StringTokenizer(text, separator, false);
-      Vector tokens = new Vector();
+      List<String> tokens = new ArrayList<>();
       while (stk.hasMoreTokens()) {
         tokens.add(stk.nextToken());
       }
@@ -429,7 +427,7 @@ public class FileHelper {
         StringBuilder secondBuf = new StringBuilder();
         
         for (int i = maxTokens - 1; i >= 2; i--) {
-          String token = (String) tokens.get(i);
+          String token = tokens.get(i);
           if (fontMetrics.stringWidth(buf.toString() + secondBuf.toString() + token) < width) {
             secondBuf.insert(0, token);
             secondBuf.insert(0, separator);
@@ -441,8 +439,8 @@ public class FileHelper {
         if (secondBuf.length() == 0) {
           buf.append(separator);
           int aproxNumberOfCharsInWidth = width / fontMetrics.charWidth('w');
-          buf.append(BasicTextUtil.getSomeTextAtEnd(
-              (String) tokens.get(maxTokens - 1), 
+          buf.append(getSomeTextAtEnd(
+              tokens.get(maxTokens - 1), 
               Math.max(aproxNumberOfCharsInWidth - buf.length(), 0)));
         } else {
           buf.append(secondBuf);
@@ -452,4 +450,24 @@ public class FileHelper {
     
     return buf.toString();
   }
+  
+  /**
+   * Get some text from the end of the string. It adds &quot;...&quot; when string limit is exceeded.
+   * This is used when the file name is too large to be displayed as it is.
+   * 
+   * @param str The original string.
+   * @param maxLen The max length where to trim the string.
+   * @return The trimmed text.
+   */
+  public static String getSomeTextAtEnd(String str, int maxLen) {
+    int strLen = str != null ? str.length() : 0;
+    if (str != null && strLen > maxLen) {
+      str = str.substring(strLen - maxLen, strLen);
+      if (str.length() > 3) {
+        str = "..." + str.substring(3);
+      }
+    }
+    return str;
+  }
+  
 }
