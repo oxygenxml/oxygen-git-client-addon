@@ -642,6 +642,7 @@ public class BranchManagementTest extends GitTestBase{
       assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_NAME));
       assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_EMAIL));
       assertTrue(toolTipLabel.getToolTipText().contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
+      assertTrue(toolTipLabel.getToolTipText().contains("Local") || toolTipLabel.getToolTipText().contains("Remote")); 
       leaf = (GitTreeNode) leaf.getNextLeaf();
     }
   }

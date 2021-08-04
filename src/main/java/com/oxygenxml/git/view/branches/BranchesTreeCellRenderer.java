@@ -103,24 +103,12 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       label.setIcon(icon);
       if (!text.isEmpty()) {
         label.setText(text);
-
         try {
-          if(BranchesUtil.getLocalBranches().contains(text) || BranchesUtil.getRemoteBranches().contains(path)) {
-            StringBuilder toolTipText = new StringBuilder();
-            toolTipText.append("<html><p>")
-                .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
-                .append(":<br>- ")
-                .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
-                .append(": ")  
-                .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getName())
-                .append(" &lt ")
-                .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getEmailAddress())
-                .append("&gt<br> - ")
-                .append(TRANSLATOR.getTranslation(Tags.DATE))
-                .append(": ")
-                .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getWhen())
-                .append("</p></html>");
-            label.setToolTipText(toolTipText.toString());
+          boolean isRemoteBranch =  BranchesUtil.getRemoteBranches().contains(path);
+          if(isRemoteBranch) {
+            label.setToolTipText(constructRemoteBranchToolTip(path));
+          } else if (BranchesUtil.getLocalBranches().contains(text)) {
+            label.setToolTipText(constructLocalBranchToolTip(path));
           }
         } catch (GitAPIException | IOException | NoRepositorySelected e) {
           LOGGER.error(e, e);
@@ -214,5 +202,77 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       g.setColor(bsColor);
       g.drawRect(x, y, w - 1, h - 1);
     }
+  }
+  
+  /**
+   * Construct message for local branches.
+   * 
+   * @param path the location of the branch.
+   * 
+   * @return the message.
+   * 
+   * @throws GitAPIException
+   * @throws IOException
+   */
+  private String constructLocalBranchToolTip(String path) throws GitAPIException, IOException {
+    StringBuilder toolTipText = new StringBuilder();
+    toolTipText.append("<html><p>")
+    .append(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH))
+    .append(" ")
+    .append(path)
+    .append("<br>") 
+    .append("<br>")
+    .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
+    .append(":<br>- ")
+    .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
+    .append(": ")  
+    .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getName())
+    .append(" &lt;")
+    .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getEmailAddress())
+    .append("&gt;<br> - ")
+    .append(TRANSLATOR.getTranslation(Tags.DATE))
+    .append(": ")
+    .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getWhen())
+    .append("</p></html>"); 
+    return toolTipText.toString();
+  }
+  
+  /**
+   * Construct message for remote branches.
+   * 
+   * @param path path the location of the branch.
+   * 
+   * @return the message.
+   * 
+   * @throws GitAPIException
+   * @throws IOException
+   * @throws NoRepositorySelected
+   */
+  private String constructRemoteBranchToolTip(String path) throws GitAPIException, IOException, NoRepositorySelected {
+    StringBuilder toolTipText = new StringBuilder();
+    toolTipText.append("<html><p>")
+    .append(" ")
+    .append(path)
+    .append("<br>")
+    .append(TRANSLATOR.getTranslation(Tags.REPOSITORY))
+    .append(" ")
+    .append(TRANSLATOR.getTranslation("URL: "))
+    .append("<a href=" + GitAccess.getInstance().getRemoteURLFromConfig() + "> ")
+    .append(GitAccess.getInstance().getRemoteURLFromConfig() + " </a>")
+    .append("<br>")
+    .append("<br>")
+    .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
+    .append(":<br>- ")
+    .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
+    .append(": ")  
+    .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getName())
+    .append(" &lt;")
+    .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getEmailAddress())
+    .append("&gt;<br> - ")
+    .append(TRANSLATOR.getTranslation(Tags.DATE))
+    .append(": ")
+    .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getWhen())
+    .append("</p></html>"); 
+    return toolTipText.toString();
   }
 }
