@@ -251,6 +251,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   private String constructRemoteBranchToolTip(String path) throws GitAPIException, IOException, NoRepositorySelected {
     StringBuilder toolTipText = new StringBuilder();
     toolTipText.append("<html><p>")
+    .append(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH))
     .append(" ")
     .append(path)
     .append("<br>")
