@@ -26,6 +26,12 @@
 				showing the history of the repository resources, and more. The add-on also includes a built-in tool for comparing and merging changes.
 			</p>
                     </div>
+		    <div>
+                        <h3>What's new in version 2.6.0</h3>
+                        <ol>
+                            <li>A new editor variables is now supported: ${git(working_copy_url)}. It is resolved to the URL of the current working copy.</li>
+                        </ol>
+                    </div>
                     <div>
                         <h3>What's new in version 2.5.2</h3>
                         <ol>
