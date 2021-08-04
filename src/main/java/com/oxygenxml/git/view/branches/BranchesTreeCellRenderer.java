@@ -41,7 +41,6 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
  * @author Bogdan Draghici
  *
  */
-@SuppressWarnings("java:S110")
 public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   private static final Translator TRANSLATOR = Translator.getInstance();
   /**
@@ -90,6 +89,10 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
 
     JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
+    if(label == null) {
+      return null;
+    }
+      
     Icon icon = null;
     String text = "";
     String path = value.toString();
@@ -100,35 +103,34 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       icon = renderingInfo.getIcon();
       text = renderingInfo.getTooltip();
     }
-
+    
     boolean isLeaf = ((DefaultMutableTreeNode) value).isLeaf();
-    if (label != null) {
-      label.setIcon(icon);
-      if (!text.isEmpty()) {
-        label.setText(text);
-        try {
-          String toolTipText = null;
-          if(BranchesUtil.getRemoteBranches().contains(path) && isLeaf) {
-            toolTipText = constructRemoteBranchToolTip(text, path);
-          } else if (BranchesUtil.getLocalBranches().contains(text) && isLeaf) {
-            toolTipText = constructLocalBranchToolTip(text);
-          }
-          label.setToolTipText(toolTipText);
-        } catch (GitAPIException | IOException | NoRepositorySelected e) {
-          LOGGER.error(e, e);
+    
+    label.setIcon(icon);
+    if (!text.isEmpty()) {
+      label.setText(text);
+      try {
+        String toolTipText = null;
+        if(BranchesUtil.getRemoteBranches().contains(path) && isLeaf) {
+          toolTipText = constructRemoteBranchToolTip(text, path);
+        } else if (BranchesUtil.getLocalBranches().contains(text) && isLeaf) {
+          toolTipText = constructLocalBranchToolTip(text);
         }
-        Font font = label.getFont();
-        label.setFont(font.deriveFont(Font.PLAIN));
-        label.setBorder(new EmptyBorder(0, 5, 0, 0));
-        if (path.equals(Constants.R_HEADS + currentBranchNameSupplier.get())) {
-          // Mark the current branch
-          label.setFont(font.deriveFont(Font.BOLD));
-          label.setBorder(new RoundedLineBorder(label.getForeground(), 1, CURRENT_BRANCH_BORDER_CRONER_SIZE, true));
-        }
-        // Active/inactive table selection
-        if (sel) {
-          setSelectionColors(tree);
-        }
+        label.setToolTipText(toolTipText);
+      } catch (GitAPIException | IOException | NoRepositorySelected e) {
+        LOGGER.error(e, e);
+      }
+      Font font = label.getFont();
+      label.setFont(font.deriveFont(Font.PLAIN));
+      label.setBorder(new EmptyBorder(0, 5, 0, 0));
+      if (path.equals(Constants.R_HEADS + currentBranchNameSupplier.get())) {
+        // Mark the current branch
+        label.setFont(font.deriveFont(Font.BOLD));
+        label.setBorder(new RoundedLineBorder(label.getForeground(), 1, CURRENT_BRANCH_BORDER_CRONER_SIZE, true));
+      }
+      // Active/inactive table selection
+      if (sel) {
+        setSelectionColors(tree);
       }
     }
 
@@ -262,7 +264,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     .append("/")
     .append(branchName)
     .append(" " + TRANSLATOR.getTranslation(Tags.FROM))
-    .append(" ")
+    .append("<br>")
     .append("<a href=" + GitAccess.getInstance().getRemoteURLFromConfig() + "> ")
     .append(GitAccess.getInstance().getRemoteURLFromConfig() + " </a>")
     .append("<br>")
