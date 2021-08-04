@@ -24,6 +24,7 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
@@ -40,6 +41,7 @@ import ro.sync.exml.workspace.api.util.ColorTheme;
  */
 @SuppressWarnings("java:S110")
 public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    * The corner size for the current branch border.
    */
@@ -106,13 +108,15 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
           if(BranchesUtil.getLocalBranches().contains(text) || BranchesUtil.getRemoteBranches().contains(path)) {
             StringBuilder toolTipText = new StringBuilder();
             toolTipText.append("<html><p>")
-                .append(Tags.AUTHOR)
+                .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
+                .append(":<br>- ")
+                .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
                 .append(": ")  
                 .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getName())
-                .append(" ")
+                .append(" &lt ")
                 .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getEmailAddress())
-                .append("<br>")
-                .append(Tags.DATE)
+                .append("&gt<br> - ")
+                .append(TRANSLATOR.getTranslation(Tags.DATE))
                 .append(": ")
                 .append(GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent().getWhen())
                 .append("</p></html>");

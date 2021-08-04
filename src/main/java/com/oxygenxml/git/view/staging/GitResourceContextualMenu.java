@@ -11,7 +11,6 @@ import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 
-import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.entities.FileStatus;

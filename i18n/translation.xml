@@ -6,6 +6,15 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    
+    <key value="Last_Commit_Details">
+        <comment>The last commit details</comment>
+        <val lang="en_US">Last commit details</val>
+        <val lang="de_DE">Last commit details</val>
+        <val lang="fr_FR">Last commit details</val>
+        <val lang="ja_JP">Last commit details</val>
+        <val lang="nl_NL">Last commit details</val>
+    </key>
 	
 	<key value="Branch_switch_checkout_conflict_error_msg">
         <comment>The the message displayed when branch selection fails</comment>
@@ -18,7 +27,7 @@
         <val lang="ja_JP">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
 			\nCommit or discard your changes before you switch branches.</val>
         <val lang="nl_NL">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
-			\nCommit or discard your changes before you switch branches..</val>
+			\nCommit or discard your changes before you switch branches.</val>
     </key>
     <key value = "Notify_on_conflict_markers">
         <comment> The text for notifying when there are conflict markers in selected files.</comment>

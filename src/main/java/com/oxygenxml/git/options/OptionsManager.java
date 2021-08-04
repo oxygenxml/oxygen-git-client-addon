@@ -57,7 +57,7 @@ public class OptionsManager {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(OptionsManager.class);
+  private static final Logger LOGGER = Logger.getLogger(OptionsManager.class);
 
   /**
    * The filename in which all the options are saved
@@ -112,7 +112,7 @@ public class OptionsManager {
           if (optionsFileForTests.exists()) {
             options = (Options) jaxbUnmarshaller.unmarshal(optionsFileForTests);
           } else {
-            logger.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
+            LOGGER.warn("Options file doesn't exist:" + optionsFileForTests.getAbsolutePath());
           }
         } else {
           // Running in Oxygen's context. Save inside Oxygen's options. 
@@ -140,7 +140,7 @@ public class OptionsManager {
 
         }
       } catch (JAXBException e) {
-        logger.warn("Options not loaded: " + e, e);
+        LOGGER.warn("Options not loaded: " + e, e);
       }
 
     }
@@ -184,8 +184,8 @@ public class OptionsManager {
       }
     } catch (JAXBException e) {
       save = false;
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e, e);
       }
     } finally {
       Thread.currentThread().setContextClassLoader(contextClassLoader);

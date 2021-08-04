@@ -14,6 +14,10 @@ public class Tags {
     // Nothing.
   }
   /**
+   * Last commit details.
+   */
+  public static final String LAST_COMMIT_DETAILS = "Last_Commit_Details";
+  /**
    * Staged files.
    */
   public static final String STAGED_FILES = "Staged_files";

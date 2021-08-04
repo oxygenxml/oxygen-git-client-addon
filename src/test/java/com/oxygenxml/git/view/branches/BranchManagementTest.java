@@ -582,7 +582,8 @@ public class BranchManagementTest extends GitTestBase{
    */
   @Test
   public void testBranchesTreeToolTipBranches() throws Exception {
-    final String AUTHOR_DETAILS = "Author: AlexJitianu alex_jitianu@sync.ro";
+    final String AUTHOR_NAME = "AlexJitianu";
+    final String AUTHOR_EMAIL = "alex_jitianu@sync.ro";
     Map<String, Date> lastCommitDetailsForAllBranchesMap = new HashMap<>();
     
     // Local repo
@@ -638,7 +639,8 @@ public class BranchManagementTest extends GitTestBase{
     //  Tests the tool tips for all branches
     for (int i = 0; i < root.getLeafCount(); i++) {
       toolTipLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, leaf, false, true, leaf.isLeaf(), 0, true);
-      assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_DETAILS));
+      assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_NAME));
+      assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_EMAIL));
       assertTrue(toolTipLabel.getToolTipText().contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
       leaf = (GitTreeNode) leaf.getNextLeaf();
     }
