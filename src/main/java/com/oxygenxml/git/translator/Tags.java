@@ -13,6 +13,10 @@ public class Tags {
   private Tags() {
     // Nothing.
   }
+	/**
+	 * From.
+	 */
+	public static final String FROM = "From";
   /**
    * Last commit details.
    */

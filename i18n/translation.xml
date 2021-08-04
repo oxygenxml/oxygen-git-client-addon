@@ -15,7 +15,14 @@
         <val lang="ja_JP">Last commit details</val>
         <val lang="nl_NL">Last commit details</val>
     </key>
-	
+    <key value="From">
+        <comment>From</comment>
+        <val lang="en_US">from</val>
+        <val lang="de_DE">from</val>
+        <val lang="fr_FR">from</val>
+        <val lang="ja_JP">from</val>
+        <val lang="nl_NL">from</val>
+    </key>
 	<key value="Branch_switch_checkout_conflict_error_msg">
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
