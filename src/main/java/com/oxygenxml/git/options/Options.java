@@ -126,10 +126,6 @@ public class Options {
 	 */
 	@XmlElement(name = "isAutoPushWhenCommitting")
 	private boolean isAutoPushWhenCommitting = false;
-	/**
-	 * <code>true</code> if notify user about conflict markers.
-	 */
-	private boolean shouldNotifyConflictMarkers = true;
 
 	public boolean isAutoPushWhenCommitting() {
     return isAutoPushWhenCommitting;
@@ -330,14 +326,6 @@ public class Options {
   }
 
 	/**
-	 *
-	 * @return <code>true</code> to notify about conflict markers.
-	 */
-	public boolean setShouldNotifyConflictMarkers() {
-		return shouldNotifyConflictMarkers;
-	}
-
-	/**
    * Sets the submodule update policy on pull.
    * 
    * @param updateSubmodules <code>true</code> to execute the equivalent of a "git submodule update --recursive".
@@ -345,15 +333,6 @@ public class Options {
   public void setUpdateSubmodulesOnPull(boolean updateSubmodules) {
     this.updateSubmodulesOnPull = updateSubmodules;
   }
-
-	/**
-	 * Sets to notify user about conflict markers.
-	 *
-	 * @param shouldNotifyConflictMarkers <code>true</code> to notify user about conflict markers.
-	 */
-	public void setShouldNotifyConflictMarkers(boolean shouldNotifyConflictMarkers) {
-		this.shouldNotifyConflictMarkers = shouldNotifyConflictMarkers;
-	}
 
 	/**
    * @return the list of personal access token info items.
@@ -407,8 +386,7 @@ public class Options {
 	        && Equaler.verifyEquals(paTokensList, opt.getPersonalAccessTokensList())
 	        && Equaler.verifyEquals(stagedResViewMode, opt.stagedResViewMode)
 	        && Equaler.verifyEquals(defaultPullType, opt.defaultPullType)
-	        && Equaler.verifyEquals(warnOnChangeCommitId, opt.getWarnOnChangeCommitId())
-	        && Equaler.verifyEquals(shouldNotifyConflictMarkers, opt.shouldNotifyConflictMarkers);
+	        && Equaler.verifyEquals(warnOnChangeCommitId, opt.getWarnOnChangeCommitId());
 	  }
 	  return toReturn;
 	}
@@ -423,8 +401,7 @@ public class Options {
         + projectsTestsForGit + ", destinationPaths=" + destinationPaths + ", passphrase=" + passphrase
         + ", stagedResViewMode=" + stagedResViewMode + ", unstagedResViewMode=" + unstagedResViewMode
         + ", whenRepoDetectedInProject=" + whenRepoDetectedInProject + ", updateSubmodulesOnPull="
-        + updateSubmodulesOnPull + ", isAutoPushWhenCommitting=" + isAutoPushWhenCommitting + ", notifyUserAboutConflictMarkers="
-				+ shouldNotifyConflictMarkers + "]";
+        + updateSubmodulesOnPull + ", isAutoPushWhenCommitting=" + isAutoPushWhenCommitting + "]";
   }
 
 }

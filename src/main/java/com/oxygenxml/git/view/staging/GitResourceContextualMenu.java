@@ -274,9 +274,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
-          boolean shouldWarnAboutConflictMarkers = OptionsManager.getInstance().shouldNotifyConflictMarkers();
-          if(shouldWarnAboutConflictMarkers
-                  && FileUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy())) {
+          if(FileUtil.containsConflictMarkers(allSelectedResources, GIT_ACCESS.getWorkingCopy())) {
 						int answer = FileStatusDialog.showWarningMessageWithConfirmation(
 										TRANSLATOR.getTranslation(Tags.MARK_RESOLVED),
 										TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE),

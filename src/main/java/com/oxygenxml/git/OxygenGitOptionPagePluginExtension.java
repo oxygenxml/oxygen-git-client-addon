@@ -61,10 +61,6 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
    */
   private JCheckBox notifyAboutRemoteCommitsCheckBox;
   /**
-   * CheckBox for the option to notify the user about conflict markers.
-   */
-  private JCheckBox notifyAboutConflictMarkers;
-  /**
    * The OptionsManager instance
    */
   private static final OptionsManager OPTIONS_MANAGER = OptionsManager.getInstance();
@@ -116,11 +112,6 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     updateSubmodulesOnPull = new JCheckBox(TRANSLATOR.getTranslation(Tags.UPDATE_SUBMODULES_ON_PULL));
     mainPanel.add(updateSubmodulesOnPull, constraints);
 
-    // Option for conflict markers warning message
-    constraints.gridy ++;
-    notifyAboutConflictMarkers = new JCheckBox(TRANSLATOR.getTranslation(Tags.NOTIFY_ON_CONFLICT_MARKERS));
-    mainPanel.add(notifyAboutConflictMarkers, constraints);
-
     // Empty panel to take up the rest of the space
     constraints.gridx = 0;
     constraints.gridy ++;
@@ -146,9 +137,6 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
     boolean updateSubmodules = OPTIONS_MANAGER.getUpdateSubmodulesOnPull();
     updateSubmodulesOnPull.setSelected(updateSubmodules);
 
-    boolean shouldNotifyConflictMarkers = OPTIONS_MANAGER.shouldNotifyConflictMarkers();
-    notifyAboutConflictMarkers.setSelected(shouldNotifyConflictMarkers);
-    
     WhenRepoDetectedInProject whatToDo = OPTIONS_MANAGER.getWhenRepoDetectedInProject();
     switch (whatToDo) {
       case ASK_TO_SWITCH_TO_WC:
@@ -200,7 +188,6 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void apply(PluginWorkspace pluginWorkspace) {
     OPTIONS_MANAGER.setNotifyAboutNewRemoteCommits(notifyAboutRemoteCommitsCheckBox.isSelected());
     OPTIONS_MANAGER.setUpdateSubmodulesOnPull(updateSubmodulesOnPull.isSelected());
-    OPTIONS_MANAGER.setShouldNotifyConflictMarkers(notifyAboutConflictMarkers.isSelected());
 
     WhenRepoDetectedInProject whatToDo = WhenRepoDetectedInProject.ASK_TO_SWITCH_TO_WC;
     if (autoSwitchToWCRadio.isSelected()) {
@@ -220,7 +207,6 @@ public class OxygenGitOptionPagePluginExtension extends OptionPagePluginExtensio
   public void restoreDefaults() {
     notifyAboutRemoteCommitsCheckBox.setSelected(false);
     updateSubmodulesOnPull.setSelected(true);
-    notifyAboutConflictMarkers.setSelected(true);
     askToSwitchToWCRadio.setSelected(true);
   }
 
