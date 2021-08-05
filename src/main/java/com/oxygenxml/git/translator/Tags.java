@@ -13,10 +13,6 @@ public class Tags {
   private Tags() {
     // Nothing.
   }
-	/**
-	 * From.
-	 */
-	public static final String FROM = "From";
   /**
    * Last commit details.
    */
@@ -158,10 +154,6 @@ public class Tags {
    * Option text for notifying when there are new commits upstream.
    */
   public static final String NOTIFY_ON_NEW_COMMITS = "Notify_on_new_commits";
-	/**
-	 * Option text for notifying when there are conflict markers in selected files.
-	 */
-	public static final String NOTIFY_ON_CONFLICT_MARKERS = "Notify_on_conflict_markers";
 	/**
 	 * The message displayed to the user when conflict markers are detected.
 	 */

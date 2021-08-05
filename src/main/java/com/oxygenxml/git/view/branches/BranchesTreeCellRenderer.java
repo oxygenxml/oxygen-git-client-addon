@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
-import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -104,16 +103,14 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       text = renderingInfo.getTooltip();
     }
     
-    boolean isLeaf = ((DefaultMutableTreeNode) value).isLeaf();
-    
     label.setIcon(icon);
     if (!text.isEmpty()) {
       label.setText(text);
       try {
         String toolTipText = null;
-        if(BranchesUtil.getRemoteBranches().contains(path) && isLeaf) {
+        if(BranchesUtil.getRemoteBranches().contains(path) && leaf) {
           toolTipText = constructRemoteBranchToolTip(text, path);
-        } else if (BranchesUtil.getLocalBranches().contains(text) && isLeaf) {
+        } else if (BranchesUtil.getLocalBranches().contains(text) && leaf) {
           toolTipText = constructLocalBranchToolTip(text);
         }
         label.setToolTipText(toolTipText);
@@ -222,23 +219,23 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     StringBuilder toolTipText = new StringBuilder();
     PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(nameBranch).getAuthorIdent();
     toolTipText.append("<html><p>")
-    .append(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH))
-    .append(" ")
-    .append(nameBranch)
-    .append("<br>") 
-    .append("<br>")
-    .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
-    .append(":<br>- ")
-    .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
-    .append(": ")  
-    .append(authorDetails.getName())
-    .append(" &lt;")
-    .append(authorDetails.getEmailAddress())
-    .append("&gt;<br> - ")
-    .append(TRANSLATOR.getTranslation(Tags.DATE))
-    .append(": ")
-    .append(authorDetails.getWhen())
-    .append("</p></html>"); 
+      .append(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH))
+      .append(" ")
+      .append(nameBranch)
+      .append("<br>")
+      .append("<br>")
+      .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
+      .append(":<br>- ")
+      .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
+      .append(": ")
+      .append(authorDetails.getName())
+      .append(" &lt;")
+      .append(authorDetails.getEmailAddress())
+      .append("&gt;<br> - ")
+      .append(TRANSLATOR.getTranslation(Tags.DATE))
+      .append(": ")
+      .append(authorDetails.getWhen())
+      .append("</p></html>");
     return toolTipText.toString();
   }
   
@@ -258,34 +255,31 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     StringBuilder toolTipText = new StringBuilder();
     PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent();
     toolTipText.append("<html><p>")
-    .append(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH))
-    .append(" ")
-    .append(Constants.DEFAULT_REMOTE_NAME)
-    .append("/")
-    .append(branchName)
-    .append(" " + TRANSLATOR.getTranslation(Tags.FROM))
-    .append("<br>")
-    .append("<a href=" + GitAccess.getInstance().getRemoteURLFromConfig() + "> ")
-    .append(GitAccess.getInstance().getRemoteURLFromConfig() + " </a>")
-    .append("<br>")
-    .append("<br>")
-    .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
-    .append(":<br>- ")
-    .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
-    .append(": ")  
-    .append(authorDetails.getName())
-    .append(" &lt;")
-    .append(authorDetails.getEmailAddress())
-    .append("&gt;<br> - ")
-    .append(TRANSLATOR.getTranslation(Tags.DATE))
-    .append(": ")
-    .append(authorDetails.getWhen())
-    .append("</p></html>");
+      .append(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH))
+      .append(" ")
+      .append(Constants.DEFAULT_REMOTE_NAME)
+      .append("/")
+      .append(branchName)
+      .append("<br>")
+      .append(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL))
+      .append(": ")
+      .append("<a href=" + GitAccess.getInstance().getRemoteURLFromConfig() + "> ")
+      .append(GitAccess.getInstance().getRemoteURLFromConfig() + " </a>")
+      .append("<br>")
+      .append("<br>")
+      .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
+      .append(":<br>- ")
+      .append(TRANSLATOR.getTranslation(Tags.AUTHOR))
+      .append(": ")
+      .append(authorDetails.getName())
+      .append(" &lt;")
+      .append(authorDetails.getEmailAddress())
+      .append("&gt;<br> - ")
+      .append(TRANSLATOR.getTranslation(Tags.DATE))
+      .append(": ")
+      .append(authorDetails.getWhen())
+      .append("</p></html>");
     return toolTipText.toString();
   }
   
-  @Override
-  public JToolTip createToolTip() {
-    return ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory.installMultilineTooltip(this);
-  }
 }
