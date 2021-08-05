@@ -29,9 +29,8 @@
 		    <div>
                         <h3>What's new in version 2.6.0</h3>
                         <ol>
-			    <li>When trying to switch to another branch while having uncommitted changes in the current one, a message is displayed that
-				requires the confirmation for moving the changes to the new branch.</li>
-                            <li>A new editor variables is now supported: ${git(working_copy_url)}. It is resolved to the URL of the current working copy.</li>
+			    <li>If you try to switch to another branch while there are uncommitted changes in the current branch, a message prompt is displayed that gives you the option of moving the changes to the new branch.</li>
+                            <li>A new editor variables is now supported: ${git(working_copy_url)}. It is resolved to the URL of the current working copy directory.</li>
                         </ol>
                     </div>
                     <div>
