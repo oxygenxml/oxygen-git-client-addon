@@ -131,8 +131,6 @@ public class LoginDialog extends OKCancelDialog {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-
 		// Info label
 		JLabel lblGitRemote = new JLabel(
 				"<html>" + message + "<br/>" 
