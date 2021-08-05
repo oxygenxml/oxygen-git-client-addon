@@ -25,8 +25,8 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.blame.BlamePerformer;
 import com.oxygenxml.git.view.history.HistoryController;
-import com.oxygenxml.git.view.staging.ShowBlameForUnstagedResourceAction;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
+import com.oxygenxml.git.view.staging.ShowBlameForUnstagedResourceAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;

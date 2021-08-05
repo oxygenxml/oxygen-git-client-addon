@@ -7,7 +7,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 
@@ -20,6 +19,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.DiffPresenter;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
 
