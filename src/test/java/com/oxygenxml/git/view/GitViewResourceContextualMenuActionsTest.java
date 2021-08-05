@@ -15,8 +15,8 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.PopupMenuSerializer;
 import com.oxygenxml.git.view.event.GitController;
-import com.oxygenxml.git.view.staging.GitResourceContextualMenu;
 import com.oxygenxml.git.view.staging.ChangesPanel.SelectedResourcesProvider;
+import com.oxygenxml.git.view.staging.GitResourceContextualMenu;
 
 /**
  * Test cases for the actions from the contextual menu of the staged/unstaged resources.
