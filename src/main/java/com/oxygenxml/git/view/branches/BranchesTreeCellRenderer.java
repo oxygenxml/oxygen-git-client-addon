@@ -254,6 +254,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   private String constructRemoteBranchToolTip(String branchName, String path) throws GitAPIException, IOException, NoRepositorySelected {
     StringBuilder toolTipText = new StringBuilder();
     PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(path).getAuthorIdent();
+    String remoteURL = GitAccess.getInstance().getRemoteURLFromConfig();
     toolTipText.append("<html><p>")
       .append(TRANSLATOR.getTranslation(Tags.REMOTE_BRANCH))
       .append(" ")
@@ -263,8 +264,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       .append("<br>")
       .append(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL))
       .append(": ")
-      .append("<a href=" + GitAccess.getInstance().getRemoteURLFromConfig() + "> ")
-      .append(GitAccess.getInstance().getRemoteURLFromConfig() + " </a>")
+      .append("<a href=" + remoteURL + "> ")
+      .append(remoteURL + " </a>")
       .append("<br>")
       .append("<br>")
       .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
