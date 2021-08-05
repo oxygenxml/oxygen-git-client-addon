@@ -1254,4 +1254,8 @@ public class Tags {
    * The message on the OK button of the question dialog shown when you try to switch branches and you have uncommitted changes.
    */
   public static final String MOVE_CHANGES = "Move_changes";
+  /**
+   * The message on the action that reverts a commit
+   */
+  public static final String REVERT_COMMIT = "Revert_Commit";
 }
