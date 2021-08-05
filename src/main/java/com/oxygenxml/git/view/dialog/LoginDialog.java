@@ -43,13 +43,13 @@ public class LoginDialog extends OKCancelDialog {
    */
   private static final int INNER_PANELS_LEFT_INSET = 21;
   /**
-   * Dialog minimum height.
+   * Dialog preferred height.
    */
-  private static final int DLG_MIN_HEIGHT = 200;
+  private static final int DLG_PREF_HEIGHT = 250;
   /**
-   * Dialog minimum width.
+   * Dialog preferred width.
    */
-  private static final int DLG_MIN_WIDTH = 250;
+  private static final int DLG_PREF_WIDTH = 400;
   /**
    * The translator for the messages that are displayed in this dialog
    */
@@ -116,10 +116,10 @@ public class LoginDialog extends OKCancelDialog {
 		
 		createGUI();
 
-		this.setMinimumSize(new Dimension(DLG_MIN_WIDTH, DLG_MIN_HEIGHT));
-		this.setResizable(true);
-		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		this.setPreferredSize(new Dimension(DLG_PREF_WIDTH, DLG_PREF_HEIGHT));
+		this.setResizable(false);
 		this.pack();
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
 		this.setVisible(true);
 	}

@@ -93,11 +93,11 @@
     </key>
     <key value="Check_token_value_and_permissions">
         <comment>Authentication failure message when using a personal access token.</comment>
-        <val lang="en_US">Check the personal access token value and permissions.</val>
-        <val lang="de_DE">Check the personal access token value and permissions.</val>
-        <val lang="fr_FR">Vérifiez la valeur du jeton d'accès personnel et les autorisations.</val>
-        <val lang="ja_JP">Check the personal access token value and permissions.</val>
-        <val lang="nl_NL">Check the personal access token value and permissions.</val>
+        <val lang="en_US">Check the personal access token value, permissions and expiration date.</val>
+        <val lang="de_DE">Check the personal access token value, permissions and expiration date.</val>
+        <val lang="fr_FR">Vérifiez la valeur du jeton d'accès personnel, les autorisations et la date d'expiration.</val>
+        <val lang="ja_JP">Check the personal access token value, permissions and expiration date.</val>
+        <val lang="nl_NL">Check the personal access token value, permissions and expiration date.</val>
     </key>
     <key value="Check_credentials">
         <comment>The text displayed on the first row of the login dialog if the credentials are invalid.</comment>
