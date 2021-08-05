@@ -219,7 +219,7 @@ public class GitCheckoutConflictTest extends TestCase {
     ImageUtilities imageUtilities = Mockito.mock(ImageUtilities.class);
     // Dummy icon
     Mockito.doReturn(Icons.getIcon(Icons.AMEND_COMMIT)).when(imageUtilities).loadIcon((URL)Mockito.any());
-    Mockito.when(pluginWSMock.getImageUtilities()).thenReturn(imageUtilities);
+    Mockito.doReturn(imageUtilities).when(pluginWSMock).getImageUtilities();
   }
   
   @Override
