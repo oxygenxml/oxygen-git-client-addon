@@ -534,8 +534,13 @@ public class FileUtil {
     UtilAccess utilAccess = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess();
     File currentFile = new File(workingCopy, FilenameUtils.getName(fileStatus.getFileLocation())); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN
     try (BufferedReader reader =  new BufferedReader(utilAccess.createReader(currentFile.toURI().toURL(), StandardCharsets.UTF_8.toString()))) {
-      String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-      toReturn = (content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.contains("<<<<<<<") || line.contains("=======") || line.contains(">>>>>>>")) {
+          toReturn = true;
+          break;
+        }
+      }
     } catch (IOException ex) {
       LOGGER.error(ex, ex);
     }
