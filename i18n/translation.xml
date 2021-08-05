@@ -7,6 +7,15 @@
         <language description="Dutch" lang="nl_NL" />
     </languageList>
     
+    <key value="Revert_Commit">
+        <comment>Revert the last commit</comment>
+        <val lang="en_US">Revert commit</val>
+        <val lang="de_DE">Revert commit</val>
+        <val lang="fr_FR">Revert commit</val>
+        <val lang="ja_JP">Revert commit</val>
+        <val lang="nl_NL">Revert commit</val>
+    </key>
+    
     <key value="Last_Commit_Details">
         <comment>The last commit details</comment>
         <val lang="en_US">Last commit details</val>
