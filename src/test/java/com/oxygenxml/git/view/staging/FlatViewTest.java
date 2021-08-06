@@ -393,7 +393,7 @@ public class FlatViewTest extends FlatViewTestBase {
       stagingPanel.getCommitPanel().getCommitButton().doClick();
       });
     waitForScheluerBetter();
-    sleep(500);
+    sleep(1000);
     flushAWT();
     assertEquals(1, GitAccess.getInstance().getPushesAhead());
     
