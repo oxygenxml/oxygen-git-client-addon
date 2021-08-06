@@ -67,10 +67,15 @@ public class BranchTreeMenuActionsProvider {
     String nodeContent = (String) node.getUserObject();
     // Adds either the local branch actions, or the remote branch actions.
     if (nodeContent.contains(Constants.R_HEADS)) {
-      nodeActions.add(createCheckoutLocalBranchAction(nodeContent));
-      nodeActions.add(createNewBranchAction(nodeContent));
-      nodeActions.add(createDeleteLocalBranchAction(nodeContent));
-      nodeActions.add(createMergeAction(nodeContent));
+      if (nodeContent.contains(GitAccess.getInstance().getBranchInfo().getBranchName())) {
+        nodeActions.add(createNewBranchAction(nodeContent));
+        nodeActions.add(createDeleteLocalBranchAction(nodeContent));
+      } else {
+        nodeActions.add(createCheckoutLocalBranchAction(nodeContent));
+        nodeActions.add(createNewBranchAction(nodeContent));
+        nodeActions.add(createDeleteLocalBranchAction(nodeContent));
+        nodeActions.add(createMergeAction(nodeContent));
+      }
     } else if (nodeContent.contains(Constants.R_REMOTES)) {
       nodeActions.add(createCheckoutRemoteBranchAction(nodeContent));
     }
@@ -271,16 +276,13 @@ public class BranchTreeMenuActionsProvider {
         nodePath,
         BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
     String currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
-    
     return new AbstractAction("Merge " + selectedBranch + " into " + currentBranch) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        
         ctrl.asyncTask(() -> {
           ctrl.getGitAccess().mergeBranch(nodePath);
           return null;
         }, ex -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex));
-        
       }
     };
   }
