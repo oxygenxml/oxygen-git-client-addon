@@ -59,7 +59,7 @@ public class FlatView11Test extends FlatViewTestBase {
     
     // First size
     SwingUtilities.invokeLater(() -> {
-      mainFrame.setSize(new Dimension(405, 400));
+      mainFrame.setSize(new Dimension(385, 400));
       mainFrame.repaint();
     });
     flushAWT();
