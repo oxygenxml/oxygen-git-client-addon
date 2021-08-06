@@ -26,8 +26,6 @@ import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.auth.SSHCapableUserCredentialsProvider;
 import com.oxygenxml.git.constants.Icons;
@@ -159,60 +157,33 @@ public class GitCheckoutConflictTest extends TestCase {
     config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants.CONFIG_KEY_MERGE, Constants.R_HEADS + branchName);
     config.save();
 
-
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
-    
+
     WSOptionsStorage mockedWsOptionsStorage = Mockito.mock(WSOptionsStorage.class);
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(mockedWsOptionsStorage).setOption(Mockito.anyString(), Mockito.any());
-    Mockito.doAnswer(new Answer<WSOptionsStorage>() {
-      @Override
-      public WSOptionsStorage answer(InvocationOnMock invocation) throws Throwable {
-        return mockedWsOptionsStorage;
-      }
-    }).when((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getOptionsStorage();
+    Mockito.doAnswer(invocation -> null).when(mockedWsOptionsStorage).setOption(Mockito.anyString(), Mockito.any());
+    Mockito.doAnswer(invocation -> mockedWsOptionsStorage).when(pluginWSMock).getOptionsStorage();
     
     XMLUtilAccess xmlUtilAccess = Mockito.mock(XMLUtilAccess.class);
-    Mockito.when(xmlUtilAccess.escapeTextValue(Mockito.anyString())).thenAnswer(new Answer<String>() {
-      @Override
-      public String answer(InvocationOnMock invocation) throws Throwable {
-        Object[] arguments = invocation.getArguments();
-        return arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
-      }
+    Mockito.when(xmlUtilAccess.escapeTextValue(Mockito.anyString())).thenAnswer(invocation -> {
+      Object[] arguments = invocation.getArguments();
+      return arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
     });
-
+    
     ProjectController projectCtrlMock = Mockito.mock(ProjectController.class);
     Mockito.when(pluginWSMock.getProjectManager()).thenReturn(projectCtrlMock);
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        return null;
-      }
-    }).when(projectCtrlMock).refreshFolders(Mockito.any());
+    Mockito.doAnswer(invocation -> null).when(projectCtrlMock).refreshFolders(Mockito.any());
   
-    
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        Object[] arguments = invocation.getArguments();
-        shownWarningMess[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
-        return null;
-      }
+    Mockito.doAnswer(invocation -> {
+      Object[] arguments = invocation.getArguments();
+      shownWarningMess[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
+      return null;
     }).when(pluginWSMock).showWarningMessage(Mockito.anyString());
     shownWarningMess[0] = "";
     
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        Object[] arguments = invocation.getArguments();
-        errMsg[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
-        return null;
-      }
+    Mockito.doAnswer(invocation -> {
+      Object[] arguments = invocation.getArguments();
+      errMsg[0] = arguments != null && arguments.length > 0 ? (String) arguments[0] : "";
+      return null;
     }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
     errMsg[0] = "";
     
@@ -220,6 +191,8 @@ public class GitCheckoutConflictTest extends TestCase {
     // Dummy icon
     Mockito.doReturn(Icons.getIcon(Icons.AMEND_COMMIT)).when(imageUtilities).loadIcon((URL)Mockito.any());
     Mockito.doReturn(imageUtilities).when(pluginWSMock).getImageUtilities();
+    
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
   }
   
   @Override
