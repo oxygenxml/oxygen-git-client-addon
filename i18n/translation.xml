@@ -7,6 +7,15 @@
         <language description="Dutch" lang="nl_NL" />
     </languageList>
     
+    <key value="Revert_Commit_Warning">
+        <comment>Warns about reverting the last commit</comment>
+        <val lang="en_US">Are you sure you want to revert the commit</val>
+        <val lang="de_DE">Are you sure you want to revert the commit</val>
+        <val lang="fr_FR">Are you sure you want to revert the commit</val>
+        <val lang="ja_JP">Are you sure you want to revert the commit</val>
+        <val lang="nl_NL">Are you sure you want to revert the commit</val>
+    </key>
+    
     <key value="Revert_Commit">
         <comment>Revert the last commit</comment>
         <val lang="en_US">Revert commit</val>

@@ -25,6 +25,10 @@ public enum GitOperation {
    */
   RESET_TO_COMMIT,
   /**
+   * Reverts the commit.
+   */
+  REVERT_COMMIT,
+  /**
    * Restart the merge process.
    */
   MERGE_RESTART,

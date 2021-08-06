@@ -1255,7 +1255,11 @@ public class Tags {
    */
   public static final String MOVE_CHANGES = "Move_changes";
   /**
-   * The message on the action that reverts a commit
+   * The message on the action that reverts a selected commit
    */
   public static final String REVERT_COMMIT = "Revert_Commit";
+  /**
+   * The message that warns about a revert
+   */
+  public static final String REVERT_COMMIT_WARNING = "Revert_Commit_Warning";
 }
