@@ -1661,6 +1661,28 @@ public class GitAccess {
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
   }
+  
+  /**
+   * Reverts the last commit.
+   * 
+   * @param resetType The reset type to perform on the current branch.
+   * @param commitId  The commit id to which to reset.
+   * @throws NoRepositorySelected 
+   * @throws IOException 
+   */
+  public void revertCommit(Repository repo, String commitId) throws IOException, NoRepositorySelected {
+    fireOperationAboutToStart(new GitEventInfo(GitOperation.REVERT_COMMIT));
+    try {
+      RevWalk revWalk = new RevWalk(repo);
+      RevCommit revcom = revWalk.parseCommit(getRepository().resolve(commitId));
+      git.revert().include(revcom).call();
+      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.REVERT_COMMIT));
+    } catch (GitAPIException e) {
+      fireOperationFailed(new GitEventInfo(GitOperation.REVERT_COMMIT), e);
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+    }
+  }
+  
 
 	/**
 	 * Restores the last commit file content to the local file at the given path.
