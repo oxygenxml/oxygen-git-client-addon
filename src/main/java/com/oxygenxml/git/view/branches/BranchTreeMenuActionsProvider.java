@@ -262,25 +262,23 @@ public class BranchTreeMenuActionsProvider {
   }
   
   /**
-   * Create merge action for [selected_branch] into [current_branch]
+   * Create merge action for [selected_branch] into [current_branch].
    * 
-   * @param nodePath The node path of the selected branch
+   * @param nodePath The node path of the selected branch.
    * 
-   * @return The action created
+   * @return The merge action.
    */
   private AbstractAction createMergeAction(String nodePath) {
-    
-    String selectedBranch = BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
+    String selectedBranch = BranchesUtil.createBranchPath(
+        nodePath,
+        BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
     String currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
     
-    return new AbstractAction("Merge " +selectedBranch+ " into " + currentBranch) {
+    return new AbstractAction("Merge " + selectedBranch + " into " + currentBranch) {
       @Override
       public void actionPerformed(ActionEvent e) {
-
         try {
-          
           GitAccess.getInstance().mergeBranch(nodePath);
-          
         } catch (RevisionSyntaxException | IOException | NoRepositorySelected | GitAPIException e1) {
           logger.debug(e1);
         }

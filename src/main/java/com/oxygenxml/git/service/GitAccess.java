@@ -32,7 +32,6 @@ import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.LogCommand;
-import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullCommand;
@@ -2310,20 +2309,17 @@ public class GitAccess {
   }
   
   /**
-   * Merge the given branch into the current branch
+   * Merge the given branch into the current branch.
    * 
-   * @param nodePath The node path of the given branch
+   * @param branchName The full name of the branch to be merged into the current one (e.g. refs/heads/dev).
    * 
    * @throws IOException
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  public void mergeBranch(String nodePath) throws IOException, NoRepositorySelected, GitAPIException {
-    MergeCommand mgCmd = git.merge();
-    ObjectId mergeBase = getRepository().resolve(nodePath);
-
-    mgCmd.include(mergeBase); 
-    MergeResult res = mgCmd.call(); // start the merge
+  public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException {
+    ObjectId mergeBase = getRepository().resolve(branchName);
+    MergeResult res = git.merge().include(mergeBase).call();
     if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)){
        logger.debug("We have conflicts here:" + res.getConflicts().toString());
     }
