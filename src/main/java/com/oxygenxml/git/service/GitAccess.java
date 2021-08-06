@@ -32,6 +32,7 @@ import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.PullCommand;
@@ -2307,5 +2308,24 @@ public class GitAccess {
     revWalk.sort(RevSort.COMMIT_TIME_DESC);
     return revWalk.next();
   }
+  
+  /**
+   * Merge the given branch into the current branch
+   * 
+   * @param nodePath The node path of the given branch
+   * 
+   * @throws IOException
+   * @throws NoRepositorySelected
+   * @throws GitAPIException
+   */
+  public void mergeBranch(String nodePath) throws IOException, NoRepositorySelected, GitAPIException {
+    MergeCommand mgCmd = git.merge();
+    ObjectId mergeBase = getRepository().resolve(nodePath);
 
+    mgCmd.include(mergeBase); 
+    MergeResult res = mgCmd.call(); // start the merge
+    if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)){
+       logger.debug("We have conflicts here:" + res.getConflicts().toString());
+    }
+  }
 }

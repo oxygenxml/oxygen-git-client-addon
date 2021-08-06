@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.branches;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.RepositoryState;
 
@@ -70,6 +72,7 @@ public class BranchTreeMenuActionsProvider {
       nodeActions.add(createCheckoutLocalBranchAction(nodeContent));
       nodeActions.add(createNewBranchAction(nodeContent));
       nodeActions.add(createDeleteLocalBranchAction(nodeContent));
+      nodeActions.add(createMergeAction(nodeContent));
     } else if (nodeContent.contains(Constants.R_REMOTES)) {
       nodeActions.add(createCheckoutRemoteBranchAction(nodeContent));
     }
@@ -254,6 +257,33 @@ public class BranchTreeMenuActionsProvider {
         }
 
         return null;
+      }
+    };
+  }
+  
+  /**
+   * Create merge action for [selected_branch] into [current_branch]
+   * 
+   * @param nodePath The node path of the selected branch
+   * 
+   * @return The action created
+   */
+  private AbstractAction createMergeAction(String nodePath) {
+    
+    String selectedBranch = BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
+    String currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
+    
+    return new AbstractAction("Merge " +selectedBranch+ " into " + currentBranch) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        try {
+          
+          GitAccess.getInstance().mergeBranch(nodePath);
+          
+        } catch (RevisionSyntaxException | IOException | NoRepositorySelected | GitAPIException e1) {
+          logger.debug(e1);
+        }
       }
     };
   }
