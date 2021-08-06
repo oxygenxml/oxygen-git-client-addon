@@ -106,6 +106,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.utils.RepoUtil;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.ProgressDialog;
 import com.oxygenxml.git.view.event.BranchGitEventInfo;
 import com.oxygenxml.git.view.event.FileGitEventInfo;
@@ -2329,21 +2330,37 @@ public class GitAccess {
     revWalk.sort(RevSort.COMMIT_TIME_DESC);
     return revWalk.next();
   }
-  
+
   /**
    * Merge the given branch into the current branch.
    * 
    * @param branchName The full name of the branch to be merged into the current one (e.g. refs/heads/dev).
    * 
+   * @throws RevisionSyntaxException
    * @throws IOException
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException {
-    ObjectId mergeBase = getRepository().resolve(branchName);
-    MergeResult res = git.merge().include(mergeBase).call();
-    if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)){
-       logger.debug("We have conflicts here:" + res.getConflicts().toString());
+  public void mergeBranch(String branchName) throws RevisionSyntaxException, IOException, NoRepositorySelected, GitAPIException {
+    
+    fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+    try {
+      ObjectId mergeBase = getRepository().resolve(branchName);
+      MergeResult res = git.merge().include(mergeBase).call();
+      
+      if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
+        logger.debug("We have conflicts here:" + res.getConflicts().toString());
+        List<String> conflictingFiles = new ArrayList(res.getConflicts().keySet());
+        FileStatusDialog.showWarningMessage("Merge", conflictingFiles, "Merge conflicts in this files:");
+      }
+      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
+
+    } catch (RevisionSyntaxException | IOException | NoRepositorySelected | GitAPIException e) {
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE,branchName), e);
+      throw e;
     }
+
+    
+
   }
 }

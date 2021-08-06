@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.branches;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.RepositoryState;
 
@@ -277,11 +275,12 @@ public class BranchTreeMenuActionsProvider {
     return new AbstractAction("Merge " + selectedBranch + " into " + currentBranch) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        try {
-          GitAccess.getInstance().mergeBranch(nodePath);
-        } catch (RevisionSyntaxException | IOException | NoRepositorySelected | GitAPIException e1) {
-          logger.debug(e1);
-        }
+        
+        ctrl.asyncTask(() -> {
+          ctrl.getGitAccess().mergeBranch(nodePath);
+          return null;
+        }, ex -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex));
+        
       }
     };
   }
