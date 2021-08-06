@@ -42,12 +42,14 @@ import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.RmCommand;
+import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -144,7 +146,7 @@ public class GitAccess {
   /**
 	 * Logger for logging.
 	 */
-	private static final Logger logger = Logger.getLogger(GitAccess.class);
+	private static final Logger LOGGER = Logger.getLogger(GitAccess.class);
 	/**
 	 * Listeners notifications.
 	 */
@@ -297,7 +299,7 @@ public class GitAccess {
 	      openRepository(path);
 	    } catch (IOException e) {
 	      //  openRepository() already notified the listeners.
-	      logger.debug(e, e);
+	      LOGGER.debug(e, e);
 	    }
 	  });
 	}
@@ -356,7 +358,7 @@ public class GitAccess {
     // Start intercepting authentication requests.
     AuthenticationInterceptor.bind(getHostName());
 
-    if (logger.isDebugEnabled()) {
+    if (LOGGER.isDebugEnabled()) {
       logSshKeyLoadingData();
     }
 
@@ -368,31 +370,31 @@ public class GitAccess {
 	 */
   private void logSshKeyLoadingData() {
     // Debug data for the SSH key load location.
-    logger.debug("Java env user home: " + System.getProperty("user.home"));
+    LOGGER.debug("Java env user home: " + System.getProperty("user.home"));
     try {
       Repository repository = getRepository();
-      logger.debug("Load repository " + repository.getDirectory());
+      LOGGER.debug("Load repository " + repository.getDirectory());
       
       FS fs = repository.getFS();
       if (fs != null) {
         File userHome = fs.userHome();
-        logger.debug("User home " + userHome);
+        LOGGER.debug("User home " + userHome);
 
         File sshDir = new File(userHome, ".ssh");
 
         boolean exists = sshDir.exists();
-        logger.debug("SSH dir exists " + exists);
+        LOGGER.debug("SSH dir exists " + exists);
         if (exists) {
           File[] listFiles = sshDir.listFiles();
           for (int i = 0; i < listFiles.length; i++) {
-            logger.debug("SSH resource path " + listFiles[i]);
+            LOGGER.debug("SSH resource path " + listFiles[i]);
           }
         }
       } else {
-        logger.debug("Null FS");
+        LOGGER.debug("Null FS");
       }
     } catch (NoRepositorySelected e) {
-      logger.debug(e, e);
+      LOGGER.debug(e, e);
     }
   }
   
@@ -402,8 +404,8 @@ public class GitAccess {
    * @param info event info.
    */
   private void fireOperationAboutToStart(GitEventInfo info) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Fire operation about to start: " + info);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Fire operation about to start: " + info);
     }
     listeners.fireOperationAboutToStart(info);
   }
@@ -414,8 +416,8 @@ public class GitAccess {
    * @param info event info.
    */
   private void fireOperationSuccessfullyEnded(GitEventInfo info) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Fire operation successfully ended: " + info);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Fire operation successfully ended: " + info);
     }
     listeners.fireOperationSuccessfullyEnded(info);
   }
@@ -427,8 +429,8 @@ public class GitAccess {
    * @param t related exception/error. May be <code>null</code>.
    */
   void fireOperationFailed(GitEventInfo info, Throwable t) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Fire operation failed: " + info + ". Reason: " + t.getMessage());
     }
     listeners.fireOperationFailed(info, t);
   }
@@ -485,12 +487,12 @@ public class GitAccess {
 	  GitStatus gitStatus = null;
 	  if (git != null) {
 	    try {
-	      logger.debug("-- Compute our GitStatus -> getStatus() --");
+	      LOGGER.debug("-- Compute our GitStatus -> getStatus() --");
 	      Status status = git.status().call();
-	      logger.debug("-- Get JGit status -> git.status().call() --");
+	      LOGGER.debug("-- Get JGit status -> git.status().call() --");
 	      gitStatus = new GitStatus(getUnstagedFiles(status), getStagedFiles(status));
 	    } catch (GitAPIException e) {
-	      logger.error(e, e);
+	      LOGGER.error(e, e);
 	    }
 	  }
     return gitStatus != null ? gitStatus 
@@ -520,9 +522,9 @@ public class GitAccess {
    */
   public List<FileStatus> getUnstagedFiles(Collection<String> paths) {
     if (git != null) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("PUBLIC - GET UNSTAGED FILES");
-        logger.debug("Prepare fot JGit status, in paths " + paths);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("PUBLIC - GET UNSTAGED FILES");
+        LOGGER.debug("Prepare fot JGit status, in paths " + paths);
       }
       
       StatusCommand statusCmd = git.status();
@@ -531,10 +533,10 @@ public class GitAccess {
       }
       try {
         Status status = statusCmd.call();
-        logger.debug("JGit Status computed: " + status);
+        LOGGER.debug("JGit Status computed: " + status);
         return getUnstagedFiles(status);
       } catch (GitAPIException e) {
-        logger.error(e, e);
+        LOGGER.error(e, e);
       }
     }
     
@@ -550,7 +552,7 @@ public class GitAccess {
 	 * @return The unstaged files and their states.
 	 */
 	private List<FileStatus> getUnstagedFiles(Status status) {
-	  logger.debug("PRIVATE - GET UNSTAGE FOR GIVEN STATUS " + status);
+	  LOGGER.debug("PRIVATE - GET UNSTAGE FOR GIVEN STATUS " + status);
 		List<FileStatus> unstagedFiles = new ArrayList<>();
 		if (git != null) {
 			try {
@@ -561,7 +563,7 @@ public class GitAccess {
         addMissingFilesToUnstaged(status, unstagedFiles, submodules);
 				addConflictingFilesToUnstaged(status, unstagedFiles);
 			} catch (NoWorkTreeException | GitAPIException e1) {
-			  logger.error(e1, e1);
+			  LOGGER.error(e1, e1);
 			}
 		}
 		return unstagedFiles;
@@ -574,8 +576,8 @@ public class GitAccess {
 	 * @param unstagedFiles The list of unstaged (not in the INDEX) files.
 	 */
   private void addConflictingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("addConflictingFilesToUnstaged: " + status.getConflicting());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("addConflictingFilesToUnstaged: " + status.getConflicting());
     }
     for (String fileName : status.getConflicting()) {
       unstagedFiles.add(new FileStatus(GitChangeType.CONFLICT, fileName));
@@ -591,8 +593,8 @@ public class GitAccess {
    * @param submodules    The set of submodules.
    */
   private void addMissingFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("addMissingFilesToUnstaged: " + status.getMissing());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("addMissingFilesToUnstaged: " + status.getMissing());
     }
     for (String string : status.getMissing()) {
     	if (!submodules.contains(string)) {
@@ -610,8 +612,8 @@ public class GitAccess {
    * @param submodules    The set of submodules.
    */
   private void addModifiedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("addModifiedFilesToUnstaged " + status.getModified());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("addModifiedFilesToUnstaged " + status.getModified());
     }
     for (String string : status.getModified()) {
       // A file that was modified compared to the one from INDEX.
@@ -630,8 +632,8 @@ public class GitAccess {
    * @param submodules    The set of submodules.
    */
   private void addUntrackedFilesToUnstaged(Status status, List<FileStatus> unstagedFiles, Set<String> submodules) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("addUntrackedFilesToUnstaged " + status.getUntracked());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("addUntrackedFilesToUnstaged " + status.getUntracked());
     }
     for (String string : status.getUntracked()) {
     	if (!submodules.contains(string)) {
@@ -650,8 +652,8 @@ public class GitAccess {
 	 *                         submodules status.
    */
   private void addSubmodulesToUnstaged(List<FileStatus> unstagedFiles, Set<String> submodules) throws GitAPIException {
-    if (logger.isDebugEnabled()) {
-      logger.debug("addSubmodulesToUnstaged " + submodules);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("addSubmodulesToUnstaged " + submodules);
     }
     for (String submodulePath : submodules) {
     	SubmoduleStatus submoduleStatus = git.submoduleStatus().call().get(submodulePath);
@@ -771,7 +773,7 @@ public class GitAccess {
 		  fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.COMMIT, filePaths));
 		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.COMMIT, filePaths), e);
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
 		  // Re throw the exception so that the user sees a proper error message, depending on its type.
 		  throw e;
 		}
@@ -824,7 +826,7 @@ public class GitAccess {
 			  }
 			}
 		} catch (GitAPIException e) {
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
 		}
 		return branches;
 	}
@@ -839,7 +841,7 @@ public class GitAccess {
     try {
       branches = git.branchList().setListMode(ListMode.REMOTE).call();
     } catch (GitAPIException e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
     return branches;
   }
@@ -873,25 +875,25 @@ public class GitAccess {
     Collection<Ref> remoteRefs = Collections.emptySet();
     String host = repoURL.getHost();
     boolean shouldStopTryingLogin = false;
-    if (logger.isDebugEnabled()) {
-      logger.debug("START LISTING REMOTE BRANCHES FOR: " + repoURL);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("START LISTING REMOTE BRANCHES FOR: " + repoURL);
     }
     do {
       SSHCapableUserCredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(host);
       try {
-        logger.debug("Now do list the remote branches...");
+        LOGGER.debug("Now do list the remote branches...");
         remoteRefs = Git.lsRemoteRepository()
             .setHeads(true)
             .setRemote(repoURL.toString())
             .setCredentialsProvider(credentialsProvider)
             .call();
-        if (logger.isDebugEnabled()) {
-          logger.debug("BRANCHES: " + remoteRefs);
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("BRANCHES: " + remoteRefs);
         }
         shouldStopTryingLogin = true;
       } catch (TransportException ex) {
         
-        logger.debug(ex, ex);
+        LOGGER.debug(ex, ex);
         
         boolean retryLogin = AuthUtil.handleAuthException(
             ex,
@@ -899,11 +901,11 @@ public class GitAccess {
             excMessPresenter,
             !credentialsProvider.wasResetCalled());
         if (!retryLogin || credentialsProvider.shouldCancelLogin()) {
-          logger.debug("STOP TRYING TO LOGIN!");
+          LOGGER.debug("STOP TRYING TO LOGIN!");
           shouldStopTryingLogin = true;
         }
       } catch (GitAPIException e) {
-        logger.error(e, e);
+        LOGGER.error(e, e);
       }
     } while (!shouldStopTryingLogin);
     
@@ -1009,7 +1011,7 @@ public class GitAccess {
 				return response;
 			}
 		} catch (RepoNotInitializedException e) {
-			logger.debug(e, e);
+			LOGGER.debug(e, e);
 		}
 
 
@@ -1023,7 +1025,7 @@ public class GitAccess {
 		}
 		Iterable<PushResult> pushResults = pushCommand.call();
 
-		logger.debug("Push Ended");
+		LOGGER.debug("Push Ended");
 
 		Iterator<PushResult> results = pushResults.iterator();
 		while (results.hasNext()) {
@@ -1144,8 +1146,8 @@ public class GitAccess {
    */
   private void treatRebaseResult(PullResponse pullResponseToReturn, RebaseResult rebaseResult) throws CheckoutConflictException, RebaseUncommittedChangesException {
     RebaseResult.Status status = rebaseResult.getStatus();
-    if (logger.isDebugEnabled()) {
-      logger.debug("Rebase result status: " + status);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Rebase result status: " + status);
     }
     
     switch (status) {
@@ -1183,7 +1185,7 @@ public class GitAccess {
     try {
       head = repository.resolve("HEAD^{tree}");
     } catch (RevisionSyntaxException | IOException e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
     return head;
   }
@@ -1198,13 +1200,13 @@ public class GitAccess {
 	 */
   private void treatMergeResult(PullResponse pullResponse, MergeResult mergeResult) throws CheckoutConflictException {
     if (mergeResult != null) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Merge result: " + mergeResult);
-        logger.debug("Merge result status: " + mergeResult.getMergeStatus());
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Merge result: " + mergeResult);
+        LOGGER.debug("Merge result status: " + mergeResult.getMergeStatus());
       }
 
       if (mergeResult.getMergeStatus() == MergeStatus.FAILED) {
-        if (logger.isDebugEnabled()) {
+        if (LOGGER.isDebugEnabled()) {
         logMergeFailure(mergeResult);
         }
         throw new CheckoutConflictException(
@@ -1229,14 +1231,14 @@ public class GitAccess {
    * @param mergeResult The merge result.
    */
   private void logMergeFailure(MergeResult mergeResult) {
-    if (logger.isDebugEnabled()) {
+    if (LOGGER.isDebugEnabled()) {
       Map<String, MergeFailureReason> failingPaths = mergeResult.getFailingPaths();
       if (failingPaths != null) {
-        logger.debug("NOW LOG MERGE FAILURE PATHS:");
+        LOGGER.debug("NOW LOG MERGE FAILURE PATHS:");
         Set<String> keySet = failingPaths.keySet();
         for (String string : keySet) {
-          logger.debug("  Path: " + string);
-          logger.debug("  Reason: " + failingPaths.get(string));
+          LOGGER.debug("  Path: " + string);
+          LOGGER.debug("  Reason: " + failingPaths.get(string));
         }
       }
     }
@@ -1272,7 +1274,7 @@ public class GitAccess {
             fetchResultStringBuilder.append(translator.getTranslation(Tags.FILE_EXISTS) + "\n");
           }
         } catch (NoRepositorySelected e) {
-          logger.error(e, e);
+          LOGGER.error(e, e);
         }
         fetchResultStringBuilder.append(translator.getTranslation(Tags.LOCK_FAILED_EXPLANATION));
       }
@@ -1311,7 +1313,7 @@ public class GitAccess {
       StandalonePluginWorkspace wsAccess = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
       wsAccess.getProjectManager().refreshFolders(new File[] { FileUtil.getCommonDir(pulledFilesParentDirs) });
     } catch (IOException e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
   }
 
@@ -1360,7 +1362,7 @@ public class GitAccess {
 	    fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.STAGE, filePaths));
 	  } catch (GitAPIException e) {
 	    fireOperationFailed(new FileGitEventInfo(GitOperation.STAGE, filePaths), e);
-	    logger.error(e, e);
+	    LOGGER.error(e, e);
 		}
 	}
 
@@ -1402,7 +1404,7 @@ public class GitAccess {
 			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.STAGE, filePaths));
 		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.STAGE, filePaths), e);
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
 		}
 	}
 	
@@ -1437,7 +1439,7 @@ public class GitAccess {
         Status status = statusCmd.call();
         return getStagedFiles(status);
 			} catch (GitAPIException e) {
-			  logger.error(e, e);
+			  LOGGER.error(e, e);
       }
     }
     
@@ -1494,7 +1496,7 @@ public class GitAccess {
 			try {
 				return git.status().call().getConflicting();
 			} catch (GitAPIException e) {
-			  logger.error(e, e);
+			  LOGGER.error(e, e);
 			}
 		}
 		return Collections.emptySet();
@@ -1519,7 +1521,7 @@ public class GitAccess {
 			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.UNSTAGE, filePaths));
 		} catch (GitAPIException e) {
 		  fireOperationFailed(new FileGitEventInfo(GitOperation.UNSTAGE, filePaths), e);
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
 		}
 	}
 
@@ -1545,7 +1547,7 @@ public class GitAccess {
 			try {
 				hostName = new URL(url).getHost();
 			} catch (MalformedURLException e) {
-				logger.debug(e, e);
+				LOGGER.debug(e, e);
 			}
 		}
 		return hostName;
@@ -1588,7 +1590,7 @@ public class GitAccess {
 				}
 			}
 		} catch (IOException e) {
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
 		}
 		walk.close();
 		return baseCommit;
@@ -1700,7 +1702,7 @@ public class GitAccess {
 			fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.DISCARD, paths));
 		} catch (GitAPIException e) {
       fireOperationFailed(new FileGitEventInfo(GitOperation.DISCARD, paths), e);
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
 		}
 	}
 
@@ -1726,7 +1728,7 @@ public class GitAccess {
 	      }
 	    }
 	  } catch (IOException | NoRepositorySelected e) {
-	    logger.error(e, e);
+	    LOGGER.error(e, e);
 	  }
 	  
 	  return numberOfCommits;
@@ -1750,7 +1752,7 @@ public class GitAccess {
 	      }
 	    }
 	  } catch (IOException | NoRepositorySelected e) {
-	    logger.error(e, e);
+	    LOGGER.error(e, e);
 	  }
 
 		return numberOfCommits;
@@ -1765,7 +1767,7 @@ public class GitAccess {
 	 */
 	public void fetch()
 			throws SSHPassphraseRequiredException, PrivateRepositoryException, RepositoryUnavailableException {
-	  logger.debug("Begin fetch");
+	  LOGGER.debug("Begin fetch");
     if (git == null) {
       throw new RepositoryUnavailableException(new NoRepositorySelected("Repository is empty"));
     }
@@ -1785,7 +1787,7 @@ public class GitAccess {
 						.call();
 			}
 		} catch (TransportException e) {
-		  logger.debug(e, e);
+		  LOGGER.debug(e, e);
 			
 			Throwable cause = e;
 	    while (cause.getCause() != null) {
@@ -1804,9 +1806,9 @@ public class GitAccess {
 			  throw new RepositoryUnavailableException(e);
 			}
 		} catch (GitAPIException | RevisionSyntaxException e) {
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
     } 
-		logger.debug("End fetch");
+		LOGGER.debug("End fetch");
 	}
 
 	/**
@@ -1818,7 +1820,7 @@ public class GitAccess {
 		try {
 			git.checkout().setStage(Stage.THEIRS).addPath(filePath).call();
 		} catch (Exception e) {
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
 		}
 	}
 
@@ -1848,7 +1850,7 @@ public class GitAccess {
 	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.MERGE_RESTART));
 	    } catch (IOException | NoRepositorySelected | GitAPIException e) {
 	      fireOperationFailed(new GitEventInfo(GitOperation.MERGE_RESTART), e);
-	      logger.error(e, e);
+	      LOGGER.error(e, e);
 	    }
 	  });
 	}
@@ -1880,9 +1882,9 @@ public class GitAccess {
 				}
 			} catch (NoHeadException e) {
 			  branchInfo = new BranchInfo(branchName, false);
-			  logger.debug(e, e);
+			  LOGGER.debug(e, e);
 			} catch (IOException | GitAPIException e) {
-			  logger.error(e, e);
+			  LOGGER.error(e, e);
 			}
 		}
 		return branchInfo;
@@ -2061,7 +2063,7 @@ public class GitAccess {
 			    break;
 			}
 		} catch (GitAPIException | IOException e) {
-		  logger.error(e, e);
+		  LOGGER.error(e, e);
 		}
 		return toReturn;
 	}
@@ -2106,7 +2108,7 @@ public class GitAccess {
     try {
       rootFolder = GitAccess.getInstance().getWorkingCopy().getName();
     } catch (NoRepositorySelected e) {
-      logger.debug(e, e);
+      LOGGER.debug(e, e);
     }
     return rootFolder;
   }
@@ -2130,7 +2132,7 @@ public class GitAccess {
         fireOperationSuccessfullyEnded(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles));
       } catch (GitAPIException | IOException | NoRepositorySelected e) {
         fireOperationFailed(new FileGitEventInfo(GitOperation.ABORT_MERGE, conflictingFiles), e);
-        logger.error(e, e);
+        LOGGER.error(e, e);
       }
     });
   }
@@ -2146,7 +2148,7 @@ public class GitAccess {
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.ABORT_REBASE));
       } catch (GitAPIException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.ABORT_REBASE), e);
-        logger.error(e, e);
+        LOGGER.error(e, e);
       }
     });
   }
@@ -2165,12 +2167,12 @@ public class GitAccess {
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CONTINUE_REBASE));
       } catch (UnmergedPathsException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
-        logger.debug(e, e);
+        LOGGER.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showErrorMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
-        logger.debug(e, e);
+        LOGGER.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
             .showErrorMessage(e.getMessage());
       }
@@ -2184,7 +2186,7 @@ public class GitAccess {
     try {
       git.rebase().setOperation(Operation.SKIP).call();
     } catch (GitAPIException e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
   }
   
@@ -2207,7 +2209,7 @@ public class GitAccess {
 
 			RevCommitUtil.collectCurrentBranchRevisions(filePath, revisions, repository);
 		} catch (NoWorkTreeException | GitAPIException | NoRepositorySelected | IOException e) {
-			logger.error(e, e);
+			LOGGER.error(e, e);
 		}
 		
 		return revisions;
@@ -2349,7 +2351,7 @@ public class GitAccess {
       MergeResult res = git.merge().include(mergeBase).call();
       
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
-        logger.debug("We have conflicts here:" + res.getConflicts().toString());
+        LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
         List<String> conflictingFiles = new ArrayList(res.getConflicts().keySet());
         FileStatusDialog.showWarningMessage("Merge", conflictingFiles, "Merge conflicts in this files:");
       }
@@ -2359,8 +2361,59 @@ public class GitAccess {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE,branchName), e);
       throw e;
     }
-
-    
-
   }
+  
+  
+  /**
+	 * Helper method returning whether the stash is empty or not
+	 *
+	 *
+	 * @return <code>true</code> if the git stash is empty
+	 *
+	 * @throws InvalidRefNameException
+	 * @throws GitAPIException
+	 */
+	protected boolean isStashEmpty() throws InvalidRefNameException, GitAPIException {
+		StashListCommand stashList = git.stashList();
+		Collection<RevCommit> stashedRefsCollection = stashList.call();
+		return stashedRefsCollection.isEmpty();
+	}
+
+	
+	/**
+	 * Create a new stash command.
+	 * 
+	 * @return 
+	 */
+	protected RevCommit createStash() {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
+		RevCommit stash = null;
+		try {
+			stash = git.stashCreate().call();
+			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
+		}
+		return stash;
+	}
+
+	
+	/**
+	 * Apply the stash operation with the given reference.
+	 *
+	 * @param stashRef the stash which will be applied.
+	 */
+	protected ObjectId stashApply(String stashRef) {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
+		ObjectId toReturn = null;
+		try {
+			toReturn = git.stashApply().setStashRef(stashRef).call();
+			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()));
+		} catch (GitAPIException err) {
+			LOGGER.error(err, err);
+			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()), err);
+		}
+		return toReturn;
+	}
 }

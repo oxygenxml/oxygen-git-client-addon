@@ -71,5 +71,13 @@ public enum GitOperation {
   /**
    * Push changes to upstream.
    */
-  PUSH;
+  PUSH,
+  /**
+   * Stash create operation.
+   */
+  STASH_CREATE,
+  /**
+   * Stash apply operation.
+   */
+  STASH_APPLY;
 }
