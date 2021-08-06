@@ -138,6 +138,7 @@ public class FlatView7Test extends FlatViewTestBase {
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
     toolbarPanel.refresh();
     flushAWT();
+    sleep(1000);
     
     // Tooltip texts changed again
     assertEquals(
