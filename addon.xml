@@ -32,8 +32,8 @@
 			    <li>If you try to switch to another branch while there are uncommitted changes in the current branch, a message prompt is displayed that 
 				gives you the option of moving the changes to the new branch.</li>
                             <li>A new editor variables is now supported: ${git(working_copy_url)}. It is resolved to the URL of the current working copy directory.</li>
-			    <li>When hovering over a branch name with the mouse cursor, a tooltip is displayed, providing information about the last commit
-				    performed on that branch, such as the author and the date of the commit.<li>
+			    <li>When hovering the cursor over a branch name, a tooltip is displayed that provides information about the last commit
+				    performed on that branch (such as the author and the date of the commit).<li>
                         </ol>
                     </div>
                     <div>
