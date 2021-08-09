@@ -9,11 +9,11 @@
     
     <key value="Stash_Apply_Failed">
         <comment>Stash apply failed</comment>
-        <val lang="en_US">Unable to apply stash push.</val>
-        <val lang="de_DE">Unable to apply stash push.</val>
-        <val lang="fr_FR">Unable to apply stash push.</val>
-        <val lang="ja_JP">Unable to apply stash push.</val>
-        <val lang="nl_NL">Unable to apply stash push.</val>
+        <val lang="en_US">Unable to apply stash.</val>
+        <val lang="de_DE">Unable to apply stash.</val>
+        <val lang="fr_FR">Unable to apply stash.</val>
+        <val lang="ja_JP">Unable to apply stash.</val>
+        <val lang="nl_NL">Unable to apply stash.</val>
     </key>
     
     <key value="Stash">
