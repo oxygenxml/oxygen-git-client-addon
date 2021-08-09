@@ -52,6 +52,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
+import org.eclipse.jgit.api.errors.StashApplyFailureException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
@@ -2405,14 +2406,19 @@ public class GitAccess {
 	 * @param stashRef the stash which will be applied.
 	 *
 	 * @return Returns a command object used to apply a stashed commit.
+	 * 
+	 * @throws GitAPIException 
+	 * @throws NoWorkTreeException 
 	 */
-	protected ObjectId stashApply(String stashRef) {
+	protected ObjectId stashApply(String stashRef) throws NoWorkTreeException, GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
 		ObjectId toReturn = null;
 		try {
 			toReturn = git.stashApply().setStashRef(stashRef).call();
 			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()));
-		} catch (GitAPIException e) {
+		} catch (StashApplyFailureException e) {
+      FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH), new ArrayList<>(git.status().call().getModified()), 
+          translator.getTranslation(Tags.STASH_APPLY_FAILED));
 			LOGGER.error(e, e);
 			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()), e);
 		}
@@ -2435,7 +2441,6 @@ public class GitAccess {
 			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_DROP, getBranchInfo().getBranchName()), e);
 		}
 	}
-
 }
 
 

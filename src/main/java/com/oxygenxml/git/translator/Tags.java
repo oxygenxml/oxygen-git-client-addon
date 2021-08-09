@@ -1255,11 +1255,20 @@ public class Tags {
    */
   public static final String MOVE_CHANGES = "Move_changes";
   /**
-   * The message on the action that reverts a selected commit
+   * The message on the action that reverts a selected commit.
    */
   public static final String REVERT_COMMIT = "Revert_Commit";
   /**
-   * The message that warns about a revert
+   * The message that warns about a revert.
    */
   public static final String REVERT_COMMIT_WARNING = "Revert_Commit_Warning";
+  /**
+   * Stash warning title.
+   */
+  public static final String STASH = "Stash";
+  /**
+   * Stash apply failed.
+   */
+  public static final String STASH_APPLY_FAILED = "Stash_Apply_Failed";
+  
 }

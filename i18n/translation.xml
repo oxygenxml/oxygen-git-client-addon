@@ -7,6 +7,24 @@
         <language description="Dutch" lang="nl_NL" />
     </languageList>
     
+    <key value="Stash_Apply_Failed">
+        <comment>Stash apply failed</comment>
+        <val lang="en_US">Unable to apply stash push.</val>
+        <val lang="de_DE">Unable to apply stash push.</val>
+        <val lang="fr_FR">Unable to apply stash push.</val>
+        <val lang="ja_JP">Unable to apply stash push.</val>
+        <val lang="nl_NL">Unable to apply stash push.</val>
+    </key>
+    
+    <key value="Stash">
+        <comment>Stash</comment>
+        <val lang="en_US">Stash</val>
+        <val lang="de_DE">Stash</val>
+        <val lang="fr_FR">Stash</val>
+        <val lang="ja_JP">Stash</val>
+        <val lang="nl_NL">Stash</val>
+    </key>
+    
     <key value="Revert_Commit_Warning">
         <comment>Warns about reverting the last commit</comment>
         <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
