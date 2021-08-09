@@ -26,10 +26,12 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 
 
 /**
- * Tests the methods for stash action.
- * 
+ * <p><b>Description:</b> Tests the methods for stash action.</p>
+ * <p><b>Bug ID:</b> EXM-45983</p>
+ *
  * @author Alex_Smarandache
  *
+ * @throws Exception
  */
 public class GitAccessStashTest {
 
@@ -67,10 +69,13 @@ public class GitAccessStashTest {
     gitAccess.commit("file test added");
   }
 
-  
+
   /**
-   * Tests the com.oxygenxml.git.service.GitAccess.createStash() API.
-   * 
+   * <p><b>Description:</b> tests the com.oxygenxml.git.service.GitAccess.createStash() API.</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
    * @throws Exception
    */
   @Test
@@ -89,11 +94,14 @@ public class GitAccessStashTest {
     gitAccess.stashDrop(0);
     assertTrue(gitAccess.isStashEmpty());
   }
-  
-  
+
+
   /**
-   * Tests the com.oxygenxml.git.service.GitAccess.stashApply(String stashRef) API.
-   * 
+   * <p><b>Description:</b> tests the com.oxygenxml.git.service.GitAccess.stashApply(String stashRef) API.</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
    * @throws Exception
    */
   @Test
@@ -128,11 +136,14 @@ public class GitAccessStashTest {
     reader.close();
     assertEquals("modify", content);
   }
-  
-  
+
+
   /**
-   * Tests the situation in which we want to apply a stash and we have uncommitted changes that do not cause conflicts.
-   * 
+   * <p><b>Description:</b> tests the situation in which we want to apply a stash and we have uncommitted changes that do not cause conflicts.</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
    * @throws Exception
    */
   @Test
@@ -169,11 +180,14 @@ public class GitAccessStashTest {
     reader.close();
     assertEquals("modify", content);
   }
-  
-  
+
+
   /**
-   * Tests the situation in which we want to apply a stash and we have committed changes that do cause conflicts.
-   * 
+   * <p><b>Description:</b> tests the situation in which we want to apply a stash and we have committed changes that do cause conflicts.</p>
+   * <p><b>Bug ID:</b>EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
    * @throws Exception
    */
   @Test
