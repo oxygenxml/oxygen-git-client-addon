@@ -3,6 +3,7 @@ package com.oxygenxml.git.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -35,7 +36,7 @@ public class GitAccessStashTest {
   /**
    * The local repository.
    */
-  private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GItAccessStagedFilesTest";
+  private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GItAccessStagedFilesTest";
   
   /**
    * The GitAccess instance.
@@ -52,14 +53,17 @@ public class GitAccessStashTest {
   @Before
   public void init() throws IllegalStateException, GitAPIException {
     gitAccess = GitAccess.getInstance();
-    gitAccess.createNewRepository(LOCAL_TEST_REPOSITPRY);
-    File file = new File(LOCAL_TEST_REPOSITPRY + "/test.txt");
+    gitAccess.createNewRepository(LOCAL_TEST_REPOSITORY);
+    File file = new File(LOCAL_TEST_REPOSITORY + "/test.txt");
+    File file2 = new File(LOCAL_TEST_REPOSITORY + "/test2.txt");
     try {
       file.createNewFile();
+      file2.createNewFile();
     } catch (IOException e) {
       e.printStackTrace();
     }
     gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, file2.getName()));
     gitAccess.commit("file test added");
   }
 
@@ -72,7 +76,7 @@ public class GitAccessStashTest {
   @Test
   public void testCreateMethod() throws Exception {
     try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
       out.println("modify");
       out.close();
     } catch (FileNotFoundException e) {
@@ -95,7 +99,7 @@ public class GitAccessStashTest {
   @Test
   public void testApplyMethod() throws Exception {
     try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITPRY + "/test.txt");
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
       out.println("modify");
       out.close();
     } catch (FileNotFoundException e) {
@@ -115,16 +119,96 @@ public class GitAccessStashTest {
     }
     assertTrue(noCommitFound);
     
-    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITPRY + "/test.txt"));
+    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
     assertEquals("", content);
     
     assertEquals(gitAccess.stashApply(ref.getName()).getName(), ref.getName());
-    reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITPRY + "/test.txt"));
+    reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
     assertEquals("modify", content);
+  }
+  
+  
+  /**
+   * Tests the situation in which we want to apply a stash and we have uncommitted changes that do not cause conflicts.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testStashWithUncommittedChangesWithoutConflicts() throws Exception {
+    try {
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+      out.println("test");
+      out.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
+    
+    assertTrue(gitAccess.isStashEmpty());
+    RevCommit ref = gitAccess.createStash();
+    assertFalse(gitAccess.isStashEmpty());
+    
+    try {
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test2.txt");
+      out.println("modify");
+      out.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    
+    gitAccess.stashApply(ref.getName());
+    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("test", content);
+    
+    reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test2.txt"));
+    content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("modify", content);
+  }
+  
+  
+  /**
+   * Tests the situation in which we want to apply a stash and we have committed changes that do cause conflicts.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testStashWithCommittedChangesWithConflicts() throws Exception {
+    try {
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+      out.println("test");
+      out.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
+    
+    assertTrue(gitAccess.isStashEmpty());
+    RevCommit ref = gitAccess.createStash();
+    assertFalse(gitAccess.isStashEmpty());
+    try {
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+      out.println("modify");
+      out.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
+    gitAccess.commit("file test modified");
+    assertNull(gitAccess.createStash());
+    
+    gitAccess.stashApply(ref.getName());
+    
+    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertTrue(content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
   }
   
   
@@ -134,7 +218,7 @@ public class GitAccessStashTest {
   @After
   public void freeResources() {
     gitAccess.closeRepo();
-    File dirToDelete = new File(LOCAL_TEST_REPOSITPRY);
+    File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
     try {
       FileUtils.deleteDirectory(dirToDelete);
     } catch (IOException e) {

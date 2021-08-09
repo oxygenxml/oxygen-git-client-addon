@@ -2417,10 +2417,12 @@ public class GitAccess {
 			toReturn = git.stashApply().setStashRef(stashRef).call();
 			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()));
 		} catch (StashApplyFailureException e) {
-      FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH), new ArrayList<>(git.status().call().getModified()), 
-          translator.getTranslation(Tags.STASH_APPLY_FAILED));
 			LOGGER.error(e, e);
 			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()), e);
+			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
+				FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH), new ArrayList<>(git.status().call().getModified()),
+								translator.getTranslation(Tags.STASH_APPLY_FAILED));
+			}
 		}
 		return toReturn;
 	}
