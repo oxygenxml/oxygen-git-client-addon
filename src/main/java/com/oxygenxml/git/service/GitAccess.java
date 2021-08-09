@@ -2399,8 +2399,6 @@ public class GitAccess {
 	 * Apply the given stash.
 	 *
 	 * @param stashRef the stash which will be applied.
-	 *
-	 * @return the applied stash.
 	 * 
 	 * @throws GitAPIException 
 	 */
