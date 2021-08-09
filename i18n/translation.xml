@@ -27,11 +27,11 @@
     
     <key value="Revert_Commit_Warning">
         <comment>Warns about reverting the last commit</comment>
-        <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
-        <val lang="de_DE">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
-        <val lang="fr_FR">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
-        <val lang="ja_JP">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
-        <val lang="nl_NL">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
+        <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="de_DE">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="fr_FR">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="ja_JP">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="nl_NL">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
     </key>
     
     <key value="Revert_Commit">

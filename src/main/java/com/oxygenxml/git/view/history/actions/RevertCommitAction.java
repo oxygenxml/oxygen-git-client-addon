@@ -11,13 +11,13 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
-import com.oxygenxml.git.view.revertcommit.RevertCommitDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
-public class RevertToLastCommitAction extends AbstractAction {
+public class RevertCommitAction extends AbstractAction {
   /**
    * Logger for logging.
    */
@@ -33,7 +33,7 @@ public class RevertToLastCommitAction extends AbstractAction {
    * 
    * @param commitId
    */
-  public RevertToLastCommitAction(CommitCharacteristics commitCharacteristics) {
+  public RevertCommitAction(CommitCharacteristics commitCharacteristics) {
     super(Translator.getInstance().getTranslation(Tags.REVERT_COMMIT));
     this.commitCharacteristics = commitCharacteristics;
   }
@@ -42,8 +42,9 @@ public class RevertToLastCommitAction extends AbstractAction {
   public void actionPerformed(ActionEvent e) {
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        RevertCommitDialog dialog = new RevertCommitDialog(Translator.getInstance().getTranslation(Tags.REVERT_COMMIT));
-        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+        if ( FileStatusDialog.showQuestionMessage(Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
+            Translator.getInstance().getTranslation(Tags.REVERT_COMMIT_WARNING), 
+            Translator.getInstance().getTranslation(Tags.YES), Translator.getInstance().getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
           
          GitAccess.getInstance().revertCommit(commitCharacteristics.getCommitId());
         }

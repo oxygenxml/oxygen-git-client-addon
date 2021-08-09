@@ -1667,9 +1667,8 @@ public class GitAccess {
   }
   
   /**
-   * Reverts the last commit.
+   * Reverts the given commit.
    * 
-   * @param resetType The reset type to perform on the current branch.
    * @param commitId  The commit id to which to reset.
    * @throws NoRepositorySelected 
    * @throws IOException 
@@ -1677,12 +1676,11 @@ public class GitAccess {
   public void revertCommit(String commitId) throws IOException, NoRepositorySelected {
     fireOperationAboutToStart(new GitEventInfo(GitOperation.REVERT_COMMIT));
     Repository repo = git.getRepository();
-    try {
-      RevWalk revWalk = new RevWalk(repo);
+    try (RevWalk revWalk = new RevWalk(repo)) {
       RevCommit revcom = revWalk.parseCommit(getRepository().resolve(commitId));
       git.revert().include(revcom).call();
       fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.REVERT_COMMIT));
-    } catch (GitAPIException e) {
+    } catch (GitAPIException|RevisionSyntaxException e) {
       fireOperationFailed(new GitEventInfo(GitOperation.REVERT_COMMIT), e);
       PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
     }
