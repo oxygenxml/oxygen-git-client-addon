@@ -2363,16 +2363,24 @@ public class GitAccess {
   
   
   /**
-	 * Helper method returning whether the stash is empty or not
+	 * Stash List command.
 	 *
-	 * @return <code>true</code> if the git stash is empty
+	 * @return the list of all stashes.
 	 *
 	 * @throws GitAPIException
 	 */
-	protected boolean isStashEmpty() throws GitAPIException {
+	protected Collection<RevCommit> listStash() {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
 		StashListCommand stashList = git.stashList();
-		Collection<RevCommit> stashedRefsCollection = stashList.call();
-		return stashedRefsCollection.isEmpty();
+		Collection<RevCommit> stashedRefsCollection = null;
+		try {
+			stashedRefsCollection = stashList.call();
+			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()));
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()), e);
+		}
+		return stashedRefsCollection;
 	}
 
 	

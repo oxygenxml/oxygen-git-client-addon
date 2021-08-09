@@ -12,9 +12,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.After;
@@ -71,6 +73,20 @@ public class GitAccessStashTest {
 
 
   /**
+   * Helper method returning whether the stash is empty or not.
+   *
+   * @return <code>true</code> if the git stash is empty
+   *
+   * @throws GitAPIException
+   */
+  protected boolean isStashEmpty() throws GitAPIException {
+    StashListCommand stashList = gitAccess.getGit().stashList();
+    Collection<RevCommit> stashedRefsCollection = stashList.call();
+    return stashedRefsCollection.isEmpty();
+  }
+
+
+  /**
    * <p><b>Description:</b> tests the com.oxygenxml.git.service.GitAccess.createStash() API.</p>
    * <p><b>Bug ID:</b> EXM-45983</p>
    *
@@ -88,11 +104,12 @@ public class GitAccessStashTest {
       e.printStackTrace();
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
-    assertTrue(gitAccess.isStashEmpty());
+    assertTrue(isStashEmpty());
     assertNotNull(gitAccess.createStash());
-    assertFalse(gitAccess.isStashEmpty());
+    assertFalse(isStashEmpty());
+    assertEquals(1, gitAccess.listStash().size());
     gitAccess.stashDrop(0);
-    assertTrue(gitAccess.isStashEmpty());
+    assertTrue(isStashEmpty());
   }
 
 
@@ -114,23 +131,26 @@ public class GitAccessStashTest {
       e.printStackTrace();
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
-    
-    assertTrue(gitAccess.isStashEmpty());
-    assertFalse(gitAccess.isStashEmpty());
-    
+
+    assertTrue(isStashEmpty());
+    RevCommit commitStash = gitAccess.createStash();
+    assertFalse(isStashEmpty());
+
     boolean noCommitFound = false;
     try {
       gitAccess.applyStash("No exists.");
-    } catch(Exception e) {
+    } catch (Exception e) {
       noCommitFound = true;
     }
     assertTrue(noCommitFound);
-    
+
+   
     BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
     assertEquals("", content);
-    
+
+    gitAccess.applyStash(commitStash.getName());
     reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
@@ -157,9 +177,9 @@ public class GitAccessStashTest {
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
-    assertTrue(gitAccess.isStashEmpty());
+    assertTrue(isStashEmpty());
     RevCommit ref = gitAccess.createStash();
-    assertFalse(gitAccess.isStashEmpty());
+    assertFalse(isStashEmpty());
     
     try {
       PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test2.txt");
@@ -201,9 +221,9 @@ public class GitAccessStashTest {
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
-    assertTrue(gitAccess.isStashEmpty());
+    assertTrue(isStashEmpty());
     RevCommit ref = gitAccess.createStash();
-    assertFalse(gitAccess.isStashEmpty());
+    assertFalse(isStashEmpty());
     try {
       PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
       out.println("modify");
