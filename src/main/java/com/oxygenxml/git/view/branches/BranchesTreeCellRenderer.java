@@ -108,10 +108,12 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       label.setText(text);
       try {
         String toolTipText = null;
-        if(BranchesUtil.getRemoteBranches().contains(path) && leaf) {
-          toolTipText = constructRemoteBranchToolTip(text, path);
-        } else if (BranchesUtil.getLocalBranches().contains(text) && leaf) {
-          toolTipText = constructLocalBranchToolTip(text);
+        if (leaf) {
+          if(BranchesUtil.getRemoteBranches().contains(path)) {
+            toolTipText = constructRemoteBranchToolTip(text, path);
+          } else if (BranchesUtil.getLocalBranches().contains(text)) {
+            toolTipText = constructLocalBranchToolTip(text);
+          }
         }
         label.setToolTipText(toolTipText);
       } catch (GitAPIException | IOException | NoRepositorySelected e) {
