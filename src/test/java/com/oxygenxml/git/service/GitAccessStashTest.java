@@ -108,12 +108,11 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
     assertTrue(gitAccess.isStashEmpty());
-    RevCommit ref = gitAccess.createStash();
     assertFalse(gitAccess.isStashEmpty());
     
     boolean noCommitFound = false;
     try {
-      gitAccess.stashApply("No exists.");
+      gitAccess.applyStash("No exists.");
     } catch(Exception e) {
       noCommitFound = true;
     }
@@ -124,7 +123,6 @@ public class GitAccessStashTest {
     reader.close();
     assertEquals("", content);
     
-    assertEquals(gitAccess.stashApply(ref.getName()).getName(), ref.getName());
     reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
@@ -160,7 +158,7 @@ public class GitAccessStashTest {
       e.printStackTrace();
     }
     
-    gitAccess.stashApply(ref.getName());
+    gitAccess.applyStash(ref.getName());
     BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
@@ -203,7 +201,7 @@ public class GitAccessStashTest {
     gitAccess.commit("file test modified");
     assertNull(gitAccess.createStash());
     
-    gitAccess.stashApply(ref.getName());
+    gitAccess.applyStash(ref.getName());
     
     BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));

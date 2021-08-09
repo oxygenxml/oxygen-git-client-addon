@@ -49,7 +49,6 @@ import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.StashApplyFailureException;
@@ -2338,12 +2337,11 @@ public class GitAccess {
    * 
    * @param branchName The full name of the branch to be merged into the current one (e.g. refs/heads/dev).
    * 
-   * @throws RevisionSyntaxException
    * @throws IOException
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
-  public void mergeBranch(String branchName) throws RevisionSyntaxException, IOException, NoRepositorySelected, GitAPIException {
+  public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException {
     
     fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
     try {
@@ -2352,7 +2350,7 @@ public class GitAccess {
       
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
         LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
-        List<String> conflictingFiles = new ArrayList(res.getConflicts().keySet());
+        List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
         FileStatusDialog.showWarningMessage("Merge conflicts", conflictingFiles, "Resolve this merge conflicts before continuing: ");
       }
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
@@ -2369,10 +2367,9 @@ public class GitAccess {
 	 *
 	 * @return <code>true</code> if the git stash is empty
 	 *
-	 * @throws InvalidRefNameException
 	 * @throws GitAPIException
 	 */
-	protected boolean isStashEmpty() throws InvalidRefNameException, GitAPIException {
+	protected boolean isStashEmpty() throws GitAPIException {
 		StashListCommand stashList = git.stashList();
 		Collection<RevCommit> stashedRefsCollection = stashList.call();
 		return stashedRefsCollection.isEmpty();
@@ -2382,7 +2379,7 @@ public class GitAccess {
 	/**
 	 * Create a new stash command.
 	 * 
-	 * @return The new stash command created.
+	 * @return The created stash.
 	 */
 	protected RevCommit createStash() {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
@@ -2399,49 +2396,45 @@ public class GitAccess {
 
 	
 	/**
-	 * Apply the stash operation with the given reference.
+	 * Apply the given stash.
 	 *
 	 * @param stashRef the stash which will be applied.
 	 *
-	 * @return Returns a command object used to apply a stashed commit.
+	 * @return the applied stash.
 	 * 
 	 * @throws GitAPIException 
-	 * @throws NoWorkTreeException 
 	 */
-	protected ObjectId stashApply(String stashRef) throws NoWorkTreeException, GitAPIException {
+	public void applyStash(String stashRef) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
-		ObjectId toReturn = null;
 		try {
-			toReturn = git.stashApply().setStashRef(stashRef).call();
-			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()));
+			git.stashApply().setStashRef(stashRef).call();
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 		} catch (StashApplyFailureException e) {
 			LOGGER.error(e, e);
-			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()), e);
+			fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
-				FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH), new ArrayList<>(git.status().call().getModified()),
-								translator.getTranslation(Tags.STASH_APPLY_FAILED));
+				FileStatusDialog.showWarningMessage(
+				    translator.getTranslation(Tags.STASH),
+				    new ArrayList<>(git.status().call().getModified()),
+						translator.getTranslation(Tags.STASH_APPLY_FAILED));
 			}
 		}
-		return toReturn;
 	}
 
 
 	/**
-	 * Drops one stash object from list of stash commands creates.
+	 * Drops one stash item from the list of stashes.
 	 * 
-	 * @param stashRef The index of stash command to be dropped.
+	 * @param stashIndex The index of the stash item to be dropped.
 	 */
-	protected void stashDrop(int stashRef) {
+	protected void stashDrop(int stashIndex) {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
 		try {
-			git.stashDrop().setStashRef(stashRef).call();
-			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_DROP, getBranchInfo().getBranchName()));
+			git.stashDrop().setStashRef(stashIndex).call();
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_DROP));
 		} catch (GitAPIException e) {
 			LOGGER.error(e, e);
-			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_DROP, getBranchInfo().getBranchName()), e);
+			fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
 		}
 	}
 }
-
-
-
