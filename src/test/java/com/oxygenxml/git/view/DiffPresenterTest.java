@@ -151,7 +151,7 @@ public class DiffPresenterTest extends GitTestBase {
     assertNull(toOpen);
     
     // Assert content.
-    assertEquals("", read(new URL(indexVersionURL)));
+    assertEquals("", TestUtil.read(new URL(indexVersionURL)));
     
   }
 
@@ -245,7 +245,7 @@ public class DiffPresenterTest extends GitTestBase {
         headVersionURL, rightDiff.toString());
     
     // Assert content.
-    assertEquals("index content", read(new URL(indexVersionURL)));
+    assertEquals("index content", TestUtil.read(new URL(indexVersionURL)));
   }
   
   /**
@@ -305,11 +305,11 @@ public class DiffPresenterTest extends GitTestBase {
     
     String left = "git://CurrentSubmodule/modules/submodule.txt";
     assertEquals(left, leftDiff.toString());
-    assertTrue(read(new URL(left)).startsWith("Subproject commit "));
+    assertTrue(TestUtil.read(new URL(left)).startsWith("Subproject commit "));
     
     String right = "git://PreviousSubmodule/modules/submodule.txt";
     assertEquals(right, rightDiff.toString());
-    assertTrue(read(new URL(right)).startsWith("Subproject commit "));
+    assertTrue(TestUtil.read(new URL(right)).startsWith("Subproject commit "));
   }
   
   @Test
@@ -364,7 +364,7 @@ public class DiffPresenterTest extends GitTestBase {
     
     //Create new file for second repository.
     File local2File = new File(localTestRepository2, "test.txt");
-    assertEquals("initial content", read(local2File.toURI().toURL()));
+    assertEquals("initial content", TestUtil.read(local2File.toURI().toURL()));
     
     // Modify the file.
     setFileContent(local2File, "changed in local 2, resolved");
@@ -416,7 +416,7 @@ public class DiffPresenterTest extends GitTestBase {
     assertNull(pullFailedMessage[0]);
     assertFalse(wasRebaseInterrupted[0]);
     assertEquals("Status: CONFLICTS Conflicting files: [test.txt]", pullWithConflictsSB.toString());
-    assertTrue(read(localFile1.toURI().toURL()).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
+    assertTrue(TestUtil.read(localFile1.toURI().toURL()).startsWith("<<<<<<< Upstream, based on branch '" + GitAccess.DEFAULT_BRANCH_NAME + "' of file:"));
 
     leftDiff = null;
     rightDiff = null;
@@ -433,8 +433,8 @@ public class DiffPresenterTest extends GitTestBase {
     // Verify that each side has the proper tag and content.
     assertTrue(leftDiff.toString().contains("MineResolved"));
     assertTrue(rightDiff.toString().contains("MineOriginal"));
-    assertEquals("changed in local 2, resolved", read(leftDiff));
-    assertEquals("changed in local 1, conflict content, original", read(rightDiff));
+    assertEquals("changed in local 2, resolved", TestUtil.read(leftDiff));
+    assertEquals("changed in local 1, conflict content, original", TestUtil.read(rightDiff));
   }
 
 

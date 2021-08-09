@@ -47,7 +47,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
     
-    String content = read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+    String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
     assertEquals("The submodules must be initialized and updated", "version 1", content);
     
     // Move the submodule target forward.
@@ -58,7 +58,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     // Pull again.
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
-    content = read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+    content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
     assertEquals("The submodules must be initialized and updated", "version 2", content);
   }
   
@@ -143,12 +143,12 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     assertEquals(
         "The submodules must be initialized and updated", 
         "base", 
-        read(new File(remote2.getWorkTree(), "main/base.txt").toURI().toURL()));
+        TestUtil.read(new File(remote2.getWorkTree(), "main/base.txt").toURI().toURL()));
     
     assertEquals(
         "The submodules must be initialized and updated", 
         "version 1", 
-        read(new File(remote2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
+        TestUtil.read(new File(remote2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
     
     // Main entry point.
     Repository db2 = createRepository("target/test-resources/PullSubmoduleUpdate_main");
@@ -161,12 +161,12 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     assertEquals(
         "The submodules must be initialized and updated", 
         "base", 
-        read(new File(db2.getWorkTree(), "main/base.txt").toURI().toURL()));
+        TestUtil.read(new File(db2.getWorkTree(), "main/base.txt").toURI().toURL()));
     
     assertEquals(
         "The submodules must be initialized and updated", 
         "version 1", 
-        read(new File(db2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
+        TestUtil.read(new File(db2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
   }
 
   /**
@@ -197,12 +197,12 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     assertEquals(
         "The submodules must be initialized and updated", 
         "base", 
-        read(new File(remote2.getWorkTree(), "main/base.txt").toURI().toURL()));
+        TestUtil.read(new File(remote2.getWorkTree(), "main/base.txt").toURI().toURL()));
     
     assertEquals(
         "The submodules must be initialized and updated", 
         "version 1", 
-        read(new File(remote2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
+        TestUtil.read(new File(remote2.getWorkTree(), "main/sub/file.txt").toURI().toURL()));
     
     File directory = new File("target/test-resources/clone");
     GitAccess.getInstance().clone(
@@ -214,12 +214,12 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     assertEquals(
         "The submodules must be initialized and updated", 
         "base", 
-        read(new File(directory, "main/base.txt").toURI().toURL()));
+        TestUtil.read(new File(directory, "main/base.txt").toURI().toURL()));
     
     assertEquals(
         "The submodules must be initialized and updated", 
         "version 1", 
-        read(new File(directory, "main/sub/file.txt").toURI().toURL()));
+        TestUtil.read(new File(directory, "main/sub/file.txt").toURI().toURL()));
   }
 
   /**
@@ -249,7 +249,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
     
-    String content = read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+    String content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
     assertEquals("The submodules must be initialized and updated", "version 1", content);
     
     // Move the submodule target forward.
@@ -261,7 +261,7 @@ public class PullSubmoduleUpdateTest extends GitTestBase {
     // Pull again.
     GitAccess.getInstance().setGit(new Git(db2));
     ctrl.pull().get();
-    content = read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
+    content = TestUtil.read(new File(db2.getWorkTree(), "sub/file.txt").toURI().toURL());
     assertEquals("The submodules must no be initialized and updated automatically", "version 1", content);
   }
 }

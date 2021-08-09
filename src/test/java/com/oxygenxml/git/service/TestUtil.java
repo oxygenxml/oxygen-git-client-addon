@@ -3,7 +3,11 @@ package com.oxygenxml.git.service;
 import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 
 import javax.swing.JButton;
 
@@ -98,5 +102,50 @@ public class TestUtil {
       }
     }
     return null;
+  }
+  
+  /**
+   * Gets the content from a given URL.
+   * 
+   * @param url The URL from where to read.
+   * 
+   * @return The content, never <code>null</code>.
+   */
+  @SuppressWarnings("unused")
+  public final static String read(URL url) throws IOException {
+    String result = null;
+    try (
+        // Java will try to automatically close each of the declared resources
+        InputStream openedStream = url.openStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(openedStream, "UTF-8")) {
+      result = read(inputStreamReader);
+    } catch (IOException e) {
+      if (result == null) {
+        throw e;
+      } else {
+        // Just some info about this error, the method will return the result.
+        e.printStackTrace();
+      }
+    }
+    return result != null ? result.trim() : null;
+  }
+  
+  /**
+   * Reads all the content from a given reader.
+   * 
+   * @param isr The reader.
+   *
+   * @return The content.
+   *
+   * @throws IOException If cannot read.
+   */
+  private static String read(InputStreamReader isr) throws IOException {
+    StringBuilder stringBuilder = new StringBuilder();
+    char[] buf = new char[1024];
+    int length = -1;
+    while ((length = isr.read(buf)) != -1) {
+      stringBuilder.append(buf, 0, length);
+    }
+    return stringBuilder.toString();
   }
 }

@@ -67,7 +67,7 @@ public class GitPullCasesTest extends GitTestBase {
     PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
-    assertEquals("original", read(local2File.toURI().toURL()));
+    assertEquals("original", TestUtil.read(local2File.toURI().toURL()));
     
     setFileContent(local2File, "changed in local 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
@@ -157,7 +157,7 @@ public class GitPullCasesTest extends GitTestBase {
     PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
-    assertEquals("original", read(local2File.toURI().toURL()));
+    assertEquals("original", TestUtil.read(local2File.toURI().toURL()));
     
     setFileContent(local2File, "changed in local 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
@@ -255,7 +255,7 @@ public class GitPullCasesTest extends GitTestBase {
     PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
-    assertEquals("original", read(local2File.toURI().toURL()));
+    assertEquals("original", TestUtil.read(local2File.toURI().toURL()));
     
     setFileContent(local2File, "changed in local 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));
@@ -341,7 +341,7 @@ public class GitPullCasesTest extends GitTestBase {
     PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
-    assertEquals("1\n2\n3", read(local2File.toURI().toURL()));
+    assertEquals("1\n2\n3", TestUtil.read(local2File.toURI().toURL()));
     
     setFileContent(local2File, "11\n2\n3");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
@@ -361,7 +361,7 @@ public class GitPullCasesTest extends GitTestBase {
     sleep(200);
     
     File firstRepofile = new File( new File(local1Repository), "test.txt");
-    assertEquals("11\n2\n33", read(firstRepofile.toURI().toURL()));
+    assertEquals("11\n2\n33", TestUtil.read(firstRepofile.toURI().toURL()));
     
     Git git = GitAccess.getInstance().getGit();
     Iterable<RevCommit> commits = git.log().add(local1Repo.resolve("refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME)).call();
@@ -414,7 +414,7 @@ public class GitPullCasesTest extends GitTestBase {
     PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
-    assertEquals("1\n2\n3", read(local2File.toURI().toURL()));
+    assertEquals("1\n2\n3", TestUtil.read(local2File.toURI().toURL()));
     
     setFileContent(local2File, "11\n2\n3");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
@@ -434,7 +434,7 @@ public class GitPullCasesTest extends GitTestBase {
     sleep(200);
     
     File firstRepofile = new File( new File(local1Repository), "test.txt");
-    assertEquals("11\n2\n33", read(firstRepofile.toURI().toURL()));
+    assertEquals("11\n2\n33", TestUtil.read(firstRepofile.toURI().toURL()));
     
     Git git = GitAccess.getInstance().getGit();
     Iterable<RevCommit> commits = git.log().add(local1Repo.resolve("refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME)).call();
@@ -627,7 +627,7 @@ public class GitPullCasesTest extends GitTestBase {
     PullResponse pull = pull("", "", PullType.MERGE_FF, false);
     assertEquals(PullStatus.OK.toString(), pull.getStatus().toString());
     File local2File = new File( new File(local2Repository), "test.txt");
-    assertEquals("original", read(local2File.toURI().toURL()));
+    assertEquals("original", TestUtil.read(local2File.toURI().toURL()));
     
     setFileContent(local2File, "changed in local 2");
     instance.add(new FileStatus(GitChangeType.ADD, "test.txt"));

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitTestBase;
+import com.oxygenxml.git.service.TestUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
@@ -68,11 +69,11 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
     
     // Get the INDEX version.
     String indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/test.txt";
-    assertEquals("index content", read(new URL(indexVersionURL)));
+    assertEquals("index content", TestUtil.read(new URL(indexVersionURL)));
     
     // Get the HEAD version.
     String headVersionURL = "git://" + VersionIdentifier.LAST_COMMIT  + "/test.txt";
-    assertEquals("initial content", read(new URL(headVersionURL)));
+    assertEquals("initial content", TestUtil.read(new URL(headVersionURL)));
   }
   
   /**
@@ -91,10 +92,10 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
       GitAccess.getInstance().setRepositorySynchronously(wcTree.getAbsolutePath());
 
       String indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/file1.txt";
-      assertEquals("file 1 Third commit.", read(new URL(indexVersionURL)));
+      assertEquals("file 1 Third commit.", TestUtil.read(new URL(indexVersionURL)));
       
       indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/file1.txt";
-      assertEquals("file 1 Third commit.", read(new URL(indexVersionURL)));
+      assertEquals("file 1 Third commit.", TestUtil.read(new URL(indexVersionURL)));
       
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
       
@@ -105,17 +106,17 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
       
       assertEquals("Third.", revCommit.getCommitMessage());
       indexVersionURL = "git://" + revCommit.getCommitId() + "/file1.txt";
-      assertEquals("file 1 Third commit.", read(new URL(indexVersionURL)));
+      assertEquals("file 1 Third commit.", TestUtil.read(new URL(indexVersionURL)));
       
       revCommit = iterator.next();
       assertEquals("Second.", revCommit.getCommitMessage());
       indexVersionURL = "git://" + revCommit.getCommitId() + "/file1.txt";
-      assertEquals("file 1 Second commit.", read(new URL(indexVersionURL)));
+      assertEquals("file 1 Second commit.", TestUtil.read(new URL(indexVersionURL)));
       
       revCommit = iterator.next();
       assertEquals("First commit.", revCommit.getCommitMessage());
       indexVersionURL = "git://" + revCommit.getCommitId() + "/file1.txt";
-      assertEquals("file 1 First commit.", read(new URL(indexVersionURL)));
+      assertEquals("file 1 First commit.", TestUtil.read(new URL(indexVersionURL)));
       
       
       
@@ -141,14 +142,14 @@ public class GitRevisionURLHandlerTest extends GitTestBase {
     generateRepositoryAndLoad(script, wcTree);
     
     String indexVersionURL = "git://" + VersionIdentifier.INDEX_OR_LAST_COMMIT  + "/folder with spaces/f.txt";
-    assertEquals("content", read(new URL(indexVersionURL)));
+    assertEquals("content", TestUtil.read(new URL(indexVersionURL)));
     
     
     String encodedURL = indexVersionURL.replaceAll(" ", "%20");
     assertEquals("git://IndexOrLastCommit/folder%20with%20spaces/f.txt", encodedURL);
     
     // This used to fail with java.io.IOException: Unable to obtain commit ID for: git://IndexOrLastCommit/folder%20with%20spaces/f.txt
-    assertEquals("content", read(new URL(encodedURL)));
+    assertEquals("content", TestUtil.read(new URL(encodedURL)));
   }
 
 

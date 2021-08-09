@@ -960,6 +960,6 @@ public class GitAccessConflictTest {
    * @throws IOException Unable to read the file.
    */
 	private String getFileContent(File file) throws IOException {
-		return GitTestBase.read(file.toURI().toURL());
+		return TestUtil.read(file.toURI().toURL());
 	}
 }

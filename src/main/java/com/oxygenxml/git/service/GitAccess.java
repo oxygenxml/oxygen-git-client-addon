@@ -2355,7 +2355,7 @@ public class GitAccess {
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
         LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
         List<String> conflictingFiles = new ArrayList(res.getConflicts().keySet());
-        FileStatusDialog.showWarningMessage("Merge", conflictingFiles, "Merge conflicts in this files:");
+        FileStatusDialog.showWarningMessage("Merge conflicts", conflictingFiles, "Resolve this merge conflicts before continuing: ");
       }
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
 
