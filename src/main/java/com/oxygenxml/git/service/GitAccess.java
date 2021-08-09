@@ -2417,4 +2417,25 @@ public class GitAccess {
 		}
 		return toReturn;
 	}
+
+
+	/**
+	 * Drops one stash object from list of stash commands creates.
+	 * 
+	 * @param stashRef The index of stash command to be dropped.
+	 */
+	protected void stashDrop(int stashRef) {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
+		try {
+			git.stashDrop().setStashRef(stashRef).call();
+			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_DROP, getBranchInfo().getBranchName()));
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_DROP, getBranchInfo().getBranchName()), e);
+		}
+	}
+
 }
+
+
+

@@ -82,6 +82,8 @@ public class GitAccessStashTest {
     assertTrue(gitAccess.isStashEmpty());
     assertNotNull(gitAccess.createStash());
     assertFalse(gitAccess.isStashEmpty());
+    gitAccess.stashDrop(0);
+    assertTrue(gitAccess.isStashEmpty());
   }
   
   
