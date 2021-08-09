@@ -2413,6 +2413,7 @@ public class GitAccess {
 			LOGGER.error(e, e);
 			fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
+			  // TODO: better explanation in the message
 				FileStatusDialog.showWarningMessage(
 				    translator.getTranslation(Tags.STASH),
 				    new ArrayList<>(git.status().call().getModified()),
