@@ -5,10 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -29,9 +32,23 @@ import com.oxygenxml.git.service.entities.GitChangeType;
  */
 public class GitAccessStashTest {
 
+  /**
+   * The local repository.
+   */
   private final static String LOCAL_TEST_REPOSITPRY = "target/test-resources/GItAccessStagedFilesTest";
+  
+  /**
+   * The GitAccess instance.
+   */
   private GitAccess gitAccess;
 
+  
+  /**
+   * Initialise the git, repository and first local commit.
+   * 
+   * @throws IllegalStateException
+   * @throws GitAPIException
+   */
   @Before
   public void init() throws IllegalStateException, GitAPIException {
     gitAccess = GitAccess.getInstance();
@@ -46,6 +63,12 @@ public class GitAccessStashTest {
     gitAccess.commit("file test added");
   }
 
+  
+  /**
+   * Tests the com.oxygenxml.git.service.GitAccess.createStash() API.
+   * 
+   * @throws Exception
+   */
   @Test
   public void testCreateMethod() throws Exception {
     try {
@@ -61,6 +84,12 @@ public class GitAccessStashTest {
     assertFalse(gitAccess.isStashEmpty());
   }
   
+  
+  /**
+   * Tests the com.oxygenxml.git.service.GitAccess.stashApply(String stashRef) API.
+   * 
+   * @throws Exception
+   */
   @Test
   public void testApplyMethod() throws Exception {
     try {
@@ -71,9 +100,11 @@ public class GitAccessStashTest {
       e.printStackTrace();
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
+    
     assertTrue(gitAccess.isStashEmpty());
     RevCommit ref = gitAccess.createStash();
     assertFalse(gitAccess.isStashEmpty());
+    
     boolean noCommitFound = false;
     try {
       gitAccess.stashApply("No exists.");
@@ -81,9 +112,23 @@ public class GitAccessStashTest {
       noCommitFound = true;
     }
     assertTrue(noCommitFound);
+    
+    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITPRY + "/test.txt"));
+    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("", content);
+    
     assertEquals(gitAccess.stashApply(ref.getName()).getName(), ref.getName());
+    reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITPRY + "/test.txt"));
+    content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("modify", content);
   }
   
+  
+  /**
+   * Used to free up test resources.
+   */
   @After
   public void freeResources() {
     gitAccess.closeRepo();

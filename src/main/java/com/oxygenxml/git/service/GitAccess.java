@@ -2367,7 +2367,6 @@ public class GitAccess {
   /**
 	 * Helper method returning whether the stash is empty or not
 	 *
-	 *
 	 * @return <code>true</code> if the git stash is empty
 	 *
 	 * @throws InvalidRefNameException
@@ -2410,9 +2409,9 @@ public class GitAccess {
 		try {
 			toReturn = git.stashApply().setStashRef(stashRef).call();
 			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()));
-		} catch (GitAPIException err) {
-			LOGGER.error(err, err);
-			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()), err);
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_APPLY, getBranchInfo().getBranchName()), e);
 		}
 		return toReturn;
 	}
