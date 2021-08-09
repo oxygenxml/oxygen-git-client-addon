@@ -17,14 +17,12 @@ import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryCommitTableModel;
 import com.oxygenxml.git.view.history.HistoryPanel;
 
-public class HistoryPanelTest4 extends HistoryPanelTestBase {
+public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
   private static final GitController PUSH_PULL_CONTROLLER = new GitController(GitAccess.getInstance());
 
-  int noOfRefreshes;
 
   @Override
   protected void setUpHistoryPanel() {
-    noOfRefreshes = 0;
 
     // Initialize history panel.
     historyPanel = new HistoryPanel(PUSH_PULL_CONTROLLER) {
@@ -42,7 +40,7 @@ public class HistoryPanelTest4 extends HistoryPanelTestBase {
       @Override
       public void refresh() {
         super.refresh();
-        noOfRefreshes++;
+
       }
     };
   }

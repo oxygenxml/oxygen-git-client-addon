@@ -12,9 +12,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.After;
@@ -26,10 +28,12 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 
 
 /**
- * Tests the methods for stash action.
- * 
+ * <p><b>Description:</b> Tests the methods for stash action.</p>
+ * <p><b>Bug ID:</b> EXM-45983</p>
+ *
  * @author Alex_Smarandache
  *
+ * @throws Exception
  */
 public class GitAccessStashTest {
 
@@ -67,10 +71,27 @@ public class GitAccessStashTest {
     gitAccess.commit("file test added");
   }
 
-  
+
   /**
-   * Tests the com.oxygenxml.git.service.GitAccess.createStash() API.
-   * 
+   * Helper method returning whether the stash is empty or not.
+   *
+   * @return <code>true</code> if the git stash is empty
+   *
+   * @throws GitAPIException
+   */
+  protected boolean isStashEmpty() throws GitAPIException {
+    StashListCommand stashList = gitAccess.getGit().stashList();
+    Collection<RevCommit> stashedRefsCollection = stashList.call();
+    return stashedRefsCollection.isEmpty();
+  }
+
+
+  /**
+   * <p><b>Description:</b> tests the com.oxygenxml.git.service.GitAccess.createStash() API.</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
    * @throws Exception
    */
   @Test
@@ -83,17 +104,21 @@ public class GitAccessStashTest {
       e.printStackTrace();
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
-    assertTrue(gitAccess.isStashEmpty());
+    assertTrue(isStashEmpty());
     assertNotNull(gitAccess.createStash());
-    assertFalse(gitAccess.isStashEmpty());
+    assertFalse(isStashEmpty());
+    assertEquals(1, gitAccess.listStash().size());
     gitAccess.stashDrop(0);
-    assertTrue(gitAccess.isStashEmpty());
+    assertTrue(isStashEmpty());
   }
-  
-  
+
+
   /**
-   * Tests the com.oxygenxml.git.service.GitAccess.stashApply(String stashRef) API.
-   * 
+   * <p><b>Description:</b> tests the com.oxygenxml.git.service.GitAccess.stashApply(String stashRef) API.</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
    * @throws Exception
    */
   @Test
@@ -106,35 +131,39 @@ public class GitAccessStashTest {
       e.printStackTrace();
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
-    
-    assertTrue(gitAccess.isStashEmpty());
-    RevCommit ref = gitAccess.createStash();
-    assertFalse(gitAccess.isStashEmpty());
-    
+
+    assertTrue(isStashEmpty());
+    RevCommit commitStash = gitAccess.createStash();
+    assertFalse(isStashEmpty());
+
     boolean noCommitFound = false;
     try {
-      gitAccess.stashApply("No exists.");
-    } catch(Exception e) {
+      gitAccess.applyStash("No exists.");
+    } catch (Exception e) {
       noCommitFound = true;
     }
     assertTrue(noCommitFound);
-    
+
+   
     BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
     assertEquals("", content);
-    
-    assertEquals(gitAccess.stashApply(ref.getName()).getName(), ref.getName());
+
+    gitAccess.applyStash(commitStash.getName());
     reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
     assertEquals("modify", content);
   }
-  
-  
+
+
   /**
-   * Tests the situation in which we want to apply a stash and we have uncommitted changes that do not cause conflicts.
-   * 
+   * <p><b>Description:</b> tests the situation in which we want to apply a stash and we have uncommitted changes that do not cause conflicts.</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
    * @throws Exception
    */
   @Test
@@ -148,9 +177,9 @@ public class GitAccessStashTest {
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
-    assertTrue(gitAccess.isStashEmpty());
+    assertTrue(isStashEmpty());
     RevCommit ref = gitAccess.createStash();
-    assertFalse(gitAccess.isStashEmpty());
+    assertFalse(isStashEmpty());
     
     try {
       PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test2.txt");
@@ -160,7 +189,7 @@ public class GitAccessStashTest {
       e.printStackTrace();
     }
     
-    gitAccess.stashApply(ref.getName());
+    gitAccess.applyStash(ref.getName());
     BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
@@ -171,11 +200,14 @@ public class GitAccessStashTest {
     reader.close();
     assertEquals("modify", content);
   }
-  
-  
+
+
   /**
-   * Tests the situation in which we want to apply a stash and we have committed changes that do cause conflicts.
-   * 
+   * <p><b>Description:</b> tests the situation in which we want to apply a stash and we have committed changes that do cause conflicts.</p>
+   * <p><b>Bug ID:</b>EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
    * @throws Exception
    */
   @Test
@@ -189,9 +221,9 @@ public class GitAccessStashTest {
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
-    assertTrue(gitAccess.isStashEmpty());
+    assertTrue(isStashEmpty());
     RevCommit ref = gitAccess.createStash();
-    assertFalse(gitAccess.isStashEmpty());
+    assertFalse(isStashEmpty());
     try {
       PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
       out.println("modify");
@@ -203,7 +235,7 @@ public class GitAccessStashTest {
     gitAccess.commit("file test modified");
     assertNull(gitAccess.createStash());
     
-    gitAccess.stashApply(ref.getName());
+    gitAccess.applyStash(ref.getName());
     
     BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));

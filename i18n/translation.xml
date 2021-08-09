@@ -9,11 +9,11 @@
     
     <key value="Stash_Apply_Failed">
         <comment>Stash apply failed</comment>
-        <val lang="en_US">Unable to apply stash push.</val>
-        <val lang="de_DE">Unable to apply stash push.</val>
-        <val lang="fr_FR">Unable to apply stash push.</val>
-        <val lang="ja_JP">Unable to apply stash push.</val>
-        <val lang="nl_NL">Unable to apply stash push.</val>
+        <val lang="en_US">Unable to apply stash.</val>
+        <val lang="de_DE">Unable to apply stash.</val>
+        <val lang="fr_FR">Unable to apply stash.</val>
+        <val lang="ja_JP">Unable to apply stash.</val>
+        <val lang="nl_NL">Unable to apply stash.</val>
     </key>
     
     <key value="Stash">
@@ -27,11 +27,11 @@
     
     <key value="Revert_Commit_Warning">
         <comment>Warns about reverting the last commit</comment>
-        <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
-        <val lang="de_DE">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
-        <val lang="fr_FR">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
-        <val lang="ja_JP">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
-        <val lang="nl_NL">Are you sure you want to create a new commit that reverts all the changes in the selected commit</val>
+        <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="de_DE">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="fr_FR">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="ja_JP">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="nl_NL">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
     </key>
     
     <key value="Revert_Commit">

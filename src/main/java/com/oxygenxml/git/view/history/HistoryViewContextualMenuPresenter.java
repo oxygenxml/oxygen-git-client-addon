@@ -34,7 +34,7 @@ import com.oxygenxml.git.utils.FileUtil;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.history.actions.CreateBranchFromCommitAction;
 import com.oxygenxml.git.view.history.actions.ResetBranchToCommitAction;
-import com.oxygenxml.git.view.history.actions.RevertToLastCommitAction;
+import com.oxygenxml.git.view.history.actions.RevertCommitAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -233,7 +233,7 @@ public class HistoryViewContextualMenuPresenter {
     String commitId = commitCharacteristics.getCommitId();
     if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitId)) {
       jPopupMenu.add(new CreateBranchFromCommitAction(commitId));
-      jPopupMenu.add(new RevertToLastCommitAction(commitCharacteristics));
+      jPopupMenu.add(new RevertCommitAction(commitCharacteristics));
       jPopupMenu.add(new ResetBranchToCommitAction(commitCharacteristics));
     }
   }
