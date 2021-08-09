@@ -63,8 +63,8 @@ public class RevertCommitDialog extends OKCancelDialog { // NOSONAR (java:S110)
     setResizable(true);
     pack();
     
-    //setOkButtonText(TRANSLATOR.getTranslation(Tags.));
-    //setCancelButtonText();
+    setOkButtonText(TRANSLATOR.getTranslation(Tags.YES));
+    setCancelButtonText(TRANSLATOR.getTranslation(Tags.NO));
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }

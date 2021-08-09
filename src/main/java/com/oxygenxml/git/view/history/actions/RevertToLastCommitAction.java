@@ -45,7 +45,7 @@ public class RevertToLastCommitAction extends AbstractAction {
         RevertCommitDialog dialog = new RevertCommitDialog(Translator.getInstance().getTranslation(Tags.REVERT_COMMIT));
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           
-         GitAccess.getInstance().revertCommit(GitAccess.getInstance().getRepository(),commitCharacteristics.getCommitId());
+         GitAccess.getInstance().revertCommit(commitCharacteristics.getCommitId());
         }
       }  catch (Exception ex) {
         LOGGER.debug(ex);

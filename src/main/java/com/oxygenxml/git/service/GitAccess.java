@@ -1673,8 +1673,9 @@ public class GitAccess {
    * @throws NoRepositorySelected 
    * @throws IOException 
    */
-  public void revertCommit(Repository repo, String commitId) throws IOException, NoRepositorySelected {
+  public void revertCommit(String commitId) throws IOException, NoRepositorySelected {
     fireOperationAboutToStart(new GitEventInfo(GitOperation.REVERT_COMMIT));
+    Repository repo = git.getRepository();
     try {
       RevWalk revWalk = new RevWalk(repo);
       RevCommit revcom = revWalk.parseCommit(getRepository().resolve(commitId));
