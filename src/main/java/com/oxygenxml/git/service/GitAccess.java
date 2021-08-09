@@ -2382,7 +2382,7 @@ public class GitAccess {
 	/**
 	 * Create a new stash command.
 	 * 
-	 * @return 
+	 * @return The new stash command created.
 	 */
 	protected RevCommit createStash() {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
@@ -2402,6 +2402,8 @@ public class GitAccess {
 	 * Apply the stash operation with the given reference.
 	 *
 	 * @param stashRef the stash which will be applied.
+	 *
+	 * @return Returns a command object used to apply a stashed commit.
 	 */
 	protected ObjectId stashApply(String stashRef) {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
