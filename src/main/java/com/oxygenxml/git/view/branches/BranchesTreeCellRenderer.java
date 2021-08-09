@@ -117,6 +117,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       } catch (GitAPIException | IOException | NoRepositorySelected e) {
         LOGGER.error(e, e);
       }
+    }
       Font font = label.getFont();
       label.setFont(font.deriveFont(Font.PLAIN));
       label.setBorder(new EmptyBorder(0, 5, 0, 0));
@@ -129,8 +130,6 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       if (sel) {
         setSelectionColors(tree);
       }
-    }
-
     return label;
   }
 
