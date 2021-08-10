@@ -34,7 +34,7 @@
               			the new branch.</li>
                             <li>A new editor variables is now supported: ${git(working_copy_url)}. It is resolved to the URL of the current working copy directory.</li>
 			    <li>When hovering the cursor over a branch name, a tooltip is displayed that provides information about the last commit
-				    performed on that branch (such as the author and the date of the commit).<li>
+				    performed on that branch (such as the author and the date of the commit).</li>
                         </ol>
                     </div>
                     <div>
