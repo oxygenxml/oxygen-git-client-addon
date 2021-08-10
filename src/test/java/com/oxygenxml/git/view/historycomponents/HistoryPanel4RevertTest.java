@@ -20,10 +20,11 @@ import com.oxygenxml.git.view.history.HistoryPanel;
 public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
   private static final GitController PUSH_PULL_CONTROLLER = new GitController(GitAccess.getInstance());
 
-
+  int noOfRefreshes;
   @Override
   protected void setUpHistoryPanel() {
-
+    noOfRefreshes = 0;
+    
     // Initialize history panel.
     historyPanel = new HistoryPanel(PUSH_PULL_CONTROLLER) {
       @Override
@@ -40,7 +41,7 @@ public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
       @Override
       public void refresh() {
         super.refresh();
-
+        noOfRefreshes++;
       }
     };
   }
@@ -96,13 +97,14 @@ public class HistoryPanel4RevertTest extends HistoryPanelTestBase {
       expected = "[ Revert \"Changes.\"\n"
           + "\n"
           + "This reverts commit "+commitCharacteristics.getCommitId()+".\n"
-          + " , 9 Aug 2021 , AlexJitianu <alex_jitianu@sync.ro> , 5 , AlexJitianu , [1] ]\n"
-          + "[ Root file changed. , 9 Aug 2021 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
-          + "[ Root file. , 9 Aug 2021 , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
-          + "[ Changes. , 9 Aug 2021 , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n"
-          + "[ First commit. , 9 Aug 2021 , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n";
+          + " , {date} , AlexJitianu <alex_jitianu@sync.ro> , 5 , AlexJitianu , [1] ]\n"
+          + "[ Root file changed. , {date} , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n"
+          + "[ Root file. , {date} , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n"
+          + "[ Changes. , {date} , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n"
+          + "[ First commit. , {date} , Alex <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n";
       expected = replaceDate(expected);
       assertEquals(expected, dump);
+      assertEquals(1, noOfRefreshes);
     } finally {
       GitAccess.getInstance().closeRepo();
       FileUtils.deleteDirectory(wcTree);
