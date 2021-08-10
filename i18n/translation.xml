@@ -26,11 +26,11 @@
 
     <key value="Merge_Failed_Uncommitted_Changes_Message">
         <comment>The message in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
-        <val lang="en_US">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
-        <val lang="de_DE">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
-        <val lang="fr_FR">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
-        <val lang="ja_JP">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
-        <val lang="nl_NL">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
+        <val lang="en_US">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
+        <val lang="de_DE">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
+        <val lang="fr_FR">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
+        <val lang="ja_JP">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
+        <val lang="nl_NL">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
     </key> 
     <key value="Merge_Failed_Uncommitted_Changes_Title">
         <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
