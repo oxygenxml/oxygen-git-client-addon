@@ -73,8 +73,8 @@ public class BranchTreeMenuActionsProvider {
       } else {
         nodeActions.add(createCheckoutLocalBranchAction(nodeContent));
         nodeActions.add(createNewBranchAction(nodeContent));
-        nodeActions.add(createDeleteLocalBranchAction(nodeContent));
         nodeActions.add(createMergeAction(nodeContent));
+        nodeActions.add(createDeleteLocalBranchAction(nodeContent));
       }
     } else if (nodeContent.contains(Constants.R_REMOTES)) {
       nodeActions.add(createCheckoutRemoteBranchAction(nodeContent));

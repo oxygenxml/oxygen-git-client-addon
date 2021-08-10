@@ -299,7 +299,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
             || operation == GitOperation.MERGE) {
           gitRefreshSupport.call();
           
-          if (operation == GitOperation.CHECKOUT) {
+          if (operation == GitOperation.CHECKOUT
+              || operation == GitOperation.MERGE) {
             try {
               FileUtil.refreshProjectView();
             } catch (NoRepositorySelected e) {

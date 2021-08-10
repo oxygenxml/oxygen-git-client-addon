@@ -7,7 +7,6 @@
         <language description="Dutch" lang="nl_NL" />
     </languageList>
     
-    
      <key value="Open_working_copy_version">
         <comment>Open working copy version.</comment>
         <val lang="en_US">Open current version</val>
@@ -24,6 +23,40 @@
         <val lang="ja_JP">Open selected version</val>
         <val lang="nl_NL">Open selected version</val>
     </key>
+
+    <key value="Merge_Failed_Uncommitted_Changes_Message">
+        <comment>The message in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
+        <val lang="en_US">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
+        <val lang="de_DE">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
+        <val lang="fr_FR">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
+        <val lang="ja_JP">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
+        <val lang="nl_NL">Merge failed because there are uncommitted changes on this branch,  \n in this files: </val>
+    </key> 
+    <key value="Merge_Failed_Uncommitted_Changes_Title">
+        <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
+        <val lang="en_US">Merge failed</val>
+        <val lang="de_DE">Merge failed</val>
+        <val lang="fr_FR">Merge failed</val>
+        <val lang="ja_JP">Merge failed</val>
+        <val lang="nl_NL">Merge failed</val>
+    </key>
+    <key value="Merge_Conflicts_Message">
+        <comment>TThe message in the warning File Status Dialog when there are merge conflicts</comment>
+        <val lang="en_US">Resolve this merge conflicts before continuing: </val>
+        <val lang="de_DE">Resolve this merge conflicts before continuing: </val>
+        <val lang="fr_FR">Resolve this merge conflicts before continuing: </val>
+        <val lang="ja_JP">Resolve this merge conflicts before continuing: </val>
+        <val lang="nl_NL">Resolve this merge conflicts before continuing: </val>
+    </key>
+    <key value="Merge_Conflicts_Title">
+        <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
+        <val lang="en_US">Merge conflicts</val>
+        <val lang="de_DE">Merge conflicts</val>
+        <val lang="fr_FR">Merge conflicts</val>
+        <val lang="ja_JP">Merge conflicts</val>
+        <val lang="nl_NL">Merge conflicts</val>
+    </key>
+    
     <key value="Stash_Apply_Failed">
         <comment>Stash apply failed</comment>
         <val lang="en_US">Unable to apply stash.</val>
