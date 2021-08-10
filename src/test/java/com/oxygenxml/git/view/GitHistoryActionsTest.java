@@ -51,7 +51,6 @@ public class GitHistoryActionsTest extends GitTestBase {
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
 
       String dump = dumpHistory(commitsCharacteristics);
-      System.out.println(dump);
 
       String expected = 
           "[ Changes. , 19 Nov 2019 , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
@@ -88,7 +87,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       assertEquals("["
           + "Compare_file_with_previous_version, "
           + "Compare_file_with_working_tree_version, "
-          + "Open_file]", dumpActions(actions));
+          + "Open_file, Open_file]", dumpActions(actions));
       
       // A deleted file.
       actions.clear();
@@ -116,8 +115,9 @@ public class GitHistoryActionsTest extends GitTestBase {
           "(changeType=ADD, fileLocation=file1.txt)\n" + 
           "", dumpFS);
       actions.clear();
+      
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
-      assertEquals("[Open_file]", dumpActions(actions));
+      assertEquals("[Open_file, Open_file]", dumpActions(actions));
 
     } finally {
       GitAccess.getInstance().closeRepo();

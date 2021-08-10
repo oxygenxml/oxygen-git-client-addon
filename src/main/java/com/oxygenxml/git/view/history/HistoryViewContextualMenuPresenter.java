@@ -602,10 +602,7 @@ public class HistoryViewContextualMenuPresenter {
    */
   private String getOpenFileWorkingCopyActionName(FileStatus fileStatus, boolean addFileName) {
     String actionName = Translator.getInstance().getTranslation(Tags.OPEN_WORKING_COPY);
-    if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
-      // A removed file. We can only present the previous version.
-      actionName = Translator.getInstance().getTranslation(Tags.OPEN_PREVIOUS_VERSION);
-    } else if (addFileName) {
+    if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
       actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
     }
