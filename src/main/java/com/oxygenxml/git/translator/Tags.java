@@ -396,9 +396,14 @@ public class Tags {
 	public static final String OPEN_IN_COMPARE = "Open_In_Compare";
 
 	 /**
-   * The text displayed for the "Open" contextual menu item
+   * The text displayed for the "Open this version" contextual menu item
    */
   public static final String OPEN_THIS_VERSION = "Open_this_version";
+  
+  /**
+   * The text displayed for the "Open working copy" contextual menu item
+   */
+  public static final String OPEN_WORKING_COPY = "Open_working_copy_version";
   
 	/**
 	 * The text displayed for the "Open" contextual menu item

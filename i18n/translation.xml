@@ -8,13 +8,21 @@
     </languageList>
     
     
+     <key value="Open_working_copy_version">
+        <comment>Open working copy version.</comment>
+        <val lang="en_US">Open current version</val>
+        <val lang="de_DE">Open current version</val>
+        <val lang="fr_FR">Open current version</val>
+        <val lang="ja_JP">Open current version</val>
+        <val lang="nl_NL">Open current version</val>
+    </key>
     <key value="Open_this_version">
         <comment>Open this version.</comment>
-        <val lang="en_US">Open this version</val>
-        <val lang="de_DE">Open this version</val>
-        <val lang="fr_FR">Open this version</val>
-        <val lang="ja_JP">Open this version</val>
-        <val lang="nl_NL">Open this version</val>
+        <val lang="en_US">Open selected version</val>
+        <val lang="de_DE">Open selected version</val>
+        <val lang="fr_FR">Open selected version</val>
+        <val lang="ja_JP">Open selected version</val>
+        <val lang="nl_NL">Open selected version</val>
     </key>
     <key value="Stash_Apply_Failed">
         <comment>Stash apply failed</comment>
