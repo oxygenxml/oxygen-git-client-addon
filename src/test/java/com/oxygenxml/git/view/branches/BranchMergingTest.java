@@ -114,8 +114,6 @@ public class BranchMergingTest extends GitTestBase {
     
     sleep(500);
     
-    File afterMergeFile = new File(gitAccess.getWorkingCopy().getAbsolutePath() + "local.txt");
-    
     assertEquals("local content for merging", TestUtil.read(file.toURI().toURL()));
     
   }
