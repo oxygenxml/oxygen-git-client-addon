@@ -278,7 +278,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 										TRANSLATOR.getTranslation(Tags.MARK_RESOLVED),
 										TRANSLATOR.getTranslation(Tags.CONFLICT_MARKERS_MESSAGE),
 										TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY),
-										TRANSLATOR.getTranslation(Tags.CLOSE)
+										TRANSLATOR.getTranslation(Tags.CANCEL)
 										
 						);
 						if(answer == FileStatusDialog.RESULT_OK) {
