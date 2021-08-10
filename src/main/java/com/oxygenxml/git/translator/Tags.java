@@ -1280,5 +1280,22 @@ public class Tags {
    * Stash apply failed.
    */
   public static final String STASH_APPLY_FAILED = "Stash_Apply_Failed";
+
+  /**
+   * The message in the warning File Status Dialog when Merge Fail because of uncommitted changes
+   */
+  public static final String MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE = "Merge_Failed_Uncommitted_Changes_Message";
+  /**
+   * The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes
+   */
+  public static final String MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE = "Merge_Failed_Uncommitted_Changes_Title";
+  /**
+   * The message in the warning File Status Dialog when there are merge conflicts
+   */
+  public static final String MERGE_CONFLICTS_MESSAGE = "Merge_Conflicts_Message";
+  /**
+   * The tile in the warning File Status Dialog when there are merge conflicts
+   */
+  public static final String MERGE_CONFLICTS_TITLE = "Merge_Conflicts_Title";
   
 }

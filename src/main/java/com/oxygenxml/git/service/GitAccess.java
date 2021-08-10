@@ -2347,12 +2347,22 @@ public class GitAccess {
     try {
       ObjectId mergeBase = getRepository().resolve(branchName);
       MergeResult res = git.merge().include(mergeBase).call();
-      
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
         LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
         List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
-        FileStatusDialog.showWarningMessage("Merge conflicts", conflictingFiles, "Resolve this merge conflicts before continuing: ");
+        FileStatusDialog.showWarningMessage(
+            translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
+            conflictingFiles,
+            translator.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
+      } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
+        LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
+        List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
+        FileStatusDialog.showWarningMessage(
+            translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
+            failingFiles,
+            translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
       }
+      
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
 
     } catch (RevisionSyntaxException | IOException | NoRepositorySelected | GitAPIException e) {
