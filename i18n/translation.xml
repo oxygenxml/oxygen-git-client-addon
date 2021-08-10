@@ -15,6 +15,22 @@
         <val lang="ja_JP">Open current version</val>
         <val lang="nl_NL">Open current version</val>
     </key>
+    <key value="Check_out_this_version">
+        <comment>Check out this version.</comment>
+        <val lang="en_US">Check out this version</val>
+        <val lang="de_DE">Check out this version</val>
+        <val lang="fr_FR">Check out this version</val>
+        <val lang="ja_JP">Check out this version</val>
+        <val lang="nl_NL">Check out this version</val>
+    </key>
+    <key value="Restore_this_file">
+        <comment>Restore this file.</comment>
+        <val lang="en_US">Restore this file</val>
+        <val lang="de_DE">Restore this file</val>
+        <val lang="fr_FR">Restore this file</val>
+        <val lang="ja_JP">Restore this file</val>
+        <val lang="nl_NL">Restore this file</val>
+    </key>
     <key value="Open_this_version">
         <comment>Open this version.</comment>
         <val lang="en_US">Open selected version</val>

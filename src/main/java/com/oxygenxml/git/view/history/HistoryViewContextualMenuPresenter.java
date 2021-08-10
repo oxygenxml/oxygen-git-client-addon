@@ -3,8 +3,10 @@ package com.oxygenxml.git.view.history;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -17,11 +19,15 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.TreeWalk;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
-import com.oxygenxml.git.protocol.VersionIdentifier;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -322,6 +328,7 @@ public class HistoryViewContextualMenuPresenter {
       }
     } 
     if(existsLocalFile(fileStatus.getFileLocation())) {
+      actions.add(createRevertFileAction(commitCharacteristics, fileStatus, addFileName)); 
       actions.add(createOpenWorkingCopyFileAction(fileStatus, addFileName));
     }
     actions.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
@@ -516,50 +523,95 @@ public class HistoryViewContextualMenuPresenter {
 
   
   /**
-   * Creates an action to open a working copy file.
+   * Creates an action to open a working copy for a file file.
    * 
    * @author Alex_Smarandache
    * 
+   * @param revisionID Revision ID.
    * @param fileStatus File path, relative to the working copy.
    * @param addFileName <code>true</code> to append the name of the file to the name of the action.
    * 
    * @return The action that will open the file when invoked.
    */
-  private AbstractAction createOpenWorkingCopyFileAction(FileStatus file, boolean addFileName) {
-    return new AbstractAction(getOpenFileWorkingCopyActionName(file, addFileName)) {
+  private AbstractAction createRevertFileAction(CommitCharacteristics commitCharacteristics, FileStatus fileStatus, boolean addFileName) {
+    return new AbstractAction(getRevertFileActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        URL fileURL = null;
-        String fileLocation = file.getFileLocation();
-        if (file.getChangeType() == GitChangeType.ADD || file.getChangeType() == GitChangeType.CHANGED) {
-          // A file from the INDEX. We need a special URL to access it.
-          try {
-            fileURL = GitRevisionURLHandler.encodeURL(
-                VersionIdentifier.INDEX_OR_LAST_COMMIT,
-                fileLocation);
-          } catch (MalformedURLException e1) {
-            LOGGER.error(e1.getMessage(), e1);
+        try {
+          String selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+          File file = new File(selectedRepository, fileStatus.getFileLocation());
+          // TODO complete action for case where the file does not exists.
+       //   if(file.createNewFile()) {
+       //     GitAccess.getInstance().add(new FileStatus(GitChangeType.ADD, file.getName()));
+       //   }
+          try(PrintWriter prw = new PrintWriter(file)) {
+            RevWalk revWalk = new RevWalk(GitAccess.getInstance().getGit().getRepository());
+            RevCommit revcom = revWalk.parseCommit(GitAccess.getInstance().getGit().getRepository().resolve(commitCharacteristics.getCommitId()));
+            prw.print(getContent(revcom, fileStatus.getFileLocation()));          
           }
-        } else {
-          try {
-            fileURL = FileUtil.getFileURL(fileLocation);
-          } catch (NoRepositorySelected e1) {
-            LOGGER.error(e1.getMessage(), e1);
-          }
+        } catch (IOException | NoRepositorySelected e1) {
+          LOGGER.error(e1.getMessage(), e1);
         }
-
-        boolean isProjectExt = false;
-        int index = fileLocation.lastIndexOf('.');
-        if (index != -1) {
-          String ext = fileLocation.substring(index + 1);
-          isProjectExt = "xpr".equals(ext);
-        }
-        PluginWorkspaceProvider.getPluginWorkspace().open(
-            fileURL,
-            isProjectExt ? EditorPageConstants.PAGE_TEXT : null,
-            isProjectExt ? "text/xml" : null);
       }
     };
+  }
+  
+  /**
+   * Get content from a file from a commit.
+   * 
+   * @author Alex_Smarandache
+   * 
+   * @param commit  The commit where the file is extracted from.
+   * @param path    Path of the file.
+   * 
+   * @return        The content of the file.
+   * 
+   * @throws IOException
+   */
+  private String getContent(RevCommit commit, String path) throws IOException {
+    try (TreeWalk treeWalk = TreeWalk.forPath(GitAccess.getInstance().getGit().getRepository(), path, commit.getTree())) {
+      ObjectId blobId = treeWalk.getObjectId(0);
+      try (ObjectReader objectReader = GitAccess.getInstance().getGit().getRepository().newObjectReader()) {
+        ObjectLoader objectLoader = objectReader.open(blobId);
+        byte[] bytes = objectLoader.getBytes();
+        return new String(bytes, StandardCharsets.UTF_8);
+      }
+    }
+  }
+  
+  /**
+   * Creates an action to open a working copy file.
+   * 
+   * @author Alex_Smarandache
+   * 
+   * @param fileStatus  File path, relative to the working copy.
+   * @param addFileName <code>true</code> to append the name of the file to the name of the action.
+   * 
+   * @return The action that will open the file when invoked.
+   */
+  private AbstractAction createOpenWorkingCopyFileAction(FileStatus fileStatus, boolean addFileName) {
+    return new AbstractAction(getOpenFileWorkingCopyActionName(fileStatus, addFileName)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          String selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
+          String fileLocation = fileStatus.getFileLocation();
+          File file = new File(selectedRepository, fileLocation);
+          boolean isProjectExt = false;
+          int index = fileLocation.lastIndexOf('.');
+          if (index != -1) {
+            String ext = fileLocation.substring(index + 1);
+            isProjectExt = "xpr".equals(ext);
+          }
+          PluginWorkspaceProvider.getPluginWorkspace().open(
+              file.toURI().toURL(),
+              isProjectExt ? EditorPageConstants.PAGE_TEXT : null,
+              isProjectExt ? "text/xml" : null);
+        } catch (NoRepositorySelected | MalformedURLException e1) {
+         LOGGER.error(e1.getMessage(), e1);
+        }
+      }
+     };
   }
   
   
@@ -608,6 +660,27 @@ public class HistoryViewContextualMenuPresenter {
     }
     return actionName;
   }
+  
+  
+  /**
+   * Builds the name for the action that revert changes for a file.
+   * 
+   * @param fileStatus File info.
+   * @param addFileName <code>true</code> to put the file name in the action name too.
+   * 
+   * @return The name of the revert file action.
+   */
+  private String getRevertFileActionName(FileStatus fileStatus, boolean addFileName) {
+    String actionName = Translator.getInstance().getTranslation(Tags.CHECK_OUT_THIS_VERSION);
+    if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
+      actionName = Translator.getInstance().getTranslation(Tags.RESTORE_THIS_FILE);
+    } else if (addFileName) {
+      String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
+      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.RESTORE_THIS_FILE), fileName);
+    }
+    return actionName;
+  }
+  
   
   
   /**

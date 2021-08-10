@@ -405,6 +405,16 @@ public class Tags {
    */
   public static final String OPEN_WORKING_COPY = "Open_working_copy_version";
   
+  /**
+   * The text displayed for the "Checkout this version" contextual menu item
+   */
+  public static final String CHECK_OUT_THIS_VERSION = "Check_out_this_version";
+  
+  /**
+   * The text displayed for the "Restore this file" contextual menu item
+   */
+  public static final String RESTORE_THIS_FILE = "Restore_this_file";
+  
 	/**
 	 * The text displayed for the "Open" contextual menu item
 	 */

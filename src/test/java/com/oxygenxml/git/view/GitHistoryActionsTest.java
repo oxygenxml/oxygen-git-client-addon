@@ -87,13 +87,13 @@ public class GitHistoryActionsTest extends GitTestBase {
       assertEquals("["
           + "Compare_file_with_previous_version, "
           + "Compare_file_with_working_tree_version, "
-          + "Open_file, Open_file]", dumpActions(actions));
+          + "Open_file, Open_file, Restore_this_file]", dumpActions(actions));
       
       // A deleted file.
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(1), commitCharacteristic, true);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Open_previous_version]", dumpActions(actions));
+      assertEquals("[Open_previous_version, Restore_this_file]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
@@ -105,7 +105,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Open_file]", dumpActions(actions));
+      assertEquals("[Open_file, Restore_this_file]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
@@ -117,7 +117,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
-      assertEquals("[Open_file, Open_file]", dumpActions(actions));
+      assertEquals("[Open_file, Open_file, Restore_this_file]", dumpActions(actions));
 
     } finally {
       GitAccess.getInstance().closeRepo();
@@ -191,7 +191,6 @@ public class GitHistoryActionsTest extends GitTestBase {
       List<CommitCharacteristics> commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
   
       String dump = dumpHistory(commitsCharacteristics);
-      System.out.println(dump);
   
       String expected = 
           "[ Merge branch 'main' , 19 Nov 2019 , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2, 3] ]\n" + 
@@ -226,7 +225,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changes.get(0), commitCharacteristics, true);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristics);
-      assertEquals("[Open_previous_version]", dumpActions(actions));
+      assertEquals("[Open_previous_version, Restore_this_file]", dumpActions(actions));
       
       final StringBuilder b = new StringBuilder();
       Mockito.when(PluginWorkspaceProvider.getPluginWorkspace().open((URL)Mockito.any())).thenAnswer(new Answer<Void>() {
@@ -246,7 +245,6 @@ public class GitHistoryActionsTest extends GitTestBase {
       
     } finally {
       GitAccess.getInstance().closeRepo();
-  
       FileUtils.deleteDirectory(wcTree);
     }
   }
