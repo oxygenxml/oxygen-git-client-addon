@@ -7,6 +7,15 @@
         <language description="Dutch" lang="nl_NL" />
     </languageList>
     
+    
+    <key value="Open_this_version">
+        <comment>Open this version.</comment>
+        <val lang="en_US">Open this version</val>
+        <val lang="de_DE">Open this version</val>
+        <val lang="fr_FR">Open this version</val>
+        <val lang="ja_JP">Open this version</val>
+        <val lang="nl_NL">Open this version</val>
+    </key>
     <key value="Stash_Apply_Failed">
         <comment>Stash apply failed</comment>
         <val lang="en_US">Unable to apply stash.</val>
@@ -15,7 +24,6 @@
         <val lang="ja_JP">Unable to apply stash.</val>
         <val lang="nl_NL">Unable to apply stash.</val>
     </key>
-    
     <key value="Stash">
         <comment>Stash</comment>
         <val lang="en_US">Stash</val>

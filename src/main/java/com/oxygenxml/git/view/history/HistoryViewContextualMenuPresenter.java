@@ -520,7 +520,7 @@ public class HistoryViewContextualMenuPresenter {
    * @return The name of the open file action.
    */
   private String getOpenFileActionName(FileStatus fileStatus, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.OPEN);
+    String actionName = Translator.getInstance().getTranslation(Tags.OPEN_THIS_VERSION);
     if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
       // A removed file. We can only present the previous version.
       actionName = Translator.getInstance().getTranslation(Tags.OPEN_PREVIOUS_VERSION);
