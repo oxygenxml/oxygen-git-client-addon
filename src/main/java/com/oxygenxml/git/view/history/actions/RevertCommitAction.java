@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
@@ -58,6 +59,7 @@ public class RevertCommitAction extends AbstractAction {
             Translator.getInstance().getTranslation(Tags.NO));
         if ( result == OKCancelDialog.RESULT_OK) {
           GitAccess.getInstance().revertCommit(commitCharacteristics.getCommitId());
+          RemoteRepositoryChangeWatcher.markAsNotified();
         }
       } catch (NoRepositorySelected | IOException ex) {
         LOGGER.debug(ex);
