@@ -129,7 +129,7 @@ public class BranchMergingTest extends GitTestBase {
     File file1 = new File(LOCAL_TEST_REPOSITORY, "local1.txt");
     File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
     file1.createNewFile();
-    file1.createNewFile();
+    file2.createNewFile();
 
     setFileContent(file1, "local file 1 content");
     setFileContent(file2, "local file 2 content");
@@ -150,8 +150,8 @@ public class BranchMergingTest extends GitTestBase {
     String secondaryBranchPath = (String) secondaryBranchNode.getUserObject();
     assertTrue(secondaryBranchPath.contains(Constants.R_HEADS));
 
-    // ------------- Checkout the first branch in the tree: LOCAL_BRANCH_NAME1
-    // -------------
+    // ------------- Checkout the first branch in the tree: LOCAL_BRANCH_NAME1  -------------
+    
     gitAccess.setBranch(LOCAL_BRANCH_NAME1);
     // Commit on this branch
     setFileContent(file1, "local file 1 on new branch");
@@ -185,8 +185,6 @@ public class BranchMergingTest extends GitTestBase {
     sleep(200);
 
     conflictMergeDialog.dispose();
-    System.out.println(TestUtil.read(file1.toURI().toURL()));
-    System.out.println(TestUtil.read(file2.toURI().toURL()));
     assertTrue(TestUtil.read(file1.toURI().toURL()).
         contains("<<<<<<< HEAD\n" 
             + "local file 1 modifications\n" 
@@ -200,5 +198,91 @@ public class BranchMergingTest extends GitTestBase {
             + "=======\n" 
             + "local file 2 on new branch\n" 
             + ">>>>>>>"));
+  }
+  
+  /**
+   * Tests the failing merging.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testFailingMerging() throws Exception {
+  
+    File file1 = new File(LOCAL_TEST_REPOSITORY, "local1.txt");
+    File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
+    file1.createNewFile();
+    file2.createNewFile();
+
+    setFileContent(file1, "local file 1 content");
+    setFileContent(file2, "local file 2 content");
+
+    // Make the first commit for the local repository, create a new branch and move on it
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    gitAccess.commit("First local commit on main.");
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    GitTreeNode root = (GitTreeNode) (branchManagementPanel.getTree().getModel().getRoot());
+    GitTreeNode secondaryBranchNode = (GitTreeNode) root.getFirstLeaf();
+    
+    gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+    
+    // Commit on this branch
+    setFileContent(file1, "branch file1 modification ");
+    setFileContent(file2, "branch file2 modification ");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    gitAccess.commit("Commit on secondary branch");
+    
+    // Move on main branch, make some uncommitted modifications and then try to merge
+    
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    setFileContent(file1, "file1 something xx...xx...");
+    setFileContent(file2, "file2 something xx...xx...");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    // merge action
+    
+    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
+    for (AbstractAction abstractAction : actionsForNode) {
+      if (abstractAction.getValue(AbstractAction.NAME).toString().contains("Merge")) {
+        abstractAction.actionPerformed(null);
+        break;
+      }
+    }
+    
+    JDialog checkoutMergeFailDialog = findDialog(translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE));
+    assertNotNull(checkoutMergeFailDialog);
+    sleep(200);
+    
+    checkoutMergeFailDialog.dispose();
+    
+    
+    //Commit the changes on the main branch then make other uncommitted changes and try to merge again
+    gitAccess.commit("Commit on main branch");
+    
+    setFileContent(file1, "file1 something modif");
+    setFileContent(file2, "file2 something modif");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local1.txt"));
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local2.txt"));
+    
+    List<AbstractAction> actionsForNode2 = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
+    for (AbstractAction abstractAction : actionsForNode2) {
+      if (abstractAction.getValue(AbstractAction.NAME).toString().contains("Merge")) {
+        abstractAction.actionPerformed(null);
+        break;
+      }
+    }
+    
+    JDialog mergeFailDialog = findDialog(translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE));
+    assertNotNull(mergeFailDialog);
+    sleep(200);
+    
+    mergeFailDialog.dispose();
   }
 }

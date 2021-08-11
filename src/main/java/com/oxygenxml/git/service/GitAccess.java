@@ -2335,14 +2335,14 @@ public class GitAccess {
   /**
    * Merge the given branch into the current branch.
    * 
-   * @param branchName The full name of the branch to be merged into the current one (e.g. refs/heads/dev).
+   * @param branchName The full name of the branch to be merged into the current
+   *                   one (e.g. refs/heads/dev).
    * 
    * @throws IOException
    * @throws NoRepositorySelected
    * @throws GitAPIException
    */
   public void mergeBranch(String branchName) throws IOException, NoRepositorySelected, GitAPIException {
-    
     fireOperationAboutToStart(new BranchGitEventInfo(GitOperation.MERGE, branchName));
     try {
       ObjectId mergeBase = getRepository().resolve(branchName);
@@ -2350,9 +2350,7 @@ public class GitAccess {
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
         LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
         List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
-        FileStatusDialog.showWarningMessage(
-            translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
-            conflictingFiles,
+        FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE), conflictingFiles,
             translator.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
         LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
@@ -2362,11 +2360,18 @@ public class GitAccess {
             failingFiles,
             translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
       }
-      
+
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
 
     } catch (RevisionSyntaxException | IOException | NoRepositorySelected | GitAPIException e) {
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE,branchName), e);
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
+       if (e.getMessage().contains("Checkout conflict")) {
+         String checkoutExceptionMessageString = e.getMessage();
+         List<String> checkoutFailingFiles = Arrays.asList(checkoutExceptionMessageString.split("\n")) ;
+         FileStatusDialog.showWarningMessage(
+           translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
+           checkoutFailingFiles,
+           translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE)); }
       throw e;
     }
   }
