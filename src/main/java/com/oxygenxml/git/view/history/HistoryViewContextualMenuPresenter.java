@@ -3,10 +3,8 @@ package com.oxygenxml.git.view.history;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -19,17 +17,13 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.treewalk.TreeWalk;
 
 import com.oxygenxml.git.protocol.GitRevisionURLHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.RevCommitUtilBase;
@@ -134,9 +128,7 @@ public class HistoryViewContextualMenuPresenter {
           } 
         }
       }
-    };
-    
-  
+    };    
 
     // Add Compare action.
     if (commitCharacteristics.length == 2) {
@@ -293,7 +285,13 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics commitCharacteristics,
       boolean addFileName) {
     List<Action> contextualActions = getContextualActions(fileStatus, commitCharacteristics, addFileName);
-    contextualActions.forEach(jPopupMenu::add);
+    contextualActions.forEach(action -> {
+      if(action == null) {
+        jPopupMenu.addSeparator();
+      } else {
+        jPopupMenu.add(action);
+      }
+    });  
   }
 
   /**
@@ -326,12 +324,23 @@ public class HistoryViewContextualMenuPresenter {
           }
         });
       }
-    } 
-    if(existsLocalFile(fileStatus.getFileLocation())) {
-      actions.add(createRevertFileAction(commitCharacteristics, fileStatus, addFileName)); 
+    }
+    if(!actions.isEmpty()) {
+      actions.add(null);
+    }
+    
+    actions.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
+    
+    boolean existsFile = existsLocalFile(fileStatus.getFileLocation());
+    
+    if(existsFile) {
       actions.add(createOpenWorkingCopyFileAction(fileStatus, addFileName));
     }
-    actions.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
+    
+    actions.add(null);
+    if(existsFile) {
+      actions.add(createCheckoutFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName)); 
+    }
    
     return actions;
   }
@@ -368,7 +377,7 @@ public class HistoryViewContextualMenuPresenter {
       addCompareWithParentsAction(actions, commitCharacteristics, addFileName, filePath);
     }
     
-    if(existsLocalFile(filePath)) {
+    if(existsLocalFile(filePath) || fileStatus.getChangeType() == GitChangeType.RENAME) {
       addCompareWithWorkingTreeAction(actions, commitCharacteristics, addFileName, filePath); 
     }
     
@@ -482,6 +491,7 @@ public class HistoryViewContextualMenuPresenter {
     };
   }
 
+  
   /**
    * Builds the name for the compare with previous version action.
    * 
@@ -523,61 +533,25 @@ public class HistoryViewContextualMenuPresenter {
 
   
   /**
-   * Creates an action to open a working copy for a file file.
+   * Creates an action revert a file for a file.
    * 
    * @author Alex_Smarandache
    * 
-   * @param revisionID Revision ID.
-   * @param fileStatus File path, relative to the working copy.
-   * @param addFileName <code>true</code> to append the name of the file to the name of the action.
+   * @param commitId         The commit ID.
+   * @param fileStatus       The File to be reverted.
+   * @param addFileName      <code>true</code> to append the name of the file to the name of the action.
    * 
    * @return The action that will open the file when invoked.
    */
-  private AbstractAction createRevertFileAction(CommitCharacteristics commitCharacteristics, FileStatus fileStatus, boolean addFileName) {
-    return new AbstractAction(getRevertFileActionName(fileStatus, addFileName)) {
+  private AbstractAction createCheckoutFileAction(String commitId, FileStatus fileStatus, boolean addFileName) {
+    return new AbstractAction(getCheckoutFileActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        try {
-          String selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-          File file = new File(selectedRepository, fileStatus.getFileLocation());
-          // TODO complete action for case where the file does not exists.
-       //   if(file.createNewFile()) {
-       //     GitAccess.getInstance().add(new FileStatus(GitChangeType.ADD, file.getName()));
-       //   }
-          try(PrintWriter prw = new PrintWriter(file)) {
-            RevWalk revWalk = new RevWalk(GitAccess.getInstance().getGit().getRepository());
-            RevCommit revcom = revWalk.parseCommit(GitAccess.getInstance().getGit().getRepository().resolve(commitCharacteristics.getCommitId()));
-            prw.print(getContent(revcom, fileStatus.getFileLocation()));          
-          }
-        } catch (IOException | NoRepositorySelected e1) {
-          LOGGER.error(e1.getMessage(), e1);
-        }
+        GitOperationScheduler.getInstance().schedule(() -> GitAccess.getInstance().checkoutCommitForFile(fileStatus.getFileLocation(), commitId));
       }
     };
   }
   
-  /**
-   * Get content from a file from a commit.
-   * 
-   * @author Alex_Smarandache
-   * 
-   * @param commit  The commit where the file is extracted from.
-   * @param path    Path of the file.
-   * 
-   * @return        The content of the file.
-   * 
-   * @throws IOException
-   */
-  private String getContent(RevCommit commit, String path) throws IOException {
-    try (TreeWalk treeWalk = TreeWalk.forPath(GitAccess.getInstance().getGit().getRepository(), path, commit.getTree())) {
-      ObjectId blobId = treeWalk.getObjectId(0);
-      try (ObjectReader objectReader = GitAccess.getInstance().getGit().getRepository().newObjectReader()) {
-        ObjectLoader objectLoader = objectReader.open(blobId);
-        byte[] bytes = objectLoader.getBytes();
-        return new String(bytes, StandardCharsets.UTF_8);
-      }
-    }
-  }
   
   /**
    * Creates an action to open a working copy file.
@@ -670,13 +644,11 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The name of the revert file action.
    */
-  private String getRevertFileActionName(FileStatus fileStatus, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.CHECK_OUT_THIS_VERSION);
-    if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
-      actionName = Translator.getInstance().getTranslation(Tags.RESTORE_THIS_FILE);
-    } else if (addFileName) {
+  private String getCheckoutFileActionName(FileStatus fileStatus, boolean addFileName) {
+    String actionName = Translator.getInstance().getTranslation(Tags.CHECKOUT);
+    if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.RESTORE_THIS_FILE), fileName);
+      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.CHECKOUT), fileName);
     }
     return actionName;
   }
@@ -692,7 +664,7 @@ public class HistoryViewContextualMenuPresenter {
    * @return The name of the open file action.
    */
   private String getOpenFileActionName(FileStatus fileStatus, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.OPEN_THIS_VERSION);
+    String actionName = Translator.getInstance().getTranslation(Tags.OPEN);
     if (fileStatus.getChangeType() == GitChangeType.REMOVED) {
       // A removed file. We can only present the previous version.
       actionName = Translator.getInstance().getTranslation(Tags.OPEN_PREVIOUS_VERSION);

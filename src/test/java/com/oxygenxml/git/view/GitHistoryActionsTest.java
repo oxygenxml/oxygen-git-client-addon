@@ -87,13 +87,13 @@ public class GitHistoryActionsTest extends GitTestBase {
       assertEquals("["
           + "Compare_file_with_previous_version, "
           + "Compare_file_with_working_tree_version, "
-          + "Open_file, Open_file, Restore_this_file]", dumpActions(actions));
+          + "Open_file, Open_file, Checkout]", dumpActions(actions));
       
       // A deleted file.
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(1), commitCharacteristic, true);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Open_previous_version, Restore_this_file]", dumpActions(actions));
+      assertEquals("[Open_previous_version]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
@@ -105,7 +105,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Open_file, Restore_this_file]", dumpActions(actions));
+      assertEquals("[Open_file]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
@@ -117,8 +117,62 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
-      assertEquals("[Open_file, Open_file, Restore_this_file]", dumpActions(actions));
+      assertEquals("[Open_file, Open_file, Checkout]", dumpActions(actions));
 
+      
+      actions = new ArrayList<>();
+      
+      
+      //////////////////////////
+      //  Changes.
+      //////////////////////////
+      iterator = commitsCharacteristics.iterator();
+      commitCharacteristic = iterator.next();
+      changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
+      dumpFS = dumpFS(changedFiles);
+      assertEquals(
+          "(changeType=CHANGED, fileLocation=file1.txt)\n" + 
+          "(changeType=REMOVED, fileLocation=file2.txt)\n" + 
+          "", dumpFS);
+      
+      // Assert the available actions for the changed file.
+      actions.clear();
+      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
+      assertEquals("[Compare_with_previous_version, Compare_with_working_tree_version, "
+          + "Open, Open_working_copy_version, Checkout]", 
+          dumpActions(actions));
+      
+      // A deleted file.
+      actions.clear();
+      actions = presenter.getContextualActions(changedFiles.get(1), commitCharacteristic, false);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
+      assertEquals("[Open_previous_version]", 
+          dumpActions(actions));
+      
+      // Next COMMIT / REVISION
+      commitCharacteristic = iterator.next();
+      changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
+      dumpFS = dumpFS(changedFiles);
+      assertEquals(
+          "(changeType=ADD, fileLocation=file2.txt)\n" + 
+          "", dumpFS);
+      actions.clear();
+      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
+      presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
+      assertEquals("[Open]", dumpActions(actions));
+      
+      // Next COMMIT / REVISION
+      commitCharacteristic = iterator.next();
+      changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
+      dumpFS = dumpFS(changedFiles);
+      assertEquals(
+          "(changeType=ADD, fileLocation=file1.txt)\n" + 
+          "", dumpFS);
+      actions.clear();
+      
+      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
+      assertEquals("[Open, Open_working_copy_version, Checkout]", dumpActions(actions));
+      
     } finally {
       GitAccess.getInstance().closeRepo();
 
@@ -225,7 +279,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changes.get(0), commitCharacteristics, true);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristics);
-      assertEquals("[Open_previous_version, Restore_this_file]", dumpActions(actions));
+      assertEquals("[Open_previous_version]", dumpActions(actions));
       
       final StringBuilder b = new StringBuilder();
       Mockito.when(PluginWorkspaceProvider.getPluginWorkspace().open((URL)Mockito.any())).thenAnswer(new Answer<Void>() {
