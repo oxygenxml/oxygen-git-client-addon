@@ -378,7 +378,7 @@ public class HistoryViewContextualMenuPresenter {
       addCompareWithParentsAction(actions, commitCharacteristics, addFileName, filePath);
     }
     
-    if(existsLocalFile(filePath)) {
+    if(existsLocalFile(filePath) || fileStatus.getChangeType() == GitChangeType.RENAME) {
       addCompareWithWorkingTreeAction(actions, commitCharacteristics, addFileName, filePath); 
     }
     
