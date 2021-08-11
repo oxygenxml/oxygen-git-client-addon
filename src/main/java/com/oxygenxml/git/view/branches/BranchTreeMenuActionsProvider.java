@@ -66,8 +66,11 @@ public class BranchTreeMenuActionsProvider {
   private void createBranchTreeActions(GitTreeNode node) {
     String nodeContent = (String) node.getUserObject();
     // Adds either the local branch actions, or the remote branch actions.
-    if (nodeContent.contains(Constants.R_HEADS)) {
-      if (nodeContent.contains(GitAccess.getInstance().getBranchInfo().getBranchName())) {
+    boolean isLocalBranch = nodeContent.contains(Constants.R_HEADS);
+    boolean isRemoteBranch = nodeContent.contains(Constants.R_REMOTES);
+    if (isLocalBranch) {
+      boolean isCurrentBranch = nodeContent.contains(GitAccess.getInstance().getBranchInfo().getBranchName());
+      if (isCurrentBranch) {
         nodeActions.add(createNewBranchAction(nodeContent));
         nodeActions.add(createDeleteLocalBranchAction(nodeContent));
       } else {
@@ -76,7 +79,7 @@ public class BranchTreeMenuActionsProvider {
         nodeActions.add(createMergeAction(nodeContent));
         nodeActions.add(createDeleteLocalBranchAction(nodeContent));
       }
-    } else if (nodeContent.contains(Constants.R_REMOTES)) {
+    } else if (isRemoteBranch) {
       nodeActions.add(createCheckoutRemoteBranchAction(nodeContent));
     }
   }
