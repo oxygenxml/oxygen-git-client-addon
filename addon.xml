@@ -29,6 +29,8 @@
 		    <div>
                         <h3>What's new in version 2.6.0</h3>
                         <ol>
+			    <li>A warning message is now displayed when trying to use the "Mark as resolved" action 
+				on a file that contains conflict markers.</li>
 			    <li>A message prompt is now displayed if you try to switch the branch while there
               			are uncommitted changes so that you can confirm that you want to move the changes to
               			the new branch.</li>
