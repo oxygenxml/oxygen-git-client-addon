@@ -1307,5 +1307,9 @@ public class Tags {
    * The tile in the warning File Status Dialog when there are merge conflicts
    */
   public static final String MERGE_CONFLICTS_TITLE = "Merge_Conflicts_Title";
-  
+  /**
+   * Merge {0} into {1}
+   */
+  public static final String MERGE_BRANCH1_INTO_BRANCH2 = "Merge_Branch1_Into_Branch2";
+
 }

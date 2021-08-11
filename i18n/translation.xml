@@ -40,13 +40,21 @@
         <val lang="nl_NL">Open selected version</val>
     </key>
 
+	<key value="Merge_Branch1_Into_Branch2">
+        <comment>Merge {branch1} into {branch2}</comment>
+        <val lang="en_US">Merge {0} into {1}</val>
+        <val lang="de_DE">Merge {0} into {1}</val>
+        <val lang="fr_FR">Merge {0} into {1}</val>
+        <val lang="ja_JP">Merge {0} into {1}</val>
+        <val lang="nl_NL">Merge {0} into {1}</val>	
+    </key> 
     <key value="Merge_Failed_Uncommitted_Changes_Message">
         <comment>The message in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
-        <val lang="en_US">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
-        <val lang="de_DE">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
-        <val lang="fr_FR">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
-        <val lang="ja_JP">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
-        <val lang="nl_NL">Merge failed because there are uncommitted changes\non this branch, in these files: </val>
+        <val lang="en_US">Cannot merge because of the following uncommitted files:</val>
+        <val lang="de_DE">Cannot merge because of the following uncommitted files:</val>
+        <val lang="fr_FR">Cannot merge because of the following uncommitted files:</val>
+        <val lang="ja_JP">Cannot merge because of the following uncommitted files:</val>
+        <val lang="nl_NL">Cannot merge because of the following uncommitted files:</val>	
     </key> 
     <key value="Merge_Failed_Uncommitted_Changes_Title">
         <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
@@ -57,12 +65,12 @@
         <val lang="nl_NL">Merge failed</val>
     </key>
     <key value="Merge_Conflicts_Message">
-        <comment>TThe message in the warning File Status Dialog when there are merge conflicts</comment>
-        <val lang="en_US">Resolve this merge conflicts before continuing: </val>
-        <val lang="de_DE">Resolve this merge conflicts before continuing: </val>
-        <val lang="fr_FR">Resolve this merge conflicts before continuing: </val>
-        <val lang="ja_JP">Resolve this merge conflicts before continuing: </val>
-        <val lang="nl_NL">Resolve this merge conflicts before continuing: </val>
+        <comment>The message in the warning File Status Dialog when there are merge conflicts</comment>
+        <val lang="en_US">Resolve these merge conflicts before continuing:</val>
+        <val lang="de_DE">Resolve these merge conflicts before continuing:</val>
+        <val lang="fr_FR">Resolve these merge conflicts before continuing:</val>
+        <val lang="ja_JP">Resolve these merge conflicts before continuing:</val>
+        <val lang="nl_NL">Resolve these merge conflicts before continuing:</val>
     </key>
     <key value="Merge_Conflicts_Title">
         <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>

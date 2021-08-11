@@ -2350,7 +2350,9 @@ public class GitAccess {
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
         LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
         List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
-        FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE), conflictingFiles,
+        FileStatusDialog.showWarningMessage(
+            translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
+            conflictingFiles,
             translator.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
         LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
@@ -2363,16 +2365,19 @@ public class GitAccess {
 
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
 
-    } catch (RevisionSyntaxException | IOException | NoRepositorySelected | GitAPIException e) {
+    } catch (RevisionSyntaxException | IOException | NoRepositorySelected e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
-       if (e.getMessage().contains("Checkout conflict")) {
-         String checkoutExceptionMessageString = e.getMessage();
-         List<String> checkoutFailingFiles = Arrays.asList(checkoutExceptionMessageString.split("\n")) ;
-         FileStatusDialog.showWarningMessage(
-           translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
-           checkoutFailingFiles,
-           translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE)); }
       throw e;
+    } catch (CheckoutConflictException e) {
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
+      String checkoutExceptionMessageString = e.getMessage();
+      List<String> checkoutFailingFiles = new ArrayList<>();
+      Collections.addAll(checkoutFailingFiles, checkoutExceptionMessageString.split("\n"));
+      checkoutFailingFiles.remove(0);
+      FileStatusDialog.showWarningMessage(
+        translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
+        checkoutFailingFiles,
+        translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
     }
   }
   

@@ -276,13 +276,21 @@ public class BranchTreeMenuActionsProvider {
         nodePath,
         BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
     String currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
-    return new AbstractAction("Merge " + selectedBranch + " into " + currentBranch) {
+    
+    String mergeActionName = MessageFormat.format(
+        Translator.getInstance().getTranslation(Tags.MERGE_BRANCH1_INTO_BRANCH2),
+        selectedBranch,
+        currentBranch);
+    
+    return new AbstractAction(mergeActionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        ctrl.asyncTask(() -> {
-          ctrl.getGitAccess().mergeBranch(nodePath);
-          return null;
-        }, ex -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex));
+        ctrl.asyncTask(
+            () -> {
+              ctrl.getGitAccess().mergeBranch(nodePath);
+              return null;
+            },
+            ex -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex));
       }
     };
   }
