@@ -285,25 +285,13 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics commitCharacteristics,
       boolean addFileName) {
     List<Action> contextualActions = getContextualActions(fileStatus, commitCharacteristics, addFileName);
-    String[] keys = new String[] {"Compare", "Open"};
-    int keyIndex = 0;
-    if(contextualActions.size() % 2 == 1) {
-      int index = 0;
-      for (Action actionIterator : contextualActions) {
-        jPopupMenu.add(actionIterator);
-        index++;
-        if(index % 2 == 0) {
-          jPopupMenu.addSeparator();
-        }
+    contextualActions.forEach(action -> {
+      if(action == null) {
+        jPopupMenu.addSeparator();
+      } else {
+        jPopupMenu.add(action);
       }
-      
-    } else if(contextualActions.size() == 2) {
-      jPopupMenu.add(contextualActions.get(0));
-      jPopupMenu.addSeparator();
-      jPopupMenu.add(contextualActions.get(1));
-    } else {
-      contextualActions.forEach(jPopupMenu::add);  
-    }
+    });  
   }
 
   /**
@@ -337,9 +325,20 @@ public class HistoryViewContextualMenuPresenter {
         });
       }
     }
+    if(!actions.isEmpty()) {
+      actions.add(null);
+    }
+    
     actions.add(createOpenFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName));
-    if(existsLocalFile(fileStatus.getFileLocation())) {
+    
+    boolean existsFile = existsLocalFile(fileStatus.getFileLocation());
+    
+    if(existsFile) {
       actions.add(createOpenWorkingCopyFileAction(fileStatus, addFileName));
+    }
+    
+    actions.add(null);
+    if(existsFile) {
       actions.add(createCheckoutFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName)); 
     }
    
