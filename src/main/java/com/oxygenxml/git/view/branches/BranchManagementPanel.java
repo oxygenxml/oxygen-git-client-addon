@@ -247,7 +247,13 @@ public class BranchManagementPanel extends JPanel {
           isContextMenuShowing = false;
         }
       });
-      actionsForSelectedNode.forEach(popupMenu::add);
+      for (AbstractAction action : actionsForSelectedNode) {
+        if(action != null) {
+          popupMenu.add(action);
+        } else {
+          popupMenu.addSeparator();
+        }
+      }
       popupMenu.show(branchesTree, point.x, point.y);
     }
   }

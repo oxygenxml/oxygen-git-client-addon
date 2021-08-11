@@ -72,11 +72,13 @@ public class BranchTreeMenuActionsProvider {
       boolean isCurrentBranch = nodeContent.contains(GitAccess.getInstance().getBranchInfo().getBranchName());
       if (isCurrentBranch) {
         nodeActions.add(createNewBranchAction(nodeContent));
+        nodeActions.add(null);
         nodeActions.add(createDeleteLocalBranchAction(nodeContent));
       } else {
         nodeActions.add(createCheckoutLocalBranchAction(nodeContent));
         nodeActions.add(createNewBranchAction(nodeContent));
         nodeActions.add(createMergeAction(nodeContent));
+        nodeActions.add(null);
         nodeActions.add(createDeleteLocalBranchAction(nodeContent));
       }
     } else if (isRemoteBranch) {
