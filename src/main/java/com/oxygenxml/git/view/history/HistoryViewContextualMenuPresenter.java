@@ -337,8 +337,8 @@ public class HistoryViewContextualMenuPresenter {
       actions.add(createOpenWorkingCopyFileAction(fileStatus, addFileName));
     }
     
-    actions.add(null);
     if(existsFile) {
+      actions.add(null);
       actions.add(createCheckoutFileAction(commitCharacteristics.getCommitId(), fileStatus, addFileName)); 
     }
    
