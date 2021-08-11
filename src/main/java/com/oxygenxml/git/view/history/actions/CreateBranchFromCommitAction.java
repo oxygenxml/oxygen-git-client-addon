@@ -45,22 +45,22 @@ public class CreateBranchFromCommitAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    GitOperationScheduler.getInstance().schedule(() -> {
-      try {
-        CreateBranchDialog dialog = new CreateBranchDialog(
-            Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
-            null,
-            false);
-        if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+    CreateBranchDialog dialog = new CreateBranchDialog(
+        Translator.getInstance().getTranslation(Tags.CREATE_BRANCH),
+        null,
+        false);
+    if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
+      GitOperationScheduler.getInstance().schedule(() -> {
+        try {
           GitAccess.getInstance().checkoutCommitAndCreateBranch(dialog.getBranchName(), commitId);
+        } catch (CheckoutConflictException ex) {
+          BranchesUtil.showCannotCheckoutNewBranchMessage();
+        } catch (HeadlessException | GitAPIException ex) {
+          LOGGER.debug(ex);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         }
-      } catch (CheckoutConflictException ex) {
-        BranchesUtil.showCannotCheckoutNewBranchMessage();
-      } catch (HeadlessException | GitAPIException ex) {
-        LOGGER.debug(ex);
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-      }
-    });
+      });
+    }
   }
   
 }

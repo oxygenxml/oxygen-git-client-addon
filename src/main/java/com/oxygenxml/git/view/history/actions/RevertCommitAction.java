@@ -49,21 +49,21 @@ public class RevertCommitAction extends AbstractAction {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    GitOperationScheduler.getInstance().schedule(() -> {
-      try {
-        int result = FileStatusDialog.showQuestionMessage(
-            Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
-            Translator.getInstance().getTranslation(Tags.REVERT_COMMIT_WARNING), 
-            Translator.getInstance().getTranslation(Tags.YES),
-            Translator.getInstance().getTranslation(Tags.NO));
-        if ( result == OKCancelDialog.RESULT_OK) {
+    int result = FileStatusDialog.showQuestionMessage(
+        Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
+        Translator.getInstance().getTranslation(Tags.REVERT_COMMIT_WARNING), 
+        Translator.getInstance().getTranslation(Tags.YES),
+        Translator.getInstance().getTranslation(Tags.NO));
+    if ( result == OKCancelDialog.RESULT_OK) {
+      GitOperationScheduler.getInstance().schedule(() -> {
+        try {
           GitAccess.getInstance().revertCommit(commitCharacteristics.getCommitId());
+        } catch (NoRepositorySelected | IOException ex) {
+          LOGGER.debug(ex);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         }
-      } catch (NoRepositorySelected | IOException ex) {
-        LOGGER.debug(ex);
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-      }
-    });
+      });
+    }
   }
 
 }

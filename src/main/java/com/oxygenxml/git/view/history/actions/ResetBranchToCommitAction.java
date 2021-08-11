@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import javax.swing.AbstractAction;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.RemoteRepositoryChangeWatcher;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -47,8 +48,10 @@ public class ResetBranchToCommitAction extends AbstractAction {
         commitCharacteristics);
     dialog.setVisible(true);
     if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
-      GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitCharacteristics.getCommitId());
-      RemoteRepositoryChangeWatcher.markAsNotified();
+      GitOperationScheduler.getInstance().schedule(() -> {
+        GitAccess.getInstance().resetToCommit(dialog.getResetType(), commitCharacteristics.getCommitId());
+        RemoteRepositoryChangeWatcher.markAsNotified();
+      });
     }
   }
 
