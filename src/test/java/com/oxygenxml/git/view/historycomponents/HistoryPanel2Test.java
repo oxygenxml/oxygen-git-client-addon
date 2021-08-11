@@ -150,7 +150,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
   }
   
   /**
-   * Contextual actions were not presented For revisions preceding a rename.
+   * Test the contextual actions presented for revisions preceding a rename.
    * EXM-44300
    * 
    * @throws Exception If it fails.
