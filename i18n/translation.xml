@@ -34,11 +34,11 @@
 
 	<key value="Merge_Branch1_Into_Branch2">
         <comment>Merge {branch1} into {branch2}</comment>
-        <val lang="en_US">Merge {0} into {1}</val>
-        <val lang="de_DE">Merge {0} into {1}</val>
-        <val lang="fr_FR">Merge {0} into {1}</val>
-        <val lang="ja_JP">Merge {0} into {1}</val>
-        <val lang="nl_NL">Merge {0} into {1}</val>	
+        <val lang="en_US">Merge "{0}" into "{1}"</val>
+        <val lang="de_DE">Merge "{0}" into "{1}"</val>
+        <val lang="fr_FR">Merge "{0}" into "{1}"</val>
+        <val lang="ja_JP">Merge "{0}" into "{1}"</val>
+        <val lang="nl_NL">Merge "{0}" into "{1}"</val>
     </key> 
     <key value="Merge_Failed_Uncommitted_Changes_Message">
         <comment>The message in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
