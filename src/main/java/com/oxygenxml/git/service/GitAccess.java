@@ -2395,10 +2395,9 @@ public class GitAccess {
       throw e;
     } catch (CheckoutConflictException e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
-      List<String> checkoutFailingFiles = e.getConflictingPaths();
       FileStatusDialog.showWarningMessage(
         translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
-        checkoutFailingFiles,
+        e.getConflictingPaths(),
         translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
     }
   }
