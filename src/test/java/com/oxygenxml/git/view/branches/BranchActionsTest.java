@@ -328,6 +328,10 @@ public class BranchActionsTest extends GitTestBase {
     
     List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(firstLeaf);
     for (AbstractAction abstractAction : actionsForNode) {
+      if (abstractAction == null) {
+        // Probably separator. Continue.
+        continue;
+      }
       if (abstractAction.getValue(AbstractAction.NAME).equals(translator.getTranslation(Tags.DELETE) + "...")) {
         SwingUtilities.invokeLater(() -> {
           abstractAction.actionPerformed(null);

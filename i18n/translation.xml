@@ -58,11 +58,11 @@
     </key>
     <key value="Merge_Conflicts_Message">
         <comment>The message in the warning File Status Dialog when there are merge conflicts</comment>
-        <val lang="en_US">Resolve these merge conflicts before continuing:</val>
-        <val lang="de_DE">Resolve these merge conflicts before continuing:</val>
-        <val lang="fr_FR">Resolve these merge conflicts before continuing:</val>
-        <val lang="ja_JP">Resolve these merge conflicts before continuing:</val>
-        <val lang="nl_NL">Resolve these merge conflicts before continuing:</val>
+        <val lang="en_US">Resolve the following conflicts to complete the merge:</val>
+        <val lang="de_DE">Resolve the following conflicts to complete the merge:</val>
+        <val lang="fr_FR">Resolve the following conflicts to complete the merge:</val>
+        <val lang="ja_JP">Resolve the following conflicts to complete the merge:</val>
+        <val lang="nl_NL">Resolve the following conflicts to complete the merge:</val>
     </key>
     <key value="Merge_Conflicts_Title">
         <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>

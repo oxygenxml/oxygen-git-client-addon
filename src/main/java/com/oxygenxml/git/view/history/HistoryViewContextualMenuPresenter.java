@@ -531,7 +531,7 @@ public class HistoryViewContextualMenuPresenter {
     boolean toReturn = true;
     try {
       selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-      File file = new File(selectedRepository, filePath);
+      File file = new File(selectedRepository, filePath); // NOSONAR findsecbugs:PATH_TRAVERSAL_IN - false pozitive
       toReturn = file.exists();
     } catch (NoRepositorySelected e) {
      toReturn = false;
