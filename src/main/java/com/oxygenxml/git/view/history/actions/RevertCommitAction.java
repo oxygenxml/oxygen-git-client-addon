@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.history.actions;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 import javax.swing.AbstractAction;
 
@@ -10,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
@@ -58,7 +56,7 @@ public class RevertCommitAction extends AbstractAction {
       GitOperationScheduler.getInstance().schedule(() -> {
         try {
           GitAccess.getInstance().revertCommit(commitCharacteristics.getCommitId());
-        } catch (NoRepositorySelected | IOException ex) {
+        } catch (Exception ex) {
           LOGGER.debug(ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         }
