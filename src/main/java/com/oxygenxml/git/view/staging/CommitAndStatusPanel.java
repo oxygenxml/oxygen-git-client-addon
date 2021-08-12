@@ -122,6 +122,7 @@ public class CommitAndStatusPanel extends JPanel {
         if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
             // which actually calls git.status(), operation that is slow
             repoState == RepositoryState.MERGING 
+            || repoState == RepositoryState.REVERTING
             || repoState == RepositoryState.REBASING_MERGE && !gitAccess.getConflictingFiles().isEmpty()) {
           SwingUtilities.invokeLater(() -> setStatusMessage(""));
           PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
