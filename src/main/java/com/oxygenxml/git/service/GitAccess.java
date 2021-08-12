@@ -1696,8 +1696,19 @@ public class GitAccess {
    * @param commitId  The commit id to which to reset.
    * @throws NoRepositorySelected 
    * @throws IOException 
+   * @throws GitAPIException 
+   * @throws NoWorkTreeException 
    */
-  public void revertCommit(String commitId) throws IOException, NoRepositorySelected {
+  public void revertCommit(String commitId) throws IOException, NoRepositorySelected, NoWorkTreeException, GitAPIException {
+    if (git.status().call().hasUncommittedChanges()) {
+     // a conflict happened
+      List<String> uncommited= new ArrayList<>(git.status().call().getUncommittedChanges());
+     FileStatusDialog.showWarningMessage(
+         Translator.getInstance().getTranslation(Tags.ERROR),
+         uncommited,
+         Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES));
+      return;
+    }
     fireOperationAboutToStart(new GitEventInfo(GitOperation.REVERT_COMMIT));
     Repository repo = git.getRepository();
     try (RevWalk revWalk = new RevWalk(repo)) {

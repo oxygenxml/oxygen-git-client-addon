@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
@@ -124,6 +125,13 @@ public class BranchMergingTest extends GitTestBase {
     }
     flushAWT();
     
+    //Confirm merge dialog
+    JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    mergeOkButton.doClick();
+    
+    sleep(200);
+    
     assertEquals("local content for merging", TestUtil.read(file.toURI().toURL()));
     
   }
@@ -198,6 +206,13 @@ public class BranchMergingTest extends GitTestBase {
       }
     }
     flushAWT();
+    
+    //Confirm merge dialog
+    JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    mergeOkButton.doClick();
+    
+    sleep(200);
 
     conflictMergeDialog = findDialog(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE));
     assertNotNull(conflictMergeDialog);
@@ -288,6 +303,15 @@ public class BranchMergingTest extends GitTestBase {
           }
         }
       }
+      
+      flushAWT();
+      
+      //Confirm merge dialog
+      JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
+      JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+      mergeOkButton.doClick();
+      
+      sleep(200);
 
       mergeFailDialog = findDialog(translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE));
       assertNotNull(mergeFailDialog);
@@ -314,6 +338,15 @@ public class BranchMergingTest extends GitTestBase {
           }
         }
       }
+      
+      flushAWT();
+      
+      //Confirm merge dialog
+      mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
+      mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+      mergeOkButton.doClick();
+      
+      sleep(200);
 
       mergeFailDialog = findDialog(translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE));
       assertNotNull(mergeFailDialog);
@@ -326,4 +359,103 @@ public class BranchMergingTest extends GitTestBase {
     }
   }
   
+  /**
+   *<p><b>Description:</b>Tests the merging after you have an ignored conflict.</p>
+   * <p><b>Bug ID:</b> EXM-43410</p>
+   * 
+   * @author gabriel_nedianu
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testBranchMergingWithoutResolvingConflict() throws Exception { 
+    
+    JDialog conflictMergeDialog = null;
+    JDialog errorConflictDialog = null;
+    JDialog mergeOkDialog = null;
+
+    File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
+    file.createNewFile();
+
+    setFileContent(file, "local file 1 content");
+
+    // Make the first commit for the local repository and create a new branch
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("1st commit on main.");
+    
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    
+    // ------------- Checkout branch: LOCAL_BRANCH_NAME1  -------------
+    gitAccess.setBranch(LOCAL_BRANCH_NAME1);
+    
+    // Commit on this branch
+    setFileContent(file, "local file ... new branch");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("Commit on secondary branch");
+
+    // ------------- Move to the main branch and commit something there ---------------
+    gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
+    
+    setFileContent(file, "file modifications");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("2nd commit on main");
+
+    // Merge secondary branch into main
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    GitTreeNode root = (GitTreeNode) (branchManagementPanel.getTree().getModel().getRoot());
+    GitTreeNode secondaryBranchNode = (GitTreeNode) root.getFirstLeaf();
+    String secondaryBranchPath = (String) secondaryBranchNode.getUserObject();
+    assertTrue(secondaryBranchPath.contains(Constants.R_HEADS));
+    
+    List<AbstractAction> actionsForSecondaryBranch = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
+    for (AbstractAction action : actionsForSecondaryBranch) {
+      if (action != null) {
+        String actionName = action.getValue(AbstractAction.NAME).toString();
+        if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+          SwingUtilities.invokeLater(() -> action.actionPerformed(null));
+          break;
+        }
+      }
+    }
+    flushAWT();
+    
+    //Confirm merge dialog
+    mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
+    JButton mergeOkButton = findFirstButton(mergeOkDialog, translator.getTranslation(Tags.YES));
+    mergeOkButton.doClick();
+    
+    sleep(200);
+    
+    conflictMergeDialog = findDialog(translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE));
+    assertNotNull(conflictMergeDialog);
+    conflictMergeDialog.dispose();
+    
+    sleep(200);
+    
+    //Don't resolve merge conflicts and try to do the merge again
+    
+    List<AbstractAction> actionsForSecondaryBranch2 = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
+    for (AbstractAction action : actionsForSecondaryBranch2) {
+      if (action != null) {
+        String actionName = action.getValue(AbstractAction.NAME).toString();
+        if("Merge_Branch1_Into_Branch2".equals(actionName)) {
+          SwingUtilities.invokeLater(() -> action.actionPerformed(null));
+          break;
+        }
+      }
+    }
+    flushAWT();
+    
+    sleep(1000);
+    //Search for the error dialog 
+    errorConflictDialog = findDialog(translator.getTranslation(Tags.ERROR));
+    assertNotNull(errorConflictDialog);
+    sleep(100);
+    errorConflictDialog.dispose();
+  }
 }

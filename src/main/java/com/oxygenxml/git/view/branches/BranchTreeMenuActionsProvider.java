@@ -72,8 +72,6 @@ public class BranchTreeMenuActionsProvider {
       boolean isCurrentBranch = nodeContent.contains(GitAccess.getInstance().getBranchInfo().getBranchName());
       if (isCurrentBranch) {
         nodeActions.add(createNewBranchAction(nodeContent));
-        nodeActions.add(null);
-        nodeActions.add(createDeleteLocalBranchAction(nodeContent));
       } else {
         nodeActions.add(createCheckoutLocalBranchAction(nodeContent));
         nodeActions.add(createNewBranchAction(nodeContent));
@@ -292,7 +290,22 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         ctrl.asyncTask(
             () -> {
-              ctrl.getGitAccess().mergeBranch(nodePath);
+              if (RepoUtil.isUnfinishedConflictState(ctrl.getGitAccess().getRepository().getRepositoryState())) {
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+              } else {
+                String questionMessage = MessageFormat.format(
+                    Translator.getInstance().getTranslation(Tags.MERGE_BRANCHES_QUESTION_MESSAGE),
+                    selectedBranch,
+                    currentBranch);
+                
+                int answer = FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.MERGE_BRANCHES),
+                    questionMessage,
+                    translator.getTranslation(Tags.YES),
+                    translator.getTranslation(Tags.CANCEL));
+                if (answer == OKCancelDialog.RESULT_OK) {
+                  ctrl.getGitAccess().mergeBranch(nodePath);
+                }
+              }
               return null;
             },
             ex -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex));
