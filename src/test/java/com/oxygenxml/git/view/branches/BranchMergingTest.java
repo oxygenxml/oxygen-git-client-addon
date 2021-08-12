@@ -53,7 +53,7 @@ public class BranchMergingTest extends GitTestBase {
   }
   
   /**
-   * <p><b>Description:</b>Tests the fast forward merging.</p>
+   * <p><b>Description:</b>Tests the branch merging.</p>
    * <p><b>Bug ID:</b> EXM-43410</p>
    * 
    * @author gabriel_nedianu
@@ -61,7 +61,7 @@ public class BranchMergingTest extends GitTestBase {
    * @throws Exception
    */
   @Test
-  public void testFastForwardMerging() throws Exception{
+  public void testBranchMerging() throws Exception{
     File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
     file.createNewFile();
     setFileContent(file, "local content");
@@ -122,7 +122,7 @@ public class BranchMergingTest extends GitTestBase {
   }
   
   /**
-   * <p><b>Description:</b>Tests the conflict merging.</p>
+   * <p><b>Description:</b>Tests the branch merging. Conflict happens.</p>
    * <p><b>Bug ID:</b> EXM-43410</p>
    * 
    * @author gabriel_nedianu
@@ -130,7 +130,7 @@ public class BranchMergingTest extends GitTestBase {
    * @throws Exception
    */
   @Test
-  public void testConflictMerging() throws Exception {
+  public void testBranchMergingWithConflict() throws Exception {
 
     File file1 = new File(LOCAL_TEST_REPOSITORY, "local1.txt");
     File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
@@ -215,7 +215,7 @@ public class BranchMergingTest extends GitTestBase {
    * @throws Exception
    */
   @Test
-  public void testFailingMerging() throws Exception {
+  public void testFailingBranchMerging() throws Exception {
   
     File file1 = new File(LOCAL_TEST_REPOSITORY, "local1.txt");
     File file2 = new File(LOCAL_TEST_REPOSITORY, "local2.txt");
