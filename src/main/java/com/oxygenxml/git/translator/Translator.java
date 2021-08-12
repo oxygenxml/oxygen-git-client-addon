@@ -1,5 +1,6 @@
 package com.oxygenxml.git.translator;
 
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -43,11 +44,11 @@ public class Translator {
    * @return the translation.
    */
 	public String getTranslation(String key) {
-		StandalonePluginWorkspace spw =
-		    (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
+		PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
 		String translation = key;
-		if (spw != null && spw.getResourceBundle() != null) {
-		  translation = spw.getResourceBundle().getMessage(key);
+		if (pluginWorkspace instanceof StandalonePluginWorkspace
+		    && ((StandalonePluginWorkspace)pluginWorkspace).getResourceBundle() != null) {
+		  translation = ((StandalonePluginWorkspace)pluginWorkspace).getResourceBundle().getMessage(key);
 		}
     return translation;
 	}

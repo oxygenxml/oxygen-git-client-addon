@@ -566,13 +566,14 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @author Alex_Smarandache
    * 
-   * @param fileStatus  File path, relative to the working copy.
-   * @param addFileName <code>true</code> to append the name of the file to the name of the action.
+   * @param fileStatus     File path, relative to the working copy.
+   * @param localFilePath  The local path of the file.
+   * @param addFileName    <code>true</code> to append the name of the file to the name of the action.
    * 
    * @return The action that will open the file when invoked.
    */
   
-  private AbstractAction createOpenWorkingCopyFileAction(FileStatus fileStatus, String localFilePath, boolean addFileName) {
+  protected AbstractAction createOpenWorkingCopyFileAction(FileStatus fileStatus, String localFilePath, boolean addFileName) {
     return new AbstractAction(getOpenFileWorkingCopyActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
