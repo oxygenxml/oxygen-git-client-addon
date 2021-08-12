@@ -142,7 +142,7 @@ public class BranchTreeMenuActionsProvider {
           } catch (NoRepositorySelected e1) {
             logger.error(e1, e1);
           }
-          if (RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
+          if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
             int answer = showUncommittedChangesWhenChangingBranchMsg();
             if (answer == OKCancelDialog.RESULT_OK) {
               ctrl.getGitAccess().setBranch(
@@ -255,7 +255,7 @@ public class BranchTreeMenuActionsProvider {
         } catch (NoRepositorySelected e1) {
           logger.error(e1, e1);
         }
-        if (RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
+        if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
           int answer = showUncommittedChangesWhenChangingBranchMsg();
           if (answer == OKCancelDialog.RESULT_OK) {
             ctrl.getGitAccess().setBranch(branchName);

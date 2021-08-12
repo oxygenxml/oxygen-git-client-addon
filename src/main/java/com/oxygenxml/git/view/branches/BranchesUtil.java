@@ -153,6 +153,7 @@ public class BranchesUtil {
           messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_BECAUSE_UNCOMMITTED_CHANGES;
           break;
         case MERGING:
+        case REVERTING:
           messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH_WHEN_HAVING_CONFLICTS;
           break;
         default:
@@ -173,7 +174,7 @@ public class BranchesUtil {
       LOGGER.error(e1, e1);
     }
     String msg = 
-        RepoUtil.isRepoMergingOrRebasing(repoState) 
+        RepoUtil.isUnfinishedConflictState(repoState) 
           ? TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_WHEN_REPO_IN_CONFLICT_ERROR_MSG)
           : TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_CHECKOUT_CONFLICT_ERROR_MSG);
     PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(msg);

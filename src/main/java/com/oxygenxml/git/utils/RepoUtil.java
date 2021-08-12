@@ -70,22 +70,39 @@ public class RepoUtil {
    }
    return toReturn;
  }
+  
+  /**
+   * Check if repo is in an unfinished conflict state (merging, rebasing, reverting, etc.).
+   * 
+   * @param repoState The repo state.
+   * 
+   * @return <code>true</code> if the repository is in an unfinished conflict state.
+   */
+ public static boolean isUnfinishedConflictState(RepositoryState repoState) {
+   boolean toReturn = false;
+   if (repoState != null) {
+     toReturn = repoState == RepositoryState.MERGING
+         || repoState == RepositoryState.MERGING_RESOLVED
+         || repoState == RepositoryState.REBASING
+         || repoState == RepositoryState.REBASING_MERGE
+         || repoState == RepositoryState.REBASING_REBASING
+         || repoState == RepositoryState.REVERTING;
+   }
+   return toReturn;
+ }
  
  /**
-  * Verify if the Repo is nonmerging and nonrebasing and has uncommitted changes
+  * Verify if the repo is non-conflictual and has uncommitted changes.
   * 
-  * @param repoState The repo state
+  * @param repoState The repo state.
   * 
-  * @return <code>true</code> if the repository is not merging, not rebasing and with Uncommited Changes 
+  * @return <code>true</code> if the repository is not merging, not rebasing and with uncommitted changes. 
   */
- public static boolean isNonMergingAndNonRebasingRepoWithUncommittedChanges(RepositoryState repoState) {
-   
+ public static boolean isNonConflictualRepoWithUncommittedChanges(RepositoryState repoState) {
    GitStatus status = GitAccess.getInstance().getStatus();
    boolean repoHasUncommittedChanges = !status.getUnstagedFiles().isEmpty() 
        || !status.getStagedFiles().isEmpty();
-   
-   return repoHasUncommittedChanges && !RepoUtil.isRepoMergingOrRebasing(repoState);
-     
+   return repoHasUncommittedChanges && !RepoUtil.isUnfinishedConflictState(repoState);
  }
   
   /**

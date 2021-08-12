@@ -142,7 +142,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 	    final SelectedResourcesProvider selResProvider,
 	    final boolean forStagedRes) {
 
-	  if (selResProvider.getAllSelectedResources().isEmpty() && !RepoUtil.isRepoMergingOrRebasing(repoState)) {
+	  if (selResProvider.getAllSelectedResources().isEmpty() && !RepoUtil.isUnfinishedConflictState(repoState)) {
       return;
     }
 
@@ -206,7 +206,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		showDiffAction.setEnabled(selectedLeaves.size() == 1);
 		openAction.setEnabled(!selectionContainsDeletions && !allSelectedResources.isEmpty());
 		stageUnstageAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
-		resolveConflict.setEnabled(RepoUtil.isRepoMergingOrRebasing(repoState));
+		resolveConflict.setEnabled(RepoUtil.isUnfinishedConflictState(repoState));
 		resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());

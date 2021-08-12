@@ -438,7 +438,7 @@ public class ToolbarPanel extends JPanel {
         } catch (NoRepositorySelected e1) {
           logger.error(e1, e1);
         }
-        if(RepoUtil.isNonMergingAndNonRebasingRepoWithUncommittedChanges(repoState)) {
+        if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
           int answer = FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.SWITCH_BRANCH),
               translator.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
               translator.getTranslation(Tags.MOVE_CHANGES),
