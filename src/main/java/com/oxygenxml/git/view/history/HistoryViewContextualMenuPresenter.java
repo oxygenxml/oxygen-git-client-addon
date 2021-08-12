@@ -113,19 +113,17 @@ public class HistoryViewContextualMenuPresenter {
     Action open = new AbstractAction(actionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        for (int i = 0; i < commitCharacteristics.length; i++) {
+        for (CommitCharacteristics commitCharacteristic : commitCharacteristics) {
           try {
-            Optional<FileStatus> fileStatus = getFileStatus(filePath, commitCharacteristics[i]);
-            checkIfValidForOpen(filePath, commitCharacteristics[i], fileStatus);
+            Optional<FileStatus> fileStatus = getFileStatus(filePath, commitCharacteristic);
+            checkIfValidForOpen(filePath, commitCharacteristic, fileStatus);
 
-            Optional<URL> fileURL = getFileURL(commitCharacteristics[i].getCommitId(), fileStatus.get());
-            if (fileURL.isPresent()) {
-              PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
-            }
+            Optional<URL> fileURL = getFileURL(commitCharacteristic.getCommitId(), fileStatus.get());
+            fileURL.ifPresent(url -> PluginWorkspaceProvider.getPluginWorkspace().open(url));
           } catch (IOException | GitAPIException | NoRepositorySelected e1) {
             LOGGER.debug(e1, e1);
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
-          } 
+          }
         }
       }
     };    
@@ -223,9 +221,7 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics commitCharacteristics) throws IOException, GitAPIException {
     if (filePath != null) {
       Optional<FileStatus> fileStatusOptional = getFileStatus(filePath, commitCharacteristics);
-      if (fileStatusOptional.isPresent()) {
-        populateContextActionsForFile(jPopupMenu, fileStatusOptional.get(), commitCharacteristics, true);
-      }
+      fileStatusOptional.ifPresent(fileStatus -> populateContextActionsForFile(jPopupMenu, fileStatus, commitCharacteristics, true));
     }
 
     if (filePath != null) {
@@ -302,8 +298,6 @@ public class HistoryViewContextualMenuPresenter {
    * @param addFileName           <code>true</code> to add the name of the file to the action's name.
    * 
    * @return A list with actions that can be executed over the given file. Never null.
-   * @throws GitAPIException 
-   * @throws IOException 
    */
   public List<Action> getContextualActions(
       FileStatus fileStatus,
@@ -312,9 +306,22 @@ public class HistoryViewContextualMenuPresenter {
     
     List<Action> actions = new LinkedList<>();
     
+    String localFilePath = "";
+    boolean existsWC = false; 
+    
+    try {
+      localFilePath = RevCommitUtil.getNewPathInWorkingCopy(
+          GitAccess.getInstance().getGit(), 
+          fileStatus.getFileLocation(), 
+          commitCharacteristics.getCommitId());
+      existsWC = true;
+    } catch (IOException | GitAPIException e) {
+      LOGGER.error(e, e);
+    }
+    
     if (fileStatus.getChangeType() != GitChangeType.ADD && fileStatus.getChangeType() != GitChangeType.REMOVED) {
       if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitCharacteristics.getCommitId())) {
-        createCompareActionsForCommit(actions, commitCharacteristics, addFileName, fileStatus);
+        createCompareActionsForCommit(actions, commitCharacteristics, addFileName, fileStatus, existsWC);
       } else {
         // Uncommitted changes. Compare between local and HEAD.
         actions.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
@@ -333,8 +340,8 @@ public class HistoryViewContextualMenuPresenter {
     
     boolean existsFile = existsLocalFile(fileStatus.getFileLocation());
     
-    if(existsFile) {
-      actions.add(createOpenWorkingCopyFileAction(fileStatus, addFileName));
+    if(existsWC) {
+      actions.add(createOpenWorkingCopyFileAction(fileStatus, localFilePath, addFileName));
     }
     
     if(existsFile) {
@@ -352,12 +359,14 @@ public class HistoryViewContextualMenuPresenter {
    * @param commitCharacteristics Commit data.
    * @param addFileName           <code>true</code> to append the name of the file to the actions' name.
    * @param fileStatus            File to diff.
+   * @param existsWC              <code>true</code> if the file has a current WC on disk.
    */
   private void createCompareActionsForCommit(
       List<Action> actions, 
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
-      FileStatus fileStatus) {
+      FileStatus fileStatus,
+      boolean existsWC) {
     String filePath = fileStatus.getFileLocation();
     
     if (fileStatus instanceof FileStatusOverDiffEntry
@@ -376,11 +385,10 @@ public class HistoryViewContextualMenuPresenter {
     } else {
       addCompareWithParentsAction(actions, commitCharacteristics, addFileName, filePath);
     }
-    
-    if(existsLocalFile(filePath) || fileStatus.getChangeType() == GitChangeType.RENAME) {
-      addCompareWithWorkingTreeAction(actions, commitCharacteristics, addFileName, filePath); 
+    if(existsWC) {
+      addCompareWithWorkingTreeAction(actions, commitCharacteristics, addFileName, filePath);
     }
-    
+     
   }
 
   /**
@@ -563,25 +571,26 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The action that will open the file when invoked.
    */
-  private AbstractAction createOpenWorkingCopyFileAction(FileStatus fileStatus, boolean addFileName) {
+  
+  private AbstractAction createOpenWorkingCopyFileAction(FileStatus fileStatus, String localFilePath, boolean addFileName) {
     return new AbstractAction(getOpenFileWorkingCopyActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
-          String selectedRepository = GitAccess.getInstance().getWorkingCopy().getAbsolutePath();
-          String fileLocation = fileStatus.getFileLocation();
-          File file = new File(selectedRepository, fileLocation);
+        
+          URL fileURL = FileUtil.getFileURL(localFilePath);
+                 
           boolean isProjectExt = false;
-          int index = fileLocation.lastIndexOf('.');
+          int index = localFilePath.lastIndexOf('.');
           if (index != -1) {
-            String ext = fileLocation.substring(index + 1);
+            String ext = localFilePath.substring(index + 1);
             isProjectExt = "xpr".equals(ext);
           }
           PluginWorkspaceProvider.getPluginWorkspace().open(
-              file.toURI().toURL(),
+              fileURL,
               isProjectExt ? EditorPageConstants.PAGE_TEXT : null,
               isProjectExt ? "text/xml" : null);
-        } catch (NoRepositorySelected | MalformedURLException e1) {
+        } catch (NoRepositorySelected e1) {
          LOGGER.error(e1.getMessage(), e1);
         }
       }
@@ -604,9 +613,7 @@ public class HistoryViewContextualMenuPresenter {
       public void actionPerformed(ActionEvent e) {
         try {
           Optional<URL> fileURL = getFileURL(revisionID, fileStatus);
-          if (fileURL.isPresent()) {
-            PluginWorkspaceProvider.getPluginWorkspace().open(fileURL.get());
-          }
+          fileURL.ifPresent(url -> PluginWorkspaceProvider.getPluginWorkspace().open(url));
         } catch (NoRepositorySelected | IOException e1) {
           LOGGER.error(e1, e1);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_OPEN_REVISION + e1.getMessage());
@@ -694,7 +701,7 @@ public class HistoryViewContextualMenuPresenter {
       RevCommit[] parentsRevCommits = RevCommitUtil.getParents(repository, revisionID);
       
       // If it's a merge, we look for the one parent with the actual file in it.
-      Optional<RevCommit> findFirst = Arrays.asList(parentsRevCommits).stream().filter(p -> {
+      Optional<RevCommit> findFirst = Arrays.stream(parentsRevCommits).filter(p -> {
         try {
           return RevCommitUtil.getObjectID(repository, p.getId().getName(), fileStatus.getFileLocation()) != null;
         } catch (IOException e1) {
