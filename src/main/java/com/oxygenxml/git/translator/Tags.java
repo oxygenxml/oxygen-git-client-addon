@@ -1306,5 +1306,14 @@ public class Tags {
    * Merge {0} into {1}
    */
   public static final String MERGE_BRANCH1_INTO_BRANCH2 = "Merge_Branch1_Into_Branch2";
-
+  /**
+   * Merge branches
+   */
+  public static final String MERGE_BRANCHES = "Merge_Branches";
+  /**
+   * The question message on the merge branches pop up dialog
+   * Are you sure ... from "{0}" to "{1}"?
+   * {0} = selected, {1} = current
+   */
+  public static final String MERGE_BRANCHES_QUESTION_MESSAGE = "Merge_Branches_Question_Message";
 }

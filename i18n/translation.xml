@@ -7,6 +7,24 @@
         <language description="Dutch" lang="nl_NL" />
     </languageList>
     
+
+	<key value="Merge_Branches">
+        <comment>Merge branches</comment>
+        <val lang="en_US">Merge branches</val>
+        <val lang="de_DE">Merge branches</val>
+        <val lang="fr_FR">Merge branches</val>
+        <val lang="ja_JP">Merge branches</val>
+        <val lang="nl_NL">Merge branches</val>
+    </key>
+    <key value="Merge_Branches_Question_Message">
+        <comment>The question message on the merge branches pop up dialog</comment>
+        <val lang="en_US">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
+        <val lang="de_DE">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
+        <val lang="fr_FR">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
+        <val lang="ja_JP">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
+        <val lang="nl_NL">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
+    </key>   		
+    
      <key value="Open_working_copy_version">
         <comment>Open working copy version.</comment>
         <val lang="en_US">Open working copy version</val>
