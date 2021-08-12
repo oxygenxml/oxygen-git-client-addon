@@ -53,7 +53,10 @@ public class BranchMergingTest extends GitTestBase {
   }
   
   /**
-   * Tests the fast forward merging.
+   * <p><b>Description:</b>Tests the fast forward merging.</p>
+   * <p><b>Bug ID:</b> EXM-43410</p>
+   * 
+   * @author gabriel_nedianu
    * 
    * @throws Exception
    */
@@ -119,7 +122,10 @@ public class BranchMergingTest extends GitTestBase {
   }
   
   /**
-   * Tests the conflict merging.
+   * <p><b>Description:</b>Tests the conflict merging.</p>
+   * <p><b>Bug ID:</b> EXM-43410</p>
+   * 
+   * @author gabriel_nedianu
    * 
    * @throws Exception
    */
@@ -201,7 +207,10 @@ public class BranchMergingTest extends GitTestBase {
   }
   
   /**
-   * Tests the failing merging.
+   *<p><b>Description:</b>Tests the failing merging.</p>
+   * <p><b>Bug ID:</b> EXM-43410</p>
+   * 
+   * @author gabriel_nedianu
    * 
    * @throws Exception
    */
