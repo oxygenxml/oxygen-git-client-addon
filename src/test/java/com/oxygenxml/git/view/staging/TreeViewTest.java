@@ -4,10 +4,12 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.JButton;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
 import org.eclipse.jgit.api.errors.NoMessageException;
@@ -529,4 +531,71 @@ public class TreeViewTest extends FlatViewTestBase {
     
     assertTreeModels("", "ADD, test.txt");
   }
+  
+  
+  /**
+   * <p>
+   * <b>Description:</b> Tests the Stage button enabling.
+   * </p>
+   * 
+   * <p>
+   * <b>Bug ID:</b> EXM-48559
+   * </p>
+   *
+   * @author Alex_Smarandache
+   * 
+   * @throws Exception
+   */
+  @Test  
+  public void testStageButtonEnabled() throws Exception {
+    String localTestRepository = "target/test-resources/testStageButtonVisibility_local";
+    String remoteTestRepository = "target/test-resources/testStageButtonVisibility_remote";
+    
+    new File(localTestRepository).mkdirs();
+    File file = createNewFile(localTestRepository, "test.txt", "remote");
+    
+    // Create repositories
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo = createRepository(localTestRepository);
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo , remoteRepo);
+    ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
+    JButton usButton = unstagedChangesPanel.getChangeSelectedButton();
+    assertFalse(usButton.isEnabled());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        unstagedChangesPanel.getTreeView().setSelectionInterval(1, unstagedChangesPanel.getTreeView().getRowCount());;
+      }
+    });
+    sleep(500);
+    assertTrue(usButton.isEnabled());
+    waitForScheduler();
+    List<FileStatus> allFilesUnstagedPanel = unstagedChangesPanel.getFilesStatuses();
+    allFilesUnstagedPanel.add(new FileStatus(GitChangeType.CONFLICT, "another_file.txt"));
+    ((StagingResourcesTreeModel)unstagedChangesPanel.getTreeView().getModel()).reload();;
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        unstagedChangesPanel.getTreeView().setSelectionInterval(0, unstagedChangesPanel.getTreeView().getRowCount());
+      }
+    });
+    sleep(500);
+    assertFalse(usButton.isEnabled());
+    
+    allFilesUnstagedPanel.clear();
+    allFilesUnstagedPanel.add(new FileStatus(GitChangeType.CONFLICT, "first.txt"));
+    allFilesUnstagedPanel.add(new FileStatus(GitChangeType.CONFLICT, "second.txt"));
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        unstagedChangesPanel.getTreeView().setSelectionInterval(0, unstagedChangesPanel.getTreeView().getRowCount());;
+      }
+    });
+    sleep(500);
+    assertFalse(usButton.isEnabled());
+
+  }
 }
+
+
