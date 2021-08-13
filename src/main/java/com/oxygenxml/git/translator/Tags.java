@@ -395,15 +395,25 @@ public class Tags {
 	 */
 	public static final String OPEN_IN_COMPARE = "Open_In_Compare";
 
-	 /**
+	/**
    * The text displayed for the "Open this version" contextual menu item
    */
   public static final String OPEN_THIS_VERSION = "Open_this_version";
   
   /**
+   * The text displayed for the "Open this version of FILENAME" contextual menu item
+   */
+  public static final String OPEN_THIS_VERSION_OF_FILENAME = "Open_this_version_of_filename";
+  
+  /**
    * The text displayed for the "Open working copy" contextual menu item
    */
   public static final String OPEN_WORKING_COPY = "Open_working_copy_version";
+  
+  /**
+   * The text displayed for the "Open the working copy version of " contextual menu item
+   */
+  public static final String OPEN_WORKING_COPY_VERSION = "Open_the_working_copy_version_of";
   
   /**
    * The text displayed for the "Checkout this version" contextual menu item

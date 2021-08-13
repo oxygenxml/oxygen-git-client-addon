@@ -638,7 +638,7 @@ public class HistoryViewContextualMenuPresenter {
     String actionName = Translator.getInstance().getTranslation(Tags.OPEN_WORKING_COPY);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
+      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_WORKING_COPY_VERSION), fileName);
     }
     return actionName;
   }
@@ -656,7 +656,7 @@ public class HistoryViewContextualMenuPresenter {
     String actionName = Translator.getInstance().getTranslation(Tags.CHECKOUT);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.CHECKOUT), fileName);
+      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.CHECK_OUT_THIS_VERSION), fileName);
     }
     return actionName;
   }
@@ -678,7 +678,7 @@ public class HistoryViewContextualMenuPresenter {
       actionName = Translator.getInstance().getTranslation(Tags.OPEN_PREVIOUS_VERSION);
     } else if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
+      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_THIS_VERSION_OF_FILENAME), fileName);
     }
     return actionName;
   }

@@ -23,7 +23,16 @@
         <val lang="fr_FR">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
         <val lang="ja_JP">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
         <val lang="nl_NL">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
-    </key>   		
+    </key>   	
+    	
+    <key value="Open_the_working_copy_version_of">
+        <comment>Action name to open the working copy for a file at a given revision.</comment>
+        <val lang="en_US">Open the working copy version of {0}</val>
+        <val lang="de_DE">Open the working copy version of {0}</val>
+        <val lang="fr_FR">Open the working copy version of {0}</val>
+        <val lang="ja_JP">Open the working copy version of {0}</val>
+        <val lang="nl_NL">Open the working copy version of {0}</val>
+    </key>
     
      <key value="Open_working_copy_version">
         <comment>Open working copy version.</comment>
@@ -34,13 +43,23 @@
         <val lang="nl_NL">Open working copy version</val>
     </key>
     <key value="Check_out_this_version">
-        <comment>Checkout this version.</comment>
-        <val lang="en_US">Checkout this version</val>
-        <val lang="de_DE">Checkout this version</val>
-        <val lang="fr_FR">Checkout this version</val>
-        <val lang="ja_JP">Checkout this version</val>
-        <val lang="nl_NL">Checkout this version</val>
+        <comment>Checkout this version of a file at a given revision.</comment>
+        <val lang="en_US">Checkout this version of {0}</val>
+        <val lang="de_DE">Checkout this version of {0}</val>
+        <val lang="fr_FR">Checkout this version of {0}</val>
+        <val lang="ja_JP">Checkout this version of {0}</val>
+        <val lang="nl_NL">Checkout this version of {0}</val>
     </key>
+    
+    <key value="Open_this_version_of_filename">
+        <comment>Open this version of file.</comment>
+        <val lang="en_US">Open this version of {0}</val>
+        <val lang="de_DE">Open this version of {0}</val>
+        <val lang="fr_FR">Open this version of {0}</val>
+        <val lang="ja_JP">Open this version of {0}</val>
+        <val lang="nl_NL">Open this version of {0}</val>
+    </key>
+    
     <key value="Open_this_version">
         <comment>Open this version.</comment>
         <val lang="en_US">Open selected version</val>

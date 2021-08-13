@@ -85,10 +85,9 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
-      assertEquals("["
-          + "Compare_file_with_previous_version, "
-          + "Compare_file_with_working_tree_version, "
-          + "Open_file, Open_file, Checkout]", dumpActions(actions));
+      assertEquals("[Compare_file_with_previous_version, Compare_file_with_working_tree_version, Open_this_version_of_filename, "
+          + "Open_the_working_copy_version_of, Check_out_this_version]", 
+          dumpActions(actions));
       
       // A deleted file.
       actions.clear();
@@ -108,7 +107,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Open_file]", dumpActions(actions));
+      assertEquals("[Open_this_version_of_filename]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
@@ -120,7 +119,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
-      assertEquals("[Open_file, Open_file, Checkout]", dumpActions(actions));
+      assertEquals("[Open_this_version_of_filename, Open_the_working_copy_version_of, Check_out_this_version]", dumpActions(actions));
 
       
       actions = new ArrayList<>();

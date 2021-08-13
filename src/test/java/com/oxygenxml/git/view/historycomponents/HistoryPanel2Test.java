@@ -192,8 +192,8 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
     List<Object> collect = actions.stream().map(t -> t.getValue(Action.NAME)).collect(Collectors.toList());
     
     assertEquals(
-        "[Compare_file_with_previous_version, Compare_file_with_working_tree_version, Open_file, "
-        + "Open_file, Create_branch..., Revert_Commit, Reset_branch_to_this_commit...]",
+        "[Compare_file_with_previous_version, Compare_file_with_working_tree_version, Open_this_version_of_filename, "
+        + "Open_the_working_copy_version_of, Create_branch..., Revert_Commit, Reset_branch_to_this_commit...]",
         collect.toString());
 
   }
