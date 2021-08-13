@@ -1,18 +1,22 @@
 package com.oxygenxml.git.view.history;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 import javax.swing.Action;
 
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -45,6 +49,7 @@ public class HistoryContextualActionsTest extends GitTestBase {
    */
   private GitAccess gitAccess;
 
+  
   /**
    * <p>
    * <b>Description:</b> Tests the
@@ -65,28 +70,27 @@ public class HistoryContextualActionsTest extends GitTestBase {
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(LOCAL_TEST_REPOSITORY);
     File file = new File(LOCAL_TEST_REPOSITORY + "/test.xpr");
+    
     try {
       file.createNewFile();
     } catch (IOException e) {
       e.printStackTrace();
     }
+    
     gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
     gitAccess.commit("file test added");
     String[] urlOpenedFile = new String[1];
     PluginWorkspace pluginWorkspace = Mockito.mock(PluginWorkspace.class);
     Mockito.when(pluginWorkspace.open(Mockito.any(URL.class), Mockito.any(String.class), Mockito.any(String.class)))
-        .thenAnswer(new Answer<Boolean>() {
-          @Override
-          public Boolean answer(InvocationOnMock invocation) throws Throwable {
-            File file = new File(((URL) (invocation.getArgument(0))).getFile());
-            urlOpenedFile[0] = file.getName();
-            return true;
-          }
+        .thenAnswer((Answer<Boolean>) invocation -> {
+          File file1 = new File(((URL) (invocation.getArgument(0))).getFile());
+          urlOpenedFile[0] = file1.getName();
+          return true;
         });
 
     try (MockedStatic<PluginWorkspaceProvider> provider = Mockito.mockStatic(PluginWorkspaceProvider.class)) {
 
-      provider.when(() -> PluginWorkspaceProvider.getPluginWorkspace()).thenReturn(pluginWorkspace);
+      provider.when(PluginWorkspaceProvider::getPluginWorkspace).thenReturn(pluginWorkspace);
 
       assertNotNull(PluginWorkspaceProvider.getPluginWorkspace());
       HistoryViewContextualMenuPresenter historyContextualMenu = new HistoryViewContextualMenuPresenter(null);
@@ -99,11 +103,13 @@ public class HistoryContextualActionsTest extends GitTestBase {
     assertEquals("test.xpr", urlOpenedFile[0]);
 
   }
+  
 
   /**
    * <p>
    * <b>Description:</b> Tests the
-   * com.oxygenxml.git.service.GitAccess.checkoutCommitForFile(String, String) API.
+   * com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter.createCheckoutFileAction(
+   * String, FileStatus, boolean) API.
    * </p>
    * 
    * <p>
@@ -115,7 +121,7 @@ public class HistoryContextualActionsTest extends GitTestBase {
    * @throws Exception
    */
   @Test
-  public void testCheckoutFileMethod() throws Exception {
+  public void testCheckoutFileAction() throws Exception {
     URL script = getClass().getClassLoader().getResource("scripts/history_script_actions.txt");
     File wcTree = new File("target/gen/GitHistoryActionsTest_testHistoryContextualActions");
     RepoGenerationScript.generateRepository(script, wcTree);
@@ -134,32 +140,87 @@ public class HistoryContextualActionsTest extends GitTestBase {
     
     try (MockedStatic<GitAccess> git = Mockito.mockStatic(GitAccess.class)) {
       GitAccess gitAcc = Mockito.mock(GitAccess.class);
-      Mockito.doAnswer(new Answer<Void>() {
-        public Void answer(InvocationOnMock invocation) {
-          checkoutFile[0] = invocation.getArgument(0);
-          checkoutFile[1] = invocation.getArgument(1);
-          return null;
-        }
-    }).when(gitAcc).checkoutCommitForFile(Mockito.any(String.class), Mockito.any(String.class));
-      git.when(() -> GitAccess.getInstance()).thenReturn(gitAcc);
+      Mockito.doAnswer((Answer<Void>) invocation -> {
+        checkoutFile[0] = invocation.getArgument(0);
+        checkoutFile[1] = invocation.getArgument(1);
+        return null;
+      }).when(gitAcc).checkoutCommitForFile(Mockito.any(String.class), Mockito.any(String.class));
+      git.when(GitAccess::getInstance).thenReturn(gitAcc);
       
       try (MockedStatic<GitOperationScheduler> sch = Mockito.mockStatic(GitOperationScheduler.class)) {
         GitOperationScheduler scheduler = Mockito.mock(GitOperationScheduler.class);
-        Mockito.when(scheduler.schedule(Mockito.any(Runnable.class))).thenAnswer(new Answer<ScheduledFuture<?>>() {
-          @Override
-          public ScheduledFuture<?> answer(InvocationOnMock invocation) throws Throwable {
-            ((Runnable)invocation.getArgument(0)).run();
-            return null;
-          }
+        Mockito.when(scheduler.schedule(Mockito.any(Runnable.class))).thenAnswer((Answer<ScheduledFuture<?>>) invocation -> {
+          ((Runnable)invocation.getArgument(0)).run();
+          return null;
         });
-        sch.when(() -> GitOperationScheduler.getInstance()).thenReturn(scheduler);
+        sch.when(GitOperationScheduler::getInstance).thenReturn(scheduler);
         actions.get(0).actionPerformed(null);
-      }
-      
+      }     
     }
-    
+ 
     assertEquals(checkoutFile[0], changedFiles.get(0).getFileLocation());
     assertEquals(checkoutFile[1], commitCharacteristic.getCommitId());
   }
 
+  
+  /**
+   * <p>
+   * <b>Description:</b> Tests the
+   * com.oxygenxml.git.service.GitAccess.checkoutCommitForFile(String, String) API.
+   * </p>
+   * 
+   * <p>
+   * <b>Bug ID:</b> EXM-46986
+   * </p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testCheckoutFileMethodFunctionality() throws Exception {
+    final String location = "src/test/resources/EXM-46986";
+    gitAccess = GitAccess.getInstance();
+    gitAccess.createNewRepository(location);
+    File file = new File(location + "/source.txt");
+    file.createNewFile();
+    gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
+    gitAccess.commit("file test added");
+    try {
+      PrintWriter out = new PrintWriter(location + "/source.txt");
+      out.println("modify");
+      out.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
+    gitAccess.commit("file test modified");
+    String commitID = gitAccess.getLatestCommitOnCurrentBranch().getId().getName();
+    BufferedReader reader = new BufferedReader(new FileReader(location + "/source.txt"));
+    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("modify", content);
+    
+    try {
+      PrintWriter out = new PrintWriter(location + "/source.txt");
+      out.println("oxygen");
+      out.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
+    gitAccess.commit("file updated");
+    reader = new BufferedReader(new FileReader(location + "/source.txt"));
+    content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("oxygen", content);
+   
+    gitAccess.checkoutCommitForFile("source.txt" , commitID);
+    reader = new BufferedReader(new FileReader(location + "/source.txt"));
+    content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("modify", content);
+  }
+  
 }
