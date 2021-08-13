@@ -1131,19 +1131,41 @@ public class ChangesPanel extends JPanel {
 	}
 
 	/**
+	 * @return <code>true</code> if there are conflicts in the selected files.
+	 * 
+	 * @author Alex_Smarandache
+	 */
+	private boolean haveSelectedFilesConflicts() {
+	  boolean hasConflict = false;
+    if(currentViewMode == ResourcesViewMode.FLAT_VIEW) {
+      List<FileStatus> selectedFilesTable = getTableSelectedFiles();
+      for (int i = 0; i < selectedFilesTable.size(); i++) {
+        if(selectedFilesTable.get(i).getChangeType() == GitChangeType.CONFLICT) {
+          hasConflict = true;
+          break;
+        }
+      }
+    } else {
+      List<String> selectedPaths = TreeUtil.getStringComonAncestor(tree);
+      StagingResourcesTreeModel fileTreeModel = (StagingResourcesTreeModel) tree.getModel();
+      List<FileStatus> fileStatusesForPaths = fileTreeModel.getFilesByPaths(selectedPaths);
+      for (int i = 0; i < fileStatusesForPaths.size(); i++) {
+        if(fileStatusesForPaths.get(i).getChangeType() == GitChangeType.CONFLICT) {
+          hasConflict = true;
+          break;
+        }
+      }
+    }
+    return hasConflict;
+	}
+    
+	/**
 	 * Enable or disable the changeSelected button depending wheter or not
 	 * something is selected in the current view(flat or tree)
 	 */
 	private void toggleSelectedButton() {
-	  if (changeSelectedButton != null) {
-	    List<FileStatus> selectedFiles = getTableSelectedFiles();
-	    boolean hasConflict = false;
-	    for (int i = 0; i < selectedFiles.size(); i++) {
-	      if(selectedFiles.get(i).getChangeType() == GitChangeType.CONFLICT) {
-	        hasConflict = true;
-	        break;
-	      }
-	    }
+	  if (changeSelectedButton != null) {	    
+	    boolean hasConflict = haveSelectedFilesConflicts();
 	    boolean isEnabled = 
 	        (currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable != null && filesTable.getSelectedRowCount() > 0
 	            || currentViewMode == ResourcesViewMode.TREE_VIEW && tree != null && tree.getSelectionCount() > 0) && !hasConflict;
