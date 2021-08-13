@@ -51,6 +51,7 @@ import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
@@ -1135,9 +1136,17 @@ public class ChangesPanel extends JPanel {
 	 */
 	private void toggleSelectedButton() {
 	  if (changeSelectedButton != null) {
+	    List<FileStatus> selectedFiles = getTableSelectedFiles();
+	    boolean hasConflict = false;
+	    for (int i = 0; i < selectedFiles.size(); i++) {
+	      if(selectedFiles.get(i).getChangeType() == GitChangeType.CONFLICT) {
+	        hasConflict = true;
+	        break;
+	      }
+	    }
 	    boolean isEnabled = 
-	        currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable != null && filesTable.getSelectedRowCount() > 0
-	            || currentViewMode == ResourcesViewMode.TREE_VIEW && tree != null && tree.getSelectionCount() > 0;
+	        (currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable != null && filesTable.getSelectedRowCount() > 0
+	            || currentViewMode == ResourcesViewMode.TREE_VIEW && tree != null && tree.getSelectionCount() > 0) && !hasConflict;
 	    changeSelectedButton.setEnabled(isEnabled);
 	  }
 	}
