@@ -1699,10 +1699,11 @@ public class GitAccess {
    * @throws GitAPIException 
    * @throws NoWorkTreeException 
    */
-  public void revertCommit(String commitId) throws IOException, NoRepositorySelected, NoWorkTreeException, GitAPIException {
-    if (git.status().call().hasUncommittedChanges()) {
+  public void revertCommit(String commitId) throws IOException, NoRepositorySelected, GitAPIException {
+    Status GitStatusCall = git.status().call();
+    if (GitStatusCall.hasUncommittedChanges()) {
      // a conflict happened
-      List<String> uncommited= new ArrayList<>(git.status().call().getUncommittedChanges());
+      List<String> uncommited= new ArrayList<>(GitStatusCall.getUncommittedChanges());
      FileStatusDialog.showWarningMessage(
          Translator.getInstance().getTranslation(Tags.ERROR),
          uncommited,
