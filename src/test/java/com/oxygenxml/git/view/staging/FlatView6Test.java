@@ -1,9 +1,11 @@
 package com.oxygenxml.git.view.staging;
 
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
@@ -184,6 +186,69 @@ public class FlatView6Test extends FlatViewTestBase {
         "");
   }
 
+  
+  /**
+   * <p>
+   * <b>Description:</b> Tests the Stage button enabling.
+   * </p>
+   * 
+   * <p>
+   * <b>Bug ID:</b> EXM-48559
+   * </p>
+   *
+   * @author Alex_Smarandache
+   * 
+   * @throws Exception
+   */
+  @Test  
+  public void testStageButtonEnabled() throws Exception {
+    String localTestRepository = "target/test-resources/testStageButtonVisibility_local";
+    String remoteTestRepository = "target/test-resources/testStageButtonVisibility_remote";
+    
+    new File(localTestRepository).mkdirs();
+    File file = createNewFile(localTestRepository, "test.txt", "remote");
+    
+    // Create repositories
+    Repository remoteRepo = createRepository(remoteTestRepository);
+    Repository localRepo = createRepository(localTestRepository);
+    // Bind the local repository to the remote one.
+    bindLocalToRemote(localRepo , remoteRepo);
+    ChangesPanel unstagedChangesPanel = stagingPanel.getUnstagedChangesPanel();
+    JButton usButton = unstagedChangesPanel.getChangeSelectedButton();
+    assertFalse(usButton.isEnabled());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        unstagedChangesPanel.getFilesTable().selectAll();
+      }
+    });
+    sleep(500);
+    assertTrue(usButton.isEnabled());
+    List<FileStatus> allFilesUnstagedPanel = unstagedChangesPanel.getFilesStatuses();
+    allFilesUnstagedPanel.add(new FileStatus(GitChangeType.CONFLICT, "another_file.txt"));
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        unstagedChangesPanel.getFilesTable().selectAll();
+      }
+    });
+    sleep(500);
+    assertFalse(usButton.isEnabled());
+    
+    allFilesUnstagedPanel.clear();
+    allFilesUnstagedPanel.add(new FileStatus(GitChangeType.CONFLICT, "first.txt"));
+    allFilesUnstagedPanel.add(new FileStatus(GitChangeType.CONFLICT, "second.txt"));
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        unstagedChangesPanel.getFilesTable().selectAll();
+      }
+    });
+    sleep(500);
+    assertFalse(usButton.isEnabled());
+
+  }
+  
 
   /**
    * Stage All and UnStage All on newly created files.
