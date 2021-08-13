@@ -3,7 +3,6 @@ package com.oxygenxml.git.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -54,12 +52,12 @@ public class FileHelperTest {
 		pluginWorkspace = Mockito.mock(StandalonePluginWorkspace.class);
 		UtilAccess utilAccess = Mockito.mock(UtilAccess.class);
 		Mockito.when(pluginWorkspace.getUtilAccess()).thenReturn(utilAccess);
-		Mockito.when(utilAccess.createReader(Mockito.any(URL.class), Mockito.any(String.class))).then((Answer<FileReader>) invocation -> {
-			File currentFile = URLUtil.getAbsoluteFileFromFileUrl((invocation.getArgument(0)));
-			return new FileReader(currentFile);
-		});
-		PowerMockito.mockStatic(PluginWorkspaceProvider.class);
-		when(PluginWorkspaceProvider.getPluginWorkspace()).thenReturn(pluginWorkspace);
+		Mockito.when(utilAccess.createReader(Mockito.any(URL.class), Mockito.any(String.class)))
+    		.then((Answer<FileReader>) invocation -> {
+    		  File currentFile = URLUtil.getAbsoluteFileFromFileUrl((invocation.getArgument(0)));
+    		  return new FileReader(currentFile);
+    		});
+		PluginWorkspaceProvider.setPluginWorkspace(pluginWorkspace);
 	}
 
 	/**
