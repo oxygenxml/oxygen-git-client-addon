@@ -482,7 +482,10 @@ public class BranchActionsTest extends GitTestBase {
   }
   
   /**
-   * Tests the action created on the current Branch
+   *<p><b>Description:</b>Tests the action created on the current Branch</p>
+   * <p><b>Bug ID:</b> EXM-43410</p>
+   * 
+   * @author gabriel_nedianu
    * 
    * @throws Exception
    */
