@@ -481,4 +481,45 @@ public class BranchActionsTest extends GitTestBase {
         actualTree.toString());
   }
   
+  /**
+   * Tests the action created on the current Branch
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testContextualMenuActionsOnCurrentBranch() throws Exception{
+    
+    File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    
+    //Make the first commit for the local repository
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    
+    //Verify we are on main branch
+    String initialBranchName = gitAccess.getBranchInfo().getBranchName();
+    assertEquals(GitAccess.DEFAULT_BRANCH_NAME, initialBranchName);
+    
+    GitControllerBase mock = new GitController(GitAccess.getInstance());
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(mock);
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    BranchTreeMenuActionsProvider branchTreeMenuActionsProvider = new BranchTreeMenuActionsProvider(mock);
+    GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    GitTreeNode mainBranchNode = (GitTreeNode)root.getFirstLeaf();
+    String mainBranchPath = (String)mainBranchNode.getUserObject();
+
+    assertEquals("refs/heads/" + GitAccess.DEFAULT_BRANCH_NAME, mainBranchPath);
+    
+    //------------- Verify the actions on the selected branch -------------
+
+    List<AbstractAction> actionsForNode = branchTreeMenuActionsProvider.getActionsForNode(mainBranchNode);
+    int noOfActions = actionsForNode.size();
+    assertEquals(1, noOfActions);
+    
+    String actionName = (String) actionsForNode.get(0).getValue(AbstractAction.NAME);
+    assertEquals(translator.getTranslation(Tags.CREATE_BRANCH) + "...", actionName);
+  }
+  
 }
