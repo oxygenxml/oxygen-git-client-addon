@@ -12,6 +12,9 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
@@ -22,6 +25,9 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.event.GitController;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 /**
  * Test cases for the actions that can be done on a branch.
  * 
@@ -35,6 +41,8 @@ public class BranchMergingTest extends GitTestBase {
   private GitAccess gitAccess;
   private Repository remoteRepository;
   private Repository localRepository;
+  
+  String[] errMsg = new String[1];
   
   @Override
   @Before
@@ -52,6 +60,7 @@ public class BranchMergingTest extends GitTestBase {
     localRepository = gitAccess.getRepository();
     
     bindLocalToRemote(localRepository , remoteRepository);
+
   }
   
   /**
@@ -437,8 +446,20 @@ public class BranchMergingTest extends GitTestBase {
     
     sleep(200);
     
-    //Don't resolve merge conflicts and try to do the merge again
+    //Don't resolve merge conflicts and try to do the merge again and we will get an errMsg
     
+    //Mock showErrorMessage
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    Mockito.doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        String message = (String) invocation.getArguments()[0];
+        errMsg[0] = message;
+        return null;
+      }
+    }).when(pluginWSMock).showErrorMessage(Mockito.anyString());
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
+
     List<AbstractAction> actionsForSecondaryBranch2 = branchTreeMenuActionsProvider.getActionsForNode(secondaryBranchNode);
     for (AbstractAction action : actionsForSecondaryBranch2) {
       if (action != null) {
@@ -451,11 +472,7 @@ public class BranchMergingTest extends GitTestBase {
     }
     flushAWT();
     
-    sleep(1000);
-    //Search for the error dialog 
-    errorConflictDialog = findDialog(translator.getTranslation(Tags.ERROR));
-    assertNotNull(errorConflictDialog);
-    sleep(100);
-    errorConflictDialog.dispose();
+    sleep(200);
+    assertEquals("Resolve_conflicts_first", errMsg[0]);
   }
 }
