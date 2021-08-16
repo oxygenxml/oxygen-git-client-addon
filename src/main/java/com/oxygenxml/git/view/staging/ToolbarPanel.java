@@ -757,6 +757,16 @@ public class ToolbarPanel extends JPanel {
             upstreamBranchFromConfig))
             .append(".\n");
         pushButtonTooltip.append(commitsAheadMessage);
+        try {
+          CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, 
+              currentBranchName);
+          pushButtonTooltip.append("\n\n");
+          assert commitsAheadAndBehind != null;
+          List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
+          updateCommits(commitsAhead, pushButtonTooltip, maximumSizeMessage);
+        } catch (IOException | GitAPIException e) {
+          LOGGER.error(e, e);
+        } 
       } else {
         // There is an upstream branch defined in "config",
         // but that branch does not exist in the remote repository.
@@ -779,33 +789,6 @@ public class ToolbarPanel extends JPanel {
             TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
             currentBranchName));
       }
-    }
-    
-    try {
-      CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, 
-          currentBranchName);
-      pushButtonTooltip.append("\n\n");
-			assert commitsAheadAndBehind != null;
-			List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
-      SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy - HH:mm");
-      for (int i = 0; i < commitsAhead.size() && i < maximumNoCommitsDisplayed; i++) {
-        String revCommitMessage = commitsAhead.get(i).getShortMessage();
-        if(revCommitMessage.length() > maximumSizeMessage) {
-          revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + "[...]";
-        }
-        List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitsAhead.get(i).getId().getName());
-        pushButtonTooltip.append(commitsAhead.get(i).getAuthorIdent().getName())
-            .append(" [") 
-            .append(dateFormat.format(commitsAhead.get(i).getAuthorIdent().getWhen()))
-            .append("]: ")
-            .append(revCommitMessage)
-            .append(" - ") 
-            .append(changedFiles.size())
-            .append(" file(s).\n"); 
-      }
-      
-    } catch (IOException | GitAPIException e) {
-      LOGGER.error(e, e);
     }
     
     return pushButtonTooltip.toString();
@@ -840,6 +823,7 @@ public class ToolbarPanel extends JPanel {
     } catch (NoRepositorySelected e) {
       LOGGER.debug(e, e);
     }
+    
     StringBuilder pullButtonTooltip = new StringBuilder();
     String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
     final int maximumNoCommitsDisplayed = 10;
@@ -851,6 +835,18 @@ public class ToolbarPanel extends JPanel {
 								TRANSLATOR.getTranslation(pullFromTag),
 								Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName()))).append(".\n");
         pullButtonTooltip.append(commitsBehindMessage);
+        try {
+          assert repo != null;
+          CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
+              currentBranchName);
+          pullButtonTooltip.append("\n\n");
+          assert commitsAheadAndBehind != null;
+          List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
+          updateCommits(commitsBehind, pullButtonTooltip, maximumSizeMessage);
+        } catch (IOException | GitAPIException e) {
+          LOGGER.error(e, e);
+        }
+
       } else {
         // The upstream branch defined in "config" does not exists in the remote repository.
         pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("\n").append(MessageFormat.format(
@@ -873,38 +869,40 @@ public class ToolbarPanel extends JPanel {
 								currentBranchName)).append(".");
       }
     }
-    
-    try {
-			assert repo != null;
-			CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
-          currentBranchName);
-      pullButtonTooltip.append("\n\n");
-			assert commitsAheadAndBehind != null;
-			List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
-      SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy - HH:mm");
-      for (int i = 0; i < commitsBehind.size() && i < maximumNoCommitsDisplayed; i++) {
-        String revCommitMessage = commitsBehind.get(i).getShortMessage();
-        if(revCommitMessage.length() > maximumSizeMessage) {
-          revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + "[...]";
-        }
-        List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitsBehind.get(i).getId().getName());
-        pullButtonTooltip.append(commitsBehind.get(i).getAuthorIdent().getName())
-            .append(" [") 
-            .append(dateFormat.format(commitsBehind.get(i).getAuthorIdent().getWhen()))
-            .append("]: ")
-            .append(revCommitMessage)
-            .append(" - ")
-            .append(changedFiles.size())
-            .append(" file(s).\n"); 
-      }
-      
-    } catch (IOException | GitAPIException e) {
-      LOGGER.error(e, e);
-    }
-    
+        
     return pullButtonTooltip.toString();
   }
 	
+  
+  /**
+   * Update the text with info about the commits from the list.
+   * 
+   * @param commits                 The list with new commits.
+   * @param text                    The text of the message.
+   * @param maximumSizeMessage      The maximum size for a commit message.
+   * 
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  void updateCommits(List<RevCommit> commits, StringBuilder text, int maximumSizeMessage) throws IOException, GitAPIException {
+    final int maximumNoCommitsDisplayed = 10;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy - HH:mm");
+    for (int i = 0; i < commits.size() && i < maximumNoCommitsDisplayed; i++) {
+      String revCommitMessage = commits.get(i).getShortMessage();
+      if(revCommitMessage.length() > maximumSizeMessage) {
+        revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + "[...]";
+      }
+      List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commits.get(i).getId().getName());
+      text.append(commits.get(i).getAuthorIdent().getName())
+          .append(" [") 
+          .append(dateFormat.format(commits.get(i).getAuthorIdent().getWhen()))
+          .append("]: ")
+          .append(revCommitMessage)
+          .append(" - ")
+          .append(changedFiles.size())
+          .append(" file(s).\n"); 
+    }
+  }
   
 	/**
 	 * @return The translation tag for the "Pull" button tooltip text.
