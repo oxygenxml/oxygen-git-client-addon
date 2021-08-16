@@ -35,6 +35,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -892,6 +893,35 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     }
     
     return result;      
+  }
+  
+  
+  /**
+   * Searches for the first text area.
+   * 
+   * @param parent  The parent container.
+   * @param index   The index of the button in the list of all buttons having that text.
+   * @return        The text area, or null if there is no button having that text.
+   */
+  protected JTextArea findFirstTextArea(Container parent) {
+    JTextArea result = null;
+
+    // Gets all the buttons.
+    ComponentFinder cf = new ComponentFinder(JTextArea.class);
+    @SuppressWarnings("unchecked")
+    List<Component> allTextAreas = cf.findAll(parent);
+
+    // Selects the one with the given text.
+    for (Iterator<Component> iterator = allTextAreas.iterator(); iterator.hasNext();) {
+      JTextArea textarea = (JTextArea) iterator.next();
+      boolean equals = textarea.getText() != null ;
+      if (equals) {
+        result = textarea;
+        break;
+      }
+    }
+
+    return result;
   }
 
   /**

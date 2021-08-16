@@ -50,11 +50,12 @@ public class RevertCommitAction extends AbstractAction {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
+    Translator translator = Translator.getInstance();
     int result = FileStatusDialog.showQuestionMessage(
-        Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
-        Translator.getInstance().getTranslation(Tags.REVERT_COMMIT_WARNING), 
-        Translator.getInstance().getTranslation(Tags.YES),
-        Translator.getInstance().getTranslation(Tags.NO));
+        translator.getTranslation(Tags.REVERT_COMMIT),
+        translator.getTranslation(Tags.REVERT_COMMIT_WARNING), 
+        translator.getTranslation(Tags.YES),
+        translator.getTranslation(Tags.NO));
     if ( result == OKCancelDialog.RESULT_OK) {
       GitOperationScheduler.getInstance().schedule(() -> {
         try {
