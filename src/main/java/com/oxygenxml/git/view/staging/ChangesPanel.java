@@ -1151,15 +1151,17 @@ public class ChangesPanel extends JPanel {
 	}
     
 	/**
-	 * Enable or disable the changeSelected button depending wheter or not
-	 * something is selected in the current view(flat or tree)
+	 * Enable or disable the changeSelected button depending on whether or not
+	 * something is selected in the current view (flat or tree).
 	 */
 	private void toggleSelectedButton() {
 	  if (changeSelectedButton != null) {
-			boolean isAnyTableEntrySelected = currentViewMode == ResourcesViewMode.FLAT_VIEW && filesTable != null
-							&& filesTable.getSelectedRowCount() > 0;
-			boolean isAnyTreeItemSelected = currentViewMode == ResourcesViewMode.TREE_VIEW && tree != null
-							&& tree.getSelectionCount() > 0;
+			boolean isAnyTableEntrySelected = currentViewMode == ResourcesViewMode.FLAT_VIEW
+			    && filesTable != null
+					&& filesTable.getSelectedRowCount() > 0;
+			boolean isAnyTreeItemSelected = currentViewMode == ResourcesViewMode.TREE_VIEW 
+			    && tree != null
+			    && tree.getSelectionCount() > 0;
 	    boolean isEnabled = (isAnyTreeItemSelected || isAnyTableEntrySelected) && !isAnyConflictInSelection();
 	    changeSelectedButton.setEnabled(isEnabled);
 	  }
