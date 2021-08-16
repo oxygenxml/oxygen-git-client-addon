@@ -7,8 +7,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JToolTip;
 
 /**
@@ -19,7 +19,7 @@ import javax.swing.JToolTip;
  */
 public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
 
-  private JTextArea tipArea;
+  private JEditorPane tipText;
   private JScrollPane scrollpane;
   private JComponent comp;
 
@@ -32,13 +32,12 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
     this.comp = comp;
     setPreferredSize(new Dimension(width, height));
     setLayout(new BorderLayout());
-    tipArea = new JTextArea();
-    tipArea.setLineWrap(true);
-    tipArea.setWrapStyleWord(true);
-    tipArea.setEditable(false);
-    tipArea.setBackground(super.getBackground());
-    tipArea.setFont(super.getFont());
-    scrollpane = new JScrollPane(tipArea);
+    tipText = new JEditorPane();
+    tipText.setEditable(false);
+    tipText.setContentType("text/html");
+    tipText.setFont(super.getFont());
+    tipText.setBackground(super.getBackground());
+    scrollpane = new JScrollPane(tipText);
     add(scrollpane);
     if(comp != null){
       comp.addMouseWheelListener(this);
@@ -53,20 +52,19 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
 
   @Override
   public void setTipText(final String tipText) {
-    String oldValue = this.tipArea.getText();
-    tipArea.setText(tipText);
-    tipArea.setCaretPosition(0);
+    String oldValue = this.tipText.getText();
+    this.tipText.setText(tipText);
     firePropertyChange("tiptext", oldValue, tipText);
   }
-
+  
   @Override
   public String getTipText() {
-    return tipArea == null ? "" : tipArea.getText();
+    return tipText == null ? "" : tipText.getText();
   }
 
   @Override
   protected String paramString() {
-    String tipTextString = (tipArea.getText() != null ? tipArea.getText() : "");
+    String tipTextString = (tipText.getText() != null ? tipText.getText() : "");
 
     return super.paramString() +
             ",tipText=" + tipTextString;

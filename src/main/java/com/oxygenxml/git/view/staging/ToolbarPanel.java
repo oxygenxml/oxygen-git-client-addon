@@ -709,7 +709,7 @@ public class ToolbarPanel extends JPanel {
 				    existsRemoteBranchForUpstreamDefinedInConfig, upstreamBranchFromConfig, 
 				    commitsAheadMessage, currentBranchName, repo, maximumMessageSize);
 				SwingUtilities.invokeLater(() -> pushButton.setToolTipText(pushButtonTooltipFinal));
-
+				
 				//  ===================== Pull button tooltip =====================
 				final String pullFromTag = getPullFromTranslationTag();
 				String pullButtonTooltipFinal = updatePullToolTip(isAnUpstreamBranchDefinedInConfig, existsRemoteBranchForUpstreamDefinedInConfig, upstreamBranchFromConfig, 
@@ -748,6 +748,7 @@ public class ToolbarPanel extends JPanel {
 	    int maximumSizeMessage
 	    ) {
 	  StringBuilder pushButtonTooltip = new StringBuilder();
+	  pushButtonTooltip.append("<html>");
 		final int maximumNoCommitsDisplayed = 10;
     if (isAnUpstreamBranchDefinedInConfig) {
       if (existsRemoteBranchForUpstreamDefinedInConfig) {
@@ -755,15 +756,26 @@ public class ToolbarPanel extends JPanel {
         pushButtonTooltip.append(MessageFormat.format(
             TRANSLATOR.getTranslation(Tags.PUSH_TO),
             upstreamBranchFromConfig))
-            .append(".\n");
+            .append(".<br>");
         pushButtonTooltip.append(commitsAheadMessage);
         try {
           CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, 
               currentBranchName);
-          pushButtonTooltip.append("\n\n");
+          pushButtonTooltip.append("<br><br>");
           assert commitsAheadAndBehind != null;
           List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
           updateCommits(commitsAhead, pushButtonTooltip, maximumSizeMessage);
+          if(commitsAhead.size() > maximumNoCommitsDisplayed) {
+            //TODO add Show more action
+            /*
+            pullButtonTooltip.append("<br>")
+            .append("<a href=")
+            .append("https://github.com/oxygenxml/oxygen-git-plugin/tree/master/src")
+            .append(">")
+            .append(TRANSLATOR.getTranslation(Tags.SHOW_HISTORY))
+            .append("</a>");
+            */
+          }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
         } 
@@ -790,6 +802,7 @@ public class ToolbarPanel extends JPanel {
             currentBranchName));
       }
     }
+    pushButtonTooltip.append("</html>");
     
     return pushButtonTooltip.toString();
     
@@ -825,6 +838,7 @@ public class ToolbarPanel extends JPanel {
     }
     
     StringBuilder pullButtonTooltip = new StringBuilder();
+    pullButtonTooltip.append("<html>");
     String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
     final int maximumNoCommitsDisplayed = 10;
     
@@ -833,23 +847,34 @@ public class ToolbarPanel extends JPanel {
         // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
         pullButtonTooltip.append(MessageFormat.format(
 								TRANSLATOR.getTranslation(pullFromTag),
-								Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName()))).append(".\n");
+								Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName()))).append(".<br>");
         pullButtonTooltip.append(commitsBehindMessage);
         try {
           assert repo != null;
           CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
               currentBranchName);
-          pullButtonTooltip.append("\n\n");
+          pullButtonTooltip.append("<br><br>");
           assert commitsAheadAndBehind != null;
           List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
           updateCommits(commitsBehind, pullButtonTooltip, maximumSizeMessage);
+          if(commitsBehind.size() > maximumNoCommitsDisplayed) {
+            //TODO add Show more action
+            /*
+            pullButtonTooltip.append("<br>")
+            .append("<a href=")
+            .append("https://github.com/oxygenxml/oxygen-git-plugin/tree/master/src")
+            .append(">")
+            .append(TRANSLATOR.getTranslation(Tags.SHOW_HISTORY))
+            .append("</a>");
+            */
+          }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
         }
 
       } else {
         // The upstream branch defined in "config" does not exists in the remote repository.
-        pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("\n").append(MessageFormat.format(
+        pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("<br>").append(MessageFormat.format(
 								StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH_DOES_NOT_EXIST)),
 								upstreamBranchFromConfig));
       }
@@ -860,16 +885,17 @@ public class ToolbarPanel extends JPanel {
         // that has the same name as the local branch
         pullButtonTooltip.append(MessageFormat.format(
 								TRANSLATOR.getTranslation(pullFromTag),
-								Repository.shortenRefName(remoteBranchWithLocalBranchName.getName()))).append(".\n");
+								Repository.shortenRefName(remoteBranchWithLocalBranchName.getName()))).append(".<br>");
       } else {
         // No upstream branch defined in "config" and no remote branch
         // that has the same name as the local branch.
-        pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("\n").append(MessageFormat.format(
+        pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("<br>").append(MessageFormat.format(
 								StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.NO_REMOTE_BRANCH)),
 								currentBranchName)).append(".");
       }
     }
         
+    pullButtonTooltip.append("</html>");
     return pullButtonTooltip.toString();
   }
 	
@@ -900,7 +926,7 @@ public class ToolbarPanel extends JPanel {
           .append(revCommitMessage)
           .append(" - ")
           .append(changedFiles.size())
-          .append(" file(s).\n"); 
+          .append(" file(s).<br>"); 
     }
   }
   
