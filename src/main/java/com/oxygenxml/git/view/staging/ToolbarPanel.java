@@ -23,6 +23,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToolBar;
+import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -33,8 +34,10 @@ import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.StringUtils;
 
+import com.ibm.icu.text.SimpleDateFormat;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.CredentialsBase;
@@ -48,7 +51,9 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.PrivateRepositoryException;
 import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.service.RepositoryUnavailableException;
+import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
+import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -63,6 +68,7 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
+import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 
@@ -118,15 +124,15 @@ public class ToolbarPanel extends JPanel {
     public void actionPerformed(ActionEvent e) {
       try {
         if (GitAccess.getInstance().getRepository() != null) {
-          if (logger.isDebugEnabled()) {
-            logger.debug("Pull action invoked");
+          if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Pull action invoked");
           }
           gitController.pull(pullType);
           OptionsManager.getInstance().saveDefaultPullType(pullType);
         }
       } catch (NoRepositorySelected e1) {
-        if(logger.isDebugEnabled()) {
-          logger.debug(e1, e1);
+        if(LOGGER.isDebugEnabled()) {
+          LOGGER.debug(e1, e1);
         }
       }
     }
@@ -135,7 +141,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(ToolbarPanel.class);
+	private static final Logger LOGGER = Logger.getLogger(ToolbarPanel.class);
 
 	/**
 	 * Toolbar in which the button will be placed
@@ -145,12 +151,12 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * SplitMenuButton for selecting the local branch.
 	 */
-	private SplitMenuButton branchesSplitMenuButton;
+	private final SplitMenuButton branchesSplitMenuButton;
 	
 	/**
 	 * Used to execute the push and pull commands
 	 */
-	private GitController gitController;
+	private final GitController gitController;
 
 	/**
 	 * Button for push
@@ -195,12 +201,12 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private Translator translator = Translator.getInstance();
+	private final static Translator TRANSLATOR = Translator.getInstance();
 
 	/**
 	 * Main panel refresh
 	 */
-	private GitRefreshSupport refreshSupport;
+	private final GitRefreshSupport refreshSupport;
 	
 	/**
 	 * Branch selection button.
@@ -273,11 +279,11 @@ public class ToolbarPanel extends JPanel {
     } catch (SSHPassphraseRequiredException e) {
       String message = null;
       if (firstRun) {
-        message = translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
+        message = TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       } else {
-        message = translator.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID) 
+        message = TRANSLATOR.getTranslation(Tags.PREVIOUS_PASS_PHRASE_INVALID)
             + " " 
-            + translator.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
+            + TRANSLATOR.getTranslation(Tags.ENTER_SSH_PASS_PHRASE);
       }
 
       String passphrase = new PassphraseDialog(message).getPassphrase();
@@ -289,14 +295,14 @@ public class ToolbarPanel extends JPanel {
       String loginMessage = null;
       String hostName = GitAccess.getInstance().getHostName();
       if (firstRun) {
-        loginMessage = translator.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
+        loginMessage = TRANSLATOR.getTranslation(Tags.LOGIN_DIALOG_PRIVATE_REPOSITORY_MESSAGE);
       } else {
-        loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
+        loginMessage = TRANSLATOR.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
         CredentialsBase gitCredentials = OptionsManager.getInstance().getGitCredentials(hostName);
         if (gitCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
-          loginMessage += translator.getTranslation(Tags.CHECK_CREDENTIALS);
+          loginMessage += TRANSLATOR.getTranslation(Tags.CHECK_CREDENTIALS);
         } else {
-          loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
+          loginMessage += TRANSLATOR.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
         }
       }
 
@@ -436,13 +442,13 @@ public class ToolbarPanel extends JPanel {
         try {
           repoState = GitAccess.getInstance().getRepository().getRepositoryState();
         } catch (NoRepositorySelected e1) {
-          logger.error(e1, e1);
+          LOGGER.error(e1, e1);
         }
         if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-          int answer = FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.SWITCH_BRANCH),
-              translator.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
-              translator.getTranslation(Tags.MOVE_CHANGES),
-              translator.getTranslation(Tags.CANCEL));
+          int answer = FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH),
+              TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
+              TRANSLATOR.getTranslation(Tags.MOVE_CHANGES),
+              TRANSLATOR.getTranslation(Tags.CANCEL));
           if(answer == OKCancelDialog.RESULT_OK ) {
             tryCheckingOutBranch(branchName);
           }
@@ -464,7 +470,7 @@ public class ToolbarPanel extends JPanel {
         GitAccess.getInstance().setBranch(branchName);
         BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
       } catch (CheckoutConflictException ex) {
-        logger.debug(ex, ex);
+        LOGGER.debug(ex, ex);
         restoreCurrentBranchSelectionInMenu();
         BranchesUtil.showBranchSwitchErrorMessage();
       } catch (GitAPIException | JGitInternalException | IOException | NoRepositorySelected ex) {
@@ -511,7 +517,7 @@ public class ToolbarPanel extends JPanel {
 
 		cloneRepositoryButton = new ToolbarButton(cloneRepositoryAction, false);
 		cloneRepositoryButton.setIcon(Icons.getIcon(Icons.GIT_CLONE_REPOSITORY_ICON));
-		cloneRepositoryButton.setToolTipText(translator.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
+		cloneRepositoryButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_BUTTON_TOOLTIP));
 		setDefaultToolbarButtonWidth(cloneRepositoryButton);
 
 		gitToolbar.add(cloneRepositoryButton);
@@ -530,7 +536,7 @@ public class ToolbarPanel extends JPanel {
 
 		historyButton = new ToolbarButton(historyAction, false);
 		historyButton.setIcon(Icons.getIcon(Icons.GIT_HISTORY));
-		historyButton.setToolTipText(translator.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
+		historyButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SHOW_CURRENT_BRANCH_HISTORY));
 		setDefaultToolbarButtonWidth(historyButton);
 
 		gitToolbar.add(historyButton);
@@ -551,15 +557,15 @@ public class ToolbarPanel extends JPanel {
 	          new SubmoduleSelectDialog();
 	        }
 	      } catch (NoRepositorySelected e1) {
-	        if(logger.isDebugEnabled()) {
-	          logger.debug(e1, e1);
+	        if(LOGGER.isDebugEnabled()) {
+	          LOGGER.debug(e1, e1);
 	        }
 	      }
 	    }
 	  };
 		submoduleSelectButton = new ToolbarButton(branchSelectAction, false);
 		submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
-		submoduleSelectButton.setToolTipText(translator.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
+		submoduleSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
 		setDefaultToolbarButtonWidth(submoduleSelectButton);
 
 		gitToolbar.add(submoduleSelectButton);
@@ -583,15 +589,15 @@ public class ToolbarPanel extends JPanel {
 					  branchManagementViewPresenter.showGitBranchManager();
 					}
 				} catch (NoRepositorySelected e1) {
-          if(logger.isDebugEnabled()) {
-            logger.debug(e1, e1);
+          if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug(e1, e1);
           }
 				}
 			}
 		};
 		branchSelectButton = new ToolbarButton(branchSelectAction, false);
 		branchSelectButton.setIcon(Icons.getIcon(Icons.GIT_BRANCH_ICON));
-		branchSelectButton.setToolTipText(translator.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
+		branchSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.BRANCH_MANAGER_BUTTON_TOOL_TIP));
 		setDefaultToolbarButtonWidth(branchSelectButton);
 
 		gitToolbar.add(branchSelectButton);
@@ -609,7 +615,7 @@ public class ToolbarPanel extends JPanel {
       this.pushesAhead = gitAccess.getPushesAhead();
     } catch (RepoNotInitializedException e) {
       this.pushesAhead = -1;
-      logger.debug(e, e);
+      LOGGER.debug(e, e);
     }
     
     SwingUtilities.invokeLater(() -> {
@@ -622,7 +628,7 @@ public class ToolbarPanel extends JPanel {
     try {
       repo = gitAccess.getRepository();
     } catch (NoRepositorySelected e) {
-      logger.debug(e, e);
+      LOGGER.debug(e, e);
     }
     
 		BranchInfo branchInfo = gitAccess.getBranchInfo();
@@ -631,18 +637,18 @@ public class ToolbarPanel extends JPanel {
 		if (branchInfo.isDetached()) {
       branchInfoText += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
 		  String tooltipText = "<html>"
-		      + translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
+		      + TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
 		      + " "
 		      + currentBranchName;
 		  if (repo != null && repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
-		    tooltipText += "<br>" + translator.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
+		    tooltipText += "<br>" + TRANSLATOR.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
 		  }
 		  tooltipText += "</html>";
 		  String finalText = tooltipText;
 		  SwingUtilities.invokeLater(() -> {
 		    branchesSplitMenuButton.setToolTipText(finalText);
-		    pushButton.setToolTipText(translator.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
-		    pullMenuButton.setToolTipText(translator.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
+		    pushButton.setToolTipText(TRANSLATOR.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
+		    pullMenuButton.setToolTipText(TRANSLATOR.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
 		  });
 		} else {
 			String branchTooltip = null;
@@ -663,110 +669,52 @@ public class ToolbarPanel extends JPanel {
         boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
 
         branchTooltip = "<html>"
-				    + translator.getTranslation(Tags.LOCAL_BRANCH) 
+				    + TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
 				    + " <b>" + currentBranchName + "</b>.<br>"
-				    + translator.getTranslation(Tags.UPSTREAM_BRANCH) 
+				    + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
 				    + " <b>" 
 				    + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig 
 				        ? upstreamBranchFromConfig 
-				        : translator.getTranslation(Tags.NO_UPSTREAM_BRANCH)) 
+				        : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
 				    + "</b>.<br>";
         
         String commitsBehindMessage = "";
         String commitsAheadMessage = "";
         if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
           if (pullsBehind == 0) {
-            commitsBehindMessage = translator.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+            commitsBehindMessage = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
           } else if (pullsBehind == 1) {
-            commitsBehindMessage = translator.getTranslation(Tags.ONE_COMMIT_BEHIND);
+            commitsBehindMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_BEHIND);
           } else {
-            commitsBehindMessage = MessageFormat.format(translator.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
+            commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
           }
           branchTooltip += commitsBehindMessage + "<br>";
           
           if (pushesAhead == 0) {
-            commitsAheadMessage = translator.getTranslation(Tags.NOTHING_TO_PUSH);
+            commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
           } else if (pushesAhead == 1) {
-            commitsAheadMessage = translator.getTranslation(Tags.ONE_COMMIT_AHEAD);
+            commitsAheadMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_AHEAD);
           } else {
-            commitsAheadMessage = MessageFormat.format(translator.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
+            commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
           }
           branchTooltip += commitsAheadMessage;
         }
         
 				branchTooltip += "</html>";
 
+				final int maximumMessageSize = 50;
+				
 				// ===================== Push button tooltip =====================
-				String pushButtonTooltip = "";
-				if (isAnUpstreamBranchDefinedInConfig) {
-				  if (existsRemoteBranchForUpstreamDefinedInConfig) {
-				    // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
-				    pushButtonTooltip = MessageFormat.format(
-				        translator.getTranslation(Tags.PUSH_TO),
-				        upstreamBranchFromConfig) + ".\n";
-				    pushButtonTooltip += commitsAheadMessage;
-				  } else {
-				    // There is an upstream branch defined in "config",
-				    // but that branch does not exist in the remote repository.
-				    pushButtonTooltip = MessageFormat.format(
-				        translator.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
-				        currentBranchName);
-				  }
-				} else {
-				  Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
-				  if (remoteBranchWithLocalBranchName != null) {
-				    // No upstream branch defined in "config", but there is a remote branch
-				    // that has the same name as the local branch.
-				    pushButtonTooltip = MessageFormat.format(
-				        translator.getTranslation(Tags.PUSH_TO_TRACK_REMOTE_BRANCH),
-				        currentBranchName);
-				  } else {
-				    // No upstream branch defined in "config" and no remote branch
-				    // that has the same name as the local branch.
-				    pushButtonTooltip = MessageFormat.format(
-				        translator.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
-				        currentBranchName);
-				  }
-				}
-				String pushButtonTooltipFinal = pushButtonTooltip;
+				String pushButtonTooltipFinal = updatePushToolTip(isAnUpstreamBranchDefinedInConfig, 
+				    existsRemoteBranchForUpstreamDefinedInConfig, upstreamBranchFromConfig, 
+				    commitsAheadMessage, currentBranchName, repo, maximumMessageSize);
 				SwingUtilities.invokeLater(() -> pushButton.setToolTipText(pushButtonTooltipFinal));
 
 				//  ===================== Pull button tooltip =====================
-				String pullButtonTooltip = "";
 				final String pullFromTag = getPullFromTranslationTag();
-				if (isAnUpstreamBranchDefinedInConfig) {
-				  if (existsRemoteBranchForUpstreamDefinedInConfig) {
-				    // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
-				    pullButtonTooltip = MessageFormat.format(
-				        translator.getTranslation(pullFromTag),
-				        Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName())) + ".\n";
-				    pullButtonTooltip += commitsBehindMessage;
-				  } else {
-				    // The upstream branch defined in "config" does not exists in the remote repository.
-            pullButtonTooltip = translator.getTranslation(Tags.CANNOT_PULL) + "\n" 
-                + MessageFormat.format(
-                    StringUtils.capitalize(translator.getTranslation(Tags.UPSTREAM_BRANCH_DOES_NOT_EXIST)),
-                    upstreamBranchFromConfig);
-				  }
-				} else {
-				  Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
-				  if (remoteBranchWithLocalBranchName != null) {
-				    // No upstream defined in config, but there is a remote branch
-				    // that has the same name as the local branch
-				    pullButtonTooltip = MessageFormat.format(
-				        translator.getTranslation(pullFromTag),
-				        Repository.shortenRefName(remoteBranchWithLocalBranchName.getName())) + ".\n";
-				  } else {
-				    // No upstream branch defined in "config" and no remote branch
-            // that has the same name as the local branch.
-				    pullButtonTooltip = translator.getTranslation(Tags.CANNOT_PULL) + "\n" 
-				        + MessageFormat.format(
-				            StringUtils.capitalize(translator.getTranslation(Tags.NO_REMOTE_BRANCH)),
-				            currentBranchName) 
-				        + ".";
-				  }
-				}
-				String pullButtonTooltipFinal = pullButtonTooltip;
+				String pullButtonTooltipFinal = updatePullToolTip(isAnUpstreamBranchDefinedInConfig, existsRemoteBranchForUpstreamDefinedInConfig, upstreamBranchFromConfig, 
+				    commitsBehindMessage, pullFromTag, maximumMessageSize, remoteBranchRefForUpstreamFromConfig);
+				
 				SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
         
 			}
@@ -777,6 +725,187 @@ public class ToolbarPanel extends JPanel {
 		SwingUtilities.invokeLater(() ->branchesSplitMenuButton.setText(branchInfoTextFinal));
 	}
 
+	
+  /**
+   * Updates the tool tip of "Push" Button.
+   * 
+   * @param isAnUpstreamBranchDefinedInConfig              <code>true</code> if is an upstream branch defined in configurations
+   * @param existsRemoteBranchForUpstreamDefinedInConfig   <code>true</code> if exists remote branch for upstream defined in configurations
+   * @param upstreamBranchFromConfig                       The upstream branch from configurations
+   * @param commitsAheadMessage                            The commits ahead message
+   * @param currentBranchName                              The name of the current branch
+   * @param repo                                           The current repository
+   * @param maximumSizeMessage                             The maximum size for a commit message
+   * 
+   * @return updated "Push" button tool tip text.
+   */
+	protected String updatePushToolTip(boolean isAnUpstreamBranchDefinedInConfig, 
+	    boolean existsRemoteBranchForUpstreamDefinedInConfig, 
+	    String upstreamBranchFromConfig, 
+	    String commitsAheadMessage, 
+	    String currentBranchName, 
+	    Repository repo,
+	    int maximumSizeMessage
+	    ) {
+	  StringBuilder pushButtonTooltip = new StringBuilder();
+		final int maximumNoCommitsDisplayed = 10;
+    if (isAnUpstreamBranchDefinedInConfig) {
+      if (existsRemoteBranchForUpstreamDefinedInConfig) {
+        // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
+        pushButtonTooltip.append(MessageFormat.format(
+            TRANSLATOR.getTranslation(Tags.PUSH_TO),
+            upstreamBranchFromConfig))
+            .append(".\n");
+        pushButtonTooltip.append(commitsAheadMessage);
+      } else {
+        // There is an upstream branch defined in "config",
+        // but that branch does not exist in the remote repository.
+        pushButtonTooltip.append(MessageFormat.format(
+            TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
+            currentBranchName));
+      }
+    } else {
+      Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
+      if (remoteBranchWithLocalBranchName != null) {
+        // No upstream branch defined in "config", but there is a remote branch
+        // that has the same name as the local branch.
+        pushButtonTooltip.append(MessageFormat.format(
+            TRANSLATOR.getTranslation(Tags.PUSH_TO_TRACK_REMOTE_BRANCH),
+            currentBranchName));
+      } else {
+        // No upstream branch defined in "config" and no remote branch
+        // that has the same name as the local branch.
+        pushButtonTooltip.append(MessageFormat.format(
+            TRANSLATOR.getTranslation(Tags.PUSH_TO_CREATE_AND_TRACK_REMOTE_BRANCH),
+            currentBranchName));
+      }
+    }
+    
+    try {
+      CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, 
+          currentBranchName);
+      pushButtonTooltip.append("\n\n");
+			assert commitsAheadAndBehind != null;
+			List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
+      SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy - HH:mm");
+      for (int i = 0; i < commitsAhead.size() && i < maximumNoCommitsDisplayed; i++) {
+        String revCommitMessage = commitsAhead.get(i).getShortMessage();
+        if(revCommitMessage.length() > maximumSizeMessage) {
+          revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + "[...]";
+        }
+        List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitsAhead.get(i).getId().getName());
+        pushButtonTooltip.append(commitsAhead.get(i).getAuthorIdent().getName())
+            .append(" [") 
+            .append(dateFormat.format(commitsAhead.get(i).getAuthorIdent().getWhen()))
+            .append("]: ")
+            .append(revCommitMessage)
+            .append(" - ") 
+            .append(changedFiles.size())
+            .append(" file(s).\n"); 
+      }
+      
+    } catch (IOException | GitAPIException e) {
+      LOGGER.error(e, e);
+    }
+    
+    return pushButtonTooltip.toString();
+    
+	}
+	
+	
+	/**
+   * Updates the tool tip of "Push" Button.
+   * 
+   * @param isAnUpstreamBranchDefinedInConfig              <code>true</code> if is an upstream branch defined in configurations
+   * @param existsRemoteBranchForUpstreamDefinedInConfig   <code>true</code> if exists remote branch for upstream defined in configurations
+   * @param upstreamBranchFromConfig                       The upstream branch from configurations
+   * @param commitsBehindMessage                           The commits behind message
+   * @param pullFromTag                                    The tag for pull from
+   * @param maximumSizeMessage                             The maximum size for a commit message
+	 * @param remoteBranchRefForUpstreamFromConfig           The remote branch reference for upstream from configurations.
+   * 
+   * @return updated "Push" button tool tip text.
+   */
+  protected String updatePullToolTip(boolean isAnUpstreamBranchDefinedInConfig, 
+      boolean existsRemoteBranchForUpstreamDefinedInConfig, 
+      String upstreamBranchFromConfig, 
+      String commitsBehindMessage, 
+      String pullFromTag,
+      int maximumSizeMessage, 
+      Ref remoteBranchRefForUpstreamFromConfig
+      ) {
+    Repository repo = null;
+    try {
+      repo = GitAccess.getInstance().getRepository();
+    } catch (NoRepositorySelected e) {
+      LOGGER.debug(e, e);
+    }
+    StringBuilder pullButtonTooltip = new StringBuilder();
+    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+    final int maximumNoCommitsDisplayed = 10;
+    
+    if (isAnUpstreamBranchDefinedInConfig) {
+      if (existsRemoteBranchForUpstreamDefinedInConfig) {
+        // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
+        pullButtonTooltip.append(MessageFormat.format(
+								TRANSLATOR.getTranslation(pullFromTag),
+								Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName()))).append(".\n");
+        pullButtonTooltip.append(commitsBehindMessage);
+      } else {
+        // The upstream branch defined in "config" does not exists in the remote repository.
+        pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("\n").append(MessageFormat.format(
+								StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH_DOES_NOT_EXIST)),
+								upstreamBranchFromConfig));
+      }
+    } else {
+      Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
+      if (remoteBranchWithLocalBranchName != null) {
+        // No upstream defined in config, but there is a remote branch
+        // that has the same name as the local branch
+        pullButtonTooltip.append(MessageFormat.format(
+								TRANSLATOR.getTranslation(pullFromTag),
+								Repository.shortenRefName(remoteBranchWithLocalBranchName.getName()))).append(".\n");
+      } else {
+        // No upstream branch defined in "config" and no remote branch
+        // that has the same name as the local branch.
+        pullButtonTooltip.append(TRANSLATOR.getTranslation(Tags.CANNOT_PULL)).append("\n").append(MessageFormat.format(
+								StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.NO_REMOTE_BRANCH)),
+								currentBranchName)).append(".");
+      }
+    }
+    
+    try {
+			assert repo != null;
+			CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
+          currentBranchName);
+      pullButtonTooltip.append("\n\n");
+			assert commitsAheadAndBehind != null;
+			List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
+      SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy - HH:mm");
+      for (int i = 0; i < commitsBehind.size() && i < maximumNoCommitsDisplayed; i++) {
+        String revCommitMessage = commitsBehind.get(i).getShortMessage();
+        if(revCommitMessage.length() > maximumSizeMessage) {
+          revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + "[...]";
+        }
+        List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitsBehind.get(i).getId().getName());
+        pullButtonTooltip.append(commitsBehind.get(i).getAuthorIdent().getName())
+            .append(" [") 
+            .append(dateFormat.format(commitsBehind.get(i).getAuthorIdent().getWhen()))
+            .append("]: ")
+            .append(revCommitMessage)
+            .append(" - ")
+            .append(changedFiles.size())
+            .append(" file(s).\n"); 
+      }
+      
+    } catch (IOException | GitAPIException e) {
+      LOGGER.error(e, e);
+    }
+    
+    return pullButtonTooltip.toString();
+  }
+	
+  
 	/**
 	 * @return The translation tag for the "Pull" button tooltip text.
 	 */
@@ -852,10 +981,18 @@ public class ToolbarPanel extends JPanel {
 	      false,
 	      false,
 	      true) {
-      @Override
+     
+	    @Override
       protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         paintPullsBehind(g);
+      }
+      
+      @Override
+      public JToolTip createToolTip() {
+        JScrollableToolTip tip = new JScrollableToolTip(250, 300, this);
+        tip.setComponent(this);
+        return tip;
       }
       
       /**
@@ -906,7 +1043,7 @@ public class ToolbarPanel extends JPanel {
     
     // Pull (merge)
     PullAction pullMergeAction = new PullAction(
-        translator.getTranslation(Tags.PULL_MERGE),
+        TRANSLATOR.getTranslation(Tags.PULL_MERGE),
         PullType.MERGE_FF);
     JRadioButtonMenuItem pullMergeMenuItem = new JRadioButtonMenuItem(pullMergeAction);
     pullMergeMenuItem.addActionListener(radioMenuItemActionListener);
@@ -915,7 +1052,7 @@ public class ToolbarPanel extends JPanel {
     
     // Pull (rebase)
     PullAction pullRebaseAction = new PullAction(
-        translator.getTranslation(Tags.PULL_REBASE),
+        TRANSLATOR.getTranslation(Tags.PULL_REBASE),
         PullType.REBASE);
     JRadioButtonMenuItem pullRebaseMenuItem = new JRadioButtonMenuItem(pullRebaseAction);
     pullRebaseMenuItem.addActionListener(radioMenuItemActionListener);
@@ -945,6 +1082,13 @@ public class ToolbarPanel extends JPanel {
 				paintPushesAhead(g);
 			}
 			
+		   @Override
+	      public JToolTip createToolTip() {
+	        JScrollableToolTip tip = new JScrollableToolTip(250, 300, this);
+	        tip.setComponent(this);
+	        return tip;
+	      }
+		   
 			/**
 			 * Paint the number pushes ahead.
 			 * 
@@ -985,8 +1129,8 @@ public class ToolbarPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (GitAccess.getInstance().getRepository() != null) {
-						if (logger.isDebugEnabled()) {
-							logger.debug("Push Button Clicked");
+						if (LOGGER.isDebugEnabled()) {
+							LOGGER.debug("Push Button Clicked");
 						}
 
 						gitController.push();
@@ -995,8 +1139,8 @@ public class ToolbarPanel extends JPanel {
 						}
 					}
 				} catch (NoRepositorySelected e1) {
-				  if(logger.isDebugEnabled()) {
-            logger.debug(e1, e1);
+				  if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug(e1, e1);
           }
 				}
 			}
