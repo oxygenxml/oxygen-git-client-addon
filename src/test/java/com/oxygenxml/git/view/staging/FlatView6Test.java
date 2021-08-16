@@ -222,7 +222,7 @@ public class FlatView6Test extends FlatViewTestBase {
         unstagedChangesPanel.getFilesTable().selectAll();
       }
     });
-    sleep(500);
+    flushAWT();
     assertTrue(usButton.isEnabled());
     List<FileStatus> allFilesUnstagedPanel = unstagedChangesPanel.getFilesStatuses();
     allFilesUnstagedPanel.add(new FileStatus(GitChangeType.CONFLICT, "another_file.txt"));
@@ -232,7 +232,7 @@ public class FlatView6Test extends FlatViewTestBase {
         unstagedChangesPanel.getFilesTable().selectAll();
       }
     });
-    sleep(500);
+    flushAWT();
     assertFalse(usButton.isEnabled());
     
     allFilesUnstagedPanel.clear();
@@ -244,7 +244,7 @@ public class FlatView6Test extends FlatViewTestBase {
         unstagedChangesPanel.getFilesTable().selectAll();
       }
     });
-    sleep(500);
+    flushAWT();
     assertFalse(usButton.isEnabled());
 
   }
