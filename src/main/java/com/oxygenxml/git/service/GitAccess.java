@@ -1676,15 +1676,15 @@ public class GitAccess {
    * @param commitId   The commit id to which to reset.
    */
   public void checkoutCommitForFile(String path, String commitId) {
-    fireOperationAboutToStart(new GitEventInfo(GitOperation.RESET_FILE_TO_COMMIT));
+    fireOperationAboutToStart(new GitEventInfo(GitOperation.CHECKOUT_FILE));
     try {
       CheckoutCommand checkOut = GitAccess.getInstance().getGit().checkout();
       checkOut.setStartPoint(commitId);
       checkOut.addPath(path);
       checkOut.call();
-      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.RESET_FILE_TO_COMMIT));
+      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.CHECKOUT_FILE));
     } catch (GitAPIException e) {
-      fireOperationFailed(new GitEventInfo(GitOperation.RESET_FILE_TO_COMMIT), e);
+      fireOperationFailed(new GitEventInfo(GitOperation.CHECKOUT_FILE), e);
       LOGGER.error(e, e);
     }
   }

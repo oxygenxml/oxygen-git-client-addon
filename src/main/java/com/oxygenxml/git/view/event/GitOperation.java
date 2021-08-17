@@ -27,7 +27,7 @@ public enum GitOperation {
   /**
    * Reset the file to a given commit version.
    */
-  RESET_FILE_TO_COMMIT,
+  CHECKOUT_FILE,
   /**
    * Reverts the commit.
    */

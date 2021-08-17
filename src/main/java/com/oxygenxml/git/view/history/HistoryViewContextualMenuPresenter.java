@@ -493,7 +493,7 @@ public class HistoryViewContextualMenuPresenter {
           DiffPresenter.showTwoWayDiff(commitID, filePath, parentRevCommit.name(), parentFilePath);
         } catch (MalformedURLException e1) {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(UNABLE_TO_COMPARE + e1.getMessage());
-          LOGGER.error(e1, e1);
+          LOGGER.debug(e1, e1);
         }
       }
     };
