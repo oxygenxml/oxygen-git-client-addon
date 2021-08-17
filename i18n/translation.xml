@@ -7,7 +7,14 @@
         <language description="Dutch" lang="nl_NL" />
     </languageList>
     
-
+	<key value="Revert_Commit_Failed_Uncommitted_Changes_Message">
+        <comment>Message for when "Revert commit" fails because of uncommitted changes.</comment>
+        <val lang="en_US">Cannot revert commit because of the following uncommitted files:</val>
+        <val lang="de_DE">Cannot revert commit because of the following uncommitted files:</val>
+        <val lang="fr_FR">Cannot revert commit because of the following uncommitted files:</val>
+        <val lang="ja_JP">Cannot revert commit because of the following uncommitted files:</val>
+        <val lang="nl_NL">Cannot revert commit because of the following uncommitted files:</val>	
+    </key>
 	<key value="Merge_Branches">
         <comment>Merge branches</comment>
         <val lang="en_US">Merge branches</val>
@@ -136,7 +143,7 @@
         <val lang="nl_NL">Stash</val>
     </key>
     
-    <key value="Revert_Commit_Warning">
+    <key value="Revert_Commit_Confirmation">
         <comment>Warns about reverting the last commit</comment>
         <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
         <val lang="de_DE">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>

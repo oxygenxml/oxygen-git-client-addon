@@ -1694,36 +1694,32 @@ public class GitAccess {
    * Reverts the given commit.
    * 
    * @param commitId  The commit id to which to reset.
-   * @throws NoRepositorySelected 
+   * 
    * @throws IOException 
+   * @throws NoRepositorySelected 
    * @throws GitAPIException 
-   * @throws NoWorkTreeException 
    */
   public void revertCommit(String commitId) throws IOException, NoRepositorySelected, GitAPIException { 
     Status gitStatus = git.status().call();
-    if (gitStatus.hasUncommittedChanges()) {
-      List<String> uncommitedChanges = new ArrayList<>(gitStatus.getUncommittedChanges());
-      FileStatusDialog.showWarningMessage(
-          Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
-          uncommitedChanges,
-          Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES));
-      return;
-    } else if (!gitStatus.getConflicting().isEmpty()) {
-      FileStatusDialog.showWarningMessage(
-          Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
-          null,
+    if (!gitStatus.getConflicting().isEmpty()) {
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
           Translator.getInstance().getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-      return;
-    }
-    fireOperationAboutToStart(new GitEventInfo(GitOperation.REVERT_COMMIT));
-    Repository repo = git.getRepository();
-    try (RevWalk revWalk = new RevWalk(repo)) {
-      RevCommit revcom = revWalk.parseCommit(getRepository().resolve(commitId));
-      git.revert().include(revcom).call();
-      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.REVERT_COMMIT));
-    } catch (GitAPIException|RevisionSyntaxException e) {
-      fireOperationFailed(new GitEventInfo(GitOperation.REVERT_COMMIT), e);
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+    } else if (gitStatus.hasUncommittedChanges()) {
+      FileStatusDialog.showErrorMessage(
+          Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
+          new ArrayList<>(gitStatus.getUncommittedChanges()),
+          Translator.getInstance().getTranslation(Tags.REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+    } else {
+      fireOperationAboutToStart(new GitEventInfo(GitOperation.REVERT_COMMIT));
+      Repository repo = git.getRepository();
+      try (RevWalk revWalk = new RevWalk(repo)) {
+        RevCommit revcom = revWalk.parseCommit(getRepository().resolve(commitId));
+        git.revert().include(revcom).call();
+        fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.REVERT_COMMIT));
+      } catch (GitAPIException | RevisionSyntaxException e) {
+        fireOperationFailed(new GitEventInfo(GitOperation.REVERT_COMMIT), e);
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
+      }
     }
   }
   
