@@ -568,7 +568,7 @@ public class TreeViewTest extends FlatViewTestBase {
         unstagedChangesPanel.getTreeView().setSelectionInterval(1, unstagedChangesPanel.getTreeView().getRowCount());;
       }
     });
-    sleep(500);
+    flushAWT();
     assertTrue(usButton.isEnabled());
     waitForScheduler();
     List<FileStatus> allFilesUnstagedPanel = unstagedChangesPanel.getFilesStatuses();
@@ -580,7 +580,7 @@ public class TreeViewTest extends FlatViewTestBase {
         unstagedChangesPanel.getTreeView().setSelectionInterval(0, unstagedChangesPanel.getTreeView().getRowCount());
       }
     });
-    sleep(500);
+    flushAWT();
     assertFalse(usButton.isEnabled());
     
     allFilesUnstagedPanel.clear();
@@ -592,7 +592,7 @@ public class TreeViewTest extends FlatViewTestBase {
         unstagedChangesPanel.getTreeView().setSelectionInterval(0, unstagedChangesPanel.getTreeView().getRowCount());;
       }
     });
-    sleep(500);
+    flushAWT();
     assertFalse(usButton.isEnabled());
 
   }

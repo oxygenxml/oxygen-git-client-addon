@@ -1699,15 +1699,20 @@ public class GitAccess {
    * @throws GitAPIException 
    * @throws NoWorkTreeException 
    */
-  public void revertCommit(String commitId) throws IOException, NoRepositorySelected, GitAPIException {
-    Status GitStatusCall = git.status().call();
-    if (GitStatusCall.hasUncommittedChanges()) {
-     // a conflict happened
-      List<String> uncommited= new ArrayList<>(GitStatusCall.getUncommittedChanges());
-     FileStatusDialog.showWarningMessage(
-         Translator.getInstance().getTranslation(Tags.ERROR),
-         uncommited,
-         Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES));
+  public void revertCommit(String commitId) throws IOException, NoRepositorySelected, GitAPIException { 
+    Status gitStatus = git.status().call();
+    if (gitStatus.hasUncommittedChanges()) {
+      List<String> uncommitedChanges = new ArrayList<>(gitStatus.getUncommittedChanges());
+      FileStatusDialog.showWarningMessage(
+          Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
+          uncommitedChanges,
+          Translator.getInstance().getTranslation(Tags.UNCOMMITTED_CHANGES));
+      return;
+    } else if (!gitStatus.getConflicting().isEmpty()) {
+      FileStatusDialog.showWarningMessage(
+          Translator.getInstance().getTranslation(Tags.REVERT_COMMIT),
+          null,
+          Translator.getInstance().getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
       return;
     }
     fireOperationAboutToStart(new GitEventInfo(GitOperation.REVERT_COMMIT));
