@@ -981,6 +981,11 @@ public class Tags {
   public static final String SHOW_CURRENT_BRANCH_HISTORY = "Show_current_branch_history";
   
   /**
+   * Show more message.
+   */
+  public static final String SHOW_MORE = "Show_More";
+  
+  /**
    * Git History.
    */
   public static final String GIT_HISTORY = "Git_history";

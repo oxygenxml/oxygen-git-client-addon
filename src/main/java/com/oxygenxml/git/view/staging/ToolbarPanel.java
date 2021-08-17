@@ -112,7 +112,7 @@ public class ToolbarPanel extends JPanel {
     
     private static final String PULL_TYPE_ACTION_PROP = "pullType";
     
-    private PullType pullType;
+    private final PullType pullType;
 
     public PullAction(String name, PullType pullType) {
       super(name);
@@ -214,6 +214,11 @@ public class ToolbarPanel extends JPanel {
   private ToolbarButton branchSelectButton;
   
   /**
+   * The history controller.
+   */
+  private final HistoryController historyController;
+  
+  /**
    * Constructor.
    * 
    * @param gitController     Git controller.
@@ -229,6 +234,7 @@ public class ToolbarPanel extends JPanel {
 	  this.gitController = gitController;
 	  this.refreshSupport = refreshSupport;
 	  this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
+	  this.historyController = historyController;
 
 	  createGUI(historyController, branchManagementViewPresenter);
 
@@ -712,8 +718,8 @@ public class ToolbarPanel extends JPanel {
 				
 				//  ===================== Pull button tooltip =====================
 				final String pullFromTag = getPullFromTranslationTag();
-				String pullButtonTooltipFinal = updatePullToolTip(isAnUpstreamBranchDefinedInConfig, existsRemoteBranchForUpstreamDefinedInConfig, upstreamBranchFromConfig, 
-				    commitsBehindMessage, pullFromTag, maximumMessageSize, remoteBranchRefForUpstreamFromConfig);
+				String pullButtonTooltipFinal = updatePullToolTip(isAnUpstreamBranchDefinedInConfig, existsRemoteBranchForUpstreamDefinedInConfig, 
+				    upstreamBranchFromConfig, commitsBehindMessage, pullFromTag, maximumMessageSize, remoteBranchRefForUpstreamFromConfig);
 				
 				SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
         
@@ -766,15 +772,12 @@ public class ToolbarPanel extends JPanel {
           List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
           updateCommits(commitsAhead, pushButtonTooltip, maximumSizeMessage);
           if(commitsAhead.size() > maximumNoCommitsDisplayed) {
-            //TODO add Show more action
-            /*
-            pullButtonTooltip.append("<br>")
+            pushButtonTooltip.append("<br>")
             .append("<a href=")
-            .append("https://github.com/oxygenxml/oxygen-git-plugin/tree/master/src")
+            .append("link_to_show_history")
             .append(">")
-            .append(TRANSLATOR.getTranslation(Tags.SHOW_HISTORY))
+            .append(TRANSLATOR.getTranslation(Tags.SHOW_MORE))
             .append("</a>");
-            */
           }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
@@ -858,15 +861,12 @@ public class ToolbarPanel extends JPanel {
           List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
           updateCommits(commitsBehind, pullButtonTooltip, maximumSizeMessage);
           if(commitsBehind.size() > maximumNoCommitsDisplayed) {
-            //TODO add Show more action
-            /*
             pullButtonTooltip.append("<br>")
             .append("<a href=")
-            .append("https://github.com/oxygenxml/oxygen-git-plugin/tree/master/src")
+            .append("link_to_show_history")
             .append(">")
-            .append(TRANSLATOR.getTranslation(Tags.SHOW_HISTORY))
+            .append(TRANSLATOR.getTranslation(Tags.SHOW_MORE))
             .append("</a>");
-            */
           }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
@@ -1012,11 +1012,19 @@ public class ToolbarPanel extends JPanel {
         paintPullsBehind(g);
       }
       
-      @Override
+	    @Override
       public JToolTip createToolTip() {
-        JScrollableToolTip tip = new JScrollableToolTip(250, 300, this);
+        JScrollableToolTip tip = new JScrollableToolTip(250, 300, this) {
+             
+          @Override
+          public void setTipText(final String tipText) {
+            super.setTipText(tipText);
+            super.tipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
+          }
+        };
         tip.setComponent(this);
         return tip;
+        
       }
       
       /**
@@ -1100,18 +1108,27 @@ public class ToolbarPanel extends JPanel {
 	 */
   private ToolbarButton createPushButton() {
     return new ToolbarButton(createPushAction(), false) { // NOSONAR (java:S110)
-			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				paintPushesAhead(g);
-			}
 			
-		   @Override
-	      public JToolTip createToolTip() {
-	        JScrollableToolTip tip = new JScrollableToolTip(250, 300, this);
-	        tip.setComponent(this);
-	        return tip;
-	      }
+      @Override
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintPushesAhead(g);
+      }
+      
+		  @Override
+	    public JToolTip createToolTip() {
+	      JScrollableToolTip tip = new JScrollableToolTip(250, 300, this) {
+	             
+         @Override
+         public void setTipText(final String tipText) {
+	          super.setTipText(tipText);
+	          super.tipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
+        }
+	    };
+	    tip.setComponent(this);
+	    return tip;       
+	    
+		  }
 		   
 			/**
 			 * Paint the number pushes ahead.

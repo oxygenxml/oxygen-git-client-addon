@@ -60,6 +60,15 @@
         <val lang="nl_NL">Open this version of {0}</val>
     </key>
     
+    <key value="Show_More">
+        <comment>Show more message.</comment>
+        <val lang="en_US">Show more</val>
+        <val lang="de_DE">Show more</val>
+        <val lang="fr_FR">Show more</val>
+        <val lang="ja_JP">Show more</val>
+        <val lang="nl_NL">Show more</val>
+    </key>
+    
     <key value="Open_this_version">
         <comment>Open this version.</comment>
         <val lang="en_US">Open selected version</val>

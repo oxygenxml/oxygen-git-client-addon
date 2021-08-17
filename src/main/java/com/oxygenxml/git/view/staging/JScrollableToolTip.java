@@ -19,13 +19,13 @@ import javax.swing.JToolTip;
  */
 public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
 
-  private JEditorPane tipText;
-  private JScrollPane scrollpane;
-  private JComponent comp;
+  protected JEditorPane tipText;
+  protected JScrollPane scrollpane;
+  protected JComponent comp;
   
-  Dimension smallText = new Dimension(200, 75); 
+  Dimension smallText  = new Dimension(200, 75); 
   Dimension mediumText = new Dimension(300, 150); 
-  Dimension largeText = new Dimension(400, 300); 
+  Dimension largeText  = new Dimension(400, 300); 
 
   /** Creates a tool tip. */
   public JScrollableToolTip(final int width, final int height) {
@@ -38,8 +38,8 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
     tipText = new JEditorPane();
     tipText.setEditable(false);
     tipText.setContentType("text/html");
-    tipText.setFont(super.getFont());
     tipText.setBackground(super.getBackground());
+    tipText.setFont(super.getFont());
     scrollpane = new JScrollPane(tipText);
     add(scrollpane);
     if(comp != null){
@@ -79,6 +79,5 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
     return super.paramString() +
             ",tipText=" + tipTextString;
   }
-
-
+  
 }
