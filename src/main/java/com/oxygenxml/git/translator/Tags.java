@@ -1291,7 +1291,7 @@ public class Tags {
   /**
    * The message that warns about a revert.
    */
-  public static final String REVERT_COMMIT_WARNING = "Revert_Commit_Warning";
+  public static final String REVERT_COMMIT_CONFIRMATION = "Revert_Commit_Confirmation";
   /**
    * Stash warning title.
    */
@@ -1301,6 +1301,12 @@ public class Tags {
    */
   public static final String STASH_APPLY_FAILED = "Stash_Apply_Failed";
 
+  /**
+   * Message for when "Revert commit" fails because of uncommitted changes.
+   */
+  public static final String REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE = 
+      "Revert_Commit_Failed_Uncommitted_Changes_Message";
+  
   /**
    * The message in the warning File Status Dialog when Merge Fail because of uncommitted changes
    */
