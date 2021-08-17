@@ -10,6 +10,9 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JToolTip;
+import javax.swing.ScrollPaneConstants;
+
+import com.oxygenxml.git.view.util.UIUtil;
 
 /**
  * A tip tool that is scrollable.
@@ -22,10 +25,10 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
   protected JEditorPane tipText;
   protected JScrollPane scrollpane;
   protected JComponent comp;
+  protected static final int MAXIMUM_HEIGHT = 165;
+  protected static final int MAXIMUM_WIDTH = 465;
   
-  Dimension smallText  = new Dimension(200, 75); 
-  Dimension mediumText = new Dimension(300, 150); 
-  Dimension largeText  = new Dimension(400, 300); 
+  Dimension dimension  = new Dimension(200, 200); 
 
   /** Creates a tool tip. */
   public JScrollableToolTip(final int width, final int height) {
@@ -41,6 +44,8 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
     tipText.setBackground(super.getBackground());
     tipText.setFont(super.getFont());
     scrollpane = new JScrollPane(tipText);
+    scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    setPreferredSize(dimension);
     add(scrollpane);
     if(comp != null){
       comp.addMouseWheelListener(this);
@@ -56,14 +61,15 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
   @Override
   public void setTipText(final String tipText) {
     String oldValue = this.tipText.getText();
+    JToolTip toolTip =  UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+    toolTip.setTipText(tipText);
+    int width = toolTip.getPreferredSize().width;
+    int height = toolTip.getPreferredSize().height;
+    width = (width > MAXIMUM_WIDTH) ? MAXIMUM_WIDTH : width;
+    height = (height > MAXIMUM_HEIGHT ) ? MAXIMUM_HEIGHT : height; 
+    setPreferredSize(new Dimension(width, height));
     this.tipText.setText(tipText);
-    if(tipText.length() <= 150) {
-      setPreferredSize(smallText);
-    } else if (tipText.length() <= 500) {
-      setPreferredSize(mediumText);
-    } else {
-      setPreferredSize(largeText);
-    }
+    this.tipText.setCaretPosition(0);
     firePropertyChange("tiptext", oldValue, tipText);
   }
   
