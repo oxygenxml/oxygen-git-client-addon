@@ -2502,4 +2502,38 @@ public class GitAccess {
 			fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
 		}
 	}
+	
+/**
+ * Creates a tag commit
+ * 
+ * @param name the name of the tag
+ * @param message the message of the tag
+ * @param commitId the id of the commit where the tag will be
+ */
+	public void tagCommit(String name, String message, String commitId) {
+	  try {
+	    RevWalk walk = new RevWalk(getRepository());
+	    RevCommit id = walk.parseCommit(getRepository().resolve(commitId));
+      git.tag()
+        .setName(name)
+        .setMessage(message)
+        .setObjectId(id)
+        .setForceUpdate(true)
+        .call();
+    } catch (GitAPIException | NoRepositorySelected | RevisionSyntaxException | IOException e) {
+      e.printStackTrace();
+    }
+	}
+	
+	public boolean isTag(String name) throws NoRepositorySelected, IOException {
+	  Repository repo;
+    try {
+      repo = getRepository();
+      Ref tag = repo.exactRef(Constants.R_TAGS + name);
+      return tag != null;
+    } catch (NoRepositorySelected | IOException e) {
+      e.printStackTrace();
+      throw e;
+    }
+	}
 }
