@@ -776,7 +776,9 @@ public class ToolbarPanel extends JPanel {
             .append("<a href=")
             .append("link_to_show_history")
             .append(">")
-            .append(TRANSLATOR.getTranslation(Tags.SHOW_MORE))
+            .append(MessageFormat.format(
+                StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN)),
+                TRANSLATOR.getTranslation(Tags.GIT_HISTORY)))
             .append("</a>");
           }
         } catch (IOException | GitAPIException e) {
@@ -865,7 +867,9 @@ public class ToolbarPanel extends JPanel {
             .append("<a href=")
             .append("link_to_show_history")
             .append(">")
-            .append(TRANSLATOR.getTranslation(Tags.SHOW_MORE))
+            .append(MessageFormat.format(
+                StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN)),
+                TRANSLATOR.getTranslation(Tags.GIT_HISTORY)))
             .append("</a>");
           }
         } catch (IOException | GitAPIException e) {
