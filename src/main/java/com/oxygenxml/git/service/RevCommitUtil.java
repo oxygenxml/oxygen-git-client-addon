@@ -1,6 +1,7 @@
 package com.oxygenxml.git.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -691,7 +692,7 @@ public class RevCommitUtil {
         // One last try to see if we identified the new location.
         targetFile = new File(repository.getWorkTree(), originalPath);
         if (!targetFile.exists()) {
-          throw new IOException("File " + originalPath + " was probably removed from working copy.");
+          throw new FileNotFoundException("File \"" + originalPath + "\" was probably removed from the working copy.");
         }
       }
     }
