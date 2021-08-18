@@ -2386,14 +2386,18 @@ public class GitAccess {
       ObjectId mergeBase = getRepository().resolve(branchName);
       MergeResult res = git.merge().include(mergeBase).call();
       if (res.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
-        LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("We have conflicts here:" + res.getConflicts().toString());
+        }
         List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
         FileStatusDialog.showWarningMessage(
             translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
             conflictingFiles,
             translator.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
-        LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
+        }
         List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
         FileStatusDialog.showWarningMessage(
             translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
