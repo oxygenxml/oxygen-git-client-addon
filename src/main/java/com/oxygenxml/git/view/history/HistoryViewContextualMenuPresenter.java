@@ -331,12 +331,13 @@ public class HistoryViewContextualMenuPresenter {
 
     actions.add(createOpenFileAction(currentCommitID, fileStatus, addFileName));
 
-    if(fileStatusChangeType != GitChangeType.UNTRACKED && fileStatus.getChangeType() != GitChangeType.MISSING) {
+    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(currentCommitID)) {
       actions.add(createOpenWorkingCopyFileAction(fileStatus, currentCommitID, addFileName));
     }
     
     if(fileStatusChangeType != GitChangeType.REMOVED
         && fileStatusChangeType != GitChangeType.UNTRACKED
+        && !GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(currentCommitID)
         && existsLocalFile(fileStatusLocation)) {
       actions.add(null);
       actions.add(createCheckoutFileAction(currentCommitID, fileStatus, addFileName)); 
