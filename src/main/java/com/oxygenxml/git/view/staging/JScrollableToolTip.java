@@ -65,8 +65,8 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
     toolTip.setTipText(tipText);
     int width = toolTip.getPreferredSize().width;
     int height = toolTip.getPreferredSize().height;
-    width = (width > MAXIMUM_WIDTH) ? MAXIMUM_WIDTH : width;
-    height = (height > MAXIMUM_HEIGHT ) ? MAXIMUM_HEIGHT : height; 
+    width = (width >= MAXIMUM_WIDTH) ? MAXIMUM_WIDTH : width;
+    height = (height > MAXIMUM_HEIGHT ) ? MAXIMUM_HEIGHT : height - 20; 
     setPreferredSize(new Dimension(width, height));
     this.tipText.setText(tipText);
     this.tipText.setCaretPosition(0);
