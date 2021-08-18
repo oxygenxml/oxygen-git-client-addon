@@ -1021,12 +1021,12 @@ public class ToolbarPanel extends JPanel {
       
 	    @Override
       public JToolTip createToolTip() {
-        JScrollableToolTip tip = new JScrollableToolTip(250, 300, this) {
+        JScrollableToolTip tip = new JScrollableToolTip(this) {
                
          @Override
          public void setTipText(final String tipText) {
             super.setTipText(tipText);
-            super.tipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
+            super.tooltipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
         }
       };
       tip.setComponent(this);
@@ -1123,12 +1123,12 @@ public class ToolbarPanel extends JPanel {
       
       @Override
       public JToolTip createToolTip() {
-        JScrollableToolTip tip = new JScrollableToolTip(250, 300, this) {
+        JScrollableToolTip tip = new JScrollableToolTip(this) {
                
          @Override
          public void setTipText(final String tipText) {
             super.setTipText(tipText);
-            super.tipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
+            super.tooltipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
         }
       };
       tip.setComponent(this);
