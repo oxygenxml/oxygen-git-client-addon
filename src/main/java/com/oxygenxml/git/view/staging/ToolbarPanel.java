@@ -930,7 +930,7 @@ public class ToolbarPanel extends JPanel {
           .append(" ")
           .append("(")
           .append(changedFiles.size())
-          .append(" files")
+          .append((changedFiles.size() > 1) ? " files" : " file")
           .append(")");
       if(revCommitMessage.length() > 0) {
        text.append("<br>")

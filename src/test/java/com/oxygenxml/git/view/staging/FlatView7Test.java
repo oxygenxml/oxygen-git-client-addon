@@ -148,7 +148,7 @@ public class FlatView7Test extends FlatViewTestBase {
     ); 
     
     expected = "<html>Push_to.<br>One_commit_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
    
     assertEquals(
@@ -174,7 +174,7 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     sleep(200);
     
-    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
+    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
@@ -183,8 +183,8 @@ public class FlatView7Test extends FlatViewTestBase {
     ); 
     
     expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
         expected,
@@ -216,7 +216,8 @@ public class FlatView7Test extends FlatViewTestBase {
     sleep(200);
     
     expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile300000000000000000000000000000000000000 ... <br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile300000000000000000000000000000000000000 ... <br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
@@ -225,8 +226,9 @@ public class FlatView7Test extends FlatViewTestBase {
     );  
     
     expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile200000000000000000000000000000000000000 ... <br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile200000000000000000000000000000000000000 ... <br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
         expected,
@@ -373,11 +375,11 @@ public class FlatView7Test extends FlatViewTestBase {
     sleep(200);
     
     expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_256.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2w5.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherrrFile_25.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anothe323rFile_25.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: 1anotherFile_25.txt<br><br>"
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_256.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2w5.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherrrFile_25.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anothe323rFile_25.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: 1anotherFile_25.txt<br><br>"
         + "<a href=git-open-view://history>Show_More_In_NAME</a></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
@@ -386,11 +388,11 @@ public class FlatView7Test extends FlatViewTestBase {
     );  
     
     expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile45w.txt<br>&#x25AA; Date, Hour"
-        + " &ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFileee45.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil333e45.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil233e45.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: 1anotherFile45.txt<br><br>"
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile45w.txt<br>&#x25AA; Date, Hour"
+        + " &ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFileee45.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil333e45.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil233e45.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: 1anotherFile45.txt<br><br>"
         + "<a href=git-open-view://history>Show_More_In_NAME</a></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
