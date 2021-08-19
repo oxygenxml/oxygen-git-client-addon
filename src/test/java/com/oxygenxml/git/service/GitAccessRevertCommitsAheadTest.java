@@ -151,6 +151,7 @@ public class GitAccessRevertCommitsAheadTest extends GitTestBase{
     RevertCommitAction revertAction = new RevertCommitAction(commitToRevert);
     SwingUtilities.invokeLater(() -> revertAction.actionPerformed(null));
     flushAWT();
+    sleep(200);
 
     JDialog revertConfirmationDlg = findDialog(Tags.REVERT_COMMIT);
     JTextArea confirmationTextArea = findFirstTextArea(revertConfirmationDlg);
@@ -158,6 +159,7 @@ public class GitAccessRevertCommitsAheadTest extends GitTestBase{
     JButton revertOkButton = findFirstButton(revertConfirmationDlg, Tags.YES);
     SwingUtilities.invokeLater(() -> revertOkButton.doClick());
     flushAWT();
+    sleep(300);
     
     // The history stays the same
     commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
