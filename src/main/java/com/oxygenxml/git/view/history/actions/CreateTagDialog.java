@@ -67,8 +67,6 @@ public class CreateTagDialog extends OKCancelDialog {
    * Public constructor.
    * 
    * @param title            The title of the dialog.
-   * @param nameToPropose    The name to propose. Can be <code>null</code>.
-   * @param isCheckoutRemote <code>true</code> if we create by checking out a remote branch.
    */
   public CreateTagDialog(
       String title) {
@@ -114,20 +112,19 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.gridy = 0;
     gbc.weightx = 0;
     gbc.weighty = 0;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-    gbc.insets = new Insets(0, 3, 0, 0);
+    gbc.insets = new Insets(0, 0, 0, 0);
     panel.add(label, gbc);
 
     // Tag title field.
     tagTitleField = new TextField();
     tagTitleField.setPreferredSize(new Dimension(200, tagTitleField.getPreferredSize().height));
-    tagTitleField.selectAll();
     gbc.gridx ++;
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.anchor = GridBagConstraints.BASELINE;
-    gbc.insets = new Insets(0, 6, 0, 0);
+    gbc.insets = new Insets(0, 5, 0, 0);
     panel.add(tagTitleField, gbc);
 
     label.setLabelFor(tagTitleField);
@@ -137,10 +134,10 @@ public class CreateTagDialog extends OKCancelDialog {
     errorMessageTextArea.setForeground(Color.RED);
     Font font = errorMessageTextArea.getFont();
     errorMessageTextArea.setFont(font.deriveFont(font.getSize() - 1.0f));
-    gbc.gridx = 1;
     gbc.gridy ++;
-    gbc.gridwidth = 2;
-    gbc.insets = new Insets(3, 6, 5, 0);
+    gbc.gridwidth = 1;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = new Insets(5, 5, 0, 0);
     panel.add(errorMessageTextArea, gbc);
 
     // Tag message label.
@@ -158,8 +155,10 @@ public class CreateTagDialog extends OKCancelDialog {
     tagMessageField.selectAll();
     gbc.gridx ++;
     gbc.weightx = 1;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.insets = new Insets(3, 6, 0, 0);
+    gbc.weighty = 1; 
+    gbc.fill = GridBagConstraints.BOTH;
+    gbc.anchor = GridBagConstraints.BASELINE;
+    gbc.insets = new Insets(3, 5, 0, 0);
     panel.add(tagMessageField, gbc);
 
     label.setLabelFor(tagMessageField);
@@ -170,7 +169,9 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.gridx = 0;
     gbc.gridy ++;
     gbc.gridwidth = 2;
-    gbc.insets = new Insets(7, 0, 7, 0);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.insets = new Insets(7, 0, 0, 0);
     panel.add(pushTagCheckBox, gbc);
 
   }

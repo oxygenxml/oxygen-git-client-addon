@@ -8,6 +8,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.RefSpec;
 
 import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.service.GitAccess;
@@ -50,14 +51,19 @@ public class CreateTagAction extends AbstractAction {
   public void actionPerformed(ActionEvent e) {
 
     CreateTagDialog dialog = new CreateTagDialog("Tag commit");
-
+    String tagTitle = dialog.getTagTitle();
+    
     if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
       GitOperationScheduler.getInstance().schedule(() -> {
         try {
-          GitAccess.getInstance().tagCommit(dialog.getTagTitle(), dialog.getTagMessage(), commitId);
+          GitAccess.getInstance().tagCommit(dialog.getTagTitle(), tagTitle, commitId);
           if(dialog.shouldPushNewTag()) {
             CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(GitAccess.getInstance().getHostName());
-            GitAccess.getInstance().getGit().push().setCredentialsProvider(credentialsProvider).setPushTags().call();
+            GitAccess.getInstance().getGit()
+              .push()
+              .setCredentialsProvider(credentialsProvider)
+              .setRefSpecs(new RefSpec("refs/tags/"+ tagTitle +":refs/tags/" + tagTitle))
+              .call();
           }
         } catch (GitAPIException ex) {
           LOGGER.debug(ex);
