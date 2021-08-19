@@ -331,7 +331,8 @@ public class HistoryViewContextualMenuPresenter {
 
     actions.add(createOpenFileAction(currentCommitID, fileStatus, addFileName));
 
-    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(currentCommitID)) {
+    if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(currentCommitID)
+        && fileStatusChangeType != GitChangeType.REMOVED) {
       actions.add(createOpenWorkingCopyFileAction(fileStatus, currentCommitID, addFileName));
     }
     
