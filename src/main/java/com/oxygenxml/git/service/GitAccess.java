@@ -2525,7 +2525,7 @@ public class GitAccess {
     }
 	}
 	
-	public boolean isTag(String name) throws NoRepositorySelected, IOException {
+	public boolean existsTag(String name) throws NoRepositorySelected, IOException {
 	  Repository repo;
     try {
       repo = getRepository();
