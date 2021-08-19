@@ -66,7 +66,7 @@ public class FlatView2Test extends FlatViewTestBase {
       Repository remoteRepo = createRepository(remoteTestRepository);
       Repository localRepo = createRepository(localTestRepository);
       bindLocalToRemote(localRepo , remoteRepo);
-      sleep(500);
+      sleep(700);
 
       // Create a new file and push it.
       String fileName = "test.txt";

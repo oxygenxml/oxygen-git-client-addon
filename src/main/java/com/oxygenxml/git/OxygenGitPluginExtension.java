@@ -297,7 +297,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
             || operation == GitOperation.RESET_TO_COMMIT
             || operation == GitOperation.OPEN_WORKING_COPY
             || operation == GitOperation.MERGE
-            || operation == GitOperation.REVERT_COMMIT) {
+            || operation == GitOperation.REVERT_COMMIT 
+            || operation == GitOperation.CHECKOUT_FILE) {
           gitRefreshSupport.call();
           
           if (operation == GitOperation.CHECKOUT

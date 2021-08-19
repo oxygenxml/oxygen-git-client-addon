@@ -53,7 +53,7 @@ public class RevertCommitAction extends AbstractAction {
     Translator translator = Translator.getInstance();
     int result = FileStatusDialog.showQuestionMessage(
         translator.getTranslation(Tags.REVERT_COMMIT),
-        translator.getTranslation(Tags.REVERT_COMMIT_WARNING), 
+        translator.getTranslation(Tags.REVERT_COMMIT_CONFIRMATION), 
         translator.getTranslation(Tags.YES),
         translator.getTranslation(Tags.NO));
     if ( result == OKCancelDialog.RESULT_OK) {

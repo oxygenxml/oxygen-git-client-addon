@@ -10,6 +10,9 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JToolTip;
+import javax.swing.ScrollPaneConstants;
+
+import com.oxygenxml.git.view.util.UIUtil;
 
 /**
  * A tip tool that is scrollable.
@@ -19,34 +22,65 @@ import javax.swing.JToolTip;
  */
 public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
 
-  protected JEditorPane tipText;
+  /**
+   * The JEditorPane that contains the text of the tooltip.
+   */
+  protected JEditorPane tooltipText;
+  /**
+   * The JScrollPane to make theToolTip scrollable.
+   */
   protected JScrollPane scrollpane;
+  /*
+   * The swing associated component.
+   */
   protected JComponent comp;
-  
-  Dimension smallText  = new Dimension(200, 75); 
-  Dimension mediumText = new Dimension(300, 150); 
-  Dimension largeText  = new Dimension(400, 300); 
+  /**
+   * The super ToolTip.
+   */
+  private final JToolTip toolTip;
+  /*
+   * The maximum height of the ToolTip.
+   */
+  protected static final int MAXIMUM_HEIGHT = 165;
+  /*
+   * The maximum width of the ToolTip.
+   */
+  protected static final int MAXIMUM_WIDTH = 465;
+  /*
+   * The size of redundant height.
+   */
+  private static final int HEIGHT_DELTA = 20;
+   
 
   /** Creates a tool tip. */
-  public JScrollableToolTip(final int width, final int height) {
-    this(width, height, null);
+  public JScrollableToolTip() {
+    this(null);
   }
-
-  public JScrollableToolTip(final int width, final int height, final JComponent comp) {
+  
+  /**
+   * @param comp the associated swing component.
+   */
+  public JScrollableToolTip(final JComponent comp) {
     this.comp = comp;
     setLayout(new BorderLayout());
-    tipText = new JEditorPane();
-    tipText.setEditable(false);
-    tipText.setContentType("text/html");
-    tipText.setBackground(super.getBackground());
-    tipText.setFont(super.getFont());
-    scrollpane = new JScrollPane(tipText);
+    toolTip =  UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+    tooltipText = new JEditorPane();
+    tooltipText.setEditable(false);
+    tooltipText.setContentType("text/html");
+    tooltipText.setBackground(super.getBackground());
+    tooltipText.setFont(super.getFont());
+    scrollpane = new JScrollPane(tooltipText);
+    scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    setPreferredSize(new Dimension(200, 200));
     add(scrollpane);
     if(comp != null){
       comp.addMouseWheelListener(this);
     }
   }
 
+  /**
+   * The move for mouse wheel.
+   */
   public void mouseWheelMoved(final MouseWheelEvent e) {
     scrollpane.dispatchEvent(e);
     MouseEvent e2 = new MouseEvent(comp, MouseEvent.MOUSE_MOVED, 0, 0, 0, 0, 0, false);
@@ -54,27 +88,27 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
   }
 
   @Override
-  public void setTipText(final String tipText) {
-    String oldValue = this.tipText.getText();
-    this.tipText.setText(tipText);
-    if(tipText.length() <= 150) {
-      setPreferredSize(smallText);
-    } else if (tipText.length() <= 500) {
-      setPreferredSize(mediumText);
-    } else {
-      setPreferredSize(largeText);
-    }
-    firePropertyChange("tiptext", oldValue, tipText);
+  public void setTipText(final String text) {
+    String oldValue = this.tooltipText.getText();
+    toolTip.setTipText(text);
+    int width = toolTip.getPreferredSize().width;
+    int height = toolTip.getPreferredSize().height;
+    width = (width >= MAXIMUM_WIDTH) ? MAXIMUM_WIDTH : width;
+    height = (height > MAXIMUM_HEIGHT ) ? MAXIMUM_HEIGHT : height - HEIGHT_DELTA; 
+    setPreferredSize(new Dimension(width, height));
+    this.tooltipText.setText(text);
+    this.tooltipText.setCaretPosition(0);
+    firePropertyChange("tiptext", oldValue, text);
   }
   
   @Override
   public String getTipText() {
-    return tipText == null ? "" : tipText.getText();
+    return tooltipText == null ? "" : tooltipText.getText();
   }
 
   @Override
   protected String paramString() {
-    String tipTextString = (tipText.getText() != null ? tipText.getText() : "");
+    String tipTextString = (tooltipText.getText() != null ? tooltipText.getText() : "");
 
     return super.paramString() +
             ",tipText=" + tipTextString;

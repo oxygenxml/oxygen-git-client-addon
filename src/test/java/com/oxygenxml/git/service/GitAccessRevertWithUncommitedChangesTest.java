@@ -23,14 +23,12 @@ import com.oxygenxml.git.view.history.actions.RevertCommitAction;
  *
  * @author Tudosie Razvan
  */
-
-public class GitAccessRevertUncommitedTest extends GitTestBase {
+public class GitAccessRevertWithUncommitedChangesTest extends GitTestBase {
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessRevertCommitTest";
   private final static String LOCAL_FILE_NAME = "local.txt";
   private final static String LOCAL_FILE_NAME_2 = "local_2.txt";
   private File firstFile;
   private File secondFile;
-
   private GitAccess gitAccess;
 
   /**
@@ -75,8 +73,6 @@ public class GitAccessRevertUncommitedTest extends GitTestBase {
   }
   
   /**
-   * Tests the revert commit functionality.
-   * Needs to find the conflicts
    * <p><b>Description:</b> test the revert.</p>
    * <p><b>Bug ID:</b> EXM-47154</p>
    *
@@ -85,7 +81,7 @@ public class GitAccessRevertUncommitedTest extends GitTestBase {
    * @throws Exception
    */
   @Test
-  public void testRevertCommit() throws Exception {
+  public void testRevertCommitWithUncommittedChanges() throws Exception {
     JDialog revertConfirmationDlg = null;
 
     // Initial status
@@ -99,45 +95,38 @@ public class GitAccessRevertUncommitedTest extends GitTestBase {
 
     // The history at this moment
     final List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
-    String expected = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
+    String initialHistory = "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
         "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
         "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
         "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
         "";
     String regex = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
     assertEquals(
-        expected,
+        initialHistory,
         dumpHistory(commitsCharacteristics).replaceAll(regex, "DATE"));
 
-    CommitCharacteristics commitToRevert = commitsCharacteristics.get(3);
+    CommitCharacteristics commitToRevert = commitsCharacteristics.get(2);
     RevertCommitAction revertAction = new RevertCommitAction(commitToRevert);
     SwingUtilities.invokeLater(() -> revertAction.actionPerformed(null));
     flushAWT();
 
     revertConfirmationDlg = findDialog(Tags.REVERT_COMMIT);
     JTextArea confirmationTextArea = findFirstTextArea(revertConfirmationDlg);
-    assertEquals(Tags.REVERT_COMMIT_WARNING,confirmationTextArea.getText().toString());
+    assertEquals(Tags.REVERT_COMMIT_CONFIRMATION,confirmationTextArea.getText().toString());
     JButton revertOkButton = findFirstButton(revertConfirmationDlg, Tags.YES);
     revertOkButton.doClick();
     
-
     flushAWT();
     JDialog errorDlg = findDialog(Tags.REVERT_COMMIT);
     JTextArea errorTextArea = findFirstTextArea(errorDlg);
-    assertEquals(Tags.UNCOMMITTED_CHANGES,errorTextArea.getText().toString());
+    assertEquals(Tags.REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE, errorTextArea.getText().toString());
     JButton errorOkButton = findFirstButton(errorDlg, "OK");
     errorOkButton.doClick();
 
     flushAWT();
     List<CommitCharacteristics> commitsChr =  gitAccess.getCommitsCharacteristics(null);
-    expected =
-            "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
-            "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
-            "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
-            "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
-            "";
     assertEquals(
-        expected,
+        initialHistory,
         dumpHistory(commitsChr).replaceAll(regex, "DATE"));
 
   }

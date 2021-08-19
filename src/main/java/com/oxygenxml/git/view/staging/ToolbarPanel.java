@@ -708,7 +708,7 @@ public class ToolbarPanel extends JPanel {
         
 				branchTooltip += "</html>";
 
-				final int maximumMessageSize = 50;
+				final int maximumMessageSize = 75;
 				
 				// ===================== Push button tooltip =====================
 				String pushButtonTooltipFinal = updatePushToolTip(isAnUpstreamBranchDefinedInConfig, 
@@ -774,7 +774,7 @@ public class ToolbarPanel extends JPanel {
           if(commitsAhead.size() > maximumNoCommitsDisplayed) {
             pushButtonTooltip.append("<br>")
             .append("<a href=")
-            .append("link_to_show_history")
+            .append("git-open-view://history")
             .append(">")
             .append(MessageFormat.format(
                 StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN)),
@@ -865,7 +865,7 @@ public class ToolbarPanel extends JPanel {
           if(commitsBehind.size() > maximumNoCommitsDisplayed) {
             pullButtonTooltip.append("<br>")
             .append("<a href=")
-            .append("link_to_show_history")
+            .append("git-open-view://history")
             .append(">")
             .append(MessageFormat.format(
                 StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN)),
@@ -923,9 +923,12 @@ public class ToolbarPanel extends JPanel {
         revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + "[...]";
       }
       List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commits.get(i).getId().getName());
-      text.append(commits.get(i).getAuthorIdent().getName())
+      text.append("- ")
+          .append(commits.get(i).getAuthorIdent().getName())
           .append(" [") 
+          .append("<i>")
           .append(dateFormat.format(commits.get(i).getAuthorIdent().getWhen()))
+          .append("</i>")
           .append("]: ")
           .append(revCommitMessage)
           .append(" - ")
@@ -1018,17 +1021,16 @@ public class ToolbarPanel extends JPanel {
       
 	    @Override
       public JToolTip createToolTip() {
-        JScrollableToolTip tip = new JScrollableToolTip(250, 300, this) {
-             
-          @Override
-          public void setTipText(final String tipText) {
+        JScrollableToolTip tip = new JScrollableToolTip(this) {
+               
+         @Override
+         public void setTipText(final String tipText) {
             super.setTipText(tipText);
-            super.tipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
-          }
-        };
-        tip.setComponent(this);
-        return tip;
-        
+            super.tooltipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
+        }
+      };
+      tip.setComponent(this);
+      return tip;       
       }
       
       /**
@@ -1119,20 +1121,19 @@ public class ToolbarPanel extends JPanel {
         paintPushesAhead(g);
       }
       
-		  @Override
-	    public JToolTip createToolTip() {
-	      JScrollableToolTip tip = new JScrollableToolTip(250, 300, this) {
-	             
+      @Override
+      public JToolTip createToolTip() {
+        JScrollableToolTip tip = new JScrollableToolTip(this) {
+               
          @Override
          public void setTipText(final String tipText) {
-	          super.setTipText(tipText);
-	          super.tipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
+            super.setTipText(tipText);
+            super.tooltipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
         }
-	    };
-	    tip.setComponent(this);
-	    return tip;       
-	    
-		  }
+      };
+      tip.setComponent(this);
+      return tip;       
+      }
 		   
 			/**
 			 * Paint the number pushes ahead.

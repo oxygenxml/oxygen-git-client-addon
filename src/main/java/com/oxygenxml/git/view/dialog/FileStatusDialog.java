@@ -233,6 +233,20 @@ public class FileStatusDialog extends OKCancelDialog {
 	}
   
   /**
+   * Presents an error to the user about the files' status.
+   * 
+   * @param title    Title of the Dialog
+   * @param files    Files that relate to the message.
+   * @param message  The message.
+   */
+  public static void showErrorMessage(String title, List<String> files, String message) {
+    FileStatusDialog dialog = new FileStatusDialog(Icons.ERROR_ICON,title, files, message, null, null, null);
+    dialog.setResizable(true);
+    dialog.setMinimumSize(new Dimension(WARN_MESSAGE_DLG_MINIMUM_WIDTH, WARN_MESSAGE_DLG_MINIMUM_HEIGHT));
+    dialog.setVisible(true);
+  }
+  
+  /**
    * Presents a warning to the user about the files' status.
    * 
    * @param title         Title of the Dialog

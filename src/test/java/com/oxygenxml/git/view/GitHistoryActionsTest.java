@@ -3,6 +3,7 @@ package com.oxygenxml.git.view;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -60,7 +61,7 @@ public class GitHistoryActionsTest extends GitTestBase {
 
       String regex = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
       expected = expected.replaceAll(regex, "DATE");
-      dump = expected.replaceAll(regex, "DATE");
+      dump = dump.replaceAll(regex, "DATE");
 
       assertEquals(expected, dump);
 
@@ -85,8 +86,12 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
-      assertEquals("[Compare_file_with_previous_version, Compare_file_with_working_tree_version, Open_this_version_of_filename, "
-          + "Open_the_working_copy_version_of, Check_out_this_version]", 
+      assertEquals(
+          "[Compare_file_with_previous_version, "
+          + "Compare_file_with_working_tree_version, "
+          + "Open_this_version_of_filename, "
+          + "Open_the_working_copy_version_of, "
+          + "Check_out_this_version]", 
           dumpActions(actions));
       
       // A deleted file.
@@ -107,7 +112,9 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Open_this_version_of_filename]", dumpActions(actions));
+      assertEquals("[Compare_file_with_working_tree_version,"
+          + " Open_this_version_of_filename,"
+          + " Open_the_working_copy_version_of]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
@@ -119,7 +126,8 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
-      assertEquals("[Open_this_version_of_filename, Open_the_working_copy_version_of, Check_out_this_version]", dumpActions(actions));
+      assertEquals("[Compare_file_with_working_tree_version, Open_this_version_of_filename,"
+          + " Open_the_working_copy_version_of, Check_out_this_version]", dumpActions(actions));
 
       
       actions = new ArrayList<>();
@@ -164,7 +172,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
-      assertEquals("[Open]", dumpActions(actions));
+      assertEquals("[Compare_with_working_tree_version, Open, Open_working_copy_version]", dumpActions(actions));
       
       // Next COMMIT / REVISION
       commitCharacteristic = iterator.next();
@@ -177,8 +185,80 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions.clear();
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
-      assertEquals("[Open, Open_working_copy_version, Checkout]", dumpActions(actions));
+      assertEquals(
+          "[Compare_with_working_tree_version, Open, Open_working_copy_version, Checkout]", 
+          dumpActions(actions));
       
+      // ========================= Uncommitted changes ======================================
+      File newFile = new File(wcTree, "newFile.xml");
+      newFile.createNewFile();
+      
+      setFileContent(new File(wcTree, "file1.txt"), "branza");
+      
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      dump = dumpHistory(commitsCharacteristics);
+      expected = 
+          "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
+          "[ Changes. , DATE , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Second commit. , DATE , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+          "[ First commit. , DATE , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
+          "";
+      expected = expected.replaceAll(regex, "DATE");
+      dump = dump.replaceAll(regex, "DATE");
+      assertEquals(expected, dump);
+      
+      CommitCharacteristics uncommittedChanges = commitsCharacteristics.get(0);
+      changedFiles = RevCommitUtil.getChangedFiles(uncommittedChanges.getCommitId());
+      dumpFS = dumpFS(changedFiles);
+      assertEquals(
+          "(changeType=UNTRACKED, fileLocation=newFile.xml)\n" + 
+          "(changeType=MODIFIED, fileLocation=file1.txt)\n" + 
+          "",
+          dumpFS);
+      
+      // Assert the available actions for the untracked file.
+      actions.clear();
+      actions = presenter.getContextualActions(changedFiles.get(0), uncommittedChanges, false);
+      actions.removeIf(e -> e == null);
+      assertEquals("[Open]", dumpActions(actions));
+      
+      // Assert the available actions for the modified file.
+      actions.clear();
+      actions = presenter.getContextualActions(changedFiles.get(1), uncommittedChanges, false);
+      actions.removeIf(e -> e == null);
+      assertEquals("[Open_In_Compare, Open]", dumpActions(actions));
+      
+      // ====== DELETE a file =====
+      
+      Files.delete(new File(wcTree, "file1.txt").toPath());
+      Files.delete(newFile.toPath());
+      
+      commitsCharacteristics = GitAccess.getInstance().getCommitsCharacteristics(null);
+      dump = dumpHistory(commitsCharacteristics);
+      expected = 
+          "[ Uncommitted_changes , DATE , * , * , null , null ]\n" + 
+          "[ Changes. , DATE , Alex <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+          "[ Second commit. , DATE , Alex <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+          "[ First commit. , DATE , Alex <alex_jitianu@sync.ro> , 3 , AlexJitianu , null ]\n" + 
+          "";
+      expected = expected.replaceAll(regex, "DATE");
+      dump = dump.replaceAll(regex, "DATE");
+      assertEquals(expected, dump);
+      
+      uncommittedChanges = commitsCharacteristics.get(0);
+      changedFiles = RevCommitUtil.getChangedFiles(uncommittedChanges.getCommitId());
+      dumpFS = dumpFS(changedFiles);
+      assertEquals(
+          "(changeType=MISSING, fileLocation=file1.txt)\n" + 
+          "",
+          dumpFS);
+      
+      // Assert the available actions for the missing file.
+      actions.clear();
+      actions = presenter.getContextualActions(changedFiles.get(0), uncommittedChanges, false);
+      actions.removeIf(e -> e == null);
+      assertEquals("[Open_previous_version]", dumpActions(actions));
+
     } finally {
       GitAccess.getInstance().closeRepo();
 

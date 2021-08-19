@@ -110,7 +110,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       historyPanel.showRepositoryHistory();
       waitForScheduler();
       flushAWT();
-      sleep(300);
+      sleep(500);
   
       JTable historyTable = historyPanel.getHistoryTable();
       HistoryCommitTableModel model = (HistoryCommitTableModel) historyTable.getModel();
@@ -128,8 +128,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       //-----------
       // Assert the affected files
       //-----------
-      assertAffectedFiles(historyPanel, "(changeType=RENAME, fileLocation=child/file.txt)\n" + 
-          "");
+      assertAffectedFiles(historyPanel, "(changeType=RENAME, fileLocation=child/file.txt)\n");
       
       //---------------
       // Invoke the Diff action to see if the built URLs are O.K.

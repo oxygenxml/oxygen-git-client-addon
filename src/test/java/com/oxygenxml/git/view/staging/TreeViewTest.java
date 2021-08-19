@@ -311,6 +311,7 @@ public class TreeViewTest extends FlatViewTestBase {
     // Get the remote. The conflict appears.
     pull();
     flushAWT();
+    sleep(300);
     assertTreeModels("CONFLICT, test.txt", "");
     
     stagingPanel.getGitController().asyncResolveUsingMine(
@@ -552,7 +553,7 @@ public class TreeViewTest extends FlatViewTestBase {
     String remoteTestRepository = "target/test-resources/testStageButtonVisibility_remote";
     
     new File(localTestRepository).mkdirs();
-    File file = createNewFile(localTestRepository, "test.txt", "remote");
+    createNewFile(localTestRepository, "test.txt", "remote");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);

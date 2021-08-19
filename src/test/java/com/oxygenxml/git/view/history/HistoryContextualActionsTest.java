@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Iterator;
@@ -12,8 +11,10 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 
+import org.eclipse.jgit.api.Git;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -69,13 +70,9 @@ public class HistoryContextualActionsTest extends GitTestBase {
   public void testOpenWCMethod() throws Exception {
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(LOCAL_TEST_REPOSITORY);
-    File file = new File(LOCAL_TEST_REPOSITORY + "/test.xpr");
     
-    try {
-      file.createNewFile();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    File file = new File(LOCAL_TEST_REPOSITORY + "/test.xpr");
+    file.createNewFile();
     
     gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
     gitAccess.commit("file test added");
@@ -88,16 +85,21 @@ public class HistoryContextualActionsTest extends GitTestBase {
           return true;
         });
 
-    try (MockedStatic<PluginWorkspaceProvider> provider = Mockito.mockStatic(PluginWorkspaceProvider.class)) {
-
-      provider.when(PluginWorkspaceProvider::getPluginWorkspace).thenReturn(pluginWorkspace);
-
+    try (MockedStatic<PluginWorkspaceProvider> provider = Mockito.mockStatic(PluginWorkspaceProvider.class);
+        MockedStatic<RevCommitUtil> revCommitUtil = Mockito.mockStatic(RevCommitUtil.class);) {
+      
+      revCommitUtil.when(() -> RevCommitUtil.getNewPathInWorkingCopy(
+          (Git) Mockito.any(), Mockito.anyString(), Mockito.anyString())).thenReturn(LOCAL_TEST_REPOSITORY + "/test.xpr");
+      
+      provider.when(() -> PluginWorkspaceProvider.getPluginWorkspace()).thenReturn(pluginWorkspace);
       assertNotNull(PluginWorkspaceProvider.getPluginWorkspace());
+      
       HistoryViewContextualMenuPresenter historyContextualMenu = new HistoryViewContextualMenuPresenter(null);
-      historyContextualMenu
-          .createOpenWorkingCopyFileAction(new FileStatus(GitChangeType.RENAME, LOCAL_TEST_REPOSITORY + "/test.xpr"),
-              LOCAL_TEST_REPOSITORY + "/test.xpr", false)
-          .actionPerformed(null);
+      AbstractAction openWCVersionAction = historyContextualMenu.createOpenWorkingCopyFileAction(
+          new FileStatus(GitChangeType.RENAME, LOCAL_TEST_REPOSITORY + "/test.xpr"),
+          LOCAL_TEST_REPOSITORY + "/test.xpr",
+          false);
+      openWCVersionAction.actionPerformed(null);
     }
 
     assertEquals("test.xpr", urlOpenedFile[0]);
