@@ -553,7 +553,7 @@ public class TreeViewTest extends FlatViewTestBase {
     String remoteTestRepository = "target/test-resources/testStageButtonVisibility_remote";
     
     new File(localTestRepository).mkdirs();
-    File file = createNewFile(localTestRepository, "test.txt", "remote");
+    createNewFile(localTestRepository, "test.txt", "remote");
     
     // Create repositories
     Repository remoteRepo = createRepository(remoteTestRepository);

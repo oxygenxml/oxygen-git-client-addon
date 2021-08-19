@@ -109,6 +109,7 @@ public class BranchMergingTest extends GitTestBase {
       }
     }
     flushAWT();
+    sleep(300);
     
     assertEquals(LOCAL_BRANCH_NAME1, gitAccess.getRepository().getBranch());
     
@@ -133,6 +134,7 @@ public class BranchMergingTest extends GitTestBase {
       }
     }
     flushAWT();
+    sleep(300);
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
@@ -215,6 +217,7 @@ public class BranchMergingTest extends GitTestBase {
       }
     }
     flushAWT();
+    sleep(300);
     
     //Confirm merge dialog
     JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
@@ -314,6 +317,7 @@ public class BranchMergingTest extends GitTestBase {
       }
       
       flushAWT();
+      sleep(300);
       
       //Confirm merge dialog
       JDialog mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
@@ -349,6 +353,7 @@ public class BranchMergingTest extends GitTestBase {
       }
       
       flushAWT();
+      sleep(300);
       
       //Confirm merge dialog
       mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));
@@ -380,7 +385,6 @@ public class BranchMergingTest extends GitTestBase {
   public void testBranchMergingWithoutResolvingConflict() throws Exception { 
     
     JDialog conflictMergeDialog = null;
-    JDialog errorConflictDialog = null;
     JDialog mergeOkDialog = null;
 
     File file = new File(LOCAL_TEST_REPOSITORY, "local.txt");
@@ -432,6 +436,7 @@ public class BranchMergingTest extends GitTestBase {
       }
     }
     flushAWT();
+    sleep(300);
     
     //Confirm merge dialog
     mergeOkDialog = findDialog(translator.getTranslation(Tags.MERGE_BRANCHES));

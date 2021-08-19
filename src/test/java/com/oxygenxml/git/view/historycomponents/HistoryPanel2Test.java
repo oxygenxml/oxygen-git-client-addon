@@ -128,6 +128,7 @@ public class HistoryPanel2Test extends HistoryPanelTestBase {
       //-----------
       // Assert the affected files
       //-----------
+      sleep(1000);
       assertAffectedFiles(historyPanel, "(changeType=RENAME, fileLocation=child/file.txt)\n" + 
           "");
       
