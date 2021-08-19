@@ -311,6 +311,7 @@ public class TreeViewTest extends FlatViewTestBase {
     // Get the remote. The conflict appears.
     pull();
     flushAWT();
+    sleep(300);
     assertTreeModels("CONFLICT, test.txt", "");
     
     stagingPanel.getGitController().asyncResolveUsingMine(
