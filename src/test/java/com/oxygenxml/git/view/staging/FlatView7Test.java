@@ -137,22 +137,24 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     
     // Tooltip texts changed again
-    String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>- AlexJitianu [18 Aug 2021 - 00:34]: "
-        + "New file: anotherFile_2.txt - 2 file(s).<br></html>";
+    String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (2 files)"
+        + "<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
+    String regexDate = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
+    String regexHour = "(\\d\\d:\\d\\d)";
     String actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
-        replaceDateString(expected),
-        replaceDateString(actual)
+        expected,
+        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
     ); 
     
-    expected = "<html>Push_to.<br>One_commit_ahead<br><br>- AlexJitianu [18 Aug 2021 - 00:36]: New file: anotherFile.txt "
-        + "- 1 file(s).<br></html>";
+    expected = "<html>Push_to.<br>One_commit_ahead<br><br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
    
     assertEquals(
-        replaceDateString(expected),
-        replaceDateString(actual)
-    ); 
+        expected,
+        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+    );  
    
     assertEquals(
         "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
@@ -172,23 +174,22 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     sleep(200);
     
-    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>"
-        + "- AlexJitianu [18 Aug 2021 - 00:36]: New file: anotherFile_2.txt - 1 file(s).<br>"
-        + "- AlexJitianu [18 Aug 2021 - 00:36]: New file: anotherFile_2.txt - 2 file(s).<br></html>";
+    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
-        replaceDateString(expected),
-        replaceDateString(actual)
+        expected,
+        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
     ); 
     
-    expected = "<html>Push_to.<br>Commits_ahead<br><br>"
-        + "- AlexJitianu [18 Aug 2021 - 01:13]: New file: anotherFile.txt - 1 file(s).<br>"
-        + "- AlexJitianu [18 Aug 2021 - 01:13]: New file: anotherFile.txt - 1 file(s).<br></html>";
+    expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
-        replaceDateString(expected),
-        replaceDateString(actual)
-    ); 
+        expected,
+        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+    );  
     
     assertEquals(
         "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
@@ -214,25 +215,23 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     sleep(200);
     
-    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>"
-        + "- AlexJitianu {Date}: New file: anotherFile300000000000000000000000000000000000000000000000000000{...} - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherFile_2.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherFile_2.txt - 2 file(s).<br></html>";
+    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile300000000000000000000000000000000000000 ... <br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
-        replaceDateString(expected),
-        replaceDateString(actual)
-    ); 
+        expected,
+        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+    );  
     
-    expected = "<html>Push_to.<br>Commits_ahead<br><br>"
-        + "- AlexJitianu {Date}: New file: anotherFile200000000000000000000000000000000000000000000000000000{...} - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherFile.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherFile.txt - 1 file(s).<br></html>";
+    expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile200000000000000000000000000000000000000 ... <br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
-        replaceDateString(expected),
-        replaceDateString(actual)
-    ); 
+        expected,
+        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+    );  
     
     // Commit a new change locally
     commitOneFile(localTestRepository, "6anotherFile45.txt", "changed");
@@ -373,42 +372,31 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     sleep(200);
     
-    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>"
-        + "- AlexJitianu {Date}: New file: anotherFile_256.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherFile_2w5.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherrrFile_25.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anothe323rFile_25.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 1anotherFile_25.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 2anotherFile_25.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 3anotherFile_25.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 4anotherFile_25.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 5anotherFile_25.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 6anotherFile_25.txt - 1 file(s).<br>"
-        + "<br><a href=git-open-view://history>Show_More_In_NAME</a></html>";
+    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_256.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2w5.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherrrFile_25.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anothe323rFile_25.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: 1anotherFile_25.txt<br><br>"
+        + "<a href=git-open-view://history>Show_More_In_NAME</a></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
-        replaceDateString(expected),
-        replaceDateString(actual)
-    ); 
+        expected,
+        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+    );  
     
-    expected = "<html>Push_to.<br>Commits_ahead<br><br>"
-        + "- AlexJitianu {Date}: New file: anotherFile45w.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherFileee45.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherFil333e45.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: anotherFil233e45.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 1anotherFile45.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 2anotherFile45.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 3anotherFile45.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 4anotherFile45.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 5anotherFile45.txt - 1 file(s).<br>"
-        + "- AlexJitianu {Date}: New file: 6anotherFile45.txt - 1 file(s).<br>"
-        + "<br><a href=git-open-view://history>Show_More_In_NAME</a></html>";
+    expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile45w.txt<br>&#x25AA; Date, Hour"
+        + " &ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFileee45.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil333e45.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil233e45.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 files)<br>&nbsp;&nbsp;&nbsp;New file: 1anotherFile45.txt<br><br>"
+        + "<a href=git-open-view://history>Show_More_In_NAME</a></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
-        replaceDateString(expected),
-        replaceDateString(actual)
-    );
-    
+        expected.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour"),
+        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+    );      
   }
   
   /**

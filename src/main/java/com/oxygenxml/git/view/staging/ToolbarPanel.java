@@ -708,7 +708,7 @@ public class ToolbarPanel extends JPanel {
         
 				branchTooltip += "</html>";
 
-				final int maximumMessageSize = 75;
+				final int maximumMessageSize = 60;
 				
 				// ===================== Push button tooltip =====================
 				String pushButtonTooltipFinal = updatePushToolTip(isAnUpstreamBranchDefinedInConfig, 
@@ -755,7 +755,7 @@ public class ToolbarPanel extends JPanel {
 	    ) {
 	  StringBuilder pushButtonTooltip = new StringBuilder();
 	  pushButtonTooltip.append("<html>");
-		final int maximumNoCommitsDisplayed = 10;
+		final int maximumNoCommitsDisplayed = 5;
     if (isAnUpstreamBranchDefinedInConfig) {
       if (existsRemoteBranchForUpstreamDefinedInConfig) {
         // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
@@ -845,7 +845,7 @@ public class ToolbarPanel extends JPanel {
     StringBuilder pullButtonTooltip = new StringBuilder();
     pullButtonTooltip.append("<html>");
     String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-    final int maximumNoCommitsDisplayed = 10;
+    final int maximumNoCommitsDisplayed = 5;
     
     if (isAnUpstreamBranchDefinedInConfig) {
       if (existsRemoteBranchForUpstreamDefinedInConfig) {
@@ -915,25 +915,29 @@ public class ToolbarPanel extends JPanel {
    * @throws GitAPIException
    */
   void updateCommits(List<RevCommit> commits, StringBuilder text, int maximumSizeMessage) throws IOException, GitAPIException {
-    final int maximumNoCommitsDisplayed = 10;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy - HH:mm");
+    final int maximumNoCommitsDisplayed = 5;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy, HH:mm");
     for (int i = 0; i < commits.size() && i < maximumNoCommitsDisplayed; i++) {
       String revCommitMessage = commits.get(i).getShortMessage();
       if(revCommitMessage.length() > maximumSizeMessage) {
-        revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + "[...]";
+        revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + " ... ";
       }
       List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commits.get(i).getId().getName());
-      text.append("- ")
-          .append(commits.get(i).getAuthorIdent().getName())
-          .append(" [") 
-          .append("<i>")
+      text.append("&#x25AA; ")
           .append(dateFormat.format(commits.get(i).getAuthorIdent().getWhen()))
-          .append("</i>")
-          .append("]: ")
-          .append(revCommitMessage)
-          .append(" - ")
+          .append(" &ndash; ")
+          .append(commits.get(i).getAuthorIdent().getName())
+          .append(" ")
+          .append("(")
           .append(changedFiles.size())
-          .append(" file(s).<br>"); 
+          .append(" files")
+          .append(")");
+      if(revCommitMessage.length() > 0) {
+       text.append("<br>")
+        .append("&nbsp;&nbsp;&nbsp;")
+        .append(revCommitMessage);
+      }
+      text.append("<br>");     
     }
   }
   

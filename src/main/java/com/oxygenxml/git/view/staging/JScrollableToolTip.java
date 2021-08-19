@@ -41,11 +41,11 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
   /*
    * The maximum height of the ToolTip.
    */
-  protected static final int MAXIMUM_HEIGHT = 165;
+  protected static final int MAXIMUM_HEIGHT = 400;
   /*
    * The maximum width of the ToolTip.
    */
-  protected static final int MAXIMUM_WIDTH = 465;
+  protected static final int MAXIMUM_WIDTH = 500;
   /*
    * The size of redundant height.
    */
@@ -63,7 +63,7 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
   public JScrollableToolTip(final JComponent comp) {
     this.comp = comp;
     setLayout(new BorderLayout());
-    toolTip =  UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+    toolTip = UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
     tooltipText = new JEditorPane();
     tooltipText.setEditable(false);
     tooltipText.setContentType("text/html");
@@ -93,7 +93,7 @@ public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
     toolTip.setTipText(text);
     int width = toolTip.getPreferredSize().width;
     int height = toolTip.getPreferredSize().height;
-    width = (width >= MAXIMUM_WIDTH) ? MAXIMUM_WIDTH : width;
+    width = Math.min(width, MAXIMUM_WIDTH);
     height = (height > MAXIMUM_HEIGHT ) ? MAXIMUM_HEIGHT : height - HEIGHT_DELTA; 
     setPreferredSize(new Dimension(width, height));
     this.tooltipText.setText(text);
