@@ -31,6 +31,8 @@
                         <ol>
 			    <li>Added a "Revert commit" action in the context menu of the commits from Git History.
 				It creates a new commit that reverts all the changes from the selected commit.</li>
+			    <li>Added a "Open working copy version" action to the context menu of the resources associated
+				to a revision in Git History.</li>
 			    <li>A warning message is now displayed when trying to use the "Mark as resolved" action 
 				on a file that contains conflict markers.</li>
 			    <li>A message prompt is now displayed if you try to switch the branch while there
