@@ -6,6 +6,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -16,8 +17,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
@@ -320,8 +325,18 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
           try {
             RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
             if (repositoryState != RepositoryState.REBASING_MERGE) {
-              PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                  translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
+              String commitID = GitAccess.getInstance().getBranchInfo().getShortBranchName();
+              Repository repo = GitAccess.getInstance().getRepository();
+              try (RevWalk revWalk = new RevWalk(repo)) {
+                RevCommit revcom = revWalk.parseCommit(repo.resolve(commitID));
+                String commitMessage = revcom.getFullMessage();
+                PersonIdent authorIdent = revcom.getAuthorIdent();
+                PluginWorkspaceProvider.getPluginWorkspace()
+                    .showInformationMessage(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE) + "\n"
+                        + authorIdent.getName() + " " + commitMessage);
+              } catch (RevisionSyntaxException | IOException e) {
+                logger.debug(e, e);
+              }
             }
           } catch (NoRepositorySelected e) {
             logger.debug(e, e);
