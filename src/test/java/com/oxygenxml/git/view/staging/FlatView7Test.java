@@ -29,24 +29,6 @@ public class FlatView7Test extends FlatViewTestBase {
     stagingPanel.getStagedChangesPanel().setResourcesViewMode(ResourcesViewMode.FLAT_VIEW);
   }
   
-  /**
-   * Replace the current date with {Date}.
-   * 
-   * @param text The String to be modified.
-   * 
-   * @return The new String.
-   */
-  private String replaceDateString(String text) {
-    int startDate = text.indexOf("[");
-    int endDate = text.indexOf("]", startDate) + 1;
-    if(startDate == -1 || endDate == 0) {
-      return text;
-    }
-    String substrDate = text.substring(startDate, endDate);
-    return replaceDateString( ("[...]".compareTo(substrDate) != 0) ? 
-        text.replace(substrDate, "{Date}") : text.replace(substrDate, "{...}"));
-  }
-  
   
   /**
    * <p><b>Description:</b> Test the tooltips of the pull/push buttons and branch label.</p>
