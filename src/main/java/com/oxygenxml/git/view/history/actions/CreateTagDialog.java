@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Translator;
@@ -94,7 +95,7 @@ public class CreateTagDialog extends OKCancelDialog {
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }
-    setMinimumSize(new Dimension(300, 135));
+    setMinimumSize(new Dimension(UIConstants.TAG_CREATE_DIALOG_PREF_WIDTH, UIConstants.TAG_CREATE_DIALOG_PREF_HEIGHT));
     setVisible(true);
   }
 
@@ -102,9 +103,12 @@ public class CreateTagDialog extends OKCancelDialog {
    * Adds the elements to the user interface/
    * 
    * @param panel         The panel in which the components are added.
-   * @param nameToPropose The name to propose. Can be <code>null</code>.
    */
   private void createGUI(JPanel panel) {
+    
+    int topInset = UIConstants.COMPONENT_TOP_PADDING;
+    int leftInset = 5;
+    
     // Tag title label.
     JLabel label = new JLabel("Tag title:");
     GridBagConstraints gbc = new GridBagConstraints();
@@ -124,7 +128,7 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.anchor = GridBagConstraints.BASELINE;
-    gbc.insets = new Insets(0, 5, 0, 0);
+    gbc.insets = new Insets(0, leftInset, 0, 0);
     panel.add(tagTitleField, gbc);
 
     label.setLabelFor(tagTitleField);
@@ -137,7 +141,7 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.gridy ++;
     gbc.gridwidth = 1;
     gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = new Insets(5, 5, 0, 0);
+    gbc.insets = new Insets(topInset, leftInset, 0, 0);
     panel.add(errorMessageTextArea, gbc);
 
     // Tag message label.
@@ -145,7 +149,7 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-    gbc.insets = new Insets(3, 3, 5, 0);      
+    gbc.insets = new Insets(topInset, leftInset, 0, 0);      
     panel.add(messageLabel, gbc);
 
     // Tag message field.
@@ -158,7 +162,6 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.weighty = 1; 
     gbc.fill = GridBagConstraints.BOTH;
     gbc.anchor = GridBagConstraints.BASELINE;
-    gbc.insets = new Insets(3, 5, 0, 0);
     panel.add(tagMessageField, gbc);
 
     label.setLabelFor(tagMessageField);
@@ -191,7 +194,7 @@ public class CreateTagDialog extends OKCancelDialog {
    * Update UI components depending whether the provided tag title
    * is valid or not.
    * 
-   * @param branchName The branch name provided in the input field.
+   * @param tagTitle The tag title provided in the input field.
    */
   private void updateUI(String tagTitle) {
     boolean titleAlreadyExists = false;
@@ -209,7 +212,7 @@ public class CreateTagDialog extends OKCancelDialog {
   /**
    * Gets the tag title to be set for the new tag.
    * 
-   * @return The name for the branch.
+   * @return The name for the tag.
    */
   public String getTagTitle() {
     return tagTitleField.getText();
@@ -218,14 +221,14 @@ public class CreateTagDialog extends OKCancelDialog {
   /**
    * Gets the tag message to be set for the new tag.
    * 
-   * @return The name for the branch.
+   * @return The message for the tag.
    */
   public String getTagMessage() {
     return tagMessageField.getText();
   }
   
   /**
-   * @return <code>true</code> to checkout the newly created branch.
+   * @return <code>true</code> to push the newly created tag.
    */
   public boolean shouldPushNewTag() {
     return  pushTagCheckBox.isSelected();

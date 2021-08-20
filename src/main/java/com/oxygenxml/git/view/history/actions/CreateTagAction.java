@@ -52,7 +52,7 @@ public class CreateTagAction extends AbstractAction {
 
     CreateTagDialog dialog = new CreateTagDialog("Tag commit");
     String tagTitle = dialog.getTagTitle();
-    
+    String variaString;
     if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
       GitOperationScheduler.getInstance().schedule(() -> {
         try {
@@ -72,4 +72,5 @@ public class CreateTagAction extends AbstractAction {
     }
 
   }
+  
 }
