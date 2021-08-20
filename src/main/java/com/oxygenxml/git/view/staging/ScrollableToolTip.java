@@ -20,98 +20,115 @@ import com.oxygenxml.git.view.util.UIUtil;
  * @author Alex_Smarandache
  *
  */
-public class JScrollableToolTip extends JToolTip implements MouseWheelListener {
+public class ScrollableToolTip extends JToolTip implements MouseWheelListener {
 
   /**
-   * The JEditorPane that contains the text of the tooltip.
+   * Contains the text of the tooltip.
    */
   protected JEditorPane tooltipText;
   /**
-   * The JScrollPane to make theToolTip scrollable.
+   * Makes the tooltip scrollable.
    */
   protected JScrollPane scrollpane;
-  /*
-   * The swing associated component.
+  /**
+   * The associated component.
    */
   protected JComponent comp;
   /**
-   * The super ToolTip.
+   * The super tooltip.
    */
   private final JToolTip toolTip;
-  /*
+  /**
    * The maximum height of the ToolTip.
    */
   protected static final int MAXIMUM_HEIGHT = 400;
-  /*
+  /**
    * The maximum width of the ToolTip.
    */
   protected static final int MAXIMUM_WIDTH = 500;
-  /*
+  /**
    * The size of redundant height.
    */
   private static final int HEIGHT_DELTA = 20;
    
 
-  /** Creates a tool tip. */
-  public JScrollableToolTip() {
+  /** 
+   * Creates a tool tip. 
+   */
+  public ScrollableToolTip() {
     this(null);
   }
   
   /**
-   * @param comp the associated swing component.
+   * Creates a tooltip.
+   * 
+   * @param comp the associated component.
    */
-  public JScrollableToolTip(final JComponent comp) {
+  public ScrollableToolTip(final JComponent comp) {
     this.comp = comp;
     setLayout(new BorderLayout());
     toolTip = UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+    
     tooltipText = new JEditorPane();
     tooltipText.setEditable(false);
     tooltipText.setContentType("text/html");
     tooltipText.setBackground(super.getBackground());
     tooltipText.setFont(super.getFont());
+    
     scrollpane = new JScrollPane(tooltipText);
     scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-    setPreferredSize(new Dimension(200, 200));
     add(scrollpane);
+    
     if(comp != null){
       comp.addMouseWheelListener(this);
     }
   }
 
   /**
-   * The move for mouse wheel.
+   * Mouse wheel moved.
    */
+  @Override
   public void mouseWheelMoved(final MouseWheelEvent e) {
     scrollpane.dispatchEvent(e);
     MouseEvent e2 = new MouseEvent(comp, MouseEvent.MOUSE_MOVED, 0, 0, 0, 0, 0, false);
     comp.dispatchEvent(e2);
   }
 
+  /**
+   * Set tooltip text.
+   */
   @Override
   public void setTipText(final String text) {
-    String oldValue = this.tooltipText.getText();
+    String oldValue = tooltipText.getText();
     toolTip.setTipText(text);
+    
     int width = toolTip.getPreferredSize().width;
     int height = toolTip.getPreferredSize().height;
     width = Math.min(width, MAXIMUM_WIDTH);
     height = (height > MAXIMUM_HEIGHT ) ? MAXIMUM_HEIGHT : height - HEIGHT_DELTA; 
     setPreferredSize(new Dimension(width, height));
-    this.tooltipText.setText(text);
-    this.tooltipText.setCaretPosition(0);
+    
+    tooltipText.setText(text);
+    tooltipText.setCaretPosition(0);
+    
     firePropertyChange("tiptext", oldValue, text);
   }
   
+  /**
+   * Get tooltip text.
+   */
   @Override
   public String getTipText() {
     return tooltipText == null ? "" : tooltipText.getText();
   }
 
+  /**
+   * Get a string representation of this tooltip.
+   */
   @Override
   protected String paramString() {
     String tipTextString = (tooltipText.getText() != null ? tooltipText.getText() : "");
-
-    return super.paramString() +
-            ",tipText=" + tipTextString;
+    return super.paramString() + ", tipText=" + tipTextString;
   }
   
 }

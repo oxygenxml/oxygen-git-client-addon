@@ -85,27 +85,8 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
  *
  */
 public class ToolbarPanel extends JPanel {
+  
   /**
-   * The font size of the push/pull counters.
-   */
-  private static final float PUSH_PULL_COUNTERS_FONT_SIZE = 8.5f;
-
-  /**
-   * Pull button extra width, for beautifying reasons.
-   */
-	private static final int PULL_BUTTON_EXTRA_WIDTH = 4;
-
-	/**
-   * Toolbar button default extra width, for beautifying reasons.
-   */
-  private static final int TOOLBAR_BUTTON_DEFAULT_EXTRA_WIDTH = 8;
-
-  /**
-	 * Distance between text and decoration
-	 */
-  private static final int DECORATION_DISPLACEMENT = 13;
-
-/**
    * Pull action.
    */
   private final class PullAction extends AbstractAction {
@@ -137,6 +118,36 @@ public class ToolbarPanel extends JPanel {
       }
     }
   }
+  
+  /**
+   * The font size of the push/pull counters.
+   */
+  private static final float PUSH_PULL_COUNTERS_FONT_SIZE = 8.5f;
+
+  /**
+   * Pull button extra width, for beautifying reasons.
+   */
+	private static final int PULL_BUTTON_EXTRA_WIDTH = 4;
+
+	/**
+   * Toolbar button default extra width, for beautifying reasons.
+   */
+  private static final int TOOLBAR_BUTTON_DEFAULT_EXTRA_WIDTH = 8;
+
+  /**
+	 * Distance between text and decoration
+	 */
+  private static final int DECORATION_DISPLACEMENT = 13;
+  
+  /**
+   * Maximum number of commits to be displayed in pull/push buttons tooltips.
+   */
+  private static final int MAXIMUM_NO_OF_COMMITS_DISPLAYED = 5;
+  
+  /**
+   * Maximum commit message length in tooltip.
+   */
+  private static final int MAXIMUM_COMMIT_MESSAGE_LENGTH = 60;
 
 	/**
 	 * Logger for logging.
@@ -201,7 +212,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private final static Translator TRANSLATOR = Translator.getInstance();
+	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	/**
 	 * Main panel refresh
@@ -708,19 +719,26 @@ public class ToolbarPanel extends JPanel {
         
 				branchTooltip += "</html>";
 
-				final int maximumMessageSize = 60;
-				
 				// ===================== Push button tooltip =====================
-				String pushButtonTooltipFinal = updatePushToolTip(isAnUpstreamBranchDefinedInConfig, 
-				    existsRemoteBranchForUpstreamDefinedInConfig, upstreamBranchFromConfig, 
-				    commitsAheadMessage, currentBranchName, repo, maximumMessageSize);
+				System.err.println(Thread.currentThread().getName());
+				String pushButtonTooltipFinal = updatePushToolTip(
+				    isAnUpstreamBranchDefinedInConfig, 
+				    existsRemoteBranchForUpstreamDefinedInConfig,
+				    upstreamBranchFromConfig, 
+				    commitsAheadMessage, 
+				    currentBranchName,
+				    repo);
 				SwingUtilities.invokeLater(() -> pushButton.setToolTipText(pushButtonTooltipFinal));
 				
 				//  ===================== Pull button tooltip =====================
 				final String pullFromTag = getPullFromTranslationTag();
-				String pullButtonTooltipFinal = updatePullToolTip(isAnUpstreamBranchDefinedInConfig, existsRemoteBranchForUpstreamDefinedInConfig, 
-				    upstreamBranchFromConfig, commitsBehindMessage, pullFromTag, maximumMessageSize, remoteBranchRefForUpstreamFromConfig);
-				
+				String pullButtonTooltipFinal = updatePullToolTip(
+				    isAnUpstreamBranchDefinedInConfig,
+				    existsRemoteBranchForUpstreamDefinedInConfig, 
+				    upstreamBranchFromConfig,
+				    commitsBehindMessage,
+				    pullFromTag,
+				    remoteBranchRefForUpstreamFromConfig);
 				SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
         
 			}
@@ -741,7 +759,6 @@ public class ToolbarPanel extends JPanel {
    * @param commitsAheadMessage                            The commits ahead message
    * @param currentBranchName                              The name of the current branch
    * @param repo                                           The current repository
-   * @param maximumSizeMessage                             The maximum size for a commit message
    * 
    * @return updated "Push" button tool tip text.
    */
@@ -750,12 +767,9 @@ public class ToolbarPanel extends JPanel {
 	    String upstreamBranchFromConfig, 
 	    String commitsAheadMessage, 
 	    String currentBranchName, 
-	    Repository repo,
-	    int maximumSizeMessage
-	    ) {
+	    Repository repo) {
 	  StringBuilder pushButtonTooltip = new StringBuilder();
 	  pushButtonTooltip.append("<html>");
-		final int maximumNoCommitsDisplayed = 5;
     if (isAnUpstreamBranchDefinedInConfig) {
       if (existsRemoteBranchForUpstreamDefinedInConfig) {
         // The "normal" case. The upstream branch defined in "config" exists in the remote repository.
@@ -765,21 +779,23 @@ public class ToolbarPanel extends JPanel {
             .append(".<br>");
         pushButtonTooltip.append(commitsAheadMessage);
         try {
-          CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo, 
+          CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(
+              repo, 
               currentBranchName);
-          pushButtonTooltip.append("<br><br>");
-          assert commitsAheadAndBehind != null;
-          List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
-          updateCommits(commitsAhead, pushButtonTooltip, maximumSizeMessage);
-          if(commitsAhead.size() > maximumNoCommitsDisplayed) {
-            pushButtonTooltip.append("<br>")
-            .append("<a href=")
-            .append("git-open-view://history")
-            .append(">")
-            .append(MessageFormat.format(
-                StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN)),
-                TRANSLATOR.getTranslation(Tags.GIT_HISTORY)))
-            .append("</a>");
+          if (commitsAheadAndBehind != null) {
+            pushButtonTooltip.append("<br><br>");
+            List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
+            addCommitsToTooltip(commitsAhead, pushButtonTooltip);
+            if(commitsAhead.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
+              pushButtonTooltip.append("<br>")
+              .append("<a href=")
+              .append("git-open-view://history")
+              .append(">")
+              .append(MessageFormat.format(
+                  StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN)),
+                  TRANSLATOR.getTranslation(Tags.GIT_HISTORY)))
+              .append("</a>");
+            }
           }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
@@ -822,7 +838,6 @@ public class ToolbarPanel extends JPanel {
    * @param upstreamBranchFromConfig                       The upstream branch from configurations
    * @param commitsBehindMessage                           The commits behind message
    * @param pullFromTag                                    The tag for pull from
-   * @param maximumSizeMessage                             The maximum size for a commit message
 	 * @param remoteBranchRefForUpstreamFromConfig           The remote branch reference for upstream from configurations.
    * 
    * @return updated "Push" button tool tip text.
@@ -832,7 +847,6 @@ public class ToolbarPanel extends JPanel {
       String upstreamBranchFromConfig, 
       String commitsBehindMessage, 
       String pullFromTag,
-      int maximumSizeMessage, 
       Ref remoteBranchRefForUpstreamFromConfig
       ) {
     Repository repo = null;
@@ -861,7 +875,7 @@ public class ToolbarPanel extends JPanel {
           pullButtonTooltip.append("<br><br>");
           assert commitsAheadAndBehind != null;
           List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
-          updateCommits(commitsBehind, pullButtonTooltip, maximumSizeMessage);
+          addCommitsToTooltip(commitsBehind, pullButtonTooltip);
           if(commitsBehind.size() > maximumNoCommitsDisplayed) {
             pullButtonTooltip.append("<br>")
             .append("<a href=")
@@ -905,22 +919,22 @@ public class ToolbarPanel extends JPanel {
 	
   
   /**
-   * Update the text with info about the commits from the list.
+   * Update the tooltip text with info about the incoming/outgoing commits.
    * 
    * @param commits                 The list with new commits.
    * @param text                    The text of the message.
-   * @param maximumSizeMessage      The maximum size for a commit message.
    * 
    * @throws IOException
    * @throws GitAPIException
    */
-  void updateCommits(List<RevCommit> commits, StringBuilder text, int maximumSizeMessage) throws IOException, GitAPIException {
+  void addCommitsToTooltip(List<RevCommit> commits, StringBuilder text) 
+      throws IOException, GitAPIException {
     final int maximumNoCommitsDisplayed = 5;
     SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy, HH:mm");
     for (int i = 0; i < commits.size() && i < maximumNoCommitsDisplayed; i++) {
       String revCommitMessage = commits.get(i).getShortMessage();
-      if(revCommitMessage.length() > maximumSizeMessage) {
-        revCommitMessage = revCommitMessage.substring(0, maximumSizeMessage) + " ... ";
+      if(revCommitMessage.length() > MAXIMUM_COMMIT_MESSAGE_LENGTH) {
+        revCommitMessage = revCommitMessage.substring(0, MAXIMUM_COMMIT_MESSAGE_LENGTH) + " ... ";
       }
       List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commits.get(i).getId().getName());
       text.append("&#x25AA; ")
@@ -1025,7 +1039,7 @@ public class ToolbarPanel extends JPanel {
       
 	    @Override
       public JToolTip createToolTip() {
-        JScrollableToolTip tip = new JScrollableToolTip(this) {
+        ScrollableToolTip tip = new ScrollableToolTip(this) {
                
          @Override
          public void setTipText(final String tipText) {
@@ -1127,7 +1141,7 @@ public class ToolbarPanel extends JPanel {
       
       @Override
       public JToolTip createToolTip() {
-        JScrollableToolTip tip = new JScrollableToolTip(this) {
+        ScrollableToolTip tip = new ScrollableToolTip(this) {
                
          @Override
          public void setTipText(final String tipText) {
