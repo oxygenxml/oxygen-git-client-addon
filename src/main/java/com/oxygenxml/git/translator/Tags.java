@@ -983,7 +983,7 @@ public class Tags {
   /**
    * Show more in ... message.
    */
-  public static final String SHOW_MORE_IN = "Show_More_In_NAME";
+  public static final String SHOW_MORE_IN_NAME = "Show_More_In_NAME";
   
   /**
    * Git History.
@@ -1337,4 +1337,8 @@ public class Tags {
    * {0} = selected, {1} = current
    */
   public static final String MERGE_BRANCHES_QUESTION_MESSAGE = "Merge_Branches_Question_Message";
+  /**
+   * Open Git History action name.
+   */
+  public static final String OPEN_GIT_HISTORY = "Open_Git_History";
 }

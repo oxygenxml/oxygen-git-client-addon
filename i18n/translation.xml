@@ -69,11 +69,20 @@
     
     <key value="Show_More_In_NAME">
         <comment>Show more in ... message.</comment>
-        <val lang="en_US">Show more in {0}</val>
-        <val lang="de_DE">Show more in {0}</val>
-        <val lang="fr_FR">Show more in {0}</val>
-        <val lang="ja_JP">Show more in {0}</val>
-        <val lang="nl_NL">Show more in {0}</val>
+        <val lang="en_US">Use "{0} + H" to see all commits in Git History.</val>
+        <val lang="de_DE">Use {0} + H to see all commits in Git History.</val>
+        <val lang="fr_FR">Use {0} + H to see all commits in Git History.</val>
+        <val lang="ja_JP">Use {0} + H to see all commits in Git History.</val>
+        <val lang="nl_NL">Use {0} + H to see all commits in Git History.</val>
+    </key>
+    
+    <key value="Open_Git_History">
+        <comment> Open Git History action name.</comment>
+        <val lang="en_US">Open Git History</val>
+        <val lang="de_DE">Open Git History</val>
+        <val lang="fr_FR">Open Git History</val>
+        <val lang="ja_JP">Open Git History</val>
+        <val lang="nl_NL">Open Git History</val>
     </key>
     
     <key value="Open_this_version">

@@ -10,6 +10,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToolBar;
 import javax.swing.JToolTip;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -56,6 +59,7 @@ import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
@@ -71,8 +75,10 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -118,6 +124,11 @@ public class ToolbarPanel extends JPanel {
       }
     }
   }
+  
+  /**
+   * ... String
+   */
+  private static final String THREE_DOTS = "...";
   
   /**
    * The font size of the push/pull counters.
@@ -230,6 +241,11 @@ public class ToolbarPanel extends JPanel {
   private final HistoryController historyController;
   
   /**
+   * Cmd key on Mac, Ctrl on others os.
+   */
+  private String keyCtrl;
+  
+  /**
    * Constructor.
    * 
    * @param gitController     Git controller.
@@ -248,7 +264,9 @@ public class ToolbarPanel extends JPanel {
 	  this.historyController = historyController;
 
 	  createGUI(historyController, branchManagementViewPresenter);
-
+	  
+	  initialise();
+    
 	  gitController.addGitListener(new GitEventAdapter() {
       @Override
       public void operationSuccessfullyEnded(GitEventInfo info) {
@@ -277,6 +295,33 @@ public class ToolbarPanel extends JPanel {
       }
 	  });
 	}
+	
+	
+	/**
+	 * Initialise the action for open Git History and the Ctrl/Cmd key value.
+	 */
+	private void initialise() {
+	  try {
+	    Action action = new AbstractAction(TRANSLATOR.getTranslation(Tags.OPEN_GIT_HISTORY)) {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        historyController.showRepositoryHistory();
+	      }
+	    };
+	    ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getActionsProvider().registerAction(
+	        "com.oxygenxml.git.history", action, "M1 H");
+	    
+	    KeyStroke commitKeyStroke = KeyStroke.getKeyStroke(
+	        KeyEvent.VK_ENTER,
+	        PlatformDetectionUtil.isMacOS() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
+	    keyCtrl = PlatformDetectionUtil.isMacOS() ? UIUtil.getKeyModifiersSymbol(commitKeyStroke.getModifiers(), false)
+	        : InputEvent.getModifiersExText(commitKeyStroke.getModifiers());
+	  } catch (Exception e) {
+	    LOGGER.debug(e, e);
+	  }
+	  
+	}
+	  
 	
 	/**
 	 * @return <code>true</code> if we have submodules.
@@ -786,14 +831,10 @@ public class ToolbarPanel extends JPanel {
             List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
             addCommitsToTooltip(commitsAhead, pushButtonTooltip);
             if(commitsAhead.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
-              pushButtonTooltip.append("<br>")
-              .append("<a href=")
-              .append("git-open-view://history")
-              .append(">")
+              pushButtonTooltip.append("<br>") 
               .append(MessageFormat.format(
-                  StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN)),
-                  TRANSLATOR.getTranslation(Tags.GIT_HISTORY)))
-              .append("</a>");
+                  StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME)),
+                  keyCtrl));
             }
           }
         } catch (IOException | GitAPIException e) {
@@ -858,7 +899,6 @@ public class ToolbarPanel extends JPanel {
     StringBuilder pullButtonTooltip = new StringBuilder();
     pullButtonTooltip.append("<html>");
     String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
-    final int maximumNoCommitsDisplayed = 5;
     
     if (isAnUpstreamBranchDefinedInConfig) {
       if (existsRemoteBranchForUpstreamDefinedInConfig) {
@@ -875,15 +915,11 @@ public class ToolbarPanel extends JPanel {
           assert commitsAheadAndBehind != null;
           List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
           addCommitsToTooltip(commitsBehind, pullButtonTooltip);
-          if(commitsBehind.size() > maximumNoCommitsDisplayed) {
-            pullButtonTooltip.append("<br>")
-            .append("<a href=")
-            .append("git-open-view://history")
-            .append(">")
+          if(commitsBehind.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
+            pullButtonTooltip.append("<br>") 
             .append(MessageFormat.format(
-                StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN)),
-                TRANSLATOR.getTranslation(Tags.GIT_HISTORY)))
-            .append("</a>");
+                StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME)),
+                keyCtrl));
           }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
@@ -928,14 +964,15 @@ public class ToolbarPanel extends JPanel {
    */
   void addCommitsToTooltip(List<RevCommit> commits, StringBuilder text) 
       throws IOException, GitAPIException {
-    final int maximumNoCommitsDisplayed = 5;
+    final int maximumNoCommitsDisplayed = 4;
+    List<FileStatus> changedFiles;
     SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy, HH:mm");
-    for (int i = 0; i < commits.size() && i < maximumNoCommitsDisplayed; i++) {
+    for (int i = 0; i < commits.size(); i++) {
       String revCommitMessage = commits.get(i).getShortMessage();
       if(revCommitMessage.length() > MAXIMUM_COMMIT_MESSAGE_LENGTH) {
         revCommitMessage = revCommitMessage.substring(0, MAXIMUM_COMMIT_MESSAGE_LENGTH) + " ... ";
       }
-      List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commits.get(i).getId().getName());
+      changedFiles = RevCommitUtil.getChangedFiles(commits.get(i).getId().getName());
       text.append("&#x25AA; ")
           .append(dateFormat.format(commits.get(i).getAuthorIdent().getWhen()))
           .append(" &ndash; ")
@@ -951,7 +988,18 @@ public class ToolbarPanel extends JPanel {
         .append(revCommitMessage);
       }
       text.append("<br>");     
-    }
+      if(i + 1 == maximumNoCommitsDisplayed && commits.size() > maximumNoCommitsDisplayed + 1) {
+        text.append("&#x25AA; ")
+        .append("[")
+        .append(THREE_DOTS)
+        .append("]")
+        .append("<br>"); 
+          i = commits.size() - 2;
+        }
+        
+      }
+   
+   
   }
   
 	/**
@@ -1038,16 +1086,7 @@ public class ToolbarPanel extends JPanel {
       
 	    @Override
       public JToolTip createToolTip() {
-        ScrollableToolTip tip = new ScrollableToolTip(this) {
-               
-         @Override
-         public void setTipText(final String tipText) {
-            super.setTipText(tipText);
-            super.tooltipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
-        }
-      };
-      tip.setComponent(this);
-      return tip;       
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
       }
       
       /**
@@ -1140,16 +1179,7 @@ public class ToolbarPanel extends JPanel {
       
       @Override
       public JToolTip createToolTip() {
-        ScrollableToolTip tip = new ScrollableToolTip(this) {
-               
-         @Override
-         public void setTipText(final String tipText) {
-            super.setTipText(tipText);
-            super.tooltipText.addHyperlinkListener(e -> historyController.showRepositoryHistory());
-        }
-      };
-      tip.setComponent(this);
-      return tip;       
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
       }
 		   
 			/**
