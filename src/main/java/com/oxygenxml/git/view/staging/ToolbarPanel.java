@@ -720,7 +720,6 @@ public class ToolbarPanel extends JPanel {
 				branchTooltip += "</html>";
 
 				// ===================== Push button tooltip =====================
-				System.err.println(Thread.currentThread().getName());
 				String pushButtonTooltipFinal = updatePushToolTip(
 				    isAnUpstreamBranchDefinedInConfig, 
 				    existsRemoteBranchForUpstreamDefinedInConfig,
