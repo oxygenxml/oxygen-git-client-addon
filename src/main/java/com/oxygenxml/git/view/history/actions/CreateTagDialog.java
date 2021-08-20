@@ -149,7 +149,7 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-    gbc.insets = new Insets(topInset, leftInset, 0, 0);      
+    gbc.insets = new Insets(topInset, 0, 0, 5);      
     panel.add(messageLabel, gbc);
 
     // Tag message field.
@@ -162,6 +162,7 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.weighty = 1; 
     gbc.fill = GridBagConstraints.BOTH;
     gbc.anchor = GridBagConstraints.BASELINE;
+    gbc.insets = new Insets(topInset, leftInset, 0, 0);  
     panel.add(tagMessageField, gbc);
 
     label.setLabelFor(tagMessageField);
