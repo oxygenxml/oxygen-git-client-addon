@@ -360,7 +360,8 @@ public class FlatView7Test extends FlatViewTestBase {
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_256.txt<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2w5.txt<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherrrFile_25.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anothe323rFile_25.txt<br>&#x25AA; [...]<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anothe323rFile_25.txt<br>&#x25AA; [...] "
+        + "&ndash; N_More_Commits<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br><br>Show_More_In_NAME</html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
@@ -372,7 +373,8 @@ public class FlatView7Test extends FlatViewTestBase {
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile45w.txt<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFileee45.txt<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil333e45.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil233e45.txt<br>&#x25AA; [...]<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil233e45.txt<br>&#x25AA; [...] "
+        + "&ndash; N_More_Commits<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br><br>Show_More_In_NAME</html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(

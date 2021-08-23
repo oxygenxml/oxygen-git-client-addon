@@ -69,21 +69,31 @@
     
     <key value="Show_More_In_NAME">
         <comment>Show more in ... message.</comment>
-        <val lang="en_US">Use {1}{0} + H{2} to see all commits in Git History.</val>
-        <val lang="de_DE">Use {0} + H to see all commits in Git History.</val>
-        <val lang="fr_FR">Use {0} + H to see all commits in Git History.</val>
-        <val lang="ja_JP">Use {0} + H to see all commits in Git History.</val>
-        <val lang="nl_NL">Use {0} + H to see all commits in Git History.</val>
+        <val lang="en_US">See all commits in Git History.</val>
+        <val lang="de_DE">See all commits in Git History.</val>
+        <val lang="fr_FR">See all commits in Git History.</val>
+        <val lang="ja_JP">See all commits in Git History.</val>
+        <val lang="nl_NL">See all commits in Git History.</val>
     </key>
     
-    <key value="Open_Git_History">
-        <comment> Open Git History action name.</comment>
-        <val lang="en_US">Open Git History</val>
-        <val lang="de_DE">Open Git History</val>
-        <val lang="fr_FR">Open Git History</val>
-        <val lang="ja_JP">Open Git History</val>
-        <val lang="nl_NL">Open Git History</val>
+    <key value="One_more_commit">
+        <comment>One more commit message</comment>
+        <val lang="en_US">1 more commit</val>
+        <val lang="de_DE">1 more commit</val>
+        <val lang="fr_FR">1 more commit</val>
+        <val lang="ja_JP">1 more commit</val>
+        <val lang="nl_NL">1 more commit</val>
     </key>
+    
+    <key value="N_More_Commits">
+        <comment> n more commits message.</comment>
+        <val lang="en_US">{0} more commits</val>
+        <val lang="de_DE">{0} more commits</val>
+        <val lang="fr_FR">{0} more commits</val>
+        <val lang="ja_JP">{0} more commits</val>
+        <val lang="nl_NL">{0} more commits</val>
+    </key>
+    
     
     <key value="Open_this_version">
         <comment>Open this version.</comment>

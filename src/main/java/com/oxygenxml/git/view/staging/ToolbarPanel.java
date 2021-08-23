@@ -10,8 +10,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -26,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToolBar;
 import javax.swing.JToolTip;
-import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -59,7 +56,6 @@ import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.PlatformDetectionUtil;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchesUtil;
@@ -78,8 +74,6 @@ import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.exml.workspace.api.standalone.actions.ActionsProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -129,7 +123,7 @@ public class ToolbarPanel extends JPanel {
   /**
    * ... String
    */
-  private static final String THREE_DOTS = "...";
+  private static final String THREE_DOTS = "[...] - 4 more commits ";
   
   /**
    * The font size of the push/pull counters.
@@ -242,11 +236,6 @@ public class ToolbarPanel extends JPanel {
   private final HistoryController historyController;
   
   /**
-   * Cmd key on Mac, Ctrl on others os.
-   */
-  private String keyCtrl;
-  
-  /**
    * Constructor.
    * 
    * @param gitController     Git controller.
@@ -265,25 +254,6 @@ public class ToolbarPanel extends JPanel {
 	  this.historyController = historyController;
 
 	  createGUI(historyController, branchManagementViewPresenter);
-	  
-	  Action action = new AbstractAction(TRANSLATOR.getTranslation(Tags.OPEN_GIT_HISTORY)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        historyController.showRepositoryHistory();
-      }
-	  };
-	  if(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace &&
-	      ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getActionsProvider() instanceof ActionsProvider
-	      ) {
-	    ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getActionsProvider().registerAction(
-          "com.oxygenxml.git.history", action, "M1 H");
-	  }
-	  
-	  KeyStroke commitKeyStroke = KeyStroke.getKeyStroke(
-        KeyEvent.VK_ENTER,
-        PlatformDetectionUtil.isMacOS() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
-    keyCtrl = PlatformDetectionUtil.isMacOS() ? UIUtil.getKeyModifiersSymbol(commitKeyStroke.getModifiers(), false)
-        : InputEvent.getModifiersExText(commitKeyStroke.getModifiers());
     
 	  gitController.addGitListener(new GitEventAdapter() {
       @Override
@@ -823,9 +793,7 @@ public class ToolbarPanel extends JPanel {
             addCommitsToTooltip(commitsAhead, pushButtonTooltip);
             if(commitsAhead.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
               pushButtonTooltip.append("<br>") 
-              .append(MessageFormat.format(
-                  StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME)),
-                  keyCtrl, "<b><i>", "</i></b>"));
+              .append(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME));
             }
           }
         } catch (IOException | GitAPIException e) {
@@ -908,9 +876,7 @@ public class ToolbarPanel extends JPanel {
           addCommitsToTooltip(commitsBehind, pullButtonTooltip);
           if(commitsBehind.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
             pullButtonTooltip.append("<br>") 
-            .append(MessageFormat.format(
-                StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME)),
-                keyCtrl, "<b><i>", "</i></b>"));
+            .append(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME));
           }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
@@ -984,8 +950,13 @@ public class ToolbarPanel extends JPanel {
       if(i + 1 == maximumNoCommitsDisplayed && noOfCommits > maximumNoCommitsDisplayed + 1) {
         text.append("&#x25AA; ")
         .append("[")
-        .append(THREE_DOTS)
+        .append("...")
         .append("]")
+        .append(" &ndash; ")  
+        .append(TRANSLATOR.getTranslation((noOfCommits - maximumNoCommitsDisplayed - 1) == 1 ? 
+            Tags.ONE_MORE_COMMIT : MessageFormat.format(
+                StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.N_MORE_COMMITS)),
+                noOfCommits - maximumNoCommitsDisplayed - 1)))    
         .append("<br>"); 
           i = noOfCommits - 2;
         } 

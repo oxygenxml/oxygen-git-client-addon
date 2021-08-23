@@ -1338,7 +1338,11 @@ public class Tags {
    */
   public static final String MERGE_BRANCHES_QUESTION_MESSAGE = "Merge_Branches_Question_Message";
   /**
-   * Open Git History action name.
+   * 1 more commit message.
    */
-  public static final String OPEN_GIT_HISTORY = "Open_Git_History";
+  public static final String ONE_MORE_COMMIT = "One_more_commit";
+  /**
+   * n more commits message.
+   */
+  public static final String N_MORE_COMMITS = "N_More_Commits";
 }
