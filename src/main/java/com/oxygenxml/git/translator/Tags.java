@@ -227,13 +227,6 @@ public class Tags {
    * en: Please enter your SSH passphrase.
    */
   public static final String ENTER_SSH_PASS_PHRASE = "Enter_ssh_passphrase";
-  /**
-   * Shown when a command is aborted.
-   * 
-   * en: Command aborted.
-   */
-  public static final String COMMAND_ABORTED = "Command_aborted";
-
 	/**
 	 * Label displayed on the left of the working copy combo box
 	 */
@@ -273,11 +266,6 @@ public class Tags {
 	 * The text displayed on the Unstage Selected button
 	 */
 	public static final String UNSTAGE_SELECTED_BUTTON_TEXT = "Unstage_Selected_Button_Text";
-
-	/**
-	 * The tooltip for the ChangeView button
-	 */
-	public static final String CHANGE_VIEW_BUTTON_TOOLTIP = "Change_View_Button_ToolTip";
 
 	/**
 	 * The massage displayed above the previously committed messages combo box
@@ -359,11 +347,6 @@ public class Tags {
 	 * The massage displayed when your push is in progress
 	 */
 	public static final String PUSH_IN_PROGRESS = "Push_In_Progress";
-
-	/**
-	 * The massage displayed when you pull with uncommitted files
-	 */
-	public static final String PULL_WITH_UNCOMMITED_CHANGES = "Pull_With_Uncommitted_Changes";
 
 	/**
 	 * The massage displayed when your repository is up to date
@@ -478,12 +461,6 @@ public class Tags {
 	public static final String WORKINGCOPY_NOT_GIT_DIRECTORY = "Workingcopy_Not_Git_Directory";
 
 	/**
-	 * The text displayed when the application starts and the last selected
-	 * repository doesn't exists
-	 */
-	public static final String WORKINGCOPY_LAST_SELECTED_REPOSITORY_DELETED = "Workingcopy_Last_Selected_Repository_Deleted";
-
-	/**
 	 * The text displayed after exiting the diff for a conflict file and you don't
 	 * modify anithing
 	 */
@@ -494,12 +471,6 @@ public class Tags {
 	 * the diff for a conflict file and you don't modify anithing
 	 */
 	public static final String CHECK_IF_CONFLICT_RESOLVED_TITLE = "Title_Check_If_Conflict_Resolved";
-
-	/**
-	 * The text displayed in the title for the dialog that appears when you select
-	 * your current branch
-	 */
-	public static final String BRANCH_SELECTION_DIALOG_TITLE = "Branch_Selection_Dialog_Title";
 
 	/**
 	 * The the message displayed when branch selection fails because of checkout conflict.
@@ -516,12 +487,6 @@ public class Tags {
 	 * while having no remote set
 	 */
 	public static final String ADD_REMOTE_DIALOG_TITLE = "Add_Remote_Dialog_Title";
-
-	/**
-	 * The text displayed in the dialog that appears near the text field for
-	 * remote name
-	 */
-	public static final String ADD_REMOTE_DIALOG_ADD_REMOTE_NAME_LABEL = "Add_Remote_Dialog_Add_Remote_Name_Label";
 
 	/**
 	 * The text displayed in the dialog that appears near the text field for
@@ -764,12 +729,7 @@ public class Tags {
 	 * The text displayed if the destination path is invalid
 	 */
 	public static final String CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH = "Clone_Repository_Dialog_Invalid_Destination_Path";
-
-	/**
-	 * The text displayed if an error occured during cloning
-	 */
-	public static final String CLONE_REPOSITORY_DIALOG_CLONE_ERROR = "Clone_Repository_Dialog_Clone_Error";
-
+	
 	/**
 	 * The text displayed if the chosen destionation path is not an empty folder
 	 */
@@ -779,12 +739,6 @@ public class Tags {
 	 * The text displayed if the URL doesn't point to a remote repository
 	 */
 	public static final String CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY = "Clone_Repository_Dialog_Url_Is_Not_A_Repository";
-
-	/**
-	 * The text displayed in the login dialog if you are not authorized to clone
-	 * the repository
-	 */
-	public static final String CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE = "Clone_Repository_Dialog_Login_Message";
 
 	/**
 	 * The text in the title of the cloning progress dialog
@@ -1193,11 +1147,6 @@ public class Tags {
    * No details available.
    */
   public static final String NO_DETAILS_AVAILABLE = "No_details_available";
-  
-  /**
-   * Details.
-   */
-  public static final String DETAILS = "Details";
   
   /**
    * A custom message for the Git "pre-receive hook declined" message.

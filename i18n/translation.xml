@@ -735,14 +735,6 @@
         <val lang="ja_JP">The "pre-receive" server-side hook declined the operation.</val>
         <val lang="nl_NL">De "pre-receive" hook op de server heeft de bewerking geweigerd.</val>
     </key>
-    <key value = "Details">
-		<comment>"Details:"</comment>
-        <val lang="en_US">Details:</val>
-        <val lang="de_DE">Details:</val>
-        <val lang="fr_FR">Détails:</val>
-        <val lang="ja_JP">Details:</val>
-        <val lang="nl_NL">Details:</val>
-    </key>
     <key value = "Remote_changes_label">
 		<comment> The message when there are changes in the remote repository.</comment>
         <val lang="en_US">Remote changes detected</val>
@@ -1565,14 +1557,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Voer uw SSH wachtwoord in</val>
     </key>
-    <key value="Command_aborted">
-        <comment>Message displayed when a command is aborted.</comment>
-        <val lang="en_US">Command aborted.</val>
-        <val lang="de_DE">Aktion abgebrochen.</val>
-        <val lang="fr_FR">Commande abandonnée</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Commando afgebroken</val>
-    </key>
+   
     <key value="Working_Copy_Label">
         <comment>Label displayed on the left of the working copy combo box</comment>
         <val lang="en_US">Working copy: </val>
@@ -1636,14 +1621,6 @@
         <val lang="fr_FR">Libérer la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Unstage geselecteerde</val>
-    </key>
-    <key value="Change_View_Button_ToolTip">
-        <comment>The tooltip for the ChangeView button</comment>
-        <val lang="en_US">Change View</val>
-        <val lang="de_DE">Ansicht ändern</val>
-        <val lang="fr_FR">Changer de vue</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Weergave wijzigen</val>
     </key>
     <key value="Add_Icon_ToolTip">
         <comment>The tooltip for the "+" icon that appears on the left side of the file</comment>
@@ -1756,14 +1733,6 @@
         <val lang="fr_FR">Push en cours...</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Bezig met push ...</val>
-    </key>
-    <key value="Pull_With_Uncommitted_Changes">
-        <comment>The message displayed when you pull with uncommitted files</comment>
-        <val lang="en_US">Cannot pull with uncommitted changes</val>
-        <val lang="de_DE">Pull kann nicht ausgeführt werden solange es nicht-committete Änderungen gibt</val>
-        <val lang="fr_FR">Pull impossible avec des modifications hors commit</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Kan geen pull doen zolang er wijzigingen zonder commit zijn.</val>
     </key>
     
     <key value="Pull_Up_To_Date">
@@ -1902,14 +1871,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Selecteer een git-repository</val>
     </key>
-    <key value="Workingcopy_Last_Selected_Repository_Deleted">
-        <comment>The text displayed when the application starts and the last selected repository doesn't exists</comment>
-        <val lang="en_US">Last selected repository not found. It may have been deleted</val>
-        <val lang="de_DE">Das zuletzt verwendete Repository wurde nicht gefunden. Eventuell wurde es gelöscht.</val>
-        <val lang="fr_FR">Le dernier dépôt sélectionné n'a pas été trouvé. Il peut avoir été supprimé</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Laatst geselecteerde repository niet gevonden. Mogelijk is deze verwijderd.</val>
-    </key>
     <key value="Check_If_Conflict_Resolved">
         <comment>The text displayed after exiting the diff for a conflict file and you don't modify anithing</comment>
         <val lang="en_US">You have not modified the local version. Do you want to resolve the conflict by keeping your version?</val>
@@ -1926,14 +1887,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Conflictoplossing</val>
     </key>
-    <key value="Branch_Selection_Dialog_Title">
-        <comment>The text displayed in the title for the dialog that appears when you select your current branch</comment>
-        <val lang="en_US">Select Branch</val>
-        <val lang="de_DE">Branch-Auswahl</val>
-        <val lang="fr_FR">Sélectionner la branche</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Branch selecteren</val>
-    </key>
     <key value="Add_Remote_Dialog_Title">
         <comment>The text displayed in the title for the dialog that appears when you push while having no remote set</comment>
         <val lang="en_US">Add Remote</val>
@@ -1941,14 +1894,6 @@
         <val lang="fr_FR">Ajouter remote</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Externe repository toevoegen</val>
-    </key>
-    <key value="Add_Remote_Dialog_Add_Remote_Name_Label">
-        <comment>The text displayed in the dialog that appears near the text field for remote name</comment>
-        <val lang="en_US">Remote Name: </val>
-        <val lang="de_DE">Remote-Name: </val>
-        <val lang="fr_FR">Nom du remote: </val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Naam externe repository: </val>
     </key>
     <key value="Add_Remote_Dialog_Add_Remote_Repo_Label">
         <comment>The text displayed in the dialog that appears near the text field for remote repo</comment>
@@ -2142,14 +2087,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Doelpad is niet geldig</val>
     </key>
-    <key value="Clone_Repository_Dialog_Clone_Error">
-        <comment>The text displayed if an error occured during cloning</comment>
-        <val lang="en_US">We could not clone the repository</val>
-        <val lang="de_DE">Dieses Repository konnte nicht geklont werden</val>
-        <val lang="fr_FR">Nous n'avons pas pu cloner le dépôt</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">We konden de repository niet klonen</val>
-    </key>
     <key value="Clone_Repository_Dialog_Destination_Path_Not_Empty">
         <comment>The text displayed if the chosen destionation path is not an empty folder</comment>
         <val lang="en_US">The destination path already exists and is not an empty folder.</val>
@@ -2157,14 +2094,6 @@
         <val lang="fr_FR">Le chemin de destination existe déjà et n'est pas un dossier vide.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Het doelpad bestaat al en is geen lege map.</val>
-    </key>
-    <key value="Clone_Repository_Dialog_Login_Message">
-        <comment>The text displayed in the login dialog if you are not authorized to clone the repository</comment>
-        <val lang="en_US">You are not authorized to clone this repository</val>
-        <val lang="de_DE">Sie haben keine Berechtigung dieses Repository zu klonen</val>
-        <val lang="fr_FR">Vous n'êtes pas autorisé à cloner ce dépôt</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">U hebt niet de bevoegdheden deze repository te klonen.</val>
     </key>
     <key value="Cloning_Progress_Dialog_TItle">
         <comment>The text in the title of the cloning progress dialog </comment>

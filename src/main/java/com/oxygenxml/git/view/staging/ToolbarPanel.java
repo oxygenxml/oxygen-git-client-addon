@@ -855,13 +855,11 @@ public class ToolbarPanel extends JPanel {
 								Repository.shortenRefName(remoteBranchRefForUpstreamFromConfig.getName()))).append(".<br>");
         pullButtonTooltip.append(commitsBehindMessage);
         try {
-          assert repo != null;
           CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(
               repo,
               currentBranchName);
           pullButtonTooltip.append("<br><br>");
           
-          assert commitsAheadAndBehind != null;
           List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
           addCommitsToTooltip(commitsBehind, pullButtonTooltip);
           if(commitsBehind.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
