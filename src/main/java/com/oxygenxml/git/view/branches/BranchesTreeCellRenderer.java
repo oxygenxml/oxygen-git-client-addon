@@ -219,11 +219,19 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   private String constructLocalBranchToolTip(String nameBranch) throws GitAPIException, IOException {
     StringBuilder toolTipText = new StringBuilder();
     PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(nameBranch).getAuthorIdent();
+    String remoteBranchName = GitAccess.getInstance().getUpstreamBranchShortNameFromConfig(nameBranch);
+    boolean foundRemoteBranch = remoteBranchName != null;
     toolTipText.append("<html><p>")
       .append(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH))
       .append(" ")
-      .append(nameBranch)
-      .append("<br>")
+      .append(nameBranch);
+    if(foundRemoteBranch) {
+      toolTipText.append("<br>")
+        .append(TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH))
+        .append(" ")
+        .append(remoteBranchName);
+    }
+    toolTipText.append("<br>")
       .append("<br>")
       .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
       .append(":<br>- ")
