@@ -636,14 +636,23 @@ public class BranchManagementTest extends GitTestBase{
     JLabel toolTipLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, root, false, true, root.isLeaf(), 0, true);
     assertNull(toolTipLabel.getToolTipText());
     
+    int noOfNewLocalBranches = 0;
+    
     //  Tests the tool tips for all branches
     for (int i = 0; i < root.getLeafCount(); i++) {
       toolTipLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, leaf, false, true, leaf.isLeaf(), 0, true);
+      if(toolTipLabel.getToolTipText().contains("Local") || toolTipLabel.getToolTipText().contains("Remote")) {
+        boolean isNewLocalBranch = toolTipLabel.getToolTipText().contains("Upstream");
+        noOfNewLocalBranches += isNewLocalBranch ? 1 : 0;
+      } else {
+        assertFalse(true);
+      }
       assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_NAME));
       assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_EMAIL));
       assertTrue(toolTipLabel.getToolTipText().contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
-      assertTrue(toolTipLabel.getToolTipText().contains("Local") || toolTipLabel.getToolTipText().contains("Remote")); 
       leaf = (GitTreeNode) leaf.getNextLeaf();
     }
+    
+    assertEquals(noOfNewLocalBranches, 1);
   }
 }

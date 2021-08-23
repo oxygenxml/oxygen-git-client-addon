@@ -121,11 +121,6 @@ public class ToolbarPanel extends JPanel {
   }
   
   /**
-   * ... String
-   */
-  private static final String THREE_DOTS = "[...] - 4 more commits ";
-  
-  /**
    * The font size of the push/pull counters.
    */
   private static final float PUSH_PULL_COUNTERS_FONT_SIZE = 8.5f;
@@ -231,11 +226,6 @@ public class ToolbarPanel extends JPanel {
   private ToolbarButton branchSelectButton;
   
   /**
-   * The history controller.
-   */
-  private final HistoryController historyController;
-  
-  /**
    * Constructor.
    * 
    * @param gitController     Git controller.
@@ -251,8 +241,7 @@ public class ToolbarPanel extends JPanel {
 	  this.gitController = gitController;
 	  this.refreshSupport = refreshSupport;
 	  this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
-	  this.historyController = historyController;
-
+	  
 	  createGUI(historyController, branchManagementViewPresenter);
     
 	  gitController.addGitListener(new GitEventAdapter() {
