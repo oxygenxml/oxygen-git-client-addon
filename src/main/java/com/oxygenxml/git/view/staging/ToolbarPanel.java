@@ -793,7 +793,7 @@ public class ToolbarPanel extends JPanel {
             addCommitsToTooltip(commitsAhead, pushButtonTooltip);
             if(commitsAhead.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
               pushButtonTooltip.append("<br>") 
-              .append(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME));
+              .append(TRANSLATOR.getTranslation(Tags.SEE_ALL_COMMITS_IN_GIT_HISTORY));
             }
           }
         } catch (IOException | GitAPIException e) {
@@ -846,8 +846,7 @@ public class ToolbarPanel extends JPanel {
       String upstreamBranchFromConfig, 
       String commitsBehindMessage, 
       String pullFromTag,
-      Ref remoteBranchRefForUpstreamFromConfig
-      ) {
+      Ref remoteBranchRefForUpstreamFromConfig) {
     Repository repo = null;
     try {
       repo = GitAccess.getInstance().getRepository();
@@ -868,15 +867,17 @@ public class ToolbarPanel extends JPanel {
         pullButtonTooltip.append(commitsBehindMessage);
         try {
           assert repo != null;
-          CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(repo,
+          CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(
+              repo,
               currentBranchName);
           pullButtonTooltip.append("<br><br>");
+          
           assert commitsAheadAndBehind != null;
           List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
           addCommitsToTooltip(commitsBehind, pullButtonTooltip);
           if(commitsBehind.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
             pullButtonTooltip.append("<br>") 
-            .append(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME));
+            .append(TRANSLATOR.getTranslation(Tags.SEE_ALL_COMMITS_IN_GIT_HISTORY));
           }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);

@@ -395,11 +395,6 @@ public class Tags {
 	 */
 	public static final String OPEN_IN_COMPARE = "Open_In_Compare";
 
-	/**
-   * The text displayed for the "Open this version" contextual menu item
-   */
-  public static final String OPEN_THIS_VERSION = "Open_this_version";
-  
   /**
    * The text displayed for the "Open this version of FILENAME" contextual menu item
    */
@@ -981,9 +976,9 @@ public class Tags {
   public static final String SHOW_CURRENT_BRANCH_HISTORY = "Show_current_branch_history";
   
   /**
-   * Show more in ... message.
+   * Show all commits in Git History.
    */
-  public static final String SHOW_MORE_IN_NAME = "Show_More_In_NAME";
+  public static final String SEE_ALL_COMMITS_IN_GIT_HISTORY = "See_all_commits_in_Git_History";
   
   /**
    * Git History.

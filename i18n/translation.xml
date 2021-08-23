@@ -31,7 +31,6 @@
         <val lang="ja_JP">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
         <val lang="nl_NL">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
     </key>   	
-    	
     <key value="Open_the_working_copy_version_of">
         <comment>Action name to open the working copy for a file at a given revision.</comment>
         <val lang="en_US">Open the working copy version of {0}</val>
@@ -40,7 +39,6 @@
         <val lang="ja_JP">Open the working copy version of {0}</val>
         <val lang="nl_NL">Open the working copy version of {0}</val>
     </key>
-    
      <key value="Open_working_copy_version">
         <comment>Open working copy version.</comment>
         <val lang="en_US">Open working copy version</val>
@@ -57,7 +55,6 @@
         <val lang="ja_JP">Checkout this version of {0}</val>
         <val lang="nl_NL">Checkout this version of {0}</val>
     </key>
-    
     <key value="Open_this_version_of_filename">
         <comment>Open this version of file.</comment>
         <val lang="en_US">Open this version of {0}</val>
@@ -66,16 +63,14 @@
         <val lang="ja_JP">Open this version of {0}</val>
         <val lang="nl_NL">Open this version of {0}</val>
     </key>
-    
-    <key value="Show_More_In_NAME">
-        <comment>Show more in ... message.</comment>
+    <key value="See_all_commits_in_Git_History">
+        <comment>See all commits in Git History.</comment>
         <val lang="en_US">See all commits in Git History.</val>
         <val lang="de_DE">See all commits in Git History.</val>
         <val lang="fr_FR">See all commits in Git History.</val>
         <val lang="ja_JP">See all commits in Git History.</val>
         <val lang="nl_NL">See all commits in Git History.</val>
     </key>
-    
     <key value="One_more_commit">
         <comment>One more commit message</comment>
         <val lang="en_US">1 more commit</val>
@@ -84,7 +79,6 @@
         <val lang="ja_JP">1 more commit</val>
         <val lang="nl_NL">1 more commit</val>
     </key>
-    
     <key value="N_More_Commits">
         <comment> n more commits message.</comment>
         <val lang="en_US">{0} more commits</val>
@@ -93,17 +87,6 @@
         <val lang="ja_JP">{0} more commits</val>
         <val lang="nl_NL">{0} more commits</val>
     </key>
-    
-    
-    <key value="Open_this_version">
-        <comment>Open this version.</comment>
-        <val lang="en_US">Open selected version</val>
-        <val lang="de_DE">Open selected version</val>
-        <val lang="fr_FR">Open selected version</val>
-        <val lang="ja_JP">Open selected version</val>
-        <val lang="nl_NL">Open selected version</val>
-    </key>
-
 	<key value="Merge_Branch1_Into_Branch2">
         <comment>Merge {branch1} into {branch2}</comment>
         <val lang="en_US">Merge "{0}" into "{1}"</val>
