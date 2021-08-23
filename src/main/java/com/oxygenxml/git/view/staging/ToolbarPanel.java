@@ -79,6 +79,7 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.standalone.actions.ActionsProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
@@ -265,7 +266,24 @@ public class ToolbarPanel extends JPanel {
 
 	  createGUI(historyController, branchManagementViewPresenter);
 	  
-	  initialise();
+	  Action action = new AbstractAction(TRANSLATOR.getTranslation(Tags.OPEN_GIT_HISTORY)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        historyController.showRepositoryHistory();
+      }
+	  };
+	  if(PluginWorkspaceProvider.getPluginWorkspace() instanceof StandalonePluginWorkspace &&
+	      ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getActionsProvider() instanceof ActionsProvider
+	      ) {
+	    ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getActionsProvider().registerAction(
+          "com.oxygenxml.git.history", action, "M1 H");
+	  }
+	  
+	  KeyStroke commitKeyStroke = KeyStroke.getKeyStroke(
+        KeyEvent.VK_ENTER,
+        PlatformDetectionUtil.isMacOS() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
+    keyCtrl = PlatformDetectionUtil.isMacOS() ? UIUtil.getKeyModifiersSymbol(commitKeyStroke.getModifiers(), false)
+        : InputEvent.getModifiersExText(commitKeyStroke.getModifiers());
     
 	  gitController.addGitListener(new GitEventAdapter() {
       @Override
@@ -295,33 +313,6 @@ public class ToolbarPanel extends JPanel {
       }
 	  });
 	}
-	
-	
-	/**
-	 * Initialise the action for open Git History and the Ctrl/Cmd key value.
-	 */
-	private void initialise() {
-	  try {
-	    Action action = new AbstractAction(TRANSLATOR.getTranslation(Tags.OPEN_GIT_HISTORY)) {
-	      @Override
-	      public void actionPerformed(ActionEvent e) {
-	        historyController.showRepositoryHistory();
-	      }
-	    };
-	    ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getActionsProvider().registerAction(
-	        "com.oxygenxml.git.history", action, "M1 H");
-	    
-	    KeyStroke commitKeyStroke = KeyStroke.getKeyStroke(
-	        KeyEvent.VK_ENTER,
-	        PlatformDetectionUtil.isMacOS() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
-	    keyCtrl = PlatformDetectionUtil.isMacOS() ? UIUtil.getKeyModifiersSymbol(commitKeyStroke.getModifiers(), false)
-	        : InputEvent.getModifiersExText(commitKeyStroke.getModifiers());
-	  } catch (Exception e) {
-	    LOGGER.debug(e, e);
-	  }
-	  
-	}
-	  
 	
 	/**
 	 * @return <code>true</code> if we have submodules.
@@ -834,7 +825,7 @@ public class ToolbarPanel extends JPanel {
               pushButtonTooltip.append("<br>") 
               .append(MessageFormat.format(
                   StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME)),
-                  keyCtrl));
+                  keyCtrl, "<b><i>", "</i></b>"));
             }
           }
         } catch (IOException | GitAPIException e) {
@@ -919,7 +910,7 @@ public class ToolbarPanel extends JPanel {
             pullButtonTooltip.append("<br>") 
             .append(MessageFormat.format(
                 StringUtils.capitalize(TRANSLATOR.getTranslation(Tags.SHOW_MORE_IN_NAME)),
-                keyCtrl));
+                keyCtrl, "<b><i>", "</i></b>"));
           }
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
@@ -967,7 +958,9 @@ public class ToolbarPanel extends JPanel {
     final int maximumNoCommitsDisplayed = 4;
     List<FileStatus> changedFiles;
     SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy, HH:mm");
-    for (int i = 0; i < commits.size(); i++) {
+    int noOfCommits = commits.size();
+    int i = 0;
+    while(i < noOfCommits) {
       String revCommitMessage = commits.get(i).getShortMessage();
       if(revCommitMessage.length() > MAXIMUM_COMMIT_MESSAGE_LENGTH) {
         revCommitMessage = revCommitMessage.substring(0, MAXIMUM_COMMIT_MESSAGE_LENGTH) + " ... ";
@@ -988,19 +981,18 @@ public class ToolbarPanel extends JPanel {
         .append(revCommitMessage);
       }
       text.append("<br>");     
-      if(i + 1 == maximumNoCommitsDisplayed && commits.size() > maximumNoCommitsDisplayed + 1) {
+      if(i + 1 == maximumNoCommitsDisplayed && noOfCommits > maximumNoCommitsDisplayed + 1) {
         text.append("&#x25AA; ")
         .append("[")
         .append(THREE_DOTS)
         .append("]")
         .append("<br>"); 
-          i = commits.size() - 2;
-        }
-        
-      }
-   
-   
+          i = noOfCommits - 2;
+        } 
+      i++;
+      } 
   }
+  
   
 	/**
 	 * @return The translation tag for the "Pull" button tooltip text.

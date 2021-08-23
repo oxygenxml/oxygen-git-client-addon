@@ -69,7 +69,7 @@
     
     <key value="Show_More_In_NAME">
         <comment>Show more in ... message.</comment>
-        <val lang="en_US">Use "{0} + H" to see all commits in Git History.</val>
+        <val lang="en_US">Use {1}{0} + H{2} to see all commits in Git History.</val>
         <val lang="de_DE">Use {0} + H to see all commits in Git History.</val>
         <val lang="fr_FR">Use {0} + H to see all commits in Git History.</val>
         <val lang="ja_JP">Use {0} + H to see all commits in Git History.</val>
