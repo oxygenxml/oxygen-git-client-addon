@@ -29,16 +29,18 @@
 		    <div>
                         <h3>What's new in version 2.6.0</h3>
                         <ol>
-			    <li>Added a "Revert commit" action in the context menu of the commits from Git History.
-				It creates a new commit that reverts all the changes from the selected commit.</li>
-			    <li>Added a "Open working copy version" action to the context menu of the resources associated
-				to a revision in Git History.</li>
-			    <li>A warning message is now displayed when trying to use the "Mark as resolved" action 
+			    <li>Added a <b>Revert commit</b> action in the contextual menu for
+              			commits from the <i>Git History</i> view. It creates a new commit that
+             			reverts all the changes from the selected commit.</li>
+			    <li>Added an <b>Open working copy version</b> action to the contextual
+             			menu for resources associated to a revision in the <i>Git History</i>
+              			view.</li>
+			    <li>A warning message is now displayed when trying to use the <i>Mark as resolved</i> action 
 				on a file that contains conflict markers.</li>
 			    <li>A message prompt is now displayed if you try to switch the branch while there
               			are uncommitted changes so that you can confirm that you want to move the changes to
               			the new branch.</li>
-                            <li>A new editor variables is now supported: ${git(working_copy_url)}. It is resolved to the URL of the current working copy directory.</li>
+                            <li>A new editor variables is now supported: <b>${git(working_copy_url)}</b>. It is resolved to the URL of the current working copy directory.</li>
 			    <li>When hovering the cursor over a branch name, a tooltip is displayed that provides information about the last commit
 				    performed on that branch (such as the author and the date of the commit).</li>
                         </ol>
