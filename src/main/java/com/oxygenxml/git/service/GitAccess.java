@@ -2511,6 +2511,7 @@ public class GitAccess {
  * @param commitId the id of the commit where the tag will be
  */
 	public void tagCommit(String name, String message, String commitId) {
+	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_COMMIT));
 	  try {
 	    RevWalk walk = new RevWalk(getRepository());
 	    RevCommit id = walk.parseCommit(getRepository().resolve(commitId));
@@ -2520,20 +2521,17 @@ public class GitAccess {
         .setObjectId(id)
         .setForceUpdate(true)
         .call();
+      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.TAG_COMMIT));
     } catch (GitAPIException | NoRepositorySelected | RevisionSyntaxException | IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e, e);
+      fireOperationFailed(new GitEventInfo(GitOperation.TAG_COMMIT), e);
     }
 	}
 	
 	public boolean existsTag(String name) throws NoRepositorySelected, IOException {
 	  Repository repo;
-    try {
       repo = getRepository();
       Ref tag = repo.exactRef(Constants.R_TAGS + name);
       return tag != null;
-    } catch (NoRepositorySelected | IOException e) {
-      e.printStackTrace();
-      throw e;
-    }
 	}
 }

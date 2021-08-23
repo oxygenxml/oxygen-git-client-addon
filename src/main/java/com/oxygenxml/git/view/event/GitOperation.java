@@ -91,5 +91,9 @@ public enum GitOperation {
   /**
    * Stash list operation.
    */
-  STASH_LIST;
+  STASH_LIST,
+  /**
+   * Tag a commit operation
+   */
+  TAG_COMMIT;
 }

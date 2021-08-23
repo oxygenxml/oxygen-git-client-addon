@@ -52,10 +52,11 @@ public class CreateTagAction extends AbstractAction {
 
     CreateTagDialog dialog = new CreateTagDialog("Tag commit");
     String tagTitle = dialog.getTagTitle();
+    String tagMessage = dialog.getTagMessage();
     if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
       GitOperationScheduler.getInstance().schedule(() -> {
         try {
-          GitAccess.getInstance().tagCommit(dialog.getTagTitle(), tagTitle, commitId);
+          GitAccess.getInstance().tagCommit(tagTitle, tagMessage, commitId);
           if(dialog.shouldPushNewTag()) {
             CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(GitAccess.getInstance().getHostName());
             GitAccess.getInstance().getGit()

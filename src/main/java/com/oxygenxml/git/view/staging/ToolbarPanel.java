@@ -182,6 +182,11 @@ public class ToolbarPanel extends JPanel {
 	 * Button for history
 	 */
 	private ToolbarButton historyButton;
+	
+	 /**
+   * Button for showing tags
+   */
+  private ToolbarButton showTagsButton;
 
 	/**
 	 * Button for cloning a new repository
@@ -370,11 +375,12 @@ public class ToolbarPanel extends JPanel {
 		addBranchSelectButton(branchManagementViewPresenter);
 		addSubmoduleSelectButton();
 		addHistoryButton(historyController);
+		addTagsShowButton();
 		addSettingsButton();
 		this.add(gitToolbar, gbc);
 
 		gbc.insets = new Insets(0, 0, 0, 0);
-		gbc.anchor = GridBagConstraints.EAST;
+		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 1;
 		gbc.gridy = 0;
@@ -548,6 +554,27 @@ public class ToolbarPanel extends JPanel {
 		gitToolbar.add(historyButton);
 
 	}
+	
+/**
+ * Add the "Show Tags" button
+ */
+  private void addTagsShowButton() {
+    Action showTagsAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        TagsDialog dialog = new TagsDialog();
+        dialog.setVisible(true);
+      }
+    };
+
+    showTagsButton = new ToolbarButton(showTagsAction, false);
+    showTagsButton.setIcon(Icons.getIcon(Icons.ERROR_ICON));  //dummy icon for now
+    showTagsButton.setToolTipText("Show text");
+    setDefaultToolbarButtonWidth(showTagsButton);
+
+    gitToolbar.add(showTagsButton);
+
+  }
 
 	/**
 	 * Adds to the tool bar a button for selecting submodules. When clicked, a new

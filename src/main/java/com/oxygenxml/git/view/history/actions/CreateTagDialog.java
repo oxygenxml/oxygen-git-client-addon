@@ -105,7 +105,7 @@ public class CreateTagDialog extends OKCancelDialog {
    * @param panel         The panel in which the components are added.
    */
   private void createGUI(JPanel panel) {
-    
+      
     int topInset = UIConstants.COMPONENT_TOP_PADDING;
     int leftInset = 5;
     

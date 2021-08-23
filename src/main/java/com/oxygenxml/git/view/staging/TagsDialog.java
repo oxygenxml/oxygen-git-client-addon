@@ -1,6 +1,6 @@
 package com.oxygenxml.git.view.staging;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -25,25 +27,83 @@ import org.eclipse.jgit.revwalk.RevObject;
 import org.eclipse.jgit.revwalk.RevTag;
 import org.eclipse.jgit.revwalk.RevWalk;
 
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 
-public class TagsShowDialog {
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
+
+/**
+ * Used for making a dialog that shows the Tags of the repository
+ * 
+ * @author gabriel_nedianu
+ *
+ */
+public class TagsDialog extends JDialog {
   
-  public static void createTagsFrame() {
-    JFrame frame = new JFrame("Tags" );
-    frame.setSize(500,400);
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  /**
+   * Constructor
+   */
+  TagsDialog (){
+
+    super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
+        "Tags",
+        false);
+    
+    JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
+    
+    if (parentFrame != null) {
+      setIconImage(parentFrame.getIconImage());
+    }
+    
+    createGUI();
+
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    if (parentFrame != null) {
+      setLocationRelativeTo(parentFrame);
+    }
+    setSize(new Dimension(475, getPreferredSize().height));
+    setResizable(false);
+    
+  
+  }
+  
+  /**
+   * Create GUI
+   */
+  private void createGUI() {
+    
+    JPanel mainPanel;
     try {
-      TagsShowDialog tsf = new TagsShowDialog();
-      frame.getContentPane().add(tsf.createTagsPanel(), BorderLayout.CENTER);
+      mainPanel = createTagsPanel();
+      getContentPane().add(mainPanel);
     } catch (GitAPIException | NoRepositorySelected | IOException e) {
       e.printStackTrace();
     }
-    frame.setVisible(true); 
+    
+    pack();
   }
   
-  public JPanel createTagsPanel() throws GitAPIException, NoRepositorySelected, IOException {
+  
+  /**
+   * Creates a JPanel with the
+   * 
+   * @return a JPanel for the tags
+   * 
+   * @throws GitAPIException
+   * @throws NoRepositorySelected
+   * @throws IOException
+   */
+  private JPanel createTagsPanel() throws GitAPIException, NoRepositorySelected, IOException {
+    
+    
+    int topInset = UIConstants.COMPONENT_TOP_PADDING;
+    int bottomInset = UIConstants.COMPONENT_BOTTOM_PADDING;
+    int leftInset = UIConstants.COMPONENT_LEFT_PADDING;
+    int rightInset = UIConstants.COMPONENT_RIGHT_PADDING;
     
     //a panel with the header and table
     JPanel tagsPanel = new JPanel(new GridBagLayout());
@@ -57,7 +117,7 @@ public class TagsShowDialog {
     gbc.weighty = 1;
     gbc.gridwidth = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.insets = new Insets(10, 10, 0, 10);
+    gbc.insets = new Insets(topInset, leftInset, 0, rightInset);
     tagsPanel.add(header,gbc);
     
     gbc.gridy++;
@@ -73,7 +133,7 @@ public class TagsShowDialog {
     buttonsGridBagConstraints.gridy=0;
     buttonsGridBagConstraints.anchor = GridBagConstraints.EAST;
     buttonsGridBagConstraints.fill = GridBagConstraints.NONE;
-    buttonsGridBagConstraints.insets = new Insets(10, 0, 10, 0);
+    buttonsGridBagConstraints.insets = new Insets(topInset, 0, bottomInset, 0);
     
     JButton pushButton = new JButton("Push");
     buttonsPanel.add(pushButton, buttonsGridBagConstraints);
@@ -87,12 +147,21 @@ public class TagsShowDialog {
     gbc.gridwidth = 1;
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.SOUTHEAST;
-    gbc.insets = new Insets(5, 0, 0, 10);
+    gbc.insets = new Insets(topInset, 0, 0, rightInset);
     tagsPanel.add(buttonsPanel,gbc);
     
     return tagsPanel;
   }
   
+  /**
+   * Create a table with the tags
+   * 
+   * @return a JTable with the tags and the messages of every tag
+   * 
+   * @throws GitAPIException
+   * @throws NoRepositorySelected
+   * @throws IOException
+   */
   private JTable createTagsTable() throws GitAPIException, NoRepositorySelected, IOException{
     List<Ref> call = GitAccess.getInstance().getGit().tagList().call();
     List<String> tagsList = new ArrayList<>();
@@ -125,6 +194,6 @@ public class TagsShowDialog {
       model.addRow(row);
   }
     
-    return new JTable(model);
+    return OxygenUIComponentsFactory.createTable(model);
   }
 }
