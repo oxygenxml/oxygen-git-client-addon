@@ -776,9 +776,9 @@ public class ToolbarPanel extends JPanel {
           CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(
               repo, 
               currentBranchName);
-          if (commitsAheadAndBehind != null) {
-            pushButtonTooltip.append("<br><br>");
+          if (commitsAheadAndBehind != null && commitsAheadAndBehind.getCommitsAhead() != null) {
             List<RevCommit> commitsAhead = commitsAheadAndBehind.getCommitsAhead();
+            pushButtonTooltip.append("<br><br>");
             addCommitsToTooltip(commitsAhead, pushButtonTooltip);
             if(commitsAhead.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
               pushButtonTooltip.append("<br>") 
@@ -858,14 +858,16 @@ public class ToolbarPanel extends JPanel {
           CommitsAheadAndBehind commitsAheadAndBehind = RevCommitUtil.getCommitsAheadAndBehind(
               repo,
               currentBranchName);
-          pullButtonTooltip.append("<br><br>");
-          
-          List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
-          addCommitsToTooltip(commitsBehind, pullButtonTooltip);
-          if(commitsBehind.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
-            pullButtonTooltip.append("<br>") 
-            .append(TRANSLATOR.getTranslation(Tags.SEE_ALL_COMMITS_IN_GIT_HISTORY));
+          if(commitsAheadAndBehind != null && commitsAheadAndBehind.getCommitsBehind() != null) {
+            List<RevCommit> commitsBehind = commitsAheadAndBehind.getCommitsBehind();
+            pullButtonTooltip.append("<br><br>");
+            addCommitsToTooltip(commitsBehind, pullButtonTooltip);
+            if(commitsBehind.size() > MAXIMUM_NO_OF_COMMITS_DISPLAYED) {
+              pullButtonTooltip.append("<br>") 
+              .append(TRANSLATOR.getTranslation(Tags.SEE_ALL_COMMITS_IN_GIT_HISTORY));
+            }
           }
+           
         } catch (IOException | GitAPIException e) {
           LOGGER.error(e, e);
         }
