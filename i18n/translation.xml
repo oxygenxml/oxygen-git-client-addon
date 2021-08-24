@@ -7,7 +7,6 @@
         <language description="Dutch" lang="nl_NL" />
     </languageList>
     
-    
     <key value="Filter_hint">
         <comment>Filter hint</comment>
         <val lang="en_US">Filter hint</val>
@@ -16,7 +15,6 @@
         <val lang="ja_JP">Filter hint</val>
         <val lang="nl_NL">Filter hint</val>
     </key>
-    
     <key value="No_details_available">
         <comment>No details available</comment>
         <val lang="en_US">No details available</val>
@@ -25,7 +23,6 @@
         <val lang="ja_JP">No details available</val>
         <val lang="nl_NL">No details available</val>
     </key>
-    
     <key value="Git_client">
         <comment>Git client</comment>
         <val lang="en_US">Git client</val>
@@ -34,7 +31,6 @@
         <val lang="ja_JP">Git client</val>
         <val lang="nl_NL">Git client</val>
     </key>
-    
     <key value="Preferences">
         <comment>Preferences</comment>
         <val lang="en_US">Preferences</val>
@@ -43,7 +39,6 @@
         <val lang="ja_JP">Preferences</val>
         <val lang="nl_NL">Preferences</val>
     </key>
-    
     <key value="Create">
         <comment>Create</comment>
         <val lang="en_US">Create</val>
@@ -52,7 +47,6 @@
         <val lang="ja_JP">Create</val>
         <val lang="nl_NL">Create</val>
     </key>
-    
     <key value="Close">
         <comment>Close</comment>
         <val lang="en_US">Close</val>
@@ -61,7 +55,6 @@
         <val lang="ja_JP">Close</val>
         <val lang="nl_NL">Close</val>
     </key>
-    
     <key value="Cancel">
         <comment>Cancel</comment>
         <val lang="en_US">Cancel</val>
@@ -70,7 +63,6 @@
         <val lang="ja_JP">Cancel</val>
         <val lang="nl_NL">Cancel</val>
     </key>
-    
 	<key value="Revert_Commit_Failed_Uncommitted_Changes_Message">
         <comment>Message for when "Revert commit" fails because of uncommitted changes.</comment>
         <val lang="en_US">Cannot revert commit because of the following uncommitted files:</val>
