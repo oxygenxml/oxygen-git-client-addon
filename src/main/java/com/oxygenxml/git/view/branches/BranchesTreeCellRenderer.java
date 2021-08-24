@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -29,6 +30,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.ColorTheme;
@@ -66,6 +68,10 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * Logger for logging.
    */
   private static final Logger LOGGER = LogManager.getLogger(BranchesTreeCellRenderer.class.getName());
+  /**
+   * Date format.
+   */
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
 
   /**
    * Constructor.
@@ -243,7 +249,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       .append("&gt;<br> - ")
       .append(TRANSLATOR.getTranslation(Tags.DATE))
       .append(": ")
-      .append(authorDetails.getWhen())
+      .append(dateFormat.format(authorDetails.getWhen()))
       .append("</p></html>");
     return toolTipText.toString();
   }
@@ -287,7 +293,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       .append("&gt;<br> - ")
       .append(TRANSLATOR.getTranslation(Tags.DATE))
       .append(": ")
-      .append(authorDetails.getWhen())
+      .append(dateFormat.format(authorDetails.getWhen()))
       .append("</p></html>");
     return toolTipText.toString();
   }

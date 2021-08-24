@@ -1,21 +1,16 @@
 package com.oxygenxml.git.view.branches;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,6 +21,7 @@ import com.oxygenxml.git.service.GitTestBase;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.util.UIUtil;
 /**
  * Test cases for the structure of the branches tree.
  * 
@@ -43,6 +39,8 @@ public class BranchManagementTest extends GitTestBase{
   private GitAccess gitAccess;
   private Repository remoteRepository;
   private Repository localRepository;
+  
+  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
   
   @Override
   @Before
@@ -583,10 +581,6 @@ public class BranchManagementTest extends GitTestBase{
    */
   @Test
   public void testBranchesTreeToolTipBranches() throws Exception {
-    final String AUTHOR_NAME = "AlexJitianu";
-    final String AUTHOR_EMAIL = "alex_jitianu@sync.ro";
-    Map<String, Date> lastCommitDetailsForAllBranchesMap = new HashMap<>();
-    
     // Local repo
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
@@ -610,47 +604,85 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
     
-    try (RevWalk walk = new RevWalk(gitAccess.getRepository())) {
-      List<Ref> localBranches = gitAccess.getLocalBranchList();
-      List<Ref> remoteBranches = gitAccess.getRemoteBrachListForCurrentRepo();
-      List<Ref> allBranches = new ArrayList<>();
-      allBranches.addAll(localBranches);
-      allBranches.addAll(remoteBranches);
-    
-      for (Ref branch : allBranches) {
-        Ref tracking = gitAccess.getRepository().exactRef(branch.getName());
-        RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
-        lastCommitDetailsForAllBranchesMap.put(branch.getName(), trackingCommit.getAuthorIdent().getWhen());
-      }
-    } 
-     
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitControllerBase.class));
     branchManagementPanel.refreshBranches();
     flushAWT();
     
     JTree tree = branchManagementPanel.getTree();
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
-    GitTreeNode leaf = (GitTreeNode) root.getFirstLeaf();
+    DefaultMutableTreeNode leaf = root.getFirstLeaf();
+    JLabel rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 2, true);
+    assertEquals(
+        "<html><p>Local_branch LocalBranch<br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
     
-    JLabel toolTipLabel; 
-    int noOfLocalBranchesWithUpstreamBranch = 0;
+    leaf = leaf.getNextLeaf();
+    rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 3, true);
+    assertEquals(
+        "<html><p>Local_branch LocalBranch2<br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
     
-    //  Tests the tool tips for all branches
-    for (int i = 0; i < root.getLeafCount(); i++) {
-      toolTipLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, leaf, false, true, leaf.isLeaf(), 0, true);
-      String toolTipText = toolTipLabel.getToolTipText();
-      if(toolTipText.contains("Local") || toolTipText.contains("Remote")) {
-        boolean isLocalBranchWithUpstreamBranch = toolTipText.contains("Upstream");
-        noOfLocalBranchesWithUpstreamBranch += isLocalBranchWithUpstreamBranch ? 1 : 0;
-      } else {
-        fail("This branch is not local or remote.");
-      }
-      assertTrue(toolTipText.contains(AUTHOR_NAME));
-      assertTrue(toolTipText.contains(AUTHOR_EMAIL));
-      assertTrue(toolTipText.contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
-      leaf = (GitTreeNode) leaf.getNextLeaf();
-    }
+    leaf = leaf.getNextLeaf();
+    rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 4, true);
+    assertEquals(
+        "<html><p>Local_branch main<br>"
+        // Also has upstream
+        + "Upstream_branch origin/main<br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
     
-    assertEquals(noOfLocalBranchesWithUpstreamBranch, 1);
+    leaf = leaf.getNextLeaf();
+    rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 7, true);
+    assertEquals(
+        "<html><p>Remote_branch origin/main<br>"
+        + "Clone_Repository_Dialog_Url_Label: "
+        + "<a href=file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/>"
+        + " file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/ </a><br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
+    
+    leaf = leaf.getNextLeaf();
+    rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 8, true);
+    assertEquals(
+        "<html><p>Remote_branch origin/RemoteBranch<br>"
+            + "Clone_Repository_Dialog_Url_Label: "
+            + "<a href=file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/>"
+            + " file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/ </a><br><br>"
+            + "Last_Commit_Details:<br>"
+            + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+            + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
+    
+    leaf = leaf.getNextLeaf();
+    rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 9, true);
+    assertEquals(
+        "<html><p>Remote_branch origin/RemoteBranch2<br>"
+            + "Clone_Repository_Dialog_Url_Label: "
+            + "<a href=file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/>"
+            + " file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/ </a><br><br>"
+            + "Last_Commit_Details:<br>"
+            + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+            + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
+    
+    assertNull(leaf.getNextLeaf());
+    
   }
+  
 }

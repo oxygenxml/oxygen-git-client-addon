@@ -661,7 +661,7 @@ public class HistoryPanel extends JPanel {
           updateHistoryTableWidths();
 
           historyTable.setDefaultRenderer(CommitCharacteristics.class, renderer);
-          historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
+          historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer(UIUtil.DATE_FORMAT_PATTERN));
           TableColumn authorColumn = historyTable.getColumn(translator.getTranslation(Tags.AUTHOR));
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
 
