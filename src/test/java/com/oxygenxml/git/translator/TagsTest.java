@@ -130,7 +130,7 @@ public class TagsTest {
    * @throws Exception
    */
   @Test
-  public void testIfAllTagsHaveAMatch() throws Exception {
+  public void testIfAllTagsHaveAKey() throws Exception {
     String[] oxygenKeys = {"Filter_hint", "Close", "Cancel", "Preferences", "Git_client", "Create"};
     
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("i18n/translation.xml");
@@ -161,6 +161,49 @@ public class TagsTest {
       }
     }
     assertEquals("Usually tags should have a correspondent key in translation.xml.", "[]", unresolvedTags.toString());
+  
+  }
+
+  
+  /**
+   * Check if all keys have corresponding tag. 
+   * @author Alex_Smarandache
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testIfAllKeysHaveATag() throws Exception {
+  
+    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("i18n/translation.xml");
+    NodeList keys = doc.getDocumentElement().getElementsByTagName("key");
+    Set<String> tagsValues = new HashSet<>();
+    List<String> unresolvedKeys = new ArrayList<>();
+    
+    Field[] fields = Tags.class.getFields();
+    for (int i = 0; i < fields.length; i++) {
+      if (Modifier.isStatic(fields[i].getModifiers())) {
+         tagsValues.add((String) fields[i].get(fields[i]));
+      }
+    }
+    
+    int length = keys.getLength();
+    for (int i = 0; i < length; i++) {
+      Element keyElem = (Element) keys.item(i);
+      String key = keyElem.getAttribute("value");
+      if(!tagsValues.contains(key)) {
+        unresolvedKeys.add(key);
+      }
+    }
+
+ 
+    
+    StringBuilder missedKeys = new StringBuilder();
+    if (unresolvedKeys.size() > 0) {
+      for (Object key : unresolvedKeys) {
+        missedKeys.append("\n" + key);
+      }
+    }
+    assertEquals("Usually keys should have a correspondent tag.", "[]", unresolvedKeys.toString());
   
   }
 
