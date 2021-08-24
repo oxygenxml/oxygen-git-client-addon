@@ -1,7 +1,7 @@
 package com.oxygenxml.git.translator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,13 +13,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.oxygenxml.git.service.TestUtil;
 
@@ -30,9 +28,8 @@ import javassist.Modifier;
  */
 public class TagsTest {
 
-  
   /**
-   * Check if exists unused tags.
+   * Check if there are any unused translation tags.
    * 
    * @author Alex_Smarandache
    * 
@@ -40,7 +37,7 @@ public class TagsTest {
    */
   @Test
   public void testAllTagsUsed() throws Exception {
-    List allTags = new ArrayList(500);
+    List<String> allTags = new ArrayList<>();
     Field[] fields = Tags.class.getFields();
     for (int i = 0; i < fields.length; i++) {
       if (Modifier.isStatic(fields[i].getModifiers())) {
@@ -52,36 +49,37 @@ public class TagsTest {
     for (int i = 0; i < files.length; i++) {
       File file = files[i];
       if (file.isDirectory()) {
-        if ("src".equals(file.getName()) || file.getName().startsWith("module-")) {
-          check(file, allTags);
+        if ("src".equals(file.getName())) {
+          removeUsedTags(file, allTags);
         }
       }
     }
-    assertEquals("All tags should be used:", "[]", allTags.toString());
+    assertEquals("All tags should be used, but found some unused ones:", "[]", allTags.toString());
   }
 
   
   /**
-   * Check if the file has the Java type and remove the contained files from the tag list .
+   * Remove the tags that are used in the current file.
    * 
-   * @param file
-   * @param tags
+   * @param file Current file.
+   * @param tags All tags.
+   * 
    * @throws IOException
    */
-  private void check(File file, List tags) throws IOException {
-    if (tags.size() > 0) {
+  private void removeUsedTags(File file, List<String> tags) throws IOException {
+    if (!tags.isEmpty()) {
       if (file.isFile() && file.getName().endsWith("java")) {
         String content = TestUtil.read(file.toURI().toURL());
         for (int i = tags.size() - 1; i >= 0; i--) {
-          String tag = (String) tags.get(i);
-          if (content.indexOf(tag) > 0) {
+          String tag = tags.get(i);
+          if (content.indexOf(tag) != -1) {
             tags.remove(i);
           }
         }
       } else if (file.isDirectory()) {
         File[] children = file.listFiles();
         for (int i = 0; i < children.length; i++) {
-          check(children[i], tags);
+          removeUsedTags(children[i], tags);
         }
       }
     }
@@ -89,37 +87,22 @@ public class TagsTest {
 
   
   /**
-   * Check if into translation.xml are duplicate keys.
+   * Check if there are duplicate keys in translation.xml.
    * 
-   * @author radu_coravu
    * @throws Exception
    */
   @Test
   public void testDuplicateKeys() throws Exception {
-    checkDuplicatedKeys("i18n/translation.xml");
-  }
-
-  
-  /**
-   * Check if there are duplicated keys in some translation file
-   * 
-   * @param translationFilePath The path of translation file.
-   * @throws SAXException
-   * @throws IOException
-   * @throws ParserConfigurationException
-   */
-  private void checkDuplicatedKeys(String translationFilePath)
-      throws SAXException, IOException, ParserConfigurationException {
-    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(translationFilePath);
+    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("i18n/translation.xml");
     NodeList keys = doc.getDocumentElement().getElementsByTagName("key");
-    List duplicateKeys = new ArrayList();
-    List keyList = new ArrayList();
+    List<String> duplicateKeys = new ArrayList<>();
+    List<String> keyList = new ArrayList<>();
     int length = keys.getLength();
     for (int i = 0; i < length; i++) {
       Element keyElem = (Element) keys.item(i);
       String keyVal = keyElem.getAttribute("value");
       if (keyVal.length() == 0) {
-        assertTrue("Empty key into translation.xml", false);
+        fail("Empty key into translation.xml");
       }
       if (keyList.contains(keyVal)) {
         duplicateKeys.add(keyVal);
@@ -127,19 +110,20 @@ public class TagsTest {
         keyList.add(keyVal);
       }
     }
-    if (duplicateKeys.size() > 0) {
-      StringBuilder duplicatedKeys = new StringBuilder();
+    
+    StringBuilder duplicatedKeys = new StringBuilder();
+    if (!duplicateKeys.isEmpty()) {
       for (Object key : duplicateKeys) {
         duplicatedKeys.append("\n" + key);
       }
-      System.err.println("Duplicate keys : " + duplicatedKeys.toString());
-      assertEquals("Should be no duplicate keys into translation", "[]", duplicateKeys.toString());
     }
+    assertEquals("Should be no duplicate keys in translation.xml, but found some:", "[]", duplicateKeys.toString());
   }
 
   
   /**
-   * Check if into translation.xml, all keys are a correspondent to Tags.
+   * Check if all tags have corresponding keys in translation.xml.<br><br>
+   * OBS: there are some exceptions - the tags defined for the keys loaded from Oxygen's translation.xml.
    * 
    * @author Alex_Smarandache
    * 
@@ -147,27 +131,10 @@ public class TagsTest {
    */
   @Test
   public void testIfAllTagsHaveAMatch() throws Exception {
-    checkCorrespondentKeys("i18n/translation.xml");
-  }
-
-  
-  /**
-   * Check if into translation.xml, all keys are a correspondent to Tags.
-   * 
-   * @author Alex_Smarandache
-   * 
-   * @param translationFilePath The path of translation file.
-   * @throws SAXException
-   * @throws IOException
-   * @throws ParserConfigurationException
-   * @throws IllegalAccessException
-   * @throws IllegalArgumentException
-   */
-  private void checkCorrespondentKeys(String translationFilePath)
-      throws SAXException, IOException, ParserConfigurationException, IllegalArgumentException, IllegalAccessException {
-    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(translationFilePath);
+    String[] oxygenKeys = {"Filter_hint", "Close", "Cancel", "Preferences", "Git_client", "Create"};
+    
+    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("i18n/translation.xml");
     NodeList keys = doc.getDocumentElement().getElementsByTagName("key");
-    String[] oxygenKeys = {"Filter_hint", "Close", "Cancel", "Preferences", "Git_client", "Create"}; 
     Set<String> existingKeysInOxygen = new HashSet<>(Arrays.asList(oxygenKeys));
     Set<String> keyValues = new HashSet<>();
     List<String> unresolvedTags = new ArrayList<>();
@@ -186,14 +153,17 @@ public class TagsTest {
         }
       }
     }
+    
+    StringBuilder missedKeys = new StringBuilder();
     if (unresolvedTags.size() > 0) {
-      StringBuilder missedKeys = new StringBuilder();
       for (Object key : unresolvedTags) {
         missedKeys.append("\n" + key);
       }
-      System.err.println("Missed keys : " + missedKeys.toString());
-      assertEquals("All tags must have a correspondent key in translation.xml", "[]", unresolvedTags.toString());
     }
+    assertEquals("Usually tags should have a correspondent key in translation.xml.", "[]", unresolvedTags.toString());
+  
   }
+
+  
 
 }
