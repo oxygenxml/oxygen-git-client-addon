@@ -216,87 +216,28 @@ public class FlatView7Test extends FlatViewTestBase {
         actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
     );  
     
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "6anotherFile45.txt", "changed");
-    waitForScheluerBetter();
+    String[] filesForCommit = {
+        "6anotherFile45.txt",
+        "5anotherFile45.txt",
+        "4anotherFile45.txt",
+        "3anotherFile45.txt",
+        "2anotherFile45.txt",
+        "1anotherFile45.txt",
+        "anotherFil233e45.txt",
+        "anotherFil333e45.txt",
+        "anotherFileee45.txt",
+        "anotherFile45w.txt"
+    };
     
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "6anotherFile_25.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "5anotherFile45.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "5anotherFile_25.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "4anotherFile45.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "4anotherFile_25.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "3anotherFile45.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "3anotherFile_25.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "2anotherFile45.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "2anotherFile_25.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "1anotherFile45.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "1anotherFile_25.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "anotherFil233e45.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "anothe323rFile_25.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "anotherFil333e45.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "anotherrrFile_25.txt", "changed");
-    waitForScheluerBetter();
-    
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "anotherFileee45.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "anotherFile_2w5.txt", "changed");
-    waitForScheluerBetter();
-    
-    
-    // Commit a new change locally
-    commitOneFile(localTestRepository, "anotherFile45w.txt", "changed");
-    waitForScheluerBetter();
-    
-    // Commit to remote
-    commitOneFile(remoteTestRepository, "anotherFile_256.txt", "changed");
-    waitForScheluerBetter();
+    for (int i = 0; i < filesForCommit.length; i++) {
+      // Commit a new change locally
+      commitOneFile(localTestRepository, filesForCommit[i], "changed");
+      waitForScheluerBetter();
+      
+      // Commit to remote
+      commitOneFile(remoteTestRepository, "_" + filesForCommit[i], "changed");
+      waitForScheluerBetter();
+    }
     
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
     toolbarPanel.refresh();
@@ -304,10 +245,10 @@ public class FlatView7Test extends FlatViewTestBase {
     sleep(500);
     
     expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_256.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2w5.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherrrFile_25.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anothe323rFile_25.txt<br>&#x25AA; [...] "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFile45w.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFileee45.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFil333e45.txt<br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFil233e45.txt<br>&#x25AA; [...] "
         + "&ndash; N_More_Commits<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br><br>See_all_commits_in_Git_History</html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
