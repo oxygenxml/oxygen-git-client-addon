@@ -2528,10 +2528,36 @@ public class GitAccess {
     }
 	}
 	
+	/**
+	 * Check if the given tag exists
+	 * 
+	 * @param name The name of the tag
+	 * 
+	 * @return <code>true</code> if this tag exists
+	 * 
+	 * @throws NoRepositorySelected
+	 * @throws IOException
+	 */
 	public boolean existsTag(String name) throws NoRepositorySelected, IOException {
 	  Repository repo;
       repo = getRepository();
       Ref tag = repo.exactRef(Constants.R_TAGS + name);
       return tag != null;
+	}
+	
+	/**
+	 * Push a given local tag
+	 * 
+	 * @param name The name of the tag
+	 * 
+	 * @throws GitAPIException
+	 */
+	public void pushTag(String name) throws GitAPIException {
+      CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
+      getGit()
+        .push()
+        .setCredentialsProvider(credentialsProvider)
+        .setRefSpecs(new RefSpec("refs/tags/"+ name +":refs/tags/" + name))
+        .call();
 	}
 }

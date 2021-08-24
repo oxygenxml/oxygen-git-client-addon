@@ -7,10 +7,7 @@ import javax.swing.AbstractAction;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.CredentialsProvider;
-import org.eclipse.jgit.transport.RefSpec;
 
-import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.translator.Translator;
@@ -35,7 +32,7 @@ public class CreateTagAction extends AbstractAction {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(CreateBranchFromCommitAction.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(CreateTagAction.class.getName());
   
 /**
  * Constructor
@@ -58,12 +55,7 @@ public class CreateTagAction extends AbstractAction {
         try {
           GitAccess.getInstance().tagCommit(tagTitle, tagMessage, commitId);
           if(dialog.shouldPushNewTag()) {
-            CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(GitAccess.getInstance().getHostName());
-            GitAccess.getInstance().getGit()
-              .push()
-              .setCredentialsProvider(credentialsProvider)
-              .setRefSpecs(new RefSpec("refs/tags/"+ tagTitle +":refs/tags/" + tagTitle))
-              .call();
+            GitAccess.getInstance().pushTag(tagTitle);
           }
         } catch (GitAPIException ex) {
           LOGGER.debug(ex);
