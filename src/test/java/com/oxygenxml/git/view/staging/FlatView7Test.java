@@ -32,8 +32,7 @@ public class FlatView7Test extends FlatViewTestBase {
   
   /**
    * <p><b>Description:</b> Test the tooltips of the pull/push buttons and branch label.</p>
-   * <p><b>Bug ID:</b> EXM-45599</p>
-   * <p><b>Bug ID:</b> EXM-44564</p>
+   * <p><b>Bug ID:</b> EXM-45599, EXM-44564</p>
    *
    * @author sorin_carbunaru
    * @author Alex_Smarandache
@@ -225,12 +224,6 @@ public class FlatView7Test extends FlatViewTestBase {
     commitOneFile(remoteTestRepository, "6anotherFile_25.txt", "changed");
     waitForScheluerBetter();
     
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
-    
-    
     // Commit a new change locally
     commitOneFile(localTestRepository, "5anotherFile45.txt", "changed");
     waitForScheluerBetter();
@@ -238,12 +231,6 @@ public class FlatView7Test extends FlatViewTestBase {
     // Commit to remote
     commitOneFile(remoteTestRepository, "5anotherFile_25.txt", "changed");
     waitForScheluerBetter();
-    
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
-    
     
     // Commit a new change locally
     commitOneFile(localTestRepository, "4anotherFile45.txt", "changed");
@@ -253,12 +240,6 @@ public class FlatView7Test extends FlatViewTestBase {
     commitOneFile(remoteTestRepository, "4anotherFile_25.txt", "changed");
     waitForScheluerBetter();
     
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
-    
-    
     // Commit a new change locally
     commitOneFile(localTestRepository, "3anotherFile45.txt", "changed");
     waitForScheluerBetter();
@@ -266,12 +247,6 @@ public class FlatView7Test extends FlatViewTestBase {
     // Commit to remote
     commitOneFile(remoteTestRepository, "3anotherFile_25.txt", "changed");
     waitForScheluerBetter();
-    
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
-    
     
     // Commit a new change locally
     commitOneFile(localTestRepository, "2anotherFile45.txt", "changed");
@@ -281,12 +256,6 @@ public class FlatView7Test extends FlatViewTestBase {
     commitOneFile(remoteTestRepository, "2anotherFile_25.txt", "changed");
     waitForScheluerBetter();
     
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
-    
-    
     // Commit a new change locally
     commitOneFile(localTestRepository, "1anotherFile45.txt", "changed");
     waitForScheluerBetter();
@@ -294,12 +263,6 @@ public class FlatView7Test extends FlatViewTestBase {
     // Commit to remote
     commitOneFile(remoteTestRepository, "1anotherFile_25.txt", "changed");
     waitForScheluerBetter();
-    
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
-    
     
     // Commit a new change locally
     commitOneFile(localTestRepository, "anotherFil233e45.txt", "changed");
@@ -309,12 +272,6 @@ public class FlatView7Test extends FlatViewTestBase {
     commitOneFile(remoteTestRepository, "anothe323rFile_25.txt", "changed");
     waitForScheluerBetter();
     
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
-    
-    
     // Commit a new change locally
     commitOneFile(localTestRepository, "anotherFil333e45.txt", "changed");
     waitForScheluerBetter();
@@ -322,11 +279,6 @@ public class FlatView7Test extends FlatViewTestBase {
     // Commit to remote
     commitOneFile(remoteTestRepository, "anotherrrFile_25.txt", "changed");
     waitForScheluerBetter();
-    
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
     
     
     // Commit a new change locally
@@ -336,11 +288,6 @@ public class FlatView7Test extends FlatViewTestBase {
     // Commit to remote
     commitOneFile(remoteTestRepository, "anotherFile_2w5.txt", "changed");
     waitForScheluerBetter();
-    
-    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
-    toolbarPanel.refresh();
-    flushAWT();
-    sleep(200);
     
     
     // Commit a new change locally
@@ -354,7 +301,7 @@ public class FlatView7Test extends FlatViewTestBase {
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
     toolbarPanel.refresh();
     flushAWT();
-    sleep(200);
+    sleep(500);
     
     expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_256.txt<br>&#x25AA; Date, Hour "
