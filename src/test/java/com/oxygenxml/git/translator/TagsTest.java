@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -166,6 +167,8 @@ public class TagsTest {
       throws SAXException, IOException, ParserConfigurationException, IllegalArgumentException, IllegalAccessException {
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(translationFilePath);
     NodeList keys = doc.getDocumentElement().getElementsByTagName("key");
+    String[] oxygenKeys = {"Filter_hint", "Close", "Cancel", "Preferences", "Git_client", "Create"}; 
+    Set<String> existingKeysInOxygen = new HashSet<>(Arrays.asList(oxygenKeys));
     Set<String> keyValues = new HashSet<>();
     List<String> unresolvedTags = new ArrayList<>();
     int length = keys.getLength();
@@ -177,7 +180,8 @@ public class TagsTest {
     Field[] fields = Tags.class.getFields();
     for (int i = 0; i < fields.length; i++) {
       if (Modifier.isStatic(fields[i].getModifiers())) {
-        if (!(keyValues.contains(fields[i].get(fields[i])))) {
+        String currentTag = (String)fields[i].get(fields[i]);
+        if (!existingKeysInOxygen.contains(currentTag) && !keyValues.contains(currentTag)) {
           unresolvedTags.add((String) fields[i].get(fields[i]));
         }
       }
