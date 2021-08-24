@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.branches;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -594,14 +595,6 @@ public class BranchManagementTest extends GitTestBase{
     gitAccess.commit("First local commit.");
     gitAccess.createBranch(LOCAL_BRANCH_NAME1);
     gitAccess.createBranch(LOCAL_BRANCH_NAME2);
-    try (RevWalk walk = new RevWalk(gitAccess.getRepository())) {
-      List<Ref> localBranches = gitAccess.getLocalBranchList();
-      for (Ref localBranch : localBranches) {
-        Ref tracking = gitAccess.getRepository().exactRef(localBranch.getName());
-        RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
-        lastCommitDetailsForAllBranchesMap.put(localBranch.getName(), trackingCommit.getAuthorIdent().getWhen());
-      }
-    }
     
     // Remote repo
     gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
@@ -616,14 +609,20 @@ public class BranchManagementTest extends GitTestBase{
     // Local repo again
     gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
     gitAccess.fetch();
+    
     try (RevWalk walk = new RevWalk(gitAccess.getRepository())) {
+      List<Ref> localBranches = gitAccess.getLocalBranchList();
       List<Ref> remoteBranches = gitAccess.getRemoteBrachListForCurrentRepo();
-      for (Ref remoteBranch : remoteBranches) {
-        Ref tracking = gitAccess.getRepository().exactRef(remoteBranch.getName());
+      List<Ref> allBranches = new ArrayList<>();
+      allBranches.addAll(localBranches);
+      allBranches.addAll(remoteBranches);
+    
+      for (Ref branch : allBranches) {
+        Ref tracking = gitAccess.getRepository().exactRef(branch.getName());
         RevCommit trackingCommit = walk.parseCommit(tracking.getObjectId());
-        lastCommitDetailsForAllBranchesMap.put(remoteBranch.getName(), trackingCommit.getAuthorIdent().getWhen());
+        lastCommitDetailsForAllBranchesMap.put(branch.getName(), trackingCommit.getAuthorIdent().getWhen());
       }
-    }
+    } 
      
     BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitControllerBase.class));
     branchManagementPanel.refreshBranches();
@@ -633,26 +632,25 @@ public class BranchManagementTest extends GitTestBase{
     GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
     GitTreeNode leaf = (GitTreeNode) root.getFirstLeaf();
     
-    JLabel toolTipLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, root, false, true, root.isLeaf(), 0, true);
-    assertNull(toolTipLabel.getToolTipText());
-    
-    int noOfNewLocalBranches = 0;
+    JLabel toolTipLabel; 
+    int noOfLocalBranchesWithUpstreamBranch = 0;
     
     //  Tests the tool tips for all branches
     for (int i = 0; i < root.getLeafCount(); i++) {
       toolTipLabel = (JLabel) tree.getCellRenderer().getTreeCellRendererComponent(tree, leaf, false, true, leaf.isLeaf(), 0, true);
-      if(toolTipLabel.getToolTipText().contains("Local") || toolTipLabel.getToolTipText().contains("Remote")) {
-        boolean isNewLocalBranch = toolTipLabel.getToolTipText().contains("Upstream");
-        noOfNewLocalBranches += isNewLocalBranch ? 1 : 0;
+      String toolTipText = toolTipLabel.getToolTipText();
+      if(toolTipText.contains("Local") || toolTipText.contains("Remote")) {
+        boolean isLocalBranchWithUpstreamBranch = toolTipText.contains("Upstream");
+        noOfLocalBranchesWithUpstreamBranch += isLocalBranchWithUpstreamBranch ? 1 : 0;
       } else {
-        assertFalse(true);
+        fail("This branch is not local or remote.");
       }
-      assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_NAME));
-      assertTrue(toolTipLabel.getToolTipText().contains(AUTHOR_EMAIL));
-      assertTrue(toolTipLabel.getToolTipText().contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
+      assertTrue(toolTipText.contains(AUTHOR_NAME));
+      assertTrue(toolTipText.contains(AUTHOR_EMAIL));
+      assertTrue(toolTipText.contains(lastCommitDetailsForAllBranchesMap.get(leaf.toString()).toString()));
       leaf = (GitTreeNode) leaf.getNextLeaf();
     }
     
-    assertEquals(noOfNewLocalBranches, 1);
+    assertEquals(noOfLocalBranchesWithUpstreamBranch, 1);
   }
 }
