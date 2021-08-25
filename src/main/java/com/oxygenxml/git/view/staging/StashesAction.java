@@ -5,6 +5,9 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -178,7 +181,7 @@ public class StashesAction extends JDialog {
     constrains.weighty = 0;
    
     
-    Button applyButton = new Button(Translator.getInstance().getTranslation(Tags.STASH));
+    Button applyButton = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
     applyButton.setEnabled(true);
     applyButton.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
@@ -232,10 +235,11 @@ public class StashesAction extends JDialog {
      }
     };
     
-    for (int i = 0; i < stashes.size(); i++){
+    for (int i = 0; i < stashes.size(); i++) {
       Object[] row = {i, stashes.get(i).getFullMessage()};
       model.addRow(row);
-  }
+    }
+    
     stashesTable = OxygenUIComponentsFactory.createTable(model);
     stashesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     stashesTable.setFillsViewportHeight(true);
@@ -243,6 +247,7 @@ public class StashesAction extends JDialog {
     JPopupMenu contextualActions = new JPopupMenu();
     JMenuItem menuItemStash      = new JMenuItem(Translator.getInstance().getTranslation(Tags.APPLY));
     JMenuItem menuItemRemove     = new JMenuItem(Translator.getInstance().getTranslation(Tags.DELETE));
+    JMenuItem menuItemShowDif    = new JMenuItem(Translator.getInstance().getTranslation("Show diff"));
     
     menuItemStash.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
@@ -265,12 +270,32 @@ public class StashesAction extends JDialog {
         model.removeRow(selectedRow);     
     });
     
+    ActionListener showDiff = new ActionListener() {
+      @Override
+      public void actionPerformed(java.awt.event.ActionEvent e) { 
+       // TODO 
+      }
+    };
+        
+    menuItemShowDif.addActionListener(showDiff);
+    
+    contextualActions.add(menuItemShowDif);
+    contextualActions.addSeparator();
     contextualActions.add(menuItemStash);
     contextualActions.addSeparator();
     contextualActions.add(menuItemRemove);
     
     stashesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     stashesTable.setComponentPopupMenu(contextualActions);
+    stashesTable.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked (MouseEvent evt) {
+        int selectedRow = stashesTable.getSelectedRow();
+        if(selectedRow >= 0 && evt.getClickCount() == 2) {
+          showDiff.actionPerformed(null);
+        }
+      }
+    });
     
     model.fireTableDataChanged();
     updateStashTableWidths();
@@ -282,11 +307,9 @@ public class StashesAction extends JDialog {
    */
   private void updateStashTableWidths() {
     int idColWidth = HistoryPanel.scaleColumnsWidth(20);
-
     TableColumnModel tcm = stashesTable.getColumnModel();
     TableColumn column = tcm.getColumn(1);
     column.setPreferredWidth(stashesTable.getWidth() - idColWidth);
- 
   }
 }
 
