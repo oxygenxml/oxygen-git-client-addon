@@ -22,6 +22,14 @@
         <val lang="ja_JP">You can enter a message to describe the stash</val>
         <val lang="nl_NL">You can enter a message to describe the stash</val>
     </key>
+     <key value="Stash_Generate_Conflicts">
+        <comment>The message for generated conflicts from stash</comment>
+        <val lang="en_US">The stash command was applied successfully, but some conflicts were created.</val>
+        <val lang="de_DE">The stash command was applied successfully, but some conflicts were created.</val>
+        <val lang="fr_FR">The stash command was applied successfully, but some conflicts were created.</val>
+        <val lang="ja_JP">The stash command was applied successfully, but some conflicts were created.</val>
+        <val lang="nl_NL">The stash command was applied successfully, but some conflicts were created.</val>
+    </key>
      <key value="Stash_All_Changes">
         <comment>Stash all changes</comment>
         <val lang="en_US">Stash all changes</val>
@@ -30,13 +38,13 @@
         <val lang="ja_JP">Stash all changes</val>
         <val lang="nl_NL">Stash all changes</val>
     </key>
-   <key value="Stashes">
-        <comment>Stashes.</comment>
-        <val lang="en_US">Stashes</val>
-        <val lang="de_DE">Stashes</val>
-        <val lang="fr_FR">Stashes</val>
-        <val lang="ja_JP">Stashes</val>
-        <val lang="nl_NL">Stashes</val>
+   <key value="List_Stashes">
+        <comment>List Stashes.</comment>
+        <val lang="en_US">List stashes</val>
+        <val lang="de_DE">List stashes</val>
+        <val lang="fr_FR">List stashes</val>
+        <val lang="ja_JP">List stashes</val>
+        <val lang="nl_NL">List stashes</val>
     </key>
     <key value="No_details_available">
         <comment>No details available</comment>
@@ -169,11 +177,11 @@
     
     <key value="Stash_Apply_Failed">
         <comment>Stash apply failed</comment>
-        <val lang="en_US">Unable to apply stash.</val>
-        <val lang="de_DE">Unable to apply stash.</val>
-        <val lang="fr_FR">Unable to apply stash.</val>
-        <val lang="ja_JP">Unable to apply stash.</val>
-        <val lang="nl_NL">Unable to apply stash.</val>
+        <val lang="en_US">Unable to apply stash. One possible solution is to make local changes.</val>
+        <val lang="de_DE">Unable to apply stash. One possible solution is to make local changes.</val>
+        <val lang="fr_FR">Unable to apply stash. One possible solution is to make local changes.</val>
+        <val lang="ja_JP">Unable to apply stash. One possible solution is to make local changes.</val>
+        <val lang="nl_NL">Unable to apply stash. One possible solution is to make local changes.</val>
     </key>
     <key value="Stash">
         <comment>Stash</comment>

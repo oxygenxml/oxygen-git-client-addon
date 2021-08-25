@@ -242,9 +242,15 @@ public class ToolbarPanel extends JPanel {
 	 */
   private ToolbarButton branchSelectButton;
 
-  private JRadioButtonMenuItem stasheAllChangesMenuItem;
+  /**
+   * The stash all changes item.
+   */
+  private JRadioButtonMenuItem stashAllChangesMenuItem;
 
-  private JRadioButtonMenuItem stashesMenuItem;
+  /**
+   * The list stahses item.
+   */
+  private JRadioButtonMenuItem listStashesMenuItem;
   
   /**
    * Constructor.
@@ -654,15 +660,13 @@ public class ToolbarPanel extends JPanel {
       LOGGER.debug(e, e);
     }
     
-    Collection<RevCommit> stashes = gitAccess.listStash();
-    noOfStashes = stashes == null ? 0 : stashes.size();
-    
-    stashButton.setEnabled(addStashActionsToMenu(stashButton));
+    refreshStashButton();
 
     SwingUtilities.invokeLater(() -> {
       updateBranchesMenu();
       pullMenuButton.repaint();
       pushButton.repaint();
+      stashButton.repaint();
     });
     
     Repository repo = null;
@@ -772,6 +776,41 @@ public class ToolbarPanel extends JPanel {
 
 	}
 
+	/**
+	 * Refresh the status for stash button.
+	 */
+	public void refreshStashButton() {
+	  GitAccess gitAccess = GitAccess.getInstance();
+	  Collection<RevCommit> stashes = gitAccess.listStash();
+    noOfStashes = stashes == null ? 0 : stashes.size();
+    
+    List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+    boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
+    if(!existsLocalFiles) {
+      List<FileStatus> stagedFiles = gitAccess.getStagedFiles();
+      existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
+    }
+    
+    stashAllChangesMenuItem.setEnabled(existsLocalFiles);
+    
+    Collection<RevCommit> stashesList = GitAccess.getInstance().listStash();
+    boolean existsStashes = stashesList != null && !stashesList.isEmpty();
+    
+    listStashesMenuItem.setEnabled(existsStashes);
+    
+    if ((existsLocalFiles && !existsStashes) ||
+        (!stashAllChangesMenuItem.isSelected() && !listStashesMenuItem.isSelected())
+        ){
+      stashAllChangesMenuItem.setSelected(true);
+      stashButton.setAction(stashAllChangesMenuItem.getAction());
+    } else if (!existsLocalFiles && existsStashes) {
+      listStashesMenuItem.setSelected(true);
+      stashButton.setAction(listStashesMenuItem.getAction());
+    }
+    
+    stashButton.setEnabled(existsLocalFiles || existsStashes);
+	}
+	
 	
   /**
    * Updates the tool tip of "Push" Button.
@@ -1060,12 +1099,12 @@ public class ToolbarPanel extends JPanel {
 		gitToolbar.add(pullMenuButton);
 	}
 	
-	
 	/**
    * Adds to the tool bar the Stash Button.
    */
   private void addStashButton() {
     stashButton = createStashButton();
+    refreshStashButton();
     Dimension d = stashButton.getPreferredSize();
     d.width += PULL_BUTTON_EXTRA_WIDTH;
     stashButton.setPreferredSize(d);
@@ -1074,8 +1113,6 @@ public class ToolbarPanel extends JPanel {
    
     gitToolbar.add(stashButton);
   }
-
-  
 
 	/**
 	 * Create "Pull" button.
@@ -1228,7 +1265,7 @@ public class ToolbarPanel extends JPanel {
       }
     }; 
     
-    stashLocalButton.setEnabled(addStashActionsToMenu(stashLocalButton));
+    addStashActionsToMenu(stashLocalButton);
     
     return stashLocalButton;
   }
@@ -1241,7 +1278,7 @@ public class ToolbarPanel extends JPanel {
    * 
    * @return <code>true</code> if the button has at least an action.
    */
-  private boolean addStashActionsToMenu(SplitMenuButton splitMenuButton) {
+  private void addStashActionsToMenu(SplitMenuButton splitMenuButton) {
     ButtonGroup stashActionsGroup = new ButtonGroup();
     
     ActionListener radioMenuItemActionListener = e -> {
@@ -1250,60 +1287,29 @@ public class ToolbarPanel extends JPanel {
       }
     };
     
-    if(stasheAllChangesMenuItem != null) {
-      splitMenuButton.remove(stasheAllChangesMenuItem);
-    }
-    if(stashesMenuItem != null) {
-      splitMenuButton.remove(stashesMenuItem);
-    }
+    Action stashAllChangesAction = createStashAllChangesAction();
+    stashAllChangesMenuItem = new JRadioButtonMenuItem(stashAllChangesAction);
+     
+    stashAllChangesMenuItem.addActionListener(radioMenuItemActionListener);
+    splitMenuButton.add(stashAllChangesMenuItem);
+    stashActionsGroup.add(stashAllChangesMenuItem);  
     
-    List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
-    boolean existsFilesChanged = unstagedFiles != null && !unstagedFiles.isEmpty();
-    if(!existsFilesChanged) {
-      List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFiles();
-      existsFilesChanged = stagedFiles != null && !stagedFiles.isEmpty();
-    }
-    
-    if(existsFilesChanged) {
-      Action stashAllChangesAction = createStashAllChangesAction();
-      
-      stasheAllChangesMenuItem = new JRadioButtonMenuItem(stashAllChangesAction);
-      stasheAllChangesMenuItem.addActionListener(radioMenuItemActionListener);
-      splitMenuButton.add(stasheAllChangesMenuItem);
-      stashActionsGroup.add(stasheAllChangesMenuItem);
-      
-      splitMenuButton.setAction(stashAllChangesAction);
-      stasheAllChangesMenuItem.setSelected(true);
-    }
-    
-    Collection<RevCommit> stashesList = GitAccess.getInstance().listStash();
-    
-    boolean existsStashes = stashesList != null && !stashesList.isEmpty();
-    
-    if(existsStashes) {
-      Action stashesAction = new AbstractAction("Stashes") {
+    Action stashesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.LIST_STASHES)) {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          StashesAction stashesDialog = new StashesAction();
-          stashesDialog.setVisible(true);   
-        }
-        
-      };
-      
-      stashesMenuItem = new JRadioButtonMenuItem(stashesAction);
-      stashesMenuItem.addActionListener(radioMenuItemActionListener);
-      splitMenuButton.add(stashesMenuItem);
-      stashActionsGroup.add(stashesMenuItem);
-      
-      if(!existsFilesChanged) {
-        splitMenuButton.setAction(stashesAction);
-        stashesMenuItem.setSelected(true);
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ListStashesAction stashesDialog = new ListStashesAction();
+        stashesDialog.setVisible(true);   
       }
-    }
+      
+    };
     
-    return existsFilesChanged || existsStashes;
-    
+    listStashesMenuItem = new JRadioButtonMenuItem(stashesAction);
+    listStashesMenuItem.addActionListener(radioMenuItemActionListener);
+      
+    splitMenuButton.add(listStashesMenuItem);
+    stashActionsGroup.add(listStashesMenuItem);
+        
   }
   
   

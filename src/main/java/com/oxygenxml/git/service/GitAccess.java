@@ -2508,15 +2508,31 @@ public class GitAccess {
 			git.stashApply().setStashRef(stashRef).call();
 			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 		} catch (StashApplyFailureException e) {
-			LOGGER.error(e, e);
-			fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
+			  List<String> modifiedFiles = new ArrayList<>(git.status().call().getModified());
+			  if(!modifiedFiles.isEmpty()) {
+			    FileStatusDialog.showWarningMessage(
+	            translator.getTranslation(Tags.STASH),
+	            modifiedFiles,
+	            translator.getTranslation(Tags.STASH_APPLY_FAILED));
+			  } else {
+			    FileStatusDialog.showWarningMessageWithConfirmation(translator.getTranslation(Tags.STASH), 
+			        translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS), 
+			        "", 
+			        "");
+			    try {
+            System.out.println(getRepository().getRepositoryState().toString());
+          } catch (NoRepositorySelected e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+          }
+			  }
 			  // TODO: better explanation in the message
-				FileStatusDialog.showWarningMessage(
-				    translator.getTranslation(Tags.STASH),
-				    new ArrayList<>(git.status().call().getModified()),
-						translator.getTranslation(Tags.STASH_APPLY_FAILED));
+				
+				
+				
 			}
+			fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 		}
 	}
   

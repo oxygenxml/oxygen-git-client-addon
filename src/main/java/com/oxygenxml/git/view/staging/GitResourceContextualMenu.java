@@ -206,7 +206,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		showDiffAction.setEnabled(selectedLeaves.size() == 1);
 		openAction.setEnabled(!selectionContainsDeletions && !allSelectedResources.isEmpty());
 		stageUnstageAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
-		resolveConflict.setEnabled(RepoUtil.isUnfinishedConflictState(repoState));
+		resolveConflict.setEnabled(RepoUtil.isUnfinishedConflictState(repoState) || selectionContainsConflicts);
 		resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());

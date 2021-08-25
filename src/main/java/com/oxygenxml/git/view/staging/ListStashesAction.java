@@ -1,6 +1,5 @@
 package com.oxygenxml.git.view.staging;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,6 +33,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.history.HistoryPanel;
+import com.oxygenxml.git.view.util.HiDPIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
@@ -45,12 +45,22 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  * @author Alex_Smarandache
  *
  */
-public class StashesAction extends JDialog {
+public class ListStashesAction extends JDialog {
   
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(StashesAction.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(ListStashesAction.class.getName());
+  
+  /**
+   * The default width for table.
+   */
+  private static final int TABLE_DEFAULT_WIDTH = 400;
+  
+  /**
+   * The default height for table.
+   */
+  private static final int TABLE_DEFAULT_HEIGHT = 200;
   
   /**
    * The table with the stashes.
@@ -61,7 +71,7 @@ public class StashesAction extends JDialog {
   /**
    * Constructor
    */
-  public StashesAction (){
+  public ListStashesAction (){
 
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
@@ -123,7 +133,7 @@ public class StashesAction extends JDialog {
     constrains.fill = GridBagConstraints.BOTH;
     JScrollPane scrollPane = new JScrollPane();
     scrollPane.setBorder(null);
-    scrollPane.setPreferredSize(new Dimension(400, 200));
+    scrollPane.setPreferredSize(HiDPIUtil.getHiDPIDimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
     scrollPane.setViewportView(stashesTable);
     scrollPane.setBackground(stashesTable.getBackground());
     scrollPane.setForeground(stashesTable.getForeground());

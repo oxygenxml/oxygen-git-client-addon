@@ -1298,9 +1298,9 @@ public class Tags {
    */
   public static final String STASH_ADD_DESCRIPTION = "Stash_Add_Description";
   /**
-   * Stashes.
+   * List Stashes.
    */
-  public static final String STASHES = "Stashes";
+  public static final String LIST_STASHES = "List_Stashes";
   /**
    * Apply.
    */
@@ -1309,5 +1309,9 @@ public class Tags {
    * Stash all changes.
    */
   public static final String STASH_ALL_CHANGES = "Stash_All_Changes";
+  /**
+   * Stash generate conflicts message
+   */
+  public static final String STASH_GENERATE_CONFLICTS = "Stash_Generate_Conflicts";
 
 }
