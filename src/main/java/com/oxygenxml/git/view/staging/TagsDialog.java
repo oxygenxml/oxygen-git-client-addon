@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,6 +74,16 @@ public class TagsDialog extends JDialog {
   private JTable tagsTable;
   
   /**
+   * The local tags titles
+   */
+  private List<String> localTags;
+  
+  /**
+   * The local tags messages
+   */
+  private List<String> localTagsMessages;
+  
+  /**
    * Constructor
    */
   TagsDialog (){
@@ -104,7 +113,7 @@ public class TagsDialog extends JDialog {
       setLocationRelativeTo(parentFrame);
     }
     setSize(new Dimension(475, getPreferredSize().height));
-    setResizable(false);
+    setResizable(true);
     
     
   }
@@ -152,7 +161,7 @@ public class TagsDialog extends JDialog {
     int leftInset = UIConstants.COMPONENT_LEFT_PADDING;
     int rightInset = UIConstants.COMPONENT_RIGHT_PADDING;
     
-    //a panel with the header and table
+    //add the header and table
     JPanel tagsPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
     
@@ -162,7 +171,7 @@ public class TagsDialog extends JDialog {
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.weighty = 1;
-    gbc.gridwidth = 1;
+    gbc.gridwidth = 2;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(topInset, leftInset, 0, rightInset);
     tagsPanel.add(header,gbc);
@@ -178,13 +187,42 @@ public class TagsDialog extends JDialog {
     
     buttonsGridBagConstraints.gridx=0;
     buttonsGridBagConstraints.gridy=0;
-    buttonsGridBagConstraints.anchor = GridBagConstraints.EAST;
+    buttonsGridBagConstraints.anchor = GridBagConstraints.SOUTHEAST;
     buttonsGridBagConstraints.fill = GridBagConstraints.NONE;
-    buttonsGridBagConstraints.insets = new Insets(topInset, 0, bottomInset, 0);
+    buttonsGridBagConstraints.insets = new Insets(topInset, 0, bottomInset, rightInset);
     
     pushButton = new JButton("Push");
-    pushButton.setEnabled(true);
-    pushButton.addActionListener(e -> {
+    pushButton.addActionListener(createPushListener());
+    buttonsPanel.add(pushButton, buttonsGridBagConstraints);
+    
+    deleteButton = new JButton("Delete");
+    deleteButton.addActionListener(createDeleteListener());
+    
+    buttonsGridBagConstraints.gridx ++;
+    buttonsPanel.add(deleteButton, buttonsGridBagConstraints);
+    
+    
+    gbc.gridx = 0;
+    gbc.gridy++;
+    gbc.gridwidth = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.anchor = GridBagConstraints.SOUTHEAST;
+    gbc.insets = new Insets(topInset, leftInset, bottomInset, rightInset);
+    tagsPanel.add(pushButton, gbc);
+    gbc.gridx++;
+    tagsPanel.add(deleteButton,gbc);
+    
+    return tagsPanel;
+  }
+  
+  /**
+   * Create the Listener for the Push Button
+   * 
+   * @return an ActionListener
+   */
+  private ActionListener createPushListener() {
+
+    return e -> {
       int selectedRow = tagsTable.getSelectedRow();
       String tag = (String) tagsTable.getValueAt(selectedRow, 0);
       if (!remoteTagStrings.contains(tag)) {
@@ -195,30 +233,29 @@ public class TagsDialog extends JDialog {
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
         }
       }
-    });
-    buttonsPanel.add(pushButton, buttonsGridBagConstraints);
-    
-    deleteButton = new JButton("Delete");
-    
-    deleteButton.addActionListener(new ActionListener() {
-      
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        //To be completed
+    };
+  }
+  
+  /**
+   * Create the Listener for the Delete Button
+   * 
+   * @return an ActionListener
+   */
+  private ActionListener createDeleteListener() {
+
+    return e -> {
+      int selectedRow = (tagsTable.getSelectedRow());
+      String tag = (String) tagsTable.getValueAt(selectedRow, 0);
+      try {
+        GitAccess.getInstance().deleteTag(tag);
+      } catch (GitAPIException ex) {
+        LOGGER.debug(ex);
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
       }
-    });
-    buttonsGridBagConstraints.gridx ++;
-    buttonsPanel.add(deleteButton, buttonsGridBagConstraints);
-    
-    gbc.gridx = 0;
-    gbc.gridy++;
-    gbc.gridwidth = 1;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.anchor = GridBagConstraints.SOUTHEAST;
-    gbc.insets = new Insets(topInset, 0, 0, rightInset);
-    tagsPanel.add(buttonsPanel,gbc);
-    
-    return tagsPanel;
+      localTags.remove(selectedRow);
+      localTagsMessages.remove(selectedRow);
+      tagsTable.repaint();
+    };
   }
   
   /**
@@ -232,8 +269,8 @@ public class TagsDialog extends JDialog {
    */
   private void createTagsTable() throws GitAPIException, NoRepositorySelected, IOException{
     List<Ref> call = GitAccess.getInstance().getGit().tagList().call();
-    List<String> tagsList = new ArrayList<>();
-    List<String> tagsMessages = new ArrayList<>();
+    localTags = new ArrayList<>();
+    localTagsMessages = new ArrayList<>();
     Repository repository = GitAccess.getInstance().getRepository();
     RevWalk walk = new RevWalk(repository);
 
@@ -242,13 +279,13 @@ public class TagsDialog extends JDialog {
       RevObject object = walk.parseAny(objectIdOfTag);
       if (object instanceof RevTag) {
         RevTag tag = (RevTag) object;
-        tagsList.add( tag.getTagName() );
-        tagsMessages.add(tag.getFullMessage());
+        localTags.add( tag.getTagName() );
+        localTagsMessages.add(tag.getFullMessage());
         
       } else if (object instanceof RevCommit) {
         RevCommit lightTag = (RevCommit) object;
-        tagsList.add( Repository.shortenRefName(lightTag.getName()) );
-        tagsMessages.add("");
+        localTags.add( Repository.shortenRefName(lightTag.getName()) );
+        localTagsMessages.add("");
       } 
     }
     
@@ -257,8 +294,8 @@ public class TagsDialog extends JDialog {
     String[] columnNames = {"Tag name","Message"};
     DefaultTableModel model = new DefaultTableModel(columnNames, 0);
     
-    for (int i = 0; i < tagsList.size(); i++){
-      Object[] row = { tagsList.get(i), tagsMessages.get(i) };
+    for (int i = 0; i < localTags.size(); i++){
+      Object[] row = { localTags.get(i), localTagsMessages.get(i) };
       model.addRow(row);
   }
     tagsTable = OxygenUIComponentsFactory.createTable(model);
@@ -272,7 +309,6 @@ public class TagsDialog extends JDialog {
         pushButton.setEnabled(false);
         deleteButton.setEnabled(false);
       }
-      
     });
   }
 }

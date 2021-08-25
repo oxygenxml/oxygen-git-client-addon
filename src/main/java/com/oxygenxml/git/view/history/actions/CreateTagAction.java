@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -40,14 +41,14 @@ public class CreateTagAction extends AbstractAction {
  * @param commitCharacteristics
  */
   public CreateTagAction(String commitId) {
-    super("Create tag for this commit");
+    super(translator.getTranslation(Tags.CREATE_TAG_FOR_THIS_COMMIT));
     this.commitId = commitId;
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    CreateTagDialog dialog = new CreateTagDialog("Tag commit");
+    CreateTagDialog dialog = new CreateTagDialog(translator.getTranslation(Tags.CREATE_TAG_COMMIT_TITLE));
     String tagTitle = dialog.getTagTitle();
     String tagMessage = dialog.getTagMessage();
     if (dialog.getResult() == OKCancelDialog.RESULT_OK) {

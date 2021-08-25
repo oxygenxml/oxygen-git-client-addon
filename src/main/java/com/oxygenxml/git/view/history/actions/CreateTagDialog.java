@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -44,7 +45,7 @@ public class CreateTagDialog extends OKCancelDialog {
   /**
    * Translator.
    */
-  private static final Translator TRANSLATOR = Translator.getInstance();
+  private static final Translator translator = Translator.getInstance();
   /**
    * A text field for the tag title.
    */
@@ -110,7 +111,7 @@ public class CreateTagDialog extends OKCancelDialog {
     int leftInset = 5;
     
     // Tag title label.
-    JLabel label = new JLabel("Tag title:");
+    JLabel label = new JLabel(translator.getTranslation(Tags.CREATE_TAG_TITLE_LABEL) + ":");
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
@@ -145,7 +146,7 @@ public class CreateTagDialog extends OKCancelDialog {
     panel.add(errorMessageTextArea, gbc);
 
     // Tag message label.
-    JLabel messageLabel = new JLabel("Message:");
+    JLabel messageLabel = new JLabel(translator.getTranslation(Tags.CREATE_TAG_MESSAGE_LABEL) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.BASELINE_LEADING;
@@ -168,7 +169,7 @@ public class CreateTagDialog extends OKCancelDialog {
     label.setLabelFor(tagMessageField);
 
     // "Push tag" check box
-    pushTagCheckBox = new JCheckBox("Push Tag");
+    pushTagCheckBox = new JCheckBox(translator.getTranslation(Tags.CREATE_TAG_PUSH_CHECKBOX));
     pushTagCheckBox.setSelected(true);
     gbc.gridx = 0;
     gbc.gridy ++;
@@ -204,7 +205,7 @@ public class CreateTagDialog extends OKCancelDialog {
     } catch (NoRepositorySelected | IOException e) {
       logger.debug(e, e);
     }
-    errorMessageTextArea.setText(titleAlreadyExists ? "Tag already exists" : "");
+    errorMessageTextArea.setText(titleAlreadyExists ? translator.getTranslation(Tags.TAG_ALREADY_EXISTS) : "");
     
     boolean isTagTitleValid = !tagTitle.isEmpty() && !titleAlreadyExists;
     getOkButton().setEnabled(isTagTitleValid);

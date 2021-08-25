@@ -1337,4 +1337,31 @@ public class Tags {
    * {0} = selected, {1} = current
    */
   public static final String MERGE_BRANCHES_QUESTION_MESSAGE = "Merge_Branches_Question_Message";
+  
+  /**
+   * The message for the create Tag action
+   */
+  public static final String CREATE_TAG_FOR_THIS_COMMIT = "Create_Tag_For_This_Commit";
+  
+  /**
+   * The title for the create Tag Commit dialog
+   */
+  public static final String CREATE_TAG_COMMIT_TITLE = "Create_Tag_Commit_Title"; 
+  /**
+   * The message in the label for Tag title
+   */
+  public static final String CREATE_TAG_TITLE_LABEL = "Create_Tag_Title_Label"; 
+  /**
+   * The message in the label for Tag message
+   */
+  public static final String CREATE_TAG_MESSAGE_LABEL = "Create_Tag_Message_Label"; 
+  /**
+   * The message for the checkbox for Tag pushing
+   */
+  public static final String CREATE_TAG_PUSH_CHECKBOX = "Create_Tag_Push_Checkbox"; 
+  
+  /**
+   * The message for error when we already have a tag with this name
+   */
+  public static final String TAG_ALREADY_EXISTS = "Tag_Already_Exists"; 
 }
