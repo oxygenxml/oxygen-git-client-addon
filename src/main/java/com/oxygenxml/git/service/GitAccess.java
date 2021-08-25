@@ -2560,4 +2560,18 @@ public class GitAccess {
         .setRefSpecs(new RefSpec("refs/tags/"+ name +":refs/tags/" + name))
         .call();
 	}
+	
+	/**
+	 * Delete a given Tag
+	 * 
+	 * @param name The name of the tag to be deleted
+	 * 
+	 * @throws GitAPIException
+	 */
+	public void deleteTag(String name) throws GitAPIException {
+	  getGit()
+	    .tagDelete()
+	    .setTags(name)
+	    .call();
+	}
 }
