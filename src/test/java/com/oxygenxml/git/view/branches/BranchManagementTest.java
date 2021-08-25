@@ -645,11 +645,12 @@ public class BranchManagementTest extends GitTestBase{
     leaf = leaf.getNextLeaf();
     rendererLabel = (JLabel) tree.getCellRenderer()
         .getTreeCellRendererComponent(tree, leaf, false, true, true, 7, true);
+    String remoteURL = gitAccess.getRemoteURLFromConfig();
     assertEquals(
         "<html><p>Remote_branch origin/main<br>"
         + "Clone_Repository_Dialog_Url_Label: "
-        + "<a href=file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/>"
-        + " file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/ </a><br><br>"
+        + "<a href=\"" + remoteURL + "\">"
+        + remoteURL + "</a><br><br>"
         + "Last_Commit_Details:<br>"
         + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
         + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
@@ -661,8 +662,8 @@ public class BranchManagementTest extends GitTestBase{
     assertEquals(
         "<html><p>Remote_branch origin/RemoteBranch<br>"
             + "Clone_Repository_Dialog_Url_Label: "
-            + "<a href=file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/>"
-            + " file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/ </a><br><br>"
+            + "<a href=\"" + remoteURL + "\">"
+            + remoteURL + "</a><br><br>"
             + "Last_Commit_Details:<br>"
             + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
             + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
@@ -674,8 +675,8 @@ public class BranchManagementTest extends GitTestBase{
     assertEquals(
         "<html><p>Remote_branch origin/RemoteBranch2<br>"
             + "Clone_Repository_Dialog_Url_Label: "
-            + "<a href=file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/>"
-            + " file:///D:/workspaceSorin/oxygen-git-plugin/target/test-resources/GitAccessCheckoutNewBranch/remoteRepository/.git/ </a><br><br>"
+            + "<a href=\"" + remoteURL + "\">"
+            + remoteURL + "</a><br><br>"
             + "Last_Commit_Details:<br>"
             + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
             + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
