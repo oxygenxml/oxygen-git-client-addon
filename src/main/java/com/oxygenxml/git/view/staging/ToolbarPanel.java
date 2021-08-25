@@ -956,7 +956,7 @@ public class ToolbarPanel extends JPanel {
       text.append("<br>");     
       if(i + 1 == MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS - 1 
           && noOfCommits > MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS) {
-        int noOfSkippedCommits = noOfCommits - MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS - 2;
+        int noOfSkippedCommits = getNoOfSkippedCommits(noOfCommits);
         text.append("&#x25AA; ")
             .append("[")
             .append("...")
@@ -970,6 +970,17 @@ public class ToolbarPanel extends JPanel {
       } 
       i++;
     } 
+  }
+
+  /**
+   * Get the number of skipped commits.
+   * 
+   * @param noOfCommits The total number of commits.
+   * 
+   * @return the number of skipped commits.
+   */
+  int getNoOfSkippedCommits(int noOfCommits) {
+    return noOfCommits - MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS;
   }
   
   
