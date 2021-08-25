@@ -2448,16 +2448,23 @@ public class GitAccess {
 	 * @return The created stash.
 	 */
 	public RevCommit createStash() {
-		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
-		RevCommit stash = null;
-		try {
-			stash = git.stashCreate().call();
-			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
-		} catch (GitAPIException e) {
-			LOGGER.error(e, e);
-			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
-		}
-		return stash;
+	  fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
+    RevCommit stash = null;
+    try {
+      stash = git.stashCreate().call();
+      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
+    } catch (GitAPIException e) {
+      boolean isBecauseConflicts = getUnstagedFiles() != null 
+          && !getUnstagedFiles().isEmpty() 
+          && getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
+      if(isBecauseConflicts) {
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+      } else {
+        LOGGER.error(e, e);
+      }
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
+    }
+    return stash;
 	}
 
 	/**
@@ -2478,7 +2485,7 @@ public class GitAccess {
           && !getUnstagedFiles().isEmpty() 
           && getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
       if(isBecauseConflicts) {
-        PluginWorkspaceProvider.getPluginWorkspace().showWarningMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
       } else {
         LOGGER.error(e, e);
       }
