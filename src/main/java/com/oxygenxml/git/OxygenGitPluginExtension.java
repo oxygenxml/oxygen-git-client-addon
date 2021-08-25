@@ -338,7 +338,8 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
                     commitMessage,
                     Arrays.asList(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE),
                         translator.getTranslation(Tags.COMMITID)+": "+commitIDString,
-                        translator.getTranslation(Tags.COMMITTER)+": "+ authorIdent.getName(),
+                        translator.getTranslation(Tags.AUTHOR)+":   "+ authorIdent.getName(),
+                        translator.getTranslation(Tags.DATE)+":      "+ authorIdent.getWhen().toLocaleString(),
                         translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)+": "),
                     null);
                        

@@ -1004,10 +1004,6 @@ public class Tags {
    */
   public static final String DATE = "Date";
   /**
-   * History table column name.
-   */
-  public static final String COMMITTER = "Comitter";
-  /**
    * Cancel. Taken from oXygen's "translation.xml".
    */
   public static final String CANCEL = "Cancel";

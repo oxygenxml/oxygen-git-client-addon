@@ -1164,14 +1164,6 @@
         <val lang="ja_JP">Git Staging</val>
         <val lang="nl_NL">Git staging</val>
     </key>
-    <key value="Comitter">
-        <comment>History table column name.</comment>
-        <val lang="en_US">Committer</val>
-        <val lang="de_DE">Committer</val>
-        <val lang="fr_FR">Auteur du commit</val>
-        <val lang="ja_JP">Committer</val>
-        <val lang="nl_NL">Committer</val>
-    </key>
     <key value="Date">
         <comment>History table column name.</comment>
         <val lang="en_US">Date</val>

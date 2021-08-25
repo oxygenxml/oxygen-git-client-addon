@@ -21,6 +21,8 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
@@ -144,6 +146,7 @@ public class InformationsDialog extends OKCancelDialog {
     
     // DescriptionMessage
     if (descriptionMessage != null) {
+      
       JPanel descriptionPanel=new JPanel(new GridBagLayout());
       GridBagConstraints descriptionConstraints = new GridBagConstraints();
       descriptionConstraints.anchor = GridBagConstraints.NORTHWEST;
@@ -152,13 +155,24 @@ public class InformationsDialog extends OKCancelDialog {
       descriptionConstraints.gridx = 0;
       descriptionConstraints.gridy = 0;
       descriptionConstraints.fill = GridBagConstraints.HORIZONTAL;
-      descriptionPanel.add(new JLabel("<html>"+descriptionMessage.get(0)+"</html>"),descriptionConstraints);
+      
+      JTextArea description = new JTextArea();
+      description.setWrapStyleWord(true);
+      description.setLineWrap(true);
+      description.setEditable(false); 
+      description.setText(descriptionMessage.get(0));
+      descriptionPanel.add(description,descriptionConstraints);
       
       descriptionConstraints.gridy++;
-      descriptionConstraints.insets=new Insets(12,0,0,0);
+      descriptionConstraints.insets=new Insets(11,0,0,0);
+      
+      JLabel label= new JLabel();
+      label.setName(Translator.getInstance().getTranslation(Tags.COMMITID));
+      label.setText(descriptionMessage.get(1));
+      
       for(int i=1; i<descriptionMessage.size(); i++)
       {
-        descriptionPanel.add(new JLabel("<html>"+descriptionMessage.get(i)+"</html>"),descriptionConstraints);
+        descriptionPanel.add(new JLabel(descriptionMessage.get(i)),descriptionConstraints);
         if(i==1)
         {
           descriptionConstraints.insets=new Insets(4,0,0,0);
@@ -166,7 +180,7 @@ public class InformationsDialog extends OKCancelDialog {
         descriptionConstraints.gridy++;
       }
       
-      
+     
       gbc.anchor = GridBagConstraints.WEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.weightx = 1;
@@ -183,6 +197,7 @@ public class InformationsDialog extends OKCancelDialog {
      
       JTextArea messageArea=new JTextArea();
       messageArea.setText(message);
+      messageArea.setWrapStyleWord(true);
       messageArea.setLineWrap(true);
       messageArea.setEditable(false);             
       JScrollPane scollPane = new JScrollPane(messageArea);
@@ -193,10 +208,10 @@ public class InformationsDialog extends OKCancelDialog {
       gbc.weighty = 1;
       gbc.gridx = 1;
       gbc.gridheight = 1;
-      gbc.insets = new Insets( -5, 
-        0,
-        0, 
-        0);
+      gbc.insets = new Insets( -2, 
+        UIConstants.COMPONENT_LEFT_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING, 
+        10);
       panel.add(scollPane, gbc);
       
       gbc.gridy++;
