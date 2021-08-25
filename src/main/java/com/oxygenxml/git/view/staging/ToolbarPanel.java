@@ -55,7 +55,6 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -1259,14 +1258,10 @@ public class ToolbarPanel extends JPanel {
     }
     
     List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
-    boolean existsFilesChanged = (unstagedFiles != null && 
-        !unstagedFiles.isEmpty() 
-        && unstagedFiles.stream().noneMatch(e -> e.getChangeType() == GitChangeType.CONFLICT));
+    boolean existsFilesChanged = unstagedFiles != null && !unstagedFiles.isEmpty();
     if(!existsFilesChanged) {
       List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFiles();
-      existsFilesChanged = (stagedFiles != null && 
-          !stagedFiles.isEmpty() 
-          && !stagedFiles.stream().noneMatch(e -> e.getChangeType() == GitChangeType.CONFLICT));
+      existsFilesChanged = stagedFiles != null && !stagedFiles.isEmpty();
     }
     
     if(existsFilesChanged) {
