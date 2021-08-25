@@ -2,7 +2,6 @@ package com.oxygenxml.git.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -105,7 +104,7 @@ public class GitAccessStashTest {
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     assertTrue(isStashEmpty());
-    assertNotNull(gitAccess.createStash());
+    assertEquals("stash_description", gitAccess.createStash("stash_description").getFullMessage());
     assertFalse(isStashEmpty());
     assertEquals(1, gitAccess.listStash().size());
     gitAccess.stashDrop(0);

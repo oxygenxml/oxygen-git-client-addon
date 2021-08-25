@@ -2427,15 +2427,15 @@ public class GitAccess {
 	 *
 	 * @throws GitAPIException
 	 */
-	protected Collection<RevCommit> listStash() {
+	public Collection<RevCommit> listStash() {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
-		StashListCommand stashList = git.stashList();
-		Collection<RevCommit> stashedRefsCollection = null;
+		 Collection<RevCommit> stashedRefsCollection = null;
 		try {
+		  StashListCommand stashList = git.stashList();
 			stashedRefsCollection = stashList.call();
 			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()));
-		} catch (GitAPIException e) {
-			LOGGER.error(e, e);
+		} catch (Exception e) {
+			LOGGER.debug(e, e);
 			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()), e);
 		}
 		return stashedRefsCollection;
@@ -2447,7 +2447,7 @@ public class GitAccess {
 	 * 
 	 * @return The created stash.
 	 */
-	protected RevCommit createStash() {
+	public RevCommit createStash() {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
 		RevCommit stash = null;
 		try {
@@ -2460,6 +2460,26 @@ public class GitAccess {
 		return stash;
 	}
 
+	/**
+   * Create a new stash command.
+   * 
+   * @param description The description of stash.
+   * 
+   * @return The created stash.
+   */
+  public RevCommit createStash(String description) {
+    fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
+    RevCommit stash = null;
+    try {
+      stash = git.stashCreate().setWorkingDirectoryMessage(description).call();
+      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
+    } catch (GitAPIException e) {
+      LOGGER.error(e, e);
+      fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
+    }
+    return stash;
+  }
+  
 	
 	/**
 	 * Apply the given stash.
@@ -2485,14 +2505,14 @@ public class GitAccess {
 			}
 		}
 	}
-
+  
 
 	/**
 	 * Drops one stash item from the list of stashes.
 	 * 
 	 * @param stashIndex The index of the stash item to be dropped.
 	 */
-	protected void stashDrop(int stashIndex) {
+	public void stashDrop(int stashIndex) {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
 		try {
 			git.stashDrop().setStashRef(stashIndex).call();

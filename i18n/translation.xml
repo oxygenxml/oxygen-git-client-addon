@@ -6,6 +6,38 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+     <key value="Stash_Informative_Message">
+        <comment>The informative message for stash.</comment>
+        <val lang="en_US">This will stash all your current changes and return your working copy to a clean state.</val>
+        <val lang="de_DE">This will stash all your current changes and return your working copy to a clean state.</val>
+        <val lang="fr_FR">This will stash all your current changes and return your working copy to a clean state.</val>
+        <val lang="ja_JP">This will stash all your current changes and return your working copy to a clean state.</val>
+        <val lang="nl_NL">This will stash all your current changes and return your working copy to a clean state.</val>
+    </key>
+     <key value="Stash_Add_Description">
+        <comment>The text to tell user about adding stash description.</comment>
+        <val lang="en_US">You can enter a message to describe the stash</val>
+        <val lang="de_DE">You can enter a message to describe the stash</val>
+        <val lang="fr_FR">You can enter a message to describe the stash</val>
+        <val lang="ja_JP">You can enter a message to describe the stash</val>
+        <val lang="nl_NL">You can enter a message to describe the stash</val>
+    </key>
+     <key value="Stash_All_Changes">
+        <comment>Stash all changes</comment>
+        <val lang="en_US">Stash all changes</val>
+        <val lang="de_DE">Stash all changes</val>
+        <val lang="fr_FR">Stash all changes</val>
+        <val lang="ja_JP">Stash all changes</val>
+        <val lang="nl_NL">Stash all changes</val>
+    </key>
+   <key value="Stashes">
+        <comment>Stashes.</comment>
+        <val lang="en_US">Stashes</val>
+        <val lang="de_DE">Stashes</val>
+        <val lang="fr_FR">Stashes</val>
+        <val lang="ja_JP">Stashes</val>
+        <val lang="nl_NL">Stashes</val>
+    </key>
     <key value="No_details_available">
         <comment>No details available</comment>
         <val lang="en_US">No details available.</val>

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -54,6 +55,7 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -63,6 +65,7 @@ import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
+import com.oxygenxml.git.view.dialog.StashAllChangesDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -179,6 +182,11 @@ public class ToolbarPanel extends JPanel {
 	 * Button for push
 	 */
 	private ToolbarButton pushButton;
+	
+	/**
+   * Button for stash
+   */
+  private SplitMenuButton stashButton;
 
 	/**
 	 * Button with menu for pull (with merge or rebase).
@@ -209,6 +217,11 @@ public class ToolbarPanel extends JPanel {
 	 * Counter for how many pushes the local copy is ahead of the base
 	 */
 	private int pushesAhead = 0;
+	
+	/**
+   * Counter for how many stahses has the repository.
+   */
+  private int noOfStashes = 0;
 
 	/**
 	 * Counter for how many pulls the local copy is behind the base
@@ -229,6 +242,10 @@ public class ToolbarPanel extends JPanel {
 	 * Branch selection button.
 	 */
   private ToolbarButton branchSelectButton;
+
+  private JRadioButtonMenuItem stasheAllChangesMenuItem;
+
+  private JRadioButtonMenuItem stashesMenuItem;
   
   /**
    * Constructor.
@@ -246,7 +263,7 @@ public class ToolbarPanel extends JPanel {
 	  this.gitController = gitController;
 	  this.refreshSupport = refreshSupport;
 	  this.branchesSplitMenuButton = new SplitMenuButton(null, null, true, false, true, true);
-	  
+    
 	  createGUI(historyController, branchManagementViewPresenter);
     
 	  gitController.addGitListener(new GitEventAdapter() {
@@ -346,6 +363,7 @@ public class ToolbarPanel extends JPanel {
     branchSelectButton.setEnabled(enabled);
     historyButton.setEnabled(enabled);
     settingsMenuButton.setEnabled(enabled);
+    stashButton.setEnabled(enabled);
   }
   
   public ToolbarButton getSubmoduleSelectButton() {
@@ -380,6 +398,7 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton(branchManagementViewPresenter);
 		addSubmoduleSelectButton();
+		addStashButton();
 		addHistoryButton(historyController);
 		addSettingsButton();
 		this.add(gitToolbar, gbc);
@@ -394,6 +413,7 @@ public class ToolbarPanel extends JPanel {
 		this.add(branchesSplitMenuButton, gbc);
 		 
 		this.setMinimumSize(new Dimension(UIConstants.MIN_PANEL_WIDTH, UIConstants.TOOLBAR_PANEL_HEIGHT));
+		
 	}
 
 	/**
@@ -635,6 +655,11 @@ public class ToolbarPanel extends JPanel {
       LOGGER.debug(e, e);
     }
     
+    Collection<RevCommit> stashes = gitAccess.listStash();
+    noOfStashes = stashes == null ? 0 : stashes.size();
+    
+    stashButton.setEnabled(addStashActionsToMenu(stashButton));
+
     SwingUtilities.invokeLater(() -> {
       updateBranchesMenu();
       pullMenuButton.repaint();
@@ -716,7 +741,7 @@ public class ToolbarPanel extends JPanel {
           }
           branchTooltip += commitsAheadMessage;
         }
-        
+                
 				branchTooltip += "</html>";
 
 				// ===================== Push button tooltip =====================
@@ -745,6 +770,7 @@ public class ToolbarPanel extends JPanel {
 		}
 		String branchInfoTextFinal = branchInfoText;
 		SwingUtilities.invokeLater(() -> branchesSplitMenuButton.setText(branchInfoTextFinal));
+
 	}
 
 	
@@ -956,7 +982,7 @@ public class ToolbarPanel extends JPanel {
       text.append("<br>");     
       if(i + 1 == MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS - 1 
           && noOfCommits > MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS) {
-        int noOfSkippedCommits = noOfCommits - MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS - 2;
+        int noOfSkippedCommits = noOfCommits - MAX_NO_OF_COMMITS_IN_PUSH_AND_PULL_TOOLTIPS;
         text.append("&#x25AA; ")
             .append("[")
             .append("...")
@@ -1034,6 +1060,23 @@ public class ToolbarPanel extends JPanel {
 		gitToolbar.add(pushButton);
 		gitToolbar.add(pullMenuButton);
 	}
+	
+	
+	/**
+   * Adds to the tool bar the Stash Button.
+   */
+  private void addStashButton() {
+    stashButton = createStashButton();
+    Dimension d = stashButton.getPreferredSize();
+    d.width += PULL_BUTTON_EXTRA_WIDTH;
+    stashButton.setPreferredSize(d);
+    stashButton.setMinimumSize(d);
+    stashButton.setMaximumSize(d);
+   
+    gitToolbar.add(stashButton);
+  }
+
+  
 
 	/**
 	 * Create "Pull" button.
@@ -1134,6 +1177,141 @@ public class ToolbarPanel extends JPanel {
 	  }
   }
 
+  /**
+   * Create the "Stash" button.
+   * 
+   * @return the "Stash" button.
+   */
+  private SplitMenuButton createStashButton() {
+    SplitMenuButton stashLocalButton = new SplitMenuButton( // NOSONAR (java:S110)
+        null,
+        Icons.getIcon(Icons.QUESTION_ICON),
+        false,
+        false,
+        false,
+        true) {
+      
+      @Override
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintStashes(g);
+      }
+       
+      /**
+       * Paint the number pushes ahead.
+       * 
+       * @param g Graphics.
+       */
+      private void paintStashes(Graphics g) {
+        String noOfStashesString = "";
+        Collection<RevCommit> stashes = GitAccess.getInstance().listStash();
+       
+        noOfStashes = stashes == null ? 0 : stashes.size();
+       
+        if (noOfStashes > 0) {
+          noOfStashesString = "" + noOfStashes;
+        }
+        if (noOfStashes > 9) {
+          stashButton.setHorizontalAlignment(SwingConstants.LEFT);
+        } else {
+          stashButton.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+        g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
+        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+        int stringWidth = fontMetrics.stringWidth(noOfStashesString);
+        g.setColor(getForeground());
+        g.drawString(
+            noOfStashesString,
+            // X
+            stashButton.getWidth() - stringWidth,
+            // Y
+            stashButton.getHeight() - fontMetrics.getDescent());
+      }
+    }; 
+    
+    stashLocalButton.setEnabled(addStashActionsToMenu(stashLocalButton));
+    
+    return stashLocalButton;
+  }
+  
+  
+  /**
+   * Add the stash actions (stashes) to the Stash menu.
+   * 
+   * @param splitMenuButton The menu button to add to.
+   * 
+   * @return <code>true</code> if the button has at least an action.
+   */
+  private boolean addStashActionsToMenu(SplitMenuButton splitMenuButton) {
+    ButtonGroup stashActionsGroup = new ButtonGroup();
+    
+    ActionListener radioMenuItemActionListener = e -> {
+      if (e.getSource() instanceof JMenuItem) {
+        splitMenuButton.setAction(((JMenuItem) e.getSource()).getAction());
+      }
+    };
+    
+    if(stasheAllChangesMenuItem != null) {
+      splitMenuButton.remove(stasheAllChangesMenuItem);
+    }
+    if(stashesMenuItem != null) {
+      splitMenuButton.remove(stashesMenuItem);
+    }
+    
+    List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
+    boolean existsFilesChanged = (unstagedFiles != null && 
+        !unstagedFiles.isEmpty() 
+        && unstagedFiles.stream().noneMatch(e -> e.getChangeType() == GitChangeType.CONFLICT));
+    if(!existsFilesChanged) {
+      List<FileStatus> stagedFiles = GitAccess.getInstance().getStagedFiles();
+      existsFilesChanged = (stagedFiles != null && 
+          !stagedFiles.isEmpty() 
+          && !stagedFiles.stream().noneMatch(e -> e.getChangeType() == GitChangeType.CONFLICT));
+    }
+    
+    if(existsFilesChanged) {
+      Action stashAllChangesAction = createStashAllChangesAction();
+      
+      stasheAllChangesMenuItem = new JRadioButtonMenuItem(stashAllChangesAction);
+      stasheAllChangesMenuItem.addActionListener(radioMenuItemActionListener);
+      splitMenuButton.add(stasheAllChangesMenuItem);
+      stashActionsGroup.add(stasheAllChangesMenuItem);
+      
+      splitMenuButton.setAction(stashAllChangesAction);
+      stasheAllChangesMenuItem.setSelected(true);
+    }
+    
+    Collection<RevCommit> stashesList = GitAccess.getInstance().listStash();
+    
+    boolean existsStashes = stashesList != null && !stashesList.isEmpty();
+    
+    if(existsStashes) {
+      Action stashesAction = new AbstractAction("Stashes") {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          StashesAction stashesDialog = new StashesAction();
+          stashesDialog.setVisible(true);   
+        }
+        
+      };
+      
+      stashesMenuItem = new JRadioButtonMenuItem(stashesAction);
+      stashesMenuItem.addActionListener(radioMenuItemActionListener);
+      splitMenuButton.add(stashesMenuItem);
+      stashActionsGroup.add(stashesMenuItem);
+      
+      if(!existsFilesChanged) {
+        splitMenuButton.setAction(stashesAction);
+        stashesMenuItem.setSelected(true);
+      }
+    }
+    
+    return existsFilesChanged || existsStashes;
+    
+  }
+  
+  
 	/**
 	 * Create the "Push" button.
 	 * 
@@ -1182,6 +1360,43 @@ public class ToolbarPanel extends JPanel {
 		};
   }
 
+  
+  /**
+   * Create the "Stash all changes" action.
+   * 
+   * @return the "Stash all changes" action
+   */
+  private Action createStashAllChangesAction() {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_ALL_CHANGES)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          if (GitAccess.getInstance().getRepository() != null) {
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("Stash Button Clicked");
+            }
+            StashAllChangesDialog dialog = new StashAllChangesDialog(TRANSLATOR.getTranslation(Tags.STASH_ALL_CHANGES));
+            if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
+              String description = dialog.getStashMessage();
+              if("".compareTo(description) == 0) {
+                GitAccess.getInstance().createStash();
+              } else {
+                GitAccess.getInstance().createStash(description);
+              }
+              Collection<RevCommit> stashes = GitAccess.getInstance().listStash();
+              noOfStashes = stashes != null ? stashes.size() : 0;
+            }
+          }
+        } catch (NoRepositorySelected e1) {
+          if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug(e1, e1);
+          }
+        }
+      }
+    };
+  }
+  
+  
 	/**
 	 * Create the "Push" action.
 	 * 
@@ -1223,6 +1438,10 @@ public class ToolbarPanel extends JPanel {
 		button.setMinimumSize(d);
 		button.setMaximumSize(d);
 	}
+	
+	public SplitMenuButton getStashButton() {
+    return stashButton;
+  }
 	
 	public ToolbarButton getPushButton() {
     return pushButton;

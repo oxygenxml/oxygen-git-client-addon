@@ -303,6 +303,9 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
             || operation == GitOperation.OPEN_WORKING_COPY
             || operation == GitOperation.MERGE
             || operation == GitOperation.REVERT_COMMIT 
+            || operation == GitOperation.STASH_CREATE
+            || operation == GitOperation.STASH_DROP
+            || operation == GitOperation.STASH_APPLY
             || operation == GitOperation.CHECKOUT_FILE) {
           gitRefreshSupport.call();
           

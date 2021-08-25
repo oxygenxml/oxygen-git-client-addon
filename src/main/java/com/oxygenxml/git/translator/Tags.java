@@ -1289,4 +1289,21 @@ public class Tags {
    * n more commits message.
    */
   public static final String N_MORE_COMMITS = "N_More_Commits";
+  /**
+   * The informative message for stash.
+   */
+  public static final String STASH_INFORMATIVE_MESSAGE = "Stash_Informative_Message";
+  /**
+   * The text to tell user about adding stash description.
+   */
+  public static final String STASH_ADD_DESCRIPTION = "Stash_Add_Description";
+  /**
+   * Stashes.
+   */
+  public static final String STASHES = "Stashes";
+  /**
+   * Stash all changes.
+   */
+  public static final String STASH_ALL_CHANGES = "Stash_All_Changes";
+
 }
