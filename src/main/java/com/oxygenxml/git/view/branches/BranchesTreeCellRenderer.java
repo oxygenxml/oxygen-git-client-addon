@@ -115,10 +115,13 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       try {
         String toolTipText = null;
         if (leaf) {
-          if(BranchesUtil.getRemoteBranches().contains(path)) {
+          if(path.contains(Constants.R_REMOTES)) {
             toolTipText = constructRemoteBranchToolTip(text, path);
-          } else if (BranchesUtil.getLocalBranches().contains(text)) {
-            toolTipText = constructLocalBranchToolTip(text);
+          } else if (path.contains(Constants.R_HEADS)) {
+            String branchName = BranchesUtil.createBranchPath(
+                path,
+                BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
+            toolTipText = constructLocalBranchToolTip(branchName);
           }
         }
         label.setToolTipText(toolTipText);

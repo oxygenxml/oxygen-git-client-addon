@@ -580,7 +580,7 @@ public class BranchManagementTest extends GitTestBase{
    * @throws Exception
    */
   @Test
-  public void testBranchesTreeToolTipBranches() throws Exception {
+  public void testBranchesTreeToolTips() throws Exception {
     // Local repo
     File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
     file.createNewFile();
@@ -680,6 +680,61 @@ public class BranchManagementTest extends GitTestBase{
             + "Last_Commit_Details:<br>"
             + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
             + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
+    
+    assertNull(leaf.getNextLeaf());
+    
+  }
+  
+  /**
+   * <p><b>Description:</b> Tests the tool tips for branches that contain slashes
+   * in their names.</p>
+   * <p><b>Bug ID:</b> EXM-48643</p>
+   * 
+   * @author sorin_carbunaru
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testBranchesTreeToolTips_2() throws Exception {
+    // Local repo
+    File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    gitAccess.createBranch("the/breanci");
+    
+    // Local repo again
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
+    
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitControllerBase.class));
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    
+    JTree tree = branchManagementPanel.getTree();
+    GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    DefaultMutableTreeNode leaf = root.getFirstLeaf();
+    JLabel rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 3, true);
+    assertEquals("breanci", rendererLabel.getText());
+    assertEquals(
+        "<html><p>Local_branch the/breanci<br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
+    
+    leaf = leaf.getNextLeaf();
+    rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 4, true);
+    assertEquals(
+        "<html><p>Local_branch main<br>"
+        // Also has upstream
+        + "Upstream_branch origin/main<br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
         rendererLabel.getToolTipText());
     
     assertNull(leaf.getNextLeaf());
