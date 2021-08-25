@@ -10,7 +10,9 @@ import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -26,6 +28,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.history.HistoryPanel;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -174,9 +178,9 @@ public class StashesAction extends JDialog {
     constrains.weighty = 0;
    
     
-    Button pushButton = new Button("Apply");
-    pushButton.setEnabled(true);
-    pushButton.addActionListener(e -> {
+    Button applyButton = new Button(Translator.getInstance().getTranslation(Tags.STASH));
+    applyButton.setEnabled(true);
+    applyButton.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
       if(!stashes.isEmpty()) {
@@ -188,9 +192,9 @@ public class StashesAction extends JDialog {
       }
     });
     
-    buttonsPanel.add(pushButton, constrains);    
-    Button deleteButton = new Button("Delete");
-    pushButton.setEnabled(true);
+    buttonsPanel.add(applyButton, constrains);    
+    Button deleteButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
+    applyButton.setEnabled(true);
     deleteButton.addActionListener(e -> {
         int selectedRow = stashesTable.getSelectedRow();
         GitAccess.getInstance().stashDrop(selectedRow);
@@ -233,10 +237,41 @@ public class StashesAction extends JDialog {
       model.addRow(row);
   }
     stashesTable = OxygenUIComponentsFactory.createTable(model);
-    stashesTable.setAutoResizeMode( JTable.AUTO_RESIZE_LAST_COLUMN);
+    stashesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     stashesTable.setFillsViewportHeight(true);
     
+    JPopupMenu contextualActions = new JPopupMenu();
+    JMenuItem menuItemStash      = new JMenuItem(Translator.getInstance().getTranslation(Tags.APPLY));
+    JMenuItem menuItemRemove     = new JMenuItem(Translator.getInstance().getTranslation(Tags.DELETE));
+    
+    menuItemStash.addActionListener(e -> {
+      int selectedRow = stashesTable.getSelectedRow();
+      if(!stashes.isEmpty()) {
+        try {
+          GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
+        } catch (GitAPIException e1) {
+          LOGGER.error(e1, e1);
+        }
+      }
+    });
+
+    menuItemRemove.addActionListener(e -> {
+        int selectedRow = stashesTable.getSelectedRow();
+        GitAccess.getInstance().stashDrop(selectedRow);
+        for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+          model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
+            model.fireTableCellUpdated(row, 0);
+        }
+        model.removeRow(selectedRow);     
+    });
+    
+    contextualActions.add(menuItemStash);
+    contextualActions.addSeparator();
+    contextualActions.add(menuItemRemove);
+    
     stashesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    stashesTable.setComponentPopupMenu(contextualActions);
+    
     model.fireTableDataChanged();
     updateStashTableWidths();
   }

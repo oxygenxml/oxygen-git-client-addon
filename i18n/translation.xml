@@ -183,7 +183,14 @@
         <val lang="ja_JP">Stash</val>
         <val lang="nl_NL">Stash</val>
     </key>
-    
+    <key value="Apply">
+        <comment>Apply</comment>
+        <val lang="en_US">Apply</val>
+        <val lang="de_DE">Apply</val>
+        <val lang="fr_FR">Apply</val>
+        <val lang="ja_JP">Apply</val>
+        <val lang="nl_NL">Apply</val>
+    </key>
     <key value="Revert_Commit_Confirmation">
         <comment>Warns about reverting the last commit</comment>
         <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>

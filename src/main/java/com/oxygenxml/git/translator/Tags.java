@@ -1302,6 +1302,10 @@ public class Tags {
    */
   public static final String STASHES = "Stashes";
   /**
+   * Apply.
+   */
+  public static final String APPLY = "Apply";
+  /**
    * Stash all changes.
    */
   public static final String STASH_ALL_CHANGES = "Stash_All_Changes";
