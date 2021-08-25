@@ -562,8 +562,12 @@ public class ToolbarPanel extends JPanel {
     Action showTagsAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        TagsDialog dialog = new TagsDialog();
-        dialog.setVisible(true);
+        try {
+          TagsDialog dialog = new TagsDialog();
+          dialog.setVisible(true);
+        } catch (GitAPIException | IOException | NoRepositorySelected ex) { 
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        }
       }
     };
 

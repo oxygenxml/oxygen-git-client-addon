@@ -6,8 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -16,23 +14,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevObject;
-import org.eclipse.jgit.revwalk.RevTag;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.transport.CredentialsProvider;
 
-import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -48,15 +37,17 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  */
 public class TagsDialog extends JDialog {
   
+  private static final int PREFERRED_WIDTH = 475;
+
   /**
    * Logger for logging.
    */
   private static final Logger LOGGER = LogManager.getLogger(TagsDialog.class.getName());
   
   /**
-   * A list with the remote tags
+   * A list with the remote tags titles
    */
-  private List<String> remoteTagStrings;
+  private List<String> remoteTagsTitle;
   
   /**
    * The button used to push a local tag
@@ -74,75 +65,47 @@ public class TagsDialog extends JDialog {
   private JTable tagsTable;
   
   /**
-   * The local tags titles
+   * A list with all GitTags 
    */
-  private List<String> localTags;
-  
-  /**
-   * The local tags messages
-   */
-  private List<String> localTagsMessages;
+  private List<GitTag> localTagsList;
   
   /**
    * Constructor
    */
-  TagsDialog (){
-
+  public TagsDialog() throws GitAPIException, IOException, NoRepositorySelected {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
         "Tags",
         false);
     
-    try {
-      createRemoteTagList();
-    } catch (GitAPIException  e) {
-      e.printStackTrace();
-    }
+    remoteTagsTitle = GitTagsManager.getRemoteTagsTitle();
+    localTagsList = GitTagsManager.getLocalTags();
+    
+    createGUI();
     
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-    
-    if (parentFrame != null) {
-      setIconImage(parentFrame.getIconImage());
-    }
-    
-    createGUI();
-
-    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     if (parentFrame != null) {
       setLocationRelativeTo(parentFrame);
+      setIconImage(parentFrame.getIconImage());
     }
-    setSize(new Dimension(475, getPreferredSize().height));
+
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    setPreferredSize(new Dimension(PREFERRED_WIDTH, getPreferredSize().height));
     setResizable(true);
-    
-    
   }
   
-  private void createRemoteTagList() throws GitAPIException {
-    CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(GitAccess.getInstance().getHostName());
-    Collection <Ref> refs = GitAccess.getInstance().getGit().lsRemote().setCredentialsProvider(credentialsProvider).setTags(true).call();
-    remoteTagStrings = new ArrayList<>();
-    for (Ref ref : refs) {
-    remoteTagStrings.add(Repository.shortenRefName(ref.getName()));
-    }
-  }
   
   /**
    * Create GUI
    */
   private void createGUI() {
-    
-    JPanel mainPanel;
-    try {
-      mainPanel = createTagsPanel();
-      getContentPane().add(mainPanel);
-    } catch (GitAPIException | NoRepositorySelected | IOException e) {
-      e.printStackTrace();
-    }
-    
+
+    JPanel mainPanel = createTagsPanel();
+    getContentPane().add(mainPanel);
+
     pack();
   }
-  
   
   /**
    * Creates a JPanel with the
@@ -153,7 +116,7 @@ public class TagsDialog extends JDialog {
    * @throws NoRepositorySelected
    * @throws IOException
    */
-  private JPanel createTagsPanel() throws GitAPIException, NoRepositorySelected, IOException {
+  private JPanel createTagsPanel() {
     
     
     int topInset = UIConstants.COMPONENT_TOP_PADDING;
@@ -166,19 +129,15 @@ public class TagsDialog extends JDialog {
     GridBagConstraints gbc = new GridBagConstraints();
     
     createTagsTable();
-    JTableHeader header = tagsTable.getTableHeader();
     
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.weighty = 1;
-    gbc.gridwidth = 2;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.insets = new Insets(topInset, leftInset, 0, rightInset);
-    tagsPanel.add(header,gbc);
-    
-    gbc.gridy++;
     gbc.weightx = 1;
+    gbc.gridwidth = 1;
     gbc.fill = GridBagConstraints.BOTH;
+    gbc.insets = new Insets(topInset, leftInset, 0, rightInset);
+
     tagsPanel.add(new JScrollPane(tagsTable),gbc);
     
     //add a panel with buttons
@@ -193,10 +152,12 @@ public class TagsDialog extends JDialog {
     
     pushButton = new JButton("Push");
     pushButton.addActionListener(createPushListener());
+    pushButton.setEnabled(false);
     buttonsPanel.add(pushButton, buttonsGridBagConstraints);
     
     deleteButton = new JButton("Delete");
     deleteButton.addActionListener(createDeleteListener());
+    deleteButton.setEnabled(false);
     
     buttonsGridBagConstraints.gridx ++;
     buttonsPanel.add(deleteButton, buttonsGridBagConstraints);
@@ -206,11 +167,9 @@ public class TagsDialog extends JDialog {
     gbc.gridy++;
     gbc.gridwidth = 1;
     gbc.fill = GridBagConstraints.NONE;
-    gbc.anchor = GridBagConstraints.SOUTHEAST;
+    gbc.anchor = GridBagConstraints.EAST;
     gbc.insets = new Insets(topInset, leftInset, bottomInset, rightInset);
-    tagsPanel.add(pushButton, gbc);
-    gbc.gridx++;
-    tagsPanel.add(deleteButton,gbc);
+    tagsPanel.add(buttonsPanel, gbc);
     
     return tagsPanel;
   }
@@ -225,7 +184,7 @@ public class TagsDialog extends JDialog {
     return e -> {
       int selectedRow = tagsTable.getSelectedRow();
       String tag = (String) tagsTable.getValueAt(selectedRow, 0);
-      if (!remoteTagStrings.contains(tag)) {
+      if (!remoteTagsTitle.contains(tag)) {
         try {
           GitAccess.getInstance().pushTag(tag);
         } catch (GitAPIException ex) {
@@ -244,16 +203,17 @@ public class TagsDialog extends JDialog {
   private ActionListener createDeleteListener() {
 
     return e -> {
+      deleteButton.setEnabled(false);
+      pushButton.setEnabled(false);
       int selectedRow = (tagsTable.getSelectedRow());
       String tag = (String) tagsTable.getValueAt(selectedRow, 0);
-      try {
-        GitAccess.getInstance().deleteTag(tag);
-      } catch (GitAPIException ex) {
-        LOGGER.debug(ex);
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-      }
-      localTags.remove(selectedRow);
-      localTagsMessages.remove(selectedRow);
+      GitAccess.getInstance().deleteTag(tag);
+      
+      localTagsList.remove(selectedRow);
+
+      DefaultTableModel tagsTableModel = (DefaultTableModel) tagsTable.getModel();
+      tagsTableModel.removeRow(selectedRow);
+      tagsTableModel.fireTableStructureChanged();
       tagsTable.repaint();
     };
   }
@@ -267,48 +227,28 @@ public class TagsDialog extends JDialog {
    * @throws NoRepositorySelected
    * @throws IOException
    */
-  private void createTagsTable() throws GitAPIException, NoRepositorySelected, IOException{
-    List<Ref> call = GitAccess.getInstance().getGit().tagList().call();
-    localTags = new ArrayList<>();
-    localTagsMessages = new ArrayList<>();
-    Repository repository = GitAccess.getInstance().getRepository();
-    RevWalk walk = new RevWalk(repository);
-
-    for (Ref ref : call) {
-      ObjectId objectIdOfTag = ref.getObjectId();
-      RevObject object = walk.parseAny(objectIdOfTag);
-      if (object instanceof RevTag) {
-        RevTag tag = (RevTag) object;
-        localTags.add( tag.getTagName() );
-        localTagsMessages.add(tag.getFullMessage());
-        
-      } else if (object instanceof RevCommit) {
-        RevCommit lightTag = (RevCommit) object;
-        localTags.add( Repository.shortenRefName(lightTag.getName()) );
-        localTagsMessages.add("");
-      } 
-    }
-    
-    walk.close();
-    
+  private void createTagsTable() {
     String[] columnNames = {"Tag name","Message"};
     DefaultTableModel model = new DefaultTableModel(columnNames, 0);
     
-    for (int i = 0; i < localTags.size(); i++){
-      Object[] row = { localTags.get(i), localTagsMessages.get(i) };
+    for (int i = 0; i < localTagsList.size(); i++){
+      Object[] row = { localTagsList.get(i).getTitle(), localTagsList.get(i).getMessage() };
       model.addRow(row);
   }
     tagsTable = OxygenUIComponentsFactory.createTable(model);
     tagsTable.getSelectionModel().addListSelectionListener(e -> {
       int selectedRow = (tagsTable.getSelectedRow());
-      String tag = (String) tagsTable.getValueAt(selectedRow, 0);
-      if (!remoteTagStrings.contains(tag)) {
-        pushButton.setEnabled(true);
-        deleteButton.setEnabled(true);
-      } else {
-        pushButton.setEnabled(false);
-        deleteButton.setEnabled(false);
+      if(selectedRow >= 0) {
+        GitTag tag = localTagsList.get(selectedRow);
+        if (!tag.isPushed()) {
+          pushButton.setEnabled(true);
+          deleteButton.setEnabled(true);
+        } else {
+          pushButton.setEnabled(false);
+          deleteButton.setEnabled(false);
+        }
       }
     });
+    tagsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
   }
 }

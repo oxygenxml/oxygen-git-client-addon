@@ -272,6 +272,7 @@ public class HistoryPanel extends JPanel {
           case CONTINUE_REBASE:
           case REVERT_COMMIT:
           case TAG_COMMIT:
+          case TAG_DELETE:
             refresh();
             break;
           default:

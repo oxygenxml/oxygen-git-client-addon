@@ -2568,10 +2568,17 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException
 	 */
-	public void deleteTag(String name) throws GitAPIException {
-	  getGit()
-	    .tagDelete()
-	    .setTags(name)
-	    .call();
+	public void deleteTag(String name)  {
+	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_DELETE));
+	  try {
+      getGit()
+        .tagDelete()
+        .setTags(name)
+        .call();
+      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.TAG_DELETE));
+    } catch (GitAPIException e) {
+      LOGGER.error(e, e);
+      fireOperationFailed(new GitEventInfo(GitOperation.TAG_DELETE), e);
+    }
 	}
 }

@@ -95,5 +95,9 @@ public enum GitOperation {
   /**
    * Tag a commit operation
    */
-  TAG_COMMIT;
+  TAG_COMMIT,
+  /**
+   * Delete a tag operation
+   */
+  TAG_DELETE;
 }
