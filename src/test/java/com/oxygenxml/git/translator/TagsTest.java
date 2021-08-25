@@ -130,7 +130,7 @@ public class TagsTest {
    * @throws Exception
    */
   @Test
-  public void testIfAllTagsHaveAKey() throws Exception {
+  public void testTagsHaveCorrespondingKeys() throws Exception {
     String[] oxygenKeys = {"Filter_hint", "Close", "Cancel", "Preferences", "Git_client", "Create"};
     
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("i18n/translation.xml");
@@ -167,13 +167,13 @@ public class TagsTest {
   
   /**
    * Check if all keys have corresponding tag. 
+   * 
    * @author Alex_Smarandache
    * 
    * @throws Exception
    */
   @Test
-  public void testIfAllKeysHaveATag() throws Exception {
-  
+  public void testAllKeysHaveCorrespondingTags() throws Exception {
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("i18n/translation.xml");
     NodeList keys = doc.getDocumentElement().getElementsByTagName("key");
     Set<String> tagsValues = new HashSet<>();
@@ -203,7 +203,7 @@ public class TagsTest {
         missedKeys.append("\n" + key);
       }
     }
-    assertEquals("Usually keys should have a correspondent tag.", "[]", unresolvedKeys.toString());
+    assertEquals("All keys must have correspondent tags.", "[]", unresolvedKeys.toString());
   
   }
 
