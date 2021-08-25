@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -41,6 +42,7 @@ import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
+import com.oxygenxml.git.view.dialog.InformationsDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -330,10 +332,16 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
               try (RevWalk revWalk = new RevWalk(repo)) {
                 RevCommit revcom = revWalk.parseCommit(repo.resolve(commitID));
                 String commitMessage = revcom.getFullMessage();
+                String commitIDString = revcom.getId().name();
                 PersonIdent authorIdent = revcom.getAuthorIdent();
-                PluginWorkspaceProvider.getPluginWorkspace()
-                    .showInformationMessage(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE) + "\n"
-                        + authorIdent.getName() + " " + commitMessage);
+                InformationsDialog.showInformationMessage(translator.getTranslation(Tags.DETACHED_HEAD),
+                    commitMessage,
+                    Arrays.asList(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE),
+                        translator.getTranslation(Tags.COMMITID)+": "+commitIDString,
+                        translator.getTranslation(Tags.COMMITTER)+": "+ authorIdent.getName(),
+                        translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)+": "),
+                    null);
+                       
               } catch (RevisionSyntaxException | IOException e) {
                 logger.debug(e, e);
               }

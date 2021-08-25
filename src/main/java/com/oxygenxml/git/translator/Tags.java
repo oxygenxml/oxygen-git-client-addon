@@ -1289,4 +1289,14 @@ public class Tags {
    * n more commits message.
    */
   public static final String N_MORE_COMMITS = "N_More_Commits";
+  
+  /**
+   * The name of the commit
+   */
+  public static final String COMMITID = "CommitID";
+  
+  /**
+   * Detached-Head
+   */
+  public static final String DETACHED_HEAD = "Detached_Head";
 }
