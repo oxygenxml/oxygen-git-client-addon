@@ -2504,39 +2504,76 @@ public class GitAccess {
 	 */
 	public void applyStash(String stashRef) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
+		boolean wasApplied = false;
 		try {
+		 
+		  wasApplied = checkIfStashWasApplied(stashRef);
+		  
 			git.stashApply().setStashRef(stashRef).call();
+			
 			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
-		} catch (StashApplyFailureException e) {
+		
+			
+		} catch (StashApplyFailureException | IOException e) {
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
-			  List<String> modifiedFiles = new ArrayList<>(git.status().call().getModified());
-			  if(!modifiedFiles.isEmpty()) {
-			    FileStatusDialog.showWarningMessage(
-	            translator.getTranslation(Tags.STASH),
-	            modifiedFiles,
-	            translator.getTranslation(Tags.STASH_APPLY_FAILED));
-			  } else {
+			  if(wasApplied) {
 			    FileStatusDialog.showWarningMessageWithConfirmation(translator.getTranslation(Tags.STASH), 
 			        translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS), 
-			        "", 
-			        "");
-			    try {
-            System.out.println(getRepository().getRepositoryState().toString());
-          } catch (NoRepositorySelected e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-          }
+              "", 
+              "");
+          fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
+			  } else {
+			    List<String> modifiedFiles = new ArrayList<>(git.status().call().getModified());
+	        if(!modifiedFiles.isEmpty()) {
+	          FileStatusDialog.showErrorMessage(
+	              translator.getTranslation(Tags.STASH),
+	              modifiedFiles,
+	              translator.getTranslation(Tags.STASH_APPLY_FAILED));
+	          fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
+			    } else {
+			      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+			          translator.getTranslation(Tags.STASH_APPLY_FAILED));
+            fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
+			    }
 			  }
-			  // TODO: better explanation in the message
-				
-				
-				
-			}
-			fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
-		}
+		  }
+	  }
 	}
   
-
+	
+/**
+ * @param stashRef       The stash reference.
+ * 
+ * @return               <code>true</code> if the stash was applied with success even is throws an exception.
+ * 
+ * @throws IOException
+ * @throws GitAPIException
+ */
+	private boolean checkIfStashWasApplied(String stashRef) throws IOException, GitAPIException {
+	  boolean wasApplied = true;
+	  List<FileStatus> list = RevCommitUtil.getChangedFiles(stashRef);
+    for(int i = 0; i < list.size(); i++) {
+      for (int j = 0; j < getUnstagedFiles().size(); j++) {
+        if(getUnstagedFiles().get(j).getChangeType() == GitChangeType.CONFLICT ||
+            getUnstagedFiles().get(j).getFileLocation().compareTo(list.get(i).getFileLocation()) == 0) {
+          wasApplied = false;
+          break;
+        }
+      }
+      if(wasApplied) {
+        for (int j = 0; j < getStagedFiles().size(); j++) {
+          if(getStagedFiles().get(j).getChangeType() == GitChangeType.CONFLICT ||
+              getStagedFiles().get(j).getFileLocation().compareTo(list.get(i).getFileLocation()) == 0) {
+            wasApplied = false;
+            break;
+          }
+        }
+      }
+    }
+      
+    return wasApplied;
+	}
+	
 	/**
 	 * Drops one stash item from the list of stashes.
 	 * 

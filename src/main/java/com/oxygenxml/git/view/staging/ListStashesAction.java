@@ -40,77 +40,77 @@ import ro.sync.exml.workspace.api.standalone.ui.Button;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
- * Used for create the dialog that shows the Stashes of the repository.
+ * Used for create the dialog that shows the stashes of the repository.
  * 
  * @author Alex_Smarandache
  *
  */
 public class ListStashesAction extends JDialog {
-  
+
   /**
    * Logger for logging.
    */
   private static final Logger LOGGER = LogManager.getLogger(ListStashesAction.class.getName());
-  
+
   /**
    * The default width for table.
    */
   private static final int TABLE_DEFAULT_WIDTH = 400;
-  
+
   /**
    * The default height for table.
    */
   private static final int TABLE_DEFAULT_HEIGHT = 200;
-  
+
   /**
    * The table with the stashes.
    */
   private JTable stashesTable;
- 
-  
+
+
   /**
    * Constructor
    */
-  public ListStashesAction (){
+  public ListStashesAction () {
 
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
         "Stashes",
         false);
-    
+
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-    
+
     if (parentFrame != null) {
       setIconImage(parentFrame.getIconImage());
     }
-    
+
     createGUI();
 
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     if (parentFrame != null) {
       setLocationRelativeTo(parentFrame);
     }
-       
+
   }
-  
-  
+
+
   /**
-   * Create GUI
+   * Create GUI.
    */
   private void createGUI() {
     this.add(createStashesPanel());
     pack();
   }
-  
-  
+
+
   /**
-   * Creates a JPanel with the
+   * Creates the main panel.
    * 
-   * @return a JPanel for the tags
+   * @return a JPanel for the stashes list.
    */
   private JPanel createStashesPanel() {
-   
+
     //a panel with the header and table
     JPanel stashesPanel = new JPanel(new GridBagLayout()) {
       @Override
@@ -120,9 +120,9 @@ public class ListStashesAction extends JDialog {
       }
     };
     GridBagConstraints constrains = new GridBagConstraints();
-    
+
     createTable();
-      
+
     constrains.gridx = 0;
     constrains.gridy = 0;
     constrains.weighty = 1;
@@ -138,12 +138,12 @@ public class ListStashesAction extends JDialog {
     scrollPane.setBackground(stashesTable.getBackground());
     scrollPane.setForeground(stashesTable.getForeground());
     scrollPane.setFont(stashesTable.getFont());
-  
+
     stashesPanel.setBackground(stashesTable.getBackground());
     stashesPanel.setForeground(stashesTable.getForeground());
     stashesPanel.setFont(stashesTable.getFont());
     stashesPanel.add(scrollPane,constrains);
-    
+
     constrains.gridy++;
     constrains.fill = GridBagConstraints.HORIZONTAL;
     constrains.weightx = 1;
@@ -151,11 +151,11 @@ public class ListStashesAction extends JDialog {
     constrains.anchor = GridBagConstraints.EAST;
     constrains.insets = new Insets(5, 10, 0, 10);
     stashesPanel.add(createButtonsPanel(), constrains);
-    
+
     return stashesPanel;
   }
-  
-  
+
+
   /**
    * Create the panel with the buttons.
    * 
@@ -177,9 +177,9 @@ public class ListStashesAction extends JDialog {
     emptyPanel.setBackground(stashesTable.getBackground());
     emptyPanel.setForeground(stashesTable.getForeground());
     emptyPanel.setFont(stashesTable.getFont());
-    
+
     buttonsPanel.add(emptyPanel, constrains);   
-    
+
     constrains.fill = GridBagConstraints.NONE;
     constrains.anchor = GridBagConstraints.WEST;
     constrains.insets = new Insets(0, 3, 7, 0);
@@ -189,8 +189,8 @@ public class ListStashesAction extends JDialog {
     constrains.gridheight = 1;
     constrains.weightx = 0;
     constrains.weighty = 0;
-   
-    
+
+
     Button applyButton = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
     applyButton.setEnabled(true);
     applyButton.addActionListener(e -> {
@@ -204,31 +204,31 @@ public class ListStashesAction extends JDialog {
         }
       }
     });
-    
+
     buttonsPanel.add(applyButton, constrains);    
     Button deleteButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
     applyButton.setEnabled(true);
     deleteButton.addActionListener(e -> {
-        int selectedRow = stashesTable.getSelectedRow();
-        GitAccess.getInstance().stashDrop(selectedRow);
-        TableModel model = stashesTable.getModel();
-        for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
-            model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-            ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
-        }
-        ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow);     
+      int selectedRow = stashesTable.getSelectedRow();
+      GitAccess.getInstance().stashDrop(selectedRow);
+      TableModel model = stashesTable.getModel();
+      for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+        model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
+        ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
+      }
+      ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow);     
     });
     constrains.gridx ++;
     buttonsPanel.add(deleteButton, constrains);
-    
+
     buttonsPanel.setBackground(stashesTable.getBackground());
     buttonsPanel.setForeground(stashesTable.getForeground());
     buttonsPanel.setFont(stashesTable.getFont());
-    
+
     return buttonsPanel;
   }
-  
-  
+
+
   /**
    * Create a table with all stashes.
    * 
@@ -242,23 +242,23 @@ public class ListStashesAction extends JDialog {
       @Override
       public boolean isCellEditable(int row, int column) {
         return false;
-     }
+      }
     };
-    
+
     for (int i = 0; i < stashes.size(); i++) {
       Object[] row = {i, stashes.get(i).getFullMessage()};
       model.addRow(row);
     }
-    
+
     stashesTable = OxygenUIComponentsFactory.createTable(model);
     stashesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     stashesTable.setFillsViewportHeight(true);
-    
+
     JPopupMenu contextualActions = new JPopupMenu();
     JMenuItem menuItemStash      = new JMenuItem(Translator.getInstance().getTranslation(Tags.APPLY));
     JMenuItem menuItemRemove     = new JMenuItem(Translator.getInstance().getTranslation(Tags.DELETE));
     JMenuItem menuItemShowDif    = new JMenuItem(Translator.getInstance().getTranslation("Show diff"));
-    
+
     menuItemStash.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       if(!stashes.isEmpty()) {
@@ -271,30 +271,30 @@ public class ListStashesAction extends JDialog {
     });
 
     menuItemRemove.addActionListener(e -> {
-        int selectedRow = stashesTable.getSelectedRow();
-        GitAccess.getInstance().stashDrop(selectedRow);
-        for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
-          model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-            model.fireTableCellUpdated(row, 0);
-        }
-        model.removeRow(selectedRow);     
+      int selectedRow = stashesTable.getSelectedRow();
+      GitAccess.getInstance().stashDrop(selectedRow);
+      for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+        model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
+        model.fireTableCellUpdated(row, 0);
+      }
+      model.removeRow(selectedRow);     
     });
-    
+
     ActionListener showDiff = new ActionListener() {
       @Override
       public void actionPerformed(java.awt.event.ActionEvent e) { 
-       // TODO 
+        // TODO 
       }
     };
-        
+
     menuItemShowDif.addActionListener(showDiff);
-    
+
     contextualActions.add(menuItemShowDif);
     contextualActions.addSeparator();
     contextualActions.add(menuItemStash);
     contextualActions.addSeparator();
     contextualActions.add(menuItemRemove);
-    
+
     stashesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     stashesTable.setComponentPopupMenu(contextualActions);
     stashesTable.addMouseListener(new MouseAdapter() {
@@ -306,12 +306,12 @@ public class ListStashesAction extends JDialog {
         }
       }
     });
-    
+
     model.fireTableDataChanged();
     updateStashTableWidths();
   }
-  
-  
+
+
   /**
    * Distribute widths to the columns according to their content.
    */

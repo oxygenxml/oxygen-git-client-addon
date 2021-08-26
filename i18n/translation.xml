@@ -177,11 +177,11 @@
     
     <key value="Stash_Apply_Failed">
         <comment>Stash apply failed</comment>
-        <val lang="en_US">Unable to apply stash. One possible solution is to make local changes.</val>
-        <val lang="de_DE">Unable to apply stash. One possible solution is to make local changes.</val>
-        <val lang="fr_FR">Unable to apply stash. One possible solution is to make local changes.</val>
-        <val lang="ja_JP">Unable to apply stash. One possible solution is to make local changes.</val>
-        <val lang="nl_NL">Unable to apply stash. One possible solution is to make local changes.</val>
+        <val lang="en_US">Unable to apply stash. The most common causes are: local changes to one of the files that would generate conflicts and the presence of files with unresolved conflicts.</val>
+        <val lang="de_DE">Unable to apply stash. The most common causes are: local changes to one of the files that would generate conflicts and the presence of files with unresolved conflicts.</val>
+        <val lang="fr_FR">Unable to apply stash. The most common causes are: local changes to one of the files that would generate conflicts and the presence of files with unresolved conflicts.</val>
+        <val lang="ja_JP">Unable to apply stash. The most common causes are: local changes to one of the files that would generate conflicts and the presence of files with unresolved conflicts.</val>
+        <val lang="nl_NL">Unable to apply stash. The most common causes are: local changes to one of the files that would generate conflicts and the presence of files with unresolved conflicts.</val>
     </key>
     <key value="Stash">
         <comment>Stash</comment>
