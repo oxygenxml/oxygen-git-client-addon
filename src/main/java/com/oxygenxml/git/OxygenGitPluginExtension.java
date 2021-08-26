@@ -8,7 +8,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -19,7 +18,6 @@ import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
-import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -42,7 +40,7 @@ import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
-import com.oxygenxml.git.view.dialog.InformationsDialog;
+import com.oxygenxml.git.view.dialog.DetachedHeadDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -322,37 +320,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
         }
       }
       
-      private void treatDetachedHead(WorkingCopyGitEventInfo wcEventInfo) {
-        if (!wcEventInfo.isWorkingCopySubmodule()) {
-          try {
-            RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
-            if (repositoryState != RepositoryState.REBASING_MERGE) {
-              String commitID = GitAccess.getInstance().getBranchInfo().getShortBranchName();
-              Repository repo = GitAccess.getInstance().getRepository();
-              try (RevWalk revWalk = new RevWalk(repo)) {
-                RevCommit revcom = revWalk.parseCommit(repo.resolve(commitID));
-                String commitMessage = revcom.getFullMessage();
-                String commitIDString = revcom.getId().name();
-                PersonIdent authorIdent = revcom.getAuthorIdent();
-                InformationsDialog.showInformationMessage(translator.getTranslation(Tags.DETACHED_HEAD),
-                    commitMessage,
-                    Arrays.asList(translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE),
-                        translator.getTranslation(Tags.COMMITID)+": "+commitIDString,
-                        translator.getTranslation(Tags.AUTHOR)+": "+ authorIdent.getName(),
-                        translator.getTranslation(Tags.DATE)+": "+ authorIdent.getWhen().toLocaleString(),
-                        translator.getTranslation(Tags.COMMIT_MESSAGE_LABEL)+": "),
-                    null);
-                       
-              } catch (RevisionSyntaxException | IOException e) {
-                logger.debug(e, e);
-              }
-            }
-          } catch (NoRepositorySelected e) {
-            logger.debug(e, e);
-          }
-        }
-      }
-      
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
         GitOperation operation = info.getGitOperation();
@@ -367,6 +334,35 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     viewInfo.setIcon(Icons.getIcon(Icons.GIT_ICON));
     viewInfo.setTitle(translator.getTranslation(Tags.GIT_STAGING));
   }
+	
+	/**
+	 * Treat detached HEAD.
+	 * 
+	 * @param wcEventInfo Event information.
+	 */
+	private void treatDetachedHead(WorkingCopyGitEventInfo wcEventInfo) {
+	  if (wcEventInfo.isWorkingCopySubmodule()) {
+	    return;
+	  }
+
+	  Repository repo = null;
+    try {
+      repo = GitAccess.getInstance().getRepository();
+	  } catch (NoRepositorySelected e) {
+	    logger.error(e, e);
+	  }
+
+	  if (repo != null && repo.getRepositoryState() != RepositoryState.REBASING_MERGE) {
+	    String commitFullID = GitAccess.getInstance().getBranchInfo().getBranchName();
+	    try (RevWalk revWalk = new RevWalk(repo)) {
+	      RevCommit commit = revWalk.parseCommit(repo.resolve(commitFullID));
+	      DetachedHeadDialog dlg = new DetachedHeadDialog(commit);
+	      dlg.setVisible(true);
+	    } catch (RevisionSyntaxException | IOException e) {
+	      logger.debug(e, e);
+	    }
+	  }
+	}
 	
 	/**
 	 * Customize the history view.
