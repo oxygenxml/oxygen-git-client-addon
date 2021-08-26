@@ -29,6 +29,8 @@
 		    <div>
                         <h3>What's new in version 2.6.0</h3>
                         <ol>
+			    <li>Added a <b>Merge "SELECTED_BRANCH" into "CURRENT_BRANCH"</b> action
+				in the contextual menu for local branches in <i>Git Branch Manager</i>.</li>
 			    <li>Added a <b>Revert commit</b> action in the contextual menu for
               			commits from the <i>Git History</i> view. It creates a new commit that
              			reverts all the changes from the selected commit.</li>
