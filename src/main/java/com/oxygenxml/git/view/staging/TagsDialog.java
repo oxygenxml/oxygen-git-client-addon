@@ -183,10 +183,13 @@ public class TagsDialog extends JDialog {
 
     return e -> {
       int selectedRow = tagsTable.getSelectedRow();
-      String tag = (String) tagsTable.getValueAt(selectedRow, 0);
-      if (!remoteTagsTitle.contains(tag)) {
+      GitTag tag = localTagsList.get(selectedRow);
+      if (!remoteTagsTitle.contains(tag.getTitle())) {
         try {
-          GitAccess.getInstance().pushTag(tag);
+          GitAccess.getInstance().pushTag(tag.getTitle());
+          tag.setPushed(true);
+          pushButton.setEnabled(false);
+          deleteButton.setEnabled(false);
         } catch (GitAPIException ex) {
           LOGGER.debug(ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
