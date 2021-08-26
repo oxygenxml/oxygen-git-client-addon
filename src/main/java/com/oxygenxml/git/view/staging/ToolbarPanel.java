@@ -245,12 +245,12 @@ public class ToolbarPanel extends JPanel {
   /**
    * The stash all changes item.
    */
-  private JRadioButtonMenuItem stashAllChangesMenuItem;
+  private JMenuItem stashAllChangesMenuItem;
 
   /**
    * The list stahses item.
    */
-  private JRadioButtonMenuItem listStashesMenuItem;
+  private JMenuItem listStashesMenuItem;
   
   /**
    * Constructor.
@@ -799,13 +799,11 @@ public class ToolbarPanel extends JPanel {
     listStashesMenuItem.setEnabled(existsStashes);
     
     if ((existsLocalFiles && !existsStashes) ||
-        (!stashAllChangesMenuItem.isSelected() && !listStashesMenuItem.isSelected())
+        (existsLocalFiles && existsStashes)
         ){
-      stashAllChangesMenuItem.setSelected(true);
-      stashButton.setAction(stashAllChangesMenuItem.getAction());
+    //  stashButton.setAction(stashAllChangesMenuItem.getAction());
     } else if (!existsLocalFiles && existsStashes) {
-      listStashesMenuItem.setSelected(true);
-      stashButton.setAction(listStashesMenuItem.getAction());
+  //    stashButton.setAction(listStashesMenuItem.getAction());
     }
     
     stashButton.setEnabled(existsLocalFiles || existsStashes);
@@ -1224,7 +1222,7 @@ public class ToolbarPanel extends JPanel {
         Icons.getIcon(Icons.QUESTION_ICON),
         false,
         false,
-        false,
+        true,
         true) {
       
       @Override
@@ -1281,16 +1279,16 @@ public class ToolbarPanel extends JPanel {
   private void addStashActionsToMenu(SplitMenuButton splitMenuButton) {
     ButtonGroup stashActionsGroup = new ButtonGroup();
     
-    ActionListener radioMenuItemActionListener = e -> {
+    ActionListener menuItemActionListener = e -> {
       if (e.getSource() instanceof JMenuItem) {
         splitMenuButton.setAction(((JMenuItem) e.getSource()).getAction());
       }
     };
     
     Action stashAllChangesAction = createStashAllChangesAction();
-    stashAllChangesMenuItem = new JRadioButtonMenuItem(stashAllChangesAction);
+    stashAllChangesMenuItem = new JMenuItem(stashAllChangesAction);
      
-    stashAllChangesMenuItem.addActionListener(radioMenuItemActionListener);
+    stashAllChangesMenuItem.addActionListener(menuItemActionListener);
     splitMenuButton.add(stashAllChangesMenuItem);
     stashActionsGroup.add(stashAllChangesMenuItem);  
     
@@ -1304,8 +1302,8 @@ public class ToolbarPanel extends JPanel {
       
     };
     
-    listStashesMenuItem = new JRadioButtonMenuItem(stashesAction);
-    listStashesMenuItem.addActionListener(radioMenuItemActionListener);
+    listStashesMenuItem = new JMenuItem(stashesAction);
+    listStashesMenuItem.addActionListener(menuItemActionListener);
       
     splitMenuButton.add(listStashesMenuItem);
     stashActionsGroup.add(listStashesMenuItem);

@@ -196,7 +196,7 @@ public class ListStashesAction extends JDialog {
     applyButton.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
-      if(!stashes.isEmpty()) {
+      if(!stashes.isEmpty() && selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
         try {
           GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
         } catch (GitAPIException e1) {
@@ -210,13 +210,15 @@ public class ListStashesAction extends JDialog {
     applyButton.setEnabled(true);
     deleteButton.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
-      GitAccess.getInstance().stashDrop(selectedRow);
-      TableModel model = stashesTable.getModel();
-      for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
-        model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-        ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
-      }
-      ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow);     
+      if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
+        GitAccess.getInstance().stashDrop(selectedRow);
+        TableModel model = stashesTable.getModel();
+        for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+          model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
+          ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
+        }
+        ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow); 
+      } 
     });
     constrains.gridx ++;
     buttonsPanel.add(deleteButton, constrains);
@@ -261,7 +263,7 @@ public class ListStashesAction extends JDialog {
 
     menuItemStash.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
-      if(!stashes.isEmpty()) {
+      if(selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
         try {
           GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
         } catch (GitAPIException e1) {
@@ -272,12 +274,14 @@ public class ListStashesAction extends JDialog {
 
     menuItemRemove.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
-      GitAccess.getInstance().stashDrop(selectedRow);
-      for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
-        model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-        model.fireTableCellUpdated(row, 0);
+      if(selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
+        GitAccess.getInstance().stashDrop(selectedRow);
+        for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+          model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
+          model.fireTableCellUpdated(row, 0);
+        }
+        model.removeRow(selectedRow);     
       }
-      model.removeRow(selectedRow);     
     });
 
     ActionListener showDiff = new ActionListener() {
