@@ -11,7 +11,10 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -23,10 +26,12 @@ import javax.swing.table.TableColumnModel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -76,6 +81,12 @@ public class TagsDialog extends JDialog {
    * A list with all GitTags 
    */
   private List<GitTag> localTagsList;
+  
+  
+  private int topInset = UIConstants.COMPONENT_TOP_PADDING;
+  private int bottomInset = UIConstants.COMPONENT_BOTTOM_PADDING;
+  private int leftInset = UIConstants.COMPONENT_LEFT_PADDING;
+  private int rightInset = UIConstants.COMPONENT_RIGHT_PADDING;
   
   /**
    * Translator
@@ -132,10 +143,7 @@ public class TagsDialog extends JDialog {
   private JPanel createTagsPanel() {
     
     
-    int topInset = UIConstants.COMPONENT_TOP_PADDING;
-    int bottomInset = UIConstants.COMPONENT_BOTTOM_PADDING;
-    int leftInset = UIConstants.COMPONENT_LEFT_PADDING;
-    int rightInset = UIConstants.COMPONENT_RIGHT_PADDING;
+
     
     //add the table
     JPanel tagsPanel = new JPanel(new GridBagLayout());
@@ -267,8 +275,7 @@ public class TagsDialog extends JDialog {
       }
     });
     
- // Use TableColumnModel.getTotalColumnWidth() if your table is included in a JScrollPane
-    
+    //Resize the table
     TableColumnModel tagsTableColumnModel = tagsTable.getColumnModel();
     int tableWidth = tagsTableColumnModel.getTotalColumnWidth();
     
@@ -281,5 +288,105 @@ public class TagsDialog extends JDialog {
     }
     
     tagsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    tagsTable.setComponentPopupMenu(createTableComponentMenu());  
+  }
+  
+  /**
+   * Create the popup menu for the tagsTable
+   * 
+   * @return
+   */
+  private JPopupMenu createTableComponentMenu() {
+    JPopupMenu contextualActions = new JPopupMenu();
+    JMenuItem menuItemDetails = new JMenuItem("See details");
+    
+    menuItemDetails.addActionListener(e -> {
+      JDialog dialog;
+      try {
+        dialog = createSeeDetailsDialog();
+        dialog.setVisible(true);
+      } catch (NoRepositorySelected | IOException ex) {
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+      }
+    });
+    
+    contextualActions.add(menuItemDetails);
+    
+    new JDialog();
+    return contextualActions;
+  }
+  
+  private JDialog createSeeDetailsDialog() throws NoRepositorySelected, IOException {
+    
+    JDialog detailsDialog = new JDialog(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
+        (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
+        "Tag Details",
+        false);
+    
+    int selectedRow = tagsTable.getSelectedRow();
+    GitTag tag = localTagsList.get(selectedRow);
+    
+    //The panel with the Tag Details, Commit Details and a cancel button
+    JPanel mainPanel = new JPanel(new GridBagLayout());
+    GridBagConstraints gbc = new GridBagConstraints();
+    
+    JLabel tagNameLabel = new JLabel();
+    tagNameLabel.setText("Tag name: " + tag.getName());
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = new Insets(topInset, leftInset, 0, rightInset);
+    mainPanel.add(tagNameLabel, gbc);
+    
+    JLabel taggerDetailsLabel = new JLabel();
+    gbc.gridy++;
+    taggerDetailsLabel.setText("Tagger name: " + tag.getTaggerName() + ", email: " + tag.getTaggerEmail());
+    mainPanel.add(taggerDetailsLabel, gbc);
+    
+    JLabel tagDateLabel = new JLabel();
+    gbc.gridy++;
+    tagDateLabel.setText("Date: " + tag.getTaggingDate());
+    mainPanel.add(tagDateLabel, gbc);
+    
+    JLabel tagMessageLabel = new JLabel();
+    gbc.gridy++;
+    tagMessageLabel.setText("<html>Message:" + tag.getMessage() + "</html>");
+    mainPanel.add(tagMessageLabel, gbc);
+    
+    JLabel commitIDLabel = new JLabel();
+    gbc.gridy++;
+    commitIDLabel.setText("Commit id: " + tag.getCommitID() );
+    mainPanel.add(commitIDLabel, gbc);
+    
+    RevCommit commit = RevCommitUtil.getCommit(tag.getCommitID());
+    
+    JLabel authorDetailsLabel = new JLabel();
+    gbc.gridy++;
+    authorDetailsLabel.setText("Committer: " + commit.getAuthorIdent().getName() + ", email: " + commit.getAuthorIdent().getEmailAddress());
+    mainPanel.add(authorDetailsLabel, gbc);
+    
+    JLabel commitDateLabel = new JLabel();
+    gbc.gridy++;
+    commitDateLabel.setText("Date: " + commit.getAuthorIdent().getWhen());
+    mainPanel.add(commitDateLabel, gbc);
+    
+    JLabel commitMessageLabel = new JLabel();
+    gbc.gridy++;
+    commitMessageLabel.setText("<html>Message:" + commit.getFullMessage() + "</html>");
+    mainPanel.add(commitMessageLabel, gbc);
+    
+    JButton closeButton = new JButton(TRANSLATOR.getTranslation(Tags.CLOSE));
+    gbc.gridy++;
+    gbc.anchor = GridBagConstraints.EAST;
+    gbc.insets = new Insets(topInset, leftInset, bottomInset, rightInset);
+    closeButton.addActionListener(e -> {
+      detailsDialog.dispose();
+    });
+    mainPanel.add(closeButton, gbc);
+    
+    detailsDialog.getContentPane().add(mainPanel);
+    detailsDialog.pack();
+    detailsDialog.setResizable(false);
+    return detailsDialog;
   }
 }

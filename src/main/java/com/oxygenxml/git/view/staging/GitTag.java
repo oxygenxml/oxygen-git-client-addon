@@ -1,5 +1,7 @@
 package com.oxygenxml.git.view.staging;
 
+import java.util.Date;
+
 /**
  * A git Tag
  * 
@@ -22,18 +24,42 @@ public class GitTag {
    * True if tag is Pushed on remote
    */
   private boolean isPushed;
+  
+  /**
+   * The name of the tagger
+   */
+  private String taggerName;
+  
+  /**
+   * The email of the tagger
+   */
+  private String taggerEmail;
+  
+  /**
+   * The time when the tag was done
+   */
+  private Date taggingDate;
+  
+  /**
+   * The id of the commit this tag was made for
+   */
+  private String commitID;
 
 
-  public GitTag(String tagName, String tagMessage, boolean isTagPushed) {
+  public GitTag(String tagName, String tagMessage, boolean isTagPushed, String taggerName, String taggerEmail, Date taggingDate, String commitID) {
     this.name = tagName;
     this.message = tagMessage;
     this.isPushed = isTagPushed;
+    this.taggerName = taggerName;
+    this.taggerEmail = taggerEmail;
+    this.taggingDate = taggingDate;
+    this.commitID = commitID;
   }
-  
+
   /**
-   * Get the title of the tag
+   * Get the name of the tag
    * 
-   * @return tag Title
+   * @return tag Name
    */
   public String getName() {
     return name;
@@ -66,5 +92,40 @@ public class GitTag {
     this.isPushed = isPushed;
   }
   
+  /**
+   * Get the tagger Full name
+   * 
+   * @return a String, tagger name
+   */
+  public String getTaggerName() {
+    return taggerName;
+  }
   
+  /**
+   * Get the tagger email address
+   * 
+   * @return the email address of the tagger
+   */
+  public String getTaggerEmail() {
+    return taggerEmail;
+  }
+
+  /**
+   * Get the tagging date
+   * 
+   * @return date of the tagging
+   */
+  public Date getTaggingDate() {
+    return taggingDate;
+  }
+
+  /**
+   * Get the commit id    
+   *  
+   * @return String form of the SHA-1, in lower case hexadecimal
+   */
+  public String getCommitID() {
+    return commitID;
+  }
+
 }

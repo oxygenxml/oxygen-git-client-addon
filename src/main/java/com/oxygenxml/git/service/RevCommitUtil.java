@@ -930,5 +930,21 @@ public class RevCommitUtil {
     return null;
   }
   
+  /**
+   * Finds the commit from the commitID 
+   * 
+   * @param commitID the commit id, string form of the SHA-1
+   * 
+   * @return a RevCommit
+   * 
+   * @throws NoRepositorySelected
+   * @throws IOException
+   */
+  public static RevCommit getCommit(String commitID) throws NoRepositorySelected, IOException {
+    ObjectId commitId = ObjectId.fromString(commitID);
+    try (RevWalk revWalk = new RevWalk(GitAccess.getInstance().getRepository())) {
+      return revWalk.parseCommit(commitId);
+    }
+  }
 
 }

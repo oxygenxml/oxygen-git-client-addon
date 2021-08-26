@@ -75,11 +75,25 @@ public class GitTagsManager {
         RevObject object = walk.parseAny(objectIdOfTag);
         if (object instanceof RevTag) {
           RevTag tag = (RevTag) object;
-          remoteTags.add(new GitTag(tag.getName(), tag.getFullMessage(), true));
+          remoteTags.add(
+              new GitTag(tag.getTagName(),
+                  tag.getFullMessage(),
+                  true,
+                  tag.getTaggerIdent().getName(),
+                  tag.getTaggerIdent().getEmailAddress(),
+                  tag.getTaggerIdent().getWhen(),
+                  tag.getObject().getName()));
         } else if (object instanceof RevCommit) {
           RevCommit lightTag = (RevCommit) object;
           String lightTagTitle = Repository.shortenRefName(lightTag.getName());
-          remoteTags.add(new GitTag(lightTagTitle, "", true));
+          remoteTags.add(
+              new GitTag(lightTagTitle,
+                  "",
+                  true,
+                  lightTag.getAuthorIdent().getName(),
+                  lightTag.getAuthorIdent().getEmailAddress(),
+                  lightTag.getAuthorIdent().getWhen(),
+                  lightTag.getName()));
         } 
       }
     }
@@ -110,13 +124,27 @@ public class GitTagsManager {
         if (object instanceof RevTag) {
           RevTag tag = (RevTag) object;
           boolean isPushed = remoteTagsTitle.contains(tag.getTagName());
-          allTags.add(new GitTag(tag.getTagName(), tag.getFullMessage(), isPushed));
-
+          allTags.add(
+              new GitTag(tag.getTagName(),
+                  tag.getFullMessage(),
+                  isPushed,
+                  tag.getTaggerIdent().getName(),
+                  tag.getTaggerIdent().getEmailAddress(),
+                  tag.getTaggerIdent().getWhen(),
+                  tag.getObject().getName()));
+          
         } else if (object instanceof RevCommit) {
           RevCommit lightTag = (RevCommit) object;
           String lightTagTitle = Repository.shortenRefName(lightTag.getName());
           boolean isPushed = remoteTagsTitle.contains(lightTagTitle);
-          allTags.add(new GitTag(lightTagTitle, "", isPushed));
+          allTags.add(
+              new GitTag(lightTagTitle,
+                  "",
+                  isPushed,
+                  lightTag.getAuthorIdent().getName(),
+                  lightTag.getAuthorIdent().getEmailAddress(),
+                  lightTag.getAuthorIdent().getWhen(),
+                  lightTag.getName()));
         } 
       }
     }

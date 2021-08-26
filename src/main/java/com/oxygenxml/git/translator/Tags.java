@@ -126,7 +126,7 @@ public class Tags {
    */
   public static final String SEARCH_BAR_TOOL_TIP = "Search_bar_tool_tip";
   /**
-   * Action in the dialog that notifies the user that there are changes in the remote.
+   * Displays the message "Close"
    */
   public static final String CLOSE = "Close";
   /**
