@@ -171,7 +171,7 @@ public class CreateTagDialog extends OKCancelDialog {
 
     // "Push tag" check box
     pushTagCheckBox = new JCheckBox(translator.getTranslation(Tags.CREATE_TAG_PUSH_CHECKBOX));
-    pushTagCheckBox.setSelected(true);
+    pushTagCheckBox.setSelected(false);
     gbc.gridx = 0;
     gbc.gridy ++;
     gbc.gridwidth = 2;
