@@ -41,6 +41,9 @@
               			are uncommitted changes so that you can confirm that you want to move the changes to
               			the new branch.</li>
                             <li>A new editor variables is now supported: <b>${git(working_copy_url)}</b>. It is resolved to the URL of the current working copy directory.</li>
+			    <li>When hovering the cursor over the <i>Pull</i> and <i>Push</i> buttons,
+            			the displayed tooltip now shows information about some of the incoming/outgoing commits
+            			(such as the date, author and message).</li>
 			    <li>When hovering the cursor over a branch name, a tooltip is displayed that provides information about the last commit
 				    performed on that branch (such as the author and the date of the commit).</li>
                         </ol>
