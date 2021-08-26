@@ -1314,8 +1314,8 @@ public class Tags {
    */
   public static final String STASH_GENERATE_CONFLICTS = "Stash_Generate_Conflicts";
   /**
-   * Clear all.
+   * The message for confirmation delete stash.
    */
-  public static final String CLEAR_ALL = "Clear_All";
+  public static final String STASH_DELETE_CONFIRMATION = "Stash_Delete_Confirmation";
 
 }

@@ -33,11 +33,13 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
@@ -67,21 +69,16 @@ public class ListStashesAction extends JDialog {
    * The table with the stashes.
    */
   private JTable stashesTable;
-  
+
   /**
    * The apply button.
    */
   private Button applyButton;
-  
+
   /**
    * The delete Button.
    */
   private Button deleteButton;
-  
-  /**
-   * The clear all button.
-   */
-  private Button clearAllButton;
 
 
   /**
@@ -206,11 +203,9 @@ public class ListStashesAction extends JDialog {
     constrains.weightx = 0;
     constrains.weighty = 0;
 
-
     applyButton    = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
     deleteButton   = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
-    clearAllButton = new Button(Translator.getInstance().getTranslation(Tags.CLEAR_ALL));
-    
+
     applyButton.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
@@ -223,62 +218,58 @@ public class ListStashesAction extends JDialog {
       }
     });
     buttonsPanel.add(applyButton, constrains); 
-    
+
     deleteButton.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
-        GitAccess.getInstance().stashDrop(selectedRow);
-        TableModel model = stashesTable.getModel();
-        for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
-          model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-          ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
-        }
-        ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow); 
-        if(stashesTable.getRowCount() == 0) {
-          changeStatusAllButtons(false);
-        }
-      } 
+        int answer = FileStatusDialog.showQuestionMessage(
+                Translator.getInstance().getTranslation(Tags.STASH),
+                Translator.getInstance().getTranslation(Tags.STASH_DELETE_CONFIRMATION),
+                Translator.getInstance().getTranslation(Tags.YES),
+                Translator.getInstance().getTranslation(Tags.CANCEL));
+        if(OKCancelDialog.RESULT_OK == answer) {
+          GitAccess.getInstance().stashDrop(selectedRow);
+          TableModel model = stashesTable.getModel();
+          for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+            model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
+            ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
+          }
+          ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow); 
+          if(stashesTable.getRowCount() == 0) {
+            changeStatusAllButtons(false);
+          }
+        } 
+      }
     });
     constrains.gridx ++;
     buttonsPanel.add(deleteButton, constrains);
 
-    clearAllButton.addActionListener( e-> {
-      while (stashesTable.getRowCount() != 0 ) {
-        GitAccess.getInstance().stashDrop(0);
-        ((DefaultTableModel)stashesTable.getModel()).removeRow(0); 
-      }
-      changeStatusAllButtons(false);
-    });
-    constrains.gridx ++;
-    buttonsPanel.add(clearAllButton, constrains);
-    
     buttonsPanel.setBackground(stashesTable.getBackground());
     buttonsPanel.setForeground(stashesTable.getForeground());
     buttonsPanel.setFont(stashesTable.getFont());
 
     stashesTable.getSelectionModel().addListSelectionListener(e -> changeStatusAllButtons(true));
-    
+
     changeStatusAllButtons(false);
-    
+
     return buttonsPanel;
   }
 
- /**
-  * Enable or disable all buttons with the new status.
-  * 
-  * @param newStatus the new status for enabled all buttons.
-  */
+  /**
+   * Enable or disable all buttons with the new status.
+   * 
+   * @param newStatus the new status for enabled all buttons.
+   */
   private void changeStatusAllButtons(boolean newStatus) {
     SwingUtilities.invokeLater(
-            () -> {
-              clearAllButton.setEnabled(newStatus);
-              deleteButton.setEnabled(newStatus);
-              applyButton.setEnabled(newStatus);
-             }
-    );
+        () -> {
+          deleteButton.setEnabled(newStatus);
+          applyButton.setEnabled(newStatus);
+        }
+        );
   }   
-  
-  
+
+
   /**
    * Create a table with all stashes.
    * 
@@ -321,14 +312,21 @@ public class ListStashesAction extends JDialog {
     menuItemRemove.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       if(selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
-        GitAccess.getInstance().stashDrop(selectedRow);
-        for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
-          model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-          model.fireTableCellUpdated(row, 0);
-        }
-        model.removeRow(selectedRow);   
-        if(stashesTable.getRowCount() == 0) {
-          changeStatusAllButtons(false);
+        int answer = FileStatusDialog.showQuestionMessage(
+            Translator.getInstance().getTranslation(Tags.STASH),
+            Translator.getInstance().getTranslation(Tags.STASH_DELETE_CONFIRMATION),
+            Translator.getInstance().getTranslation(Tags.YES),
+            Translator.getInstance().getTranslation(Tags.CANCEL));
+        if(OKCancelDialog.RESULT_OK == answer) {
+          GitAccess.getInstance().stashDrop(selectedRow);
+          for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+            model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
+            model.fireTableCellUpdated(row, 0);
+          }
+          model.removeRow(selectedRow);   
+          if(stashesTable.getRowCount() == 0) {
+            changeStatusAllButtons(false);
+          }
         }
       }
     });
