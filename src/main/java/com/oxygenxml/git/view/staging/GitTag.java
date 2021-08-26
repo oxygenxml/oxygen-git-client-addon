@@ -11,7 +11,7 @@ public class GitTag {
   /**
    * Tag title
    */
-  private String title;
+  private String name;
   
   /**
    * Tag message
@@ -24,8 +24,8 @@ public class GitTag {
   private boolean isPushed;
 
 
-  public GitTag(String tagTitle, String tagMessage, boolean isTagPushed) {
-    this.title = tagTitle;
+  public GitTag(String tagName, String tagMessage, boolean isTagPushed) {
+    this.name = tagName;
     this.message = tagMessage;
     this.isPushed = isTagPushed;
   }
@@ -35,8 +35,8 @@ public class GitTag {
    * 
    * @return tag Title
    */
-  public String getTitle() {
-    return title;
+  public String getName() {
+    return name;
   }
 
   /**

@@ -79,6 +79,7 @@ public class CreateTagDialog extends OKCancelDialog {
     // Create GUI
     JPanel panel = new JPanel(new GridBagLayout());
     createGUI(panel);
+    getOkButton().setText(translator.getTranslation(Tags.CREATE));
     getContentPane().add(panel);
     setResizable(true);
     pack();

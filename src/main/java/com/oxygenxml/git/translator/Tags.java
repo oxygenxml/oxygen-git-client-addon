@@ -1339,7 +1339,7 @@ public class Tags {
   public static final String MERGE_BRANCHES_QUESTION_MESSAGE = "Merge_Branches_Question_Message";
   
   /**
-   * The message for the create Tag action
+   * The message for the create Tag action (Create tag...)
    */
   public static final String CREATE_TAG_FOR_THIS_COMMIT = "Create_Tag_For_This_Commit";
   
@@ -1363,5 +1363,26 @@ public class Tags {
   /**
    * The message for error when we already have a tag with this name
    */
-  public static final String TAG_ALREADY_EXISTS = "Tag_Already_Exists"; 
+  public static final String TAG_ALREADY_EXISTS = "Tag_Already_Exists";
+  
+  /**
+   * The first column name in the table with the tags (column for the tag name)
+   */
+  public static final String TAGS_DIALOG_NAME_COLUMN= "Tags_Dialog_Name_Column";
+  
+  /**
+   * The second column name in the table with the tags (column for the tag message)
+   */
+  public static final String TAGS_DIALOG_MESSAGE_COLUMN= "Tags_Dialog_Message_Column"; 
+  
+  /**
+   * Displays the message "Push"
+   */
+  public static final String PUSH = "Push";
+  
+  /**
+   * Displays the message "Tags" for the Tags showing Dialog 
+   */
+  public static final String TAGS_DIALOG= "Tags_Dialog"; 
+  
 }

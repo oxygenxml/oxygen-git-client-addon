@@ -17,6 +17,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -25,6 +27,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
@@ -37,8 +41,12 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  */
 public class TagsDialog extends JDialog {
   
+  /**
+   * Preferred width
+   */
   private static final int PREFERRED_WIDTH = 475;
 
+  private static final float[] columnWidthPer = {0.2f, 0.8f};
   /**
    * Logger for logging.
    */
@@ -70,12 +78,17 @@ public class TagsDialog extends JDialog {
   private List<GitTag> localTagsList;
   
   /**
+   * Translator
+   */
+  private static final Translator TRANSLATOR = Translator.getInstance();
+  
+  /**
    * Constructor
    */
   public TagsDialog() throws GitAPIException, IOException, NoRepositorySelected {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
-        "Tags",
+        TRANSLATOR.getTranslation(Tags.TAGS_DIALOG),
         false);
     
     remoteTagsTitle = GitTagsManager.getRemoteTagsTitle();
@@ -88,7 +101,7 @@ public class TagsDialog extends JDialog {
     if (parentFrame != null) {
       setLocationRelativeTo(parentFrame);
       setIconImage(parentFrame.getIconImage());
-    }
+    } 
 
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     setPreferredSize(new Dimension(PREFERRED_WIDTH, getPreferredSize().height));
@@ -124,7 +137,7 @@ public class TagsDialog extends JDialog {
     int leftInset = UIConstants.COMPONENT_LEFT_PADDING;
     int rightInset = UIConstants.COMPONENT_RIGHT_PADDING;
     
-    //add the header and table
+    //add the table
     JPanel tagsPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
     
@@ -150,12 +163,12 @@ public class TagsDialog extends JDialog {
     buttonsGridBagConstraints.fill = GridBagConstraints.NONE;
     buttonsGridBagConstraints.insets = new Insets(topInset, 0, bottomInset, rightInset);
     
-    pushButton = new JButton("Push");
+    pushButton = new JButton(TRANSLATOR.getTranslation(Tags.PUSH));
     pushButton.addActionListener(createPushListener());
     pushButton.setEnabled(false);
     buttonsPanel.add(pushButton, buttonsGridBagConstraints);
     
-    deleteButton = new JButton("Delete");
+    deleteButton = new JButton(TRANSLATOR.getTranslation(Tags.DELETE));
     deleteButton.addActionListener(createDeleteListener());
     deleteButton.setEnabled(false);
     
@@ -184,9 +197,9 @@ public class TagsDialog extends JDialog {
     return e -> {
       int selectedRow = tagsTable.getSelectedRow();
       GitTag tag = localTagsList.get(selectedRow);
-      if (!remoteTagsTitle.contains(tag.getTitle())) {
+      if (!remoteTagsTitle.contains(tag.getName())) {
         try {
-          GitAccess.getInstance().pushTag(tag.getTitle());
+          GitAccess.getInstance().pushTag(tag.getName());
           tag.setPushed(true);
           pushButton.setEnabled(false);
           deleteButton.setEnabled(false);
@@ -231,11 +244,12 @@ public class TagsDialog extends JDialog {
    * @throws IOException
    */
   private void createTagsTable() {
-    String[] columnNames = {"Tag name","Message"};
+    String[] columnNames = {TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_NAME_COLUMN),
+                            TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_MESSAGE_COLUMN)};
     DefaultTableModel model = new DefaultTableModel(columnNames, 0);
     
     for (int i = 0; i < localTagsList.size(); i++){
-      Object[] row = { localTagsList.get(i).getTitle(), localTagsList.get(i).getMessage() };
+      Object[] row = { localTagsList.get(i).getName(), localTagsList.get(i).getMessage() };
       model.addRow(row);
   }
     tagsTable = OxygenUIComponentsFactory.createTable(model);
@@ -252,6 +266,20 @@ public class TagsDialog extends JDialog {
         }
       }
     });
+    
+ // Use TableColumnModel.getTotalColumnWidth() if your table is included in a JScrollPane
+    
+    TableColumnModel tagsTableColumnModel = tagsTable.getColumnModel();
+    int tableWidth = tagsTableColumnModel.getTotalColumnWidth();
+    
+    TableColumn column;
+    int cantCols = tagsTableColumnModel.getColumnCount();
+    for (int i = 0; i < cantCols; i++) {
+        column = tagsTableColumnModel.getColumn(i);
+        int pWidth = Math.round(columnWidthPer[i] * tableWidth);
+        column.setPreferredWidth(pWidth);
+    }
+    
     tagsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
   }
 }

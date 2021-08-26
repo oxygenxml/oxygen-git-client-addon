@@ -9,27 +9,27 @@
     
     <key value="Create_Tag_Commit_Title">
         <comment>The title for the create Tag Commit dialog</comment>
-        <val lang="en_US">Tag Commit</val>
-        <val lang="de_DE">Tag Commit</val>
-        <val lang="fr_FR">Tag Commit</val>
-        <val lang="ja_JP">Tag Commit</val>
-        <val lang="nl_NL">Tag Commit</val>
+        <val lang="en_US">Create tag</val>
+        <val lang="de_DE">Create tag</val>
+        <val lang="fr_FR">Create tag</val>
+        <val lang="ja_JP">Create tag</val>
+        <val lang="nl_NL">Create tag</val>
     </key>
     <key value="Create_Tag_For_This_Commit">
         <comment>The message for the create Tag action</comment>
-        <val lang="en_US">Create tag for this commit</val>
-        <val lang="de_DE">Create tag for this commit</val>
-        <val lang="fr_FR">Create tag for this commit</val>
-        <val lang="ja_JP">Create tag for this commit</val>
-        <val lang="nl_NL">Create tag for this commit</val>
+        <val lang="en_US">Create tag...</val>
+        <val lang="de_DE">Create tag...</val>
+        <val lang="fr_FR">Create tag...</val>
+        <val lang="ja_JP">Create tag...</val>
+        <val lang="nl_NL">Create tag...</val>
     </key>
     <key value="Create_Tag_Title_Label">
         <comment>The message in the label for Tag title</comment>
-        <val lang="en_US">Tag title</val>
-        <val lang="de_DE">Tag title</val>
-        <val lang="fr_FR">Tag title</val>
-        <val lang="ja_JP">Tag title</val>
-        <val lang="nl_NL">Tag title</val>
+        <val lang="en_US">Tag name</val>
+        <val lang="de_DE">Tag name</val>
+        <val lang="fr_FR">Tag name</val>
+        <val lang="ja_JP">Tag name</val>
+        <val lang="nl_NL">Tag name</val>
     </key>
     <key value="Create_Tag_Message_Label">
         <comment>The message in the label for Tag message</comment>
@@ -54,6 +54,38 @@
         <val lang="fr_FR">Tag already exists</val>
         <val lang="ja_JP">Tag already exists</val>
         <val lang="nl_NL">Tag already exists</val>
+    </key>
+    <key value="Tags_Dialog_Name_Column">
+        <comment>The first column name in the table with the tags (column for the tag name)</comment>
+        <val lang="en_US">Tag name</val>
+        <val lang="de_DE">Tag name</val>
+        <val lang="fr_FR">Tag name</val>
+        <val lang="ja_JP">Tag name</val>
+        <val lang="nl_NL">Tag name</val>
+    </key>
+    <key value="Tags_Dialog_Message_Column">
+        <comment></comment>
+        <val lang="en_US">Message</val>
+        <val lang="de_DE">Message</val>
+        <val lang="fr_FR">Message</val>
+        <val lang="ja_JP">Message</val>
+        <val lang="nl_NL">Message</val>
+    </key>
+    <key value="Push">
+        <comment>Displays the message "Push"</comment>
+        <val lang="en_US">Push</val>
+        <val lang="de_DE">Push</val>
+        <val lang="fr_FR">Push</val>
+        <val lang="ja_JP">Push</val>
+        <val lang="nl_NL">Push</val>
+    </key>
+    <key value="Tags_Dialog">
+        <comment>Displays the message "Tags" for the Tags showing Dialog </comment>
+        <val lang="en_US">Tags</val>
+        <val lang="de_DE">Tags</val>
+        <val lang="fr_FR">Tags</val>
+        <val lang="ja_JP">Tags</val>
+        <val lang="nl_NL">Tags</val>
     </key>
     
 	<key value="Revert_Commit_Failed_Uncommitted_Changes_Message">
