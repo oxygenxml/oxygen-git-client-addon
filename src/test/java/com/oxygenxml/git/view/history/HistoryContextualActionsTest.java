@@ -184,17 +184,20 @@ public class HistoryContextualActionsTest extends GitTestBase {
     final String location = "src/test/resources/EXM-46986";
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(location);
+    
     File file = new File(location + "/source.txt");
     file.createNewFile();
     gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
     gitAccess.commit("file test added");
+    
     try (PrintWriter out = new PrintWriter(location + "/source.txt")) {
       out.println("modify");
     } catch (FileNotFoundException e) {
       e.printStackTrace();
-    }
+    }   
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     gitAccess.commit("file test modified");
+    
     String commitID = gitAccess.getLatestCommitOnCurrentBranch().getId().getName();
     BufferedReader reader = new BufferedReader(new FileReader(location + "/source.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
@@ -204,9 +207,9 @@ public class HistoryContextualActionsTest extends GitTestBase {
     try (PrintWriter out = new PrintWriter(location + "/source.txt")) {
       out.println("oxygen");
     }
-    
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     gitAccess.commit("file updated");
+    
     reader = new BufferedReader(new FileReader(location + "/source.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
