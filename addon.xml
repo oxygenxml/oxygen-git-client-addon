@@ -51,6 +51,8 @@
             			(such as the date, author and message).</li>
 			    <li>When hovering the cursor over a branch name, a tooltip is displayed that provides information about the last commit
 				    performed on that branch (such as the author and the date of the commit).</li>
+			    <li>The information message shown when starting Oxygen and being on a detached HEAD now presents more information
+				about the checked out commit (ID, author, date, message).</li>
                         </ol>
                     </div>
                     <div>
