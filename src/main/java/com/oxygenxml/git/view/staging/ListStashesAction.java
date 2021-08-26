@@ -18,6 +18,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -66,6 +67,21 @@ public class ListStashesAction extends JDialog {
    * The table with the stashes.
    */
   private JTable stashesTable;
+  
+  /**
+   * The apply button.
+   */
+  private Button applyButton;
+  
+  /**
+   * The delete Button.
+   */
+  private Button deleteButton;
+  
+  /**
+   * The clear all button.
+   */
+  private Button clearAllButton;
 
 
   /**
@@ -191,8 +207,10 @@ public class ListStashesAction extends JDialog {
     constrains.weighty = 0;
 
 
-    Button applyButton = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
-    applyButton.setEnabled(true);
+    applyButton    = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
+    deleteButton   = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
+    clearAllButton = new Button(Translator.getInstance().getTranslation(Tags.CLEAR_ALL));
+    
     applyButton.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
@@ -204,10 +222,8 @@ public class ListStashesAction extends JDialog {
         }
       }
     });
-
-    buttonsPanel.add(applyButton, constrains);    
-    Button deleteButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
-    applyButton.setEnabled(true);
+    buttonsPanel.add(applyButton, constrains); 
+    
     deleteButton.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
@@ -218,19 +234,51 @@ public class ListStashesAction extends JDialog {
           ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
         }
         ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow); 
+        if(stashesTable.getRowCount() == 0) {
+          changeStatusAllButtons(false);
+        }
       } 
     });
     constrains.gridx ++;
     buttonsPanel.add(deleteButton, constrains);
 
+    clearAllButton.addActionListener( e-> {
+      while (stashesTable.getRowCount() != 0 ) {
+        GitAccess.getInstance().stashDrop(0);
+        ((DefaultTableModel)stashesTable.getModel()).removeRow(0); 
+      }
+      changeStatusAllButtons(false);
+    });
+    constrains.gridx ++;
+    buttonsPanel.add(clearAllButton, constrains);
+    
     buttonsPanel.setBackground(stashesTable.getBackground());
     buttonsPanel.setForeground(stashesTable.getForeground());
     buttonsPanel.setFont(stashesTable.getFont());
 
+    stashesTable.getSelectionModel().addListSelectionListener(e -> changeStatusAllButtons(true));
+    
+    changeStatusAllButtons(false);
+    
     return buttonsPanel;
   }
 
-
+ /**
+  * Enable or disable all buttons with the new status.
+  * 
+  * @param newStatus the new status for enabled all buttons.
+  */
+  private void changeStatusAllButtons(boolean newStatus) {
+    SwingUtilities.invokeLater(
+            () -> {
+              clearAllButton.setEnabled(newStatus);
+              deleteButton.setEnabled(newStatus);
+              applyButton.setEnabled(newStatus);
+             }
+    );
+  }   
+  
+  
   /**
    * Create a table with all stashes.
    * 
@@ -263,12 +311,10 @@ public class ListStashesAction extends JDialog {
 
     menuItemStash.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
-      if(selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
-        try {
-          GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
-        } catch (GitAPIException e1) {
-          LOGGER.error(e1, e1);
-        }
+      try {
+        GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
+      } catch (GitAPIException e1) {
+        LOGGER.error(e1, e1);
       }
     });
 
@@ -280,15 +326,15 @@ public class ListStashesAction extends JDialog {
           model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
           model.fireTableCellUpdated(row, 0);
         }
-        model.removeRow(selectedRow);     
+        model.removeRow(selectedRow);   
+        if(stashesTable.getRowCount() == 0) {
+          changeStatusAllButtons(false);
+        }
       }
     });
 
-    ActionListener showDiff = new ActionListener() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent e) { 
-        // TODO 
-      }
+    ActionListener showDiff = e -> {
+      // TODO
     };
 
     menuItemShowDif.addActionListener(showDiff);

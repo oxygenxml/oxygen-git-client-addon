@@ -1313,5 +1313,9 @@ public class Tags {
    * Stash generate conflicts message
    */
   public static final String STASH_GENERATE_CONFLICTS = "Stash_Generate_Conflicts";
+  /**
+   * Clear all.
+   */
+  public static final String CLEAR_ALL = "Clear_All";
 
 }
