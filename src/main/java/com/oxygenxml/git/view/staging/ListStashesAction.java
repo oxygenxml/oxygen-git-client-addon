@@ -1,5 +1,6 @@
 package com.oxygenxml.git.view.staging;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,11 +8,15 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -31,6 +36,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
@@ -58,6 +65,11 @@ public class ListStashesAction extends JDialog {
   /**
    * The default width for table.
    */
+  private static final int FILES_LIST_DEFAULT_WIDTH = 200;
+
+  /**
+   * The default width for table.
+   */
   private static final int TABLE_DEFAULT_WIDTH = 400;
 
   /**
@@ -80,6 +92,10 @@ public class ListStashesAction extends JDialog {
    */
   private Button deleteButton;
 
+  /**
+   * The list of affected files by stash changes.
+   */
+  private DefaultListModel<FileStatus> filesListModel;
 
   /**
    * Constructor
@@ -107,7 +123,6 @@ public class ListStashesAction extends JDialog {
 
   }
 
-
   /**
    * Create GUI.
    */
@@ -115,7 +130,6 @@ public class ListStashesAction extends JDialog {
     this.add(createStashesPanel());
     pack();
   }
-
 
   /**
    * Creates the main panel.
@@ -144,22 +158,35 @@ public class ListStashesAction extends JDialog {
     constrains.weightx = 1;
     constrains.gridwidth = 1;
     constrains.fill = GridBagConstraints.BOTH;
-    JScrollPane scrollPane = new JScrollPane();
-    scrollPane.setBorder(null);
-    scrollPane.setPreferredSize(HiDPIUtil.getHiDPIDimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
-    scrollPane.setViewportView(stashesTable);
-    scrollPane.setBackground(stashesTable.getBackground());
-    scrollPane.setForeground(stashesTable.getForeground());
-    scrollPane.setFont(stashesTable.getFont());
+
+    JScrollPane tableStashesScrollPane = new JScrollPane();
+    tableStashesScrollPane.setBorder(null);
+    tableStashesScrollPane.setPreferredSize(HiDPIUtil.getHiDPIDimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
+    tableStashesScrollPane.setViewportView(stashesTable);
+    tableStashesScrollPane.setBackground(stashesTable.getBackground());
+    tableStashesScrollPane.setForeground(stashesTable.getForeground());
+    tableStashesScrollPane.setFont(stashesTable.getFont());
 
     stashesPanel.setBackground(stashesTable.getBackground());
     stashesPanel.setForeground(stashesTable.getForeground());
     stashesPanel.setFont(stashesTable.getFont());
-    stashesPanel.add(scrollPane,constrains);
+    stashesPanel.add(tableStashesScrollPane,constrains);
+
+    constrains.gridx++;
+    constrains.weightx = 0.5;
+    filesListModel = new DefaultListModel<>();
+    final JList<FileStatus> stashedFilesJList = new JList<>(filesListModel);
+    stashedFilesJList.setCellRenderer(new FileStatusRender());
+    stashedFilesJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    JScrollPane changesOfStashScrollPane = new JScrollPane(stashedFilesJList);
+    changesOfStashScrollPane.setPreferredSize(HiDPIUtil.getHiDPIDimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
+    stashesPanel.add(changesOfStashScrollPane, constrains);
 
     constrains.gridy++;
+    constrains.gridx = 0;
     constrains.fill = GridBagConstraints.HORIZONTAL;
     constrains.weightx = 1;
+    constrains.gridwidth = 1;
     constrains.weighty = 0;
     constrains.anchor = GridBagConstraints.EAST;
     constrains.insets = new Insets(5, 10, 0, 10);
@@ -248,7 +275,24 @@ public class ListStashesAction extends JDialog {
     buttonsPanel.setForeground(stashesTable.getForeground());
     buttonsPanel.setFont(stashesTable.getFont());
 
-    stashesTable.getSelectionModel().addListSelectionListener(e -> changeStatusAllButtons(true));
+    stashesTable.getSelectionModel().addListSelectionListener(e -> {
+      changeStatusAllButtons(true);
+      if(filesListModel != null) {
+        filesListModel.clear();
+        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStash());
+        try {
+          List<FileStatus> listOfChangedFiles = RevCommitUtil.
+                  getChangedFiles(stashesList.get(stashesTable.getSelectedRow()).getName());
+          for(FileStatus file : listOfChangedFiles) {
+            filesListModel.addElement(file);
+          }
+        } catch (IOException | GitAPIException ex) {
+          LOGGER.debug(ex, ex);
+        }
+      } else {
+        System.out.println("FAIL");
+      }
+    });
 
     changeStatusAllButtons(false);
 
@@ -368,6 +412,23 @@ public class ListStashesAction extends JDialog {
     TableColumnModel tcm = stashesTable.getColumnModel();
     TableColumn column = tcm.getColumn(1);
     column.setPreferredWidth(stashesTable.getWidth() - idColWidth);
+  }
+
+  /**
+   * A custom render for File.
+   *
+   * @author Alex_Smarandache
+   *
+   */
+  static class FileStatusRender extends DefaultListCellRenderer {
+    @Override
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                                                  boolean cellHasFocus) {
+      Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+      setText(((FileStatus)value).getFileLocation());
+     // setToolTipText(((File)value).getPath());
+      return comp;
+    }
   }
 }
 
