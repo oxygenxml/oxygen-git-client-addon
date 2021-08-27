@@ -2050,7 +2050,7 @@ public class GitAccess {
 	 * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
 	 */
 	public String getUpstreamBranchNameFromConfig(String localBranchShortName) {
-	  return RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName);
+	  return git != null ? RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName) : null;
   }
 	
 	 /**
