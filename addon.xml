@@ -36,7 +36,7 @@
              			reverts all the changes from the selected commit.</li>
 			    <li>Added a <b>Checkout</b> action to the contextual
              			menu for resources associated to a revision in the <italic>Git History</italic>
-				view. It checks out the selected version of the file.</li>
+				view. It checks out (i.e. it loads) the selected version of the file.</li>
 			    <li>Added an <b>Open working copy version</b> action to the contextual
              			menu for resources associated to a revision in the <i>Git History</i>
               			view.</li>
