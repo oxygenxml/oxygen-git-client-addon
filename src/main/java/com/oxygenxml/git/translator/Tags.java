@@ -7,6 +7,7 @@ package com.oxygenxml.git.translator;
  *
  */
 public class Tags {
+
   /**
    * Private constructor.
    */
@@ -1317,5 +1318,9 @@ public class Tags {
    * The message for confirmation delete stash.
    */
   public static final String STASH_DELETE_CONFIRMATION = "Stash_Delete_Confirmation";
+	/**
+	 * Message for unable to compare.
+	 */
+	public static final String UNABLE_TO_COMPARE = "Unable_To_Compare";
 
 }

@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +39,12 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
@@ -78,7 +81,7 @@ public class ListStashesAction extends JDialog {
   /**
    * The default height for table.
    */
-  private static final int TABLE_DEFAULT_HEIGHT = 200;
+  private static final int TABLE_DEFAULT_HEIGHT = 205;
 
   /**
    * The table with the stashes.
@@ -104,6 +107,11 @@ public class ListStashesAction extends JDialog {
    * Show diff action.
    */
   private Action showDiff;
+
+  /**
+   * The files table.
+   */
+  private Table affectedFilesTable;
 
 
   /**
@@ -182,9 +190,10 @@ public class ListStashesAction extends JDialog {
     stashesPanel.add(tableStashesScrollPane,constrains);
 
     constrains.gridx++;
-    constrains.weightx = 0.5;
+    constrains.weightx = 0.75;
     showDiff = createShowDiffAction();
-    JScrollPane changesOfStashScrollPane = new JScrollPane(createAffectedFilesTable());
+    affectedFilesTable = createAffectedFilesTable();
+    JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
     changesOfStashScrollPane.setPreferredSize(HiDPIUtil.getHiDPIDimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
     stashesPanel.add(changesOfStashScrollPane, constrains);
 
@@ -200,7 +209,7 @@ public class ListStashesAction extends JDialog {
 
     return stashesPanel;
   }
-  
+
 
   /**
    * Creates table for affected files by stash.
@@ -215,7 +224,7 @@ public class ListStashesAction extends JDialog {
         return false;
       }
     };
-    
+
     Table filesTable = OxygenUIComponentsFactory.createTable(tableModel);
     filesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     filesTable.setFillsViewportHeight(true);
@@ -246,7 +255,7 @@ public class ListStashesAction extends JDialog {
         if(e.getKeyCode() == KeyEvent.VK_ENTER 
             && filesTable.getSelectedRow() >= 0 
             && filesTable.getSelectedRow() < filesTable.getRowCount()) {     
-         showDiff.actionPerformed(null);
+          showDiff.actionPerformed(null);
         }
       }
 
@@ -254,13 +263,13 @@ public class ListStashesAction extends JDialog {
       public void keyReleased(KeyEvent e) {
         // Nothing
       }
-       
-     });
-    
+
+    });
+
     return filesTable;
   }
-  
-  
+
+
   /**
    * Create the panel with the buttons.
    * 
@@ -295,45 +304,11 @@ public class ListStashesAction extends JDialog {
     constrains.weightx = 0;
     constrains.weighty = 0;
 
-    applyButton    = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
-    deleteButton   = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
+    applyButton = createApplyButton();
+    buttonsPanel.add(applyButton, constrains);
 
-    applyButton.addActionListener(e -> {
-      int selectedRow = stashesTable.getSelectedRow();
-      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
-      if(!stashes.isEmpty() && selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
-        try {
-          GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
-        } catch (GitAPIException e1) {
-          LOGGER.error(e1, e1);
-        }
-      }
-    });
-    buttonsPanel.add(applyButton, constrains); 
-
-    deleteButton.addActionListener(e -> {
-      int selectedRow = stashesTable.getSelectedRow();
-      if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
-        int answer = FileStatusDialog.showQuestionMessage(
-            Translator.getInstance().getTranslation(Tags.STASH),
-            Translator.getInstance().getTranslation(Tags.STASH_DELETE_CONFIRMATION),
-            Translator.getInstance().getTranslation(Tags.YES),
-            Translator.getInstance().getTranslation(Tags.CANCEL));
-        if(OKCancelDialog.RESULT_OK == answer) {
-          GitAccess.getInstance().stashDrop(selectedRow);
-          TableModel model = stashesTable.getModel();
-          for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
-            model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-            ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
-          }
-          ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow); 
-          if(stashesTable.getRowCount() == 0) {
-            changeStatusAllButtons(false);
-          }
-        } 
-      }
-    });
     constrains.gridx ++;
+    deleteButton = createDeleteButton();
     buttonsPanel.add(deleteButton, constrains);
 
     buttonsPanel.setBackground(stashesTable.getBackground());
@@ -342,22 +317,23 @@ public class ListStashesAction extends JDialog {
 
     stashesTable.getSelectionModel().addListSelectionListener(e -> {
       changeStatusAllButtons(true);
-
-      while(tableModel.getRowCount() != 0) {
-        tableModel.removeRow(tableModel.getRowCount() - 1);
+      int selectedRow = stashesTable.getSelectedRow();
+      if (selectedRow >= 0) {
+        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStash());
+        try {
+          List<FileStatus> listOfChangedFiles = RevCommitUtil.
+              getChangedFiles(stashesList.get(selectedRow).getName());
+          while (tableModel.getRowCount() != 0) {
+            tableModel.removeRow(tableModel.getRowCount() - 1);
+          }
+          for (FileStatus file : listOfChangedFiles) {
+            Object[] row = {file};
+            tableModel.addRow(row);
+          }
+        } catch (IOException | GitAPIException exc) {
+          LOGGER.debug(exc, exc);
+        } 
       }
-      List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStash());
-      try {
-        List<FileStatus> listOfChangedFiles = RevCommitUtil.
-            getChangedFiles(stashesList.get(stashesTable.getSelectedRow()).getName());
-        for(FileStatus file : listOfChangedFiles) {
-          Object[] row = {file};
-          tableModel.addRow(row);
-        }
-      } catch (IOException | GitAPIException ex) {
-        LOGGER.debug(ex, ex);
-      } 
-
     });
 
     changeStatusAllButtons(false);
@@ -365,24 +341,105 @@ public class ListStashesAction extends JDialog {
     return buttonsPanel;
   }
 
-  
- /**
-  * Creates the action to show difference for stashed changes.
-  * 
-  * @return The action created
-  */
-  private AbstractAction createShowDiffAction() {
-    return new AbstractAction("Show Diff") {
 
+  /**
+   * Creates the apply button.
+   * 
+   * @return the created button.
+   */
+  private Button createApplyButton() {
+    Button button = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
+
+    button.addActionListener(e -> {
+      int selectedRow = stashesTable.getSelectedRow();
+      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+      if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
+        try {
+          GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
+        } catch (GitAPIException e1) {
+          LOGGER.error(e1, e1);
+        }
+      }
+    });
+
+    return button;
+  }
+
+
+  /**
+   * Creates the delete button.
+   * 
+   * @return the created button.
+   */
+  private Button createDeleteButton() {
+    Button button = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
+
+    button.addActionListener(e -> {
+      int selectedRow = stashesTable.getSelectedRow();
+      if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
+        int answer = FileStatusDialog.showQuestionMessage(
+            Translator.getInstance().getTranslation(Tags.STASH),
+            Translator.getInstance().getTranslation(Tags.STASH_DELETE_CONFIRMATION),
+            Translator.getInstance().getTranslation(Tags.YES),
+            Translator.getInstance().getTranslation(Tags.CANCEL));
+        if (OKCancelDialog.RESULT_OK == answer) {
+          GitAccess.getInstance().stashDrop(selectedRow);
+          TableModel model = stashesTable.getModel();
+          for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+            model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
+            ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
+          }
+          ((DefaultTableModel)stashesTable.getModel()).removeRow(selectedRow); 
+
+          if (stashesTable.getRowCount() == 0) {
+            changeStatusAllButtons(false);
+          }
+        } 
+      }
+    });
+
+    return button;
+  }
+
+
+  /**
+   * Creates the action to show difference for stashed changes.
+   * 
+   * @return The action created
+   */
+  private AbstractAction createShowDiffAction() {
+    return new AbstractAction(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        // TODO
-        System.out.println("Show Diff was Pressed");
+        int selectedRow = stashesTable.getSelectedRow();
+        int selectedFilesIndex = affectedFilesTable.getSelectedRow();
+        if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()
+            && selectedFilesIndex >= 0 && selectedFilesIndex < affectedFilesTable.getRowCount()
+            ) {
+          FileStatus selectedFile = null;
+          List<RevCommit> stashes = null;
+          try {
+            stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+            selectedFile = ((FileStatus)affectedFilesTable.getValueAt(selectedFilesIndex, 0));
+            String filePath = selectedFile.getFileLocation();
+            DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
+          } catch (FileNotFoundException e1) {
+            try {
+              DiffPresenter.showTwoWayDiffOnlyGitFile(selectedFile.getFileLocation(), stashes.get(selectedRow).getId().getName());
+            } catch (IOException e2) {
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e2.getMessage());
+              LOGGER.error(e2, e2);
+            }
+          } catch (NoRepositorySelected | IOException | GitAPIException e1) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e1.getMessage());
+            LOGGER.error(e1, e1);
+          }
+        }
       }
     };
   }
 
-  
+
   /**
    * Enable or disable all buttons with the new status.
    * 
@@ -485,7 +542,7 @@ public class ListStashesAction extends JDialog {
    *
    * @author Alex_Smarandache
    */
-  static class FileStatusRender extends DefaultTableCellRenderer {
+  private static class FileStatusRender extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table,
         Object value,
@@ -501,6 +558,7 @@ public class ListStashesAction extends JDialog {
     }
   }
 
+  
 }
 
 

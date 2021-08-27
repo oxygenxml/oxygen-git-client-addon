@@ -24,11 +24,11 @@
     </key>
     <key value="Stash_Delete_Confirmation">
         <comment>The text to tell user to confirm the stash deleting</comment>
-        <val lang="en_US">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="de_DE">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="fr_FR">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="ja_JP">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="nl_NL">Are you sure you want to delete the selected stashed changes?</val>
+        <val lang="en_US">Are you sure you want to delete the selected stashed changes ?</val>
+        <val lang="de_DE">Are you sure you want to delete the selected stashed changes ?</val>
+        <val lang="fr_FR">Are you sure you want to delete the selected stashed changes ?</val>
+        <val lang="ja_JP">Are you sure you want to delete the selected stashed changes ?</val>
+        <val lang="nl_NL">Are you sure you want to delete the selected stashed changes ?</val>
     </key>
      <key value="Stash_Generate_Conflicts">
         <comment>The message for generated conflicts from stash</comment>
@@ -37,6 +37,14 @@
         <val lang="fr_FR">The stash command was applied successfully, but some conflicts were created.</val>
         <val lang="ja_JP">The stash command was applied successfully, but some conflicts were created.</val>
         <val lang="nl_NL">The stash command was applied successfully, but some conflicts were created.</val>
+    </key>
+    <key value="Unable_To_Compare">
+        <comment>Message when is unnable to compare</comment>
+        <val lang="en_US">Unable to compare.</val>
+        <val lang="de_DE">Unable to compare.</val>
+        <val lang="fr_FR">Unable to compare.</val>
+        <val lang="ja_JP">Unable to compare.</val>
+        <val lang="nl_NL">Unable to compare.</val>
     </key>
      <key value="Stash_All_Changes">
         <comment>Stash all changes</comment>
