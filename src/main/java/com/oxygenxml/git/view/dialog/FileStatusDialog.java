@@ -28,6 +28,8 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -239,6 +241,7 @@ public class FileStatusDialog extends OKCancelDialog {
     FileStatusDialog dialog = new FileStatusDialog(Icons.ERROR_ICON,title, files, message, null, null, null);
     dialog.setResizable(true);
     dialog.setMinimumSize(new Dimension(WARN_MESSAGE_DLG_MINIMUM_WIDTH, WARN_MESSAGE_DLG_MINIMUM_HEIGHT));
+    dialog.getOkButton().setText(Translator.getInstance().getTranslation(Tags.CLOSE));
     dialog.setVisible(true);
   }
   
