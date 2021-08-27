@@ -66,4 +66,9 @@ public class UIConstants {
    * Create new tag preferred width.
    */
   public static final int TAG_CREATE_DIALOG_PREF_WIDTH = 300;
+  
+  /**
+   * 5px for insets
+   */
+  public static final int INDENT_5PX = 5;
 }
