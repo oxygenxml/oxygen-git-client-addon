@@ -77,7 +77,7 @@ public class ListStashesAction extends JDialog {
   /**
    * The default width for table.
    */
-  private static final int FILES_LIST_DEFAULT_WIDTH = 200;
+  private static final int FILES_LIST_DEFAULT_WIDTH = 225;
 
   /**
    * The default width for table.
@@ -137,7 +137,7 @@ public class ListStashesAction extends JDialog {
 
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
-        Translator.getInstance().getTranslation(Tags.LIST_STASHES),
+        Translator.getInstance().getTranslation(Tags.STASHES),
         true);
 
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
@@ -223,6 +223,13 @@ public class ListStashesAction extends JDialog {
     constrains.anchor = GridBagConstraints.EAST;
     constrains.insets = new Insets(5, 10, 0, 10);
     stashesPanel.add(createButtonsPanel(), constrains);
+    
+    constrains.gridx++;
+    constrains.fill = GridBagConstraints.NONE;
+    constrains.insets = new Insets(5, 10, 7, 10);
+    Button closeButton = new Button(Translator.getInstance().getTranslation(Tags.CLOSE));
+    closeButton.addActionListener(e-> this.dispose());
+    stashesPanel.add(closeButton, constrains);
 
     return stashesPanel;
   }

@@ -1330,5 +1330,9 @@ public class Tags {
    * Description.
    */
   public static final String DESCRIPTION = "Description";
+  /**
+   * Stashes.
+   */
+  public static final String STASHES = "Stashes";
 
 }
