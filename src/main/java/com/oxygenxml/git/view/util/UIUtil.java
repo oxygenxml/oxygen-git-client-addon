@@ -182,8 +182,7 @@ public class UIUtil {
     statusCol.setMaxWidth(colWidth);
 
     table.setDefaultRenderer(Object.class, new StagingResourcesTableCellRenderer(contextMenuShowing));
-    
-    
+
     return table;
   }
   

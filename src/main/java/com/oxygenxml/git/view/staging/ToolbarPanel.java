@@ -1378,9 +1378,9 @@ public class ToolbarPanel extends JPanel {
             if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
               String description = dialog.getStashMessage();
               if("".compareTo(description) == 0) {
-                GitAccess.getInstance().createStash();
+                GitAccess.getInstance().createStash(false);
               } else {
-                GitAccess.getInstance().createStash(description);
+                GitAccess.getInstance().createStash(false, description);
               }
               Collection<RevCommit> stashes = GitAccess.getInstance().listStash();
               noOfStashes = stashes != null ? stashes.size() : 0;

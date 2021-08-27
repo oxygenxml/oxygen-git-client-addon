@@ -104,7 +104,7 @@ public class GitAccessStashTest {
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     assertTrue(isStashEmpty());
-    assertEquals("stash_description", gitAccess.createStash("stash_description").getFullMessage());
+    assertEquals("stash_description", gitAccess.createStash(false,"stash_description").getFullMessage());
     assertFalse(isStashEmpty());
     assertEquals(1, gitAccess.listStash().size());
     gitAccess.stashDrop(0);
@@ -132,7 +132,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
 
     assertTrue(isStashEmpty());
-    RevCommit commitStash = gitAccess.createStash();
+    RevCommit commitStash = gitAccess.createStash(false);
     assertFalse(isStashEmpty());
 
     boolean noCommitFound = false;
@@ -177,7 +177,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
     assertTrue(isStashEmpty());
-    RevCommit ref = gitAccess.createStash();
+    RevCommit ref = gitAccess.createStash(false);
     assertFalse(isStashEmpty());
     
     try {
@@ -221,7 +221,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
     assertTrue(isStashEmpty());
-    RevCommit ref = gitAccess.createStash();
+    RevCommit ref = gitAccess.createStash(false);
     assertFalse(isStashEmpty());
     try {
       PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
@@ -232,7 +232,7 @@ public class GitAccessStashTest {
     }
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("file test modified");
-    assertNull(gitAccess.createStash());
+    assertNull(gitAccess.createStash(false));
     
     gitAccess.applyStash(ref.getName());
     

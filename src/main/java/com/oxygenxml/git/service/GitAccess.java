@@ -2444,14 +2444,16 @@ public class GitAccess {
 	
 	/**
 	 * Create a new stash command.
-	 * 
+	 *
+	 * @param includeUntrackedFiles <code>True</code> if the stash should include the untracked files.
+	 *
 	 * @return The created stash.
 	 */
-	public RevCommit createStash() {
+	public RevCommit createStash(boolean includeUntrackedFiles) {
 	  fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
     RevCommit stash = null;
     try {
-      stash = git.stashCreate().call();
+      stash = git.stashCreate().setIncludeUntracked(includeUntrackedFiles).call();
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
     } catch (GitAPIException e) {
       boolean isBecauseConflicts = getUnstagedFiles() != null 
@@ -2469,16 +2471,17 @@ public class GitAccess {
 
 	/**
    * Create a new stash command.
-   * 
+   *
+	 * @param includeUntrackedFiles <code>True</code> if the stash should include the untracked files.
    * @param description The description of stash.
    * 
    * @return The created stash.
    */
-  public RevCommit createStash(String description) {
+  public RevCommit createStash(boolean includeUntrackedFiles, String description) {
     fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
     RevCommit stash = null;
     try {
-      stash = git.stashCreate().setWorkingDirectoryMessage(description).call();
+      stash = git.stashCreate().setIncludeUntracked(includeUntrackedFiles).setWorkingDirectoryMessage(description).call();
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
     } catch (GitAPIException e) {
       boolean isBecauseConflicts = getUnstagedFiles() != null 

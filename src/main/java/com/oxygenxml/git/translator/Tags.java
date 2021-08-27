@@ -1322,5 +1322,13 @@ public class Tags {
 	 * Message for unable to compare.
 	 */
 	public static final String UNABLE_TO_COMPARE = "Unable_To_Compare";
+  /**
+   * ID.
+   */
+  public static final String ID = "ID";
+  /**
+   * Description.
+   */
+  public static final String DESCRIPTION = "Description";
 
 }

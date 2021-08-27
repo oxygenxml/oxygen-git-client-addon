@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -24,9 +26,12 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -38,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
@@ -48,11 +54,11 @@ import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.history.HistoryPanel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
-import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 
 /**
@@ -82,11 +88,16 @@ public class ListStashesAction extends JDialog {
    * The default height for table.
    */
   private static final int TABLE_DEFAULT_HEIGHT = 205;
+  
+  /**
+   * Extra width for column icon.
+   */
+  private static final int RESOURCE_TABLE_ICON_COLUMN_EXTRA_WIDTH = 3;
 
   /**
    * The table with the stashes.
    */
-  private JTable stashesTable;
+  private Table stashesTable;
 
   /**
    * The apply button.
@@ -112,6 +123,11 @@ public class ListStashesAction extends JDialog {
    * The files table.
    */
   private Table affectedFilesTable;
+  
+  /**
+   * The size of column id.
+   */
+  private static final int COLUMN_ID_SIZE = 25;
 
 
   /**
@@ -121,8 +137,8 @@ public class ListStashesAction extends JDialog {
 
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
-        "Stashes",
-        false);
+        Translator.getInstance().getTranslation(Tags.LIST_STASHES),
+        true);
 
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
@@ -165,7 +181,7 @@ public class ListStashesAction extends JDialog {
     };
     GridBagConstraints constrains = new GridBagConstraints();
 
-    createStashesTable();
+    stashesTable = (Table)createStashesTable();
 
     constrains.gridx = 0;
     constrains.gridy = 0;
@@ -194,6 +210,7 @@ public class ListStashesAction extends JDialog {
     showDiff = createShowDiffAction();
     affectedFilesTable = createAffectedFilesTable();
     JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
+    
     changesOfStashScrollPane.setPreferredSize(HiDPIUtil.getHiDPIDimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
     stashesPanel.add(changesOfStashScrollPane, constrains);
 
@@ -217,7 +234,7 @@ public class ListStashesAction extends JDialog {
    * @return The created table.
    */
   private Table createAffectedFilesTable() {
-    String[] columnName = {"Affected files:"};
+    String[] columnName = {"", ""};
     tableModel = new DefaultTableModel(columnName, 0) {
       @Override
       public boolean isCellEditable(int row, int column) {
@@ -225,7 +242,12 @@ public class ListStashesAction extends JDialog {
       }
     };
 
-    Table filesTable = OxygenUIComponentsFactory.createTable(tableModel);
+    Table filesTable = new Table(tableModel) {
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+    };
     filesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     filesTable.setFillsViewportHeight(true);
     filesTable.addMouseListener(new MouseAdapter() {
@@ -237,9 +259,9 @@ public class ListStashesAction extends JDialog {
         }
       }
     });
-    filesTable.getColumnModel().getColumn(0).setCellRenderer(new FileStatusRender());
+    
     JPopupMenu contextualActions  = new JPopupMenu();
-    JMenuItem  menuItemShowDiff   = new JMenuItem(Translator.getInstance().getTranslation("Show Diff"));
+    JMenuItem  menuItemShowDiff   = new JMenuItem(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION));
     menuItemShowDiff.setAction(showDiff);
     contextualActions.add(menuItemShowDiff);
     filesTable.setComponentPopupMenu(contextualActions);
@@ -266,7 +288,59 @@ public class ListStashesAction extends JDialog {
 
     });
 
+    addClickRightSelection(filesTable, contextualActions);
+
+
+    filesTable.getColumnModel().setColumnMargin(0);
+    filesTable.setTableHeader(null);
+    filesTable.setShowGrid(false);
+
+
+    Icon icon = Icons.getIcon(Icons.GIT_ADD_ICON);
+    int iconWidth = icon.getIconWidth();
+    int colWidth = iconWidth + RESOURCE_TABLE_ICON_COLUMN_EXTRA_WIDTH;
+    TableColumn statusCol = filesTable.getColumnModel().getColumn(StagingResourcesTableModel.FILE_STATUS_COLUMN);
+    statusCol.setMinWidth(colWidth);
+    statusCol.setPreferredWidth(colWidth);
+    statusCol.setMaxWidth(colWidth);
+
+    filesTable.setDefaultRenderer(Object.class, new StagingResourcesTableCellRenderer(() -> false));
+
     return filesTable;
+  }
+
+
+  /**
+   * Add selection on click-right for JPopupMenu actions.
+   *
+   * @param table             the table.
+   * @param contextualActions the actionsMenu
+   */
+  private void addClickRightSelection(Table table, JPopupMenu contextualActions) {
+    contextualActions.addPopupMenuListener(new PopupMenuListener() {
+
+      @Override
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        SwingUtilities.invokeLater(() -> {
+          int rowAtPoint = table.rowAtPoint(SwingUtilities.convertPoint(contextualActions,
+                  new Point(0, 0),
+                  table));
+          if (rowAtPoint >= 0) {
+            table.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+          }
+        });
+      }
+
+      @Override
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        // Nothing
+      }
+
+      @Override
+      public void popupMenuCanceled(PopupMenuEvent e) {
+       // Nothing
+      }
+    });
   }
 
 
@@ -314,27 +388,6 @@ public class ListStashesAction extends JDialog {
     buttonsPanel.setBackground(stashesTable.getBackground());
     buttonsPanel.setForeground(stashesTable.getForeground());
     buttonsPanel.setFont(stashesTable.getFont());
-
-    stashesTable.getSelectionModel().addListSelectionListener(e -> {
-      changeStatusAllButtons(true);
-      int selectedRow = stashesTable.getSelectedRow();
-      if (selectedRow >= 0) {
-        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStash());
-        try {
-          List<FileStatus> listOfChangedFiles = RevCommitUtil.
-              getChangedFiles(stashesList.get(selectedRow).getName());
-          while (tableModel.getRowCount() != 0) {
-            tableModel.removeRow(tableModel.getRowCount() - 1);
-          }
-          for (FileStatus file : listOfChangedFiles) {
-            Object[] row = {file};
-            tableModel.addRow(row);
-          }
-        } catch (IOException | GitAPIException exc) {
-          LOGGER.debug(exc, exc);
-        } 
-      }
-    });
 
     changeStatusAllButtons(false);
 
@@ -457,12 +510,15 @@ public class ListStashesAction extends JDialog {
   /**
    * Create a table with all stashes.
    * 
-   * @return a JTable with the tags and the messages of every stash
+   * @return a JTable with the tags and the messages of every stash.
    *
    */
-  private void createStashesTable() {
+  private JTable createStashesTable() {
     List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
-    String[] columnNames = {"Id","Description"};
+    String[] columnNames = {
+        Translator.getInstance().getTranslation(Tags.ID),
+        Translator.getInstance().getTranslation(Tags.DESCRIPTION)
+        };
     DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
       @Override
       public boolean isCellEditable(int row, int column) {
@@ -475,16 +531,70 @@ public class ListStashesAction extends JDialog {
       model.addRow(row);
     }
 
-    stashesTable = OxygenUIComponentsFactory.createTable(model);
-    stashesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-    stashesTable.setFillsViewportHeight(true);
+    JTable tableOfStashes = new Table(model) {
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+    };
+    tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+    tableOfStashes.setFillsViewportHeight(true);
+    tableOfStashes.getColumnModel().getColumn(1).setCellRenderer(new StringRender());
 
+    JPopupMenu contextualActions = createContextualActionsForStashedTable(tableOfStashes, stashes, model);
+    
+    tableOfStashes.setComponentPopupMenu(contextualActions);
+    
+    tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    
+    tableOfStashes.getSelectionModel().addListSelectionListener(e -> {
+      changeStatusAllButtons(true);
+      int selectedRow = tableOfStashes.getSelectedRow();
+      if (selectedRow >= 0) {
+        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStash());
+        try {
+          List<FileStatus> listOfChangedFiles = RevCommitUtil.
+              getChangedFiles(stashesList.get(selectedRow).getName());
+          while (tableModel.getRowCount() != 0) {
+            tableModel.removeRow(tableModel.getRowCount() - 1);
+          }
+          for (FileStatus file : listOfChangedFiles) {
+            Object[] row = {file.getChangeType(), file};
+            tableModel.addRow(row);
+          }
+        } catch (IOException | GitAPIException exc) {
+          LOGGER.debug(exc, exc);
+        } 
+      }
+    });
+
+    tableOfStashes.getTableHeader().setResizingAllowed(false);
+    
+    model.fireTableDataChanged();
+    
+    SwingUtilities.invokeLater(
+        () -> tableOfStashes.setRowSelectionInterval(0, 0)
+        );
+    
+    return tableOfStashes;
+  }
+
+
+  /**
+   * Creates the contextual actions menu for a stash.
+   * 
+   * @param stashes  List of stahses.
+   * @param model    The table model.
+   * 
+   * @return a JPopupMenu with actions created.
+   */
+  private JPopupMenu createContextualActionsForStashedTable(JTable tableOfStashes, List<RevCommit> stashes, DefaultTableModel model) {
     JPopupMenu contextualActions = new JPopupMenu();
     JMenuItem menuItemStash      = new JMenuItem(Translator.getInstance().getTranslation(Tags.APPLY));
     JMenuItem menuItemRemove     = new JMenuItem(Translator.getInstance().getTranslation(Tags.DELETE));
 
     menuItemStash.addActionListener(e -> {
-      int selectedRow = stashesTable.getSelectedRow();
+      int selectedRow = tableOfStashes.getSelectedRow();
       try {
         GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
       } catch (GitAPIException e1) {
@@ -493,8 +603,8 @@ public class ListStashesAction extends JDialog {
     });
 
     menuItemRemove.addActionListener(e -> {
-      int selectedRow = stashesTable.getSelectedRow();
-      if(selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
+      int selectedRow = tableOfStashes.getSelectedRow();
+      if(selectedRow >= 0 && selectedRow < tableOfStashes.getRowCount()) {
         int answer = FileStatusDialog.showQuestionMessage(
             Translator.getInstance().getTranslation(Tags.STASH),
             Translator.getInstance().getTranslation(Tags.STASH_DELETE_CONFIRMATION),
@@ -502,12 +612,12 @@ public class ListStashesAction extends JDialog {
             Translator.getInstance().getTranslation(Tags.CANCEL));
         if(OKCancelDialog.RESULT_OK == answer) {
           GitAccess.getInstance().stashDrop(selectedRow);
-          for (int row = selectedRow + 1; row <  stashesTable.getRowCount(); row++) {
+          for (int row = selectedRow + 1; row <  tableOfStashes.getRowCount(); row++) {
             model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
             model.fireTableCellUpdated(row, 0);
           }
           model.removeRow(selectedRow);   
-          if(stashesTable.getRowCount() == 0) {
+          if(tableOfStashes.getRowCount() == 0) {
             changeStatusAllButtons(false);
           }
         }
@@ -518,47 +628,54 @@ public class ListStashesAction extends JDialog {
     contextualActions.addSeparator();
     contextualActions.add(menuItemRemove);
 
-    stashesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    stashesTable.setComponentPopupMenu(contextualActions);
-
-    model.fireTableDataChanged();
-    updateStashTableWidths();
+    addClickRightSelection((Table)tableOfStashes, contextualActions);
+    
+    return contextualActions;
   }
-
-
+  
+  
   /**
    * Distribute widths to the columns according to their content.
    */
   private void updateStashTableWidths() {
-    int idColWidth = HistoryPanel.scaleColumnsWidth(20);
+    int idColWidth = HistoryPanel.scaleColumnsWidth(COLUMN_ID_SIZE);
     TableColumnModel tcm = stashesTable.getColumnModel();
     TableColumn column = tcm.getColumn(1);
     column.setPreferredWidth(stashesTable.getWidth() - idColWidth);
+    column = tcm.getColumn(0);
+    column.setPreferredWidth(COLUMN_ID_SIZE);
   }
 
 
   /**
-   * A custom render for FileStatus.
+   * A custom render for String.
    *
    * @author Alex_Smarandache
    */
-  private static class FileStatusRender extends DefaultTableCellRenderer {
+  private static class StringRender extends DefaultTableCellRenderer {
+    
     @Override
     public Component getTableCellRendererComponent(JTable table,
         Object value,
         boolean isSelected,
         boolean hasFocus,
         int row,
-        int column) {
+        int column) {  
+      
       super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-      String path = ((FileStatus)value).getFileLocation();
-      setToolTipText(path);
-      setValue(path.substring(path.lastIndexOf('/') + 1));
+      
+      setText((String)value);
+      setToolTipText((String)value);
+      
       return this;
+    }
+    
+    @Override
+    public JToolTip createToolTip() {
+      return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
     }
   }
 
-  
 }
 
 
