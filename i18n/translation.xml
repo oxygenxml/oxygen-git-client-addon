@@ -1283,14 +1283,6 @@
         <val lang="ja_JP">Git Staging</val>
         <val lang="nl_NL">Git staging</val>
     </key>
-    <key value="Comitter">
-        <comment>History table column name.</comment>
-        <val lang="en_US">Committer</val>
-        <val lang="de_DE">Committer</val>
-        <val lang="fr_FR">Auteur du commit</val>
-        <val lang="ja_JP">Committer</val>
-        <val lang="nl_NL">Committer</val>
-    </key>
     <key value="Date">
         <comment>History table column name.</comment>
         <val lang="en_US">Date</val>
@@ -2253,5 +2245,20 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Kan geen pull doen. Uw niet-bewaarde, lokale wijzigingen in de volgende bestanden zouden door het samenvoegen worden overschreven:</val>
     </key>
-
+    <key value="CommitID">
+        <comment>The text in the warning of detached-head </comment>
+        <val lang="en_US">Commit</val>
+        <val lang="de_DE">Commit</val>
+        <val lang="fr_FR">Commit</val>
+        <val lang="ja_JP">Commit</val>
+        <val lang="nl_NL">Commit</val>
+    </key>
+    <key value="Detached_Head">
+        <comment>The title in the warning of detached-head </comment>
+        <val lang="en_US">Detached HEAD</val>
+        <val lang="de_DE">Detached HEAD</val>
+        <val lang="fr_FR">Detached HEAD</val>
+        <val lang="ja_JP">Detached HEAD</val>
+        <val lang="nl_NL">Detached HEAD</val>
+    </key>
 </translation>

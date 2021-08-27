@@ -85,6 +85,10 @@ public class UIUtil {
    * Dummy minimum width.
    */
   public static final int DUMMY_MIN_WIDTH = 1;
+  /**
+   * Date format.
+   */
+  public static final String DATE_FORMAT_PATTERN = "d MMM yyyy HH:mm";
   
   /**
    * Hidden constructor.

@@ -2050,7 +2050,7 @@ public class GitAccess {
 	 * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
 	 */
 	public String getUpstreamBranchNameFromConfig(String localBranchShortName) {
-	  return RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName);
+	  return git != null ? RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName) : null;
   }
 	
 	 /**
@@ -2399,7 +2399,7 @@ public class GitAccess {
           LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
         }
         List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
-        FileStatusDialog.showWarningMessage(
+        FileStatusDialog.showErrorMessage(
             translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
             failingFiles,
             translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));

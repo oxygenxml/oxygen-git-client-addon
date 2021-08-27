@@ -1005,10 +1005,6 @@ public class Tags {
    */
   public static final String DATE = "Date";
   /**
-   * History table column name.
-   */
-  public static final String COMMITTER = "Comitter";
-  /**
    * Cancel. Taken from oXygen's "translation.xml".
    */
   public static final String CANCEL = "Cancel";
@@ -1290,6 +1286,7 @@ public class Tags {
    * n more commits message.
    */
   public static final String N_MORE_COMMITS = "N_More_Commits";
+
   /**
    * The informative message for stash.
    */
@@ -1342,5 +1339,15 @@ public class Tags {
    * The text for tooltip that explain the Open action.
    */
   public static final String EXPLAIN_OPEN_ACTION = "Explain_Open_Action";
+  
+  /**
+   * The name of the commit
+   */
+  public static final String COMMITID = "CommitID";
+  
+  /**
+   * Detached-Head
+   */
+  public static final String DETACHED_HEAD = "Detached_Head";
 
 }
