@@ -12,6 +12,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.tags.CreateTagDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;

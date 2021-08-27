@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.history.actions;
+package com.oxygenxml.git.view.tags;
 
 import java.awt.Color;
 import java.awt.Dimension;

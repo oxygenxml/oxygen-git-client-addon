@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.staging;
+package com.oxygenxml.git.view.tags;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -41,11 +41,6 @@ public class TagDetailsDialog extends OKCancelDialog{
   private static final Translator TRANSLATOR = Translator.getInstance();
   
   /**
-   * The tag.
-   */
-  private GitTag tag;
-  
-  /**
    * The preferred width of the scroll pane for the files list.
    */
   private static final int MESSAGE_SCROLLPANE_PREFERRED_WIDTH = 320;
@@ -74,7 +69,6 @@ public class TagDetailsDialog extends OKCancelDialog{
             (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
         "Tag details",
         false);
-    this.tag = tag;
     
     this.getContentPane().add(createMainPanel(tag));
     

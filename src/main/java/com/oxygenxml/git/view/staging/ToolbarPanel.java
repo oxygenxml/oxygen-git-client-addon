@@ -71,6 +71,7 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
+import com.oxygenxml.git.view.tags.TagsDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;

@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.staging;
+package com.oxygenxml.git.view.tags;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
