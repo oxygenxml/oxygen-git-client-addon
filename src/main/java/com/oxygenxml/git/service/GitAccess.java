@@ -2399,7 +2399,7 @@ public class GitAccess {
           LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
         }
         List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
-        FileStatusDialog.showWarningMessage(
+        FileStatusDialog.showErrorMessage(
             translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
             failingFiles,
             translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
