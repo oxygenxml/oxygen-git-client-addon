@@ -16,7 +16,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
@@ -340,7 +342,7 @@ public class TagsDialog extends JDialog {
     
     JLabel taggerDetailsLabel = new JLabel();
     gbc.gridy++;
-    taggerDetailsLabel.setText("Tagger name: " + tag.getTaggerName() + ", email: " + tag.getTaggerEmail());
+    taggerDetailsLabel.setText("Tagger name: " + tag.getTaggerName() + ", <" + tag.getTaggerEmail() + ">");
     mainPanel.add(taggerDetailsLabel, gbc);
     
     JLabel tagDateLabel = new JLabel();
@@ -349,12 +351,30 @@ public class TagsDialog extends JDialog {
     mainPanel.add(tagDateLabel, gbc);
     
     JLabel tagMessageLabel = new JLabel();
+    tagMessageLabel.setText("Tag message:");
     gbc.gridy++;
-    tagMessageLabel.setText("<html>Message:" + tag.getMessage() + "</html>");
     mainPanel.add(tagMessageLabel, gbc);
+    
+    JTextArea tagMessageArea = new JTextArea();
+    gbc.gridy++;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 1;
+    tagMessageArea.setText(tag.getMessage());
+    tagMessageArea.setBorder(OxygenUIComponentsFactory.createTextField().getBorder());
+    tagMessageArea.setPreferredSize(new Dimension(tagMessageArea.getPreferredSize().width, 2* tagMessageArea.getPreferredSize().height));
+    tagMessageArea.setEditable(false);
+    mainPanel.add(tagMessageArea, gbc);
+    
+    JSeparator separator = new JSeparator();
+    gbc.gridy++;
+    gbc.insets = new Insets(2* topInset, leftInset, 2 * bottomInset, rightInset);
+    mainPanel.add(separator, gbc);
     
     JLabel commitIDLabel = new JLabel();
     gbc.gridy++;
+    gbc.insets = new Insets(topInset, leftInset, 0, rightInset);
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.weightx = 0;
     commitIDLabel.setText("Commit id: " + tag.getCommitID() );
     mainPanel.add(commitIDLabel, gbc);
     
@@ -362,7 +382,7 @@ public class TagsDialog extends JDialog {
     
     JLabel authorDetailsLabel = new JLabel();
     gbc.gridy++;
-    authorDetailsLabel.setText("Committer: " + commit.getAuthorIdent().getName() + ", email: " + commit.getAuthorIdent().getEmailAddress());
+    authorDetailsLabel.setText("Committer: " + commit.getAuthorIdent().getName() + ", <" + commit.getAuthorIdent().getEmailAddress() + ">");
     mainPanel.add(authorDetailsLabel, gbc);
     
     JLabel commitDateLabel = new JLabel();
@@ -371,12 +391,24 @@ public class TagsDialog extends JDialog {
     mainPanel.add(commitDateLabel, gbc);
     
     JLabel commitMessageLabel = new JLabel();
+    commitMessageLabel.setText("Commit message:");
     gbc.gridy++;
-    commitMessageLabel.setText("<html>Message:" + commit.getFullMessage() + "</html>");
     mainPanel.add(commitMessageLabel, gbc);
+    
+    JTextArea commitMessageArea = new JTextArea();
+    commitMessageArea.setEditable(false);
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 1;
+    gbc.gridy++;
+    commitMessageArea.setText(commit.getFullMessage());
+    commitMessageArea.setBorder(OxygenUIComponentsFactory.createTextField().getBorder());
+    commitMessageArea.setPreferredSize(new Dimension(commitMessageArea.getPreferredSize().width, 2* commitMessageArea.getPreferredSize().height));
+    mainPanel.add(commitMessageArea, gbc);
     
     JButton closeButton = new JButton(TRANSLATOR.getTranslation(Tags.CLOSE));
     gbc.gridy++;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.weightx = 0;
     gbc.anchor = GridBagConstraints.EAST;
     gbc.insets = new Insets(topInset, leftInset, bottomInset, rightInset);
     closeButton.addActionListener(e -> {
