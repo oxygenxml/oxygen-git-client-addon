@@ -27,9 +27,6 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Detached head dialog.
- * 
- * @author Tudosie Razvan
- *
  */
 public class DetachedHeadDialog extends OKCancelDialog {
 
@@ -114,6 +111,7 @@ public class DetachedHeadDialog extends OKCancelDialog {
     infoMessageArea.setWrapStyleWord(true);
     infoMessageArea.setLineWrap(true);
     infoMessageArea.setEditable(false); 
+    infoMessageArea.setOpaque(false);
     infoMessageArea.setText(TRANSLATOR.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
     gbc.gridx++;
     gbc.anchor = GridBagConstraints.WEST;
