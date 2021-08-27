@@ -8,12 +8,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
@@ -65,6 +68,17 @@ public class HistoryViewContextualMenuPresenter {
    * Executes GIT commands (stage, unstage, discard, etc).
    */
   protected GitControllerBase gitCtrl;
+  /**
+   * Contains the tooltips text for file contextual actions.
+   */
+  private static final Map<String, String> actionsToolTipText = new HashMap<>();
+  static {
+    actionsToolTipText.put(Translator.getInstance().getTranslation(Tags.CHECKOUT), 
+        Translator.getInstance().getTranslation(Tags.EXPLAIN_CHECKOUT_ACTION));
+    actionsToolTipText.put(Translator.getInstance().getTranslation(Tags.OPEN), 
+        Translator.getInstance().getTranslation(Tags.EXPLAIN_OPEN_ACTION));
+  }
+
   
   /**
    * Constructor.
@@ -286,6 +300,11 @@ public class HistoryViewContextualMenuPresenter {
     contextualActions.forEach(action -> {
       if(action == null) {
         jPopupMenu.addSeparator();
+      } else if (actionsToolTipText.containsKey(action.getValue(Action.NAME))) {
+          JMenuItem checkoutAction = new JMenuItem((String)action.getValue(Action.NAME));
+          checkoutAction.setAction(action);
+          checkoutAction.setToolTipText(actionsToolTipText.get(action.getValue(Action.NAME)));
+          jPopupMenu.add(checkoutAction);
       } else {
         jPopupMenu.add(action);
       }

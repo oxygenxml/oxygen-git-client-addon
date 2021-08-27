@@ -1334,5 +1334,13 @@ public class Tags {
    * Stashes.
    */
   public static final String STASHES = "Stashes";
+  /**
+   * The text for tooltip that explain the Checkout action.
+   */
+  public static final String EXPLAIN_CHECKOUT_ACTION = "Explain_Checkout_Action";
+  /**
+   * The text for tooltip that explain the Open action.
+   */
+  public static final String EXPLAIN_OPEN_ACTION = "Explain_Open_Action";
 
 }

@@ -138,7 +138,7 @@ public class ListStashesAction extends JDialog {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
         Translator.getInstance().getTranslation(Tags.STASHES),
-        true);
+        false);
 
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
@@ -480,7 +480,7 @@ public class ListStashesAction extends JDialog {
           List<RevCommit> stashes = null;
           try {
             stashes = new ArrayList<>(GitAccess.getInstance().listStash());
-            selectedFile = ((FileStatus)affectedFilesTable.getValueAt(selectedFilesIndex, 0));
+            selectedFile = ((FileStatus)affectedFilesTable.getValueAt(selectedFilesIndex, 1));
             String filePath = selectedFile.getFileLocation();
             DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
           } catch (FileNotFoundException e1) {
