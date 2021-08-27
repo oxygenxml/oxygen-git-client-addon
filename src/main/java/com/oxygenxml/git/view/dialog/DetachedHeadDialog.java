@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 
 import javax.swing.Icon;
@@ -24,7 +23,6 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -34,6 +32,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class DetachedHeadDialog extends OKCancelDialog {
+
+  /**
+   * Icon right padding.
+   */
+  private static final int ICON_RIGHT_PADDING = 10;
 
   /**
    * The preferred width of the scroll pane for the files list.
@@ -54,6 +57,11 @@ public class DetachedHeadDialog extends OKCancelDialog {
    * Minimum height.
    */
   private static final int DLG_MINIMUM_HEIGHT = 250;
+  
+  /**
+   * Right padding for commit details labels.
+   */
+  private static final int COMMIT_DETAILS_LABELS_RIGHT_PADDING = 5;
   
   /**
    * i18n
@@ -84,17 +92,15 @@ public class DetachedHeadDialog extends OKCancelDialog {
     
     // Icon
     JLabel iconLabel = new JLabel();
-    URL iconURL =  PluginWorkspaceProvider.class.getResource(Icons.INFO_ICON);
-    if (iconURL != null) {
-      ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-      Icon icon = (Icon) imageUtilities.loadIcon(iconURL);
-      iconLabel.setIcon(icon);
+    Icon infoIcon = Icons.getIcon(Icons.INFO_ICON);
+    if (infoIcon != null) {
+      iconLabel.setIcon(infoIcon);
     }
     gbc.insets = new Insets(
         UIConstants.COMPONENT_TOP_PADDING, 
         UIConstants.COMPONENT_LEFT_PADDING,
         UIConstants.COMPONENT_BOTTOM_PADDING, 
-        10);
+        ICON_RIGHT_PADDING);
     gbc.anchor = GridBagConstraints.NORTHWEST;
     gbc.weightx = 0;
     gbc.weighty = 0;
@@ -103,6 +109,7 @@ public class DetachedHeadDialog extends OKCancelDialog {
     gbc.gridheight = 2;
     mainPanel.add(iconLabel, gbc);
     
+    // Info message ("You are on a detached HEAD...").
     JTextArea infoMessageArea = new JTextArea();
     infoMessageArea.setWrapStyleWord(true);
     infoMessageArea.setLineWrap(true);
@@ -116,6 +123,7 @@ public class DetachedHeadDialog extends OKCancelDialog {
     gbc.insets.bottom = 11;
     mainPanel.add(infoMessageArea, gbc);
     
+    // Commit details (ID, author, date, message).
     JPanel commitDetailsPanel = createCommitDetailsPanel();
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.WEST;
@@ -137,6 +145,9 @@ public class DetachedHeadDialog extends OKCancelDialog {
     }
   }
 
+  /**
+   * @return the commit details panel.
+   */
   private JPanel createCommitDetailsPanel() {
     JPanel commitDetailsPanel = new JPanel(new GridBagLayout());
     
@@ -149,14 +160,15 @@ public class DetachedHeadDialog extends OKCancelDialog {
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.gridheight = 1;
-    gbc.insets.bottom = 5;
-    gbc.insets.right = 5;
+    gbc.insets.bottom = UIConstants.COMPONENT_BOTTOM_PADDING;
+    gbc.insets.right = COMMIT_DETAILS_LABELS_RIGHT_PADDING;
     commitDetailsPanel.add(commitIDLabel, gbc);
     
     JLabel commitIDValueLabel = new JLabel(commit.getId().getName());
     gbc.gridx++;
     commitDetailsPanel.add(commitIDValueLabel, gbc);
     
+    // Author
     JLabel authorLabel = new JLabel(TRANSLATOR.getTranslation(Tags.AUTHOR) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
@@ -167,6 +179,7 @@ public class DetachedHeadDialog extends OKCancelDialog {
     gbc.gridx++;
     commitDetailsPanel.add(authorValue, gbc);
     
+    // Date
     JLabel dateLabel = new JLabel(TRANSLATOR.getTranslation(Tags.DATE) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
@@ -177,6 +190,7 @@ public class DetachedHeadDialog extends OKCancelDialog {
     gbc.gridx++;
     commitDetailsPanel.add(dateValue, gbc);
     
+    // Commit message
     JLabel commitMessageLabel = new JLabel(TRANSLATOR.getTranslation(Tags.COMMIT_MESSAGE_LABEL) + ":");
     gbc.gridx = 0;
     gbc.gridy++;

@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
-import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +31,6 @@ import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
@@ -132,11 +130,9 @@ public class FileStatusDialog extends OKCancelDialog {
 		
 		// Icon
 		JLabel iconLabel = new JLabel();
-    URL iconURL =  PluginWorkspaceProvider.class.getResource(iconPath);
-    if (iconURL != null) {
-      ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-      Icon icon = (Icon) imageUtilities.loadIcon(iconURL);
-      iconLabel.setIcon(icon);
+		Icon infoIcon = Icons.getIcon(iconPath);
+    if (infoIcon != null) {
+      iconLabel.setIcon(infoIcon);
     }
 		gbc.insets = new Insets(
 		    UIConstants.COMPONENT_TOP_PADDING, 
