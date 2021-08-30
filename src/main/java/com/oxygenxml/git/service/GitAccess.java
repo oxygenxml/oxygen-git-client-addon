@@ -162,7 +162,7 @@ public class GitAccess {
 	/**
 	 * Translation support.
 	 */
-	private static Translator translator = Translator.getInstance();
+	private static final Translator translator = Translator.getInstance();
 
 	/**
 	 * Singleton instance.
@@ -2505,42 +2505,54 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException 
 	 */
-	public void applyStash(String stashRef) throws GitAPIException {
+	public ApplyStashStatus applyStash(String stashRef) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
-		boolean wasApplied = false;
+		ApplyStashStatus status = ApplyStashStatus.SUCCESSFULLY;
 		try {
-		 
-		  wasApplied = checkIfStashWasApplied(stashRef);
+		  status = getCauseForFailedStashApply(stashRef);
 		  
 			git.stashApply().setStashRef(stashRef).call();
 			
+			status = ApplyStashStatus.SUCCESSFULLY;
+			
 			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
-		
 			
 		} catch (StashApplyFailureException | IOException e) {
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
-			  if(wasApplied) {
-			    FileStatusDialog.showWarningMessageWithConfirmation(translator.getTranslation(Tags.STASH), 
-			        translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS), 
-              "", 
-              "");
+			  if(status == ApplyStashStatus.APPLIED_WITH_GENERATED_CONFLICTS) {
+			    FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH), 
+			        new ArrayList<>(getConflictingFiles()), 
+			        translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS));		 
           fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
+			  } else if (status == ApplyStashStatus.CONFLICTS){
+			    FileStatusDialog.showErrorMessage(
+              translator.getTranslation(Tags.STASH),
+              new ArrayList<>(getConflictingFiles()),
+              translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+			    fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
+          LOGGER.debug(e, e);
+			  } else if (status == ApplyStashStatus.UNCOMMITTED_FILES) {
+			    FileStatusDialog.showErrorMessage(
+              translator.getTranslation(Tags.STASH),
+              null,
+              translator.getTranslation("Commit your files first"));
+          fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
+          LOGGER.debug(e, e);
+			  } else if (status == ApplyStashStatus.BUG_CONFLICT) {
+			    FileStatusDialog.showErrorMessage(
+              translator.getTranslation(Tags.STASH),
+              null,
+              translator.getTranslation("Unstage your files"));
 			  } else {
-			    List<String> modifiedFiles = new ArrayList<>(git.status().call().getModified());
-	        if(!modifiedFiles.isEmpty()) {
-	          FileStatusDialog.showErrorMessage(
-	              translator.getTranslation(Tags.STASH),
-	              modifiedFiles,
-	              translator.getTranslation(Tags.STASH_APPLY_FAILED));
-	          fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
-			    } else {
-			      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-			          translator.getTranslation(Tags.STASH_APPLY_FAILED));
-            fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
-			    }
+			    FileStatusDialog.showErrorMessage(
+              translator.getTranslation(Tags.STASH),
+              null,
+              translator.getTranslation("Unable to apply stash"));
 			  }
 		  }
 	  }
+		
+		return status;
 	}
   
 	
@@ -2552,29 +2564,33 @@ public class GitAccess {
  * @throws IOException
  * @throws GitAPIException
  */
-	private boolean checkIfStashWasApplied(String stashRef) throws IOException, GitAPIException {
-	  boolean wasApplied = true;
+	private ApplyStashStatus getCauseForFailedStashApply(String stashRef) throws IOException, GitAPIException {
+	  ApplyStashStatus status = ApplyStashStatus.APPLIED_WITH_GENERATED_CONFLICTS;
 	  List<FileStatus> list = RevCommitUtil.getChangedFiles(stashRef);
-    for(int i = 0; i < list.size(); i++) {
-      for (int j = 0; j < getUnstagedFiles().size(); j++) {
-        if(getUnstagedFiles().get(j).getChangeType() == GitChangeType.CONFLICT ||
-            getUnstagedFiles().get(j).getFileLocation().compareTo(list.get(i).getFileLocation()) == 0) {
-          wasApplied = false;
-          break;
-        }
-      }
-      if(wasApplied) {
-        for (int j = 0; j < getStagedFiles().size(); j++) {
-          if(getStagedFiles().get(j).getChangeType() == GitChangeType.CONFLICT ||
-              getStagedFiles().get(j).getFileLocation().compareTo(list.get(i).getFileLocation()) == 0) {
-            wasApplied = false;
-            break;
-          }
-        }
-      }
-    }
+		for (FileStatus fileStatus : list) {
+			for (int j = 0; j < getUnstagedFiles().size(); j++) {
+				if (getUnstagedFiles().get(j).getChangeType() == GitChangeType.CONFLICT) {
+				  status = ApplyStashStatus.CONFLICTS;
+				} else if (getUnstagedFiles().get(j).getFileLocation().compareTo(fileStatus.getFileLocation()) == 0) {
+				  status = ApplyStashStatus.UNCOMMITTED_FILES;
+				}
+			}
+			if(fileStatus.getChangeType() == GitChangeType.ADD && !getStagedFiles().isEmpty()) {
+			  status =  ApplyStashStatus.BUG_CONFLICT;
+				break;
+			}
+			if (status == ApplyStashStatus.APPLIED_WITH_GENERATED_CONFLICTS) {
+			  for (int j = 0; j < getStagedFiles().size(); j++) {
+	        if (getStagedFiles().get(j).getChangeType() == GitChangeType.CONFLICT) {
+	          status = ApplyStashStatus.CONFLICTS;
+	        } else if (getStagedFiles().get(j).getFileLocation().compareTo(fileStatus.getFileLocation()) == 0) {
+	          status = ApplyStashStatus.UNCOMMITTED_FILES;
+	        }
+	      }
+			}
+		}
       
-    return wasApplied;
+    return status;
 	}
 	
 	/**

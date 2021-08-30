@@ -1317,6 +1317,22 @@ public class ToolbarPanel extends JPanel {
     
     listStashesMenuItem = new JMenuItem(stashesAction);
     listStashesMenuItem.addActionListener(menuItemActionListener);
+    
+    splitMenuButton.add(listStashesMenuItem);
+    stashActionsGroup.add(listStashesMenuItem);
+    
+    Action stashesAction2 = new AbstractAction(TRANSLATOR.getTranslation(Tags.LIST_STASHES)) {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ListStashesAction2 stashesDialog = new ListStashesAction2();
+        stashesDialog.setVisible(true);   
+      }
+      
+    };
+    
+    listStashesMenuItem = new JMenuItem(stashesAction2);
+    listStashesMenuItem.addActionListener(menuItemActionListener);
       
     splitMenuButton.add(listStashesMenuItem);
     stashActionsGroup.add(listStashesMenuItem);
