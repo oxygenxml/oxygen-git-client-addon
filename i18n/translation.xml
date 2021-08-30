@@ -22,16 +22,16 @@
         <val lang="ja_JP">Description</val>
         <val lang="nl_NL">Description</val>
     </key>
-    <key value="Open_Action_Tooltip">
-        <comment>Tooltip to explain the Open action</comment>
+    <key value="History_resource_open_action_tooltip">
+        <comment>The text for the tooltip that explains the Open action for a Git History resource.</comment>
         <val lang="en_US">Opens this version of the file as read-only.</val>
         <val lang="de_DE">Opens this version of the file as read-only.</val>
         <val lang="fr_FR">Opens this version of the file as read-only.</val>
         <val lang="ja_JP">Opens this version of the file as read-only.</val>
         <val lang="nl_NL">Opens this version of the file as read-only.</val>
     </key>
-    <key value="Checkout_Action_Tooltip">
-        <comment>Tooltip to explain the Checkout action</comment>
+    <key value="History_resource_checkout_action_tooltip">
+        <comment>The text for the tooltip that explains the Checkout action for a  Git History resource.</comment>
         <val lang="en_US">Resets the working copy file to this version.</val>
         <val lang="de_DE">Resets the working copy file to this version.</val>
         <val lang="fr_FR">Resets the working copy file to this version.</val>

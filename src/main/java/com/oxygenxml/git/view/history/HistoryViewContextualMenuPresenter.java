@@ -53,6 +53,10 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  */
 public class HistoryViewContextualMenuPresenter {
   /**
+   * i18n
+   */
+  private static final Translator TRANSLATOR = Translator.getInstance();
+  /**
    * Exception message prefix.
    */
   private static final String UNABLE_TO_OPEN_REVISION = "Unable to open revision. ";
@@ -71,12 +75,12 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Contains the tooltips text for file contextual actions.
    */
-  private static final Map<String, String> actionsToolTipText = new HashMap<>();
+  private static final Map<String, String> ACTION_NAMES_TO_TOOLTIP_TEXT = new HashMap<>();
   static {
-    actionsToolTipText.put(Translator.getInstance().getTranslation(Tags.CHECKOUT), 
-        Translator.getInstance().getTranslation(Tags.CHECKOUT_ACTION_TOOLTIP));
-    actionsToolTipText.put(Translator.getInstance().getTranslation(Tags.OPEN), 
-        Translator.getInstance().getTranslation(Tags.OPEN_ACTION_TOOLTIP));
+    ACTION_NAMES_TO_TOOLTIP_TEXT.put(TRANSLATOR.getTranslation(Tags.CHECKOUT), 
+        TRANSLATOR.getTranslation(Tags.HISTORY_RESOURCE_CHECKOUT_ACTION_TOOLTIP));
+    ACTION_NAMES_TO_TOOLTIP_TEXT.put(TRANSLATOR.getTranslation(Tags.OPEN), 
+        TRANSLATOR.getTranslation(Tags.HISTORY_RESOURCE_OPEN_ACTION_TOOLTIP));
   }
 
   
@@ -124,7 +128,7 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics... commitCharacteristics) {
     // Add open actions.
     String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath);
-    String actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_FILE), fileName);
+    String actionName = MessageFormat.format(TRANSLATOR.getTranslation(Tags.OPEN_FILE), fileName);
 
     Action open = new AbstractAction(actionName) {
       @Override
@@ -169,7 +173,7 @@ public class HistoryViewContextualMenuPresenter {
 
     // Create action
     Action compareWithEachOther = 
-        new AbstractAction(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_EACH_OTHER)) {
+        new AbstractAction(TRANSLATOR.getTranslation(Tags.COMPARE_WITH_EACH_OTHER)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
@@ -208,13 +212,13 @@ public class HistoryViewContextualMenuPresenter {
       Optional<FileStatus> fileStatus) throws IOException {
     if (!fileStatus.isPresent()) {
       String error = MessageFormat.format(
-          Translator.getInstance().getTranslation(Tags.FILE_NOT_PRESENT_IN_REVISION),
+          TRANSLATOR.getTranslation(Tags.FILE_NOT_PRESENT_IN_REVISION),
           filePath,
           commit.getCommitAbbreviatedId());
       throw new IOException(error);
     } else if (fileStatus.get().getChangeType() == GitChangeType.REMOVED) {
       String error = MessageFormat.format(
-          Translator.getInstance().getTranslation(Tags.FILE_WAS_REMOVED_IN_REVISION),
+          TRANSLATOR.getTranslation(Tags.FILE_WAS_REMOVED_IN_REVISION),
           filePath,
           commit.getCommitAbbreviatedId());
       throw new IOException(error);
@@ -300,13 +304,16 @@ public class HistoryViewContextualMenuPresenter {
     contextualActions.forEach(action -> {
       if(action == null) {
         jPopupMenu.addSeparator();
-      } else if (actionsToolTipText.containsKey(action.getValue(Action.NAME))) {
-          JMenuItem checkoutAction = new JMenuItem((String)action.getValue(Action.NAME));
-          checkoutAction.setAction(action);
-          checkoutAction.setToolTipText(actionsToolTipText.get(action.getValue(Action.NAME)));
-          jPopupMenu.add(checkoutAction);
       } else {
-        jPopupMenu.add(action);
+        String actionName = (String) action.getValue(Action.NAME);
+        if (ACTION_NAMES_TO_TOOLTIP_TEXT.containsKey(actionName)) {
+          JMenuItem checkoutAction = new JMenuItem(actionName);
+          checkoutAction.setAction(action);
+          checkoutAction.setToolTipText(ACTION_NAMES_TO_TOOLTIP_TEXT.get(actionName));
+          jPopupMenu.add(checkoutAction);
+        } else {
+          jPopupMenu.add(action);
+        }
       }
     });  
   }
@@ -335,7 +342,7 @@ public class HistoryViewContextualMenuPresenter {
         createCompareActionsForCommit(actions, commitCharacteristics, addFileName, fileStatus);
       } else if (fileStatusChangeType != GitChangeType.ADD && fileStatusChangeType != GitChangeType.UNTRACKED) {
         // Uncommitted changes. Compare between local and HEAD.
-        actions.add(new AbstractAction(Translator.getInstance().getTranslation(Tags.OPEN_IN_COMPARE)) {
+        actions.add(new AbstractAction(TRANSLATOR.getTranslation(Tags.OPEN_IN_COMPARE)) {
           @Override
           public void actionPerformed(ActionEvent e) {
             DiffPresenter.showDiff(fileStatus, gitCtrl);
@@ -451,10 +458,10 @@ public class HistoryViewContextualMenuPresenter {
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
       String filePath) {
-    String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
+    String actionName = TRANSLATOR.getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION);
     if (addFileName) {
       actionName = MessageFormat.format(
-          Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION),
+          TRANSLATOR.getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION),
           PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath));
     }
     actions.add(new AbstractAction(actionName) {
@@ -523,10 +530,10 @@ public class HistoryViewContextualMenuPresenter {
    * @return The name of the compare action.
    */
   private String getCompareWithPreviousVersionActionName(String filePath, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
+    String actionName = TRANSLATOR.getTranslation(Tags.COMPARE_WITH_PREVIOUS_VERSION);
     if (addFileName) {
       actionName = MessageFormat.format(
-          Translator.getInstance().getTranslation(Tags.COMPARE_FILE_WITH_PREVIOUS_VERSION),
+          TRANSLATOR.getTranslation(Tags.COMPARE_FILE_WITH_PREVIOUS_VERSION),
           PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath));
     }
     return actionName;
@@ -659,10 +666,10 @@ public class HistoryViewContextualMenuPresenter {
    * @return The name of the open file action.
    */
   private String getOpenFileWorkingCopyActionName(FileStatus fileStatus, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.OPEN_WORKING_COPY);
+    String actionName = TRANSLATOR.getTranslation(Tags.OPEN_WORKING_COPY);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_WORKING_COPY_VERSION), fileName);
+      actionName = MessageFormat.format(TRANSLATOR.getTranslation(Tags.OPEN_WORKING_COPY_VERSION), fileName);
     }
     return actionName;
   }
@@ -677,10 +684,10 @@ public class HistoryViewContextualMenuPresenter {
    * @return The name of the revert file action.
    */
   private String getCheckoutFileActionName(FileStatus fileStatus, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.CHECKOUT);
+    String actionName = TRANSLATOR.getTranslation(Tags.CHECKOUT);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.CHECK_OUT_THIS_VERSION), fileName);
+      actionName = MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHECK_OUT_THIS_VERSION), fileName);
     }
     return actionName;
   }
@@ -696,13 +703,13 @@ public class HistoryViewContextualMenuPresenter {
    * @return The name of the open file action.
    */
   private String getOpenFileActionName(FileStatus fileStatus, boolean addFileName) {
-    String actionName = Translator.getInstance().getTranslation(Tags.OPEN);
+    String actionName = TRANSLATOR.getTranslation(Tags.OPEN);
     if (fileStatus.getChangeType() == GitChangeType.REMOVED || fileStatus.getChangeType() == GitChangeType.MISSING) {
       // A removed file. We can only present the previous version.
-      actionName = Translator.getInstance().getTranslation(Tags.OPEN_PREVIOUS_VERSION);
+      actionName = TRANSLATOR.getTranslation(Tags.OPEN_PREVIOUS_VERSION);
     } else if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
-      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.OPEN_THIS_VERSION_OF_FILENAME), fileName);
+      actionName = MessageFormat.format(TRANSLATOR.getTranslation(Tags.OPEN_THIS_VERSION_OF_FILENAME), fileName);
     }
     return actionName;
   }
