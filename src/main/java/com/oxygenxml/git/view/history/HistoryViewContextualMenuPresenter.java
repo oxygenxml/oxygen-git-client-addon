@@ -307,10 +307,10 @@ public class HistoryViewContextualMenuPresenter {
       } else {
         String actionName = (String) action.getValue(Action.NAME);
         if (ACTION_NAMES_TO_TOOLTIP_TEXT.containsKey(actionName)) {
-          JMenuItem checkoutAction = new JMenuItem(actionName);
-          checkoutAction.setAction(action);
-          checkoutAction.setToolTipText(ACTION_NAMES_TO_TOOLTIP_TEXT.get(actionName));
-          jPopupMenu.add(checkoutAction);
+          JMenuItem currentAction = new JMenuItem(actionName);
+          currentAction.setAction(action);
+          currentAction.setToolTipText(ACTION_NAMES_TO_TOOLTIP_TEXT.get(actionName));
+          jPopupMenu.add(currentAction);
         } else {
           jPopupMenu.add(action);
         }
