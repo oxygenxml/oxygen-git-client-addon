@@ -1243,6 +1243,11 @@ public class ToolbarPanel extends JPanel {
         super.paintComponent(g);
         paintStashes(g);
       }
+      
+      @Override
+      public JToolTip createToolTip() {
+        return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
        
       /**
        * Paint the number pushes ahead.
@@ -1275,6 +1280,9 @@ public class ToolbarPanel extends JPanel {
             stashButton.getHeight() - fontMetrics.getDescent());
       }
     }; 
+    
+    //TODO add the relevent text for stash button tooltip
+    stashLocalButton.setToolTipText("This is the stash button");
     
     addStashActionsToMenu(stashLocalButton);
     
