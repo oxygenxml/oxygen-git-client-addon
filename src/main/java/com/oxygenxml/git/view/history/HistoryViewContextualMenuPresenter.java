@@ -75,11 +75,11 @@ public class HistoryViewContextualMenuPresenter {
   /**
    * Contains the tooltips text for file contextual actions.
    */
-  private static final Map<String, String> actionsToolTipText = new HashMap<>();
+  private static final Map<String, String> ACTION_NAMES_TO_TOOLTIP_TEXT = new HashMap<>();
   static {
-    actionsToolTipText.put(TRANSLATOR.getTranslation(Tags.CHECKOUT), 
+    ACTION_NAMES_TO_TOOLTIP_TEXT.put(TRANSLATOR.getTranslation(Tags.CHECKOUT), 
         TRANSLATOR.getTranslation(Tags.HISTORY_RESOURCE_CHECKOUT_ACTION_TOOLTIP));
-    actionsToolTipText.put(TRANSLATOR.getTranslation(Tags.OPEN), 
+    ACTION_NAMES_TO_TOOLTIP_TEXT.put(TRANSLATOR.getTranslation(Tags.OPEN), 
         TRANSLATOR.getTranslation(Tags.HISTORY_RESOURCE_OPEN_ACTION_TOOLTIP));
   }
 
@@ -304,13 +304,16 @@ public class HistoryViewContextualMenuPresenter {
     contextualActions.forEach(action -> {
       if(action == null) {
         jPopupMenu.addSeparator();
-      } else if (actionsToolTipText.containsKey(action.getValue(Action.NAME))) {
-          JMenuItem checkoutAction = new JMenuItem((String)action.getValue(Action.NAME));
-          checkoutAction.setAction(action);
-          checkoutAction.setToolTipText(actionsToolTipText.get(action.getValue(Action.NAME)));
-          jPopupMenu.add(checkoutAction);
       } else {
-        jPopupMenu.add(action);
+        String actionName = (String) action.getValue(Action.NAME);
+        if (ACTION_NAMES_TO_TOOLTIP_TEXT.containsKey(actionName)) {
+          JMenuItem checkoutAction = new JMenuItem(actionName);
+          checkoutAction.setAction(action);
+          checkoutAction.setToolTipText(ACTION_NAMES_TO_TOOLTIP_TEXT.get(actionName));
+          jPopupMenu.add(checkoutAction);
+        } else {
+          jPopupMenu.add(action);
+        }
       }
     });  
   }
