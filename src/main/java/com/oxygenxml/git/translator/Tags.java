@@ -1334,11 +1334,11 @@ public class Tags {
   /**
    * The text for tooltip that explain the Checkout action.
    */
-  public static final String EXPLAIN_CHECKOUT_ACTION = "Explain_Checkout_Action";
+  public static final String CHECKOUT_ACTION_TOOLTIP = "Checkout_Action_Tooltip";
   /**
    * The text for tooltip that explain the Open action.
    */
-  public static final String EXPLAIN_OPEN_ACTION = "Explain_Open_Action";
+  public static final String OPEN_ACTION_TOOLTIP = "Open_Action_Tooltip";
   
   /**
    * The name of the commit

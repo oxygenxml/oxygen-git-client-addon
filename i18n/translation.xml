@@ -22,21 +22,21 @@
         <val lang="ja_JP">Description</val>
         <val lang="nl_NL">Description</val>
     </key>
-    <key value="Explain_Open_Action">
-        <comment>Explain the Checkout action</comment>
-        <val lang="en_US">Opens a read-only file with the selected version of the file</val>
-        <val lang="de_DE">Opens a read-only file with the selected version of the file</val>
-        <val lang="fr_FR">Opens a read-only file with the selected version of the file</val>
-        <val lang="ja_JP">Opens a read-only file with the selected version of the file</val>
-        <val lang="nl_NL">Opens a read-only file with the selected version of the file</val>
+    <key value="Open_Action_Tooltip">
+        <comment>Tooltip to explain the Open action</comment>
+        <val lang="en_US">Opens this version of the file as read-only.</val>
+        <val lang="de_DE">Opens this version of the file as read-only.</val>
+        <val lang="fr_FR">Opens this version of the file as read-only.</val>
+        <val lang="ja_JP">Opens this version of the file as read-only.</val>
+        <val lang="nl_NL">Opens this version of the file as read-only.</val>
     </key>
-    <key value="Explain_Checkout_Action">
-        <comment>Explain the Checkout action</comment>
-        <val lang="en_US">Revert the contents of the file in the working copy to the current commit</val>
-        <val lang="de_DE">Revert the contents of the file in the working copy to the current commit</val>
-        <val lang="fr_FR">Revert the contents of the file in the working copy to the current commit</val>
-        <val lang="ja_JP">Revert the contents of the file in the working copy to the current commit</val>
-        <val lang="nl_NL">Revert the contents of the file in the working copy to the current commit</val>
+    <key value="Checkout_Action_Tooltip">
+        <comment>Tooltip to explain the Checkout action</comment>
+        <val lang="en_US">Resets the working copy file to this version.</val>
+        <val lang="de_DE">Resets the working copy file to this version.</val>
+        <val lang="fr_FR">Resets the working copy file to this version.</val>
+        <val lang="ja_JP">Resets the working copy file to this version.</val>
+        <val lang="nl_NL">Resets the working copy file to this version.</val>
     </key>
      <key value="ID">
         <comment>ID</comment>

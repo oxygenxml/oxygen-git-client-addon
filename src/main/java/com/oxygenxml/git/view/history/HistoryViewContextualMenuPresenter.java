@@ -74,9 +74,9 @@ public class HistoryViewContextualMenuPresenter {
   private static final Map<String, String> actionsToolTipText = new HashMap<>();
   static {
     actionsToolTipText.put(Translator.getInstance().getTranslation(Tags.CHECKOUT), 
-        Translator.getInstance().getTranslation(Tags.EXPLAIN_CHECKOUT_ACTION));
+        Translator.getInstance().getTranslation(Tags.CHECKOUT_ACTION_TOOLTIP));
     actionsToolTipText.put(Translator.getInstance().getTranslation(Tags.OPEN), 
-        Translator.getInstance().getTranslation(Tags.EXPLAIN_OPEN_ACTION));
+        Translator.getInstance().getTranslation(Tags.OPEN_ACTION_TOOLTIP));
   }
 
   
