@@ -573,8 +573,8 @@ public class ToolbarPanel extends JPanel {
     };
 
     showTagsButton = new ToolbarButton(showTagsAction, false);
-    showTagsButton.setIcon(Icons.getIcon(Icons.ERROR_ICON));  //dummy icon for now
-    showTagsButton.setToolTipText("Show text");
+    showTagsButton.setIcon(Icons.getIcon(Icons.TAG));
+    showTagsButton.setToolTipText("Tags"); // TODO: i18n
     setDefaultToolbarButtonWidth(showTagsButton);
 
     gitToolbar.add(showTagsButton);
