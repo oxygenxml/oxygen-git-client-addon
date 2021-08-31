@@ -86,7 +86,7 @@ public class ListStashesAction extends JDialog {
   /**
    * The default width for table.
    */
-  private static final int FILES_LIST_DEFAULT_WIDTH = 272;
+  private static final int FILES_LIST_DEFAULT_WIDTH = 300;
 
   /**
    * The default width for table.
@@ -206,29 +206,30 @@ public class ListStashesAction extends JDialog {
     constraints.gridy = 0;
     constraints.gridheight = 1;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(7, 10, 5, 10);
+    constraints.insets = new Insets(7, 10, 5, 0);
     constraints.gridwidth = 1;
     constraints.weighty = 0;
-    constraints.weightx = 0;
-    constraints.fill = GridBagConstraints.NONE;
+    constraints.weightx = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
     
     JLabel stashesLabel = new JLabel("Stashes:");
     stashesPanel.add(stashesLabel, constraints);
     
     constraints.gridx++;
+    constraints.weightx = 0;
+    constraints.insets = new Insets(7, 10, 5, 10);
     JLabel tableTitleLabel = new JLabel("Affected files:");
     stashesPanel.add(tableTitleLabel, constraints);
     
     constraints.weighty = 1;
+    constraints.weightx = 1;
     constraints.gridy++;
     constraints.gridx = 0;
-    constraints.weightx = 1;
     constraints.insets = new Insets(0, 10, 0, 10);
     constraints.fill = GridBagConstraints.BOTH;
 
     JScrollPane tableStashesScrollPane = new JScrollPane();
     
-    tableStashesScrollPane.setBorder(null);
     tableStashesScrollPane.setPreferredSize(new Dimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
     tableStashesScrollPane.setViewportView(stashesTable);
     tableStashesScrollPane.setBackground(stashesTable.getBackground());
@@ -247,8 +248,10 @@ public class ListStashesAction extends JDialog {
     stashesPanel.setFont(stashesTable.getFont());
     stashesPanel.add(tableStashesScrollPane,constraints);
 
+    constraints.insets = new Insets(0, 10, 0, 10);
     constraints.gridx++;
-    constraints.weightx = 0.75;
+    constraints.anchor = GridBagConstraints.EAST;
+    constraints.weightx = 1;
     showDiff = createShowDiffAction();
     affectedFilesTable = createAffectedFilesTable();
     JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
@@ -258,25 +261,16 @@ public class ListStashesAction extends JDialog {
 
     constraints.gridy++;
     constraints.gridx = 0;
-    constraints.fill = GridBagConstraints.NONE;
-    constraints.gridwidth = 1;
-    constraints.weightx = 0;
-    constraints.weighty = 0;
-    constraints.anchor = GridBagConstraints.WEST;
-    deleteAfterApplingCheckBox = createDeleteAfterApplyingCheckBox();
-    constraints.insets = new Insets(7 - deleteAfterApplingCheckBox.getInsets().top, 10, 0, 10);
-    stashesPanel.add(deleteAfterApplingCheckBox, constraints);
-
-    constraints.gridx = 0;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.weightx = 1;
-    constraints.gridwidth = 1;
     constraints.weighty = 0;
-    constraints.anchor = GridBagConstraints.EAST;
-    constraints.insets = new Insets(7, 0, 0, 10);
-    stashesPanel.add(createButtonsPanel(), constraints);
+    constraints.anchor = GridBagConstraints.WEST;
+    JPanel stashesTableButtons = createButtonsStashesPanel();
+    constraints.insets = new Insets(3, 10, 0, 10);
+    stashesPanel.add(stashesTableButtons, constraints);
 
     constraints.gridy++;
+    constraints.insets = new Insets(0, 0, 0, 0);
     JPanel emptyPanel = new JPanel();
     emptyPanel.setBackground(stashesTable.getBackground());
     emptyPanel.setForeground(stashesTable.getForeground());
@@ -285,6 +279,7 @@ public class ListStashesAction extends JDialog {
 
     constraints.gridx++;
     constraints.fill = GridBagConstraints.NONE;
+    constraints.anchor = GridBagConstraints.EAST;
     constraints.weightx = 0;
     constraints.weighty = 0;
     constraints.insets = new Insets(5, 0, 10, 10);
@@ -296,6 +291,11 @@ public class ListStashesAction extends JDialog {
   }
 
 
+  /**
+   * Creates the clear button.
+   *
+   * @return the created button.
+   */
   private Button createClearButton() {
     Button clearAllButton = new Button(Translator.getInstance().getTranslation(Tags.CLEAR));
     clearAllButton.addActionListener( e-> {
@@ -431,6 +431,52 @@ public class ListStashesAction extends JDialog {
   }
 
 
+  private JPanel createButtonsStashesPanel() {
+    JPanel panel = new JPanel(new GridBagLayout());
+    GridBagConstraints constraints = new GridBagConstraints();
+    
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.anchor = GridBagConstraints.WEST;
+    constraints.insets = new Insets(0, 0, 0, 0);
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.gridwidth = 1;
+    constraints.gridheight = 1;
+    constraints.weightx = 0;
+    constraints.weighty = 0;
+    deleteAfterApplingCheckBox = createDeleteAfterApplyingCheckBox();
+    deleteAfterApplingCheckBox.setBackground(stashesTable.getBackground());
+    deleteAfterApplingCheckBox.setForeground(stashesTable.getForeground());
+    deleteAfterApplingCheckBox.setFont(stashesTable.getFont());
+    panel.add(deleteAfterApplingCheckBox, constraints);
+
+    constraints.gridx++;
+    constraints.weightx = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    JPanel emptyPanel = new JPanel();
+    emptyPanel.setBackground(stashesTable.getBackground());
+    emptyPanel.setForeground(stashesTable.getForeground());
+    emptyPanel.setFont(stashesTable.getFont());
+    panel.add(emptyPanel, constraints);
+
+    constraints.insets =new Insets(4, 0, 0, 0);
+    constraints.gridx++;
+    constraints.weightx = 0;
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.anchor = GridBagConstraints.EAST;
+    JPanel buttonsPanel = createButtonsPanel();
+    buttonsPanel.setBackground(stashesTable.getBackground());
+    buttonsPanel.setForeground(stashesTable.getForeground());
+    buttonsPanel.setFont(stashesTable.getFont());
+    panel.add(buttonsPanel, constraints);
+    
+    panel.setBackground(stashesTable.getBackground());
+    panel.setForeground(stashesTable.getForeground());
+    panel.setFont(stashesTable.getFont());
+    
+    return panel;
+  }
+  
   /**
    * Create the panel with the buttons.
    * 
@@ -439,26 +485,11 @@ public class ListStashesAction extends JDialog {
   private JPanel createButtonsPanel() {
     JPanel buttonsPanel = new JPanel(new GridBagLayout());
     GridBagConstraints constraints = new GridBagConstraints();
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(0, 0, 0, 0);
+
     constraints.gridx = 0;
-    constraints.gridy = 0;
-    constraints.gridwidth = 1;
-    constraints.gridheight = 1;
-    constraints.weightx = 1;
-    constraints.weighty = 0;
-    JPanel emptyPanel = new JPanel();
-    emptyPanel.setBackground(stashesTable.getBackground());
-    emptyPanel.setForeground(stashesTable.getForeground());
-    emptyPanel.setFont(stashesTable.getFont());
-
-    buttonsPanel.add(emptyPanel, constraints);   
-
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.WEST;
     constraints.insets = new Insets(0, 3, 7, 0);
-    constraints.gridx++;
     constraints.gridy = 0;
     constraints.gridwidth = 1;
     constraints.gridheight = 1;
