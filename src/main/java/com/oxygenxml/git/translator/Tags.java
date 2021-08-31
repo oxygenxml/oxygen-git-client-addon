@@ -1306,7 +1306,7 @@ public class Tags {
   /**
    * Stash all changes.
    */
-  public static final String STASH_ALL_CHANGES = "Stash_All_Changes";
+  public static final String STASH_CHANGES = "Stash_Changes";
   /**
    * Stash generate conflicts message
    */

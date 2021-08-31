@@ -127,13 +127,13 @@
         <val lang="ja_JP">Unable to compare.</val>
         <val lang="nl_NL">Unable to compare.</val>
     </key>
-     <key value="Stash_All_Changes">
-        <comment>Stash all changes</comment>
-        <val lang="en_US">Stash all changes</val>
-        <val lang="de_DE">Stash all changes</val>
-        <val lang="fr_FR">Stash all changes</val>
-        <val lang="ja_JP">Stash all changes</val>
-        <val lang="nl_NL">Stash all changes</val>
+     <key value="Stash_Changes">
+        <comment>Stash changes</comment>
+        <val lang="en_US">Stash changes</val>
+        <val lang="de_DE">Stash changes</val>
+        <val lang="fr_FR">Stash changes</val>
+        <val lang="ja_JP">Stash changes</val>
+        <val lang="nl_NL">Stash changes</val>
     </key>
    <key value="List_Stashes">
         <comment>List Stashes.</comment>

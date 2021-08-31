@@ -1423,7 +1423,10 @@ public class ToolbarPanel extends JPanel {
             Collection<RevCommit> stashes = GitAccess.getInstance().listStash();
             noOfStashes = stashes != null ? stashes.size() : 0;
           }
-        }   
+        } else {
+          PluginWorkspaceProvider.getPluginWorkspace()
+            .showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+        }
       }
     };
   }
@@ -1437,11 +1440,10 @@ public class ToolbarPanel extends JPanel {
     boolean isConflict =  unstagedFiles != null 
         && !unstagedFiles.isEmpty() 
         && unstagedFiles.stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
-    if(isConflict) {
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-    }
+   
     return !isConflict;
   }
+  
   
 	/**
 	 * Create the "Push" action.
