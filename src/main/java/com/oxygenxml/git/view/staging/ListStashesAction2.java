@@ -374,7 +374,7 @@ public class ListStashesAction2 extends JDialog {
 
     button.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
-      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
       if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < stashesTable.getRowCount()) {
         try {
           ApplyStashStatus applyStashStatus = GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
@@ -425,7 +425,7 @@ public class ListStashesAction2 extends JDialog {
    * @param toDeleteRow row to delete.
    */
   private void deleteRow(int toDeleteRow) {
-    GitAccess.getInstance().stashDrop(toDeleteRow);
+    GitAccess.getInstance().dropStash(toDeleteRow);
     TableModel model = stashesTable.getModel();
     for (int row = toDeleteRow + 1; row <  stashesTable.getRowCount(); row++) {
       model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
@@ -475,7 +475,7 @@ public class ListStashesAction2 extends JDialog {
    */
   private JTable createStashesTable() {
     // Creates list of current stashes.
-    List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+    List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
 
     String[] columnNames = {
         Translator.getInstance().getTranslation(Tags.ID),
@@ -768,7 +768,7 @@ public class ListStashesAction2 extends JDialog {
       JScrollPane affectedFilesScrollPane = new JScrollPane(affectedFilesTable);
       affectedFilesScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH + 100, 255));
 
-      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
       messageStashTextArea = new JTextArea();
       messageStashTextArea.setText(stashes.get(stashesTable.getSelectedRow()).getFullMessage());
       messageStashTextArea.setWrapStyleWord(true);
@@ -852,7 +852,7 @@ public class ListStashesAction2 extends JDialog {
         while(tableModel.getRowCount() > 0) {
           tableModel.removeRow(tableModel.getRowCount() - 1);
         }
-        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStash());
+        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
         try {
           List<FileStatus> listOfChangedFiles = RevCommitUtil.
               getChangedFiles(stashesList.get(selectedRow).getName());
@@ -954,7 +954,7 @@ public class ListStashesAction2 extends JDialog {
            FileStatus selectedFile = null;
            List<RevCommit> stashes = null;
            try {
-             stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+             stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
              selectedFile = ((FileStatus)affectedFilesTable.getValueAt(selectedFilesIndex, 1));
              String filePath = selectedFile.getFileLocation();
              DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());

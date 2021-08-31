@@ -782,7 +782,7 @@ public class ToolbarPanel extends JPanel {
 	 */
 	public void refreshStashButton() {
 	  GitAccess gitAccess = GitAccess.getInstance();
-	  Collection<RevCommit> stashes = gitAccess.listStash();
+	  Collection<RevCommit> stashes = gitAccess.listStashes();
     noOfStashes = stashes == null ? 0 : stashes.size();
     
     List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
@@ -794,7 +794,7 @@ public class ToolbarPanel extends JPanel {
     
     stashChangesMenuItem.setEnabled(existsLocalFiles);
     
-    Collection<RevCommit> stashesList = GitAccess.getInstance().listStash();
+    Collection<RevCommit> stashesList = GitAccess.getInstance().listStashes();
     boolean existsStashes = stashesList != null && !stashesList.isEmpty();
     
     listStashesMenuItem.setEnabled(existsStashes);
@@ -1262,7 +1262,7 @@ public class ToolbarPanel extends JPanel {
        */
       private void paintStashes(Graphics g) {
         String noOfStashesString = "";
-        Collection<RevCommit> stashes = GitAccess.getInstance().listStash();
+        Collection<RevCommit> stashes = GitAccess.getInstance().listStashes();
        
         noOfStashes = stashes == null ? 0 : stashes.size();
        
@@ -1420,7 +1420,7 @@ public class ToolbarPanel extends JPanel {
             } else {
               GitAccess.getInstance().createStash(false, description);
             }
-            Collection<RevCommit> stashes = GitAccess.getInstance().listStash();
+            Collection<RevCommit> stashes = GitAccess.getInstance().listStashes();
             noOfStashes = stashes != null ? stashes.size() : 0;
           }
         } else {

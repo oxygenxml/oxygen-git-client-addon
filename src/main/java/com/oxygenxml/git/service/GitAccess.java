@@ -2421,7 +2421,7 @@ public class GitAccess {
 	 *
 	 * @throws GitAPIException
 	 */
-	public Collection<RevCommit> listStash() {
+	public Collection<RevCommit> listStashes() {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
 		 Collection<RevCommit> stashedRefsCollection = null;
 		try {
@@ -2505,7 +2505,7 @@ public class GitAccess {
       if(status == ApplyStashStatus.APPLIED_WITH_GENERATED_CONFLICTS) {
         git.stashApply().setStashRef(stashRef).call();
         
-        List<RevCommit> stashes = new ArrayList<>(listStash());
+        List<RevCommit> stashes = new ArrayList<>(listStashes());
         
         stashes.removeIf(commit -> commit.getName().compareTo(stashRef) == 0);
         
@@ -2684,7 +2684,7 @@ public class GitAccess {
 	 * 
 	 * @param stashIndex The index of the stash item to be dropped.
 	 */
-	public void stashDrop(int stashIndex) {
+	public void dropStash(int stashIndex) {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
 		try {
 			git.stashDrop().setStashRef(stashIndex).call();
