@@ -163,6 +163,10 @@ public class Icons {
    * Icon for the remote branches category in Git Branch Manager.
    */
   public static final String REMOTE = "/images/Remote16.png";
+  /**
+   * Stash icon.
+   */
+  public static final String STASH_ICON = "/images/Help32.png";
   
   /**
    * Get icon.

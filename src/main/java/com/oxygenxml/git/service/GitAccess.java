@@ -2450,16 +2450,11 @@ public class GitAccess {
       stash = git.stashCreate().setIncludeUntracked(includeUntrackedFiles).call();
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
     } catch (GitAPIException e) {
-      boolean isBecauseConflicts = getUnstagedFiles() != null 
-          && !getUnstagedFiles().isEmpty() 
-          && getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
-      if(isBecauseConflicts) {
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-      } else {
         LOGGER.error(e, e);
+        fireOperationFailed(
+            new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
       }
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
-    }
+     
     return stash;
 	}
 

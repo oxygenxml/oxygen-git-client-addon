@@ -259,8 +259,8 @@ public class ListStashesAction extends JDialog {
     constraints.weightx = 0;
     constraints.weighty = 0;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(7, 10, 0, 10);
     deleteAfterApplingCheckBox = createDeleteAfterApplyingCheckBox();
+    constraints.insets = new Insets(7 - deleteAfterApplingCheckBox.getInsets().top, 10, 0, 10);
     stashesPanel.add(deleteAfterApplingCheckBox, constraints);
 
     constraints.gridx = 0;
@@ -269,7 +269,7 @@ public class ListStashesAction extends JDialog {
     constraints.gridwidth = 1;
     constraints.weighty = 0;
     constraints.anchor = GridBagConstraints.EAST;
-    constraints.insets = new Insets(10, 0, 0, 10);
+    constraints.insets = new Insets(7, 0, 0, 10);
     stashesPanel.add(createButtonsPanel(), constraints);
 
     constraints.gridy++;

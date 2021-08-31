@@ -55,6 +55,7 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -1232,7 +1233,7 @@ public class ToolbarPanel extends JPanel {
   private SplitMenuButton createStashButton() {
     SplitMenuButton stashLocalButton = new SplitMenuButton( // NOSONAR (java:S110)
         null,
-        Icons.getIcon(Icons.QUESTION_ICON),
+        Icons.getIcon(Icons.STASH_ICON),
         false,
         false,
         true,
@@ -1247,6 +1248,11 @@ public class ToolbarPanel extends JPanel {
       @Override
       public JToolTip createToolTip() {
         return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+      }
+      
+      @Override
+      public void setToolTipText(String text) {
+        super.setToolTipText(TRANSLATOR.getTranslation(Tags.STASH));
       }
        
       /**
@@ -1281,8 +1287,7 @@ public class ToolbarPanel extends JPanel {
       }
     }; 
     
-    //TODO add the relevent text for stash button tooltip
-    stashLocalButton.setToolTipText("This is the stash button");
+    stashLocalButton.setToolTipText(TRANSLATOR.getTranslation(Tags.STASH));
     
     addStashActionsToMenu(stashLocalButton);
     
@@ -1406,32 +1411,37 @@ public class ToolbarPanel extends JPanel {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_ALL_CHANGES)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        try {
-          if (GitAccess.getInstance().getRepository() != null) {
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Stash Button Clicked");
+        if(stashCanBeCreated()) {
+          StashAllChangesDialog dialog = new StashAllChangesDialog(TRANSLATOR.getTranslation(Tags.STASH_ALL_CHANGES));
+          if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
+            String description = dialog.getStashMessage();
+            if("".compareTo(description) == 0) {
+              GitAccess.getInstance().createStash(false);
+            } else {
+              GitAccess.getInstance().createStash(false, description);
             }
-            StashAllChangesDialog dialog = new StashAllChangesDialog(TRANSLATOR.getTranslation(Tags.STASH_ALL_CHANGES));
-            if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
-              String description = dialog.getStashMessage();
-              if("".compareTo(description) == 0) {
-                GitAccess.getInstance().createStash(false);
-              } else {
-                GitAccess.getInstance().createStash(false, description);
-              }
-              Collection<RevCommit> stashes = GitAccess.getInstance().listStash();
-              noOfStashes = stashes != null ? stashes.size() : 0;
-            }
+            Collection<RevCommit> stashes = GitAccess.getInstance().listStash();
+            noOfStashes = stashes != null ? stashes.size() : 0;
           }
-        } catch (NoRepositorySelected e1) {
-          if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug(e1, e1);
-          }
-        }
+        }   
       }
     };
   }
   
+  
+  /**
+   * @return <code>true</code> if the stash can be created
+   */
+  private boolean stashCanBeCreated() {
+    List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
+    boolean isConflict =  unstagedFiles != null 
+        && !unstagedFiles.isEmpty() 
+        && unstagedFiles.stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
+    if(isConflict) {
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+    }
+    return !isConflict;
+  }
   
 	/**
 	 * Create the "Push" action.
