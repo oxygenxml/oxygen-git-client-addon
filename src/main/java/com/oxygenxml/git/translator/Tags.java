@@ -1349,5 +1349,16 @@ public class Tags {
    * Detached-Head
    */
   public static final String DETACHED_HEAD = "Detached_Head";
-
+  /**
+   * Unable to apply stash message.
+   */
+  public static final String UNABLE_TO_APPLY_STASH = "Unable_To_Apply_Stash";
+  /**
+  * The message presents user solutions to can apply the stash.
+  */
+  public static final String STASH_SOLUTIONS_TO_APPLY = "Stash_Solutions_To_Apply";
+  /**
+   * The message presents user that the stash was kept.
+   */
+  public static final String STASH_WAS_KEPT = "Stash_Was_Kept";
 }

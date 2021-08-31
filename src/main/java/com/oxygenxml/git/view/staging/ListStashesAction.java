@@ -496,18 +496,21 @@ public class ListStashesAction extends JDialog {
       List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
       if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
         try {
-          ApplyStashStatus applyStashStatus = GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
-          if((applyStashStatus == ApplyStashStatus.APPLIED_WITH_GENERATED_CONFLICTS ||
-              applyStashStatus == ApplyStashStatus.SUCCESSFULLY)
-              && deleteAfterApplingCheckBox.isSelected()) {
-            deleteRow(selectedRow);
-            if(noOfRows > 1) {
-              if (selectedRow == noOfRows - 1) {
-                stashesTable.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
-              } else {
-                stashesTable.setRowSelectionInterval(selectedRow, selectedRow);
+          if(deleteAfterApplingCheckBox.isSelected()) {
+            ApplyStashStatus applyStashStatus =
+                GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
+            if(applyStashStatus == ApplyStashStatus.SUCCESSFULLY) {
+              deleteRow(selectedRow);
+              if(noOfRows > 1) {
+                if (selectedRow == noOfRows - 1) {
+                  stashesTable.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
+                } else {
+                  stashesTable.setRowSelectionInterval(selectedRow, selectedRow);
+                }
               }
             }
+          } else {
+            GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
           }
         } catch (GitAPIException e1) {
           LOGGER.error(e1, e1);

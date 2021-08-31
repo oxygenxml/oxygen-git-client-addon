@@ -46,6 +46,30 @@
         <val lang="ja_JP">ID</val>
         <val lang="nl_NL">ID</val>
     </key>
+    <key value="Unable_To_Apply_Stash">
+        <comment>Unable to apply stash message.</comment>
+        <val lang="en_US">Unable to apply stash</val>
+        <val lang="de_DE">Unable to apply stash</val>
+        <val lang="fr_FR">Unable to apply stash</val>
+        <val lang="ja_JP">Unable to apply stash</val>
+        <val lang="nl_NL">Unable to apply stash</val>
+    </key>
+    <key value="Stash_Was_Kept">
+        <comment>The message presents user that the stash was kept.</comment>
+        <val lang="en_US">The stash is kept in case you need it again.</val>
+        <val lang="de_DE">The stash is kept in case you need it again.</val>
+        <val lang="fr_FR">The stash is kept in case you need it again.</val>
+        <val lang="ja_JP">The stash is kept in case you need it again.</val>
+        <val lang="nl_NL">The stash is kept in case you need it again.</val>
+    </key>
+    <key value="Stash_Solutions_To_Apply">
+        <comment>The message presents user solutions to can apply the stash.</comment>
+        <val lang="en_US">Commit, stash or revert your local changes first.</val>
+        <val lang="de_DE">Commit, stash or revert your local changes first.</val>
+        <val lang="fr_FR">Commit, stash or revert your local changes first.</val>
+        <val lang="ja_JP">Commit, stash or revert your local changes first.</val>
+        <val lang="nl_NL">Commit, stash or revert your local changes first.</val>
+    </key>
      <key value="Stash_Add_Description">
         <comment>The text to tell user about adding stash description.</comment>
         <val lang="en_US">You can enter a message to describe the stash</val>
