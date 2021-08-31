@@ -2497,6 +2497,8 @@ public class GitAccess {
    *
    * @param stashRef the stash which will be applied.
    * 
+   * @return the status for stash apply operation.
+   * 
    * @throws GitAPIException 
    */
   public ApplyStashStatus popStash(String stashRef) throws GitAPIException {
@@ -2509,6 +2511,7 @@ public class GitAccess {
         git.stashApply().setStashRef(stashRef).call();
         
         List<RevCommit> stashes = new ArrayList<>(listStash());
+        
         stashes.removeIf(commit -> commit.getName().compareTo(stashRef) == 0);
         
         status = ApplyStashStatus.SUCCESSFULLY;
@@ -2523,13 +2526,18 @@ public class GitAccess {
       if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
         switch (status) {
           case APPLIED_WITH_GENERATED_CONFLICTS:
-            FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH),
-                    new ArrayList<>(getConflictingFiles()),
-                    translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS) 
-                    + " " 
-                    + translator.getTranslation(Tags.STASH_WAS_KEPT)
-                    );
-            fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_POP));
+            List<String> conflictingList = new ArrayList<>(getConflictingFiles());
+            if(conflictingList.isEmpty()) {
+              fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
+            } else {
+              FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH),
+                  conflictingList,
+                  translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS) 
+                  + " " 
+                  + translator.getTranslation(Tags.STASH_WAS_KEPT)
+                  );
+              fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_POP));
+            } 
             break;
           case CONFLICTS:
             FileStatusDialog.showErrorMessage(
@@ -2569,6 +2577,8 @@ public class GitAccess {
 	 *
 	 * @param stashRef the stash which will be applied.
 	 * 
+	 * @return the status for stash apply operation.
+	 * 
 	 * @throws GitAPIException 
 	 */
 	public ApplyStashStatus applyStash(String stashRef) throws GitAPIException {
@@ -2592,11 +2602,19 @@ public class GitAccess {
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
 				switch (status) {
 					case APPLIED_WITH_GENERATED_CONFLICTS:
-						FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH),
-										new ArrayList<>(getConflictingFiles()),
-										translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS));
-						fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
-						break;
+					  List<String> conflictingList = new ArrayList<>(getConflictingFiles());
+            if(conflictingList.isEmpty()) {
+              fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
+            } else {
+              FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH),
+                  conflictingList,
+                  translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS) 
+                  + " " 
+                  + translator.getTranslation(Tags.STASH_WAS_KEPT)
+                  );
+              fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
+            } 
+            break;
 					case CONFLICTS:
 						FileStatusDialog.showErrorMessage(
 										translator.getTranslation(Tags.STASH),
@@ -2633,7 +2651,7 @@ public class GitAccess {
 /**
  * @param stashRef       The stash reference.
  * 
- * @return               <code>true</code> if the stash was applied with success even is throws an exception.
+ * @return               The status for stash.
  * 
  * @throws IOException
  * @throws GitAPIException
@@ -2642,28 +2660,24 @@ public class GitAccess {
 	  ApplyStashStatus status = ApplyStashStatus.APPLIED_WITH_GENERATED_CONFLICTS;
 	  List<FileStatus> list = RevCommitUtil.getChangedFiles(stashRef);
 		for (FileStatus fileStatus : list) {
-			List<FileStatus> unstagedFiles = getUnstagedFiles();
-			for (FileStatus unstagedFile : unstagedFiles) {
+			List<FileStatus> allFiles = new ArrayList<>(getUnstagedFiles());
+			
+			List<FileStatus> stagedFiles = getStagedFiles();
+			if(fileStatus.getChangeType() == GitChangeType.ADD && !stagedFiles.isEmpty()) {
+	        status =  ApplyStashStatus.BUG_CONFLICT;
+	        break;
+	      }
+      
+			allFiles.addAll(stagedFiles);
+      
+			for (FileStatus unstagedFile : allFiles) {
 				if (unstagedFile.getChangeType() == GitChangeType.CONFLICT) {
 					status = ApplyStashStatus.CONFLICTS;
 				} else if (unstagedFile.getFileLocation().compareTo(fileStatus.getFileLocation()) == 0) {
 					status = ApplyStashStatus.UNCOMMITTED_FILES;
 				}
 			}
-			List<FileStatus> stagedFiles = getStagedFiles();
-			if(fileStatus.getChangeType() == GitChangeType.ADD && !stagedFiles.isEmpty()) {
-			  status =  ApplyStashStatus.BUG_CONFLICT;
-				break;
-			}
-			if (status == ApplyStashStatus.APPLIED_WITH_GENERATED_CONFLICTS) {
-				for (FileStatus stagedFile : stagedFiles) {
-					if (stagedFile.getChangeType() == GitChangeType.CONFLICT) {
-						status = ApplyStashStatus.CONFLICTS;
-					} else if (stagedFile.getFileLocation().compareTo(fileStatus.getFileLocation()) == 0) {
-						status = ApplyStashStatus.UNCOMMITTED_FILES;
-					}
-				}
-			}
+			
 		}
       
     return status;

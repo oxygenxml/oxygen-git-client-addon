@@ -501,13 +501,7 @@ public class ListStashesAction extends JDialog {
                 GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
             if(applyStashStatus == ApplyStashStatus.SUCCESSFULLY) {
               deleteRow(selectedRow);
-              if(noOfRows > 1) {
-                if (selectedRow == noOfRows - 1) {
-                  stashesTable.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
-                } else {
-                  stashesTable.setRowSelectionInterval(selectedRow, selectedRow);
-                }
-              }
+              selectNextRow(stashesTable, selectedRow, noOfRows);
             }
           } else {
             GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
@@ -522,6 +516,9 @@ public class ListStashesAction extends JDialog {
   }
 
   
+  /**
+   * Removes files from table.
+   */
   private void depopulateFilesTable() {
     while(affectedFilesTable.getRowCount() > 0) {
       ((DefaultTableModel)affectedFilesTable.getModel()).removeRow(tableModel.getRowCount() - 1);
@@ -529,6 +526,24 @@ public class ListStashesAction extends JDialog {
   }
   
 
+
+ /**
+  * Select next row in the table.
+  * 
+  * @param table         The table.
+  * @param selectedRow   The deleted row
+  * @param noOfRows      The initial number of rows
+  */
+  private void selectNextRow(Table table, int selectedRow, int noOfRows) {
+    if(noOfRows > 1) {
+      if (selectedRow == noOfRows - 1) {
+        table.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
+      } else {
+        table.setRowSelectionInterval(selectedRow, selectedRow);
+      }
+    }
+  }
+  
   /**
    * Creates the delete button.
    * 

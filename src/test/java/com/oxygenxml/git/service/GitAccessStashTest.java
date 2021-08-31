@@ -199,7 +199,46 @@ public class GitAccessStashTest {
     reader.close();
     assertEquals("modify", content);
   }
+  
+  
+  /**
+   * <p><b>Description:</b> tests the pop method</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testStashPop() throws Exception {
+    try {
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+      out.println("modify");
+      out.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    gitAccess.addAll(gitAccess.getUnstagedFiles());
 
+    assertTrue(isStashEmpty());
+    RevCommit commitStash = gitAccess.createStash(false);
+    assertFalse(isStashEmpty());
+   
+    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("", content);
+
+    assertEquals(gitAccess.popStash(commitStash.getName()), ApplyStashStatus.SUCCESSFULLY);
+    
+    assertEquals(gitAccess.listStash().size(), 1);
+    
+    reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
+    content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    reader.close();
+    assertEquals("modify", content);
+  }  
+  
 
   /**
    * <p><b>Description:</b> tests the situation in which we want to apply a stash and we have committed changes that do cause conflicts.</p>
