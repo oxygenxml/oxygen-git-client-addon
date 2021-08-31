@@ -86,7 +86,7 @@ public class ListStashesAction extends JDialog {
   /**
    * The default width for table.
    */
-  private static final int FILES_LIST_DEFAULT_WIDTH = 300;
+  private static final int FILES_LIST_DEFAULT_WIDTH = 261;
 
   /**
    * The default width for table.
@@ -248,7 +248,7 @@ public class ListStashesAction extends JDialog {
     stashesPanel.setFont(stashesTable.getFont());
     stashesPanel.add(tableStashesScrollPane,constraints);
 
-    constraints.insets = new Insets(0, 10, 0, 10);
+    constraints.insets = new Insets(0, 5, 0, 10);
     constraints.gridx++;
     constraints.anchor = GridBagConstraints.EAST;
     constraints.weightx = 1;
