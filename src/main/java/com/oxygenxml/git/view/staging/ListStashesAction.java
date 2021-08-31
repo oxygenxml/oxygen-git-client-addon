@@ -58,7 +58,6 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.history.HistoryPanel;
-import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -78,11 +77,16 @@ public class ListStashesAction extends JDialog {
    * Logger for logging.
    */
   private static final Logger LOGGER = LogManager.getLogger(ListStashesAction.class.getName());
+  
+  /**
+   * The translator.
+   */
+  private static final Translator TRANSLATOR = Translator.getInstance();
 
   /**
    * The default width for table.
    */
-  private static final int FILES_LIST_DEFAULT_WIDTH = 225;
+  private static final int FILES_LIST_DEFAULT_WIDTH = 272;
 
   /**
    * The default width for table.
@@ -92,7 +96,7 @@ public class ListStashesAction extends JDialog {
   /**
    * The default height for table.
    */
-  private static final int TABLE_DEFAULT_HEIGHT = 205;
+  private static final int TABLE_DEFAULT_HEIGHT = 250;
   
   /**
    * Extra width for column icon.
@@ -249,7 +253,7 @@ public class ListStashesAction extends JDialog {
     affectedFilesTable = createAffectedFilesTable();
     JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
     
-    changesOfStashScrollPane.setPreferredSize(HiDPIUtil.getHiDPIDimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
+    changesOfStashScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
     stashesPanel.add(changesOfStashScrollPane, constraints);
 
     constraints.gridy++;
@@ -284,7 +288,7 @@ public class ListStashesAction extends JDialog {
     constraints.weightx = 0;
     constraints.weighty = 0;
     constraints.insets = new Insets(5, 0, 10, 10);
-    Button closeButton = new Button(Translator.getInstance().getTranslation(Tags.CLOSE));
+    Button closeButton = new Button(TRANSLATOR.getTranslation(Tags.CLOSE));
     closeButton.addActionListener(e-> this.dispose());
     stashesPanel.add(closeButton, constraints);
 
@@ -293,13 +297,13 @@ public class ListStashesAction extends JDialog {
 
 
   private Button createClearButton() {
-    Button clearAllButton = new Button("Clear");
+    Button clearAllButton = new Button(Translator.getInstance().getTranslation(Tags.CLEAR));
     clearAllButton.addActionListener( e-> {
       int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-          Translator.getInstance().getTranslation("Clear stashes"),
-          Translator.getInstance().getTranslation("Are you sure you want to delete all the stashes? "),
-          Translator.getInstance().getTranslation(Tags.YES),
-          Translator.getInstance().getTranslation(Tags.NO));
+          TRANSLATOR.getTranslation(Tags.CLEAR_STASHES),
+          TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
+          TRANSLATOR.getTranslation(Tags.YES),
+          TRANSLATOR.getTranslation(Tags.NO));
       if (OKCancelDialog.RESULT_OK == answer) {
         while (stashesTable.getRowCount() != 0 ) {
           deleteRow(stashesTable.getRowCount() - 1);
@@ -307,7 +311,7 @@ public class ListStashesAction extends JDialog {
         changeStatusAllButtons(false);
       }
     });
-    clearAllButton.setToolTipText("Delete all stashes from the repository");
+    clearAllButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CLEAR_STASHES__BUTTON_TOOLTIP));
     return clearAllButton;
   }
 
@@ -490,6 +494,8 @@ public class ListStashesAction extends JDialog {
   private Button createApplyButton() {
     Button button = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
 
+    button.setToolTipText(TRANSLATOR.getTranslation(Tags.APPLY_STASH__BUTTON_TOOLTIP));
+    
     button.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       int noOfRows = stashesTable.getRowCount();
@@ -526,7 +532,6 @@ public class ListStashesAction extends JDialog {
   }
   
 
-
  /**
   * Select next row in the table.
   * 
@@ -552,15 +557,17 @@ public class ListStashesAction extends JDialog {
   private Button createDeleteButton() {
     Button button = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
 
+    button.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_STASH__BUTTON_TOOLTIP));
+    
     button.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       int noOfRows = stashesTable.getRowCount();
       if (selectedRow >= 0 && selectedRow < noOfRows) {
         int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-            Translator.getInstance().getTranslation("Delete stash"),
-            Translator.getInstance().getTranslation(Tags.STASH_DELETE_CONFIRMATION),
-            Translator.getInstance().getTranslation(Tags.YES),
-            Translator.getInstance().getTranslation(Tags.NO));
+            TRANSLATOR.getTranslation(Tags.DELETE_STASH),
+            TRANSLATOR.getTranslation(Tags.STASH_DELETE_CONFIRMATION),
+            TRANSLATOR.getTranslation(Tags.YES),
+            TRANSLATOR.getTranslation(Tags.NO));
         if (OKCancelDialog.RESULT_OK == answer) {
           deleteRow(selectedRow);
           depopulateFilesTable();
@@ -600,7 +607,7 @@ public class ListStashesAction extends JDialog {
   
   
   private JCheckBox createDeleteAfterApplyingCheckBox() {
-    JCheckBox checkBox = new JCheckBox("Delete stash after being applied");
+    JCheckBox checkBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.DELETE_STASH_AFTER_APPLIED));
     checkBox.setSelected(false);
     checkBox.setBackground(stashesTable.getBackground());
     checkBox.setForeground(stashesTable.getForeground());

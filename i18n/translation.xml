@@ -89,11 +89,11 @@
     </key>
      <key value="Stash_Informative_Message">
         <comment>The informative message for stash.</comment>
-        <val lang="en_US">This will stash all your current changes and return your working copy to a clean state.</val>
-        <val lang="de_DE">This will stash all your current changes and return your working copy to a clean state.</val>
-        <val lang="fr_FR">This will stash all your current changes and return your working copy to a clean state.</val>
-        <val lang="ja_JP">This will stash all your current changes and return your working copy to a clean state.</val>
-        <val lang="nl_NL">This will stash all your current changes and return your working copy to a clean state.</val>
+        <val lang="en_US">This will stash your current changes and return your working copy to a clean state.</val>
+        <val lang="de_DE">This will stash your current changes and return your working copy to a clean state.</val>
+        <val lang="fr_FR">This will stash your current changes and return your working copy to a clean state.</val>
+        <val lang="ja_JP">This will stash your current changes and return your working copy to a clean state.</val>
+        <val lang="nl_NL">This will stash your current changes and return your working copy to a clean state.</val>
     </key>
      <key value="Stash_Add_Description">
         <comment>The text to tell user about adding stash description.</comment>
@@ -127,13 +127,77 @@
         <val lang="ja_JP">Unable to compare.</val>
         <val lang="nl_NL">Unable to compare.</val>
     </key>
+     <key value="Clear">
+        <comment>Clear</comment>
+        <val lang="en_US">Clear</val>
+        <val lang="de_DE">Clear</val>
+        <val lang="fr_FR">Clear</val>
+        <val lang="ja_JP">Clear</val>
+        <val lang="nl_NL">Clear</val>
+    </key>
+    <key value="Clear_Stashes">
+        <comment>Clear stashes.</comment>
+        <val lang="en_US">Clear stashes</val>
+        <val lang="de_DE">Clear stashes</val>
+        <val lang="fr_FR">Clear stashes</val>
+        <val lang="ja_JP">Clear stashes</val>
+        <val lang="nl_NL">Clear stashes</val>
+    </key>
+    <key value="Confirmation_Clear_Stashes_Message">
+        <comment>The message for confirmation clear all stashes message.</comment>
+        <val lang="en_US">Are you sure you want to delete all the stashes?</val>
+        <val lang="de_DE">Are you sure you want to delete all the stashes?</val>
+        <val lang="fr_FR">Are you sure you want to delete all the stashes?</val>
+        <val lang="ja_JP">Are you sure you want to delete all the stashes?</val>
+        <val lang="nl_NL">Are you sure you want to delete all the stashes?</val>
+    </key>
      <key value="Stash_Changes">
-        <comment>Stash changes</comment>
+        <comment>Stash changes.</comment>
         <val lang="en_US">Stash changes</val>
         <val lang="de_DE">Stash changes</val>
         <val lang="fr_FR">Stash changes</val>
         <val lang="ja_JP">Stash changes</val>
         <val lang="nl_NL">Stash changes</val>
+    </key>
+     <key value="Clear_Stashes_Button_Tooltip">
+        <comment>The tooltip for clear stashes button.</comment>
+        <val lang="en_US">Delete all stashes from the repository</val>
+        <val lang="de_DE">Delete all stashes from the repository</val>
+        <val lang="fr_FR">Delete all stashes from the repository</val>
+        <val lang="ja_JP">Delete all stashes from the repository</val>
+        <val lang="nl_NL">Delete all stashes from the repository</val>
+    </key>
+    <key value="Apply_Stash_Button_Tooltip">
+        <comment>The tooltip for apply stash button.</comment>
+        <val lang="en_US">Apply the selected stash changes</val>
+        <val lang="de_DE">Apply the selected stash changes</val>
+        <val lang="fr_FR">Apply the selected stash changes</val>
+        <val lang="ja_JP">Apply the selected stash changes</val>
+        <val lang="nl_NL">Apply the selected stash changes</val>
+    </key>
+    <key value="Delete_Stash_Button_Tooltip">
+        <comment>The tooltip for delete stash button.</comment>
+        <val lang="en_US">Delete the selected stash</val>
+        <val lang="de_DE">Delete the selected stash</val>
+        <val lang="fr_FR">Delete the selected stash</val>
+        <val lang="ja_JP">Delete the selected stash</val>
+        <val lang="nl_NL">Delete the selected stash</val>
+    </key>
+     <key value="Delete_Stash">
+        <comment>Delete Stash.</comment>
+        <val lang="en_US">Delete stash</val>
+        <val lang="de_DE">Delete stash</val>
+        <val lang="fr_FR">Delete stash</val>
+        <val lang="ja_JP">Delete stash</val>
+        <val lang="nl_NL">Delete stash</val>
+    </key>
+    <key value="Delete_Stash_After_Applied">
+        <comment>The checkbox text for delete stash after applied successfully.</comment>
+        <val lang="en_US">Delete stash after being applied</val>
+        <val lang="de_DE">Delete stash after being applied</val>
+        <val lang="fr_FR">Delete stash after being applied</val>
+        <val lang="ja_JP">Delete stash after being applied</val>
+        <val lang="nl_NL">Delete stash after being applied</val>
     </key>
    <key value="List_Stashes">
         <comment>List Stashes.</comment>

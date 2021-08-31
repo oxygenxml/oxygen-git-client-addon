@@ -246,7 +246,7 @@ public class ToolbarPanel extends JPanel {
   /**
    * The stash all changes item.
    */
-  private JMenuItem stashAllChangesMenuItem;
+  private JMenuItem stashChangesMenuItem;
 
   /**
    * The list stahses item.
@@ -792,7 +792,7 @@ public class ToolbarPanel extends JPanel {
       existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
     }
     
-    stashAllChangesMenuItem.setEnabled(existsLocalFiles);
+    stashChangesMenuItem.setEnabled(existsLocalFiles);
     
     Collection<RevCommit> stashesList = GitAccess.getInstance().listStash();
     boolean existsStashes = stashesList != null && !stashesList.isEmpty();
@@ -1311,12 +1311,12 @@ public class ToolbarPanel extends JPanel {
       }
     };
     
-    Action stashAllChangesAction = createStashAllChangesAction();
-    stashAllChangesMenuItem = new JMenuItem(stashAllChangesAction);
+    Action stashAChangesAction = createStashChangesAction();
+    stashChangesMenuItem = new JMenuItem(stashAChangesAction);
      
-    stashAllChangesMenuItem.addActionListener(menuItemActionListener);
-    splitMenuButton.add(stashAllChangesMenuItem);
-    stashActionsGroup.add(stashAllChangesMenuItem);  
+    stashChangesMenuItem.addActionListener(menuItemActionListener);
+    splitMenuButton.add(stashChangesMenuItem);
+    stashActionsGroup.add(stashChangesMenuItem);  
     
     Action stashesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.LIST_STASHES)) {
 
@@ -1403,16 +1403,16 @@ public class ToolbarPanel extends JPanel {
 
   
   /**
-   * Create the "Stash all changes" action.
+   * Create the "Stash changes" action.
    * 
-   * @return the "Stash all changes" action
+   * @return the "Stash changes" action
    */
-  private Action createStashAllChangesAction() {
-    return new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_ALL_CHANGES)) {
+  private Action createStashChangesAction() {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_CHANGES)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         if(stashCanBeCreated()) {
-          StashAllChangesDialog dialog = new StashAllChangesDialog(TRANSLATOR.getTranslation(Tags.STASH_ALL_CHANGES));
+          StashAllChangesDialog dialog = new StashAllChangesDialog(TRANSLATOR.getTranslation(Tags.STASH_CHANGES));
           if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
             String description = dialog.getStashMessage();
             if("".compareTo(description) == 0) {

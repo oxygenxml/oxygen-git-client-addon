@@ -1365,4 +1365,36 @@ public class Tags {
    * Stash apply.
    */
   public static final String STASH_APPLY = "Stash_Apply";
+  /**
+   * Clear.
+   */
+  public static final String CLEAR = "Clear";
+  /**
+   * Clear stashes.
+   */
+  public static final String CLEAR_STASHES = "Clear_Stashes";
+  /**
+   * The message for confirmation clear all stashes message.
+   */
+  public static final String CONFIRMATION_CLEAR_STASHES_MESSAGE = "Confirmation_Clear_Stashes_Message";
+  /**
+   * The tooltip for clear stashes button.
+   */
+  public static final String CLEAR_STASHES__BUTTON_TOOLTIP = "Clear_Stashes_Button_Tooltip";
+  /**
+   * The tooltip for apply stash button.
+   */
+  public static final String APPLY_STASH__BUTTON_TOOLTIP = "Apply_Stash_Button_Tooltip";
+  /**
+   * The tooltip for delete stash button.
+   */
+  public static final String DELETE_STASH__BUTTON_TOOLTIP = "Delete_Stash_Button_Tooltip";
+  /**
+   * The text for delete stash dialog title.
+   */
+  public static final String DELETE_STASH = "Delete_Stash";
+  /**
+   * The checkbox text for delete stash after applied successfully.
+   */
+  public static final String DELETE_STASH_AFTER_APPLIED = "Delete_Stash_After_Applied";
 }
