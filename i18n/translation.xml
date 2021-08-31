@@ -54,13 +54,22 @@
         <val lang="ja_JP">Unable to apply stash</val>
         <val lang="nl_NL">Unable to apply stash</val>
     </key>
+    <key value="Stash_Apply">
+        <comment>Stash apply</comment>
+        <val lang="en_US">Stash apply</val>
+        <val lang="de_DE">Stash apply</val>
+        <val lang="fr_FR">Stash apply</val>
+        <val lang="ja_JP">Stash apply</val>
+        <val lang="nl_NL">Stash apply</val>
+    </key>
+    
     <key value="Stash_Was_Kept">
         <comment>The message presents user that the stash was kept.</comment>
-        <val lang="en_US">The stash is kept in case you need it again.</val>
-        <val lang="de_DE">The stash is kept in case you need it again.</val>
-        <val lang="fr_FR">The stash is kept in case you need it again.</val>
-        <val lang="ja_JP">The stash is kept in case you need it again.</val>
-        <val lang="nl_NL">The stash is kept in case you need it again.</val>
+        <val lang="en_US">The stash entry was kept just in case you need it again.</val>
+        <val lang="de_DE">The stash entry was kept just in case you need it again.</val>
+        <val lang="fr_FR">The stash entry was kept just in case you need it again.</val>
+        <val lang="ja_JP">The stash entry was kept just in case you need it again.</val>
+        <val lang="nl_NL">The stash entry was kept just in case you need it again.</val>
     </key>
     <key value="Stash_Solutions_To_Apply">
         <comment>The message presents user solutions to can apply the stash.</comment>
@@ -104,11 +113,11 @@
     </key>
      <key value="Stash_Generate_Conflicts">
         <comment>The message for generated conflicts from stash</comment>
-        <val lang="en_US">The stash command was applied successfully, but some conflicts were created.</val>
-        <val lang="de_DE">The stash command was applied successfully, but some conflicts were created.</val>
-        <val lang="fr_FR">The stash command was applied successfully, but some conflicts were created.</val>
-        <val lang="ja_JP">The stash command was applied successfully, but some conflicts were created.</val>
-        <val lang="nl_NL">The stash command was applied successfully, but some conflicts were created.</val>
+        <val lang="en_US">The stash entry was applied, but the following files have conflicts now.</val>
+        <val lang="de_DE">The stash entry was applied, but the following files have conflicts now.</val>
+        <val lang="fr_FR">The stash entry was applied, but the following files have conflicts now.</val>
+        <val lang="ja_JP">The stash entry was applied, but the following files have conflicts now.</val>
+        <val lang="nl_NL">The stash entry was applied, but the following files have conflicts now.</val>
     </key>
     <key value="Unable_To_Compare">
         <comment>Message when is unnable to compare</comment>

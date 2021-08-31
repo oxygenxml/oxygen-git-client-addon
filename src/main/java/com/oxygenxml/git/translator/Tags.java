@@ -1361,4 +1361,8 @@ public class Tags {
    * The message presents user that the stash was kept.
    */
   public static final String STASH_WAS_KEPT = "Stash_Was_Kept";
+  /**
+   * Stash apply.
+   */
+  public static final String STASH_APPLY = "Stash_Apply";
 }

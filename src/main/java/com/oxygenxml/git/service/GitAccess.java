@@ -2530,7 +2530,7 @@ public class GitAccess {
             if(conflictingList.isEmpty()) {
               fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
             } else {
-              FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH),
+              FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH_APPLY),
                   conflictingList,
                   translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS) 
                   + " " 
@@ -2541,7 +2541,7 @@ public class GitAccess {
             break;
           case CONFLICTS:
             FileStatusDialog.showErrorMessage(
-                    translator.getTranslation(Tags.STASH),
+                    translator.getTranslation(Tags.STASH_APPLY),
                     new ArrayList<>(getConflictingFiles()),
                     translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
                     + ". "
@@ -2552,7 +2552,7 @@ public class GitAccess {
           case UNCOMMITTED_FILES:
           case BUG_CONFLICT:
             FileStatusDialog.showErrorMessage(
-                    translator.getTranslation(Tags.STASH),
+                    translator.getTranslation(Tags.STASH_APPLY),
                     null,
                     translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
                     + ". "
@@ -2606,7 +2606,7 @@ public class GitAccess {
             if(conflictingList.isEmpty()) {
               fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
             } else {
-              FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH),
+              FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH_APPLY),
                   conflictingList,
                   translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS) 
                   + " " 
@@ -2617,7 +2617,7 @@ public class GitAccess {
             break;
 					case CONFLICTS:
 						FileStatusDialog.showErrorMessage(
-										translator.getTranslation(Tags.STASH),
+										translator.getTranslation(Tags.STASH_APPLY),
 										new ArrayList<>(getConflictingFiles()),
 										translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
 										+ ". "
@@ -2628,7 +2628,7 @@ public class GitAccess {
 					case UNCOMMITTED_FILES:
 					case BUG_CONFLICT:
 						FileStatusDialog.showErrorMessage(
-										translator.getTranslation(Tags.STASH),
+										translator.getTranslation(Tags.STASH_APPLY),
 										null,
 										translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
                     + ". "
