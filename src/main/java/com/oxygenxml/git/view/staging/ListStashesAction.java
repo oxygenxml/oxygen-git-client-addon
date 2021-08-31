@@ -499,7 +499,7 @@ public class ListStashesAction extends JDialog {
     button.addActionListener(e -> {
       int selectedRow = stashesTable.getSelectedRow();
       int noOfRows = stashesTable.getRowCount();
-      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
       if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
         try {
           if(deleteAfterApplingCheckBox.isSelected()) {
@@ -592,7 +592,7 @@ public class ListStashesAction extends JDialog {
    * @param toDeleteRow row to delete.
    */
   private void deleteRow(int toDeleteRow) {
-    GitAccess.getInstance().stashDrop(toDeleteRow);
+    GitAccess.getInstance().dropStash(toDeleteRow);
     TableModel model = stashesTable.getModel();
     for (int row = toDeleteRow + 1; row <  stashesTable.getRowCount(); row++) {
       model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
@@ -632,7 +632,7 @@ public class ListStashesAction extends JDialog {
           FileStatus selectedFile = null;
           List<RevCommit> stashes = null;
           try {
-            stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+            stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
             selectedFile = ((FileStatus)affectedFilesTable.getValueAt(selectedFilesIndex, 1));
             String filePath = selectedFile.getFileLocation();
             DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
@@ -675,7 +675,7 @@ public class ListStashesAction extends JDialog {
    *
    */
   private JTable createStashesTable() {
-    List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStash());
+    List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
     String[] columnNames = {
         Translator.getInstance().getTranslation(Tags.ID),
         Translator.getInstance().getTranslation(Tags.DESCRIPTION)
@@ -712,7 +712,7 @@ public class ListStashesAction extends JDialog {
       changeStatusAllButtons(true);
       int selectedRow = tableOfStashes.getSelectedRow();
       if (selectedRow >= 0) {
-        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStash());
+        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
         try {
           List<FileStatus> listOfChangedFiles = RevCommitUtil.
               getChangedFiles(stashesList.get(selectedRow).getName());

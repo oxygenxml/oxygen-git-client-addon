@@ -106,8 +106,8 @@ public class GitAccessStashTest {
     assertTrue(isStashEmpty());
     assertEquals("stash_description", gitAccess.createStash(false,"stash_description").getFullMessage());
     assertFalse(isStashEmpty());
-    assertEquals(1, gitAccess.listStash().size());
-    gitAccess.stashDrop(0);
+    assertEquals(1, gitAccess.listStashes().size());
+    gitAccess.dropStash(0);
     assertTrue(isStashEmpty());
   }
 
@@ -231,7 +231,7 @@ public class GitAccessStashTest {
 
     assertEquals(gitAccess.popStash(commitStash.getName()), ApplyStashStatus.SUCCESSFULLY);
     
-    assertEquals(gitAccess.listStash().size(), 1);
+    assertEquals(gitAccess.listStashes().size(), 1);
     
     reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
