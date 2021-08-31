@@ -207,7 +207,7 @@ public class ToolbarPanel extends JPanel {
 	/**
 	 * The translator for the messages that are displayed in this panel
 	 */
-	private final static Translator TRANSLATOR = Translator.getInstance();
+	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	/**
 	 * Main panel refresh
@@ -340,6 +340,7 @@ public class ToolbarPanel extends JPanel {
     submoduleSelectButton.setEnabled(enabled && gitRepoHasSubmodules());
     branchSelectButton.setEnabled(enabled);
     historyButton.setEnabled(enabled);
+    showTagsButton.setEnabled(enabled);
     settingsMenuButton.setEnabled(enabled);
   }
   
