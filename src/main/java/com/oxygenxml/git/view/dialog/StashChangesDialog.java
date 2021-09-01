@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -18,7 +21,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.TextField;
 
-public class StashAllChangesDialog extends OKCancelDialog {
+public class StashChangesDialog extends OKCancelDialog {
 
   /**
    * Translator.
@@ -29,6 +32,11 @@ public class StashAllChangesDialog extends OKCancelDialog {
    * A text field for the tag title.
    */
   private JTextField stashDescriptionField;
+  
+  /**
+   * The date format.
+   */
+  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy, HH:mm");
  
   
   /**
@@ -36,7 +44,7 @@ public class StashAllChangesDialog extends OKCancelDialog {
    * 
    * @param title            The title of the dialog.
    */
-  public StashAllChangesDialog(
+  public StashChangesDialog(
       String title) {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
         ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
@@ -86,6 +94,13 @@ public class StashAllChangesDialog extends OKCancelDialog {
 
     // Stash description field.
     stashDescriptionField = new TextField();
+    String description = "WIP on " 
+        + GitAccess.getInstance().getBranchInfo().getBranchName() 
+        + " [" 
+        + DATE_FORMAT.format(new Date())
+        + "]";
+    stashDescriptionField.setText(description);
+    stashDescriptionField.selectAll();
     stashDescriptionField.setPreferredSize(new Dimension(200, stashDescriptionField.getPreferredSize().height));
     constrains.gridy ++;
     constrains.weightx = 1;

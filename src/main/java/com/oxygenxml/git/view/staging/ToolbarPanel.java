@@ -15,6 +15,7 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -65,7 +66,7 @@ import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
-import com.oxygenxml.git.view.dialog.StashAllChangesDialog;
+import com.oxygenxml.git.view.dialog.StashChangesDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -799,14 +800,6 @@ public class ToolbarPanel extends JPanel {
     
     listStashesMenuItem.setEnabled(existsStashes);
     
-    if ((existsLocalFiles && !existsStashes) ||
-        (existsLocalFiles && existsStashes)
-        ){
-    //  stashButton.setAction(stashAllChangesMenuItem.getAction());
-    } else if (!existsLocalFiles && existsStashes) {
-  //    stashButton.setAction(listStashesMenuItem.getAction());
-    }
-    
     stashButton.setEnabled(existsLocalFiles || existsStashes);
 	}
 	
@@ -1397,14 +1390,19 @@ public class ToolbarPanel extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
         if(stashCanBeCreated()) {
-          StashAllChangesDialog dialog = new StashAllChangesDialog(TRANSLATOR.getTranslation(Tags.STASH_CHANGES));
+          StashChangesDialog dialog = new StashChangesDialog(TRANSLATOR.getTranslation(Tags.STASH_CHANGES));
           if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
             String description = dialog.getStashMessage();
+          
             if("".compareTo(description) == 0) {
-              GitAccess.getInstance().createStash(false);
-            } else {
-              GitAccess.getInstance().createStash(false, description);
-            }
+              description = "WIP on " 
+            + GitAccess.getInstance().getBranchInfo().getBranchName() 
+            + " [" 
+            + commitDateFormat.format(new Date())
+            + "]";
+            } 
+            
+            GitAccess.getInstance().createStash(false, description);
             Collection<RevCommit> stashes = GitAccess.getInstance().listStashes();
             noOfStashes = stashes != null ? stashes.size() : 0;
           }
