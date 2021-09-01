@@ -1322,7 +1322,7 @@ public class ToolbarPanel extends JPanel {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        ListStashesAction stashesDialog = new ListStashesAction();
+        ListStashesDialog stashesDialog = new ListStashesDialog();
         stashesDialog.setVisible(true);   
       }
       

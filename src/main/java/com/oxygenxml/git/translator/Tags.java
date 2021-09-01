@@ -1366,13 +1366,13 @@ public class Tags {
    */
   public static final String STASH_APPLY = "Stash_Apply";
   /**
-   * Clear.
+   * Delete all.
    */
-  public static final String CLEAR = "Clear";
+  public static final String DELETE_ALL = "Delete_All";
   /**
-   * Clear stashes.
+   * Delete all stashes.
    */
-  public static final String CLEAR_STASHES = "Clear_Stashes";
+  public static final String DELETE_ALL_STASHES = "Delete_All_Stashes";
   /**
    * The message for confirmation clear all stashes message.
    */
@@ -1397,4 +1397,8 @@ public class Tags {
    * The checkbox text for delete stash after applied successfully.
    */
   public static final String DELETE_STASH_AFTER_APPLIED = "Delete_Stash_After_Applied";
+  /**
+   * Affected files.
+   */
+  public static final String AFFECTED_FILES = "Affected_files";
 }

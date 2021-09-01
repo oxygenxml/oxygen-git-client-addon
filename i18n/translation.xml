@@ -127,21 +127,29 @@
         <val lang="ja_JP">Unable to compare.</val>
         <val lang="nl_NL">Unable to compare.</val>
     </key>
-     <key value="Clear">
-        <comment>Clear</comment>
-        <val lang="en_US">Clear</val>
-        <val lang="de_DE">Clear</val>
-        <val lang="fr_FR">Clear</val>
-        <val lang="ja_JP">Clear</val>
-        <val lang="nl_NL">Clear</val>
+     <key value="Affected_Files">
+        <comment>Affected files.</comment>
+        <val lang="en_US">Affected files</val>
+        <val lang="de_DE">Affected files</val>
+        <val lang="fr_FR">Affected files</val>
+        <val lang="ja_JP">Affected files</val>
+        <val lang="nl_NL">Affected files</val>
     </key>
-    <key value="Clear_Stashes">
-        <comment>Clear stashes.</comment>
-        <val lang="en_US">Clear stashes</val>
-        <val lang="de_DE">Clear stashes</val>
-        <val lang="fr_FR">Clear stashes</val>
-        <val lang="ja_JP">Clear stashes</val>
-        <val lang="nl_NL">Clear stashes</val>
+     <key value="Delete_All">
+        <comment>Delete all.</comment>
+        <val lang="en_US">Delete all</val>
+        <val lang="de_DE">Delete all</val>
+        <val lang="fr_FR">Delete all</val>
+        <val lang="ja_JP">Delete all</val>
+        <val lang="nl_NL">Delete all</val>
+    </key>
+    <key value="Delete_All_Stashes">
+        <comment>Delete all stashes.</comment>
+        <val lang="en_US">Delete all stashes</val>
+        <val lang="de_DE">Delete all stashes</val>
+        <val lang="fr_FR">Delete all stashes</val>
+        <val lang="ja_JP">Delete all stashes</val>
+        <val lang="nl_NL">Delete all stashes</val>
     </key>
     <key value="Confirmation_Clear_Stashes_Message">
         <comment>The message for confirmation clear all stashes message.</comment>

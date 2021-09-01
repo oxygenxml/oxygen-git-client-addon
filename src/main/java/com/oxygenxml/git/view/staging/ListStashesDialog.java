@@ -71,12 +71,12 @@ import ro.sync.exml.workspace.api.standalone.ui.Table;
  * @author Alex_Smarandache
  *
  */
-public class ListStashesAction extends JDialog {
+public class ListStashesDialog extends JDialog {
 
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(ListStashesAction.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(ListStashesDialog.class.getName());
   
   /**
    * The translator.
@@ -86,7 +86,7 @@ public class ListStashesAction extends JDialog {
   /**
    * The default width for table.
    */
-  private static final int FILES_LIST_DEFAULT_WIDTH = 261;
+  private static final int FILES_LIST_DEFAULT_WIDTH = 300;
 
   /**
    * The default width for table.
@@ -152,7 +152,7 @@ public class ListStashesAction extends JDialog {
   /**
    * Constructor
    */
-  public ListStashesAction () {
+  public ListStashesDialog () {
 
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
@@ -175,6 +175,7 @@ public class ListStashesAction extends JDialog {
 
   }
 
+  
   /**
    * Create GUI.
    */
@@ -183,6 +184,7 @@ public class ListStashesAction extends JDialog {
     pack();
   }
 
+  
   /**
    * Creates the main panel.
    * 
@@ -212,13 +214,13 @@ public class ListStashesAction extends JDialog {
     constraints.weightx = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     
-    JLabel stashesLabel = new JLabel("Stashes:");
+    JLabel stashesLabel = new JLabel(TRANSLATOR.getTranslation(Tags.STASHES) + ":");
     stashesPanel.add(stashesLabel, constraints);
     
     constraints.gridx++;
     constraints.weightx = 0;
-    constraints.insets = new Insets(7, 10, 5, 10);
-    JLabel tableTitleLabel = new JLabel("Affected files:");
+    constraints.insets = new Insets(7, 5, 5, 10);
+    JLabel tableTitleLabel = new JLabel(TRANSLATOR.getTranslation(Tags.AFFECTED_FILES) + ":");
     stashesPanel.add(tableTitleLabel, constraints);
     
     constraints.weighty = 1;
@@ -292,15 +294,15 @@ public class ListStashesAction extends JDialog {
 
 
   /**
-   * Creates the clear button.
+   * Creates the "Delete all" button.
    *
    * @return the created button.
    */
-  private Button createClearButton() {
-    Button clearAllButton = new Button(Translator.getInstance().getTranslation(Tags.CLEAR));
+  private Button createDeleteAllButton() {
+    Button clearAllButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE_ALL));
     clearAllButton.addActionListener( e-> {
       int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-          TRANSLATOR.getTranslation(Tags.CLEAR_STASHES),
+          TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
           TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
           TRANSLATOR.getTranslation(Tags.YES),
           TRANSLATOR.getTranslation(Tags.NO));
@@ -504,7 +506,7 @@ public class ListStashesAction extends JDialog {
     buttonsPanel.add(deleteButton, constraints);
 
     constraints.gridx++;
-    clearButton = createClearButton();
+    clearButton = createDeleteAllButton();
     buttonsPanel.add(clearButton, constraints);
 
     buttonsPanel.setBackground(stashesTable.getBackground());
