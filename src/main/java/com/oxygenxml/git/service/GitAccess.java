@@ -1715,6 +1715,13 @@ public class GitAccess {
       try (RevWalk revWalk = new RevWalk(repo)) {
         RevCommit revcom = revWalk.parseCommit(getRepository().resolve(commitId));
         git.revert().include(revcom).call();
+        Set<String> conflictingFiles = getConflictingFiles();
+        if (!conflictingFiles.isEmpty()) {
+          FileStatusDialog.showWarningMessage(
+              translator.getTranslation(Tags.REVERT_COMMIT),
+              new ArrayList<>(conflictingFiles),
+              translator.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS));
+        }
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.REVERT_COMMIT));
       } catch (GitAPIException | RevisionSyntaxException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.REVERT_COMMIT), e);

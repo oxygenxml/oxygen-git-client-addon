@@ -6,6 +6,14 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value="Revert_commit_resulted_in_conflicts">
+        <comment>Message shown when reverting a commit resulted in conflicts.</comment>
+        <val lang="en_US">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="de_DE">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="fr_FR">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="ja_JP">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="nl_NL">Reverting the commit resulted in the following conflicts:</val>
+    </key>
     <key value="No_details_available">
         <comment>No details available</comment>
         <val lang="en_US">No details available.</val>
