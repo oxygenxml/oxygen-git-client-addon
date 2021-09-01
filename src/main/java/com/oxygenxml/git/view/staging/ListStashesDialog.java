@@ -8,7 +8,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -127,7 +126,7 @@ public class ListStashesDialog extends JDialog {
   /**
    * Show diff action.
    */
-  private Action showDiff;
+  private Action compareWithWorkingCopyAction;
 
   /**
    * The files table.
@@ -148,7 +147,17 @@ public class ListStashesDialog extends JDialog {
    * The clear button.
    */
   private Button deleteAllButton;
-  
+
+  /**
+   * Action to apply the selected stash.
+   */
+  private Action applySelectedStashAction;
+
+  /**
+   * Action to delete the selected stash.
+   */
+  private Action deleteSelectedStashAction;
+
   /**
    * The minimum dialog width.
    */
@@ -210,6 +219,8 @@ public class ListStashesDialog extends JDialog {
         updateStashTableWidths();
       }
     };
+
+    createAllActions();
 
     JLabel stashesLabel = new JLabel(TRANSLATOR.getTranslation(Tags.STASHES) + ":");
     GridBagConstraints constraints = new GridBagConstraints();
@@ -306,8 +317,7 @@ public class ListStashesDialog extends JDialog {
     return clearAllButton;
   }
 
-  
- 
+
   /**
    * Creates table for affected files by stash.
    * 
@@ -329,20 +339,20 @@ public class ListStashesDialog extends JDialog {
       }
     };
     filesTable.setFillsViewportHeight(true);
-    showDiff = createShowDiffAction();
+
     filesTable.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked (MouseEvent evt) {
         int selectedRow = stashesTable.getSelectedRow();
         if(selectedRow >= 0 && evt.getClickCount() == 2) {
-          showDiff.actionPerformed(null);
+          compareWithWorkingCopyAction.actionPerformed(null);
         }
       }
     });
     
     JPopupMenu contextualActions  = new JPopupMenu();
     JMenuItem  menuItemShowDiff   = new JMenuItem(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION));
-    menuItemShowDiff.setAction(showDiff);
+    menuItemShowDiff.setAction(compareWithWorkingCopyAction);
     contextualActions.add(menuItemShowDiff);
     filesTable.setComponentPopupMenu(contextualActions);
     filesTable.addKeyListener(new KeyListener() {
@@ -357,7 +367,7 @@ public class ListStashesDialog extends JDialog {
         if(e.getKeyCode() == KeyEvent.VK_ENTER 
             && filesTable.getSelectedRow() >= 0 
             && filesTable.getSelectedRow() < filesTable.getRowCount()) {     
-          showDiff.actionPerformed(null);
+          compareWithWorkingCopyAction.actionPerformed(null);
         }
       }
 
@@ -387,6 +397,15 @@ public class ListStashesDialog extends JDialog {
     return filesTable;
   }
 
+
+  /**
+   * Initialize all actions.
+   */
+  private void createAllActions() {
+     applySelectedStashAction     = createApplySelectedStashAction();
+     deleteSelectedStashAction    = createDeleteSelectedStashAction();
+     compareWithWorkingCopyAction = createCompareWithWCAction();
+  }
 
   /**
    * Add selection on click-right for JPopupMenu actions.
@@ -422,6 +441,11 @@ public class ListStashesDialog extends JDialog {
   }
 
 
+  /**
+   * Creates the panel under stahses.
+   *
+   * @return the created panel
+   */
   private JPanel createUnderStashesPanel() {
     JPanel panel = new JPanel(new GridBagLayout());
     GridBagConstraints constraints = new GridBagConstraints();
@@ -447,7 +471,8 @@ public class ListStashesDialog extends JDialog {
     
     return panel;
   }
-  
+
+
   /**
    * Create the panel with the buttons.
    * 
@@ -490,31 +515,12 @@ public class ListStashesDialog extends JDialog {
    * @return the created button.
    */
   private Button createApplyButton() {
+
     Button button = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
 
     button.setToolTipText(TRANSLATOR.getTranslation(Tags.APPLY_STASH__BUTTON_TOOLTIP));
-    
-    button.addActionListener(e -> {
-      int selectedRow = stashesTable.getSelectedRow();
-      int noOfRows = stashesTable.getRowCount();
-      List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
-      if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
-        try {
-          if(deleteAfterApplingCheckBox.isSelected()) {
-            StashStatus applyStashStatus =
-                GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
-            if(applyStashStatus == StashStatus.POST_APPLY_SUCCESS) {
-              deleteRow(selectedRow);
-              selectNextRow(stashesTable, selectedRow, noOfRows);
-            }
-          } else {
-            GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
-          }
-        } catch (GitAPIException e1) {
-          LOGGER.error(e1, e1);
-        }
-      }
-    });
+
+    button.addActionListener(applySelectedStashAction);
 
     return button;
   }
@@ -553,32 +559,12 @@ public class ListStashesDialog extends JDialog {
    * @return the created button.
    */
   private Button createDeleteButton() {
+
     Button button = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
 
     button.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_STASH__BUTTON_TOOLTIP));
-    
-    button.addActionListener(e -> {
-      int selectedRow = stashesTable.getSelectedRow();
-      int noOfRows = stashesTable.getRowCount();
-      if (selectedRow >= 0 && selectedRow < noOfRows) {
-        int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-            TRANSLATOR.getTranslation(Tags.DELETE_STASH),
-            TRANSLATOR.getTranslation(Tags.STASH_DELETE_CONFIRMATION),
-            TRANSLATOR.getTranslation(Tags.YES),
-            TRANSLATOR.getTranslation(Tags.NO));
-        if (OKCancelDialog.RESULT_OK == answer) {
-          deleteRow(selectedRow);
-          depopulateFilesTable();
-          if(noOfRows > 1) {
-            if (selectedRow == noOfRows - 1) {
-              stashesTable.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
-            } else {
-              stashesTable.setRowSelectionInterval(selectedRow, selectedRow);
-            }
-          }
-        } 
-      }
-    });
+
+    button.addActionListener(deleteSelectedStashAction);
 
     return button;
   }
@@ -609,7 +595,7 @@ public class ListStashesDialog extends JDialog {
    * 
    * @return The action created
    */
-  private AbstractAction createShowDiffAction() {
+  private AbstractAction createCompareWithWCAction() {
     return new AbstractAction(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION)) {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -652,8 +638,74 @@ public class ListStashesDialog extends JDialog {
       deleteSelectedButton.setEnabled(newStatus);
       deleteAllButton.setEnabled(newStatus);
     });
-  }   
+  }
 
+
+  /**
+   * Creates the delete selected stash action.
+   *
+   * @return the created action.
+   */
+  private Action createDeleteSelectedStashAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int selectedRow = stashesTable.getSelectedRow();
+        int noOfRows = stashesTable.getRowCount();
+        if (selectedRow >= 0 && selectedRow < noOfRows) {
+          int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+                  TRANSLATOR.getTranslation(Tags.DELETE_STASH),
+                  TRANSLATOR.getTranslation(Tags.STASH_DELETE_CONFIRMATION),
+                  TRANSLATOR.getTranslation(Tags.YES),
+                  TRANSLATOR.getTranslation(Tags.NO));
+          if (OKCancelDialog.RESULT_OK == answer) {
+            deleteRow(selectedRow);
+            depopulateFilesTable();
+            if (noOfRows > 1) {
+              if (selectedRow == noOfRows - 1) {
+                stashesTable.setRowSelectionInterval(noOfRows - 2, noOfRows - 2);
+              } else {
+                stashesTable.setRowSelectionInterval(selectedRow, selectedRow);
+              }
+            }
+          }
+        }
+      }
+    };
+  }
+
+
+  /**
+   * Creates the apply selected stash action.
+   *
+   * @return the created action.
+   */
+  private Action createApplySelectedStashAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int selectedRow = stashesTable.getSelectedRow();
+        int noOfRows = stashesTable.getRowCount();
+        List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
+        if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
+          try {
+            if(deleteAfterApplingCheckBox.isSelected()) {
+              StashStatus applyStashStatus =
+                      GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
+              if(applyStashStatus == StashStatus.POST_APPLY_SUCCESS) {
+                deleteRow(selectedRow);
+                selectNextRow(stashesTable, selectedRow, noOfRows);
+              }
+            } else {
+              GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
+            }
+          } catch (GitAPIException e1) {
+            LOGGER.error(e1, e1);
+          }
+        }
+      }
+    };
+  }
 
   /**
    * Create a table with all stashes.
@@ -686,7 +738,7 @@ public class ListStashesDialog extends JDialog {
       }
     };
     tableOfStashes.setFillsViewportHeight(true);
-    tableOfStashes.getColumnModel().getColumn(1).setCellRenderer(new StasMessageRender());
+    tableOfStashes.getColumnModel().getColumn(1).setCellRenderer(new StashMessageRender());
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tableOfStashes.getTableHeader().setReorderingAllowed(false);
 
@@ -734,21 +786,9 @@ public class ListStashesDialog extends JDialog {
     JMenuItem menuItemApply      = new JMenuItem(Translator.getInstance().getTranslation(Tags.APPLY));
     JMenuItem menuItemDelete     = new JMenuItem(Translator.getInstance().getTranslation(Tags.DELETE));
 
-    menuItemApply.addActionListener(e -> {
-      // TODO: extract apply action to use it for both the menu item and the button
-      ActionListener[] actionsApply = applyButton.getActionListeners();
-      for(ActionListener action : actionsApply) {
-        action.actionPerformed(null);
-      }
-    });
+    menuItemApply.addActionListener(applySelectedStashAction);
     
-    menuItemDelete.addActionListener(e -> {
-      // TODO: the same thing as above
-      ActionListener[] actionsDelete = deleteSelectedButton.getActionListeners();
-      for(ActionListener action : actionsDelete) {
-        action.actionPerformed(null);
-      }
-    });
+    menuItemDelete.addActionListener(deleteSelectedStashAction);
 
     contextualActions.add(menuItemApply);
     contextualActions.addSeparator();
@@ -778,7 +818,7 @@ public class ListStashesDialog extends JDialog {
    *
    * @author Alex_Smarandache
    */
-  private static class StasMessageRender extends DefaultTableCellRenderer {
+  private static class StashMessageRender extends DefaultTableCellRenderer {
     
     @Override
     public Component getTableCellRendererComponent(JTable table,
