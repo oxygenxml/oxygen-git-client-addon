@@ -962,8 +962,8 @@ public class ToolbarPanel extends JPanel {
             .append("...")
             .append("]")
             .append(" &ndash; ")  
-            .append(TRANSLATOR.getTranslation(noOfSkippedCommits == 1 ? Tags.ONE_MORE_COMMIT 
-                : MessageFormat.format(TRANSLATOR.getTranslation(Tags.N_MORE_COMMITS), noOfSkippedCommits)))    
+            .append(noOfSkippedCommits == 1 ? TRANSLATOR.getTranslation(Tags.ONE_MORE_COMMIT) 
+                : MessageFormat.format(TRANSLATOR.getTranslation(Tags.N_MORE_COMMITS), noOfSkippedCommits))    
             .append("<br>");
         // Prepare to get the last commit
         i = noOfCommits - 2;
