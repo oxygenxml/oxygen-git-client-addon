@@ -779,6 +779,10 @@ public class Tags {
 	public static final String PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES = "Pull_would_overwrite_uncommitted_changes";
 	
 	/**
+	 * Message shown when reverting a commit resulted in conflicts.
+	 */
+	public static final String REVERT_COMMIT_RESULTED_IN_CONFLICTS = "Revert_commit_resulted_in_conflicts";
+	/**
 	 * Lock failed when pulling.
 	 */
   public static final String LOCK_FAILED = "Lock_failed";

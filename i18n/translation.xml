@@ -222,6 +222,13 @@
         <val lang="fr_FR">List stashes</val>
         <val lang="ja_JP">List stashes</val>
         <val lang="nl_NL">List stashes</val>
+    <key value="Revert_commit_resulted_in_conflicts">
+        <comment>Message shown when reverting a commit resulted in conflicts.</comment>
+        <val lang="en_US">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="de_DE">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="fr_FR">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="ja_JP">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="nl_NL">Reverting the commit resulted in the following conflicts:</val>
     </key>
     <key value="No_details_available">
         <comment>No details available</comment>
@@ -289,11 +296,11 @@
     </key>
     <key value="See_all_commits_in_Git_History">
         <comment>See all commits in Git History.</comment>
-        <val lang="en_US">See all commits in Git History.</val>
-        <val lang="de_DE">See all commits in Git History.</val>
-        <val lang="fr_FR">See all commits in Git History.</val>
-        <val lang="ja_JP">See all commits in Git History.</val>
-        <val lang="nl_NL">See all commits in Git History.</val>
+        <val lang="en_US">See all commits in Git History view.</val>
+        <val lang="de_DE">See all commits in Git History view.</val>
+        <val lang="fr_FR">See all commits in Git History view.</val>
+        <val lang="ja_JP">See all commits in Git History view.</val>
+        <val lang="nl_NL">See all commits in Git History view.</val>
     </key>
     <key value="One_more_commit">
         <comment>One more commit message</comment>
