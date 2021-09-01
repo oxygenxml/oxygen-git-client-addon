@@ -58,4 +58,20 @@ public class UIConstants {
    * Commit panel preferred height.
    */
 	public static final int COMMIT_PANEL_PREF_HEIGHT = 150;
+	/**
+	 * Insets with 3px value.
+	 */
+	public static final int INSETS_3PX = 3;
+	 /**
+   * Insets with 5px value.
+   */
+  public static final int INSETS_5PX = 5;
+  /**
+   * Insets with 7px value.
+   */
+  public static final int INSETS_7PX = 7;
+  /**
+   * Insets with 11px value.
+   */
+  public static final int INSETS_11PX = 11;
 }

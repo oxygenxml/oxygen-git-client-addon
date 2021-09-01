@@ -48,6 +48,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.constants.Icons;
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
@@ -96,7 +97,7 @@ public class ListStashesDialog extends JDialog {
   /**
    * The default height for table.
    */
-  private static final int TABLE_DEFAULT_HEIGHT = 250;
+  private static final int TABLE_DEFAULT_HEIGHT = 275;
   
   /**
    * Extra width for column icon.
@@ -158,26 +159,6 @@ public class ListStashesDialog extends JDialog {
    */
   private static final int DIALOG_MINIMUM_HEIGHT = 250;
 
-  /**
-   * Top small space.
-   */
-  private static final int SMALL_SPACE = 3;
-
-  /**
-   * Top medium space.
-   */
-  private static final int MEDIUM_SPACE = 5;
-
-  /**
-   * Top large space.
-   */
-  private static final int LARGE_SPACE = 7;
-
-  /**
-   *
-   */
-  private static final int LATERAL_SPACE = 10;
-
 
   /**
    * Constructor
@@ -237,15 +218,18 @@ public class ListStashesDialog extends JDialog {
     constraints.gridwidth = 1;
     constraints.gridheight = 1;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(LARGE_SPACE, LATERAL_SPACE, MEDIUM_SPACE, 0);
-    constraints.weightx = 0;
+    constraints.insets = new Insets(UIConstants.INSETS_3PX, 
+        UIConstants.INSETS_11PX, 
+        UIConstants.INSETS_5PX, 
+        0);
+    constraints.weightx = 1;
     constraints.weighty = 0;
-    constraints.fill = GridBagConstraints.NONE;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
     stashesPanel.add(stashesLabel, constraints);
     
     JLabel tableTitleLabel = new JLabel(TRANSLATOR.getTranslation(Tags.AFFECTED_FILES) + ":");
     constraints.gridx++;
-    constraints.insets = new Insets(LARGE_SPACE, LATERAL_SPACE / 2, MEDIUM_SPACE, 0);
+    constraints.insets = new Insets(UIConstants.INSETS_3PX, UIConstants.INSETS_5PX, UIConstants.INSETS_5PX, 0);
     stashesPanel.add(tableTitleLabel, constraints);
     
     stashesTable = (Table) createStashesTable();
@@ -253,9 +237,9 @@ public class ListStashesDialog extends JDialog {
     tableStashesScrollPane.setPreferredSize(new Dimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
     constraints.gridx = 0;
     constraints.gridy++;
-    constraints.weightx = 0.5;
-    constraints.weighty = 0.5;
-    constraints.insets = new Insets(0, LATERAL_SPACE, 0, LATERAL_SPACE);
+    constraints.weightx = 1;
+    constraints.weighty = 1;
+    constraints.insets = new Insets(0, UIConstants.INSETS_11PX, 0, UIConstants.INSETS_11PX);
     constraints.fill = GridBagConstraints.BOTH;
     stashesPanel.add(tableStashesScrollPane, constraints);
 
@@ -263,9 +247,10 @@ public class ListStashesDialog extends JDialog {
     JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
     changesOfStashScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
     constraints.gridx++;
-    constraints.weightx = 0.5;
-    constraints.weighty = 0.5;
-    constraints.insets = new Insets(0, LATERAL_SPACE / 2, 0, LATERAL_SPACE);
+    constraints.weightx = 1;
+    constraints.weighty = 1;
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.insets = new Insets(0, UIConstants.INSETS_5PX, 0, UIConstants.INSETS_11PX);
     stashesPanel.add(changesOfStashScrollPane, constraints);
 
     JPanel stashesTableButtons = createUnderStashesPanel();
@@ -274,7 +259,7 @@ public class ListStashesDialog extends JDialog {
     constraints.weightx = 1;
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.insets = new Insets(SMALL_SPACE, LATERAL_SPACE, 0, LATERAL_SPACE);
+    constraints.insets = new Insets(UIConstants.INSETS_3PX, UIConstants.INSETS_11PX, 0, UIConstants.INSETS_11PX);
     stashesPanel.add(stashesTableButtons, constraints);
 
     JPanel emptyPanel = new JPanel();
@@ -291,9 +276,9 @@ public class ListStashesDialog extends JDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.EAST;
-    constraints.insets = new Insets(MEDIUM_SPACE, 0, LARGE_SPACE, LATERAL_SPACE);
+    constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, UIConstants.INSETS_7PX, UIConstants.INSETS_11PX);
     stashesPanel.add(closeButton, constraints);
-
+    
     return stashesPanel;
   }
 
@@ -454,7 +439,7 @@ public class ListStashesDialog extends JDialog {
     panel.add(deleteAfterApplingCheckBox, constraints);
 
     JPanel buttonsPanel = createButtonsPanel();
-    constraints.insets = new Insets(MEDIUM_SPACE, 0, 0, 0);
+    constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, 0, 0);
     constraints.gridx++;
     constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.EAST;
@@ -480,7 +465,7 @@ public class ListStashesDialog extends JDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(0, SMALL_SPACE, LARGE_SPACE, 0);
+    constraints.insets = new Insets(0, UIConstants.INSETS_3PX, UIConstants.INSETS_7PX, 0);
 
     applyButton = createApplyButton();
     buttonsPanel.add(applyButton, constraints);
