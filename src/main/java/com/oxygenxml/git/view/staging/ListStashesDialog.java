@@ -246,6 +246,7 @@ public class ListStashesDialog extends JDialog {
     stashesTable = (Table) createStashesTable();
     JScrollPane tableStashesScrollPane = new JScrollPane(stashesTable);
     tableStashesScrollPane.setPreferredSize(new Dimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
+    tableStashesScrollPane.setMinimumSize(tableStashesScrollPane.getPreferredSize());
     constraints.gridx = 0;
     constraints.gridy++;
     constraints.weightx = 1;
@@ -257,6 +258,7 @@ public class ListStashesDialog extends JDialog {
     affectedFilesTable = createAffectedFilesTable();
     JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
     changesOfStashScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
+    changesOfStashScrollPane.setMinimumSize(changesOfStashScrollPane.getPreferredSize());
     constraints.gridx++;
     constraints.weightx = 1;
     constraints.weighty = 1;
