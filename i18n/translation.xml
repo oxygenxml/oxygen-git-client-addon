@@ -72,11 +72,11 @@
     </key>
     <key value="See_all_commits_in_Git_History">
         <comment>See all commits in Git History.</comment>
-        <val lang="en_US">See all commits in Git History.</val>
-        <val lang="de_DE">See all commits in Git History.</val>
-        <val lang="fr_FR">See all commits in Git History.</val>
-        <val lang="ja_JP">See all commits in Git History.</val>
-        <val lang="nl_NL">See all commits in Git History.</val>
+        <val lang="en_US">See all commits in Git History view.</val>
+        <val lang="de_DE">See all commits in Git History view.</val>
+        <val lang="fr_FR">See all commits in Git History view.</val>
+        <val lang="ja_JP">See all commits in Git History view.</val>
+        <val lang="nl_NL">See all commits in Git History view.</val>
     </key>
     <key value="One_more_commit">
         <comment>One more commit message</comment>
