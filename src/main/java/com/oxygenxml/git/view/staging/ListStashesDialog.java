@@ -57,7 +57,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
-import com.oxygenxml.git.view.history.HistoryPanel;
+import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -116,12 +116,12 @@ public class ListStashesDialog extends JDialog {
   /**
    * The delete Button.
    */
-  private Button deleteButton;
+  private Button deleteSelectedButton;
 
   /**
    * The model for the table.
    */
-  private DefaultTableModel tableModel;
+  private DefaultTableModel affectedFilesTableModel;
 
   /**
    * Show diff action.
@@ -146,7 +146,7 @@ public class ListStashesDialog extends JDialog {
   /**
    * The clear button.
    */
-  private Button clearButton;
+  private Button deleteAllButton;
 
 
   /**
@@ -191,8 +191,6 @@ public class ListStashesDialog extends JDialog {
    * @return a JPanel for the stashes list.
    */
   private JPanel createStashesPanel() {
-
-    //a panel with the header and table
     JPanel stashesPanel = new JPanel(new GridBagLayout()) {
       @Override
       public void paint(Graphics g) {
@@ -200,93 +198,69 @@ public class ListStashesDialog extends JDialog {
         updateStashTableWidths();
       }
     };
+
+    JLabel stashesLabel = new JLabel(TRANSLATOR.getTranslation(Tags.STASHES) + ":");
     GridBagConstraints constraints = new GridBagConstraints();
-
-    stashesTable = (Table)createStashesTable();
-
     constraints.gridx = 0;
     constraints.gridy = 0;
+    constraints.gridwidth = 1;
     constraints.gridheight = 1;
     constraints.anchor = GridBagConstraints.WEST;
     constraints.insets = new Insets(7, 10, 5, 0);
-    constraints.gridwidth = 1;
+    constraints.weightx = 0;
     constraints.weighty = 0;
-    constraints.weightx = 1;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    
-    JLabel stashesLabel = new JLabel(TRANSLATOR.getTranslation(Tags.STASHES) + ":");
+    constraints.fill = GridBagConstraints.NONE;
     stashesPanel.add(stashesLabel, constraints);
     
-    constraints.gridx++;
-    constraints.weightx = 0;
-    constraints.insets = new Insets(7, 5, 5, 10);
     JLabel tableTitleLabel = new JLabel(TRANSLATOR.getTranslation(Tags.AFFECTED_FILES) + ":");
+    constraints.gridx++;
+    constraints.insets = new Insets(7, 5, 5, 0);
     stashesPanel.add(tableTitleLabel, constraints);
     
-    constraints.weighty = 1;
-    constraints.weightx = 1;
-    constraints.gridy++;
+    stashesTable = (Table) createStashesTable();
+    JScrollPane tableStashesScrollPane = new JScrollPane(stashesTable);
+    tableStashesScrollPane.setPreferredSize(new Dimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
     constraints.gridx = 0;
+    constraints.gridy++;
+    constraints.weightx = 0.5;
+    constraints.weighty = 0.5;
     constraints.insets = new Insets(0, 10, 0, 10);
     constraints.fill = GridBagConstraints.BOTH;
+    stashesPanel.add(tableStashesScrollPane, constraints);
 
-    JScrollPane tableStashesScrollPane = new JScrollPane();
-    
-    tableStashesScrollPane.setPreferredSize(new Dimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
-    tableStashesScrollPane.setViewportView(stashesTable);
-    tableStashesScrollPane.setBackground(stashesTable.getBackground());
-    tableStashesScrollPane.setForeground(stashesTable.getForeground());
-    tableStashesScrollPane.setFont(stashesTable.getFont());
-
-    stashesLabel.setBackground(stashesTable.getBackground());
-    stashesLabel.setForeground(stashesTable.getForeground());
-    stashesLabel.setFont(stashesTable.getFont());
-    tableTitleLabel.setBackground(stashesTable.getBackground());
-    tableTitleLabel.setForeground(stashesTable.getForeground());
-    tableTitleLabel.setFont(stashesTable.getFont());
-    
-    stashesPanel.setBackground(stashesTable.getBackground());
-    stashesPanel.setForeground(stashesTable.getForeground());
-    stashesPanel.setFont(stashesTable.getFont());
-    stashesPanel.add(tableStashesScrollPane,constraints);
-
-    constraints.insets = new Insets(0, 5, 0, 10);
-    constraints.gridx++;
-    constraints.anchor = GridBagConstraints.EAST;
-    constraints.weightx = 1;
-    showDiff = createShowDiffAction();
     affectedFilesTable = createAffectedFilesTable();
     JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
-    
     changesOfStashScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
+    constraints.gridx++;
+    constraints.weightx = 0.5;
+    constraints.weighty = 0.5;
+    constraints.insets = new Insets(0, 5, 0, 10);
     stashesPanel.add(changesOfStashScrollPane, constraints);
 
-    constraints.gridy++;
+    JPanel stashesTableButtons = createUnderStashesPanel();
     constraints.gridx = 0;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.gridy++;
     constraints.weightx = 1;
     constraints.weighty = 0;
-    constraints.anchor = GridBagConstraints.WEST;
-    JPanel stashesTableButtons = createButtonsStashesPanel();
+    constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.insets = new Insets(3, 10, 0, 10);
     stashesPanel.add(stashesTableButtons, constraints);
 
-    constraints.gridy++;
-    constraints.insets = new Insets(0, 0, 0, 0);
     JPanel emptyPanel = new JPanel();
-    emptyPanel.setBackground(stashesTable.getBackground());
-    emptyPanel.setForeground(stashesTable.getForeground());
-    emptyPanel.setFont(stashesTable.getFont());
+    constraints.gridx++;
+    constraints.insets = new Insets(0, 0, 0, 0);
     stashesPanel.add(emptyPanel, constraints);
 
-    constraints.gridx++;
-    constraints.fill = GridBagConstraints.NONE;
-    constraints.anchor = GridBagConstraints.EAST;
+    Button closeButton = new Button(TRANSLATOR.getTranslation(Tags.CLOSE));
+    closeButton.addActionListener(e -> this.dispose());
+    constraints.gridx = 0;
+    constraints.gridy++;
+    constraints.gridwidth = 2;
     constraints.weightx = 0;
     constraints.weighty = 0;
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.anchor = GridBagConstraints.EAST;
     constraints.insets = new Insets(5, 0, 10, 10);
-    Button closeButton = new Button(TRANSLATOR.getTranslation(Tags.CLOSE));
-    closeButton.addActionListener(e-> this.dispose());
     stashesPanel.add(closeButton, constraints);
 
     return stashesPanel;
@@ -310,10 +284,9 @@ public class ListStashesDialog extends JDialog {
         while (stashesTable.getRowCount() != 0 ) {
           deleteRow(stashesTable.getRowCount() - 1);
         }
-        changeStatusAllButtons(false);
+        setStashTableButtonsEnabled(false);
       }
     });
-    clearAllButton.setToolTipText(TRANSLATOR.getTranslation(Tags.CLEAR_STASHES__BUTTON_TOOLTIP));
     return clearAllButton;
   }
 
@@ -326,21 +299,21 @@ public class ListStashesDialog extends JDialog {
    */
   private Table createAffectedFilesTable() {
     String[] columnName = {"", ""};
-    tableModel = new DefaultTableModel(columnName, 0) {
+    affectedFilesTableModel = new DefaultTableModel(columnName, 0) {
       @Override
       public boolean isCellEditable(int row, int column) {
         return false;
       }
     };
 
-    Table filesTable = new Table(tableModel) {
+    Table filesTable = new Table(affectedFilesTableModel) {
       @Override
       public JToolTip createToolTip() {
         return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
       }
     };
-    filesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     filesTable.setFillsViewportHeight(true);
+    showDiff = createShowDiffAction();
     filesTable.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked (MouseEvent evt) {
@@ -433,48 +406,28 @@ public class ListStashesDialog extends JDialog {
   }
 
 
-  private JPanel createButtonsStashesPanel() {
+  private JPanel createUnderStashesPanel() {
     JPanel panel = new JPanel(new GridBagLayout());
     GridBagConstraints constraints = new GridBagConstraints();
-    
-    constraints.fill = GridBagConstraints.NONE;
-    constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(0, 0, 0, 0);
+
+    deleteAfterApplingCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.DELETE_STASH_AFTER_APPLIED));
+    deleteAfterApplingCheckBox.setSelected(false);
     constraints.gridx = 0;
     constraints.gridy = 0;
     constraints.gridwidth = 1;
     constraints.gridheight = 1;
     constraints.weightx = 0;
     constraints.weighty = 0;
-    deleteAfterApplingCheckBox = createDeleteAfterApplyingCheckBox();
-    deleteAfterApplingCheckBox.setBackground(stashesTable.getBackground());
-    deleteAfterApplingCheckBox.setForeground(stashesTable.getForeground());
-    deleteAfterApplingCheckBox.setFont(stashesTable.getFont());
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.anchor = GridBagConstraints.WEST;
     panel.add(deleteAfterApplingCheckBox, constraints);
 
+    JPanel buttonsPanel = createButtonsPanel();
+    constraints.insets = new Insets(5, 0, 0, 0);
     constraints.gridx++;
     constraints.weightx = 1;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    JPanel emptyPanel = new JPanel();
-    emptyPanel.setBackground(stashesTable.getBackground());
-    emptyPanel.setForeground(stashesTable.getForeground());
-    emptyPanel.setFont(stashesTable.getFont());
-    panel.add(emptyPanel, constraints);
-
-    constraints.insets =new Insets(4, 0, 0, 0);
-    constraints.gridx++;
-    constraints.weightx = 0;
-    constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.EAST;
-    JPanel buttonsPanel = createButtonsPanel();
-    buttonsPanel.setBackground(stashesTable.getBackground());
-    buttonsPanel.setForeground(stashesTable.getForeground());
-    buttonsPanel.setFont(stashesTable.getFont());
     panel.add(buttonsPanel, constraints);
-    
-    panel.setBackground(stashesTable.getBackground());
-    panel.setForeground(stashesTable.getForeground());
-    panel.setFont(stashesTable.getFont());
     
     return panel;
   }
@@ -486,34 +439,30 @@ public class ListStashesDialog extends JDialog {
    */
   private JPanel createButtonsPanel() {
     JPanel buttonsPanel = new JPanel(new GridBagLayout());
+    
     GridBagConstraints constraints = new GridBagConstraints();
-
     constraints.gridx = 0;
-    constraints.fill = GridBagConstraints.NONE;
-    constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(0, 3, 7, 0);
     constraints.gridy = 0;
     constraints.gridwidth = 1;
     constraints.gridheight = 1;
     constraints.weightx = 0;
     constraints.weighty = 0;
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.anchor = GridBagConstraints.WEST;
+    constraints.insets = new Insets(0, 3, 7, 0);
 
     applyButton = createApplyButton();
     buttonsPanel.add(applyButton, constraints);
 
     constraints.gridx ++;
-    deleteButton = createDeleteButton();
-    buttonsPanel.add(deleteButton, constraints);
+    deleteSelectedButton = createDeleteButton();
+    buttonsPanel.add(deleteSelectedButton, constraints);
 
     constraints.gridx++;
-    clearButton = createDeleteAllButton();
-    buttonsPanel.add(clearButton, constraints);
+    deleteAllButton = createDeleteAllButton();
+    buttonsPanel.add(deleteAllButton, constraints);
 
-    buttonsPanel.setBackground(stashesTable.getBackground());
-    buttonsPanel.setForeground(stashesTable.getForeground());
-    buttonsPanel.setFont(stashesTable.getFont());
-
-    changeStatusAllButtons(false);
+    setStashTableButtonsEnabled(false);
 
     return buttonsPanel;
   }
@@ -560,7 +509,7 @@ public class ListStashesDialog extends JDialog {
    */
   private void depopulateFilesTable() {
     while(affectedFilesTable.getRowCount() > 0) {
-      ((DefaultTableModel)affectedFilesTable.getModel()).removeRow(tableModel.getRowCount() - 1);
+      ((DefaultTableModel)affectedFilesTable.getModel()).removeRow(affectedFilesTableModel.getRowCount() - 1);
     }
   }
   
@@ -629,25 +578,16 @@ public class ListStashesDialog extends JDialog {
     TableModel model = stashesTable.getModel();
     for (int row = toDeleteRow + 1; row <  stashesTable.getRowCount(); row++) {
       model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-      ((DefaultTableModel)stashesTable.getModel()).fireTableCellUpdated(row, 0);
+      ((DefaultTableModel) stashesTable.getModel()).fireTableCellUpdated(row, 0);
     }
-    ((DefaultTableModel)stashesTable.getModel()).removeRow(toDeleteRow); 
+    ((DefaultTableModel) stashesTable.getModel()).removeRow(toDeleteRow); 
 
     if (stashesTable.getRowCount() == 0) {
-      changeStatusAllButtons(false);
+      setStashTableButtonsEnabled(false);
     }
   }
   
   
-  private JCheckBox createDeleteAfterApplyingCheckBox() {
-    JCheckBox checkBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.DELETE_STASH_AFTER_APPLIED));
-    checkBox.setSelected(false);
-    checkBox.setBackground(stashesTable.getBackground());
-    checkBox.setForeground(stashesTable.getForeground());
-    checkBox.setFont(stashesTable.getFont());
-    return checkBox;
-  }
-
   /**
    * Creates the action to show difference for stashed changes.
    * 
@@ -660,13 +600,12 @@ public class ListStashesDialog extends JDialog {
         int selectedRow = stashesTable.getSelectedRow();
         int selectedFilesIndex = affectedFilesTable.getSelectedRow();
         if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()
-            && selectedFilesIndex >= 0 && selectedFilesIndex < affectedFilesTable.getRowCount()
-            ) {
+            && selectedFilesIndex >= 0 && selectedFilesIndex < affectedFilesTable.getRowCount()) {
           FileStatus selectedFile = null;
           List<RevCommit> stashes = null;
           try {
             stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
-            selectedFile = ((FileStatus)affectedFilesTable.getValueAt(selectedFilesIndex, 1));
+            selectedFile = ((FileStatus) affectedFilesTable.getValueAt(selectedFilesIndex, 1));
             String filePath = selectedFile.getFileLocation();
             DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
           } catch (FileNotFoundException e1) {
@@ -691,13 +630,12 @@ public class ListStashesDialog extends JDialog {
    * 
    * @param newStatus the new status for enabled all buttons.
    */
-  private void changeStatusAllButtons(boolean newStatus) {
-    SwingUtilities.invokeLater(
-        () -> {
-          deleteButton.setEnabled(newStatus);
-          applyButton.setEnabled(newStatus);
-          clearButton.setEnabled(newStatus);
-        });
+  private void setStashTableButtonsEnabled(boolean newStatus) {
+    SwingUtilities.invokeLater(() -> {
+      applyButton.setEnabled(newStatus);
+      deleteSelectedButton.setEnabled(newStatus);
+      deleteAllButton.setEnabled(newStatus);
+    });
   }   
 
 
@@ -731,30 +669,28 @@ public class ListStashesDialog extends JDialog {
         return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
       }
     };
-    tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     tableOfStashes.setFillsViewportHeight(true);
-    tableOfStashes.getColumnModel().getColumn(1).setCellRenderer(new StringRender());
+    tableOfStashes.getColumnModel().getColumn(1).setCellRenderer(new StasMessageRender());
+    tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    tableOfStashes.getTableHeader().setReorderingAllowed(false);
 
-    JPopupMenu contextualActions = createContextualActionsForStashedTable(tableOfStashes, stashes, model);
-    
+    JPopupMenu contextualActions = createContextualActionsForStashedTable(tableOfStashes);
     tableOfStashes.setComponentPopupMenu(contextualActions);
     
-    tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    
     tableOfStashes.getSelectionModel().addListSelectionListener(e -> {
-      changeStatusAllButtons(true);
+      setStashTableButtonsEnabled(true);
       int selectedRow = tableOfStashes.getSelectedRow();
       if (selectedRow >= 0) {
         List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
         try {
-          List<FileStatus> listOfChangedFiles = RevCommitUtil.
-              getChangedFiles(stashesList.get(selectedRow).getName());
-          while (tableModel.getRowCount() != 0) {
-            tableModel.removeRow(tableModel.getRowCount() - 1);
+          List<FileStatus> listOfChangedFiles = 
+              RevCommitUtil.getChangedFiles(stashesList.get(selectedRow).getName());
+          while (affectedFilesTableModel.getRowCount() != 0) {
+            affectedFilesTableModel.removeRow(affectedFilesTableModel.getRowCount() - 1);
           }
           for (FileStatus file : listOfChangedFiles) {
             Object[] row = {file.getChangeType(), file};
-            tableModel.addRow(row);
+            affectedFilesTableModel.addRow(row);
           }
         } catch (IOException | GitAPIException exc) {
           LOGGER.debug(exc, exc);
@@ -762,13 +698,9 @@ public class ListStashesDialog extends JDialog {
       }
     });
 
-    tableOfStashes.getTableHeader().setResizingAllowed(false);
-    
     model.fireTableDataChanged();
     
-    SwingUtilities.invokeLater(
-        () -> tableOfStashes.setRowSelectionInterval(0, 0)
-        );
+    SwingUtilities.invokeLater(() -> tableOfStashes.setRowSelectionInterval(0, 0));
     
     return tableOfStashes;
   }
@@ -777,17 +709,17 @@ public class ListStashesDialog extends JDialog {
   /**
    * Creates the contextual actions menu for a stash.
    * 
-   * @param stashes  List of stahses.
-   * @param model    The table model.
+   * @param tableOfStashes The stashes table.
    * 
    * @return a JPopupMenu with actions created.
    */
-  private JPopupMenu createContextualActionsForStashedTable(JTable tableOfStashes, List<RevCommit> stashes, DefaultTableModel model) {
+  private JPopupMenu createContextualActionsForStashedTable(JTable tableOfStashes) {
     JPopupMenu contextualActions = new JPopupMenu();
     JMenuItem menuItemApply      = new JMenuItem(Translator.getInstance().getTranslation(Tags.APPLY));
     JMenuItem menuItemDelete     = new JMenuItem(Translator.getInstance().getTranslation(Tags.DELETE));
 
     menuItemApply.addActionListener(e -> {
+      // TODO: extract apply action to use it for both the menu item and the button
       ActionListener[] actionsApply = applyButton.getActionListeners();
       for(ActionListener action : actionsApply) {
         action.actionPerformed(null);
@@ -795,7 +727,8 @@ public class ListStashesDialog extends JDialog {
     });
     
     menuItemDelete.addActionListener(e -> {
-      ActionListener[] actionsDelete = deleteButton.getActionListeners();
+      // TODO: the same thing as above
+      ActionListener[] actionsDelete = deleteSelectedButton.getActionListeners();
       for(ActionListener action : actionsDelete) {
         action.actionPerformed(null);
       }
@@ -805,7 +738,7 @@ public class ListStashesDialog extends JDialog {
     contextualActions.addSeparator();
     contextualActions.add(menuItemDelete);
 
-    addClickRightSelection((Table)tableOfStashes, contextualActions); 
+    addClickRightSelection((Table) tableOfStashes, contextualActions); 
     
     return contextualActions;
   }
@@ -815,12 +748,12 @@ public class ListStashesDialog extends JDialog {
    * Distribute widths to the columns according to their content.
    */
   private void updateStashTableWidths() {
-    int idColWidth = HistoryPanel.scaleColumnsWidth(COLUMN_ID_SIZE);
+    int idColWidth = HiDPIUtil.scaleWidth(COLUMN_ID_SIZE);
     TableColumnModel tcm = stashesTable.getColumnModel();
-    TableColumn column = tcm.getColumn(1);
-    column.setPreferredWidth(stashesTable.getWidth() - idColWidth);
-    column = tcm.getColumn(0);
-    column.setPreferredWidth(COLUMN_ID_SIZE);
+    TableColumn idCol = tcm.getColumn(0);
+    idCol.setPreferredWidth(COLUMN_ID_SIZE);
+    TableColumn msgCol = tcm.getColumn(1);
+    msgCol.setPreferredWidth(stashesTable.getWidth() - idColWidth);
   }
 
 
@@ -829,7 +762,7 @@ public class ListStashesDialog extends JDialog {
    *
    * @author Alex_Smarandache
    */
-  private static class StringRender extends DefaultTableCellRenderer {
+  private static class StasMessageRender extends DefaultTableCellRenderer {
     
     @Override
     public Component getTableCellRendererComponent(JTable table,
@@ -841,8 +774,8 @@ public class ListStashesDialog extends JDialog {
       
       super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       
-      setText((String)value);
-      setToolTipText((String)value);
+      setText((String) value);
+      setToolTipText((String) value);
       
       return this;
     }

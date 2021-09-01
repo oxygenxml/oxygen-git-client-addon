@@ -831,9 +831,9 @@ public class HistoryPanel extends JPanel {
    * Distribute widths to the columns according to their content.
    */
   private void updateHistoryTableWidths() {
-    int dateColWidth = scaleColumnsWidth(100);
-    int authorColWidth = scaleColumnsWidth(120);
-    int commitIdColWidth = scaleColumnsWidth(80);
+    int dateColWidth = HiDPIUtil.scaleWidth(100);
+    int authorColWidth = HiDPIUtil.scaleWidth(120);
+    int commitIdColWidth = HiDPIUtil.scaleWidth(80);
 
     TableColumnModel tcm = historyTable.getColumnModel();
     TableColumn column = tcm.getColumn(0);
@@ -847,22 +847,6 @@ public class HistoryPanel extends JPanel {
 
     column = tcm.getColumn(3);
     column.setPreferredWidth(commitIdColWidth);
-  }
-
-  /**
-   * Applies a scaling factor depending if we are on a hidpi display.
-   * 
-   * @param width Width to scale.
-   * 
-   * @return A scaled width.
-   */
-  public static int scaleColumnsWidth(int width) {
-    float scalingFactor = (float) 1.0;
-    if (HiDPIUtil.isRetinaNoImplicitSupport()) {
-      scalingFactor = HiDPIUtil.getScalingFactor();
-    }
-
-    return (int) (scalingFactor * width);
   }
 
   /**
