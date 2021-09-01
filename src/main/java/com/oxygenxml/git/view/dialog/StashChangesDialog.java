@@ -12,7 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -55,7 +54,7 @@ public class StashChangesDialog extends OKCancelDialog {
     // Create GUI
     JPanel panel = new JPanel(new GridBagLayout());
     createGUI(panel);
-    getContentPane().add(panel);
+    this.add(panel);
     setResizable(true);
     pack();
     
@@ -64,8 +63,16 @@ public class StashChangesDialog extends OKCancelDialog {
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
       setLocationRelativeTo((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
     }
-    setMinimumSize(new Dimension(UIConstants.COMMIT_PANEL_PREF_HEIGHT, UIConstants.COMMIT_PANEL_PREF_HEIGHT));
+  
+    setMinimumSize(getPreferredSize());
+    Dimension maximumSize = getMaximumSize();
+    maximumSize.height = getPreferredSize().height;
+    setMaximumSize(maximumSize);
+    pack();
     setVisible(true);
+    
+    
+    
   }
 
   
@@ -81,10 +88,10 @@ public class StashChangesDialog extends OKCancelDialog {
     GridBagConstraints constrains = new GridBagConstraints();
     constrains.gridx = 0;
     constrains.gridy = 0;
-    constrains.weightx = 0;
+    constrains.weightx = 1;
     constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.NONE;
-    constrains.anchor = GridBagConstraints.BASELINE_LEADING;
+    constrains.fill = GridBagConstraints.HORIZONTAL;
+    constrains.anchor = GridBagConstraints.WEST;
     constrains.insets = new Insets(0, 0, 3, 0);
     panel.add(informativeLabel, constrains);
     
@@ -105,11 +112,16 @@ public class StashChangesDialog extends OKCancelDialog {
     constrains.gridy ++;
     constrains.weightx = 1;
     constrains.fill = GridBagConstraints.HORIZONTAL;
-    constrains.anchor = GridBagConstraints.BASELINE;
-    constrains.insets = new Insets(2, 0, 11, 0);
+    constrains.insets = new Insets(2, 0, 0, 0);
     panel.add(stashDescriptionField, constrains);
 
     addDescriptionMessage.setLabelFor(stashDescriptionField);
+    
+    constrains.insets = new Insets(0, 0, 0, 0);
+    constrains.fill = GridBagConstraints.BOTH;
+    constrains.weighty = 1;
+    constrains.gridy ++;
+    panel.add(new JPanel(), constrains);
   }
 
   

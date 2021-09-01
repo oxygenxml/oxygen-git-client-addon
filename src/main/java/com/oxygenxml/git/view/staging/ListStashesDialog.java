@@ -48,10 +48,10 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.service.StashStatus;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.StashStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -147,6 +147,16 @@ public class ListStashesDialog extends JDialog {
    * The clear button.
    */
   private Button deleteAllButton;
+  
+  /**
+   * The minimum dialog width.
+   */
+  private static final int DIALOG_MINIMUM_WIDTH = 750;
+  
+  /**
+   * The minimum dialog height.
+   */
+  private static final int DIALOG_MINIMUM_HEIGHT = 250;
 
 
   /**
@@ -173,6 +183,7 @@ public class ListStashesDialog extends JDialog {
       setLocationRelativeTo(parentFrame);
     }
 
+    setMinimumSize(new Dimension(DIALOG_MINIMUM_WIDTH, DIALOG_MINIMUM_HEIGHT));
   }
 
   
