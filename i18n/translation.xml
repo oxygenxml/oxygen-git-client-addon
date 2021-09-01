@@ -222,6 +222,7 @@
         <val lang="fr_FR">List stashes</val>
         <val lang="ja_JP">List stashes</val>
         <val lang="nl_NL">List stashes</val>
+    </key>
     <key value="Revert_commit_resulted_in_conflicts">
         <comment>Message shown when reverting a commit resulted in conflicts.</comment>
         <val lang="en_US">Reverting the commit resulted in the following conflicts:</val>
