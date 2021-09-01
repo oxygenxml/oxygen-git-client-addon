@@ -54,6 +54,14 @@
         <val lang="ja_JP">Unable to apply stash</val>
         <val lang="nl_NL">Unable to apply stash</val>
     </key>
+    <key value="Stash_Remove_Staged_Changes">
+        <comment>The message presents user when are staged changes before to apply a stash.</comment>
+        <val lang="en_US">Cannot apply stash while anything is staged. Stash, commit, or unstage first.</val>
+        <val lang="de_DE">Cannot apply stash while anything is staged. Stash, commit, or unstage first.</val>
+        <val lang="fr_FR">Cannot apply stash while anything is staged. Stash, commit, or unstage first.</val>
+        <val lang="ja_JP">Cannot apply stash while anything is staged. Stash, commit, or unstage first.</val>
+        <val lang="nl_NL">Cannot apply stash while anything is staged. Stash, commit, or unstage first.</val>
+    </key>
     <key value="Stash_Apply">
         <comment>Stash apply</comment>
         <val lang="en_US">Stash apply</val>

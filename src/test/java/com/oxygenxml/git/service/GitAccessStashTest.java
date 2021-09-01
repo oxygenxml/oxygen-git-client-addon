@@ -229,7 +229,7 @@ public class GitAccessStashTest {
     reader.close();
     assertEquals("", content);
 
-    assertEquals(gitAccess.popStash(commitStash.getName()), ApplyStashStatus.SUCCESSFULLY);
+    assertEquals(gitAccess.popStash(commitStash.getName()), StashStatus.POST_APPLY_SUCCESS);
     
     assertEquals(gitAccess.listStashes().size(), 1);
     

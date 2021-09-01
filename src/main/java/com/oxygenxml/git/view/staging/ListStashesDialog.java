@@ -48,7 +48,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.constants.Icons;
-import com.oxygenxml.git.service.ApplyStashStatus;
+import com.oxygenxml.git.service.StashStatus;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
@@ -536,9 +536,9 @@ public class ListStashesDialog extends JDialog {
       if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
         try {
           if(deleteAfterApplingCheckBox.isSelected()) {
-            ApplyStashStatus applyStashStatus =
+            StashStatus applyStashStatus =
                 GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
-            if(applyStashStatus == ApplyStashStatus.SUCCESSFULLY) {
+            if(applyStashStatus == StashStatus.POST_APPLY_SUCCESS) {
               deleteRow(selectedRow);
               selectNextRow(stashesTable, selectedRow, noOfRows);
             }

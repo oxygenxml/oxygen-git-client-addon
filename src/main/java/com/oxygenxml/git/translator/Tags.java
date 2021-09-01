@@ -1357,6 +1357,10 @@ public class Tags {
   * The message presents user solutions to can apply the stash.
   */
   public static final String STASH_SOLUTIONS_TO_APPLY = "Stash_Solutions_To_Apply";
+	/**
+	 * The message presents user when are staged changes before to apply a stash.
+	 */
+	public static final String STASH_REMOVE_STAGED_CHANGES = "Stash_Remove_Staged_Changes";
   /**
    * The message presents user that the stash was kept.
    */

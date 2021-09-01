@@ -6,29 +6,33 @@ package com.oxygenxml.git.service;
  * @author Alex_Smarandache
  *
  */
-public enum ApplyStashStatus {
+public enum StashStatus {
   /**
    * If the stash has been successfully applied.
    */
-  SUCCESSFULLY,
+  POST_APPLY_SUCCESS,
   /**
    * If the stash has been successfully applied, but were generated conflicts.
    */
-  APPLIED_WITH_GENERATED_CONFLICTS,
+  POST_APPLY_SUCCESS_WITH_CONFLICTS,
   /**
    * If the stash was not applied because there are local changes that would conflict.
    */
-  UNCOMMITTED_FILES, 
+  PRE_APPLY_UNCOMMITTED_FILES,
   /**
-   * A conflict caused by a JGit bug, if we apply to an added file and the staged area is not empty.
+   * If there are staged changes when try to apply a stash.
   */
-  BUG_CONFLICT,
+  PRE_APPLY_STAGED_FILES,
   /**
    * If the stash was not applied because there are conflicting files.
    */
-  CONFLICTS,
+  PRE_APPLY_CONFLICTS,
   /**
    * If the stash was not applied for an unknown reason.
    */
-  UNKNOWN_CAUSE
+  POST_APPLY_UNKNOWN_CAUSE,
+  /**
+   * If the stash pass the pre tests and it's ready to be applied.
+   */
+  PRE_APPLY_READY_TO_APPLY
 }
