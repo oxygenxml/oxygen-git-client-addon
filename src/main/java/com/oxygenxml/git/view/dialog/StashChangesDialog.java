@@ -35,7 +35,7 @@ public class StashChangesDialog extends OKCancelDialog {
   /**
    * The date format.
    */
-  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy, HH:mm");
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy, HH:mm");
  
   
   /**
@@ -104,7 +104,7 @@ public class StashChangesDialog extends OKCancelDialog {
     String description = "WIP on " 
         + GitAccess.getInstance().getBranchInfo().getBranchName() 
         + " [" 
-        + DATE_FORMAT.format(new Date())
+        + dateFormat.format(new Date())
         + "]";
     stashDescriptionField.setText(description);
     stashDescriptionField.selectAll();
