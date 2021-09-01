@@ -131,14 +131,12 @@ public class Icons {
    * Unstage all.
    */
   public static final String UNSTAGE_ALL = "/images/UnstageAll16.png";
-  /**
-   * Tag icon
-   * 
-   * TODO: perhaps load EditProperties16.png from Oxygen
-   */
-  public static final String TAG = "/images/Tag16.png";
   
   //=============== These icons are loaded from Oxygen =================
+  /**
+   * Tag icon.
+   */
+  public static final String TAG = "/images/EditProperties16.png";
   /**
    * Info icon.
    */
