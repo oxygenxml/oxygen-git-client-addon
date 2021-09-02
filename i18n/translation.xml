@@ -10,7 +10,7 @@
         <comment>Message shown when reverting a commit resulted in conflicts.</comment>
         <val lang="en_US">Resolve the following conflicts to complete the revert operation:</val>
         <val lang="de_DE">Resolve the following conflicts to complete the revert operation:</val>
-        <val lang="fr_FR">Resolve the following conflicts to complete the revert operation:</val>
+        <val lang="fr_FR">Résolvez les conflits suivants pour terminer l'opération de rétablissement:</val>
         <val lang="ja_JP">Resolve the following conflicts to complete the revert operation:</val>
         <val lang="nl_NL">Resolve the following conflicts to complete the revert operation:</val>
     </key>
@@ -18,7 +18,7 @@
         <comment>No details available</comment>
         <val lang="en_US">No details available.</val>
         <val lang="de_DE">No details available.</val>
-        <val lang="fr_FR">No details available.</val>
+        <val lang="fr_FR">Aucun détail disponible.</val>
         <val lang="ja_JP">No details available.</val>
         <val lang="nl_NL">No details available.</val>
     </key>
@@ -26,7 +26,7 @@
         <comment>Message for when "Revert commit" fails because of uncommitted changes.</comment>
         <val lang="en_US">Cannot revert commit because of the following uncommitted files:</val>
         <val lang="de_DE">Cannot revert commit because of the following uncommitted files:</val>
-        <val lang="fr_FR">Cannot revert commit because of the following uncommitted files:</val>
+	    <val lang="fr_FR">Impossible de rétablir le commit à cause des fichiers hors commit suivants:</val>
         <val lang="ja_JP">Cannot revert commit because of the following uncommitted files:</val>
         <val lang="nl_NL">Cannot revert commit because of the following uncommitted files:</val>	
     </key>
@@ -34,7 +34,7 @@
         <comment>Merge branches</comment>
         <val lang="en_US">Merge branches</val>
         <val lang="de_DE">Merge branches</val>
-        <val lang="fr_FR">Merge branches</val>
+	    <val lang="fr_FR">Fusionner les branches</val>
         <val lang="ja_JP">Merge branches</val>
         <val lang="nl_NL">Merge branches</val>
     </key>
@@ -42,7 +42,7 @@
         <comment>The question message on the merge branches pop up dialog</comment>
         <val lang="en_US">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
         <val lang="de_DE">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
-        <val lang="fr_FR">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
+        <val lang="fr_FR">Etes-vous sûr de vouloir ajouter toutes les modifications de "{0}" dans "{1}"?</val>
         <val lang="ja_JP">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
         <val lang="nl_NL">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
     </key>   	
@@ -50,7 +50,7 @@
         <comment>Action name to open the working copy for a file at a given revision.</comment>
         <val lang="en_US">Open the working copy version of {0}</val>
         <val lang="de_DE">Open the working copy version of {0}</val>
-        <val lang="fr_FR">Open the working copy version of {0}</val>
+        <val lang="fr_FR">Ouvrir la version de la copie de travail de {0}</val>
         <val lang="ja_JP">Open the working copy version of {0}</val>
         <val lang="nl_NL">Open the working copy version of {0}</val>
     </key>
@@ -58,7 +58,7 @@
         <comment>Open working copy version.</comment>
         <val lang="en_US">Open working copy version</val>
         <val lang="de_DE">Open working copy version</val>
-        <val lang="fr_FR">Open working copy version</val>
+        <val lang="fr_FR">Ouvrir la version de la copie de travail</val>
         <val lang="ja_JP">Open working copy version</val>
         <val lang="nl_NL">Open working copy version</val>
     </key>
@@ -66,7 +66,7 @@
         <comment>Checkout this version of a file at a given revision.</comment>
         <val lang="en_US">Checkout this version of {0}</val>
         <val lang="de_DE">Checkout this version of {0}</val>
-        <val lang="fr_FR">Checkout this version of {0}</val>
+        <val lang="fr_FR">Extraire cette version de {0}</val>
         <val lang="ja_JP">Checkout this version of {0}</val>
         <val lang="nl_NL">Checkout this version of {0}</val>
     </key>
@@ -74,7 +74,7 @@
         <comment>Open this version of file.</comment>
         <val lang="en_US">Open this version of {0}</val>
         <val lang="de_DE">Open this version of {0}</val>
-        <val lang="fr_FR">Open this version of {0}</val>
+        <val lang="fr_FR">Ouvrir cette version de {0}</val>
         <val lang="ja_JP">Open this version of {0}</val>
         <val lang="nl_NL">Open this version of {0}</val>
     </key>
@@ -82,7 +82,7 @@
         <comment>See all commits in Git History.</comment>
         <val lang="en_US">See all commits in Git History view.</val>
         <val lang="de_DE">See all commits in Git History view.</val>
-        <val lang="fr_FR">See all commits in Git History view.</val>
+        <val lang="fr_FR">Voir tous les commits dans la vue historique de Git.</val>
         <val lang="ja_JP">See all commits in Git History view.</val>
         <val lang="nl_NL">See all commits in Git History view.</val>
     </key>
@@ -90,7 +90,7 @@
         <comment>One more commit message</comment>
         <val lang="en_US">1 more commit</val>
         <val lang="de_DE">1 more commit</val>
-        <val lang="fr_FR">1 more commit</val>
+        <val lang="fr_FR">1 commit supplémentaire</val>
         <val lang="ja_JP">1 more commit</val>
         <val lang="nl_NL">1 more commit</val>
     </key>
@@ -98,7 +98,7 @@
         <comment> n more commits message.</comment>
         <val lang="en_US">{0} more commits</val>
         <val lang="de_DE">{0} more commits</val>
-        <val lang="fr_FR">{0} more commits</val>
+        <val lang="fr_FR">{0} commits supplémentaires</val>
         <val lang="ja_JP">{0} more commits</val>
         <val lang="nl_NL">{0} more commits</val>
     </key>
@@ -106,7 +106,7 @@
         <comment>Merge {branch1} into {branch2}</comment>
         <val lang="en_US">Merge "{0}" into "{1}"</val>
         <val lang="de_DE">Merge "{0}" into "{1}"</val>
-        <val lang="fr_FR">Merge "{0}" into "{1}"</val>
+        <val lang="fr_FR">Fusionner "{0}" dans "{1}"</val>
         <val lang="ja_JP">Merge "{0}" into "{1}"</val>
         <val lang="nl_NL">Merge "{0}" into "{1}"</val>
     </key> 
@@ -114,7 +114,7 @@
         <comment>The message in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
         <val lang="en_US">Cannot merge because of the following uncommitted files:</val>
         <val lang="de_DE">Cannot merge because of the following uncommitted files:</val>
-        <val lang="fr_FR">Cannot merge because of the following uncommitted files:</val>
+        <val lang="fr_FR">Impossible de fusionner à cause des fichiers hors commit suivants:</val>
         <val lang="ja_JP">Cannot merge because of the following uncommitted files:</val>
         <val lang="nl_NL">Cannot merge because of the following uncommitted files:</val>	
     </key> 
@@ -122,7 +122,7 @@
         <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
         <val lang="en_US">Merge failed</val>
         <val lang="de_DE">Merge failed</val>
-        <val lang="fr_FR">Merge failed</val>
+        <val lang="fr_FR">La fusion a échouée</val>
         <val lang="ja_JP">Merge failed</val>
         <val lang="nl_NL">Merge failed</val>
     </key>
@@ -130,7 +130,7 @@
         <comment>The message in the warning File Status Dialog when there are merge conflicts</comment>
         <val lang="en_US">Resolve the following conflicts to complete the merge:</val>
         <val lang="de_DE">Resolve the following conflicts to complete the merge:</val>
-        <val lang="fr_FR">Resolve the following conflicts to complete the merge:</val>
+        <val lang="fr_FR">Résolvez les conflits suivants pour terminer la fusion:</val>
         <val lang="ja_JP">Resolve the following conflicts to complete the merge:</val>
         <val lang="nl_NL">Resolve the following conflicts to complete the merge:</val>
     </key>
@@ -138,7 +138,7 @@
         <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
         <val lang="en_US">Merge conflicts</val>
         <val lang="de_DE">Merge conflicts</val>
-        <val lang="fr_FR">Merge conflicts</val>
+        <val lang="fr_FR">Fusionner les conflits</val>
         <val lang="ja_JP">Merge conflicts</val>
         <val lang="nl_NL">Merge conflicts</val>
     </key>
@@ -147,7 +147,7 @@
         <comment>Stash apply failed</comment>
         <val lang="en_US">Unable to apply stash.</val>
         <val lang="de_DE">Unable to apply stash.</val>
-        <val lang="fr_FR">Unable to apply stash.</val>
+        <val lang="fr_FR">Impossible d'appliquer le stash.</val>
         <val lang="ja_JP">Unable to apply stash.</val>
         <val lang="nl_NL">Unable to apply stash.</val>
     </key>
@@ -155,7 +155,7 @@
         <comment>Stash</comment>
         <val lang="en_US">Stash</val>
         <val lang="de_DE">Stash</val>
-        <val lang="fr_FR">Stash</val>
+        <val lang="fr_FR" skipTranslation="true">Stash</val>
         <val lang="ja_JP">Stash</val>
         <val lang="nl_NL">Stash</val>
     </key>
@@ -164,7 +164,7 @@
         <comment>Warns about reverting the last commit</comment>
         <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
         <val lang="de_DE">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
-        <val lang="fr_FR">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir créer un nouveau commit qui rétabli toutes les modifications dans le commit sélectionné?</val>
         <val lang="ja_JP">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
         <val lang="nl_NL">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
     </key>
@@ -173,7 +173,7 @@
         <comment>Revert the last commit</comment>
         <val lang="en_US">Revert commit</val>
         <val lang="de_DE">Revert commit</val>
-        <val lang="fr_FR">Revert commit</val>
+        <val lang="fr_FR">Rétablir le commit</val>
         <val lang="ja_JP">Revert commit</val>
         <val lang="nl_NL">Revert commit</val>
     </key>
@@ -182,7 +182,7 @@
         <comment>The last commit details</comment>
         <val lang="en_US">Last commit details</val>
         <val lang="de_DE">Last commit details</val>
-        <val lang="fr_FR">Last commit details</val>
+        <val lang="fr_FR">Détails du dernier commit</val>
         <val lang="ja_JP">Last commit details</val>
         <val lang="nl_NL">Last commit details</val>
     </key>
@@ -192,8 +192,8 @@
 			\nCommit or discard your changes before you switch branches.</val>
         <val lang="de_DE">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
 			\nCommit or discard your changes before you switch branches.</val>
-        <val lang="fr_FR">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
-			\nCommit or discard your changes before you switch branches.</val>
+	    <val lang="fr_FR">Les modifications hors commit n'ont pas pu être déplacées vers la nouvelle branche car elles sont en conflit avec des modifications déjà commitées sur cette branche.
+	        \nEffectuez un commit ou abandonnez vos modifications avant de changer de branche.</val>
         <val lang="ja_JP">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
 			\nCommit or discard your changes before you switch branches.</val>
         <val lang="nl_NL">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
@@ -203,7 +203,7 @@
         <comment> The message displayed to the user when conflict markers are detected.</comment>
         <val lang="en_US">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
         <val lang="de_DE">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
-        <val lang="fr_FR">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
+        <val lang="fr_FR">Il y a des marqueurs de conflit dans le(s) fichier(s) sélectionné(s). En général, ces marqueurs ne doivent pas être commités. Assurez-vous que vous avez correctement résolu le(s) conflit(s).</val>
         <val lang="ja_JP">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
         <val lang="nl_NL">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
     </key>
@@ -211,7 +211,7 @@
         <comment>"Switch branch" label.</comment>
         <val lang="en_US">Switch branch</val>
         <val lang="de_DE">Switch branch</val>
-        <val lang="fr_FR">Switch branch</val>
+        <val lang="fr_FR">Changer de branche</val>
         <val lang="ja_JP">Switch branch</val>
         <val lang="nl_NL">Switch branch</val>
     </key>
@@ -222,8 +222,8 @@
         	\nWould you like to move these changes to the new branch?</val>
         <val lang="de_DE">You have uncommitted changes on the current branch.
         	\nWould you like to move these changes to the new branch?</val>
-        <val lang="fr_FR">You have uncommitted changes on the current branch.
-        	\nWould you like to move these changes to the new branch?</val>
+        <val lang="fr_FR">Vous avez des modifications hors commit sur la branche actuelle.
+            \nVoulez-vous déplacer ces modifications vers la nouvelle branche?</val>
         <val lang="ja_JP">You have uncommitted changes on the current branch.
         	\nWould you like to move these changes to the new branch?</val>
         <val lang="nl_NL">You have uncommitted changes on the current branch.
@@ -234,7 +234,7 @@
          when you try to switch branches and having uncommitted changes.</comment>
         <val lang="en_US">Move changes</val>
         <val lang="de_DE">Move changes</val>
-        <val lang="fr_FR">Move changes</val>
+        <val lang="fr_FR">Déplacer les modifications</val>
         <val lang="ja_JP">Move changes</val>
         <val lang="nl_NL">Move changes</val>
     </key>
@@ -242,7 +242,7 @@
         <comment>The text is displayed when you try to push to remote repository but no internet</comment>
         <val lang="en_US">Unable to access remote repository at:</val>
         <val lang="de_DE">Unable to access remote repository at:</val>
-        <val lang="fr_FR">Unable to access remote repository at:</val>
+        <val lang="fr_FR">Impossible d'accéder au dépôt remote à:</val>
         <val lang="ja_JP">Unable to access remote repository at:</val>
         <val lang="nl_NL">Unable to access remote repository at:</val>
     </key>
@@ -363,7 +363,7 @@
         <comment>Authentication failure message.</comment>
         <val lang="en_US">Authentication failed.</val>
         <val lang="de_DE">Authentication failed.</val>
-        <val lang="fr_FR">L'authentification a échoué.</val>
+        <val lang="fr_FR">L'authentification a échouée.</val>
         <val lang="ja_JP">Authentication failed.</val>
         <val lang="nl_NL">Authenticatie mislukt.</val>
     </key>
@@ -437,8 +437,8 @@
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
         <val lang="de_DE">No changes have been made to the version on the left side that will be used to resolve
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
-        <val lang="fr_FR">Aucun changement n'a été apporté à la version de gauche qui sera utilisée pour résoudre
-          le conflit.\nVos changements (côté droit) seront perdus si vous ne les fusionnez pas avant de résoudre le conflit.</val>
+        <val lang="fr_FR">Aucune modification n'a été apportée à la version de gauche qui sera utilisée pour résoudre
+          le conflit.\nVos modifications (côté droit) seront perdues si vous ne les fusionnez pas avant de résoudre le conflit.</val>
         <val lang="ja_JP">No changes have been made to the version on the left side that will be used to resolve
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
         <val lang="nl_NL">Er zijn geen wijzigingen aangebracht in de versie aan de linkerkant die gebruikt kunnen worden om het 
@@ -531,7 +531,7 @@
         <val lang="de_DE">The new branch was created, but it could not be checked out because 
         there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
         <val lang="fr_FR">La nouvelle branche a été créée, mais elle n'a pas pu être extraite car 
-        il y a des changements hors commit dans votre copie de travail. Effectuez le commit ou abandonnez les changements pour changer de branche.</val>
+        il y a des modifications hors commit dans votre copie de travail. Effectuez le commit ou abandonnez les modifications pour changer de branche.</val>
         <val lang="ja_JP">The new branch was created, but it could not be checked out because 
         there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
         <val lang="nl_NL">De nieuwe branch is gemaakt, maar kon niet worden uitgecheckt omdat er nog niet-bewaarde wijzigingen 
@@ -658,7 +658,7 @@
         <comment>"Displays information about what a hard reset of a branch does."</comment>
         <val lang="en_US">discard all changes</val>
         <val lang="de_DE">discard all changes</val>
-        <val lang="fr_FR">annuler tous les changements</val>
+        <val lang="fr_FR">annuler toutes les modifications</val>
         <val lang="ja_JP">discard all changes</val>
         <val lang="nl_NL">alle wijzigingen annuleren</val>
     </key>
@@ -860,7 +860,7 @@
         <comment>"Upstream branch {0} does not exist" label.</comment>
         <val lang="en_US">Upstream branch "{0}" does not exist.</val>
         <val lang="de_DE">Upstream-Branch "{0}" existiert nicht.</val>
-        <val lang="fr_FR">La branche upstream  "{0}" n'existe pas.</val>
+        <val lang="fr_FR">La branche upstream  "{0}" n''existe pas.</val>
         <val lang="ja_JP">Upstream branch "{0}" does not exist.</val>
         <val lang="nl_NL">Upstream-branch "{0}" bestaat niet.</val>
     </key>
@@ -970,7 +970,7 @@
         <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits ahead.</comment>
         <val lang="en_US">{0} commits ahead.</val>
         <val lang="de_DE">{0} Commits voraus.</val>
-        <val lang="fr_FR">{0} commits d'avance.</val>
+        <val lang="fr_FR">{0} commits d''avance.</val>
         <val lang="ja_JP">{0} commits ahead.</val>
         <val lang="nl_NL">{0} commits verder.</val>
     </key>
@@ -1128,7 +1128,7 @@
             It appears as the commit message.</comment>
         <val lang="en_US">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
         <val lang="de_DE">Alle Konflikte wurden gelöst. Bitte committen Sie um den Branch ''{0}'' von {1} zu mergen.</val>
-        <val lang="fr_FR">Tous les conflits ont été résolus. Commit pour fusionner la branche ''{0}'' de {1}.</val>
+        <val lang="fr_FR">Tous les conflits ont été résolus. Effectuez un commit pour fusionner la branche ''{0}'' de {1}.</val>
         <val lang="ja_JP">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
         <val lang="nl_NL">Alle conflicten zijn opgelost. Commit om samen te voegen met branch ''{0}'' van {1}.</val>
     </key>
@@ -1232,7 +1232,7 @@
         <comment>Confirmation message for "Restart merge"</comment>
         <val lang="en_US">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
         <val lang="de_DE">Sind Sie sicher, dass Sie den Merge-Prozess neu starten möchten?\nDie nicht-committeten Änderungen aller Dateien werden dabei verworfen.</val>
-        <val lang="fr_FR">Êtes-vous sûr de vouloir relancer le processus de fusion?\nLes modifications hors commit de tous les fichiers seront annulées.</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir relancer le processus de fusion?\nLes modifications hors commit de tous les fichiers seront rétablies.</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL">Weet u zeker dat u het samenvoegproces opnieuw wilt starten?\nWijzigingen zonder commit, worden in alle bestanden teruggedraaid.</val>
     </key>
@@ -1272,7 +1272,7 @@
         <comment>Message shown when invoking "Resolve using Mine" or "Resolve using Theirs" for a conflict generated when trying to rebase.</comment>
         <val lang="en_US">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
         <val lang="de_DE">Sie lösen einen Rebase-Konflikt. In dieser Situation ist Git''s Definition von "Meins" und "Ihres" vertauscht.\nDer aktuelle lokale Branch wird zu "Ihres", während der Remote-Branch zu "Meins" wird.\n\nMöchten Sie "{0}" ({1}) zur Behebung des Konflikts auswählen?</val>
-        <val lang="fr_FR">Vous êtes sur le point de résoudre un conflit de rebase. Dans cette situation, les définitions de "La mienne" et "La leur" de Git sont inversées.\nL'ancienne branche de travail actuelle devient "La leur" tandis que la branche upstream devient "La mienne"..\n\nVoulez-vous continuer à résoudre le conflit en utilisant "{0}" ({1})?</val>
+        <val lang="fr_FR">Vous êtes sur le point de résoudre un conflit de rebase. Dans cette situation, les définitions de "La mienne" et "La leur" de Git sont inversées.\nL''ancienne branche de travail actuelle devient "La leur" tandis que la branche upstream devient "La mienne"..\n\nVoulez-vous continuer à résoudre le conflit en utilisant "{0}" ({1})?</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL">U staat op het punt een rebase-conflict op te lossen. In deze situatie zijn de Git-definities van "Mijn" en "Hun" omgedraaid.\nDe voormalige, huidige werk-branch wordt "Hun" terwijl de upstream-branch "Mijn" wordt.\n\nWilt u het conflict oplossen met "{0}" ({1})?</val>
     </key>
@@ -1336,7 +1336,7 @@
         <comment>Pull failed</comment>
         <val lang="en_US">Pull failed</val>
         <val lang="de_DE">Pull fehlgeschlagen</val>
-        <val lang="fr_FR">Échec du pull</val>
+        <val lang="fr_FR">Le pull a échoué</val>
         <val lang="ja_JP">Pull failed</val>
         <val lang="nl_NL">Pull mislukt</val>
     </key>
@@ -1344,7 +1344,7 @@
         <comment>Push failed</comment>
         <val lang="en_US">Push failed</val>
         <val lang="de_DE">Push fehlgeschlagen</val>
-        <val lang="fr_FR">Échec du push</val>
+        <val lang="fr_FR">Le push a échoué</val>
         <val lang="ja_JP">Push failed</val>
         <val lang="nl_NL">Push mislukt</val>
     </key>
@@ -1488,7 +1488,7 @@
         <comment>Message shown when the lock failed while trying to update.</comment>
         <val lang="en_US">Lock failed</val>
         <val lang="de_DE">Sperre fehlgeschlagen</val>
-        <val lang="fr_FR">Echec du verrouillage</val>
+        <val lang="fr_FR">Le verrouillage a échoué</val>
         <val lang="ja_JP">Lock failed</val>
         <val lang="nl_NL">Lock mislukt</val>
     </key>
@@ -2138,7 +2138,7 @@
         <comment>The text in the warning of detached-head </comment>
         <val lang="en_US">Commit</val>
         <val lang="de_DE">Commit</val>
-        <val lang="fr_FR">Commit</val>
+        <val lang="fr_FR" skipTranslation="true">Commit</val>
         <val lang="ja_JP">Commit</val>
         <val lang="nl_NL">Commit</val>
     </key>
@@ -2146,7 +2146,7 @@
         <comment>The title in the warning of detached-head </comment>
         <val lang="en_US">Detached HEAD</val>
         <val lang="de_DE">Detached HEAD</val>
-        <val lang="fr_FR">Detached HEAD</val>
+        <val lang="fr_FR">HEAD détaché</val>
         <val lang="ja_JP">Detached HEAD</val>
         <val lang="nl_NL">Detached HEAD</val>
     </key>
