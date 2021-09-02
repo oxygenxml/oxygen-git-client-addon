@@ -2564,9 +2564,7 @@ public class GitAccess {
 						FileStatusDialog.showErrorMessage(
 										translator.getTranslation(Tags.STASH_APPLY),
 										null,
-										translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
-														+ ". "
-														+ translator.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
+										translator.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;

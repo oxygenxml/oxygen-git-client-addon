@@ -520,7 +520,7 @@ public class ListStashesDialog extends JDialog {
 
     Button button = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
 
-    button.setToolTipText(TRANSLATOR.getTranslation(Tags.APPLY_STASH__BUTTON_TOOLTIP));
+    button.setToolTipText(TRANSLATOR.getTranslation(Tags.APPLY_STASH_BUTTON_TOOLTIP));
 
     button.addActionListener(applySelectedStashAction);
 
@@ -564,7 +564,7 @@ public class ListStashesDialog extends JDialog {
 
     Button button = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
 
-    button.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_STASH__BUTTON_TOOLTIP));
+    button.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_STASH_BUTTON_TOOLTIP));
 
     button.addActionListener(deleteSelectedStashAction);
 
@@ -771,7 +771,9 @@ public class ListStashesDialog extends JDialog {
     model.fireTableDataChanged();
     
     SwingUtilities.invokeLater(() -> tableOfStashes.setRowSelectionInterval(0, 0));
-    
+
+    tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
     return tableOfStashes;
   }
 

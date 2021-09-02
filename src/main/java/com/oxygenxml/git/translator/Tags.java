@@ -1388,15 +1388,15 @@ public class Tags {
   /**
    * The tooltip for clear stashes button.
    */
-  public static final String CLEAR_STASHES__BUTTON_TOOLTIP = "Clear_Stashes_Button_Tooltip";
+  public static final String CLEAR_STASHES_BUTTON_TOOLTIP = "Clear_Stashes_Button_Tooltip";
   /**
    * The tooltip for apply stash button.
    */
-  public static final String APPLY_STASH__BUTTON_TOOLTIP = "Apply_Stash_Button_Tooltip";
+  public static final String APPLY_STASH_BUTTON_TOOLTIP = "Apply_Stash_Button_Tooltip";
   /**
    * The tooltip for delete stash button.
    */
-  public static final String DELETE_STASH__BUTTON_TOOLTIP = "Delete_Stash_Button_Tooltip";
+  public static final String DELETE_STASH_BUTTON_TOOLTIP = "Delete_Stash_Button_Tooltip";
   /**
    * The text for delete stash dialog title.
    */
