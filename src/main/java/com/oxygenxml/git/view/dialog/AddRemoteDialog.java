@@ -159,9 +159,7 @@ public class AddRemoteDialog extends OKCancelDialog {
 			remoteConfig.update(config);
 			config.save();
 		} catch (NoRepositorySelected | URISyntaxException | IOException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
-			}
+			logger.error(e, e);
 		}
 		dispose();
 	}
