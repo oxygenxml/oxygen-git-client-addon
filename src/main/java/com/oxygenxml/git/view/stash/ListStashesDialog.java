@@ -570,10 +570,7 @@ public class ListStashesDialog extends JDialog {
    */
   private void deleteRow(int toDeleteRow) {
     GitAccess.getInstance().dropStash(toDeleteRow);
-    for (int row = toDeleteRow + 1; row <  stashesTable.getRowCount(); row++) {
-      stashesTableModel.setValueAt((int)stashesTableModel.getValueAt(row, 0) - 1, row, 0);
-      stashesTableModel.fireTableCellUpdated(row, 0);
-    }
+
     stashesTableModel.removeRow(toDeleteRow);
 
     if (stashesTable.getRowCount() == 0) {

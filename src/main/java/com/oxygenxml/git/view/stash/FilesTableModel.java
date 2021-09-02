@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.stash;
 
 import javax.swing.table.DefaultTableModel;
 
+
 /**
  * The model for affected files.
  *
@@ -17,7 +18,6 @@ public class FilesTableModel extends DefaultTableModel {
    */
   public FilesTableModel(Object[] columns, int rowCount) {
     super(columns, rowCount);
-
   }
 
 

@@ -33,4 +33,14 @@ public class StashesTableModel extends DefaultTableModel {
     return false;
   }
 
+  @Override
+  public void removeRow(int index) {
+    for (int row = index + 1; row <  this.getRowCount(); row++) {
+      this.setValueAt((int)getValueAt(row, 0) - 1, row, 0);
+      this.fireTableCellUpdated(row, 0);
+    }
+
+    super.removeRow(index);
+  }
+
 }
