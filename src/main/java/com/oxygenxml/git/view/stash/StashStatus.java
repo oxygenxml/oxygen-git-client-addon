@@ -1,4 +1,4 @@
-package com.oxygenxml.git.service;
+package com.oxygenxml.git.view.stash;
 
 /**
  * The statuses for stash apply operation.

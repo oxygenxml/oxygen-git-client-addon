@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ScheduledFuture;
 
+import com.oxygenxml.git.view.stash.StashStatus;
 import org.apache.log4j.Logger;
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;

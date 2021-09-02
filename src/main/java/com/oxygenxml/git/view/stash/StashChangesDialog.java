@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.dialog;
+package com.oxygenxml.git.view.stash;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;

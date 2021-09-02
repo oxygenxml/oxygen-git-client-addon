@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import com.oxygenxml.git.view.stash.StashStatus;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;

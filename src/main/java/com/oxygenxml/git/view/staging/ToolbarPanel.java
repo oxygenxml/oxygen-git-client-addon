@@ -30,6 +30,7 @@ import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import com.oxygenxml.git.view.stash.ListStashesDialog;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -66,7 +67,7 @@ import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.PassphraseDialog;
-import com.oxygenxml.git.view.dialog.StashChangesDialog;
+import com.oxygenxml.git.view.stash.StashChangesDialog;
 import com.oxygenxml.git.view.dialog.SubmoduleSelectDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;

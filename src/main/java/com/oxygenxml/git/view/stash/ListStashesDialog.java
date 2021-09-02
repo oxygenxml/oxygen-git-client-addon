@@ -1,4 +1,4 @@
-package com.oxygenxml.git.view.staging;
+package com.oxygenxml.git.view.stash;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -41,6 +41,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
+import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -51,7 +53,6 @@ import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
-import com.oxygenxml.git.service.StashStatus;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
