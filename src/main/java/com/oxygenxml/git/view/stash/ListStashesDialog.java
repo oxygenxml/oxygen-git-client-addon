@@ -120,9 +120,14 @@ public class ListStashesDialog extends JDialog {
   private Button deleteSelectedButton;
 
   /**
-   * The model for the table.
+   * The model for the files table.
    */
-  private DefaultTableModel affectedFilesTableModel;
+  private FilesTableModel affectedFilesTableModel;
+
+  /**
+   * The model for the stashes table.
+   */
+  private StashesTableModel stashesTableModel;
 
   /**
    * Show diff action.
@@ -328,12 +333,7 @@ public class ListStashesDialog extends JDialog {
    */
   private Table createAffectedFilesTable() {
     String[] columnName = {"", ""};
-    affectedFilesTableModel = new DefaultTableModel(columnName, 0) {
-      @Override
-      public boolean isCellEditable(int row, int column) {
-        return false;
-      }
-    };
+    affectedFilesTableModel = new FilesTableModel(columnName, 0);
 
     Table filesTable = new Table(affectedFilesTableModel) {
       @Override
@@ -528,16 +528,6 @@ public class ListStashesDialog extends JDialog {
     return button;
   }
 
-  
-  /**
-   * Removes files from table.
-   */
-  private void depopulateFilesTable() {
-    while(affectedFilesTable.getRowCount() > 0) {
-      ((DefaultTableModel)affectedFilesTable.getModel()).removeRow(affectedFilesTableModel.getRowCount() - 1);
-    }
-  }
-  
 
  /**
   * Select next row in the table.
@@ -580,12 +570,11 @@ public class ListStashesDialog extends JDialog {
    */
   private void deleteRow(int toDeleteRow) {
     GitAccess.getInstance().dropStash(toDeleteRow);
-    TableModel model = stashesTable.getModel();
     for (int row = toDeleteRow + 1; row <  stashesTable.getRowCount(); row++) {
-      model.setValueAt((int)model.getValueAt(row, 0) - 1, row, 0);
-      ((DefaultTableModel) stashesTable.getModel()).fireTableCellUpdated(row, 0);
+      stashesTableModel.setValueAt((int)stashesTableModel.getValueAt(row, 0) - 1, row, 0);
+      stashesTableModel.fireTableCellUpdated(row, 0);
     }
-    ((DefaultTableModel) stashesTable.getModel()).removeRow(toDeleteRow); 
+    stashesTableModel.removeRow(toDeleteRow);
 
     if (stashesTable.getRowCount() == 0) {
       setStashTableButtonsEnabled(false);
@@ -663,7 +652,7 @@ public class ListStashesDialog extends JDialog {
                   TRANSLATOR.getTranslation(Tags.NO));
           if (OKCancelDialog.RESULT_OK == answer) {
             deleteRow(selectedRow);
-            depopulateFilesTable();
+            affectedFilesTableModel.clear();
             if (noOfRows > 1) {
               if (selectedRow == noOfRows - 1) {
                 stashesTable.setRowSelectionInterval(noOfRows - 2, noOfRows - 2);
@@ -710,6 +699,7 @@ public class ListStashesDialog extends JDialog {
     };
   }
 
+
   /**
    * Create a table with all stashes.
    * 
@@ -722,19 +712,9 @@ public class ListStashesDialog extends JDialog {
         Translator.getInstance().getTranslation(Tags.ID),
         Translator.getInstance().getTranslation(Tags.DESCRIPTION)
         };
-    DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
-      @Override
-      public boolean isCellEditable(int row, int column) {
-        return false;
-      }
-    };
+    stashesTableModel = new StashesTableModel(columnNames, 0, stashes);
 
-    for (int i = 0; i < stashes.size(); i++) {
-      Object[] row = {i, stashes.get(i).getFullMessage()};
-      model.addRow(row);
-    }
-
-    JTable tableOfStashes = new Table(model) {
+    JTable tableOfStashes = new Table(stashesTableModel) {
       @Override
       public JToolTip createToolTip() {
         return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
@@ -769,7 +749,7 @@ public class ListStashesDialog extends JDialog {
       }
     });
 
-    model.fireTableDataChanged();
+    stashesTableModel.fireTableDataChanged();
     
     SwingUtilities.invokeLater(() -> tableOfStashes.setRowSelectionInterval(0, 0));
 
