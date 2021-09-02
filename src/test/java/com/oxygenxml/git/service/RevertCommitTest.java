@@ -28,7 +28,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  * @author Tudosie Razvan
  */
-public class GitAccessRevertCommitsAheadTest extends GitTestBase{
+public class RevertCommitTest extends GitTestBase {
   private static final String DATE_REGEX = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ "
       + "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GitAccessRevertCommitTest";
@@ -131,7 +131,7 @@ public class GitAccessRevertCommitsAheadTest extends GitTestBase{
   }
   
   /**
-   * <p><b>Description:</b> cannot revert first version.</p>
+   * <p><b>Description:</b> revert commit.</p>
    * <p><b>Bug ID:</b> EXM-47154</p>
    *
    * @author sorin_carbunaru
@@ -161,7 +161,7 @@ public class GitAccessRevertCommitsAheadTest extends GitTestBase{
     flushAWT();
     sleep(300);
     
-    // The history stays the same
+    // New commit added (for the reverted changes)
     commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
     assertEquals(4, commitsCharacteristics.size());
     assertTrue(commitsCharacteristics.get(0).getCommitMessage().startsWith("Revert \"Modified a file\""));
