@@ -8,11 +8,11 @@
     </languageList>
     <key value="Revert_commit_resulted_in_conflicts">
         <comment>Message shown when reverting a commit resulted in conflicts.</comment>
-        <val lang="en_US">Reverting the commit resulted in the following conflicts:</val>
-        <val lang="de_DE">Reverting the commit resulted in the following conflicts:</val>
-        <val lang="fr_FR">Reverting the commit resulted in the following conflicts:</val>
-        <val lang="ja_JP">Reverting the commit resulted in the following conflicts:</val>
-        <val lang="nl_NL">Reverting the commit resulted in the following conflicts:</val>
+        <val lang="en_US">Resolve the following conflicts to complete the revert operation:</val>
+        <val lang="de_DE">Resolve the following conflicts to complete the revert operation:</val>
+        <val lang="fr_FR">Resolve the following conflicts to complete the revert operation:</val>
+        <val lang="ja_JP">Resolve the following conflicts to complete the revert operation:</val>
+        <val lang="nl_NL">Resolve the following conflicts to complete the revert operation:</val>
     </key>
     <key value="No_details_available">
         <comment>No details available</comment>
