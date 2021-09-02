@@ -168,4 +168,50 @@ public class RevertCommitTest extends GitTestBase {
 
   }
   
+  /**
+   * <p><b>Description:</b> show warning when conflict is generated.</p>
+   * <p><b>Bug ID:</b> EXM-48678</p>
+   *
+   * @author sorin_carbunaru
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testRevertCommit_warningWhenConflictGenerated() throws Exception {
+    setFileContent(firstFile, "<modified content 2>");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, LOCAL_FILE_NAME));
+    gitAccess.commit("Modified a file again");
+    
+    // The history at this moment
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    String expected = "[ Modified a file again , DATE , AlexJitianu <alex_jitianu@sync.ro> , 1 , AlexJitianu , [2] ]\n" + 
+        "[ Added a new file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 2 , AlexJitianu , [3] ]\n" + 
+        "[ Modified a file , DATE , AlexJitianu <alex_jitianu@sync.ro> , 3 , AlexJitianu , [4] ]\n" + 
+        "[ First commit. , DATE , AlexJitianu <alex_jitianu@sync.ro> , 4 , AlexJitianu , null ]\n" + 
+        "";
+    assertEquals(expected, dumpHistory(commitsCharacteristics).replaceAll(DATE_REGEX, "DATE"));
+
+    //Revert commit that will trigger conflict
+    CommitCharacteristics commitToRevert = commitsCharacteristics.get(2);
+    RevertCommitAction revertAction = new RevertCommitAction(commitToRevert);
+    SwingUtilities.invokeLater(() -> revertAction.actionPerformed(null));
+    flushAWT();
+    sleep(200);
+
+    JDialog revertConfirmationDlg = findDialog(Tags.REVERT_COMMIT);
+    JTextArea confirmationTextArea = findFirstTextArea(revertConfirmationDlg);
+    assertEquals(Tags.REVERT_COMMIT_CONFIRMATION, confirmationTextArea.getText().toString());
+    JButton revertOkButton = findFirstButton(revertConfirmationDlg, Tags.YES);
+    SwingUtilities.invokeLater(() -> revertOkButton.doClick());
+    flushAWT();
+    sleep(300);
+    
+    JDialog dlg = findDialog(Tags.REVERT_COMMIT);
+    assertNotNull(dlg);
+    
+    JTextArea textArea = findFirstTextArea(dlg);
+    assertEquals(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS, textArea.getText());
+    dlg.dispose();
+  }
+  
 }
