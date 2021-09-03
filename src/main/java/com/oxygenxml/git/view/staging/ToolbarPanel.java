@@ -1007,7 +1007,7 @@ public class ToolbarPanel extends JPanel {
       RevCommit currentCommit = commits.get(i);
       String commitMessage = currentCommit.getShortMessage();
       if(commitMessage.length() > MAXIMUM_COMMIT_MESSAGE_LENGTH) {
-        commitMessage = commitMessage.substring(0, MAXIMUM_COMMIT_MESSAGE_LENGTH) + " ... ";
+        commitMessage = commitMessage.substring(0, MAXIMUM_COMMIT_MESSAGE_LENGTH).trim() + "...";
       }
       changedFiles = RevCommitUtil.getChangedFiles(currentCommit.getId().getName());
       text.append("&#x25AA; ")

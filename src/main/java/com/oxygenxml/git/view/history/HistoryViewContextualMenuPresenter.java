@@ -684,10 +684,11 @@ public class HistoryViewContextualMenuPresenter {
    * @return The name of the revert file action.
    */
   private String getCheckoutFileActionName(FileStatus fileStatus, boolean addFileName) {
-    String actionName = TRANSLATOR.getTranslation(Tags.CHECKOUT);
+
+    String actionName = Translator.getInstance().getTranslation(Tags.RESET_FILE_TO_THIS_COMMIT);
     if (addFileName) {
       String fileName = PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(fileStatus.getFileLocation());
-      actionName = MessageFormat.format(TRANSLATOR.getTranslation(Tags.CHECK_OUT_THIS_VERSION), fileName);
+      actionName = MessageFormat.format(Translator.getInstance().getTranslation(Tags.RESET_FILE_X_TO_THIS_COMMIT), fileName);
     }
     return actionName;
   }

@@ -237,6 +237,39 @@
         <val lang="ja_JP">List stashes</val>
         <val lang="nl_NL">List stashes</val>
     </key>
+    <key value="Reset_file_to_this_commit">
+        <comment>Action name.</comment>
+        <val lang="en_US">Reset file to this commit</val>
+        <val lang="de_DE">Reset file to this commit</val>
+        <val lang="fr_FR">Reset file to this commit</val>
+        <val lang="ja_JP">Reset file to this commit</val>
+        <val lang="nl_NL">Reset file to this commit</val>
+    </key>
+    <key value="Reset_file_x_to_this_commit">
+        <comment>Checkout this version of a file at a given revision.</comment>
+        <val lang="en_US">Reset {0} to this commit</val>
+        <val lang="de_DE">Reset {0} to this commit</val>
+        <val lang="fr_FR">Reset {0} to this commit</val>
+        <val lang="ja_JP">Reset {0} to this commit</val>
+        <val lang="nl_NL">Reset {0} to this commit</val>
+    </key>
+    <key value="Commit_before_pushing">
+        <comment>Message shown when a branch is unborn and we need to commit
+        before trying to push.</comment>
+        <val lang="en_US">Perform at least one local commit before trying to push again.</val>
+        <val lang="de_DE">Perform at least one local commit before trying to push again.</val>
+        <val lang="fr_FR">Perform at least one local commit before trying to push again.</val>
+        <val lang="ja_JP">Perform at least one local commit before trying to push again.</val>
+        <val lang="nl_NL">Perform at least one local commit before trying to push again.</val>
+    </key>
+    <key value="Unborn_branch">
+        <comment>"Unborn branch X".</comment>
+        <val lang="en_US">branch ''{0}'' is empty.</val>
+        <val lang="de_DE">branch ''{0}'' is empty.</val>
+        <val lang="fr_FR">branch ''{0}'' is empty.</val>
+        <val lang="ja_JP">branch ''{0}'' is empty.</val>
+        <val lang="nl_NL">branch ''{0}'' is empty.</val>
+    </key>
     <key value="Revert_commit_resulted_in_conflicts">
         <comment>Message shown when reverting a commit resulted in conflicts.</comment>
         <val lang="en_US">Resolve the following conflicts to complete the revert operation:</val>
@@ -292,14 +325,6 @@
         <val lang="fr_FR">Ouvrir la version de la copie de travail</val>
         <val lang="ja_JP">Open working copy version</val>
         <val lang="nl_NL">Open working copy version</val>
-    </key>
-    <key value="Check_out_this_version">
-        <comment>Checkout this version of a file at a given revision.</comment>
-        <val lang="en_US">Checkout this version of {0}</val>
-        <val lang="de_DE">Checkout this version of {0}</val>
-        <val lang="fr_FR">Extraire cette version de {0}</val>
-        <val lang="ja_JP">Checkout this version of {0}</val>
-        <val lang="nl_NL">Checkout this version of {0}</val>
     </key>
     <key value="Open_this_version_of_filename">
         <comment>Open this version of file.</comment>

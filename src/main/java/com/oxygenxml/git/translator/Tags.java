@@ -19,6 +19,14 @@ public class Tags {
    */
   public static final String LAST_COMMIT_DETAILS = "Last_Commit_Details";
   /**
+   * Commit before pushing.
+   */
+  public static final String COMMIT_BEFORE_PUSHING = "Commit_before_pushing";
+  /**
+   * Unborn branch {0}.
+   */
+  public static final String UNBORN_BRANCH = "Unborn_branch";
+  /**
    * Staged files.
    */
   public static final String STAGED_FILES = "Staged_files";
@@ -70,6 +78,14 @@ public class Tags {
    * Displays the message "Checkout".
    */
   public static final String CHECKOUT = "Checkout";
+  /**
+   * Action name.
+   */
+  public static final String RESET_FILE_TO_THIS_COMMIT = "Reset_file_to_this_commit";
+  /**
+   * The text displayed for the "Reset {0} to this commit" contextual menu item
+   */
+  public static final String RESET_FILE_X_TO_THIS_COMMIT = "Reset_file_x_to_this_commit";
   /**
    * Displays the message "Delete".
    */
@@ -393,11 +409,6 @@ public class Tags {
    * The text displayed for the "Open the working copy version of " contextual menu item
    */
   public static final String OPEN_WORKING_COPY_VERSION = "Open_the_working_copy_version_of";
-  
-  /**
-   * The text displayed for the "Checkout this version" contextual menu item
-   */
-  public static final String CHECK_OUT_THIS_VERSION = "Check_out_this_version";
   
 	/**
 	 * The text displayed for the "Open" contextual menu item
