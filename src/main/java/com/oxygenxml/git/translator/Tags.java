@@ -18,6 +18,14 @@ public class Tags {
    */
   public static final String LAST_COMMIT_DETAILS = "Last_Commit_Details";
   /**
+   * Commit before pushing.
+   */
+  public static final String COMMIT_BEFORE_PUSHING = "Commit_before_pushing";
+  /**
+   * Unborn branch {0}.
+   */
+  public static final String UNBORN_BRANCH = "Unborn_branch";
+  /**
    * Staged files.
    */
   public static final String STAGED_FILES = "Staged_files";

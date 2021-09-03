@@ -6,6 +6,23 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value="Commit_before_pushing">
+        <comment>Message shown when a branch is unborn and we need to commit
+        before trying to push.</comment>
+        <val lang="en_US">Perform at least one local commit before trying to push again.</val>
+        <val lang="de_DE">Perform at least one local commit before trying to push again.</val>
+        <val lang="fr_FR">Perform at least one local commit before trying to push again.</val>
+        <val lang="ja_JP">Perform at least one local commit before trying to push again.</val>
+        <val lang="nl_NL">Perform at least one local commit before trying to push again.</val>
+    </key>
+    <key value="Unborn_branch">
+        <comment>"Unborn branch X".</comment>
+        <val lang="en_US">unborn branch ''{0}''</val>
+        <val lang="de_DE">unborn branch ''{0}''</val>
+        <val lang="fr_FR">unborn branch ''{0}''</val>
+        <val lang="ja_JP">unborn branch ''{0}''</val>
+        <val lang="nl_NL">unborn branch ''{0}''</val>
+    </key>
     <key value="Revert_commit_resulted_in_conflicts">
         <comment>Message shown when reverting a commit resulted in conflicts.</comment>
         <val lang="en_US">Resolve the following conflicts to complete the revert operation:</val>
