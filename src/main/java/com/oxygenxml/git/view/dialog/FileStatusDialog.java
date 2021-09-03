@@ -71,7 +71,7 @@ public class FileStatusDialog extends OKCancelDialog {
   /**
    * Document with custom wrapping.
    */
-  private static class CustomWrapDocument extends DefaultStyledDocument {
+  static class CustomWrapDocument extends DefaultStyledDocument {
     /**
      * Maximum number of characters without a newline.
      */

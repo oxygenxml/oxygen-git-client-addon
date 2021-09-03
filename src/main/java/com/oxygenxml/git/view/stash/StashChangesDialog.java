@@ -36,6 +36,11 @@ public class StashChangesDialog extends OKCancelDialog {
    * The date format.
    */
   private final SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy, HH:mm");
+  
+  /**
+   * Title of dialog.
+   */
+  private static final String title = TRANSLATOR.getTranslation(Tags.STASH_CHANGES); 
  
   
   /**
@@ -43,8 +48,7 @@ public class StashChangesDialog extends OKCancelDialog {
    * 
    * @param title            The title of the dialog.
    */
-  public StashChangesDialog(
-      String title) {
+  public StashChangesDialog() {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
         ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
         : null, title, true);
