@@ -36,13 +36,9 @@ import javax.swing.WindowConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
-import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
-import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -52,12 +48,13 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
+import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -65,6 +62,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
+
 
 /**
  * Used for create the dialog that shows the stashes of the repository.
@@ -317,7 +315,7 @@ public class ListStashesDialog extends JDialog {
           TRANSLATOR.getTranslation(Tags.NO));
       if (OKCancelDialog.RESULT_OK == answer) {
         while (stashesTable.getRowCount() != 0 ) {
-          deleteRow(stashesTable.getRowCount() - 1);
+          stashesTableModel.clear();
         }
         setStashTableButtonsEnabled(false);
       }
@@ -332,8 +330,8 @@ public class ListStashesDialog extends JDialog {
    * @return The created table.
    */
   private Table createAffectedFilesTable() {
-    String[] columnName = {"", ""};
-    affectedFilesTableModel = new FilesTableModel(columnName, 0);
+
+    affectedFilesTableModel = new FilesTableModel();
 
     Table filesTable = new Table(affectedFilesTableModel) {
       @Override
@@ -409,6 +407,7 @@ public class ListStashesDialog extends JDialog {
      deleteSelectedStashAction    = createDeleteSelectedStashAction();
      compareWithWorkingCopyAction = createCompareWithWCAction();
   }
+
 
   /**
    * Add selection on click-right for JPopupMenu actions.
@@ -562,23 +561,7 @@ public class ListStashesDialog extends JDialog {
     return button;
   }
 
-  
-  /**
-   * Delete a row from stash table.
-   * 
-   * @param toDeleteRow row to delete.
-   */
-  private void deleteRow(int toDeleteRow) {
-    GitAccess.getInstance().dropStash(toDeleteRow);
 
-    stashesTableModel.removeRow(toDeleteRow);
-
-    if (stashesTable.getRowCount() == 0) {
-      setStashTableButtonsEnabled(false);
-    }
-  }
-  
-  
   /**
    * Creates the action to show difference for stashed changes.
    * 
@@ -648,7 +631,10 @@ public class ListStashesDialog extends JDialog {
                   TRANSLATOR.getTranslation(Tags.YES),
                   TRANSLATOR.getTranslation(Tags.NO));
           if (OKCancelDialog.RESULT_OK == answer) {
-            deleteRow(selectedRow);
+            stashesTableModel.removeRow(selectedRow);
+            if(stashesTableModel.getRowCount() == 0) {
+              setStashTableButtonsEnabled(false);
+            }
             affectedFilesTableModel.clear();
             if (noOfRows > 1) {
               if (selectedRow == noOfRows - 1) {
@@ -682,7 +668,10 @@ public class ListStashesDialog extends JDialog {
               StashStatus applyStashStatus =
                       GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
               if(applyStashStatus == StashStatus.POST_APPLY_SUCCESS) {
-                deleteRow(selectedRow);
+                stashesTableModel.removeRow(selectedRow);
+                if(stashesTableModel.getRowCount() == 0) {
+                  setStashTableButtonsEnabled(false);
+                }
                 selectNextRow(stashesTable, selectedRow, noOfRows);
               }
             } else {
@@ -705,11 +694,8 @@ public class ListStashesDialog extends JDialog {
    */
   private JTable createStashesTable() {
     List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
-    String[] columnNames = {
-        Translator.getInstance().getTranslation(Tags.ID),
-        Translator.getInstance().getTranslation(Tags.DESCRIPTION)
-        };
-    stashesTableModel = new StashesTableModel(columnNames, 0, stashes);
+
+    stashesTableModel = new StashesTableModel(stashes);
 
     JTable tableOfStashes = new Table(stashesTableModel) {
       @Override
@@ -717,6 +703,7 @@ public class ListStashesDialog extends JDialog {
         return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
       }
     };
+
     tableOfStashes.setFillsViewportHeight(true);
     tableOfStashes.getColumnModel().getColumn(1).setCellRenderer(new StashMessageRender());
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -728,22 +715,7 @@ public class ListStashesDialog extends JDialog {
     tableOfStashes.getSelectionModel().addListSelectionListener(e -> {
       setStashTableButtonsEnabled(true);
       int selectedRow = tableOfStashes.getSelectedRow();
-      if (selectedRow >= 0) {
-        List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
-        try {
-          List<FileStatus> listOfChangedFiles = 
-              RevCommitUtil.getChangedFiles(stashesList.get(selectedRow).getName());
-          while (affectedFilesTableModel.getRowCount() != 0) {
-            affectedFilesTableModel.removeRow(affectedFilesTableModel.getRowCount() - 1);
-          }
-          for (FileStatus file : listOfChangedFiles) {
-            Object[] row = {file.getChangeType(), file};
-            affectedFilesTableModel.addRow(row);
-          }
-        } catch (IOException | GitAPIException exc) {
-          LOGGER.debug(exc, exc);
-        } 
-      }
+      affectedFilesTableModel.updateTable(selectedRow);
     });
 
     stashesTableModel.fireTableDataChanged();

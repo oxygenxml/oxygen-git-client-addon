@@ -1,6 +1,17 @@
 package com.oxygenxml.git.view.stash;
 
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.entities.FileStatus;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.revwalk.RevCommit;
+
 import javax.swing.table.DefaultTableModel;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -11,13 +22,16 @@ import javax.swing.table.DefaultTableModel;
 public class FilesTableModel extends DefaultTableModel {
 
   /**
-   * The public constructor.
-   *
-   * @param columns   the columns
-   * @param rowCount  number of rows
+   * Logger for logging.
    */
-  public FilesTableModel(Object[] columns, int rowCount) {
-    super(columns, rowCount);
+  private static final Logger LOGGER = LogManager.getLogger(ListStashesDialog.class.getName());
+
+
+  /**
+   * The public constructor.
+   */
+  public FilesTableModel() {
+    super(new String[]{"", ""}, 0);
   }
 
 
@@ -34,6 +48,32 @@ public class FilesTableModel extends DefaultTableModel {
     while(this.getRowCount() > 0) {
       this.removeRow(this.getRowCount() - 1);
     }
+  }
+
+
+  /**
+   * Updates the table row files.
+   *
+   * @param rowToUpdate   The row where commits are.
+   */
+  public void updateTable(int rowToUpdate) {
+    if(rowToUpdate >= 0) {
+      List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
+      try {
+        List<FileStatus> listOfChangedFiles =
+                RevCommitUtil.getChangedFiles(stashesList.get(rowToUpdate).getName());
+        while (this.getRowCount() != 0) {
+          this.removeRow(this.getRowCount() - 1);
+        }
+        for (FileStatus file : listOfChangedFiles) {
+          Object[] row = {file.getChangeType(), file};
+          this.addRow(row);
+        }
+      } catch (IOException | GitAPIException exc) {
+        LOGGER.debug(exc, exc);
+      }
+    }
+
   }
 
 }
