@@ -137,7 +137,7 @@ public class HistoryContextualActionsTest extends GitTestBase {
     HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
     List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
     List<Action> actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
-    actions.removeIf(e -> e == null || !e.getValue(Action.NAME).toString().contains("Check"));
+    actions.removeIf(e -> e == null || !e.getValue(Action.NAME).toString().contains("Reset_file"));
     String[] checkoutFile = new String[2];
     
     try (MockedStatic<GitAccess> git = Mockito.mockStatic(GitAccess.class)) {

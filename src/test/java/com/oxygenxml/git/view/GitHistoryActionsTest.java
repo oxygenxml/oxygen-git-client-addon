@@ -91,7 +91,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           + "Compare_file_with_working_tree_version, "
           + "Open_this_version_of_filename, "
           + "Open_the_working_copy_version_of, "
-          + "Check_out_this_version]", 
+          + "Reset_file_x_to_this_commit]", 
           dumpActions(actions));
       
       // A deleted file.
@@ -127,7 +127,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
       assertEquals("[Compare_file_with_working_tree_version, Open_this_version_of_filename,"
-          + " Open_the_working_copy_version_of, Check_out_this_version]", dumpActions(actions));
+          + " Open_the_working_copy_version_of, Reset_file_x_to_this_commit]", dumpActions(actions));
 
       
       actions = new ArrayList<>();
@@ -150,7 +150,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       assertEquals("[Compare_with_previous_version, Compare_with_working_tree_version, "
-          + "Open, Open_working_copy_version, Checkout]", 
+          + "Open, Open_working_copy_version, Reset_file_to_this_commit]", 
           dumpActions(actions));
       
       // A deleted file.
@@ -186,7 +186,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       assertEquals(
-          "[Compare_with_working_tree_version, Open, Open_working_copy_version, Checkout]", 
+          "[Compare_with_working_tree_version, Open, Open_working_copy_version, Reset_file_to_this_commit]", 
           dumpActions(actions));
       
       // ========================= Uncommitted changes ======================================
