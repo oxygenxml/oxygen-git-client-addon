@@ -317,6 +317,8 @@ public class ListStashesDialog extends JDialog {
         while (stashesTable.getRowCount() != 0 ) {
           stashesTableModel.clear();
         }
+        affectedFilesTableModel.clear();
+        deleteAfterApplingCheckBox.setEnabled(false);
         setStashTableButtonsEnabled(false);
       }
     });
