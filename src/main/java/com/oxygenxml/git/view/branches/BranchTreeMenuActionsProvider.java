@@ -395,8 +395,8 @@ public class BranchTreeMenuActionsProvider {
     SimpleDateFormat commitDateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
     
     if (gitAccess.getConflictingFiles().isEmpty()) {
-      StashChangesDialog stashDialog =
-          new StashChangesDialog();
+      StashChangesDialog stashDialog = new StashChangesDialog();
+      stashDialog.setVisible(true);
       if (stashDialog.getResult() == OKCancelDialog.RESULT_OK) {
         String description = stashDialog.getStashMessage();
 

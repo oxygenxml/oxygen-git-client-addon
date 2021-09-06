@@ -1405,6 +1405,7 @@ public class ToolbarPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if(stashCanBeCreated()) {
           StashChangesDialog dialog = new StashChangesDialog();
+          dialog.setVisible(true);
           if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
             String description = dialog.getStashMessage();
 
