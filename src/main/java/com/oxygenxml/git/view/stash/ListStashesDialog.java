@@ -210,14 +210,7 @@ public class ListStashesDialog extends JDialog {
    * @return a JPanel for the stashes list.
    */
   private JPanel createStashesPanel() {
-    JPanel stashesPanel = new JPanel(new GridBagLayout()) {
-      @Override
-      public void paint(Graphics g) {
-        super.paint(g);
-        // TODO: move this somewhere else
-        updateStashTableWidths();
-      }
-    };
+    JPanel stashesPanel = new JPanel(new GridBagLayout());
 
     createAllActions();
 
@@ -570,6 +563,14 @@ public class ListStashesDialog extends JDialog {
           affectedFilesTableModel.updateTable(a);
         }  
       }
+      
+      @Override
+      public void paint(Graphics g) {
+        super.paint(g);
+        // TODO: move this somewhere else
+        updateStashTableWidths();
+      }
+      
     };
 
     tableOfStashes.setFillsViewportHeight(true);
