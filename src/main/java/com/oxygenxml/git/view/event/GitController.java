@@ -203,7 +203,7 @@ public class GitController extends GitControllerBase {
                 translator.getTranslation(Tags.PUSH_FAILED) + ": " 
                     + MessageFormat.format(
                         translator.getTranslation(Tags.UNBORN_BRANCH),
-                        gitAccess.getBranchInfo().getBranchName()) + ". "
+                        gitAccess.getBranchInfo().getBranchName()) + " "
                     + translator.getTranslation(Tags.COMMIT_BEFORE_PUSHING),
                 e);
             event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(cause.getMessage()), e));
