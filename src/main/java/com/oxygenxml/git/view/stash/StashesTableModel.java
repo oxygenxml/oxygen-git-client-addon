@@ -44,10 +44,12 @@ public class StashesTableModel extends DefaultTableModel {
 
   }
 
+
   @Override
   public boolean isCellEditable(int row, int column) {
     return false;
   }
+
 
   @Override
   public void removeRow(int index) {
@@ -62,6 +64,9 @@ public class StashesTableModel extends DefaultTableModel {
   }
 
 
+  /**
+   * Delete all rows.
+   */
   public void clear() {
     while (this.getRowCount() != 0 ) {
       this.removeRow(this.getRowCount() - 1);

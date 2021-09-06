@@ -202,6 +202,7 @@ public class ListStashesDialog extends JDialog {
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     setMinimumSize(new Dimension(DIALOG_MINIMUM_WIDTH, DIALOG_MINIMUM_HEIGHT));
   }
+  
 
   /**
    * Creates the main panel.

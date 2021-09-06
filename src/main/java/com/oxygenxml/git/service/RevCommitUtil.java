@@ -69,63 +69,19 @@ public class RevCommitUtil {
    * Utility class. Not indented to be instantiated.
    */
   private RevCommitUtil() {}
-  
+
+
   /**
    * Get changed files as compared with the parent version.
-   * 
+   *
    * @param commitID The commit ID.
-   * 
+   *
    * @return A list with changed files. Never <code>null</code>.
-   * 
+   *
    * @throws IOException
    * @throws GitAPIException
    */
   public static List<FileStatus> getChangedFiles(String commitID) throws IOException, GitAPIException {
-    List<FileStatus> changedFiles = Collections.emptyList();
-    try {
-      Repository repository = GitAccess.getInstance().getRepository();
-      if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitID)) {
-        ObjectId head = repository.resolve(commitID);
-
-        try (RevWalk rw = new RevWalk(repository)) {
-          RevCommit commit = rw.parseCommit(head);
-          TreeWalk treeWalk = new TreeWalk(repository);
-          treeWalk.addTree(commit.getTree());
-          treeWalk.setRecursive(false);
-          treeWalk.setFilter(null);
-
-          if (commit.getParentCount() > 0) {
-            RevCommit oldC = rw.parseCommit(commit.getParent(0));
-
-            changedFiles = RevCommitUtil.getChanges(repository, commit, oldC);
-
-          } else {
-            changedFiles = RevCommitUtil.getFiles(repository, commit);
-          }
-        }
-      } else {
-        changedFiles = GitAccess.getInstance().getUnstagedFiles();
-      }
-    } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
-      LOGGER.error(e, e);
-    }
-
-    return changedFiles;
-  }
-
-
-
-  /**
-   * Get changed files as compared with the parent version.
-   *
-   * @param commitID The commit ID.
-   *
-   * @return A list with changed files. Never <code>null</code>.
-   *
-   * @throws IOException
-   * @throws GitAPIException
-   */
-  public static List<FileStatus> getStashChangedFiles(String commitID) throws IOException, GitAPIException {
     List<FileStatus> changedFiles = Collections.emptyList();
     try {
       Repository repository = GitAccess.getInstance().getRepository();
