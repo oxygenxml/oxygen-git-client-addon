@@ -100,24 +100,34 @@ public class ListStashesDialog extends JDialog {
   private static final int TABLE_DEFAULT_HEIGHT = 275;
   
   /**
+   * The minimum dialog width.
+   */
+  private static final int DIALOG_MINIMUM_WIDTH = 750;
+  
+  /**
+   * The minimum dialog height.
+   */
+  private static final int DIALOG_MINIMUM_HEIGHT = 250;
+  
+  /**
    * Extra width for column icon.
    */
   private static final int RESOURCE_TABLE_ICON_COLUMN_EXTRA_WIDTH = 3;
+  
+  /**
+   * The size of column id.
+   */
+  private static final int COLUMN_ID_SIZE = 25;
 
   /**
    * The table with the stashes.
    */
   private Table stashesTable;
-
+  
   /**
-   * The apply button.
+   * The files table.
    */
-  private Button applyButton;
-
-  /**
-   * The delete Button.
-   */
-  private Button deleteSelectedButton;
+  private Table affectedFilesTable;
 
   /**
    * The model for the files table.
@@ -128,31 +138,26 @@ public class ListStashesDialog extends JDialog {
    * The model for the stashes table.
    */
   private StashesTableModel stashesTableModel;
+  
+  /**
+   * The apply button.
+   */
+  private Button applyButton;
+
+  /**
+   * The delete Button.
+   */
+  private Button deleteSelectedButton;
+  
+  /**
+   * The clear button.
+   */
+  private Button deleteAllButton;
 
   /**
    * Show diff action.
    */
   private Action compareWithWorkingCopyAction;
-
-  /**
-   * The files table.
-   */
-  private Table affectedFilesTable;
-  
-  /**
-   * The size of column id.
-   */
-  private static final int COLUMN_ID_SIZE = 25;
-
-  /**
-   * When is selected, if apply a stash, it will be deleted after that.
-   */
-  private JCheckBox deleteAfterApplyingCheckBox;
-
-  /**
-   * The clear button.
-   */
-  private Button deleteAllButton;
 
   /**
    * Action to apply the selected stash.
@@ -163,16 +168,11 @@ public class ListStashesDialog extends JDialog {
    * Action to delete the selected stash.
    */
   private Action deleteSelectedStashAction;
-
-  /**
-   * The minimum dialog width.
-   */
-  private static final int DIALOG_MINIMUM_WIDTH = 750;
   
   /**
-   * The minimum dialog height.
+   * When is selected, if apply a stash, it will be deleted after that.
    */
-  private static final int DIALOG_MINIMUM_HEIGHT = 250;
+  private JCheckBox deleteAfterApplyingCheckBox;
 
   /**
    * The actions provider.
@@ -184,39 +184,25 @@ public class ListStashesDialog extends JDialog {
    * Constructor
    */
   public ListStashesDialog () {
-
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
         Translator.getInstance().getTranslation(Tags.STASHES),
         false);
 
+    this.add(createStashesPanel());
+    pack();
+
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
-
     if (parentFrame != null) {
       setIconImage(parentFrame.getIconImage());
-    }
-
-    createGUI();
-
-    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    if (parentFrame != null) {
       setLocationRelativeTo(parentFrame);
     }
-
+    
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     setMinimumSize(new Dimension(DIALOG_MINIMUM_WIDTH, DIALOG_MINIMUM_HEIGHT));
   }
 
-  
-  /**
-   * Create GUI.
-   */
-  private void createGUI() {
-    this.add(createStashesPanel());
-    pack();
-  }
-
-  
   /**
    * Creates the main panel.
    * 
@@ -226,7 +212,8 @@ public class ListStashesDialog extends JDialog {
     JPanel stashesPanel = new JPanel(new GridBagLayout()) {
       @Override
       public void paint(Graphics g) {
-        super.paint(g); 
+        super.paint(g);
+        // TODO: move this somewhere else
         updateStashTableWidths();
       }
     };
@@ -240,7 +227,8 @@ public class ListStashesDialog extends JDialog {
     constraints.gridwidth = 1;
     constraints.gridheight = 1;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(UIConstants.INSETS_3PX, 
+    constraints.insets = new Insets(
+        UIConstants.INSETS_3PX, 
         UIConstants.INSETS_11PX, 
         UIConstants.INSETS_5PX, 
         0);
@@ -321,9 +309,7 @@ public class ListStashesDialog extends JDialog {
           TRANSLATOR.getTranslation(Tags.YES),
           TRANSLATOR.getTranslation(Tags.NO));
       if (OKCancelDialog.RESULT_OK == answer) {
-        while (stashesTable.getRowCount() != 0 ) {
-          stashesTableModel.clear();
-        }
+        stashesTableModel.clear();
         affectedFilesTableModel.clear();
         deleteAfterApplyingCheckBox.setEnabled(false);
         setStashTableButtonsEnabled(false);
