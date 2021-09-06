@@ -1,18 +1,19 @@
 package com.oxygenxml.git.view.stash;
 
-import com.oxygenxml.git.service.GitAccess;
-import com.oxygenxml.git.service.NoRepositorySelected;
-import com.oxygenxml.git.service.RevCommitUtil;
-import com.oxygenxml.git.service.entities.FileStatus;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.table.DefaultTableModel;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import javax.swing.table.DefaultTableModel;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.entities.FileStatus;
 
 
 /**
@@ -53,28 +54,24 @@ public class FilesTableModel extends DefaultTableModel {
 
 
   /**
-   * Updates the table row files.
+   * Updates the table based on the currently selected stash.
    *
-   * @param rowToUpdate   The row where commits are.
+   * @param stashIndex The index of the stashed changes.
    */
-  public void updateTable(int rowToUpdate) {
-    if(rowToUpdate >= 0) {
+  public void updateTable(int stashIndex) {
+    if(stashIndex >= 0) {
       List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
       try {
-        List<FileStatus> listOfChangedFiles =
-                RevCommitUtil.getStashChangedFiles(stashesList.get(rowToUpdate).getName());
-        while (this.getRowCount() != 0) {
-          this.removeRow(this.getRowCount() - 1);
-        }
-        for (FileStatus file : listOfChangedFiles) {
+        List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(stashesList.get(stashIndex).getName());
+        clear();
+        for (FileStatus file : changedFiles) {
           Object[] row = {file.getChangeType(), file};
           this.addRow(row);
         }
       } catch (IOException | GitAPIException exc) {
-        LOGGER.debug(exc, exc);
+        LOGGER.error(exc, exc);
       }
     }
-
   }
 
 }
