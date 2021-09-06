@@ -14,7 +14,6 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import com.oxygenxml.git.view.stash.StashStatus;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -25,6 +24,7 @@ import org.junit.Test;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.stash.StashApplyStatus;
 
 
 /**
@@ -230,9 +230,9 @@ public class GitAccessStashTest {
     reader.close();
     assertEquals("", content);
 
-    assertEquals(gitAccess.popStash(commitStash.getName()), StashStatus.POST_APPLY_SUCCESS);
+    assertEquals(StashApplyStatus.APPLIED_SUCCESSFULLY, gitAccess.popStash(commitStash.getName()));
     
-    assertEquals(gitAccess.listStashes().size(), 1);
+    assertEquals(1, gitAccess.listStashes().size());
     
     reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));

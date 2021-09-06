@@ -1,22 +1,24 @@
 package com.oxygenxml.git.view.stash;
 
+import java.util.List;
+
+import javax.swing.table.DefaultTableModel;
+
+import org.eclipse.jgit.revwalk.RevCommit;
+
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import org.eclipse.jgit.revwalk.RevCommit;
-
-import javax.swing.table.DefaultTableModel;
-import java.util.List;
 
 /**
- * Model for stahses table.
+ * Model for stashes table.
  *
  * @author Alex_Smarandache
  */
 public class StashesTableModel extends DefaultTableModel {
 
   /**
-   * List of all stahses from the current repository.
+   * List of all stashes from the current repository.
    */
   private List<RevCommit> stashes;
 
@@ -26,8 +28,12 @@ public class StashesTableModel extends DefaultTableModel {
    */
   public StashesTableModel(List<RevCommit> stashes) {
 
-    super(new String[]{Translator.getInstance().getTranslation(Tags.ID),
-            Translator.getInstance().getTranslation(Tags.DESCRIPTION)}, 0);
+    super(
+        new String[]{
+            Translator.getInstance().getTranslation(Tags.ID),
+            Translator.getInstance().getTranslation(Tags.DESCRIPTION)
+        },
+        0);
 
     for (int i = 0; i < stashes.size(); i++) {
       Object[] row = {i, stashes.get(i).getFullMessage()};

@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ScheduledFuture;
 
-import com.oxygenxml.git.view.stash.StashStatus;
 import org.apache.log4j.Logger;
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
@@ -118,6 +117,7 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.stash.StashApplyStatus;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -2504,13 +2504,13 @@ public class GitAccess {
    *
    * @throws GitAPIException 
    */
-  public StashStatus popStash(String stashRef) throws GitAPIException {
+  public StashApplyStatus popStash(String stashRef) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
-		StashStatus status = StashStatus.POST_APPLY_UNKNOWN_CAUSE;
+		StashApplyStatus status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
 		try {
 			status = checkIfStashIsApplicable(stashRef);
 
-			if(status == StashStatus.PRE_APPLY_READY_TO_APPLY) {
+			if(status == StashApplyStatus.STASH_APPLY_READY_TO_START) {
 
 				git.stashApply().setStashRef(stashRef).call();
 
@@ -2518,7 +2518,7 @@ public class GitAccess {
 
 				stashes.removeIf(commit -> commit.getName().compareTo(stashRef) == 0);
 
-				status = StashStatus.POST_APPLY_SUCCESS;
+				status = StashApplyStatus.APPLIED_SUCCESSFULLY;
 
 				fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 			} else {
@@ -2528,11 +2528,11 @@ public class GitAccess {
 		} catch (StashApplyFailureException | IOException e) {
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
 				List<String> conflictingList = new ArrayList<>(getConflictingFiles());
-				if(!conflictingList.isEmpty() && status != StashStatus.PRE_APPLY_CONFLICTS) {
-					status = StashStatus.POST_APPLY_SUCCESS_WITH_CONFLICTS;
+				if(!conflictingList.isEmpty() && status != StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS) {
+					status = StashApplyStatus.APPLIED_SUCCESSFULLY_WITH_CONFLICTS;
 				}
 				switch (status) {
-					case POST_APPLY_SUCCESS_WITH_CONFLICTS:
+					case APPLIED_SUCCESSFULLY_WITH_CONFLICTS:
 						FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH_APPLY),
 										conflictingList,
 										translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
@@ -2541,7 +2541,7 @@ public class GitAccess {
 						);
 						fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 						break;
-					case PRE_APPLY_CONFLICTS:
+					case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
 						FileStatusDialog.showErrorMessage(
 										translator.getTranslation(Tags.STASH_APPLY),
 										new ArrayList<>(getConflictingFiles()),
@@ -2551,7 +2551,7 @@ public class GitAccess {
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
-					case PRE_APPLY_UNCOMMITTED_FILES:
+					case CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES:
 						FileStatusDialog.showErrorMessage(
 										translator.getTranslation(Tags.STASH_APPLY),
 										null,
@@ -2561,7 +2561,7 @@ public class GitAccess {
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
-					case PRE_APPLY_STAGED_FILES:
+					case CANNOT_START_BECAUSE_STAGED_FILES:
 						FileStatusDialog.showErrorMessage(
 										translator.getTranslation(Tags.STASH_APPLY),
 										null,
@@ -2570,7 +2570,7 @@ public class GitAccess {
 						LOGGER.error(e, e);
 						break;
 					default:
-						status = StashStatus.POST_APPLY_UNKNOWN_CAUSE;
+						status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
 						PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH) + ".",
 										e);
 						LOGGER.error(e, e);
@@ -2593,17 +2593,17 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException 
 	 */
-	public StashStatus applyStash(String stashRef) throws GitAPIException {
+	public StashApplyStatus applyStash(String stashRef) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
-		StashStatus status = StashStatus.POST_APPLY_UNKNOWN_CAUSE;
+		StashApplyStatus status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
 		try {
 		  status = checkIfStashIsApplicable(stashRef);
 		  
-		  if(status == StashStatus.PRE_APPLY_READY_TO_APPLY) {
+		  if(status == StashApplyStatus.STASH_APPLY_READY_TO_START) {
 
 				git.stashApply().setStashRef(stashRef).call();
 
-				status = StashStatus.POST_APPLY_SUCCESS;
+				status = StashApplyStatus.APPLIED_SUCCESSFULLY;
 
 	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 		  } else {
@@ -2613,18 +2613,18 @@ public class GitAccess {
 		} catch (StashApplyFailureException | IOException e) {
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
 				List<String> conflictingList = new ArrayList<>(getConflictingFiles());
-				if(!conflictingList.isEmpty() && status != StashStatus.PRE_APPLY_CONFLICTS) {
-					status = StashStatus.POST_APPLY_SUCCESS_WITH_CONFLICTS;
+				if(!conflictingList.isEmpty() && status != StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS) {
+					status = StashApplyStatus.APPLIED_SUCCESSFULLY_WITH_CONFLICTS;
 				}
 				switch (status) {
-					case POST_APPLY_SUCCESS_WITH_CONFLICTS:
+					case APPLIED_SUCCESSFULLY_WITH_CONFLICTS:
 						FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH_APPLY),
 										conflictingList,
 										translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
 						);
 						fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
             break;
-					case PRE_APPLY_CONFLICTS:
+					case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
 						FileStatusDialog.showErrorMessage(
 										translator.getTranslation(Tags.STASH_APPLY),
 										new ArrayList<>(getConflictingFiles()),
@@ -2634,7 +2634,7 @@ public class GitAccess {
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
-					case PRE_APPLY_UNCOMMITTED_FILES:
+					case CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES:
 						FileStatusDialog.showErrorMessage(
 										translator.getTranslation(Tags.STASH_APPLY),
 										null,
@@ -2644,7 +2644,7 @@ public class GitAccess {
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
-					case PRE_APPLY_STAGED_FILES:
+					case CANNOT_START_BECAUSE_STAGED_FILES:
 						FileStatusDialog.showErrorMessage(
 										translator.getTranslation(Tags.STASH_APPLY),
 										null,
@@ -2655,7 +2655,7 @@ public class GitAccess {
 						LOGGER.error(e, e);
 						break;
 					default:
-            status = StashStatus.POST_APPLY_UNKNOWN_CAUSE;
+            status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
 					  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH) + ".",
 					      e);
 						LOGGER.error(e, e);
@@ -2677,8 +2677,8 @@ public class GitAccess {
  * @throws IOException
  * @throws GitAPIException
  */
-	private StashStatus checkIfStashIsApplicable(String stashRef) throws IOException, GitAPIException {
-	  StashStatus status = StashStatus.PRE_APPLY_READY_TO_APPLY;
+	private StashApplyStatus checkIfStashIsApplicable(String stashRef) throws IOException, GitAPIException {
+	  StashApplyStatus status = StashApplyStatus.STASH_APPLY_READY_TO_START;
 	  List<FileStatus> list = RevCommitUtil.getChangedFiles(stashRef);
 		List<FileStatus> unstagedFiles = new ArrayList<>(getUnstagedFiles());
 
@@ -2686,15 +2686,15 @@ public class GitAccess {
 
 			for (FileStatus file : unstagedFiles) {
 				if (file.getChangeType() == GitChangeType.CONFLICT) {
-					status = StashStatus.PRE_APPLY_CONFLICTS;
+					status = StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS;
 					break;
 				} else if (file.getFileLocation().compareTo(fileStatus.getFileLocation()) == 0) {
-					status = StashStatus.PRE_APPLY_UNCOMMITTED_FILES;
+					status = StashApplyStatus.CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES;
 				}
 			}
 
 			if(!getStagedFiles().isEmpty()) {
-				status = StashStatus.PRE_APPLY_STAGED_FILES;
+				status = StashApplyStatus.CANNOT_START_BECAUSE_STAGED_FILES;
 			}
 			
 		}

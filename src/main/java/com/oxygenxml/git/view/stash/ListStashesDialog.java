@@ -39,8 +39,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import com.oxygenxml.git.service.RevCommitUtil;
-import com.oxygenxml.git.service.entities.GitChangeType;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -50,7 +48,9 @@ import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.DiffPresenter;
@@ -804,9 +804,9 @@ public class ListStashesDialog extends JDialog {
           if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
             try {
               if(deleteAfterApplyingCheckBox.isSelected()) {
-                StashStatus applyStashStatus =
+                StashApplyStatus applyStashStatus =
                         GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
-                if(applyStashStatus == StashStatus.POST_APPLY_SUCCESS) {
+                if(applyStashStatus == StashApplyStatus.APPLIED_SUCCESSFULLY) {
                   stashesTableModel.removeRow(selectedRow);
                   if(stashesTableModel.getRowCount() == 0) {
                     setStashTableButtonsEnabled(false);

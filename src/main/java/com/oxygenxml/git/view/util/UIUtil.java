@@ -89,6 +89,10 @@ public class UIUtil {
    * Date format.
    */
   public static final String DATE_FORMAT_PATTERN = "d MMM yyyy HH:mm";
+  /**
+   * Date format with comma.
+   */
+  public static final String DATE_FORMAT_WITH_COMMA_PATTERN = "d MMM yyyy, HH:mm";
   
   /**
    * Hidden constructor.

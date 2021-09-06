@@ -16,12 +16,16 @@ import javax.swing.JTextField;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-
 import com.oxygenxml.git.utils.TextFormatUtil;
+import com.oxygenxml.git.view.util.UIUtil;
+
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.TextField;
 
+/**
+ * Dialog shown when stashing changes.
+ */
 public class StashChangesDialog extends OKCancelDialog {
 
   /**
@@ -37,13 +41,8 @@ public class StashChangesDialog extends OKCancelDialog {
   /**
    * The date format.
    */
-  private final SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy, HH:mm");
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_WITH_COMMA_PATTERN);
   
-  /**
-   * Title of dialog.
-   */
-  private static final String TITLE = TRANSLATOR.getTranslation(Tags.STASH_CHANGES);
-
   /**
    * When is selected, the stash will include the untracked files.
    */
@@ -61,7 +60,9 @@ public class StashChangesDialog extends OKCancelDialog {
   public StashChangesDialog() {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
         ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
-        : null, TITLE, true);
+        : null,
+        TRANSLATOR.getTranslation(Tags.STASH_CHANGES),
+        true);
     
     setOkButtonText(TRANSLATOR.getTranslation(Tags.STASH));
 

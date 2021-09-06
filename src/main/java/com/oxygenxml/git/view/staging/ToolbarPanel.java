@@ -160,7 +160,7 @@ public class ToolbarPanel extends JPanel {
   /**
    * The date format for the commits in the push/pull tooltips.
    */
-  private final SimpleDateFormat commitDateFormat = new SimpleDateFormat("d MMM yyyy, HH:mm");
+  private final SimpleDateFormat commitDateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_WITH_COMMA_PATTERN);
 
   /**
    * Logger for logging.
@@ -1284,7 +1284,6 @@ public class ToolbarPanel extends JPanel {
         }
         g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
         FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
-        int stringWidth = fontMetrics.stringWidth(noOfStashesString);
         g.setColor(getForeground());
         g.drawString(
             noOfStashesString,
