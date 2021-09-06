@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
@@ -17,7 +18,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -140,13 +144,12 @@ public class TagsDialog extends JDialog {
   private JPanel createTagsPanel() {
     
     
-
-    
     //add the table
     JPanel tagsPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
     
     createTagsTable();
+    tagsTable.getTableHeader().setReorderingAllowed(false);
     
     gbc.gridx = 0;
     gbc.gridy = 0;
@@ -180,12 +183,11 @@ public class TagsDialog extends JDialog {
     buttonsGridBagConstraints.gridx ++;
     buttonsPanel.add(deleteButton, buttonsGridBagConstraints);
     
-    
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.gridwidth = 1;
     gbc.fill = GridBagConstraints.NONE;
-    gbc.anchor = GridBagConstraints.EAST;
+    gbc.anchor = GridBagConstraints.SOUTHEAST;
     gbc.insets = new Insets(topInset, leftInset, bottomInset, rightInset);
     tagsPanel.add(buttonsPanel, gbc);
     
@@ -258,6 +260,7 @@ public class TagsDialog extends JDialog {
       model.addRow(row);
   }
     tagsTable = OxygenUIComponentsFactory.createTable(model);
+    //Add the listener for selecting a row
     tagsTable.getSelectionModel().addListSelectionListener(e -> {
       int selectedRow = (tagsTable.getSelectedRow());
       if(selectedRow >= 0) {
@@ -271,6 +274,9 @@ public class TagsDialog extends JDialog {
         }
       }
     });
+    
+    //Add the listener for double clicked
+    //TODO: create listener for double click
     
     //Resize the table
     TableColumnModel tagsTableColumnModel = tagsTable.getColumnModel();
@@ -310,7 +316,24 @@ public class TagsDialog extends JDialog {
     
     contextualActions.add(menuItemDetails);
     
-    new JDialog();
+    contextualActions.addPopupMenuListener(new PopupMenuListener() {
+
+      @Override
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+          SwingUtilities.invokeLater(() -> {
+              int rowAtPoint = tagsTable.rowAtPoint(SwingUtilities.convertPoint(contextualActions, new Point(0, 0), tagsTable));
+              if (rowAtPoint > -1) {
+                tagsTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+              }
+          });
+      }
+
+      @Override
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) { } 
+
+      @Override
+      public void popupMenuCanceled(PopupMenuEvent e) { }
+  });
     return contextualActions;
   }
  }

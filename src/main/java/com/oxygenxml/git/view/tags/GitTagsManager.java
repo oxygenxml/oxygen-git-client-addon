@@ -3,6 +3,7 @@ package com.oxygenxml.git.view.tags;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -11,6 +12,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevObject;
+import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevTag;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -117,6 +119,7 @@ public class GitTagsManager {
     List<Ref> refs = GitAccess.getInstance().getGit().tagList().call();
     Repository repository = GitAccess.getInstance().getRepository();
     try (RevWalk walk = new RevWalk(repository)) {
+      walk.sort(RevSort.COMMIT_TIME_DESC);
       for (Ref ref : refs) {
         ObjectId objectIdOfTag = ref.getObjectId();
         RevObject object = walk.parseAny(objectIdOfTag);
@@ -148,8 +151,33 @@ public class GitTagsManager {
         } 
       }
     }
+    allTags.sort(getDescendingComparator());
     
     return allTags;
+  }
+  
+  private static Comparator<GitTag> getDescendingComparator() {
+    return (o1, o2) -> {
+      int compareResult = o1.getTaggingDate().compareTo(o2.getTaggingDate());
+      if(compareResult > 0) {
+        return -1;
+      } else if (compareResult < 0) {
+        return 1;
+      }
+      return 0;
+    };
+  }
+  
+  private static Comparator<GitTag> getAscendingComparator() {
+    return (o1, o2) -> {
+      int compareResult = o1.getTaggingDate().compareTo(o2.getTaggingDate());
+      if(compareResult < 0) {
+        return -1;
+      } else if (compareResult > 0) {
+        return 1;
+      }
+      return 0;
+    };
   }
   
 }
