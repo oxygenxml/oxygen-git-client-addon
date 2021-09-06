@@ -36,15 +36,15 @@
         <comment>The message in the question dialog shown when you switch branches 
         	and you have uncommitted changes.</comment>
         <val lang="en_US">You have uncommitted changes on the current branch.
-        	\nYou can stash them or move them to the new branch.</val>
+        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
         <val lang="de_DE">You have uncommitted changes on the current branch.
-        	\nYou can stash them or move them to the new branch.</val>
+        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
         <val lang="fr_FR">You have uncommitted changes on the current branch.
-        	\nYou can stash them or move them to the new branch.</val>
+        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
         <val lang="ja_JP">You have uncommitted changes on the current branch.
-        	\nYou can stash them or move them to the new branch.</val>
+        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
         <val lang="nl_NL">You have uncommitted changes on the current branch.
-        	\nYou can stash them or move them to the new branch.</val>
+        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
     </key>
     <key value="Include_Untracked">
         <comment>Message for include untracked files.</comment>
