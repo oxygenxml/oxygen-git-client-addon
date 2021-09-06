@@ -46,6 +46,14 @@
         <val lang="nl_NL">You have uncommitted changes on the current branch.
         	\nYou can stash them on this branch for later use or move them to the new branch.</val>
     </key>
+    <key value="Delete_All_Button_Tooltip">
+        <comment>The tooltip for delete all stashes button.</comment>
+        <val lang="en_US">Delete all stashes in the repository.</val>
+        <val lang="de_DE">Delete all stashes in the repository.</val>
+        <val lang="fr_FR">Delete all stashes in the repository.</val>
+        <val lang="ja_JP">Delete all stashes in the repository.</val>
+        <val lang="nl_NL">Delete all stashes in the repository.</val>
+    </key>
     <key value="Include_Untracked">
         <comment>Message for include untracked files.</comment>
         <val lang="en_US">Include untracked files</val>

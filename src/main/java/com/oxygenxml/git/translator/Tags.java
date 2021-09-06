@@ -1424,4 +1424,8 @@ public class Tags {
 	 * Include untracked files message.
 	 */
 	public static final String INCLUDE_UNTRACKED = "Include_Untracked";
+	/**
+	 * The tooltip for delete all stashes button.
+	 */
+	public static final String DELETE_ALL_STASHES_BUTTON_TOOLTIP = "Delete_All_Button_Tooltip";
 }

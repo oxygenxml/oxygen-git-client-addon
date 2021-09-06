@@ -8,8 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
@@ -313,8 +313,8 @@ public class ListStashesDialog extends JDialog {
    * @return the created button.
    */
   private Button createDeleteAllButton() {
-    Button clearAllButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE_ALL));
-    clearAllButton.addActionListener( e-> {
+    Button deleteAllstashesButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE_ALL));
+    deleteAllstashesButton.addActionListener( e-> {
       int answer = FileStatusDialog.showWarningMessageWithConfirmation(
           TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
           TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
@@ -329,7 +329,8 @@ public class ListStashesDialog extends JDialog {
         setStashTableButtonsEnabled(false);
       }
     });
-    return clearAllButton;
+    deleteAllstashesButton.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES_BUTTON_TOOLTIP));
+    return deleteAllstashesButton;
   }
 
 
@@ -365,12 +366,7 @@ public class ListStashesDialog extends JDialog {
     menuItemShowDiff.setAction(compareWithWorkingCopyAction);
     contextualActions.add(menuItemShowDiff);
     filesTable.setComponentPopupMenu(contextualActions);
-    filesTable.addKeyListener(new KeyListener() {
-
-      @Override
-      public void keyTyped(KeyEvent e) {
-        // Nothing
-      }
+    filesTable.addKeyListener(new KeyAdapter() {
 
       @Override
       public void keyPressed(KeyEvent e) {
@@ -379,11 +375,6 @@ public class ListStashesDialog extends JDialog {
             && filesTable.getSelectedRow() < filesTable.getRowCount()) {     
           compareWithWorkingCopyAction.actionPerformed(null);
         }
-      }
-
-      @Override
-      public void keyReleased(KeyEvent e) {
-        // Nothing
       }
 
     });
@@ -534,24 +525,6 @@ public class ListStashesDialog extends JDialog {
     button.addActionListener(applySelectedStashAction);
 
     return button;
-  }
-
-
- /**
-  * Select next row in the table.
-  * 
-  * @param table         The table.
-  * @param selectedRow   The deleted row
-  * @param noOfRows      The initial number of rows
-  */
-  private void selectNextRow(Table table, int selectedRow, int noOfRows) {
-    if(noOfRows > 1) {
-      if (selectedRow == noOfRows - 1) {
-        table.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
-      } else {
-        table.setRowSelectionInterval(selectedRow, selectedRow);
-      }
-    }
   }
 
 
@@ -823,6 +796,26 @@ public class ListStashesDialog extends JDialog {
         }
       };
     }
+    
+    
+    /**
+     * Select next row in the table.
+     * 
+     * @param table         The table.
+     * @param selectedRow   The deleted row
+     * @param noOfRows      The initial number of rows
+     */
+     private void selectNextRow(Table table, int selectedRow, int noOfRows) {
+       if(noOfRows > 1) {
+         if (selectedRow == noOfRows - 1) {
+           table.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
+         } else {
+           table.setRowSelectionInterval(selectedRow, selectedRow);
+         }
+       }
+     }
+     
+     
   }
 
 }
