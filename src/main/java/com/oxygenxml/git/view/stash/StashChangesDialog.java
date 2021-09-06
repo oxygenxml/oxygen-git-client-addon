@@ -48,8 +48,13 @@ public class StashChangesDialog extends OKCancelDialog {
    * When is selected, the stash will include the untracked files.
    */
   private final JCheckBox includeUntrackedCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.INCLUDE_UNTRACKED));
- 
-  
+
+  /**
+   * The tag option for include untracked files.
+   */
+  private static final String OPTION_TAG_INCLUDE_UNTRACKED = "Stash.should.include.untracked.files";
+
+
   /**
    * Public constructor.
    */
@@ -128,7 +133,10 @@ public class StashChangesDialog extends OKCancelDialog {
     constrains.weightx = 0;
     constrains.fill = GridBagConstraints.NONE;
     constrains.insets = new Insets(5, 0, 0, 0);
-    includeUntrackedCheckBox.setSelected(false);
+    includeUntrackedCheckBox.setSelected(Boolean.parseBoolean(PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage()
+            .getOption(OPTION_TAG_INCLUDE_UNTRACKED, Boolean.toString(true))));
+    includeUntrackedCheckBox.addItemListener(e -> PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage()
+            .setOption(OPTION_TAG_INCLUDE_UNTRACKED, Boolean.toString(includeUntrackedCheckBox.isSelected())));
     panel.add(includeUntrackedCheckBox, constrains);
     
     constrains.insets = new Insets(0, 0, 0, 0);
@@ -156,6 +164,7 @@ public class StashChangesDialog extends OKCancelDialog {
   public boolean shouldIncludeUntracked() {
     return includeUntrackedCheckBox.isSelected();
   }
+
 }
 
 

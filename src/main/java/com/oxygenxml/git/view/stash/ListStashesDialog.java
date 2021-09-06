@@ -546,7 +546,8 @@ public class ListStashesDialog extends JDialog {
       }
     }
   }
-  
+
+
   /**
    * Creates the delete button.
    * 
