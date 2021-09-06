@@ -1241,7 +1241,7 @@ public class ToolbarPanel extends JPanel {
   private SplitMenuButton createStashButton() {
     SplitMenuButton stashLocalButton = new SplitMenuButton( // NOSONAR (java:S110)
         null,
-        Icons.getIcon(Icons.STASH_ICON),
+        Icons.getIcon(Icons.GIT_PUSH_ICON),
         false,
         false,
         true,
@@ -1289,7 +1289,7 @@ public class ToolbarPanel extends JPanel {
         g.drawString(
             noOfStashesString,
             // X
-            stashButton.getWidth() - stringWidth,
+            stashButton.getWidth() - 2 * DECORATION_DISPLACEMENT,
             // Y
             stashButton.getHeight() - fontMetrics.getDescent());
       }

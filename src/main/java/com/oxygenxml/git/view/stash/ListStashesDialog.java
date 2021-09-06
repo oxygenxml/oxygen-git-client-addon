@@ -172,6 +172,11 @@ public class ListStashesDialog extends JDialog {
    */
   private static final int DIALOG_MINIMUM_HEIGHT = 250;
 
+  /**
+   * The actions provider.
+   */
+  private final StashActionsProvider stashActionsProvider = new StashActionsProvider();
+
 
   /**
    * Constructor
@@ -405,9 +410,9 @@ public class ListStashesDialog extends JDialog {
    * Initialize all actions.
    */
   private void createAllActions() {
-     applySelectedStashAction     = createApplySelectedStashAction();
-     deleteSelectedStashAction    = createDeleteSelectedStashAction();
-     compareWithWorkingCopyAction = createCompareWithWCAction();
+     applySelectedStashAction     = stashActionsProvider.createApplySelectedStashAction();
+     deleteSelectedStashAction    = stashActionsProvider.createDeleteSelectedStashAction();
+     compareWithWorkingCopyAction = stashActionsProvider.createCompareWithWCAction();
   }
 
 
@@ -564,44 +569,6 @@ public class ListStashesDialog extends JDialog {
     return button;
   }
 
-
-  /**
-   * Creates the action to show difference for stashed changes.
-   * 
-   * @return The action created
-   */
-  private AbstractAction createCompareWithWCAction() {
-    return new AbstractAction(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int selectedRow = stashesTable.getSelectedRow();
-        int selectedFilesIndex = affectedFilesTable.getSelectedRow();
-        if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()
-            && selectedFilesIndex >= 0 && selectedFilesIndex < affectedFilesTable.getRowCount()) {
-          FileStatus selectedFile = null;
-          List<RevCommit> stashes = null;
-          try {
-            stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
-            selectedFile = ((FileStatus) affectedFilesTable.getValueAt(selectedFilesIndex, 1));
-            String filePath = selectedFile.getFileLocation();
-            DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
-          } catch (FileNotFoundException e1) {
-            try {
-              DiffPresenter.showTwoWayDiffOnlyGitFile(selectedFile.getFileLocation(), stashes.get(selectedRow).getId().getName());
-            } catch (IOException e2) {
-              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e2.getMessage());
-              LOGGER.error(e2, e2);
-            }
-          } catch (NoRepositorySelected | IOException | GitAPIException e1) {
-            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e1.getMessage());
-            LOGGER.error(e1, e1);
-          }
-        }
-      }
-    };
-  }
-
-
   /**
    * Enable or disable all buttons with the new status.
    * 
@@ -613,79 +580,6 @@ public class ListStashesDialog extends JDialog {
       deleteSelectedButton.setEnabled(newStatus);
       deleteAllButton.setEnabled(newStatus);
     });
-  }
-
-
-  /**
-   * Creates the delete selected stash action.
-   *
-   * @return the created action.
-   */
-  private Action createDeleteSelectedStashAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int selectedRow = stashesTable.getSelectedRow();
-        int noOfRows = stashesTable.getRowCount();
-        if (selectedRow >= 0 && selectedRow < noOfRows) {
-          int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-                  TRANSLATOR.getTranslation(Tags.DELETE_STASH),
-                  TRANSLATOR.getTranslation(Tags.STASH_DELETE_CONFIRMATION),
-                  TRANSLATOR.getTranslation(Tags.YES),
-                  TRANSLATOR.getTranslation(Tags.NO));
-          if (OKCancelDialog.RESULT_OK == answer) {
-            stashesTableModel.removeRow(selectedRow);
-            if(stashesTableModel.getRowCount() == 0) {
-              setStashTableButtonsEnabled(false);
-            }
-            affectedFilesTableModel.clear();
-            if (noOfRows > 1) {
-              if (selectedRow == noOfRows - 1) {
-                stashesTable.setRowSelectionInterval(noOfRows - 2, noOfRows - 2);
-              } else {
-                stashesTable.setRowSelectionInterval(selectedRow, selectedRow);
-              }
-            }
-          }
-        }
-      }
-    };
-  }
-
-
-  /**
-   * Creates the apply selected stash action.
-   *
-   * @return the created action.
-   */
-  private Action createApplySelectedStashAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int selectedRow = stashesTable.getSelectedRow();
-        int noOfRows = stashesTable.getRowCount();
-        List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
-        if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
-          try {
-            if(deleteAfterApplyingCheckBox.isSelected()) {
-              StashStatus applyStashStatus =
-                      GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
-              if(applyStashStatus == StashStatus.POST_APPLY_SUCCESS) {
-                stashesTableModel.removeRow(selectedRow);
-                if(stashesTableModel.getRowCount() == 0) {
-                  setStashTableButtonsEnabled(false);
-                }
-                selectNextRow(stashesTable, selectedRow, noOfRows);
-              }
-            } else {
-              GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
-            }
-          } catch (GitAPIException e1) {
-            LOGGER.error(e1, e1);
-          }
-        }
-      }
-    };
   }
 
 
@@ -796,6 +690,125 @@ public class ListStashesDialog extends JDialog {
     @Override
     public JToolTip createToolTip() {
       return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
+    }
+  }
+
+
+  /**
+   * Creates the actions for buttons.
+   *
+   * @author Alex_Smarandache
+   */
+  private class StashActionsProvider {
+
+
+    /**
+     * Creates the action to show difference for stashed changes.
+     *
+     * @return The action created
+     */
+    public AbstractAction createCompareWithWCAction() {
+      return new AbstractAction(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int selectedRow = stashesTable.getSelectedRow();
+          int selectedFilesIndex = affectedFilesTable.getSelectedRow();
+          if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()
+                  && selectedFilesIndex >= 0 && selectedFilesIndex < affectedFilesTable.getRowCount()) {
+            FileStatus selectedFile = null;
+            List<RevCommit> stashes = null;
+            try {
+              stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
+              selectedFile = ((FileStatus) affectedFilesTable.getValueAt(selectedFilesIndex, 1));
+              String filePath = selectedFile.getFileLocation();
+              DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
+            } catch (FileNotFoundException e1) {
+              try {
+                DiffPresenter.showTwoWayDiffOnlyGitFile(selectedFile.getFileLocation(), stashes.get(selectedRow).getId().getName());
+              } catch (IOException e2) {
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e2.getMessage());
+                LOGGER.error(e2, e2);
+              }
+            } catch (NoRepositorySelected | IOException | GitAPIException e1) {
+              PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e1.getMessage());
+              LOGGER.error(e1, e1);
+            }
+          }
+        }
+      };
+    }
+
+
+    /**
+     * Creates the delete selected stash action.
+     *
+     * @return the created action.
+     */
+    private Action createDeleteSelectedStashAction() {
+      return new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int selectedRow = stashesTable.getSelectedRow();
+          int noOfRows = stashesTable.getRowCount();
+          if (selectedRow >= 0 && selectedRow < noOfRows) {
+            int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+                    TRANSLATOR.getTranslation(Tags.DELETE_STASH),
+                    TRANSLATOR.getTranslation(Tags.STASH_DELETE_CONFIRMATION),
+                    TRANSLATOR.getTranslation(Tags.YES),
+                    TRANSLATOR.getTranslation(Tags.NO));
+            if (OKCancelDialog.RESULT_OK == answer) {
+              stashesTableModel.removeRow(selectedRow);
+              if(stashesTableModel.getRowCount() == 0) {
+                setStashTableButtonsEnabled(false);
+              }
+              affectedFilesTableModel.clear();
+              if (noOfRows > 1) {
+                if (selectedRow == noOfRows - 1) {
+                  stashesTable.setRowSelectionInterval(noOfRows - 2, noOfRows - 2);
+                } else {
+                  stashesTable.setRowSelectionInterval(selectedRow, selectedRow);
+                }
+              }
+            }
+          }
+        }
+      };
+    }
+
+
+    /**
+     * Creates the apply selected stash action.
+     *
+     * @return the created action.
+     */
+    private Action createApplySelectedStashAction() {
+      return new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int selectedRow = stashesTable.getSelectedRow();
+          int noOfRows = stashesTable.getRowCount();
+          List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
+          if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
+            try {
+              if(deleteAfterApplyingCheckBox.isSelected()) {
+                StashStatus applyStashStatus =
+                        GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
+                if(applyStashStatus == StashStatus.POST_APPLY_SUCCESS) {
+                  stashesTableModel.removeRow(selectedRow);
+                  if(stashesTableModel.getRowCount() == 0) {
+                    setStashTableButtonsEnabled(false);
+                  }
+                  selectNextRow(stashesTable, selectedRow, noOfRows);
+                }
+              } else {
+                GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
+              }
+            } catch (GitAPIException e1) {
+              LOGGER.error(e1, e1);
+            }
+          }
+        }
+      };
     }
   }
 
