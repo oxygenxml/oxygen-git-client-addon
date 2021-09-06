@@ -39,8 +39,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import com.oxygenxml.git.service.RevCommitUtil;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.regexp.RE;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -721,7 +724,14 @@ public class ListStashesDialog extends JDialog {
               stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
               selectedFile = ((FileStatus) affectedFilesTable.getValueAt(selectedFilesIndex, 1));
               String filePath = selectedFile.getFileLocation();
-              DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
+              if(selectedFile.getChangeType() == GitChangeType.UNTRACKED) {
+                RevCommit[] parents = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(),
+                        stashes.get(selectedRow).getId().getName());
+                DiffPresenter.showTwoWayDiffOnlyGitFile(filePath, parents[RevCommitUtil.PARENT_COMMIT_UNTRACKED].getId().getName());
+              }
+              else {
+                DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
+              }
             } catch (FileNotFoundException e1) {
               try {
                 DiffPresenter.showTwoWayDiffOnlyGitFile(selectedFile.getFileLocation(), stashes.get(selectedRow).getId().getName());

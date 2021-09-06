@@ -43,6 +43,7 @@ import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 
@@ -57,8 +58,13 @@ public class RevCommitUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(RevCommitUtil.class);
-  
+  private static final Logger LOGGER = Logger.getLogger(RevCommitUtil.class);
+  /**
+   * Index of the parent commit which contains untracked changes.
+   */
+  public static final int PARENT_COMMIT_UNTRACKED = 2;
+
+
   /**
    * Utility class. Not indented to be instantiated.
    */
@@ -83,11 +89,16 @@ public class RevCommitUtil {
 
         try (RevWalk rw = new RevWalk(repository)) {
           RevCommit commit = rw.parseCommit(head);
-          
+          TreeWalk treeWalk = new TreeWalk(repository);
+          treeWalk.addTree(commit.getTree());
+          treeWalk.setRecursive(false);
+          treeWalk.setFilter(null);
+
           if (commit.getParentCount() > 0) {
             RevCommit oldC = rw.parseCommit(commit.getParent(0));
 
             changedFiles = RevCommitUtil.getChanges(repository, commit, oldC);
+
           } else {
             changedFiles = RevCommitUtil.getFiles(repository, commit);
           }
@@ -96,12 +107,69 @@ public class RevCommitUtil {
         changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
     } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
 
     return changedFiles;
   }
-  
+
+
+
+  /**
+   * Get changed files as compared with the parent version.
+   *
+   * @param commitID The commit ID.
+   *
+   * @return A list with changed files. Never <code>null</code>.
+   *
+   * @throws IOException
+   * @throws GitAPIException
+   */
+  public static List<FileStatus> getStashChangedFiles(String commitID) throws IOException, GitAPIException {
+    List<FileStatus> changedFiles = Collections.emptyList();
+    try {
+      Repository repository = GitAccess.getInstance().getRepository();
+      if (!GitAccess.UNCOMMITED_CHANGES.getCommitId().equals(commitID)) {
+        ObjectId head = repository.resolve(commitID);
+
+        try (RevWalk rw = new RevWalk(repository)) {
+          RevCommit commit = rw.parseCommit(head);
+          TreeWalk treeWalk = new TreeWalk(repository);
+          treeWalk.addTree(commit.getTree());
+          treeWalk.setRecursive(false);
+          treeWalk.setFilter(null);
+
+          if (commit.getParentCount() > 0) {
+            RevCommit oldC = rw.parseCommit(commit.getParent(0));
+
+            changedFiles = RevCommitUtil.getChanges(repository, commit, oldC);
+
+            if(commit.getParentCount() > 2) {
+              oldC = rw.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
+              treeWalk.reset(oldC.getTree().getId());
+              while (treeWalk.next()) {
+                String path = treeWalk.getPathString();
+                changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
+              }
+            }
+
+          } else {
+            changedFiles = RevCommitUtil.getFiles(repository, commit);
+          }
+        }
+      } else {
+        changedFiles = GitAccess.getInstance().getUnstagedFiles();
+      }
+    } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
+      LOGGER.error(e, e);
+    }
+
+
+
+    return changedFiles;
+  }
+
+
   /**
    * Gets the Object ID for a file path at a given revision.
    * 
@@ -565,9 +633,9 @@ public class RevCommitUtil {
   private static String findPath(Git git, String filePath, List<RevCommit> revisions)
       throws IOException, GitAPIException {
     String path = filePath;
-    if (logger.isDebugEnabled()) {
-      logger.debug("====SORTED===");
-      revisions.stream().forEach(r -> logger.debug(r.getFullMessage()));
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("====SORTED===");
+      revisions.stream().forEach(r -> LOGGER.debug(r.getFullMessage()));
     }
 
     if (!revisions.isEmpty()) {
@@ -582,8 +650,8 @@ public class RevCommitUtil {
           // Fast stop.
           if (lastRevFiles.contains(path)) {
             // The current discovered path is the same as in the target revision.
-            if (logger.isDebugEnabled()) {
-              logger.info("Same path as in target. Stop. " + revCommit.getFullMessage());
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.info("Same path as in target. Stop. " + revCommit.getFullMessage());
             }
             break;
           }
@@ -596,8 +664,8 @@ public class RevCommitUtil {
           
           if (!same) {
             // Do a diff with rename detection.
-            if (logger.isDebugEnabled()) {
-              logger.info("Search for a rename at revision " + revCommit.getFullMessage());
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.info("Search for a rename at revision " + revCommit.getFullMessage());
             }
             
             List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
@@ -815,8 +883,8 @@ public class RevCommitUtil {
     if (!entries.isEmpty()) {
       toReturn = entries.get(0).getOldId().toObjectId();
     } else { 
-      if (logger.isDebugEnabled()) {
-        logger.debug("No BASE commit for: '" + filePath + "'");
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("No BASE commit for: '" + filePath + "'");
       }
       toReturn = getLastLocalCommitForPath(git, filePath);
     }
@@ -844,8 +912,8 @@ public class RevCommitUtil {
     if (indexOfTheirs < noOfDiffEntries) {
       toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
     } else {
-      if (logger.isDebugEnabled()) {
-        logger.debug("No THEIRS commit available for: '" + filePath + "'. "
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("No THEIRS commit available for: '" + filePath + "'. "
             + "Falling back to the last commit for this path.");
       }
       toReturn = getLastLocalCommitForPath(git, filePath);
@@ -874,8 +942,8 @@ public class RevCommitUtil {
     if (indexOfMine < noOfDiffEntries) {
       toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
     } else {
-      if (logger.isDebugEnabled()) {
-        logger.debug("No MINE commit available for: '" + path + "'."
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("No MINE commit available for: '" + path + "'."
             + " Falling back to the last commit for this path.");
       }
       toReturn = getLastLocalCommitForPath(git, path);
@@ -925,7 +993,7 @@ public class RevCommitUtil {
     try {
       return repo.resolve("HEAD^{commit}");
     } catch (IOException e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
     return null;
   }

@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.stash;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import org.apache.log4j.LogManager;
@@ -61,7 +62,7 @@ public class FilesTableModel extends DefaultTableModel {
       List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
       try {
         List<FileStatus> listOfChangedFiles =
-                RevCommitUtil.getChangedFiles(stashesList.get(rowToUpdate).getName());
+                RevCommitUtil.getStashChangedFiles(stashesList.get(rowToUpdate).getName());
         while (this.getRowCount() != 0) {
           this.removeRow(this.getRowCount() - 1);
         }
