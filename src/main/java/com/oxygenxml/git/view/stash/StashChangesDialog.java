@@ -42,7 +42,7 @@ public class StashChangesDialog extends OKCancelDialog {
   /**
    * Title of dialog.
    */
-  private static final String title = TRANSLATOR.getTranslation(Tags.STASH_CHANGES);
+  private static final String TITLE = TRANSLATOR.getTranslation(Tags.STASH_CHANGES);
 
   /**
    * When is selected, the stash will include the untracked files.
@@ -61,7 +61,7 @@ public class StashChangesDialog extends OKCancelDialog {
   public StashChangesDialog() {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
         ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
-        : null, title, true);
+        : null, TITLE, true);
     
     setOkButtonText(TRANSLATOR.getTranslation(Tags.STASH));
 

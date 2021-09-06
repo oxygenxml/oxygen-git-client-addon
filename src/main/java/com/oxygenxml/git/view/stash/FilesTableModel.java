@@ -25,7 +25,7 @@ public class FilesTableModel extends DefaultTableModel {
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = LogManager.getLogger(ListStashesDialog.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(FilesTableModel.class.getName());
 
 
   /**

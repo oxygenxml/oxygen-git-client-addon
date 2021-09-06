@@ -18,7 +18,7 @@ public class StashesTableModel extends DefaultTableModel {
   /**
    * List of all stahses from the current repository.
    */
-  List<RevCommit> stashes;
+  private List<RevCommit> stashes;
 
 
   /**

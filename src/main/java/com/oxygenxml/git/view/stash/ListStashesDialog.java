@@ -43,7 +43,6 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.regexp.RE;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -716,14 +715,17 @@ public class ListStashesDialog extends JDialog {
         public void actionPerformed(ActionEvent e) {
           int selectedRow = stashesTable.getSelectedRow();
           int selectedFilesIndex = affectedFilesTable.getSelectedRow();
+
           if (selectedRow >= 0 && selectedRow < stashesTable.getRowCount()
                   && selectedFilesIndex >= 0 && selectedFilesIndex < affectedFilesTable.getRowCount()) {
             FileStatus selectedFile = null;
             List<RevCommit> stashes = null;
+
             try {
               stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
               selectedFile = ((FileStatus) affectedFilesTable.getValueAt(selectedFilesIndex, 1));
               String filePath = selectedFile.getFileLocation();
+
               if(selectedFile.getChangeType() == GitChangeType.UNTRACKED) {
                 RevCommit[] parents = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(),
                         stashes.get(selectedRow).getId().getName());
@@ -743,6 +745,7 @@ public class ListStashesDialog extends JDialog {
               PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(Tags.UNABLE_TO_COMPARE + e1.getMessage());
               LOGGER.error(e1, e1);
             }
+
           }
         }
       };
