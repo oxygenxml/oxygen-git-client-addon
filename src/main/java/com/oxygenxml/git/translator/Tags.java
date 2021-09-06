@@ -1420,4 +1420,8 @@ public class Tags {
    * Affected files.
    */
   public static final String AFFECTED_FILES = "Affected_files";
+	/**
+	 * Include untracked files message.
+	 */
+	public static final String INCLUDE_UNTRACKED = "Include_Untracked";
 }

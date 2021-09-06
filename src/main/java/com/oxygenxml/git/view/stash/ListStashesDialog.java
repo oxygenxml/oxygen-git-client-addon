@@ -145,7 +145,7 @@ public class ListStashesDialog extends JDialog {
   /**
    * When is selected, if apply a stash, it will be deleted after that.
    */
-  private JCheckBox deleteAfterApplingCheckBox;
+  private JCheckBox deleteAfterApplyingCheckBox;
 
   /**
    * The clear button.
@@ -318,7 +318,7 @@ public class ListStashesDialog extends JDialog {
           stashesTableModel.clear();
         }
         affectedFilesTableModel.clear();
-        deleteAfterApplingCheckBox.setEnabled(false);
+        deleteAfterApplyingCheckBox.setEnabled(false);
         setStashTableButtonsEnabled(false);
       }
     });
@@ -454,8 +454,8 @@ public class ListStashesDialog extends JDialog {
     JPanel panel = new JPanel(new GridBagLayout());
     GridBagConstraints constraints = new GridBagConstraints();
 
-    deleteAfterApplingCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.DELETE_STASH_AFTER_APPLIED));
-    deleteAfterApplingCheckBox.setSelected(false);
+    deleteAfterApplyingCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.DELETE_STASH_AFTER_APPLIED));
+    deleteAfterApplyingCheckBox.setSelected(false);
     constraints.gridx = 0;
     constraints.gridy = 0;
     constraints.gridwidth = 1;
@@ -464,7 +464,7 @@ public class ListStashesDialog extends JDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.WEST;
-    panel.add(deleteAfterApplingCheckBox, constraints);
+    panel.add(deleteAfterApplyingCheckBox, constraints);
 
     JPanel buttonsPanel = createButtonsPanel();
     constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, 0, 0);
@@ -666,7 +666,7 @@ public class ListStashesDialog extends JDialog {
         List<RevCommit> stashes = new ArrayList<>(GitAccess.getInstance().listStashes());
         if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
           try {
-            if(deleteAfterApplingCheckBox.isSelected()) {
+            if(deleteAfterApplyingCheckBox.isSelected()) {
               StashStatus applyStashStatus =
                       GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
               if(applyStashStatus == StashStatus.POST_APPLY_SUCCESS) {

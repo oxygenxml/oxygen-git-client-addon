@@ -46,6 +46,14 @@
         <val lang="nl_NL">You have uncommitted changes on the current branch.
         	\nYou can stash them or move them to the new branch.</val>
     </key>
+    <key value="Include_Untracked">
+        <comment>Message for include untracked files.</comment>
+        <val lang="en_US">Include untracked files</val>
+        <val lang="de_DE">Include untracked files</val>
+        <val lang="fr_FR">Include untracked files</val>
+        <val lang="ja_JP">Include untracked files</val>
+        <val lang="nl_NL">Include untracked files</val>
+    </key>
      <key value="Stashes">
         <comment>Stashes</comment>
         <val lang="en_US">Stashes</val>

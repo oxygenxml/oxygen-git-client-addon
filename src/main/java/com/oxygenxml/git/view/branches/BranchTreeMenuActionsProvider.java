@@ -158,7 +158,7 @@ public class BranchTreeMenuActionsProvider {
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
               BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
-            } else if (answer == OKOtherAndCancelDialog.RESULT_OK && wasStashSuccesful()) {
+            } else if (answer == OKOtherAndCancelDialog.RESULT_OK && wasStashSuccessfullyCreated()) {
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL)); 
             }
@@ -390,7 +390,7 @@ public class BranchTreeMenuActionsProvider {
    * 
    * <code>True</code> if the stash was created
    */
-  public static boolean wasStashSuccesful() {
+  public static boolean wasStashSuccessfullyCreated() {
     boolean successfullyCreated = false;
     SimpleDateFormat commitDateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
     
@@ -407,7 +407,7 @@ public class BranchTreeMenuActionsProvider {
               + commitDateFormat.format(new Date())
               + "]";
         }
-        successfullyCreated = gitAccess.createStash(false, description) != null;
+        successfullyCreated = gitAccess.createStash(stashDialog.shouldIncludeUntracked(), description) != null;
       } 
     } else {
       PluginWorkspaceProvider.getPluginWorkspace()

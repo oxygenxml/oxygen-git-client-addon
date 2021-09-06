@@ -7,6 +7,7 @@ import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,6 +17,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
+import com.oxygenxml.git.utils.TextFormatUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.TextField;
@@ -40,13 +42,16 @@ public class StashChangesDialog extends OKCancelDialog {
   /**
    * Title of dialog.
    */
-  private static final String title = TRANSLATOR.getTranslation(Tags.STASH_CHANGES); 
+  private static final String title = TRANSLATOR.getTranslation(Tags.STASH_CHANGES);
+
+  /**
+   * When is selected, the stash will include the untracked files.
+   */
+  private final JCheckBox includeUntrackedCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.INCLUDE_UNTRACKED));
  
   
   /**
    * Public constructor.
-   * 
-   * @param title            The title of the dialog.
    */
   public StashChangesDialog() {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
@@ -74,9 +79,7 @@ public class StashChangesDialog extends OKCancelDialog {
     setMaximumSize(maximumSize);
     pack();
     setVisible(true);
-    
-    
-    
+
   }
 
   
@@ -88,7 +91,7 @@ public class StashChangesDialog extends OKCancelDialog {
   private void createGUI(JPanel panel) {
     
     // Informative label message.
-    JLabel informativeLabel = new JLabel("<html>" + TRANSLATOR.getTranslation(Tags.STASH_INFORMATIVE_MESSAGE) + "</html>");
+    JLabel informativeLabel = new JLabel(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.STASH_INFORMATIVE_MESSAGE)));
     GridBagConstraints constrains = new GridBagConstraints();
     constrains.gridx = 0;
     constrains.gridy = 0;
@@ -99,7 +102,7 @@ public class StashChangesDialog extends OKCancelDialog {
     constrains.insets = new Insets(0, 0, 3, 0);
     panel.add(informativeLabel, constrains);
     
-    JLabel addDescriptionMessage = new JLabel("<html>" + TRANSLATOR.getTranslation(Tags.STASH_ADD_DESCRIPTION) + ": </html>");
+    JLabel addDescriptionMessage = new JLabel(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.STASH_ADD_DESCRIPTION)));
     constrains.gridy++;
     panel.add(addDescriptionMessage, constrains);
 
@@ -120,12 +123,20 @@ public class StashChangesDialog extends OKCancelDialog {
     panel.add(stashDescriptionField, constrains);
 
     addDescriptionMessage.setLabelFor(stashDescriptionField);
+
+    constrains.gridy++;
+    constrains.weightx = 0;
+    constrains.fill = GridBagConstraints.NONE;
+    constrains.insets = new Insets(5, 0, 0, 0);
+    includeUntrackedCheckBox.setSelected(false);
+    panel.add(includeUntrackedCheckBox, constrains);
     
     constrains.insets = new Insets(0, 0, 0, 0);
     constrains.fill = GridBagConstraints.BOTH;
     constrains.weighty = 1;
     constrains.gridy ++;
     panel.add(new JPanel(), constrains);
+
   }
 
   
@@ -137,7 +148,14 @@ public class StashChangesDialog extends OKCancelDialog {
   public String getStashMessage() {
     return stashDescriptionField.getText();
   }
-  
+
+
+  /**
+   * @return <code>true</code> if the stash should include the untracked files.
+   */
+  public boolean shouldIncludeUntracked() {
+    return includeUntrackedCheckBox.isSelected();
+  }
 }
 
 

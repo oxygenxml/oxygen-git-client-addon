@@ -503,7 +503,7 @@ public class ToolbarPanel extends JPanel {
               );
           if( (answer == OKOtherAndCancelDialog.RESULT_OTHER) ||
               (answer == OKOtherAndCancelDialog.RESULT_OK && 
-              BranchTreeMenuActionsProvider.wasStashSuccesful())
+              BranchTreeMenuActionsProvider.wasStashSuccessfullyCreated())
               ) {
             tryCheckingOutBranch(branchName);
           } else {
@@ -1417,7 +1417,7 @@ public class ToolbarPanel extends JPanel {
                   + "]";
             } 
 
-            GitAccess.getInstance().createStash(false, description);
+            GitAccess.getInstance().createStash(dialog.shouldIncludeUntracked(), description);
             Collection<RevCommit> stashes = GitAccess.getInstance().listStashes();
             noOfStashes = stashes != null ? stashes.size() : 0;
           }
