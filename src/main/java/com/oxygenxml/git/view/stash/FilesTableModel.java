@@ -32,7 +32,7 @@ public class FilesTableModel extends DefaultTableModel {
    * The public constructor.
    */
   public FilesTableModel() {
-    super(new String[]{"", ""}, 0);
+    super(new String[]{"icon", "file_path"}, 0);
   }
 
 
