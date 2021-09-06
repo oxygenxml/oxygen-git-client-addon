@@ -17,11 +17,6 @@ import com.oxygenxml.git.translator.Translator;
  */
 public class StashesTableModel extends DefaultTableModel {
 
-  /**
-   * List of all stashes from the current repository.
-   */
-  private List<RevCommit> stashes;
-
 
   /**
    * The public constructor.
@@ -40,7 +35,9 @@ public class StashesTableModel extends DefaultTableModel {
       this.addRow(row);
     }
 
-    this.stashes = stashes;
+    /**
+     * List of all stashes from the current repository.
+     */
 
   }
 

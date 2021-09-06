@@ -531,6 +531,7 @@ public class ListStashesDialog extends JDialog {
     return button;
   }
 
+
   /**
    * Enable or disable all buttons with the new status.
    * 
