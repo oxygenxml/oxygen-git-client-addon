@@ -562,6 +562,14 @@ public class ListStashesDialog extends JDialog {
       public JToolTip createToolTip() {
         return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
       }
+      
+      @Override
+      public void setRowSelectionInterval(int a, int b) {
+        super.setRowSelectionInterval(a, b);
+        if(affectedFilesTableModel != null) {
+          affectedFilesTableModel.updateTable(a);
+        }  
+      }
     };
 
     tableOfStashes.setFillsViewportHeight(true);
@@ -734,14 +742,9 @@ public class ListStashesDialog extends JDialog {
               stashesTableModel.removeRow(selectedRow);
               if(stashesTableModel.getRowCount() == 0) {
                 setStashTableButtonsEnabled(false);
-              }
-              affectedFilesTableModel.clear();
-              if (noOfRows > 1) {
-                if (selectedRow == noOfRows - 1) {
-                  stashesTable.setRowSelectionInterval(noOfRows - 2, noOfRows - 2);
-                } else {
-                  stashesTable.setRowSelectionInterval(selectedRow, selectedRow);
-                }
+                affectedFilesTableModel.clear();
+              } else {
+                selectNextRow(stashesTable, selectedRow, noOfRows);
               }
             }
           }

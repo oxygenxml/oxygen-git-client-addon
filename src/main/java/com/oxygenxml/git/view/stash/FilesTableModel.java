@@ -106,8 +106,8 @@ public class FilesTableModel extends AbstractTableModel {
         break;
       default:
         break;
-
     }
+
     return temp;
   }
 
