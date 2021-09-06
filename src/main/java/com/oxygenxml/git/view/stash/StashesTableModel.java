@@ -40,6 +40,14 @@ public class StashesTableModel extends AbstractTableModel {
    */
   private final List<RevCommit> stashes = Collections.synchronizedList(new ArrayList<>());
 
+  /**
+   * The columns names.
+   */
+  private String[] columnsNames = new String[]{
+    Translator.getInstance().getTranslation(Tags.ID),
+            Translator.getInstance().getTranslation(Tags.DESCRIPTION)
+  };
+
 
   /**
    * The public constructor.
@@ -104,6 +112,12 @@ public class StashesTableModel extends AbstractTableModel {
   }
 
 
+  @Override
+  public String getColumnName(int col) {
+    return columnsNames[col];
+  }
+
+
   /**
    * Removes all rows.
    */
@@ -143,5 +157,6 @@ public class StashesTableModel extends AbstractTableModel {
   public List<RevCommit> getStashes() {
     return stashes;
   }
+
 
 }
