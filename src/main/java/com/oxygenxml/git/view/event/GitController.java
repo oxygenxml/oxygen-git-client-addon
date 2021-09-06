@@ -20,7 +20,6 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 
 import com.oxygenxml.git.auth.AuthUtil;
-import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
@@ -179,9 +178,6 @@ public class GitController extends GitControllerBase {
           logger.debug("Preparing for push/pull command");
         }
         event = doOperation(credentialsProvider);
-        if (!AuthenticationInterceptor.isBound(hostName)) {
-          AuthenticationInterceptor.bind(hostName);
-        }
       } catch (JGitInternalException e) {
         logger.debug(e, e);
 
