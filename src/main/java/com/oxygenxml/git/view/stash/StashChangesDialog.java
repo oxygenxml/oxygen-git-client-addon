@@ -37,7 +37,7 @@ public class StashChangesDialog extends OKCancelDialog {
   private static final Translator TRANSLATOR = Translator.getInstance();
   
   /**
-   * A text field for the tag title.
+   * A text field for the stash message/description.
    */
   private JTextField stashDescriptionField;
   
@@ -47,12 +47,12 @@ public class StashChangesDialog extends OKCancelDialog {
   private final SimpleDateFormat dateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_WITH_COMMA_PATTERN);
   
   /**
-   * When is selected, the stash will include the untracked files.
+   * When selected, the stash will include the untracked files.
    */
   private final JCheckBox includeUntrackedCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.INCLUDE_UNTRACKED));
 
   /**
-   * The tag option for include untracked files.
+   * The tag option for including the untracked files in the stash.
    */
   // TODO: This should be moved in a class where all Tags will reside
   private static final String OPTION_TAG_INCLUDE_UNTRACKED = "Stash.should.include.untracked.files";

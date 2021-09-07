@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.stash;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -31,12 +30,12 @@ public class FilesTableModel extends AbstractTableModel {
   private static final Logger LOGGER = Logger.getLogger(FilesTableModel.class);
 
   /**
-   * Constant for the index representing the file status
+   * Index of the file status column.
    */
   public static final int FILE_STATUS_COLUMN = 0;
 
   /**
-   * Constant for the index representing the file location
+   * Index of the file location column.
    */
   public static final int FILE_LOCATION_COLUMN = 1;
 
@@ -120,24 +119,21 @@ public class FilesTableModel extends AbstractTableModel {
    */
   public void setFilesStatus(List<FileStatus> filesStatuses) {
     fireTableRowsDeleted(0, getRowCount());
-
-    this.filesStatuses = new ArrayList<>(filesStatuses);
-
-    this.filesStatuses.sort(fileStatusComparator);
-
+    filesStatuses = new ArrayList<>(filesStatuses);
+    filesStatuses.sort(fileStatusComparator);
     fireTableRowsInserted(0, getRowCount());
   }
 
 
   /**
-   * Returns the file from the given row
+   * Returns the file from the given row.
    *
-   * @param convertedRow
-   *          - the row
+   * @param rowIndex The row index.
+   * 
    * @return the file
    */
-  public FileStatus getFileAt(int convertedRow) {
-    return filesStatuses.get(convertedRow);
+  public FileStatus getFileAt(int rowIndex) {
+    return filesStatuses.get(rowIndex);
   }
 
 
@@ -155,31 +151,31 @@ public class FilesTableModel extends AbstractTableModel {
   public void clear() {
     int size = filesStatuses.size();
     filesStatuses.clear();
-    fireTableRowsUpdated(0, size);
+    fireTableRowsDeleted(0, size);
   }
 
 
   /**
    * Get the file path.
    *
-   * @param convertedRow  file index.
+   * @param rowIndex  Row index.
    *
    * @return The location of the file.
    */
-  public String getFileLocation(int convertedRow) {
-    return filesStatuses.get(convertedRow).getFileLocation();
+  public String getFileLocation(int rowIndex) {
+    return filesStatuses.get(rowIndex).getFileLocation();
   }
 
 
   /**
-   * Get thd file status at the specified index.
+   * Get the file status at the specified index.
    *
-   * @param convertedRow file index.
+   * @param rowIndex Row index.
    *
    * @return The file status.
    */
-  public FileStatus getFileStatus(int convertedRow) {
-    return filesStatuses.get(convertedRow);
+  public FileStatus getFileStatus(int rowIndex) {
+    return filesStatuses.get(rowIndex);
   }
 
 
@@ -191,9 +187,10 @@ public class FilesTableModel extends AbstractTableModel {
   public void updateTable(int stashIndex) {
     if(stashIndex >= 0) {
       List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
+      clear();
       try {
-        clear();
         filesStatuses.addAll(RevCommitUtil.getChangedFiles(stashesList.get(stashIndex).getName()));
+        // TODO: cred ca trebuie maximul size-urilor
         fireTableRowsUpdated(0, filesStatuses.size());
       } catch (IOException | GitAPIException exc) {
         LOGGER.error(exc, exc);
