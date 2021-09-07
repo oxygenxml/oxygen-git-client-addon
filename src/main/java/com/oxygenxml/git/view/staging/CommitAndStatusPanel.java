@@ -476,8 +476,8 @@ public class CommitAndStatusPanel extends JPanel {
         RevCommit latestCommitOnBranch = null;
         try {
           latestCommitOnBranch = GitAccess.getInstance().getLatestCommitOnCurrentBranch();
-        } catch (GitAPIException | IOException e) {
-          logger.debug(e, e);
+        } catch (GitAPIException | IOException | NoRepositorySelected e) {
+          logger.error(e, e);
         }
         if (latestCommitOnBranch != null) {
           String text = latestCommitOnBranch.getFullMessage();
