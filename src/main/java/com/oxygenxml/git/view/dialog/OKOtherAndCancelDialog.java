@@ -38,17 +38,17 @@ public class OKOtherAndCancelDialog extends JDialog {
   /**
    * The button for the OK option.
    */
-  private final Button okButton = new Button("OK");
+  private final Button okButton = new Button(Translator.getInstance().getTranslation(Tags.OK));
 
   /**
    * The button for the "Other" option.
    */
-  private final Button otherButton = new Button("Other");
+  private final Button otherButton = new Button(Translator.getInstance().getTranslation(Tags.OTHER));
 
   /**
    * The "Cancel" button.
    */
-  private final Button cancelButton = new Button("Cancel");
+  private final Button cancelButton = new Button(Translator.getInstance().getTranslation(Tags.CANCEL));
 
   /**
    * The result for cancel button.
@@ -135,7 +135,7 @@ public class OKOtherAndCancelDialog extends JDialog {
     // Buttons panel
     JPanel buttonsPanel = new JPanel();
     buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
-    
+
     okButton.addActionListener(e -> {
       answer = RESULT_OK;
       dispose();
@@ -146,8 +146,6 @@ public class OKOtherAndCancelDialog extends JDialog {
       dispose();
     });
 
-    // TODO: Why set text here when you also set text when creating the field in class
-    cancelButton.setText(Translator.getInstance().getTranslation(Tags.CANCEL));
     cancelButton.addActionListener(e -> {
       answer = RESULT_CANCEL;
       dispose();

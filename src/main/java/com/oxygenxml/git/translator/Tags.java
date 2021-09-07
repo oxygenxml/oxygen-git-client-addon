@@ -1418,4 +1418,12 @@ public class Tags {
 	 * The tooltip for delete all stashes button.
 	 */
 	public static final String DELETE_ALL_STASHES_BUTTON_TOOLTIP = "Delete_All_Button_Tooltip";
+	/**
+	 * OK.
+	 */
+  public static final String OK = "OK";
+  /**
+   * Other.
+   */
+  public static final String OTHER = "Other";
 }

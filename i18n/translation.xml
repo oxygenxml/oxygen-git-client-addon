@@ -62,6 +62,22 @@
         <val lang="ja_JP">Include untracked files</val>
         <val lang="nl_NL">Include untracked files</val>
     </key>
+    <key value="OK">
+        <comment>OK.</comment>
+        <val lang="en_US">OK</val>
+        <val lang="de_DE">OK</val>
+        <val lang="fr_FR">OK</val>
+        <val lang="ja_JP">OK</val>
+        <val lang="nl_NL">OK</val>
+    </key>
+    <key value="Other">
+        <comment>Other.</comment>
+        <val lang="en_US">Other</val>
+        <val lang="de_DE">Other</val>
+        <val lang="fr_FR">Other</val>
+        <val lang="ja_JP">Other</val>
+        <val lang="nl_NL">Other</val>
+    </key>
      <key value="Stashes">
         <comment>Stashes</comment>
         <val lang="en_US">Stashes</val>
