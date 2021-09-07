@@ -2708,14 +2708,20 @@ public class GitAccess {
 	 * 
 	 * @param stashIndex The index of the stash item to be dropped.
 	 */
-	public void dropStash(int stashIndex) {
+	public boolean dropStash(int stashIndex) {
+	  boolean toReturn = false;
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
 		try {
 			git.stashDrop().setStashRef(stashIndex).call();
 			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_DROP));
+			toReturn = true;
 		} catch (GitAPIException e) {
 			LOGGER.error(e, e);
 			fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
 		}
+		
+		return toReturn;
 	}
+	
+	
 }

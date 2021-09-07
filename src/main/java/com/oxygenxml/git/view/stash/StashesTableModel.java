@@ -118,11 +118,20 @@ public class StashesTableModel extends AbstractTableModel {
     int size = stashes.size();
     while(!stashes.isEmpty()) {
       int index = stashes.size() - 1;
-      GitAccess.getInstance().dropStash(index);
-      stashes.remove(index);
+      boolean wasDeleted = GitAccess.getInstance().dropStash(index);
+      if(wasDeleted) {
+        stashes.remove(index);
+      } else {
+        break;
+      }
     }
 
-    this.fireTableRowsUpdated(0, size);
+    if(stashes.isEmpty()) {
+      this.fireTableRowsUpdated(0, size);
+    } else {
+      this.fireTableRowsUpdated(stashes.size(), size);
+    }
+    
   }
 
 
@@ -132,10 +141,11 @@ public class StashesTableModel extends AbstractTableModel {
    * @param index Index of row to be deleted.
    */
   public void removeRow(int index) {
-    GitAccess.getInstance().dropStash(index);
-    stashes.remove(index);
-    
-    fireTableRowsUpdated(index, stashes.size());
+    boolean wasDeleted = GitAccess.getInstance().dropStash(index);
+    if(wasDeleted) {
+      stashes.remove(index);
+      fireTableRowsUpdated(index, stashes.size());
+    }
   }
 
 
