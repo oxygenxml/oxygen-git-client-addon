@@ -168,6 +168,11 @@ public class ListStashesDialog extends JDialog {
    * Action to delete the selected stash.
    */
   private Action deleteSelectedStashAction;
+
+  /**
+   * Action to delete all stashes.
+   */
+  private Action deleteAllStashesAction;
   
   /**
    * When is selected, if apply a stash, it will be deleted after that.
@@ -296,20 +301,11 @@ public class ListStashesDialog extends JDialog {
    */
   private Button createDeleteAllButton() {
     Button deleteAllstashesButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE_ALL));
-    deleteAllstashesButton.addActionListener( e-> {
-      int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-          TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
-          TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
-          TRANSLATOR.getTranslation(Tags.YES),
-          TRANSLATOR.getTranslation(Tags.NO));
-      if (OKCancelDialog.RESULT_OK == answer) {
-        stashesTableModel.clear();
-        affectedFilesTableModel.clear();
-        deleteAfterApplyingCheckBox.setEnabled(false);
-        setStashTableButtonsEnabled(false);
-      }
-    });
+
+    deleteAllstashesButton.addActionListener(deleteAllStashesAction);
+
     deleteAllstashesButton.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES_BUTTON_TOOLTIP));
+    
     return deleteAllstashesButton;
   }
 
@@ -385,6 +381,7 @@ public class ListStashesDialog extends JDialog {
   private void createAllActions() {
      applySelectedStashAction     = stashActionsProvider.createApplySelectedStashAction();
      deleteSelectedStashAction    = stashActionsProvider.createDeleteSelectedStashAction();
+     deleteAllStashesAction       = stashActionsProvider.createDeleteAllStashesAction();
      compareWithWorkingCopyAction = stashActionsProvider.createCompareWithWCAction();
   }
 
@@ -724,7 +721,7 @@ public class ListStashesDialog extends JDialog {
 
 
     /**
-     * Creates the delete selected stash action.
+     * Creates the "Delete selected stash" action.
      *
      * @return the created action.
      */
@@ -741,7 +738,10 @@ public class ListStashesDialog extends JDialog {
                     TRANSLATOR.getTranslation(Tags.YES),
                     TRANSLATOR.getTranslation(Tags.NO));
             if (OKCancelDialog.RESULT_OK == answer) {
-              stashesTableModel.removeRow(selectedRow);
+              boolean wasDeleted = GitAccess.getInstance().dropStash(selectedRow);
+              if(wasDeleted) {
+                stashesTableModel.removeRow(selectedRow);
+              }
               if(stashesTableModel.getRowCount() == 0) {
                 setStashTableButtonsEnabled(false);
                 affectedFilesTableModel.clear();
@@ -756,7 +756,7 @@ public class ListStashesDialog extends JDialog {
 
 
     /**
-     * Creates the apply selected stash action.
+     * Creates the "Apply selected stash" action.
      *
      * @return the created action.
      */
@@ -790,8 +790,33 @@ public class ListStashesDialog extends JDialog {
         }
       };
     }
-    
-    
+
+
+    /**
+     * Creates the "Delete all stashes" action.
+     *
+     * @return the created action.
+     */
+    private Action createDeleteAllStashesAction() {
+      return new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int answer = FileStatusDialog.showWarningMessageWithConfirmation(
+                  TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
+                  TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
+                  TRANSLATOR.getTranslation(Tags.YES),
+                  TRANSLATOR.getTranslation(Tags.NO));
+          if (OKCancelDialog.RESULT_OK == answer && GitAccess.getInstance().dropAllStashes()) {
+            stashesTableModel.clear();
+            affectedFilesTableModel.clear();
+            deleteAfterApplyingCheckBox.setEnabled(false);
+            setStashTableButtonsEnabled(false);
+          }
+        }
+      };
+    }
+
+
     /**
      * Select next row in the table.
      * 
