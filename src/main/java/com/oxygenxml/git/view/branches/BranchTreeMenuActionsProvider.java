@@ -2,13 +2,12 @@ package com.oxygenxml.git.view.branches;
 
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.view.staging.ToolbarPanel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -27,8 +26,6 @@ import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
-import com.oxygenxml.git.view.stash.StashChangesDialog;
-import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -54,10 +51,6 @@ public class BranchTreeMenuActionsProvider {
    * Git operation controller.
    */
   private final GitControllerBase ctrl;
-  /**
-   * The git access.
-   */
-  private static final GitAccess gitAccess = GitAccess.getInstance();
 
 
   /**
@@ -158,7 +151,7 @@ public class BranchTreeMenuActionsProvider {
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
               BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
-            } else if (answer == OKOtherAndCancelDialog.RESULT_OK && wasStashSuccessfullyCreated()) {
+            } else if (answer == OKOtherAndCancelDialog.RESULT_OK && ToolbarPanel.stashChanges()) {
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL)); 
             }
@@ -356,7 +349,7 @@ public class BranchTreeMenuActionsProvider {
       public void actionPerformed(ActionEvent e) {
         if (FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_BRANCH),
             MessageFormat.format(TRANSLATOR.getTranslation(Tags.CONFIRMATION_MESSAGE_DELETE_BRANCH),
-                nodePath.substring(nodePath.indexOf("refs/heads/") != -1 ? "refs/heads/".length() : 0)),
+                nodePath.substring(nodePath.contains("refs/heads/") ? "refs/heads/".length() : 0)),
             TRANSLATOR.getTranslation(Tags.YES), TRANSLATOR.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(() -> {
             String branch = BranchesUtil.createBranchPath(nodePath,
@@ -388,37 +381,4 @@ public class BranchTreeMenuActionsProvider {
     return dialog.getResult();
   }
 
-
-  /**
-   * Tries to creates a new stash.
-   * 
-   * <code>True</code> if the stash was created
-   */
-  public static boolean wasStashSuccessfullyCreated() {
-    boolean successfullyCreated = false;
-    SimpleDateFormat commitDateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
-    
-    if (gitAccess.getConflictingFiles().isEmpty()) {
-      StashChangesDialog stashDialog = new StashChangesDialog();
-      stashDialog.setVisible(true);
-      if (stashDialog.getResult() == OKCancelDialog.RESULT_OK) {
-        String description = stashDialog.getStashMessage();
-
-        if (description.isEmpty()) {
-          description = "WIP on "
-              + gitAccess.getBranchInfo().getBranchName()
-              + " ["
-              + commitDateFormat.format(new Date())
-              + "]";
-        }
-        successfullyCreated = gitAccess.createStash(stashDialog.shouldIncludeUntracked(), description) != null;
-      } 
-    } else {
-      PluginWorkspaceProvider.getPluginWorkspace()
-      .showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-    }
-
-
-    return successfullyCreated;
-  }
 }

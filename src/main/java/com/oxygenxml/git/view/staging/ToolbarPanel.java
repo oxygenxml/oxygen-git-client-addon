@@ -61,7 +61,6 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
-import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
@@ -126,6 +125,11 @@ public class ToolbarPanel extends JPanel {
       }
     }
   }
+
+  /**
+   * The git access.
+   */
+  private static final GitAccess gitAccess = GitAccess.getInstance();
 
   /**
    * The font size of the push/pull counters.
@@ -513,7 +517,7 @@ public class ToolbarPanel extends JPanel {
 
           if( (answer == OKOtherAndCancelDialog.RESULT_OTHER) ||
               (answer == OKOtherAndCancelDialog.RESULT_OK && 
-              BranchTreeMenuActionsProvider.wasStashSuccessfullyCreated())
+              stashChanges())
               ) {
             tryCheckingOutBranch(branchName);
           } else {
@@ -1327,6 +1331,40 @@ public class ToolbarPanel extends JPanel {
     listStashesAction.setEnabled(existsStashes);
 
     stashButton.setEnabled(existsLocalFiles || existsStashes);
+  }
+
+
+  /**
+   * Tries to creates a new stash.
+   *
+   * <code>True</code> if the stash was created.
+   */
+  public static boolean stashChanges() {
+    boolean successfullyCreated = false;
+    SimpleDateFormat commitDateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
+
+    if (gitAccess.getConflictingFiles().isEmpty()) {
+      StashChangesDialog stashDialog = new StashChangesDialog();
+      stashDialog.setVisible(true);
+      if (stashDialog.getResult() == OKCancelDialog.RESULT_OK) {
+        String description = stashDialog.getStashMessage();
+
+        if (description.isEmpty()) {
+          description = "WIP on "
+                  + gitAccess.getBranchInfo().getBranchName()
+                  + " ["
+                  + commitDateFormat.format(new Date())
+                  + "]";
+        }
+        successfullyCreated = gitAccess.createStash(stashDialog.shouldIncludeUntracked(), description) != null;
+      }
+    } else {
+      PluginWorkspaceProvider.getPluginWorkspace()
+              .showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+    }
+
+
+    return successfullyCreated;
   }
 
 
