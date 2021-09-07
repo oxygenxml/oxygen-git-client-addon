@@ -126,6 +126,11 @@ public class StashesTableModel extends AbstractTableModel {
   }
 
 
+  /**
+   * Removes the row from given index.
+   *
+   * @param index Index of row to be deleted.
+   */
   public void removeRow(int index) {
     GitAccess.getInstance().dropStash(index);
     stashes.remove(index);

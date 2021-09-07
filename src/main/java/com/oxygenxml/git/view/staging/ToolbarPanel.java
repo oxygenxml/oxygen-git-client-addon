@@ -145,6 +145,11 @@ public class ToolbarPanel extends JPanel {
   /**
    * Distance between text and decoration
    */
+  private static final int STASH_DECORATION_DISPLACEMENT = 10;
+  
+  /**
+   * Distance between text and decoration
+   */
   private static final int DECORATION_DISPLACEMENT = 13;
 
   /**
@@ -1241,7 +1246,7 @@ public class ToolbarPanel extends JPanel {
   private SplitMenuButton createStashButton() {
     SplitMenuButton stashLocalButton = new SplitMenuButton( // NOSONAR (java:S110)
         null,
-        Icons.getIcon(Icons.GIT_PUSH_ICON),
+        Icons.getIcon(Icons.STASH_ICON),
         false,
         false,
         true,
@@ -1275,7 +1280,7 @@ public class ToolbarPanel extends JPanel {
         noOfStashes = stashes == null ? 0 : stashes.size();
 
         if (noOfStashes > 0) {
-          noOfStashesString = "" + noOfStashes;
+          noOfStashesString = Integer.toString(noOfStashes);
         }
         if (noOfStashes > 9) {
           stashButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -1284,11 +1289,12 @@ public class ToolbarPanel extends JPanel {
         }
         g.setFont(g.getFont().deriveFont(Font.BOLD, PUSH_PULL_COUNTERS_FONT_SIZE));
         FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
+        int stringWidth = fontMetrics.stringWidth(noOfStashesString);
         g.setColor(getForeground());
         g.drawString(
             noOfStashesString,
             // X
-            stashButton.getWidth() - 2 * DECORATION_DISPLACEMENT,
+            stashButton.getWidth() - stringWidth - STASH_DECORATION_DISPLACEMENT,
             // Y
             stashButton.getHeight() - fontMetrics.getDescent());
       }

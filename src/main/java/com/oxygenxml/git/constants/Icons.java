@@ -166,7 +166,7 @@ public class Icons {
   /**
    * Stash icon.
    */
-  public static final String STASH_ICON = "/images/Help32.png";
+  public static final String STASH_ICON = "/images/GitStash16.png";
   
   /**
    * Get icon.
