@@ -33,11 +33,11 @@
     </key>
     <key value="Unborn_branch">
         <comment>"Unborn branch X".</comment>
-        <val lang="en_US">branch ''{0}'' is empty.</val>
-        <val lang="de_DE">branch ''{0}'' is empty.</val>
-        <val lang="fr_FR">branch ''{0}'' is empty.</val>
-        <val lang="ja_JP">branch ''{0}'' is empty.</val>
-        <val lang="nl_NL">branch ''{0}'' is empty.</val>
+        <val lang="en_US">branch "{0}" is empty.</val>
+        <val lang="de_DE">branch "{0}" is empty.</val>
+        <val lang="fr_FR">branch "{0}" is empty.</val>
+        <val lang="ja_JP">branch "{0}" is empty.</val>
+        <val lang="nl_NL">branch "{0}" is empty.</val>
     </key>
     <key value="Revert_commit_resulted_in_conflicts">
         <comment>Message shown when reverting a commit resulted in conflicts.</comment>
