@@ -2724,6 +2724,27 @@ public class GitAccess {
 		
 		return toReturn;
 	}
+
+
+	/**
+	 * Drops all stashes.
+	 *
+	 * @return <code>True</code> if the operation was successfully.
+	 */
+	public boolean dropAllStashes() {
+		boolean toReturn = false;
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
+		try {
+			git.stashDrop().setAll(true).call();
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_DROP));
+			toReturn = true;
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
+		}
+
+		return toReturn;
+	}
 	
 	
 }
