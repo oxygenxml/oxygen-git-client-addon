@@ -535,6 +535,7 @@ public class ListStashesDialog extends JDialog {
       applyButton.setEnabled(newStatus);
       deleteSelectedButton.setEnabled(newStatus);
       deleteAllButton.setEnabled(newStatus);
+      deleteAfterApplyingCheckBox.setEnabled(newStatus);
     });
   }
 
