@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
 
@@ -22,7 +24,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -203,7 +204,9 @@ public class TagsDialog extends JDialog {
 
     return e -> {
       int selectedRow = tagsTable.getSelectedRow();
-      GitTag tag = localTagsList.get(selectedRow);
+      TagsTableModel model = (TagsTableModel) tagsTable.getModel();
+      GitTag tag = model.getItemAt(selectedRow);
+      
       if (!remoteTagsTitle.contains(tag.getName())) {
         try {
           GitAccess.getInstance().pushTag(tag.getName());
@@ -229,14 +232,15 @@ public class TagsDialog extends JDialog {
       deleteButton.setEnabled(false);
       pushButton.setEnabled(false);
       int selectedRow = (tagsTable.getSelectedRow());
-      String tag = (String) tagsTable.getValueAt(selectedRow, 0);
-      GitAccess.getInstance().deleteTag(tag);
+      String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
+      GitAccess.getInstance().deleteTag(tagName);
       
       localTagsList.remove(selectedRow);
 
-      DefaultTableModel tagsTableModel = (DefaultTableModel) tagsTable.getModel();
-      tagsTableModel.removeRow(selectedRow);
-      tagsTableModel.fireTableStructureChanged();
+      TagsTableModel model = (TagsTableModel) tagsTable.getModel();
+      GitTag tag = model.getItemAt(selectedRow);
+      model.remove(tag);
+      model.fireTableStructureChanged();
       tagsTable.repaint();
     };
   }
@@ -252,19 +256,16 @@ public class TagsDialog extends JDialog {
    */
   private void createTagsTable() {
     String[] columnNames = {TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_NAME_COLUMN),
-                            TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_MESSAGE_COLUMN)};
-    DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+                            TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_MESSAGE_COLUMN)};  
+    TagsTableModel model = new TagsTableModel(columnNames);
+    model.setGitTags(localTagsList);
     
-    for (int i = 0; i < localTagsList.size(); i++){
-      Object[] row = { localTagsList.get(i).getName(), localTagsList.get(i).getMessage() };
-      model.addRow(row);
-  }
     tagsTable = OxygenUIComponentsFactory.createTable(model);
     //Add the listener for selecting a row
     tagsTable.getSelectionModel().addListSelectionListener(e -> {
       int selectedRow = (tagsTable.getSelectedRow());
       if(selectedRow >= 0) {
-        GitTag tag = localTagsList.get(selectedRow);
+        GitTag tag = model.getItemAt(selectedRow);
         if (!tag.isPushed()) {
           pushButton.setEnabled(true);
           deleteButton.setEnabled(true);
@@ -276,7 +277,23 @@ public class TagsDialog extends JDialog {
     });
     
     //Add the listener for double clicked
-    //TODO: create listener for double click
+    tagsTable.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent mouseEvent) {
+        tagsTable =(JTable) mouseEvent.getSource();
+        if (mouseEvent.getClickCount() == 2 && tagsTable.getSelectedRow() != -1) {
+          int selectedRow = tagsTable.getSelectedRow();
+          GitTag tag = model.getItemAt(selectedRow);
+          TagDetailsDialog dialog;
+          try {
+            dialog = new TagDetailsDialog(tag);
+            dialog.setVisible(true);
+          } catch (NoRepositorySelected | IOException ex) {
+            PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+          }
+        }
+    }
+    });
     
     //Resize the table
     TableColumnModel tagsTableColumnModel = tagsTable.getColumnModel();
@@ -306,7 +323,8 @@ public class TagsDialog extends JDialog {
     menuItemDetails.addActionListener(e -> {
       try {
         int selectedRow = tagsTable.getSelectedRow();
-        GitTag tag = localTagsList.get(selectedRow);
+        TagsTableModel model = (TagsTableModel) tagsTable.getModel();
+        GitTag tag = model.getItemAt(selectedRow);
         TagDetailsDialog dialog = new TagDetailsDialog(tag);
         dialog.setVisible(true);
       } catch (NoRepositorySelected | IOException ex) {
