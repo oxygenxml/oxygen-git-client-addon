@@ -725,7 +725,7 @@ public class ListStashesDialog extends JDialog {
      *
      * @return the created action.
      */
-    private Action createDeleteSelectedStashAction() {
+    public Action createDeleteSelectedStashAction() {
       return new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -760,7 +760,7 @@ public class ListStashesDialog extends JDialog {
      *
      * @return the created action.
      */
-    private Action createApplySelectedStashAction() {
+    public Action createApplySelectedStashAction() {
       return new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -797,7 +797,7 @@ public class ListStashesDialog extends JDialog {
      *
      * @return the created action.
      */
-    private Action createDeleteAllStashesAction() {
+    public Action createDeleteAllStashesAction() {
       return new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {

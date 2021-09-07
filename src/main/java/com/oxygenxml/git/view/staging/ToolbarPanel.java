@@ -1415,7 +1415,7 @@ public class ToolbarPanel extends JPanel {
           if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
             String description = dialog.getStashMessage();
 
-            if("".compareTo(description) == 0) {
+            if(description.isEmpty()) {
               description = "WIP on " 
                   + GitAccess.getInstance().getBranchInfo().getBranchName() 
                   + " [" 
