@@ -680,7 +680,6 @@ public class ToolbarPanel extends JPanel {
    * and branch status.
    */
   public void refresh() {
-    GitAccess gitAccess = GitAccess.getInstance();
 
     this.pullsBehind = gitAccess.getPullsBehind();
     try {
@@ -1304,17 +1303,17 @@ public class ToolbarPanel extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
         ListStashesDialog stashesDialog = new ListStashesDialog();
-        stashesDialog.setVisible(true);   
+        SwingUtilities.invokeLater(() -> stashesDialog.setVisible(true));
       }
     };
     splitMenuButton.addActionToMenu(listStashesAction, false);
   }
   
+  
   /**
    * Refresh the status for stash button.
    */
   public void refreshStashButton() {
-    GitAccess gitAccess = GitAccess.getInstance();
     Collection<RevCommit> stashes = gitAccess.listStashes();
     noOfStashes = stashes == null ? 0 : stashes.size();
 

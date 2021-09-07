@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.stash;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -37,7 +36,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -57,7 +55,6 @@ import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
-import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -118,6 +115,16 @@ public class ListStashesDialog extends JDialog {
    * The size of column id.
    */
   private static final int COLUMN_ID_SIZE = 25;
+  
+  /**
+   * The index for stash ID column in stashes table.
+   */
+  private static final int STASH_ID_COLUMN = 0;
+  
+  /**
+   * The index for stash description column in stashes table.
+   */
+  private static final int STASH_DESCRIPTION_COLUMN = 1;
 
   /**
    * The table with the stashes.
@@ -562,17 +569,10 @@ public class ListStashesDialog extends JDialog {
         }  
       }
       
-      @Override
-      public void paint(Graphics g) {
-        super.paint(g);
-        // TODO: move this somewhere else
-        updateStashTableWidths();
-      }
-      
     };
 
     tableOfStashes.setFillsViewportHeight(true);
-    tableOfStashes.getColumnModel().getColumn(1).setCellRenderer(new StashMessageRender());
+    tableOfStashes.getColumnModel().getColumn(STASH_DESCRIPTION_COLUMN).setCellRenderer(new StashMessageRender());
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tableOfStashes.getTableHeader().setReorderingAllowed(false);
 
@@ -586,7 +586,12 @@ public class ListStashesDialog extends JDialog {
     });
 
     stashesTableModel.fireTableDataChanged();
-    
+
+    tableOfStashes.getColumnModel().getColumn(STASH_ID_COLUMN).setMinWidth(COLUMN_ID_SIZE);
+    tableOfStashes.getColumnModel().getColumn(STASH_ID_COLUMN).setPreferredWidth(COLUMN_ID_SIZE);
+    tableOfStashes.getColumnModel().getColumn(STASH_ID_COLUMN).setMaxWidth(COLUMN_ID_SIZE);
+
+
     SwingUtilities.invokeLater(() -> tableOfStashes.setRowSelectionInterval(0, 0));
 
     tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
@@ -620,19 +625,6 @@ public class ListStashesDialog extends JDialog {
     return contextualActions;
   }
   
-  
-  /**
-   * Distribute widths to the columns according to their content.
-   */
-  private void updateStashTableWidths() {
-    int idColWidth = HiDPIUtil.scaleWidth(COLUMN_ID_SIZE);
-    TableColumnModel tcm = stashesTable.getColumnModel();
-    TableColumn idCol = tcm.getColumn(0);
-    idCol.setPreferredWidth(COLUMN_ID_SIZE);
-    TableColumn msgCol = tcm.getColumn(1);
-    msgCol.setPreferredWidth(stashesTable.getWidth() - idColWidth);
-  }
-
 
   /**
    * A custom render for String.
