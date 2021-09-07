@@ -122,7 +122,7 @@ public class StashesTableModel extends AbstractTableModel {
       GitAccess.getInstance().dropStash(index);
       stashes.remove(index);
     }
-    
+
     this.fireTableRowsUpdated(0, size);
   }
 
@@ -135,13 +135,8 @@ public class StashesTableModel extends AbstractTableModel {
   public void removeRow(int index) {
     GitAccess.getInstance().dropStash(index);
     stashes.remove(index);
-
-    for (int row = index + 1; row < stashes.size(); row++) {
-      this.setValueAt((int)getValueAt(row, 0) - 1, row, 0);
-    }
-
-    this.fireTableRowsUpdated(index, stashes.size());
-
+    
+    fireTableRowsUpdated(index, stashes.size());
   }
 
 
