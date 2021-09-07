@@ -18,17 +18,17 @@ import com.oxygenxml.git.translator.Translator;
 public class StashesTableModel extends AbstractTableModel {
 
   /**
-   * Constant for the index representing the stash index.
+   * Constant for the column index representing the stash index.
    */
   public static final int STASH_INDEX_COLUMN = 0;
 
   /**
-   * Constant for the index representing the stash description.
+   * Constant for the column index representing the stash description.
    */
   public static final int STASH_DESCRIPTION_COLUMN = 1;
 
   /**
-   * The internal representation of the model
+   * The internal representation of the model.
    */
   private final List<RevCommit> stashes = new ArrayList<>();
 
@@ -37,7 +37,7 @@ public class StashesTableModel extends AbstractTableModel {
    */
   private static final String[] COLUMNS_NAMES = new String[]{
     Translator.getInstance().getTranslation(Tags.ID),
-            Translator.getInstance().getTranslation(Tags.DESCRIPTION)
+    Translator.getInstance().getTranslation(Tags.DESCRIPTION)
   };
 
 
@@ -116,8 +116,7 @@ public class StashesTableModel extends AbstractTableModel {
   public void clear() {
     int size = stashes.size();
     stashes.clear();
-    this.fireTableRowsUpdated(0, size);
-
+    this.fireTableRowsDeleted(0, size - 1);
   }
 
 
@@ -128,19 +127,19 @@ public class StashesTableModel extends AbstractTableModel {
    */
   public void removeRow(int index) {
     stashes.remove(index);
-    fireTableRowsUpdated(index, stashes.size());
+    fireTableRowsDeleted(index, index);
   }
 
 
   /**
-   * Returns the file from the given row
+   * Returns the stash from the given row.
    *
-   * @param convertedRow
-   *          - the row
+   * @param rowIndex The row index.
+   * 
    * @return the file
    */
-  public RevCommit getStashAt(int convertedRow) {
-    return stashes.get(convertedRow);
+  public RevCommit getStashAt(int rowIndex) {
+    return stashes.get(rowIndex);
   }
 
 
