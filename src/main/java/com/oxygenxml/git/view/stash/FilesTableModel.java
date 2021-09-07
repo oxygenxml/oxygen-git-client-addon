@@ -42,7 +42,7 @@ public class FilesTableModel extends AbstractTableModel {
   /**
    * The internal representation of the model
    */
-  private List<FileStatus> filesStatuses = new ArrayList<>();
+  private final List<FileStatus> filesStatuses = new ArrayList<>();
 
 
   /**
@@ -60,7 +60,7 @@ public class FilesTableModel extends AbstractTableModel {
 
   @Override
   public int getRowCount() {
-    return filesStatuses != null ? filesStatuses.size() : 0;
+    return filesStatuses.size();
   }
 
 
@@ -187,11 +187,11 @@ public class FilesTableModel extends AbstractTableModel {
   public void updateTable(int stashIndex) {
     if(stashIndex >= 0) {
       List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
+      int size = filesStatuses.size();
       clear();
       try {
         filesStatuses.addAll(RevCommitUtil.getChangedFiles(stashesList.get(stashIndex).getName()));
-        // TODO: cred ca trebuie maximul size-urilor
-        fireTableRowsUpdated(0, filesStatuses.size());
+        fireTableRowsUpdated(0, Math.max(size, filesStatuses.size()) - 1);
       } catch (IOException | GitAPIException exc) {
         LOGGER.error(exc, exc);
       }
