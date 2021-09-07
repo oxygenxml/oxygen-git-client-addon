@@ -785,10 +785,10 @@ public class ListStashesDialog extends JDialog {
         @Override
         public void actionPerformed(ActionEvent e) {
           int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-                  TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
-                  TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
-                  TRANSLATOR.getTranslation(Tags.YES),
-                  TRANSLATOR.getTranslation(Tags.NO));
+              TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
+              TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
+              TRANSLATOR.getTranslation(Tags.YES),
+              TRANSLATOR.getTranslation(Tags.NO));
           if (OKCancelDialog.RESULT_OK == answer) {
             boolean isDropAllStashes = GitAccess.getInstance().dropAllStashes();
             if(isDropAllStashes) {
@@ -809,15 +809,15 @@ public class ListStashesDialog extends JDialog {
      * @param selectedRow   The deleted row
      * @param noOfRows      The initial number of rows
      */
-     private void selectNextRow(Table table, int selectedRow, int noOfRows) {
-       if(noOfRows > 1) {
-         if (selectedRow == noOfRows - 1) {
-           table.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
-         } else {
-           table.setRowSelectionInterval(selectedRow, selectedRow);
-         }
-       }
-     }
+    private void selectNextRow(Table table, int selectedRow, int noOfRows) {
+      if(noOfRows > 1) {
+        if (selectedRow == noOfRows - 1) {
+          table.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
+        } else {
+          table.setRowSelectionInterval(selectedRow, selectedRow);
+        }
+      }
+    }
 
 
     /**

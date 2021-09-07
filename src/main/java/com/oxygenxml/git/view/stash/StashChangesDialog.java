@@ -39,7 +39,7 @@ public class StashChangesDialog extends OKCancelDialog {
   /**
    * A text field for the stash message/description.
    */
-  private JTextField stashDescriptionField;
+  private final JTextField stashDescriptionField = new TextField();
   
   /**
    * The date format.
@@ -97,22 +97,22 @@ public class StashChangesDialog extends OKCancelDialog {
     
     // Informative label message.
     JLabel informativeLabel = new JLabel(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.STASH_INFORMATIVE_MESSAGE)));
-    GridBagConstraints constrains = new GridBagConstraints();
-    constrains.gridx = 0;
-    constrains.gridy = 0;
-    constrains.weightx = 0;
-    constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.NONE;
-    constrains.anchor = GridBagConstraints.WEST;
-    constrains.insets = new Insets(0, 0, 3, 0);
-    panel.add(informativeLabel, constrains);
+    GridBagConstraints constraints = new GridBagConstraints();
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.weightx = 0;
+    constraints.weighty = 0;
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.anchor = GridBagConstraints.WEST;
+    constraints.insets = new Insets(0, 0, 3, 0);
+    panel.add(informativeLabel, constraints);
     
-    JLabel addDescriptionMessage = new JLabel(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.STASH_ADD_DESCRIPTION)));
-    constrains.gridy++;
-    panel.add(addDescriptionMessage, constrains);
+    JLabel addDescriptionMessage = new JLabel(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.STASH_ADD_DESCRIPTION)
+        + ":"));
+    constraints.gridy++;
+    panel.add(addDescriptionMessage, constraints);
 
     // Stash description field.
-    stashDescriptionField = new TextField();
     String description = "WIP on " 
         + GitAccess.getInstance().getBranchInfo().getBranchName() 
         + " [" 
@@ -121,18 +121,18 @@ public class StashChangesDialog extends OKCancelDialog {
     stashDescriptionField.setText(description);
     stashDescriptionField.selectAll();
     stashDescriptionField.setPreferredSize(new Dimension(200, stashDescriptionField.getPreferredSize().height));
-    constrains.gridy ++;
-    constrains.weightx = 1;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    constrains.insets = new Insets(3, 0, 0, 0);
-    panel.add(stashDescriptionField, constrains);
+    constraints.gridy ++;
+    constraints.weightx = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.insets = new Insets(3, 0, 0, 0);
+    panel.add(stashDescriptionField, constraints);
 
     addDescriptionMessage.setLabelFor(stashDescriptionField);
 
-    constrains.gridy++;
-    constrains.weightx = 0;
-    constrains.fill = GridBagConstraints.NONE;
-    constrains.insets = new Insets(5, 0, 0, 0);
+    constraints.gridy++;
+    constraints.weightx = 0;
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.insets = new Insets(5, 0, 0, 0);
     WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
     includeUntrackedCheckBox.setSelected(
         Boolean.parseBoolean(optionsStorage.getOption(OPTION_TAG_INCLUDE_UNTRACKED, Boolean.toString(true))));
@@ -140,13 +140,13 @@ public class StashChangesDialog extends OKCancelDialog {
         e -> optionsStorage.setOption(
             OPTION_TAG_INCLUDE_UNTRACKED,
             Boolean.toString(includeUntrackedCheckBox.isSelected())));
-    panel.add(includeUntrackedCheckBox, constrains);
+    panel.add(includeUntrackedCheckBox, constraints);
     
-    constrains.insets = new Insets(0, 0, 0, 0);
-    constrains.fill = GridBagConstraints.BOTH;
-    constrains.weighty = 1;
-    constrains.gridy ++;
-    panel.add(new JPanel(), constrains);
+    constraints.insets = new Insets(0, 0, 0, 0);
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.weighty = 1;
+    constraints.gridy ++;
+    panel.add(new JPanel(), constraints);
 
   }
 
