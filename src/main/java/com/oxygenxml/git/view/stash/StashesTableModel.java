@@ -1,7 +1,6 @@
 package com.oxygenxml.git.view.stash;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -32,7 +31,7 @@ public class StashesTableModel extends AbstractTableModel {
   /**
    * The internal representation of the model
    */
-  private final List<RevCommit> stashes = Collections.synchronizedList(new ArrayList<>());
+  private final List<RevCommit> stashes = new ArrayList<>();
 
   /**
    * The columns names.

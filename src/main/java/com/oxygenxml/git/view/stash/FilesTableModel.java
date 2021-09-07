@@ -43,7 +43,7 @@ public class FilesTableModel extends AbstractTableModel {
   /**
    * The internal representation of the model
    */
-  private List<FileStatus> filesStatuses = Collections.synchronizedList(new ArrayList<>());
+  private List<FileStatus> filesStatuses = new ArrayList<>();
 
 
   /**
@@ -121,7 +121,7 @@ public class FilesTableModel extends AbstractTableModel {
   public void setFilesStatus(List<FileStatus> filesStatuses) {
     fireTableRowsDeleted(0, getRowCount());
 
-    this.filesStatuses = Collections.synchronizedList(new ArrayList<>(filesStatuses));
+    this.filesStatuses = new ArrayList<>(filesStatuses);
 
     Collections.sort(this.filesStatuses, fileStatusComparator);
 
