@@ -775,6 +775,7 @@ public class ListStashesDialog extends JDialog {
                   stashesTableModel.removeRow(selectedRow);
                   if(stashesTableModel.getRowCount() == 0) {
                     setStashTableButtonsEnabled(false);
+                    affectedFilesTableModel.clear();
                   }
                   selectNextRow(stashesTable, selectedRow, noOfRows);
                 }

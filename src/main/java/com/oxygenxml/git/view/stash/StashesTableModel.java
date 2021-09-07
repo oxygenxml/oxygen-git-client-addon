@@ -6,11 +6,11 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.oxygenxml.git.translator.Tags;
-import com.oxygenxml.git.translator.Translator;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 
 /**
  * Model for stashes table.
@@ -116,7 +116,14 @@ public class StashesTableModel extends AbstractTableModel {
    * Removes all rows.
    */
   public void clear() {
-    stashes.clear();
+    int size = stashes.size();
+    while(!stashes.isEmpty()) {
+      int index = stashes.size() - 1;
+      GitAccess.getInstance().dropStash(index);
+      stashes.remove(index);
+    }
+    
+    this.fireTableRowsUpdated(0, size);
   }
 
 

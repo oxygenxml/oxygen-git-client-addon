@@ -102,7 +102,7 @@ public class FilesTableModel extends AbstractTableModel {
         temp = filesStatuses.get(rowIndex).getChangeType();
         break;
       case FILE_LOCATION_COLUMN:
-        temp = filesStatuses.get(rowIndex).getFileLocation();
+        temp = filesStatuses.get(rowIndex);
         break;
       default:
         break;
@@ -153,7 +153,9 @@ public class FilesTableModel extends AbstractTableModel {
    * Removes all rows.
    */
   public void clear() {
+    int size = filesStatuses.size();
     filesStatuses.clear();
+    fireTableRowsUpdated(0, size);
   }
 
 
@@ -190,9 +192,7 @@ public class FilesTableModel extends AbstractTableModel {
     if(stashIndex >= 0) {
       List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
       try {
-        int size = filesStatuses.size();
-        filesStatuses.clear();
-        fireTableRowsUpdated(0, size);
+        clear();
         filesStatuses.addAll(RevCommitUtil.getChangedFiles(stashesList.get(stashIndex).getName()));
         fireTableRowsUpdated(0, filesStatuses.size());
       } catch (IOException | GitAPIException exc) {
