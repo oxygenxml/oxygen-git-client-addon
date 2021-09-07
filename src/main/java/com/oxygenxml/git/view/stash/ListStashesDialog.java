@@ -305,7 +305,7 @@ public class ListStashesDialog extends JDialog {
     deleteAllstashesButton.addActionListener(deleteAllStashesAction);
 
     deleteAllstashesButton.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES_BUTTON_TOOLTIP));
-    
+
     return deleteAllstashesButton;
   }
 
@@ -809,7 +809,6 @@ public class ListStashesDialog extends JDialog {
           if (OKCancelDialog.RESULT_OK == answer && GitAccess.getInstance().dropAllStashes()) {
             stashesTableModel.clear();
             affectedFilesTableModel.clear();
-            deleteAfterApplyingCheckBox.setEnabled(false);
             setStashTableButtonsEnabled(false);
           }
         }

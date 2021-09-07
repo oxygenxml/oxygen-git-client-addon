@@ -90,10 +90,6 @@ public class RevCommitUtil {
 
         try (RevWalk rw = new RevWalk(repository)) {
           RevCommit commit = rw.parseCommit(head);
-          TreeWalk treeWalk = new TreeWalk(repository);
-          treeWalk.addTree(commit.getTree());
-          treeWalk.setRecursive(false);
-          treeWalk.setFilter(null);
 
           if (commit.getParentCount() > 0) {
             RevCommit oldC = rw.parseCommit(commit.getParent(0));
@@ -102,6 +98,10 @@ public class RevCommitUtil {
 
             if(commit.getParentCount() > 2) {
               oldC = rw.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
+              TreeWalk treeWalk = new TreeWalk(repository);
+              treeWalk.addTree(commit.getTree());
+              treeWalk.setRecursive(false);
+              treeWalk.setFilter(null);
               treeWalk.reset(oldC.getTree().getId());
               while (treeWalk.next()) {
                 String path = treeWalk.getPathString();
@@ -418,7 +418,7 @@ public class RevCommitUtil {
       Repository repository,
       RevCommit current)
       throws IOException, GitAPIException {
-    try (RevWalk revWalk = new RevWalk(repository);) {
+    try (RevWalk revWalk = new RevWalk(repository)) {
       current = revWalk.parseCommit(current.getId());
 
       if (current.getParentCount() > 0) {
@@ -591,7 +591,7 @@ public class RevCommitUtil {
     String path = filePath;
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("====SORTED===");
-      revisions.stream().forEach(r -> LOGGER.debug(r.getFullMessage()));
+      revisions.forEach(r -> LOGGER.debug(r.getFullMessage()));
     }
 
     if (!revisions.isEmpty()) {

@@ -123,7 +123,7 @@ public class FilesTableModel extends AbstractTableModel {
 
     this.filesStatuses = new ArrayList<>(filesStatuses);
 
-    Collections.sort(this.filesStatuses, fileStatusComparator);
+    this.filesStatuses.sort(fileStatusComparator);
 
     fireTableRowsInserted(0, getRowCount());
   }

@@ -7,7 +7,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
