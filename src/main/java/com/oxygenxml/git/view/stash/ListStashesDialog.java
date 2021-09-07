@@ -741,12 +741,12 @@ public class ListStashesDialog extends JDialog {
               boolean wasDeleted = GitAccess.getInstance().dropStash(selectedRow);
               if(wasDeleted) {
                 stashesTableModel.removeRow(selectedRow);
-              }
-              if(stashesTableModel.getRowCount() == 0) {
-                setStashTableButtonsEnabled(false);
-                affectedFilesTableModel.clear();
-              } else {
-                selectNextRow(stashesTable, selectedRow, noOfRows);
+                if(stashesTableModel.getRowCount() == 0) {
+                  setStashTableButtonsEnabled(false);
+                  affectedFilesTableModel.clear();
+                } else {
+                  selectNextRow(stashesTable, selectedRow, noOfRows);
+                }
               }
             }
           }
@@ -797,10 +797,13 @@ public class ListStashesDialog extends JDialog {
                   TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
                   TRANSLATOR.getTranslation(Tags.YES),
                   TRANSLATOR.getTranslation(Tags.NO));
-          if (OKCancelDialog.RESULT_OK == answer && GitAccess.getInstance().dropAllStashes()) {
-            stashesTableModel.clear();
-            affectedFilesTableModel.clear();
-            setStashTableButtonsEnabled(false);
+          if (OKCancelDialog.RESULT_OK == answer) {
+            boolean isDropAllStashes = GitAccess.getInstance().dropAllStashes();
+            if(isDropAllStashes) {
+              stashesTableModel.clear();
+              affectedFilesTableModel.clear();
+              setStashTableButtonsEnabled(false); 
+            }
           }
         }
       };
