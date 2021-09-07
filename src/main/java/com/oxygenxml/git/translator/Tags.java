@@ -1253,16 +1253,10 @@ public class Tags {
    */
   public static final String STASH = "Stash";
   /**
-   * Stash apply failed.
-   */
-  public static final String STASH_APPLY_FAILED = "Stash_Apply_Failed";
-
-  /**
    * Message for when "Revert commit" fails because of uncommitted changes.
    */
   public static final String REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE = 
       "Revert_Commit_Failed_Uncommitted_Changes_Message";
-  
   /**
    * The message in the warning File Status Dialog when Merge Fail because of uncommitted changes
    */
@@ -1397,10 +1391,6 @@ public class Tags {
    */
   public static final String CONFIRMATION_CLEAR_STASHES_MESSAGE = "Confirmation_Clear_Stashes_Message";
   /**
-   * The tooltip for clear stashes button.
-   */
-  public static final String CLEAR_STASHES_BUTTON_TOOLTIP = "Clear_Stashes_Button_Tooltip";
-  /**
    * The tooltip for apply stash button.
    */
   public static final String APPLY_STASH_BUTTON_TOOLTIP = "Apply_Stash_Button_Tooltip";
@@ -1419,7 +1409,7 @@ public class Tags {
   /**
    * Affected files.
    */
-  public static final String AFFECTED_FILES = "Affected_files";
+  public static final String AFFECTED_FILES = "Affected_Files";
 	/**
 	 * Include untracked files message.
 	 */

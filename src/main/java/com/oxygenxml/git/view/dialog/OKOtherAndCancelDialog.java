@@ -22,8 +22,8 @@ import javax.swing.KeyStroke;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
-import ro.sync.basic.util.PlatformDetector;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 import ro.sync.ui.application.OkCancelAndOtherDialogConstants;
 
@@ -91,9 +91,9 @@ public class OKOtherAndCancelDialog extends JDialog {
   public OKOtherAndCancelDialog(Frame parentFrame, String title, boolean modal) {
     super(parentFrame, title, modal ? Dialog.DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
 
-    if (PlatformDetector.isWin()) {
+    if (PlatformDetectionUtil.isWin()) {
       buttonsSize = new Dimension(75, 23);
-    } else if (PlatformDetector.isMacOS()) {
+    } else if (PlatformDetectionUtil.isMacOS()) {
       buttonsSize = new Dimension(80, 26);
     } else {
       buttonsSize = new Dimension(85, 23);
@@ -116,7 +116,7 @@ public class OKOtherAndCancelDialog extends JDialog {
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), cancelAction);
     getRootPane().getActionMap().put(cancelAction, cancelAction);
 
-    int bw = PlatformDetector.isMacOS() ? OkCancelAndOtherDialogConstants.DLG_MARGIN_GAP_MAC :
+    int bw = PlatformDetectionUtil.isMacOS() ? OkCancelAndOtherDialogConstants.DLG_MARGIN_GAP_MAC :
             OkCancelAndOtherDialogConstants.DLG_MARGIN_GAP_WIN;
 
     JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -154,7 +154,7 @@ public class OKOtherAndCancelDialog extends JDialog {
     });
 
     buttonsPanel.add(Box.createHorizontalGlue());
-    if (PlatformDetector.isMacOS()) {
+    if (PlatformDetectionUtil.isMacOS()) {
       buttonsPanel.add(cancelButton);
       buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_MAC));
       buttonsPanel.add(otherButton);
@@ -198,7 +198,7 @@ public class OKOtherAndCancelDialog extends JDialog {
       int textHeight = button.getFontMetrics(button.getFont()).getHeight();
       int allocW = buttonsSize.width - button.getMargin().left - button.getMargin().right;
       int allocH = buttonsSize.height - button.getMargin().top - button.getMargin().bottom;
-      if (PlatformDetector.isMacOS()) {
+      if (PlatformDetectionUtil.isMacOS()) {
         allocW -= 15;
         allocH -= 4;
       }
