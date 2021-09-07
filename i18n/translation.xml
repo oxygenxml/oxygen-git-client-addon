@@ -16,11 +16,11 @@
     </key>
     <key value="Reset_file_x_to_this_commit">
         <comment>Checkout this version of a file at a given revision.</comment>
-        <val lang="en_US">Reset {0} to this commit</val>
-        <val lang="de_DE">Reset {0} to this commit</val>
-        <val lang="fr_FR">Reset {0} to this commit</val>
-        <val lang="ja_JP">Reset {0} to this commit</val>
-        <val lang="nl_NL">Reset {0} to this commit</val>
+        <val lang="en_US">Reset "{0}" to this commit</val>
+        <val lang="de_DE">Reset "{0}" to this commit</val>
+        <val lang="fr_FR">Reset "{0}" to this commit</val>
+        <val lang="ja_JP">Reset "{0}" to this commit</val>
+        <val lang="nl_NL">Reset "{0}" to this commit</val>
     </key>
     <key value="Commit_before_pushing">
         <comment>Message shown when a branch is unborn and we need to commit
@@ -81,11 +81,11 @@
     </key>   	
     <key value="Open_the_working_copy_version_of">
         <comment>Action name to open the working copy for a file at a given revision.</comment>
-        <val lang="en_US">Open the working copy version of {0}</val>
-        <val lang="de_DE">Open the working copy version of {0}</val>
-        <val lang="fr_FR">Ouvrir la version de la copie de travail de {0}</val>
-        <val lang="ja_JP">Open the working copy version of {0}</val>
-        <val lang="nl_NL">Open the working copy version of {0}</val>
+        <val lang="en_US">Open the working copy version of "{0}"</val>
+        <val lang="de_DE">Open the working copy version of "{0}"</val>
+        <val lang="fr_FR">Ouvrir la version de la copie de travail de "{0}"</val>
+        <val lang="ja_JP">Open the working copy version of "{0}"</val>
+        <val lang="nl_NL">Open the working copy version of "{0}"</val>
     </key>
      <key value="Open_working_copy_version">
         <comment>Open working copy version.</comment>
@@ -97,11 +97,11 @@
     </key>
     <key value="Open_this_version_of_filename">
         <comment>Open this version of file.</comment>
-        <val lang="en_US">Open this version of {0}</val>
-        <val lang="de_DE">Open this version of {0}</val>
-        <val lang="fr_FR">Ouvrir cette version de {0}</val>
-        <val lang="ja_JP">Open this version of {0}</val>
-        <val lang="nl_NL">Open this version of {0}</val>
+        <val lang="en_US">Open this version of "{0}"</val>
+        <val lang="de_DE">Open this version of "{0}"</val>
+        <val lang="fr_FR">Ouvrir cette version de "{0}"</val>
+        <val lang="ja_JP">Open this version of "{0}"</val>
+        <val lang="nl_NL">Open this version of "{0}"</val>
     </key>
     <key value="See_all_commits_in_Git_History">
         <comment>See all commits in Git History.</comment>
@@ -1399,27 +1399,27 @@
     </key>
     <key value="Compare_file_with_working_tree_version">
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
-        <val lang="en_US">Compare {0} with working copy version</val>
-        <val lang="de_DE">Vergleiche {0} mit der lokalen Version</val>
-        <val lang="fr_FR">Comparer {0} avec la version de travail</val>
-        <val lang="ja_JP">Compare {0} with working copy version</val>
-        <val lang="nl_NL">Vergelijken {0} met hudige werkkopieversie</val>
+        <val lang="en_US">Compare "{0}" with working copy version</val>
+        <val lang="de_DE">Vergleiche "{0}" mit der lokalen Version</val>
+        <val lang="fr_FR">Comparer "{0}" avec la version de travail</val>
+        <val lang="ja_JP">Compare "{0}" with working copy version</val>
+        <val lang="nl_NL">Vergelijken "{0}" met hudige werkkopieversie</val>
     </key>
     <key value="Compare_file_with_previous_version">
         <comment>Action name to compare a file with its previous version.</comment>
-        <val lang="en_US">Compare {0} with previous version</val>
-        <val lang="de_DE">Vergleiche {0} mit der Vorversion</val>
-        <val lang="fr_FR">Comparer {0} avec la version précédente</val>
-        <val lang="ja_JP">Compare {0} with previous version</val>
-        <val lang="nl_NL">Vergelijken {0} met vorige versie</val>
+        <val lang="en_US">Compare "{0}" with previous version</val>
+        <val lang="de_DE">Vergleiche "{0}" mit der Vorversion</val>
+        <val lang="fr_FR">Comparer "{0}" avec la version précédente</val>
+        <val lang="ja_JP">Compare "{0}" with previous version</val>
+        <val lang="nl_NL">Vergelijken "{0}" met vorige versie</val>
     </key>
     <key value="Open_file">
         <comment>Open file action name.</comment>
-        <val lang="en_US">Open {0}</val>
-        <val lang="de_DE">Öffne {0}</val>
-        <val lang="fr_FR">Ouvrir {0}</val>
-        <val lang="ja_JP">Open {0}</val>
-        <val lang="nl_NL">Open {0}</val>
+        <val lang="en_US">Open "{0}"</val>
+        <val lang="de_DE">Öffne "{0}"</val>
+        <val lang="fr_FR">Ouvrir "{0}"</val>
+        <val lang="ja_JP">Open "{0}"</val>
+        <val lang="nl_NL">Open "{0}"</val>
     </key>
     <key value="Compare_with_working_tree_version">
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
