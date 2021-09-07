@@ -63,7 +63,7 @@ import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.branches.BranchTreeMenuActionsProvider;
 import com.oxygenxml.git.view.branches.BranchesUtil;
-import com.oxygenxml.git.view.dialog.BranchStatusDialog;
+import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
@@ -253,14 +253,14 @@ public class ToolbarPanel extends JPanel {
   private ToolbarButton branchSelectButton;
 
   /**
-   * The stash all changes item.
+   * Stash changes.
    */
-  private JMenuItem stashChangesMenuItem;
+  private AbstractAction stashChangesAction;
 
   /**
-   * The list stahses item.
+   * List stashes.
    */
-  private JMenuItem listStashesMenuItem;
+  private AbstractAction listStashesAction;
 
   /**
    * Constructor.
@@ -500,7 +500,8 @@ public class ToolbarPanel extends JPanel {
           LOGGER.error(e1, e1);
         }
         if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-          int answer = BranchStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH),
+          int answer = BranchSwitchConfirmationDialog.showQuestionMessage(
+              TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH),
               TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
               TRANSLATOR.getTranslation(Tags.STASH_CHANGES),
               TRANSLATOR.getTranslation(Tags.MOVE_CHANGES),
@@ -796,32 +797,6 @@ public class ToolbarPanel extends JPanel {
     SwingUtilities.invokeLater(() -> branchesSplitMenuButton.setText(branchInfoTextFinal));
 
   }
-
-  /**
-   * Refresh the status for stash button.
-   */
-  public void refreshStashButton() {
-    GitAccess gitAccess = GitAccess.getInstance();
-    Collection<RevCommit> stashes = gitAccess.listStashes();
-    noOfStashes = stashes == null ? 0 : stashes.size();
-
-    List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
-    boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
-    if(!existsLocalFiles) {
-      List<FileStatus> stagedFiles = gitAccess.getStagedFiles();
-      existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
-    }
-
-    stashChangesMenuItem.setEnabled(existsLocalFiles);
-
-    Collection<RevCommit> stashesList = GitAccess.getInstance().listStashes();
-    boolean existsStashes = stashesList != null && !stashesList.isEmpty();
-
-    listStashesMenuItem.setEnabled(existsStashes);
-
-    stashButton.setEnabled(existsLocalFiles || existsStashes);
-  }
-
 
   /**
    * Updates the tool tip of "Push" Button.
@@ -1309,45 +1284,45 @@ public class ToolbarPanel extends JPanel {
 
 
   /**
-   * Add the stash actions (stashes) to the Stash menu.
+   * Add the stash actions to the Stash menu.
    * 
    * @param splitMenuButton The menu button to add to.
-   * 
-   * @return <code>true</code> if the button has at least an action.
    */
   private void addStashActionsToMenu(SplitMenuButton splitMenuButton) {
-    ButtonGroup stashActionsGroup = new ButtonGroup();
+    stashChangesAction = createStashChangesAction();
+    splitMenuButton.addActionToMenu(stashChangesAction, false);
 
-    ActionListener menuItemActionListener = e -> {
-      if (e.getSource() instanceof JMenuItem) {
-        splitMenuButton.setAction(((JMenuItem) e.getSource()).getAction());
-      }
-    };
-
-    Action stashAChangesAction = createStashChangesAction();
-    stashChangesMenuItem = new JMenuItem(stashAChangesAction);
-
-    stashChangesMenuItem.addActionListener(menuItemActionListener);
-    splitMenuButton.add(stashChangesMenuItem);
-    stashActionsGroup.add(stashChangesMenuItem);  
-
-    Action stashesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.LIST_STASHES)) {
-
+    listStashesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.LIST_STASHES)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         ListStashesDialog stashesDialog = new ListStashesDialog();
         stashesDialog.setVisible(true);   
       }
-
     };
+    splitMenuButton.addActionToMenu(listStashesAction, false);
+  }
+  
+  /**
+   * Refresh the status for stash button.
+   */
+  public void refreshStashButton() {
+    GitAccess gitAccess = GitAccess.getInstance();
+    Collection<RevCommit> stashes = gitAccess.listStashes();
+    noOfStashes = stashes == null ? 0 : stashes.size();
 
-    listStashesMenuItem = new JMenuItem(stashesAction);
-    listStashesMenuItem.addActionListener(menuItemActionListener);
+    List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+    boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
+    if(!existsLocalFiles) {
+      List<FileStatus> stagedFiles = gitAccess.getStagedFiles();
+      existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
+    }
+    stashChangesAction.setEnabled(existsLocalFiles);
 
+    Collection<RevCommit> stashesList = GitAccess.getInstance().listStashes();
+    boolean existsStashes = stashesList != null && !stashesList.isEmpty();
+    listStashesAction.setEnabled(existsStashes);
 
-    splitMenuButton.add(listStashesMenuItem);
-    stashActionsGroup.add(listStashesMenuItem);
-
+    stashButton.setEnabled(existsLocalFiles || existsStashes);
   }
 
 
@@ -1405,7 +1380,7 @@ public class ToolbarPanel extends JPanel {
    * 
    * @return the "Stash changes" action
    */
-  private Action createStashChangesAction() {
+  private AbstractAction createStashChangesAction() {
     return new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_CHANGES)) {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -1429,7 +1404,7 @@ public class ToolbarPanel extends JPanel {
           }
         } else {
           PluginWorkspaceProvider.getPluginWorkspace()
-          .showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+              .showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
         }
       }
     };

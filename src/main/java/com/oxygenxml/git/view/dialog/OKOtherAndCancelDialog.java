@@ -36,17 +36,17 @@ import ro.sync.ui.application.OkCancelAndOtherDialogConstants;
 public class OKOtherAndCancelDialog extends JDialog {
 
   /**
-   * The button for first option.
+   * The button for the OK option.
    */
   private final Button okButton = new Button("OK");
 
   /**
-   * The button for second option.
+   * The button for the "Other" option.
    */
   private final Button otherButton = new Button("Other");
 
   /**
-   * The cancel button.
+   * The "Cancel" button.
    */
   private final Button cancelButton = new Button("Cancel");
 
@@ -56,12 +56,12 @@ public class OKOtherAndCancelDialog extends JDialog {
   public static final int RESULT_CANCEL = 0;
 
   /**
-   * The result for option 1.
+   * The result for OK.
    */
   public static final int RESULT_OK = 1;
 
   /**
-   * The result for option 2.
+   * The result for Other.
    */
   public static final int RESULT_OTHER = 2;
 
@@ -132,39 +132,40 @@ public class OKOtherAndCancelDialog extends JDialog {
     gridBagConstr.gridheight = 1;
     mainPanel.add(contentPanel, gridBagConstr);
 
-    // Control buttons panel
-    JPanel controlButtonsPanel = new JPanel();
-
-    controlButtonsPanel.setLayout(new BoxLayout(controlButtonsPanel, BoxLayout.X_AXIS));
+    // Buttons panel
+    JPanel buttonsPanel = new JPanel();
+    buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
+    
     okButton.addActionListener(e -> {
       answer = RESULT_OK;
       dispose();
     });
+    
     otherButton.addActionListener(e -> {
       answer = RESULT_OTHER;
       dispose();
     });
 
+    // TODO: Why set text here when you also set text when creating the field in class
     cancelButton.setText(Translator.getInstance().getTranslation(Tags.CANCEL));
-
     cancelButton.addActionListener(e -> {
       answer = RESULT_CANCEL;
       dispose();
     });
 
-    controlButtonsPanel.add(Box.createHorizontalGlue());
+    buttonsPanel.add(Box.createHorizontalGlue());
     if (PlatformDetector.isMacOS()) {
-      controlButtonsPanel.add(cancelButton);
-      controlButtonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_MAC));
-      controlButtonsPanel.add(otherButton);
-      controlButtonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_MAC));
-      controlButtonsPanel.add(okButton);
+      buttonsPanel.add(cancelButton);
+      buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_MAC));
+      buttonsPanel.add(otherButton);
+      buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_MAC));
+      buttonsPanel.add(okButton);
     } else {
-      controlButtonsPanel.add(okButton);
-      controlButtonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_WIN));
-      controlButtonsPanel.add(otherButton);
-      controlButtonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_WIN));
-      controlButtonsPanel.add(cancelButton);
+      buttonsPanel.add(okButton);
+      buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_WIN));
+      buttonsPanel.add(otherButton);
+      buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_WIN));
+      buttonsPanel.add(cancelButton);
     }
 
     gridBagConstr.gridx = 0;
@@ -176,7 +177,7 @@ public class OKOtherAndCancelDialog extends JDialog {
     gridBagConstr.anchor = GridBagConstraints.EAST;
     gridBagConstr.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstr.insets = new Insets(5, 0, 0, 0);
-    mainPanel.add(controlButtonsPanel, gridBagConstr);
+    mainPanel.add(buttonsPanel, gridBagConstr);
 
     setContentPane(mainPanel);
 

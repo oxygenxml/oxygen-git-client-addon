@@ -24,7 +24,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.GitTreeNode;
-import com.oxygenxml.git.view.dialog.BranchStatusDialog;
+import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
 import com.oxygenxml.git.view.stash.StashChangesDialog;
@@ -376,7 +376,7 @@ public class BranchTreeMenuActionsProvider {
    * @return The option chosen by the user. OKCancelDialog#RESULT_OK or OKCancelDialog#RESULT_CANCEL.
    */
   private int showUncommittedChangesWhenChangingBranchMsg() {
-    return BranchStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH),
+    return BranchSwitchConfirmationDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH),
         TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
         TRANSLATOR.getTranslation(Tags.STASH_CHANGES),
         TRANSLATOR.getTranslation(Tags.MOVE_CHANGES),

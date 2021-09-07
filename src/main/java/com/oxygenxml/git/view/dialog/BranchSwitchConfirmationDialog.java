@@ -17,9 +17,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +28,7 @@ import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
-public class BranchStatusDialog extends OKOtherAndCancelDialog {
+public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
   /**
    * Logger for logging.
    */
@@ -48,51 +45,6 @@ public class BranchStatusDialog extends OKOtherAndCancelDialog {
   private static final int FILES_SCROLLPANE_PREFERRED_HEIGHT = 100;
 
   /**
-   * Minimum width.
-   */
-  private static final int WARN_MESSAGE_DLG_MINIMUM_WIDTH = 300;
-
-  /**
-   * Minimum height.
-   */
-  private static final int WARN_MESSAGE_DLG_MINIMUM_HEIGHT = 150;
-
-  /**
-   * Document with custom wrapping.
-   */
-  private static class CustomWrapDocument extends DefaultStyledDocument {
-
-    /**
-     * Maximum number of characters without a newline.
-     */
-    private static final int MAX_NO_OF_CHARS_PER_LINE = 100;
-
-    @Override
-    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-      StringBuilder sb = new StringBuilder();
-      int charsSinceLastNewline = 0;
-      char[] charArray = str.toCharArray();
-      for (char ch : charArray) {
-        if (charsSinceLastNewline >= MAX_NO_OF_CHARS_PER_LINE) {
-          if (Character.isWhitespace(ch)) {
-            sb.append('\n');
-            charsSinceLastNewline = 0;
-          } else {
-            sb.append(ch);
-          }
-        } else {
-          if (ch == '\n') {
-            charsSinceLastNewline = 0;
-          }
-          sb.append(ch);
-        }
-        charsSinceLastNewline++;
-      }
-      super.insertString(offs, sb.toString(), a);
-    }
-  }
-
-  /**
    * Constructor.
    *
    * @param iconPath          Icon path.
@@ -104,7 +56,7 @@ public class BranchStatusDialog extends OKOtherAndCancelDialog {
    * @param option2ButtonName Text to be written on the button in case the answer to the question is option 2
    * @param cancelButtonName  Text to be written on the button in case the answer to the question is negative
    */
-  private BranchStatusDialog(
+  private BranchSwitchConfirmationDialog(
           String iconPath,
           String title,
           List<String> targetFiles,
@@ -244,7 +196,7 @@ public class BranchStatusDialog extends OKOtherAndCancelDialog {
           String option1ButtonName,
           String option2ButtonName,
           String cancelButtonName) {
-    BranchStatusDialog dialog = new BranchStatusDialog(Icons.QUESTION_ICON, title,
+    BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(Icons.QUESTION_ICON, title,
             null, null, questionMessage, option1ButtonName, option2ButtonName, cancelButtonName);
 
     dialog.setVisible(true);
