@@ -376,12 +376,16 @@ public class BranchTreeMenuActionsProvider {
    * @return The option chosen by the user. OKCancelDialog#RESULT_OK or OKCancelDialog#RESULT_CANCEL.
    */
   private int showUncommittedChangesWhenChangingBranchMsg() {
-    return BranchSwitchConfirmationDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH),
-        TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
-        TRANSLATOR.getTranslation(Tags.STASH_CHANGES),
-        TRANSLATOR.getTranslation(Tags.MOVE_CHANGES),
-        TRANSLATOR.getTranslation(Tags.CANCEL)
-        );
+    BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH),
+            TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
+            TRANSLATOR.getTranslation(Tags.STASH_CHANGES),
+            TRANSLATOR.getTranslation(Tags.MOVE_CHANGES),
+            TRANSLATOR.getTranslation(Tags.CANCEL)
+    );
+
+    dialog.setVisible(true);
+
+    return dialog.getResult();
   }
 
 
