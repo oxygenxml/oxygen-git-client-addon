@@ -114,7 +114,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       label.setText(text);
       try {
         String toolTipText = null;
-        if (leaf) {
+        if (GitAccess.getInstance().isRepoInitialized() && leaf) {
           if(path.contains(Constants.R_REMOTES)) {
             toolTipText = constructRemoteBranchToolTip(text, path);
           } else if (path.contains(Constants.R_HEADS)) {
@@ -224,8 +224,9 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * 
    * @throws GitAPIException
    * @throws IOException
+   * @throws NoRepositorySelected 
    */
-  private String constructLocalBranchToolTip(String nameBranch) throws GitAPIException, IOException {
+  private String constructLocalBranchToolTip(String nameBranch) throws GitAPIException, IOException, NoRepositorySelected {
     StringBuilder toolTipText = new StringBuilder();
     PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(nameBranch).getAuthorIdent();
     String remoteBranchName = GitAccess.getInstance().getUpstreamBranchShortNameFromConfig(nameBranch);

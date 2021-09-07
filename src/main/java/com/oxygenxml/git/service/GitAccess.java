@@ -2345,10 +2345,11 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException 
 	 * @throws IOException 
+	 * @throws NoRepositorySelected 
 	 */
-	public RevCommit getLatestCommitOnCurrentBranch() throws GitAPIException, IOException {
+	public RevCommit getLatestCommitOnCurrentBranch() throws GitAPIException, IOException, NoRepositorySelected {
+	  Repository repo = getRepository();
 	  String branchNAme = getBranchInfo().getBranchName();
-	  Repository repo = git.getRepository();
 	  RevWalk revWalk = (RevWalk) git.log().add(repo.resolve(branchNAme)).call();
 	  revWalk.sort(RevSort.COMMIT_TIME_DESC);
 	  return revWalk.next();
@@ -2364,9 +2365,10 @@ public class GitAccess {
    * 
    * @throws GitAPIException 
    * @throws IOException 
+	 * @throws NoRepositorySelected 
    */
-  public RevCommit getLatestCommitForBranch (String branchNAme) throws GitAPIException, IOException {
-    Repository repo = git.getRepository();
+  public RevCommit getLatestCommitForBranch (String branchNAme) throws GitAPIException, IOException, NoRepositorySelected {
+    Repository repo = getRepository();
     RevWalk revWalk = (RevWalk) git.log().add(repo.resolve(branchNAme)).call();
     revWalk.sort(RevSort.COMMIT_TIME_DESC);
     return revWalk.next();
