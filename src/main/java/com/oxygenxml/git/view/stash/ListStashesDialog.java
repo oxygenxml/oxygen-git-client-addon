@@ -770,16 +770,7 @@ public class ListStashesDialog extends JDialog {
           if (!stashes.isEmpty() && selectedRow >= 0 && selectedRow < noOfRows) {
             try {
               if(deleteAfterApplyingCheckBox.isSelected()) {
-                StashApplyStatus applyStashStatus =
-                        GitAccess.getInstance().popStash(stashes.get(selectedRow).getName());
-                if(applyStashStatus == StashApplyStatus.APPLIED_SUCCESSFULLY) {
-                  stashesTableModel.removeRow(selectedRow);
-                  if(stashesTableModel.getRowCount() == 0) {
-                    setStashTableButtonsEnabled(false);
-                    affectedFilesTableModel.clear();
-                  }
-                  selectNextRow(stashesTable, selectedRow, noOfRows);
-                }
+                popStash(stashes, selectedRow, noOfRows);
               } else {
                 GitAccess.getInstance().applyStash(stashes.get(selectedRow).getName());
               }
@@ -832,8 +823,31 @@ public class ListStashesDialog extends JDialog {
          }
        }
      }
-     
-     
+
+
+    /**
+     * Performs the pop stash operation.
+     *
+     * @param stashes              List of stashes.
+     * @param indexStashToDelete   The index of stash to be deleted.
+     * @param noOfStashes          The number of total stashes.
+     *
+     * @throws GitAPIException     When the operation can't be applied.
+     */
+    private void popStash(List<RevCommit> stashes, int indexStashToDelete, int noOfStashes) throws GitAPIException {
+      StashApplyStatus applyStashStatus =
+              GitAccess.getInstance().popStash(stashes.get(indexStashToDelete).getName());
+      if(applyStashStatus == StashApplyStatus.APPLIED_SUCCESSFULLY) {
+        stashesTableModel.removeRow(indexStashToDelete);
+        if(stashesTableModel.getRowCount() == 0) {
+          setStashTableButtonsEnabled(false);
+          affectedFilesTableModel.clear();
+        }
+        selectNextRow(stashesTable, indexStashToDelete, noOfStashes);
+      }
+
+     }
+
   }
 
 }
