@@ -102,7 +102,7 @@ public class FilesTableModel extends AbstractTableModel {
         temp = filesStatuses.get(rowIndex).getChangeType();
         break;
       case FILE_LOCATION_COLUMN:
-        temp = filesStatuses.get(rowIndex);
+        temp = filesStatuses.get(rowIndex).getFileLocation();
         break;
       default:
         break;

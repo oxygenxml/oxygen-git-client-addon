@@ -8,7 +8,6 @@ import javax.swing.table.AbstractTableModel;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -19,11 +18,6 @@ import com.oxygenxml.git.service.GitAccess;
  * @author Alex_Smarandache
  */
 public class StashesTableModel extends AbstractTableModel {
-
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = Logger.getLogger(FilesTableModel.class);
 
   /**
    * Constant for the index representing the stash index.
@@ -43,7 +37,7 @@ public class StashesTableModel extends AbstractTableModel {
   /**
    * The columns names.
    */
-  private String[] columnsNames = new String[]{
+  private static final String[] COLUMNS_NAMES = new String[]{
     Translator.getInstance().getTranslation(Tags.ID),
             Translator.getInstance().getTranslation(Tags.DESCRIPTION)
   };
@@ -114,7 +108,7 @@ public class StashesTableModel extends AbstractTableModel {
 
   @Override
   public String getColumnName(int col) {
-    return columnsNames[col];
+    return COLUMNS_NAMES[col];
   }
 
 

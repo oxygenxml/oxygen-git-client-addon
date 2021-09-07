@@ -26,6 +26,8 @@ import ro.sync.exml.workspace.api.standalone.ui.TextField;
 
 /**
  * Dialog shown when stashing changes.
+ * 
+ * @author Alex Smarandache
  */
 public class StashChangesDialog extends OKCancelDialog {
 
