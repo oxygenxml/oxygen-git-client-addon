@@ -197,7 +197,7 @@ public class FlatView7Test extends FlatViewTestBase {
     sleep(200);
     
     expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile300000000000000000000000000000000000000 ... <br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile300000000000000000000000000000000000000...<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
@@ -207,7 +207,7 @@ public class FlatView7Test extends FlatViewTestBase {
     );  
     
     expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile200000000000000000000000000000000000000 ... <br>&#x25AA; Date, Hour "
+        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile200000000000000000000000000000000000000...<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
         + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();

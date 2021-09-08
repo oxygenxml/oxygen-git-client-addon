@@ -544,6 +544,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     
     JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
     yesButton.doClick();
+    flushAWT();
     sleep(1000);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());
