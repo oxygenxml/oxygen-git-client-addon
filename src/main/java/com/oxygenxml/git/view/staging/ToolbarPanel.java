@@ -15,7 +15,6 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -30,6 +29,7 @@ import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import com.oxygenxml.git.view.stash.StashUtil;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -56,7 +56,6 @@ import com.oxygenxml.git.service.RepositoryUnavailableException;
 import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
-import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -76,11 +75,9 @@ import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
-import com.oxygenxml.git.view.stash.StashChangesDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
@@ -521,9 +518,13 @@ public class ToolbarPanel extends JPanel {
 
           int answer = dialog.getResult();
 
-          if( (answer == OKOtherAndCancelDialog.RESULT_OTHER) ||
-              (answer == OKOtherAndCancelDialog.RESULT_OK && stashChanges())) {
+          if(answer == OKOtherAndCancelDialog.RESULT_OTHER) {
             tryCheckingOutBranch(branchName);
+          } else if(answer == OKOtherAndCancelDialog.RESULT_OK) {
+            boolean wasStashCreated = StashUtil.stashChanges();
+            if(wasStashCreated) {
+              tryCheckingOutBranch(branchName);
+            }
           } else {
             restoreCurrentBranchSelectionInMenu();
           }
@@ -1300,7 +1301,12 @@ public class ToolbarPanel extends JPanel {
    * @param splitMenuButton The menu button to add to.
    */
   private void addStashActionsToMenu(SplitMenuButton splitMenuButton) {
-    stashChangesAction = createStashChangesAction();
+    stashChangesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_CHANGES)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        StashUtil.stashChanges();
+      }
+    };
     splitMenuButton.addActionToMenu(stashChangesAction, false);
 
     listStashesAction = new AbstractAction(TRANSLATOR.getTranslation(Tags.LIST_STASHES)) {
@@ -1337,38 +1343,7 @@ public class ToolbarPanel extends JPanel {
   }
 
 
-  /**
-   * Tries to creates a new stash.
-   *
-   * <code>True</code> if the stash was created.
-   */
-  public static boolean stashChanges() {
-    boolean successfullyCreated = false;
-    SimpleDateFormat commitDateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
 
-    if (GIT_ACCESS.getConflictingFiles().isEmpty()) {
-      StashChangesDialog stashDialog = new StashChangesDialog();
-      stashDialog.setVisible(true);
-      if (stashDialog.getResult() == OKCancelDialog.RESULT_OK) {
-        String description = stashDialog.getStashMessage();
-
-        if (description.isEmpty()) {
-          description = "WIP on "
-                  + GIT_ACCESS.getBranchInfo().getBranchName()
-                  + " ["
-                  + commitDateFormat.format(new Date())
-                  + "]";
-        }
-        successfullyCreated = GIT_ACCESS.createStash(stashDialog.shouldIncludeUntracked(), description) != null;
-      }
-    } else {
-      PluginWorkspaceProvider.getPluginWorkspace()
-              .showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-    }
-
-
-    return successfullyCreated;
-  }
 
 
   /**
@@ -1418,56 +1393,7 @@ public class ToolbarPanel extends JPanel {
       }
     };
   }
-
-
-  /**
-   * Create the "Stash changes" action.
-   * 
-   * @return the "Stash changes" action
-   */
-  private AbstractAction createStashChangesAction() {
-    return new AbstractAction(TRANSLATOR.getTranslation(Tags.STASH_CHANGES)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if(stashCanBeCreated()) {
-          StashChangesDialog dialog = new StashChangesDialog();
-          dialog.setVisible(true);
-          if(dialog.getResult() == OKCancelDialog.RESULT_OK) {
-            String description = dialog.getStashMessage();
-
-            if(description.isEmpty()) {
-              description = "WIP on " 
-                  + GitAccess.getInstance().getBranchInfo().getBranchName() 
-                  + " [" 
-                  + commitDateFormat.format(new Date())
-                  + "]";
-            } 
-
-            GitAccess.getInstance().createStash(dialog.shouldIncludeUntracked(), description);
-            Collection<RevCommit> stashes = GitAccess.getInstance().listStashes();
-            noOfStashes = stashes != null ? stashes.size() : 0;
-          }
-        } else {
-          PluginWorkspaceProvider.getPluginWorkspace()
-              .showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-        }
-      }
-    };
-  }
-
-
-  /**
-   * @return <code>true</code> if the stash can be created.
-   */
-  private boolean stashCanBeCreated() {
-    List<FileStatus> unstagedFiles = GitAccess.getInstance().getUnstagedFiles();
-    boolean isConflict =  unstagedFiles != null 
-        && !unstagedFiles.isEmpty() 
-        && unstagedFiles.stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
-
-    return !isConflict;
-  }
-
+  
 
   /**
    * Create the "Push" action.

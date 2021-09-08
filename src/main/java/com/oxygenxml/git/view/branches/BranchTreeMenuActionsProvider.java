@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
+import com.oxygenxml.git.view.stash.StashUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -151,9 +152,12 @@ public class BranchTreeMenuActionsProvider {
               ctrl.getGitAccess().setBranch(
                   BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
               BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
-            } else if (answer == OKOtherAndCancelDialog.RESULT_OK && ToolbarPanel.stashChanges()) {
-              ctrl.getGitAccess().setBranch(
-                  BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL)); 
+            } else if (answer == OKOtherAndCancelDialog.RESULT_OK) {
+              boolean wasStashCreated = StashUtil.stashChanges();
+              if(wasStashCreated) {
+                ctrl.getGitAccess().setBranch(
+                        BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
+              }
             }
           } else {
             ctrl.getGitAccess().setBranch(
