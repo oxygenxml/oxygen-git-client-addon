@@ -129,7 +129,13 @@ public class ToolbarPanel extends JPanel {
   /**
    * The git access.
    */
-  private static final GitAccess gitAccess = GitAccess.getInstance();
+  private static final GitAccess GIT_ACCESS = GitAccess.getInstance();
+  
+  /**
+   * The value starting from which the numbers will be aligned
+   * to the left in the toolbar buttons, instead of centered.
+   */
+  private static final int MAX_SINGLE_DIGIT_NUMBER = 9;
 
   /**
    * The font size of the push/pull counters.
@@ -516,9 +522,7 @@ public class ToolbarPanel extends JPanel {
           int answer = dialog.getResult();
 
           if( (answer == OKOtherAndCancelDialog.RESULT_OTHER) ||
-              (answer == OKOtherAndCancelDialog.RESULT_OK && 
-              stashChanges())
-              ) {
+              (answer == OKOtherAndCancelDialog.RESULT_OK && stashChanges())) {
             tryCheckingOutBranch(branchName);
           } else {
             restoreCurrentBranchSelectionInMenu();
@@ -681,9 +685,9 @@ public class ToolbarPanel extends JPanel {
    */
   public void refresh() {
 
-    this.pullsBehind = gitAccess.getPullsBehind();
+    this.pullsBehind = GIT_ACCESS.getPullsBehind();
     try {
-      this.pushesAhead = gitAccess.getPushesAhead();
+      this.pushesAhead = GIT_ACCESS.getPushesAhead();
     } catch (RepoNotInitializedException e) {
       this.pushesAhead = -1;
       LOGGER.debug(e, e);
@@ -700,12 +704,12 @@ public class ToolbarPanel extends JPanel {
 
     Repository repo = null;
     try {
-      repo = gitAccess.getRepository();
+      repo = GIT_ACCESS.getRepository();
     } catch (NoRepositorySelected e) {
       LOGGER.debug(e, e);
     }
 
-    BranchInfo branchInfo = gitAccess.getBranchInfo();
+    BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     String currentBranchName = branchInfo.getBranchName();
     String branchInfoText = "";
     if (branchInfo.isDetached()) {
@@ -729,7 +733,7 @@ public class ToolbarPanel extends JPanel {
       if (currentBranchName != null && !currentBranchName.isEmpty()) {
         branchInfoText = "<html><b>" + currentBranchName + "</b></html>";
 
-        String upstreamBranchFromConfig = gitAccess.getUpstreamBranchShortNameFromConfig(currentBranchName);
+        String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
         boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
 
         String upstreamShortestName = 
@@ -1156,7 +1160,7 @@ public class ToolbarPanel extends JPanel {
         if (pullsBehind > 0) {
           noOfPullsBehindString += pullsBehind;
         }
-        if (pullsBehind > 9) {
+        if (pullsBehind > MAX_SINGLE_DIGIT_NUMBER) {
           setHorizontalAlignment(SwingConstants.LEFT);
         } else {
           setHorizontalAlignment(SwingConstants.CENTER);
@@ -1264,7 +1268,7 @@ public class ToolbarPanel extends JPanel {
         if (noOfStashes > 0) {
           noOfStashesString = Integer.toString(noOfStashes);
         }
-        if (noOfStashes > 9) {
+        if (noOfStashes > MAX_SINGLE_DIGIT_NUMBER) {
           stashButton.setHorizontalAlignment(SwingConstants.LEFT);
         } else {
           stashButton.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1314,13 +1318,13 @@ public class ToolbarPanel extends JPanel {
    * Refresh the status for stash button.
    */
   public void refreshStashButton() {
-    Collection<RevCommit> stashes = gitAccess.listStashes();
+    Collection<RevCommit> stashes = GIT_ACCESS.listStashes();
     noOfStashes = stashes == null ? 0 : stashes.size();
 
-    List<FileStatus> unstagedFiles = gitAccess.getUnstagedFiles();
+    List<FileStatus> unstagedFiles = GIT_ACCESS.getUnstagedFiles();
     boolean existsLocalFiles = unstagedFiles != null && !unstagedFiles.isEmpty();
     if(!existsLocalFiles) {
-      List<FileStatus> stagedFiles = gitAccess.getStagedFiles();
+      List<FileStatus> stagedFiles = GIT_ACCESS.getStagedFiles();
       existsLocalFiles = stagedFiles != null && !stagedFiles.isEmpty();
     }
     stashChangesAction.setEnabled(existsLocalFiles);
@@ -1342,7 +1346,7 @@ public class ToolbarPanel extends JPanel {
     boolean successfullyCreated = false;
     SimpleDateFormat commitDateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
 
-    if (gitAccess.getConflictingFiles().isEmpty()) {
+    if (GIT_ACCESS.getConflictingFiles().isEmpty()) {
       StashChangesDialog stashDialog = new StashChangesDialog();
       stashDialog.setVisible(true);
       if (stashDialog.getResult() == OKCancelDialog.RESULT_OK) {
@@ -1350,12 +1354,12 @@ public class ToolbarPanel extends JPanel {
 
         if (description.isEmpty()) {
           description = "WIP on "
-                  + gitAccess.getBranchInfo().getBranchName()
+                  + GIT_ACCESS.getBranchInfo().getBranchName()
                   + " ["
                   + commitDateFormat.format(new Date())
                   + "]";
         }
-        successfullyCreated = gitAccess.createStash(stashDialog.shouldIncludeUntracked(), description) != null;
+        successfullyCreated = GIT_ACCESS.createStash(stashDialog.shouldIncludeUntracked(), description) != null;
       }
     } else {
       PluginWorkspaceProvider.getPluginWorkspace()
@@ -1396,7 +1400,7 @@ public class ToolbarPanel extends JPanel {
         if (pushesAhead > 0) {
           noOfPushesAheadString = "" + pushesAhead;
         }
-        if (pushesAhead > 9) {
+        if (pushesAhead > MAX_SINGLE_DIGIT_NUMBER) {
           pushButton.setHorizontalAlignment(SwingConstants.LEFT);
         } else {
           pushButton.setHorizontalAlignment(SwingConstants.CENTER);

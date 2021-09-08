@@ -2709,6 +2709,8 @@ public class GitAccess {
 	 * Drops one stash item from the list of stashes.
 	 * 
 	 * @param stashIndex The index of the stash item to be dropped.
+	 * 
+	 * @return <code>true</code> if the stash was successfully dropped.
 	 */
 	public boolean dropStash(int stashIndex) {
 	  boolean toReturn = false;
@@ -2729,7 +2731,7 @@ public class GitAccess {
 	/**
 	 * Drops all stashes.
 	 *
-	 * @return <code>True</code> if the operation was successfully.
+	 * @return <code>True</code> if the operation was successful.
 	 */
 	public boolean dropAllStashes() {
 		boolean toReturn = false;

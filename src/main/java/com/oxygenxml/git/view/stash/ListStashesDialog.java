@@ -690,8 +690,7 @@ public class ListStashesDialog extends JDialog {
                 RevCommit[] parents = RevCommitUtil.getParents(GitAccess.getInstance().getRepository(),
                         stashes.get(selectedRow).getId().getName());
                 DiffPresenter.showTwoWayDiffOnlyGitFile(filePath, parents[RevCommitUtil.PARENT_COMMIT_UNTRACKED].getId().getName());
-              }
-              else {
+              } else {
                 DiffPresenter.showTwoWayDiffWithLocal(filePath, stashes.get(selectedRow).getId().getName());
               }
             } catch (FileNotFoundException e1) {
