@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
-import com.oxygenxml.git.view.stash.StashUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -26,7 +25,7 @@ import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
-import com.oxygenxml.git.view.staging.ToolbarPanel;
+import com.oxygenxml.git.view.stash.StashUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -146,23 +145,22 @@ public class BranchTreeMenuActionsProvider {
           } catch (NoRepositorySelected e1) {
             LOGGER.error(e1, e1);
           }
+          String branchToSet = BranchesUtil.createBranchPath(
+              nodePath,
+              BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
           if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
             int answer = showUncommittedChangesWhenChangingBranchMsg();
-            if ( (answer == OKOtherAndCancelDialog.RESULT_OTHER) ){
-              ctrl.getGitAccess().setBranch(
-                  BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
+            if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
+              ctrl.getGitAccess().setBranch(branchToSet);
               BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
             } else if (answer == OKOtherAndCancelDialog.RESULT_OK) {
               boolean wasStashCreated = StashUtil.stashChanges();
               if(wasStashCreated) {
-                ctrl.getGitAccess().setBranch(
-                        BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
+                ctrl.getGitAccess().setBranch(branchToSet);
               }
             }
           } else {
-            ctrl.getGitAccess().setBranch(
-                BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
-
+            ctrl.getGitAccess().setBranch(branchToSet);
             BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
           }
           return null;
