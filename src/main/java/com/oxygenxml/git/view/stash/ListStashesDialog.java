@@ -36,6 +36,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -572,7 +573,8 @@ public class ListStashesDialog extends JDialog {
     };
 
     tableOfStashes.setFillsViewportHeight(true);
-    tableOfStashes.getColumnModel().getColumn(STASH_DESCRIPTION_COLUMN).setCellRenderer(new StashMessageRender());
+    TableColumnModel columnModel = tableOfStashes.getColumnModel();
+    columnModel.getColumn(STASH_DESCRIPTION_COLUMN).setCellRenderer(new StashMessageRender());
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tableOfStashes.getTableHeader().setReorderingAllowed(false);
 
@@ -587,9 +589,9 @@ public class ListStashesDialog extends JDialog {
 
     stashesTableModel.fireTableDataChanged();
 
-    tableOfStashes.getColumnModel().getColumn(STASH_ID_COLUMN).setMinWidth(COLUMN_ID_SIZE);
-    tableOfStashes.getColumnModel().getColumn(STASH_ID_COLUMN).setPreferredWidth(COLUMN_ID_SIZE);
-    tableOfStashes.getColumnModel().getColumn(STASH_ID_COLUMN).setMaxWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(STASH_ID_COLUMN).setMinWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(STASH_ID_COLUMN).setPreferredWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(STASH_ID_COLUMN).setMaxWidth(COLUMN_ID_SIZE);
 
 
     SwingUtilities.invokeLater(() -> tableOfStashes.setRowSelectionInterval(0, 0));
@@ -789,8 +791,8 @@ public class ListStashesDialog extends JDialog {
               TRANSLATOR.getTranslation(Tags.YES),
               TRANSLATOR.getTranslation(Tags.NO));
           if (OKCancelDialog.RESULT_OK == answer) {
-            boolean isDropAllStashes = GitAccess.getInstance().dropAllStashes();
-            if(isDropAllStashes) {
+            boolean wereAllStashesDropped = GitAccess.getInstance().dropAllStashes();
+            if(wereAllStashesDropped) {
               stashesTableModel.clear();
               affectedFilesTableModel.clear();
               setStashTableButtonsEnabled(false); 
