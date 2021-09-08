@@ -7,6 +7,7 @@ package com.oxygenxml.git.constants;
  *
  */
 public class UIConstants {
+  
   /**
    * Hidden constructor.
    */
@@ -18,60 +19,95 @@ public class UIConstants {
    * Top padding for components (in general).
    */
  	public static final int COMPONENT_TOP_PADDING = 5;
+ 	
  	/**
  	 * Bottom padding for components (in general).
  	 */
  	public static final int COMPONENT_BOTTOM_PADDING = 5;
+ 	
  	/**
  	 * Bottom padding for components on last line.
  	 */
  	public static final int LAST_LINE_COMPONENT_BOTTOM_PADDING = 10;
+ 
  	/**
  	 * Left padding for components (in general).
 	 */
 	public static final int COMPONENT_LEFT_PADDING = 3;
+	
 	/**
 	 * Bad padding for components (in general).
 	 */
 	public static final int COMPONENT_RIGHT_PADDING = 3;
+	
 	/**
 	 * Minimum panels width.
 	 */
 	public static final int MIN_PANEL_WIDTH = 320;
+	
 	/**
 	 * Toolbar panel height.
 	 */
 	public static final int TOOLBAR_PANEL_HEIGHT = 35;
+	
 	/**
 	 * Working copy panel height.
 	 */
 	public static final int WORKINGCOPY_PANEL_HEIGHT = 35;
+	
 	/**
 	 * Changes panel minimum height.
 	 */
 	public static final int STAGING_PANEL_MIN_HEIGHT = 75;
+	
 	/**
 	 * Commit panel minimum height.
 	 */
 	public static final int COMMIT_PANEL_MIN_HEIGHT = 130;
+	
 	/**
    * Commit panel preferred height.
    */
 	public static final int COMMIT_PANEL_PREF_HEIGHT = 150;
+	
 	/**
 	 * Insets with 3px value.
 	 */
 	public static final int INSETS_3PX = 3;
-	 /**
+	
+	/**
    * Insets with 5px value.
    */
   public static final int INSETS_5PX = 5;
+  
   /**
    * Insets with 7px value.
    */
   public static final int INSETS_7PX = 7;
+  
   /**
    * Insets with 11px value.
    */
   public static final int INSETS_11PX = 11;
+  
+  
+  /**
+   * DlG Margin GAP for MacOS.
+   */
+  public static final int DLG_MARGIN_GAP_MAC = 24;
+  
+  /**
+   * DlG Margin GAP for Windows.
+   */
+  public static final int DLG_MARGIN_GAP_WIN = 11;
+  
+  /**
+   * HGAP for MacOS.
+   */
+  public static final int HGAP_MAC = 12;
+  
+  /**
+   * HGAP for Windows.
+   */
+  public static final int HGAP_WIN = 7;
 }

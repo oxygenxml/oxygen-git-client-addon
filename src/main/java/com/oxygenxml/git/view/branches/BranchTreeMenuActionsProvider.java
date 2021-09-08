@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
-import com.oxygenxml.git.view.staging.ToolbarPanel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -26,6 +25,7 @@ import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
+import com.oxygenxml.git.view.staging.ToolbarPanel;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;

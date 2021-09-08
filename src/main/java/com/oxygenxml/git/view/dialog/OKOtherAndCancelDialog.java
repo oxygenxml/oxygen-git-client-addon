@@ -26,8 +26,6 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
 import ro.sync.exml.workspace.api.standalone.ui.Button;
-import ro.sync.ui.application.OkCancelAndOtherDialogConstants;
-
 
 /**
  * A dialog with two options buttons and a cancel button.
@@ -50,21 +48,6 @@ public class OKOtherAndCancelDialog extends JDialog {
    * The "Cancel" button.
    */
   private final Button cancelButton = new Button(Translator.getInstance().getTranslation(Tags.CANCEL));
-
-  /**
-   * The result for cancel button.
-   */
-  public static final int RESULT_CANCEL = 0;
-
-  /**
-   * The result for OK.
-   */
-  public static final int RESULT_OK = 1;
-
-  /**
-   * The result for Other.
-   */
-  public static final int RESULT_OTHER = 2;
   
   /**
    * The dimension for MacOS devices.
@@ -105,6 +88,21 @@ public class OKOtherAndCancelDialog extends JDialog {
    * Size of the buttons.
    */
   private final Dimension buttonsSize;
+  
+  /**
+   * The result for cancel button.
+   */
+  public static final int RESULT_CANCEL = 0;
+
+  /**
+   * The result for OK button.
+   */
+  public static final int RESULT_OK = 1;
+
+  /**
+   * The result for Other button.
+   */
+  public static final int RESULT_OTHER = 2;
 
 
   /**
@@ -142,8 +140,8 @@ public class OKOtherAndCancelDialog extends JDialog {
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), cancelAction);
     getRootPane().getActionMap().put(cancelAction, cancelAction);
 
-    int bw = PlatformDetectionUtil.isMacOS() ? OkCancelAndOtherDialogConstants.DLG_MARGIN_GAP_MAC :
-            OkCancelAndOtherDialogConstants.DLG_MARGIN_GAP_WIN;
+    int bw = PlatformDetectionUtil.isMacOS() ? UIConstants.DLG_MARGIN_GAP_MAC 
+        : UIConstants.DLG_MARGIN_GAP_WIN;
 
     JPanel mainPanel = new JPanel(new GridBagLayout());
     mainPanel.setBorder(BorderFactory.createEmptyBorder(bw, bw, bw, bw));
@@ -180,15 +178,15 @@ public class OKOtherAndCancelDialog extends JDialog {
     buttonsPanel.add(Box.createHorizontalGlue());
     if (PlatformDetectionUtil.isMacOS()) {
       buttonsPanel.add(cancelButton);
-      buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_MAC));
+      buttonsPanel.add(Box.createHorizontalStrut(UIConstants.HGAP_MAC));
       buttonsPanel.add(otherButton);
-      buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_MAC));
+      buttonsPanel.add(Box.createHorizontalStrut(UIConstants.HGAP_MAC));
       buttonsPanel.add(okButton);
     } else {
       buttonsPanel.add(okButton);
-      buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_WIN));
+      buttonsPanel.add(Box.createHorizontalStrut(UIConstants.HGAP_WIN));
       buttonsPanel.add(otherButton);
-      buttonsPanel.add(Box.createHorizontalStrut(OkCancelAndOtherDialogConstants.HGAP_WIN));
+      buttonsPanel.add(Box.createHorizontalStrut(UIConstants.HGAP_WIN));
       buttonsPanel.add(cancelButton);
     }
 
