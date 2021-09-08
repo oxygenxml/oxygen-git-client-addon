@@ -2719,43 +2719,33 @@ public class GitAccess {
 	 * Drops one stash item from the list of stashes.
 	 * 
 	 * @param stashIndex The index of the stash item to be dropped.
-	 * 
-	 * @return <code>true</code> if the stash was successfully dropped.
 	 */
-	public boolean dropStash(int stashIndex) {
-	  boolean toReturn = false;
+	public void dropStash(int stashIndex) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
 		try {
 			git.stashDrop().setStashRef(stashIndex).call();
 			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_DROP));
-			toReturn = true;
 		} catch (GitAPIException e) {
 			LOGGER.error(e, e);
 			fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
+			throw e;
 		}
-		
-		return toReturn;
 	}
 
 
 	/**
 	 * Drops all stashes.
-	 *
-	 * @return <code>True</code> if the operation was successful.
 	 */
-	public boolean dropAllStashes() {
-		boolean toReturn = false;
+	public void dropAllStashes() throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
 		try {
 			git.stashDrop().setAll(true).call();
 			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_DROP));
-			toReturn = true;
 		} catch (GitAPIException e) {
 			LOGGER.error(e, e);
 			fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
+			throw e;
 		}
-
-		return toReturn;
 	}
 	
 	

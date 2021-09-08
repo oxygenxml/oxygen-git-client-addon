@@ -9,6 +9,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
@@ -81,6 +82,7 @@ public class StashUtil {
    *
    * @param stashToBeDropped Index of stash to be dropped.
    *
+   *
    * @return <code>True</code> if the stash was dropped.
    */
   public static boolean dropStash(int stashToBeDropped) {
@@ -92,12 +94,14 @@ public class StashUtil {
             TRANSLATOR.getTranslation(Tags.YES),
             TRANSLATOR.getTranslation(Tags.NO));
     if (OKCancelDialog.RESULT_OK == answer) {
-      wasDropped = GIT_ACCESS.dropStash(stashToBeDropped);
-      if (!wasDropped) {
+      try {
+        GIT_ACCESS.dropStash(stashToBeDropped);
+        wasDropped = true;
+      } catch (GitAPIException e) {
         FileStatusDialog.showErrorMessage(
                 TRANSLATOR.getTranslation(Tags.DELETE_STASH),
                 null,
-                TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_DELETED)
+                TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_DELETED) + e.getMessage()
         );
       }
     }
@@ -116,7 +120,7 @@ public class StashUtil {
    * @return <code>True</code> if the all stashes were dropped.
    */
   public static boolean clearStashes() {
-    boolean isDropAllStashes = false;
+    boolean wereDroppedAllStashes = false;
 
     int answer = FileStatusDialog.showWarningMessageWithConfirmation(
             TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
@@ -124,8 +128,10 @@ public class StashUtil {
             TRANSLATOR.getTranslation(Tags.YES),
             TRANSLATOR.getTranslation(Tags.NO));
     if (OKCancelDialog.RESULT_OK == answer) {
-      isDropAllStashes = GIT_ACCESS.dropAllStashes();
-      if(!isDropAllStashes) {
+      try {
+        GIT_ACCESS.dropAllStashes();
+        wereDroppedAllStashes = true;
+      } catch (GitAPIException e) {
         FileStatusDialog.showErrorMessage(
                 TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
                 null,
@@ -134,7 +140,7 @@ public class StashUtil {
       }
     }
 
-    return isDropAllStashes;
+    return wereDroppedAllStashes;
   }
 
 }
