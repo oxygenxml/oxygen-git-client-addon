@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
@@ -56,6 +57,12 @@ public class StashChangesDialog extends OKCancelDialog {
    */
   // TODO: This should be moved in a class where all Tags will reside
   private static final String OPTION_TAG_INCLUDE_UNTRACKED = "Stash.should.include.untracked.files";
+
+  /**
+   * The dialog width.
+   */
+  private static final int DIALOG_WIDTH = 200;
+
 
   /**
    * Public constructor.
@@ -104,7 +111,7 @@ public class StashChangesDialog extends OKCancelDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(0, 0, 3, 0);
+    constraints.insets = new Insets(0, 0, UIConstants.INSETS_3PX, 0);
     panel.add(informativeLabel, constraints);
     
     JLabel addDescriptionMessage = new JLabel(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.STASH_ADD_DESCRIPTION)
@@ -120,11 +127,11 @@ public class StashChangesDialog extends OKCancelDialog {
         + "]";
     stashDescriptionField.setText(description);
     stashDescriptionField.selectAll();
-    stashDescriptionField.setPreferredSize(new Dimension(200, stashDescriptionField.getPreferredSize().height));
+    stashDescriptionField.setPreferredSize(new Dimension(DIALOG_WIDTH, stashDescriptionField.getPreferredSize().height));
     constraints.gridy ++;
     constraints.weightx = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.insets = new Insets(3, 0, 0, 0);
+    constraints.insets = new Insets(UIConstants.INSETS_3PX, 0, 0, 0);
     panel.add(stashDescriptionField, constraints);
 
     addDescriptionMessage.setLabelFor(stashDescriptionField);
@@ -132,7 +139,7 @@ public class StashChangesDialog extends OKCancelDialog {
     constraints.gridy++;
     constraints.weightx = 0;
     constraints.fill = GridBagConstraints.NONE;
-    constraints.insets = new Insets(5, 0, 0, 0);
+    constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, 0, 0);
     WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
     includeUntrackedCheckBox.setSelected(
         Boolean.parseBoolean(optionsStorage.getOption(OPTION_TAG_INCLUDE_UNTRACKED, Boolean.toString(true))));
