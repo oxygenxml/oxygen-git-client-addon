@@ -2,6 +2,7 @@ package com.oxygenxml.git.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -281,6 +282,43 @@ public class GitAccessStashTest {
     reader.close();
     assertTrue(content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
   }
+  
+  
+  /**
+   * <p><b>Description:</b> tests the drop all method</p>
+   * <p><b>Bug ID:</b> EXM-45983</p>
+   *
+   * @author Alex_Smarandache
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testStashDropAll() throws Exception {
+    
+    String[] texts = {"test1", "test2", "test3", "test4", 
+        "test5", "test6", "test7", "test8", "test9", "test10"};
+    
+    for(String fileAddedContent: texts) {
+      try {
+        PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+        out.println(fileAddedContent);
+        out.close();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      }
+      gitAccess.addAll(gitAccess.getUnstagedFiles());
+
+      RevCommit commitStash = gitAccess.createStash(true);
+      assertNotNull(commitStash);
+    }
+    
+    assertEquals(10, gitAccess.listStashes().size());
+    
+    gitAccess.dropAllStashes();
+    
+    assertTrue(isStashEmpty());
+    
+  }  
   
   
   /**
