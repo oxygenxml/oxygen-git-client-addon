@@ -2527,10 +2527,15 @@ public class GitAccess {
 				git.stashApply().setStashRef(stashRef).call();
 
 				List<RevCommit> stashes = new ArrayList<>(listStashes());
-
-				stashes.removeIf(commit -> commit.getName().compareTo(stashRef) == 0);
-
+				
 				status = StashApplyStatus.APPLIED_SUCCESSFULLY;
+				
+				for(int i = 0; i < stashes.size(); i++) {
+				  if(stashRef.equals(stashes.get(i).getName())) {
+				    dropStash(i);
+				    break;
+				  }
+				}
 
 				fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 			} else {

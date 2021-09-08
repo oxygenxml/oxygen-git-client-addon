@@ -233,7 +233,7 @@ public class GitAccessStashTest {
 
     assertEquals(StashApplyStatus.APPLIED_SUCCESSFULLY, gitAccess.popStash(commitStash.getName()));
     
-    assertEquals(1, gitAccess.listStashes().size());
+    assertEquals(0, gitAccess.listStashes().size());
     
     reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
