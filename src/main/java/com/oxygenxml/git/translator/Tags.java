@@ -1430,4 +1430,8 @@ public class Tags {
    * The message displayed to the user when a stash cannot be deleted.
    */
   public static final String STASH_CANNOT_BE_DELETED = "Stash_Cannot_Be_Deleted";
+  /**
+   * The message displayed to the user when a stash cannot be created.
+   */
+  public static final String STASH_CANNOT_BE_CREATED = "Stash_Cannot_Be_Created";
 }

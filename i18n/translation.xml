@@ -6,6 +6,23 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value="Stash_Cannot_Be_Deleted">
+        <comment>The message displayed to the user when a stash cannot be deleted.</comment>
+        <val lang="en_US">Cannot delete stashed changes. Details:</val>
+        <val lang="de_DE">Cannot delete stashed changes. Details:</val>
+        <val lang="fr_FR">Cannot delete stashed changes. Details:</val>
+        <val lang="ja_JP">Cannot delete stashed changes. Details:</val>
+        <val lang="nl_NL">Cannot delete stashed changes. Details:</val>
+    </key>
+    
+    <key value="Stash_Cannot_Be_Created">
+        <comment>The message displayed to the user when a stash cannot be created.</comment>
+        <val lang="en_US">Cannot stash changes. Details: </val>
+        <val lang="de_DE">Cannot stash changes. Details: </val>
+        <val lang="fr_FR">Cannot stash changes. Details: </val>
+        <val lang="ja_JP">Cannot stash changes. Details: </val>
+        <val lang="nl_NL">Cannot stash changes. Details: </val>
+    </key>
     <key value="Branch_switch_checkout_conflict_error_msg">
         <comment>The the message displayed when branch selection fails</comment>
         <val lang="en_US">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.

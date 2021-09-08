@@ -71,6 +71,7 @@ public class StashUtil {
     return successfullyCreated;
   }
 
+
   /**
    * Drop one stash after user confirmation.
    * <br>
@@ -91,7 +92,7 @@ public class StashUtil {
             TRANSLATOR.getTranslation(Tags.YES),
             TRANSLATOR.getTranslation(Tags.NO));
     if (OKCancelDialog.RESULT_OK == answer) {
-      wasDropped = GitAccess.getInstance().dropStash(stashToBeDropped);
+      wasDropped = GIT_ACCESS.dropStash(stashToBeDropped);
       if (!wasDropped) {
         FileStatusDialog.showErrorMessage(
                 TRANSLATOR.getTranslation(Tags.DELETE_STASH),
@@ -123,7 +124,7 @@ public class StashUtil {
             TRANSLATOR.getTranslation(Tags.YES),
             TRANSLATOR.getTranslation(Tags.NO));
     if (OKCancelDialog.RESULT_OK == answer) {
-      isDropAllStashes = GitAccess.getInstance().dropAllStashes();
+      isDropAllStashes = GIT_ACCESS.dropAllStashes();
       if(!isDropAllStashes) {
         FileStatusDialog.showErrorMessage(
                 TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),

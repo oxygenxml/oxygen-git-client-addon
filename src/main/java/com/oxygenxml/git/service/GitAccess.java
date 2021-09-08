@@ -163,7 +163,7 @@ public class GitAccess {
 	/**
 	 * Translation support.
 	 */
-	private static final Translator translator = Translator.getInstance();
+	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	/**
 	 * Singleton instance.
@@ -996,20 +996,20 @@ public class GitAccess {
 				|| repoState == RepositoryState.REBASING_REBASING
 				|| repoState == RepositoryState.REVERTING) {
 			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-			response.setMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+			response.setMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
 			return response;
 		}
 
 		if (getPullsBehind() > 0) {
 			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD);
-			response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
+			response.setMessage(TRANSLATOR.getTranslation(Tags.BRANCH_BEHIND));
 			return response;
 		}
 
 		try {
 			if (getPushesAhead() == 0) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
-				response.setMessage(translator.getTranslation(Tags.PUSH_UP_TO_DATE));
+				response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_UP_TO_DATE));
 				return response;
 			}
 		} catch (RepoNotInitializedException e) {
@@ -1058,7 +1058,7 @@ public class GitAccess {
 			}
 		}
 		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-		response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
+		response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 
 
 
@@ -1108,7 +1108,7 @@ public class GitAccess {
 		  if (!lockFailureMessage.isEmpty()) {
 		    // Lock failure
 		    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showErrorMessage(translator.getTranslation(lockFailureMessage));
+            .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
 		    pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
 		  } else {
 		    ObjectId head = resolveHead(repository);
@@ -1261,19 +1261,19 @@ public class GitAccess {
 				if (fetchResultStringBuilder.length() > 0) {
 					fetchResultStringBuilder.append("\n\n");
 				}
-				fetchResultStringBuilder.append(translator.getTranslation(Tags.ERROR)).append(": ");
-				fetchResultStringBuilder.append(MessageFormat.format(translator.getTranslation(Tags.CANNOT_LOCK_REF), trackingRefUpdate.getLocalName())).append(" ");
+				fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.ERROR)).append(": ");
+				fetchResultStringBuilder.append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CANNOT_LOCK_REF), trackingRefUpdate.getLocalName())).append(" ");
 				try {
 					String repoDir = getRepository().getDirectory().getAbsolutePath();
 					File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock");
-					fetchResultStringBuilder.append(MessageFormat.format(translator.getTranslation(Tags.UNABLE_TO_CREATE_FILE), lockFile.getAbsolutePath())).append(" ");
+					fetchResultStringBuilder.append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.UNABLE_TO_CREATE_FILE), lockFile.getAbsolutePath())).append(" ");
 					if (lockFile.exists()) {
-						fetchResultStringBuilder.append(translator.getTranslation(Tags.FILE_EXISTS)).append("\n");
+						fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.FILE_EXISTS)).append("\n");
 					}
 				} catch (NoRepositorySelected e) {
 					LOGGER.error(e, e);
 				}
-				fetchResultStringBuilder.append(translator.getTranslation(Tags.LOCK_FAILED_EXPLANATION));
+				fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.LOCK_FAILED_EXPLANATION));
 			}
 		}
     return fetchResultStringBuilder.toString();
@@ -1713,9 +1713,9 @@ public class GitAccess {
         Set<String> conflictingFiles = getConflictingFiles();
         if (!conflictingFiles.isEmpty()) {
           FileStatusDialog.showWarningMessage(
-              translator.getTranslation(Tags.REVERT_COMMIT),
+              TRANSLATOR.getTranslation(Tags.REVERT_COMMIT),
               new ArrayList<>(conflictingFiles),
-              translator.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS));
+              TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS));
         }
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.REVERT_COMMIT));
       } catch (GitAPIException | RevisionSyntaxException e) {
@@ -2208,7 +2208,7 @@ public class GitAccess {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         LOGGER.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showErrorMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
+            .showErrorMessage(TRANSLATOR.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         LOGGER.debug(e, e);
@@ -2395,18 +2395,18 @@ public class GitAccess {
         }
         List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
         FileStatusDialog.showWarningMessage(
-            translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
+            TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
             conflictingFiles,
-            translator.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
+            TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
         }
         List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
         FileStatusDialog.showErrorMessage(
-            translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
+            TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
             failingFiles,
-            translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+            TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
       }
 
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
@@ -2417,9 +2417,9 @@ public class GitAccess {
     } catch (CheckoutConflictException e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
       FileStatusDialog.showWarningMessage(
-        translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
+        TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
         e.getConflictingPaths(),
-        translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+        TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
     }
   }
   
@@ -2428,8 +2428,6 @@ public class GitAccess {
 	 * Stash List command.
 	 *
 	 * @return the list of all stashes.
-	 *
-	 * @throws GitAPIException
 	 */
 	public Collection<RevCommit> listStashes() {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
@@ -2454,19 +2452,28 @@ public class GitAccess {
 	 * @return The created stash.
 	 */
 	public RevCommit createStash(boolean includeUntrackedFiles) {
-	  fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
-    RevCommit stash = null;
-    try {
-      stash = git.stashCreate().setIncludeUntracked(includeUntrackedFiles).call();
-      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
-    } catch (GitAPIException e) {
-        LOGGER.error(e, e);
-        fireOperationFailed(
-            new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
-      }
-     
-    return stash;
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
+		RevCommit stash = null;
+		try {
+			stash = git.stashCreate().setIncludeUntracked(includeUntrackedFiles).call();
+			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
+		} catch (GitAPIException e) {
+			boolean isBecauseConflicts = getUnstagedFiles() != null
+							&& !getUnstagedFiles().isEmpty()
+							&& getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
+			if(isBecauseConflicts) {
+				PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+			} else {
+				PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+								TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_CREATED) + e.getMessage(), e);
+				LOGGER.error(e, e);
+			}
+			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
+		}
+
+		return stash;
 	}
+
 
 	/**
    * Create a new stash command.
@@ -2487,12 +2494,15 @@ public class GitAccess {
           && !getUnstagedFiles().isEmpty() 
           && getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
       if(isBecauseConflicts) {
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
       } else {
+				PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+						TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_CREATED) + e.getMessage(), e);
         LOGGER.error(e, e);
       }
       fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
     }
+
     return stash;
   }
   
@@ -2535,45 +2545,45 @@ public class GitAccess {
 				}
 				switch (status) {
 					case APPLIED_SUCCESSFULLY_WITH_CONFLICTS:
-						FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH_APPLY),
+						FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.STASH_APPLY),
 										conflictingList,
-										translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
+										TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
 														+ " "
-														+ translator.getTranslation(Tags.STASH_WAS_KEPT)
+														+ TRANSLATOR.getTranslation(Tags.STASH_WAS_KEPT)
 						);
 						fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 						break;
 					case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
 						FileStatusDialog.showErrorMessage(
-										translator.getTranslation(Tags.STASH_APPLY),
+										TRANSLATOR.getTranslation(Tags.STASH_APPLY),
 										new ArrayList<>(getConflictingFiles()),
-										translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
+										TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
 														+ ". "
-														+ translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+														+ TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
 					case CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES:
 						FileStatusDialog.showErrorMessage(
-										translator.getTranslation(Tags.STASH_APPLY),
+										TRANSLATOR.getTranslation(Tags.STASH_APPLY),
 										null,
-										translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
+										TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
 														+ ". "
-														+ translator.getTranslation(Tags.STASH_SOLUTIONS_TO_APPLY));
+														+ TRANSLATOR.getTranslation(Tags.STASH_SOLUTIONS_TO_APPLY));
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
 					case CANNOT_START_BECAUSE_STAGED_FILES:
 						FileStatusDialog.showErrorMessage(
-										translator.getTranslation(Tags.STASH_APPLY),
+										TRANSLATOR.getTranslation(Tags.STASH_APPLY),
 										null,
-										translator.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
+										TRANSLATOR.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
 					default:
 						status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
-						PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH) + ".",
+						PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH) + ".",
 										e);
 						LOGGER.error(e, e);
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
@@ -2620,45 +2630,45 @@ public class GitAccess {
 				}
 				switch (status) {
 					case APPLIED_SUCCESSFULLY_WITH_CONFLICTS:
-						FileStatusDialog.showWarningMessage(translator.getTranslation(Tags.STASH_APPLY),
+						FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.STASH_APPLY),
 										conflictingList,
-										translator.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
+										TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
 						);
 						fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
             break;
 					case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
 						FileStatusDialog.showErrorMessage(
-										translator.getTranslation(Tags.STASH_APPLY),
+										TRANSLATOR.getTranslation(Tags.STASH_APPLY),
 										new ArrayList<>(getConflictingFiles()),
-										translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
+										TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
 										+ ". "
-										+ translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+										+ TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
 					case CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES:
 						FileStatusDialog.showErrorMessage(
-										translator.getTranslation(Tags.STASH_APPLY),
+										TRANSLATOR.getTranslation(Tags.STASH_APPLY),
 										null,
-										translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
+										TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
 														+ ". "
-														+ translator.getTranslation(Tags.STASH_SOLUTIONS_TO_APPLY));
+														+ TRANSLATOR.getTranslation(Tags.STASH_SOLUTIONS_TO_APPLY));
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
 					case CANNOT_START_BECAUSE_STAGED_FILES:
 						FileStatusDialog.showErrorMessage(
-										translator.getTranslation(Tags.STASH_APPLY),
+										TRANSLATOR.getTranslation(Tags.STASH_APPLY),
 										null,
-										translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
+										TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
                     + ". "
-										+ translator.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
+										+ TRANSLATOR.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
 						LOGGER.error(e, e);
 						break;
 					default:
             status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
-					  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.UNABLE_TO_APPLY_STASH) + ".",
+					  PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH) + ".",
 					      e);
 						LOGGER.error(e, e);
 						fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
