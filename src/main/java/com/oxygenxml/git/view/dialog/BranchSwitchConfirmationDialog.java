@@ -11,6 +11,8 @@ import javax.swing.JTextArea;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -18,24 +20,44 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
 
   /**
-   * Constructor.
-   *
-   * @param title             Dialog title.
-   * @param questionMessage   A question message connected to the presented information. May be <code>null</code>.
-   * @param option1ButtonName Text to be written on the button in case the answer to the question is option 1.
-   * @param option2ButtonName Text to be written on the button in case the answer to the question is option 2.
-   * @param cancelButtonName  Text to be written on the button in case the answer to the question is negative.
+   * The translator.
    */
-  public BranchSwitchConfirmationDialog(
-          String title,
-          String questionMessage,
-          String option1ButtonName,
-          String option2ButtonName,
-          String cancelButtonName) {
+  private static final Translator TRANSLATOR = Translator.getInstance();
+
+  /**
+   * Dialog title.
+   */
+  private static final String TITLE = TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH);
+
+  /**
+   * A question message connected to the presented information. May be <code>null</code>
+   */
+  private static final String QUESTION_MESSAGE = TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES);
+
+  /**
+   * Text to be written on the button in case the answer to the question is option 1.
+   */
+  private static final String OPTION_1_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.STASH_CHANGES);
+
+  /**
+   * Text to be written on the button in case the answer to the question is option 2.
+   */
+  private static final String OPTION_2_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.MOVE_CHANGES);
+
+  /**
+   * Text to be written on the button in case the answer to the question is negative.
+   */
+  private static final String CANCEL_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.CANCEL);
+
+
+  /**
+   * Constructor.
+   */
+  public BranchSwitchConfirmationDialog() {
     super(
             PluginWorkspaceProvider.getPluginWorkspace() != null ?
                     (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
-            title,
+            TITLE,
             true);
 
     JPanel panel = getContentPanel();
@@ -65,7 +87,7 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
     JTextArea textArea = UIUtil.createMessageArea("");
     textArea.setDocument(new FileStatusDialog.CustomWrapDocument());
     textArea.setLineWrap(false);
-    textArea.setText(questionMessage);
+    textArea.setText(QUESTION_MESSAGE);
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.weightx = 1;
@@ -75,9 +97,9 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
     gbc.gridheight = 1;
     panel.add(textArea, gbc);
 
-    this.setButtonText(getOKButton(), option1ButtonName);
-    this.setButtonText(getOtherButton(), option2ButtonName);
-    this.setButtonText(getCancelButton(), cancelButtonName);
+    this.setButtonText(getOKButton(), OPTION_1_BUTTON_NAME);
+    this.setButtonText(getOtherButton(), OPTION_2_BUTTON_NAME);
+    this.setButtonText(getCancelButton(), CANCEL_BUTTON_NAME);
 
     setResizable(false);
     pack();

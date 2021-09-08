@@ -507,12 +507,7 @@ public class ToolbarPanel extends JPanel {
           LOGGER.error(e1, e1);
         }
         if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-          BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH),
-                  TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
-                  TRANSLATOR.getTranslation(Tags.STASH_CHANGES),
-                  TRANSLATOR.getTranslation(Tags.MOVE_CHANGES),
-                  TRANSLATOR.getTranslation(Tags.CANCEL)
-          );
+          BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog();
 
           dialog.setVisible(true);
 
