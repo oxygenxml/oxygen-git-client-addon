@@ -20,6 +20,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
@@ -64,7 +65,32 @@ public class OKOtherAndCancelDialog extends JDialog {
    * The result for Other.
    */
   public static final int RESULT_OTHER = 2;
+  
+  /**
+   * The dimension for MacOS devices.
+   */
+  private static final Dimension MAC_OS_DIMENSION = new Dimension(80, 26);
 
+  /**
+   * The dimension for Windows devices.
+   */
+  private static final Dimension WIN_OS_DIMENSION = new Dimension(75, 23);
+
+  /**
+   * The dimension for Other platforms devices.
+   */
+  private static final Dimension OTHER_OS_DIMENSION = new Dimension(85, 23);
+  
+  /**
+   * The MacOS width displacement.
+   */
+  private static final int MAC_OS_WIDTH_DISPLACEMENT = 15;
+  
+  /**
+   * The MacOS height displacement.
+   */
+  private static final int MAC_OS_HEIGHT_DISPLACEMENT = 4;
+  
   /**
    * The answer for current dialog.
    */
@@ -92,11 +118,11 @@ public class OKOtherAndCancelDialog extends JDialog {
     super(parentFrame, title, modal ? Dialog.DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
 
     if (PlatformDetectionUtil.isWin()) {
-      buttonsSize = new Dimension(75, 23);
+      buttonsSize = WIN_OS_DIMENSION;
     } else if (PlatformDetectionUtil.isMacOS()) {
-      buttonsSize = new Dimension(80, 26);
+      buttonsSize = MAC_OS_DIMENSION;
     } else {
-      buttonsSize = new Dimension(85, 23);
+      buttonsSize = OTHER_OS_DIMENSION;
     }
 
     //The OK button
@@ -174,7 +200,7 @@ public class OKOtherAndCancelDialog extends JDialog {
     gridBagConstr.weighty = 0;
     gridBagConstr.anchor = GridBagConstraints.EAST;
     gridBagConstr.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstr.insets = new Insets(5, 0, 0, 0);
+    gridBagConstr.insets = new Insets(UIConstants.INSETS_5PX, 0, 0, 0);
     mainPanel.add(buttonsPanel, gridBagConstr);
 
     setContentPane(mainPanel);
@@ -197,10 +223,10 @@ public class OKOtherAndCancelDialog extends JDialog {
       int allocW = buttonsSize.width - button.getMargin().left - button.getMargin().right;
       int allocH = buttonsSize.height - button.getMargin().top - button.getMargin().bottom;
       if (PlatformDetectionUtil.isMacOS()) {
-        allocW -= 15;
-        allocH -= 4;
+        allocW -= MAC_OS_WIDTH_DISPLACEMENT;
+        allocH -= MAC_OS_HEIGHT_DISPLACEMENT;
       }
-      if (textWidth <= allocW - 4 && textHeight <= allocH) {
+      if (textWidth <= allocW - MAC_OS_HEIGHT_DISPLACEMENT && textHeight <= allocH) {
         button.setPreferredSize(buttonsSize);
       } else {
         button.setPreferredSize(null);

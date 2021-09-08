@@ -2671,14 +2671,14 @@ public class GitAccess {
 	}
   
 	
-/**
- * @param stashRef       The stash reference.
- * 
- * @return               The status for stash.
- * 
- * @throws IOException
- * @throws GitAPIException
- */
+  /**
+   * @param stashRef       The stash reference.
+   *
+   * @return               The status for stash.
+   *
+   * @throws IOException
+   * @throws GitAPIException
+   */
 	private StashApplyStatus checkIfStashIsApplicable(String stashRef) throws IOException, GitAPIException {
 	  StashApplyStatus status = StashApplyStatus.STASH_APPLY_READY_TO_START;
 	  List<FileStatus> list = RevCommitUtil.getChangedFiles(stashRef);
