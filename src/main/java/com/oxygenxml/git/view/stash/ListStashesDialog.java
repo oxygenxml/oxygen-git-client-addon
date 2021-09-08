@@ -53,14 +53,12 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.DiffPresenter;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.staging.StagingResourcesTableCellRenderer;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
-import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.Table;
 
 
@@ -194,7 +192,7 @@ public class ListStashesDialog extends JDialog {
 
 
   /**
-   * Constructor
+   * Constructor.
    */
   public ListStashesDialog () {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
@@ -308,13 +306,13 @@ public class ListStashesDialog extends JDialog {
    * @return the created button.
    */
   private Button createDeleteAllButton() {
-    Button deleteAllstashesButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE_ALL));
+    Button deleteAllStashesButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE_ALL));
 
-    deleteAllstashesButton.addActionListener(deleteAllStashesAction);
+    deleteAllStashesButton.addActionListener(deleteAllStashesAction);
 
-    deleteAllstashesButton.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES_BUTTON_TOOLTIP));
+    deleteAllStashesButton.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES_BUTTON_TOOLTIP));
 
-    return deleteAllstashesButton;
+    return deleteAllStashesButton;
   }
 
 
@@ -725,21 +723,14 @@ public class ListStashesDialog extends JDialog {
           int selectedRow = stashesTable.getSelectedRow();
           int noOfRows = stashesTable.getRowCount();
           if (selectedRow >= 0 && selectedRow < noOfRows) {
-            int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-                    TRANSLATOR.getTranslation(Tags.DELETE_STASH),
-                    TRANSLATOR.getTranslation(Tags.STASH_DELETE_CONFIRMATION),
-                    TRANSLATOR.getTranslation(Tags.YES),
-                    TRANSLATOR.getTranslation(Tags.NO));
-            if (OKCancelDialog.RESULT_OK == answer) {
-              boolean wasDeleted = GitAccess.getInstance().dropStash(selectedRow);
-              if(wasDeleted) {
-                stashesTableModel.removeRow(selectedRow);
-                if(stashesTableModel.getRowCount() == 0) {
-                  setStashTableButtonsEnabled(false);
-                  affectedFilesTableModel.clear();
-                } else {
-                  selectNextRow(stashesTable, selectedRow, noOfRows);
-                }
+            boolean wasDeleted = StashUtil.dropStash(selectedRow);
+            if(wasDeleted) {
+              stashesTableModel.removeRow(selectedRow);
+              if(stashesTableModel.getRowCount() == 0) {
+                setStashTableButtonsEnabled(false);
+                affectedFilesTableModel.clear();
+              } else {
+                selectNextRow(stashesTable, selectedRow, noOfRows);
               }
             }
           }
@@ -785,18 +776,11 @@ public class ListStashesDialog extends JDialog {
       return new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          int answer = FileStatusDialog.showWarningMessageWithConfirmation(
-              TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES),
-              TRANSLATOR.getTranslation(Tags.CONFIRMATION_CLEAR_STASHES_MESSAGE),
-              TRANSLATOR.getTranslation(Tags.YES),
-              TRANSLATOR.getTranslation(Tags.NO));
-          if (OKCancelDialog.RESULT_OK == answer) {
-            boolean wereAllStashesDropped = GitAccess.getInstance().dropAllStashes();
-            if(wereAllStashesDropped) {
-              stashesTableModel.clear();
-              affectedFilesTableModel.clear();
-              setStashTableButtonsEnabled(false); 
-            }
+          boolean wereAllStashesDropped = StashUtil.clearStashes();
+          if (wereAllStashesDropped) {
+            stashesTableModel.clear();
+            affectedFilesTableModel.clear();
+            setStashTableButtonsEnabled(false);
           }
         }
       };

@@ -1393,7 +1393,7 @@ public class ToolbarPanel extends JPanel {
       }
     };
   }
-  
+
 
   /**
    * Create the "Push" action.

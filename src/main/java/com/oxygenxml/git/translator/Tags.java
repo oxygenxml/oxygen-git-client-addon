@@ -1421,9 +1421,13 @@ public class Tags {
 	/**
 	 * OK.
 	 */
-  public static final String OK = "OK";
+  public static final String OK = "Ok";
   /**
    * Other.
    */
   public static final String OTHER = "Other";
+  /**
+   * The message displayed to the user when a stash cannot be deleted.
+   */
+  public static final String STASH_CANNOT_BE_DELETED = "Stash_Cannot_Be_Deleted";
 }
