@@ -14,6 +14,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -156,16 +157,17 @@ public class CreateTagDialog extends OKCancelDialog {
 
     // Tag message field.
     tagMessageField = new JTextArea();
-    tagMessageField.setBorder(tagTitleField.getBorder());
-    tagMessageField.setPreferredSize(new Dimension(200, 2* tagMessageField.getPreferredSize().height));
+    JScrollPane tagMessageScrollPane = new JScrollPane(tagMessageField);
+    tagMessageScrollPane.setPreferredSize(new Dimension(200, 2* tagMessageField.getPreferredSize().height));
     tagMessageField.selectAll();
     gbc.gridx ++;
     gbc.weightx = 1;
     gbc.weighty = 1; 
     gbc.fill = GridBagConstraints.BOTH;
     gbc.anchor = GridBagConstraints.BASELINE;
-    gbc.insets = new Insets(topInset, leftInset, 0, 0);  
-    panel.add(tagMessageField, gbc);
+    gbc.insets = new Insets(topInset, leftInset, 0, 0);
+    //panel.add(tagMessageField, gbc);
+    panel.add(tagMessageScrollPane, gbc);
 
     label.setLabelFor(tagMessageField);
 
@@ -175,6 +177,8 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.gridx = 0;
     gbc.gridy ++;
     gbc.gridwidth = 2;
+    gbc.weightx = 0;
+    gbc.weighty = 0; 
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.NONE;
     gbc.insets = new Insets(7, 0, 0, 0);

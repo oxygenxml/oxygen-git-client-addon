@@ -1,15 +1,18 @@
 package com.oxygenxml.git.view.history.actions;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitOperationScheduler;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.tags.CreateTagDialog;
@@ -59,7 +62,7 @@ public class CreateTagAction extends AbstractAction {
           if(dialog.shouldPushNewTag()) {
             GitAccess.getInstance().pushTag(tagTitle);
           }
-        } catch (GitAPIException ex) {
+        } catch (GitAPIException | RevisionSyntaxException | NoRepositorySelected | IOException ex) {
           LOGGER.debug(ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);}
       });

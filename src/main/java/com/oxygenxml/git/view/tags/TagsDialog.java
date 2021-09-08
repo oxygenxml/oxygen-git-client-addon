@@ -166,8 +166,8 @@ public class TagsDialog extends JDialog {
     JPanel buttonsPanel = new JPanel(new GridBagLayout());
     GridBagConstraints buttonsGridBagConstraints = new GridBagConstraints();
     
-    buttonsGridBagConstraints.gridx=0;
-    buttonsGridBagConstraints.gridy=0;
+    buttonsGridBagConstraints.gridx = 0;
+    buttonsGridBagConstraints.gridy = 0;
     buttonsGridBagConstraints.anchor = GridBagConstraints.SOUTHEAST;
     buttonsGridBagConstraints.fill = GridBagConstraints.NONE;
     buttonsGridBagConstraints.insets = new Insets(topInset, 0, bottomInset, rightInset);
@@ -187,6 +187,8 @@ public class TagsDialog extends JDialog {
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.gridwidth = 1;
+    gbc.weighty = 0;
+    gbc.weightx = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.SOUTHEAST;
     gbc.insets = new Insets(topInset, leftInset, bottomInset, rightInset);
@@ -233,15 +235,20 @@ public class TagsDialog extends JDialog {
       pushButton.setEnabled(false);
       int selectedRow = (tagsTable.getSelectedRow());
       String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
-      GitAccess.getInstance().deleteTag(tagName);
-      
-      localTagsList.remove(selectedRow);
 
-      TagsTableModel model = (TagsTableModel) tagsTable.getModel();
-      GitTag tag = model.getItemAt(selectedRow);
-      model.remove(tag);
-      model.fireTableStructureChanged();
-      tagsTable.repaint();
+      try {
+        GitAccess.getInstance().deleteTag(tagName);
+        localTagsList.remove(selectedRow);
+
+        TagsTableModel model = (TagsTableModel) tagsTable.getModel();
+        GitTag tag = model.getItemAt(selectedRow);
+        model.remove(tag);
+        model.fireTableStructureChanged();
+        tagsTable.repaint();
+      } catch (GitAPIException ex) {
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+      }
+
     };
   }
   

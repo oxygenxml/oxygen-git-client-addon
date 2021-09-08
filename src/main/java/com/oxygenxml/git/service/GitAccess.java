@@ -2509,8 +2509,9 @@ public class GitAccess {
  * @param name the name of the tag
  * @param message the message of the tag
  * @param commitId the id of the commit where the tag will be
+ * @throws GitAPIException 
  */
-	public void tagCommit(String name, String message, String commitId) {
+	public void tagCommit(String name, String message, String commitId) throws GitAPIException, NoRepositorySelected, RevisionSyntaxException, IOException {
 	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_COMMIT));
 	  try {
 	    RevWalk walk = new RevWalk(getRepository());
@@ -2525,6 +2526,7 @@ public class GitAccess {
     } catch (GitAPIException | NoRepositorySelected | RevisionSyntaxException | IOException e) {
       LOGGER.error(e, e);
       fireOperationFailed(new GitEventInfo(GitOperation.TAG_COMMIT), e);
+      throw e;
     }
 	}
 	
@@ -2568,7 +2570,7 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException
 	 */
-	public void deleteTag(String name)  {
+	public void deleteTag(String name) throws GitAPIException  {
 	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_DELETE));
 	  try {
       getGit()
@@ -2579,6 +2581,7 @@ public class GitAccess {
     } catch (GitAPIException e) {
       LOGGER.error(e, e);
       fireOperationFailed(new GitEventInfo(GitOperation.TAG_DELETE), e);
+      throw e;
     }
 	}
 }
