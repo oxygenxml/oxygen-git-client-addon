@@ -1383,6 +1383,51 @@ public class Tags {
   /**
    * Displays the message "Tags" for the Tags showing Dialog 
    */
-  public static final String TAGS_DIALOG= "Tags_Dialog"; 
+  public static final String TAGS_DIALOG= "Tags_Dialog";
+  
+  /**
+   * Displays the message for the Details menu item in the popup of the Tags Dialog
+   */
+  public static final String TAGS_DIALOG_POPUP_MENU_DETAILS= "Tags_Dialog_Popup_Menu_Details";
+  
+  /**
+   * The title for the Tag Details Dialog
+   */
+  public static final String TAG_DETAILS_DIALOG_TITLE= "Tag_Details_Dialog_Title";
+  
+  /**
+   * The text of the label for the Tag Details Dialog tag name
+   */
+  public static final String TAG_DETAILS_DIALOG_TAG_NAME= "Tag_Details_Dialog_Tag_Name";
+  
+  /**
+   * The text of the label for the Tag Details Dialog tagger details
+   */
+  public static final String TAG_DETAILS_DIALOG_TAGGER_DETAILS= "Tag_Details_Dialog_Tagger_Details"; 
+  
+  /**
+   * The text of the label for the Tag Details Dialog Date
+   */
+  public static final String TAG_DETAILS_DIALOG_DATE= "Tag_Details_Dialog_Date"; 
+  
+  /**
+   * The text of the label for the Tag Details Dialog Message
+   */
+  public static final String TAG_DETAILS_DIALOG_MESSAGE= "Tag_Details_Dialog_Message"; 
+  
+  /**
+   * The text of the label for the Tag Details Dialog Commit
+   */
+  public static final String TAG_DETAILS_DIALOG_COMMIT= "Tag_Details_Dialog_Commit"; 
+  
+  /**
+   * The text of the label for the Tag Details Dialog Commit author
+   */
+  public static final String TAG_DETAILS_DIALOG_COMMIT_AUTHOR= "Tag_Details_Dialog_Commit_Author"; 
+  
+  /**
+   * The tooltip for the toolbar tags icon
+   */
+  public static final String TOOLBAR_PANEL_TAGS_TOOLTIP= "Toolbar_Panel_Tags_Tooltip"; 
   
 }

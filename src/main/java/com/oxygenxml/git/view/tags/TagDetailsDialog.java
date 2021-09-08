@@ -38,7 +38,7 @@ public class TagDetailsDialog extends OKCancelDialog{
   /**
    * i18n
    */
-  private static final Translator TRANSLATOR = Translator.getInstance();
+  private static final Translator translator = Translator.getInstance();
   
   /**
    * The preferred width of the scroll pane for the files list.
@@ -67,13 +67,13 @@ public class TagDetailsDialog extends OKCancelDialog{
     super(
         PluginWorkspaceProvider.getPluginWorkspace() != null ? 
             (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
-        "Tag details",
+        translator.getTranslation(Tags.TAG_DETAILS_DIALOG_TITLE),
         false);
     
     this.getContentPane().add(createMainPanel(tag));
     
     getOkButton().setVisible(true);
-    getOkButton().setText(TRANSLATOR.getTranslation(Tags.CANCEL));
+    getOkButton().setText(translator.getTranslation(Tags.CLOSE));
     getCancelButton().setVisible(false);
     setResizable(false);
     pack();
@@ -94,7 +94,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     GridBagConstraints gbc = new GridBagConstraints();
     
     JLabel tagNameLabel = new JLabel();
-    tagNameLabel.setText("Tag name: ");
+    tagNameLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_TAG_NAME) + ": ");
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.anchor = GridBagConstraints.WEST;
@@ -110,7 +110,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     JLabel taggerDetailsLabel = new JLabel();
     gbc.gridx = 0;
     gbc.gridy++;
-    taggerDetailsLabel.setText("Tagger name: ");
+    taggerDetailsLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_TAGGER_DETAILS) + ": ");
     mainPanel.add(taggerDetailsLabel, gbc);
     
     JLabel taggerDetailsValueLabel = new JLabel();
@@ -121,7 +121,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     JLabel tagDateLabel = new JLabel();
     gbc.gridx = 0;
     gbc.gridy++;
-    tagDateLabel.setText("Date: ");
+    tagDateLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_DATE) +": ");
     mainPanel.add(tagDateLabel, gbc);
     
     SimpleDateFormat dateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
@@ -131,7 +131,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     mainPanel.add(tagDateValueLabel, gbc);
     
     JLabel tagMessageLabel = new JLabel();
-    tagMessageLabel.setText("Tag message:");
+    tagMessageLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_MESSAGE) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.weightx = 1;
@@ -163,7 +163,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     gbc.fill = GridBagConstraints.NONE;
     gbc.weightx = 0;
     gbc.gridwidth = 1;
-    commitIDLabel.setText("Commit: ");
+    commitIDLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_COMMIT) + ": ");
     mainPanel.add(commitIDLabel, gbc);
     
     JLabel commitIDValueLabel = new JLabel();
@@ -177,7 +177,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     JLabel authorDetailsLabel = new JLabel();
     gbc.gridx = 0;
     gbc.gridy++;
-    authorDetailsLabel.setText("Author: ");
+    authorDetailsLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_COMMIT_AUTHOR) + ": ");
     mainPanel.add(authorDetailsLabel, gbc);
     
     JLabel authorDetailsValueLabel = new JLabel();
@@ -188,7 +188,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     JLabel commitDateLabel = new JLabel();
     gbc.gridx = 0;
     gbc.gridy++;
-    commitDateLabel.setText("Date: ");
+    commitDateLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_DATE) +": ");
     mainPanel.add(commitDateLabel, gbc);
     
     JLabel commitDateValueLabel = new JLabel();
@@ -197,7 +197,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     mainPanel.add(commitDateValueLabel, gbc);
     
     JLabel commitMessageLabel = new JLabel();
-    commitMessageLabel.setText("Commit message:");
+    commitMessageLabel.setText(translator.getTranslation(Tags.TAG_DETAILS_DIALOG_MESSAGE) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.weightx = 1;

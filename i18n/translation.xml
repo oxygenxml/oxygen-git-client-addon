@@ -57,11 +57,11 @@
     </key>
     <key value="Tags_Dialog_Name_Column">
         <comment>The first column name in the table with the tags (column for the tag name)</comment>
-        <val lang="en_US">Tag name</val>
-        <val lang="de_DE">Tag name</val>
-        <val lang="fr_FR">Tag name</val>
-        <val lang="ja_JP">Tag name</val>
-        <val lang="nl_NL">Tag name</val>
+        <val lang="en_US">Name</val>
+        <val lang="de_DE">Name</val>
+        <val lang="fr_FR">Name</val>
+        <val lang="ja_JP">Name</val>
+        <val lang="nl_NL">Name</val>
     </key>
     <key value="Tags_Dialog_Message_Column">
         <comment></comment>
@@ -86,6 +86,78 @@
         <val lang="fr_FR">Tags</val>
         <val lang="ja_JP">Tags</val>
         <val lang="nl_NL">Tags</val>
+    </key>
+    <key value="Tags_Dialog_Popup_Menu_Details">
+        <comment>Displays the message for the Details menu item in the popup of the Tags Dialog</comment>
+        <val lang="en_US">Show details</val>
+        <val lang="de_DE">Show details</val>
+        <val lang="fr_FR">Show details</val>
+        <val lang="ja_JP">Show details</val>
+        <val lang="nl_NL">Show details</val>
+    </key>
+    <key value="Tag_Details_Dialog_Title">
+        <comment>The title for the Tag Details Dialog</comment>
+        <val lang="en_US">Tag Details</val>
+        <val lang="de_DE">Tag Details</val>
+        <val lang="fr_FR">Tag Details</val>
+        <val lang="ja_JP">Tag Details</val>
+        <val lang="nl_NL">Tag Details</val>
+    </key>
+    <key value="Tag_Details_Dialog_Tag_Name">
+        <comment>The text of the label for the Tag Details Dialog tag name</comment>
+        <val lang="en_US">Tag name</val>
+        <val lang="de_DE">Tag name</val>
+        <val lang="fr_FR">Tag name</val>
+        <val lang="ja_JP">Tag name</val>
+        <val lang="nl_NL">Tag name</val>
+    </key>
+    <key value="Tag_Details_Dialog_Tagger_Details">
+        <comment>The text of the label for the Tag Details Dialog tagger details</comment>
+        <val lang="en_US">Author</val>
+        <val lang="de_DE">Author</val>
+        <val lang="fr_FR">Author</val>
+        <val lang="ja_JP">Author</val>
+        <val lang="nl_NL">Author</val>
+    </key>
+    <key value="Tag_Details_Dialog_Date">
+        <comment>The text of the label for the Tag Details Dialog Date</comment>
+        <val lang="en_US">Date</val>
+        <val lang="de_DE">Date</val>
+        <val lang="fr_FR">Date</val>
+        <val lang="ja_JP">Date</val>
+        <val lang="nl_NL">Date</val>
+    </key>
+    <key value="Tag_Details_Dialog_Message">
+        <comment>The text of the label for the Tag Details Dialog Message</comment>
+        <val lang="en_US">Message</val>
+        <val lang="de_DE">Message</val>
+        <val lang="fr_FR">Message</val>
+        <val lang="ja_JP">Message</val>
+        <val lang="nl_NL">Message</val>
+    </key>
+    <key value="Tag_Details_Dialog_Commit">
+        <comment>The text of the label for the Tag Details Dialog Commit</comment>
+        <val lang="en_US">Commit</val>
+        <val lang="de_DE">Commit</val>
+        <val lang="fr_FR">Commit</val>
+        <val lang="ja_JP">Commit</val>
+        <val lang="nl_NL">Commit</val>
+    </key>
+    <key value="Tag_Details_Dialog_Commit_Author">
+        <comment>The text of the label for the Tag Details Dialog Commit author</comment>
+        <val lang="en_US">Author</val>
+        <val lang="de_DE">Author</val>
+        <val lang="fr_FR">Author</val>
+        <val lang="ja_JP">Author</val>
+        <val lang="nl_NL">Author</val>
+    </key>
+    <key value="Toolbar_Panel_Tags_Tooltip">
+        <comment>The tooltip for the toolbar tags icon</comment>
+        <val lang="en_US">Show Tags</val>
+        <val lang="de_DE">Show Tags</val>
+        <val lang="fr_FR">Show Tags</val>
+        <val lang="ja_JP">Show Tags</val>
+        <val lang="nl_NL">Show Tags</val>
     </key>
     
 	<key value="Revert_Commit_Failed_Uncommitted_Changes_Message">

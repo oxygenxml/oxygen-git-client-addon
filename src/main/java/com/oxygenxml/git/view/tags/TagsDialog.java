@@ -318,7 +318,7 @@ public class TagsDialog extends JDialog {
    */
   private JPopupMenu createTableComponentMenu() {
     JPopupMenu contextualActions = new JPopupMenu();
-    JMenuItem menuItemDetails = new JMenuItem("See details");
+    JMenuItem menuItemDetails = new JMenuItem(TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_POPUP_MENU_DETAILS));
     
     menuItemDetails.addActionListener(e -> {
       try {
