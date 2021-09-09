@@ -35,14 +35,14 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
   private static final String QUESTION_MESSAGE = TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES);
 
   /**
-   * Text to be written on the button in case the answer to the question is option 1.
+   * Text to be written on the button in case the answer to the question is OK.
    */
-  private static final String OPTION_1_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.STASH_CHANGES);
+  private static final String OK_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.STASH_CHANGES);
 
   /**
-   * Text to be written on the button in case the answer to the question is option 2.
+   * Text to be written on the button in case the answer to the question is "Other"/option 2.
    */
-  private static final String OPTION_2_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.MOVE_CHANGES);
+  private static final String OTHER_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.MOVE_CHANGES);
 
   /**
    * Text to be written on the button in case the answer to the question is negative.
@@ -97,8 +97,8 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
     gbc.gridheight = 1;
     panel.add(textArea, gbc);
 
-    this.setButtonText(getOKButton(), OPTION_1_BUTTON_NAME);
-    this.setButtonText(getOtherButton(), OPTION_2_BUTTON_NAME);
+    this.setButtonText(getOKButton(), OK_BUTTON_NAME);
+    this.setButtonText(getOtherButton(), OTHER_BUTTON_NAME);
     this.setButtonText(getCancelButton(), CANCEL_BUTTON_NAME);
 
     setResizable(false);
