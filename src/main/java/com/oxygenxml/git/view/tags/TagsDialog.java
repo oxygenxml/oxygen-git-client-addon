@@ -5,14 +5,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -31,13 +28,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
@@ -46,7 +43,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  * @author gabriel_nedianu
  *
  */
-public class TagsDialog extends JDialog {
+public class TagsDialog extends OKCancelDialog {
   
   /**
    * Preferred width
@@ -60,24 +57,9 @@ public class TagsDialog extends JDialog {
   private static final Logger LOGGER = LogManager.getLogger(TagsDialog.class.getName());
   
   /**
-   * The button used to push a local tag
-   */
-  private JButton pushButton;
-  
-  /**
-   * The button used to delete a local tag
-   */
-  private JButton deleteButton;
-  
-  /**
    * The table with the tags
    */
   private JTable tagsTable;
-  
-  private int topInset = UIConstants.COMPONENT_TOP_PADDING;
-  private int bottomInset = UIConstants.COMPONENT_BOTTOM_PADDING;
-  private int leftInset = UIConstants.INDENT_5PX;
-  private int rightInset = UIConstants.INDENT_5PX;
   
   /**
    * Translator
@@ -148,96 +130,17 @@ public class TagsDialog extends JDialog {
     gbc.weightx = 1;
     gbc.gridwidth = 1;
     gbc.fill = GridBagConstraints.BOTH;
-    gbc.insets = new Insets(topInset, leftInset, 0, rightInset);
+    gbc.insets = new Insets(0, 0, 0, 0);
 
     tagsPanel.add(new JScrollPane(tagsTable),gbc);
     
-    //add a panel with buttons
-    JPanel buttonsPanel = new JPanel(new GridBagLayout());
-    GridBagConstraints buttonsGridBagConstraints = new GridBagConstraints();
+    getOkButton().setText(TRANSLATOR.getTranslation(Tags.PUSH));
+    getOkButton().setEnabled(false);
     
-    buttonsGridBagConstraints.gridx = 0;
-    buttonsGridBagConstraints.gridy = 0;
-    buttonsGridBagConstraints.anchor = GridBagConstraints.SOUTHEAST;
-    buttonsGridBagConstraints.fill = GridBagConstraints.NONE;
-    buttonsGridBagConstraints.insets = new Insets(topInset, 0, bottomInset, rightInset);
-    
-    pushButton = new JButton(TRANSLATOR.getTranslation(Tags.PUSH));
-    pushButton.addActionListener(createPushListener());
-    pushButton.setEnabled(false);
-    buttonsPanel.add(pushButton, buttonsGridBagConstraints);
-    
-    deleteButton = new JButton(TRANSLATOR.getTranslation(Tags.DELETE));
-    deleteButton.addActionListener(createDeleteListener());
-    deleteButton.setEnabled(false);
-    
-    buttonsGridBagConstraints.gridx ++;
-    buttonsPanel.add(deleteButton, buttonsGridBagConstraints);
-    
-    gbc.gridx = 0;
-    gbc.gridy++;
-    gbc.gridwidth = 1;
-    gbc.weighty = 0;
-    gbc.weightx = 0;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.anchor = GridBagConstraints.SOUTHEAST;
-    gbc.insets = new Insets(topInset, leftInset, bottomInset, rightInset);
-    tagsPanel.add(buttonsPanel, gbc);
+    getCancelButton().setText(TRANSLATOR.getTranslation(Tags.DELETE));
+    getCancelButton().setEnabled(false);
     
     return tagsPanel;
-  }
-  
-  /**
-   * Create the Listener for the Push Button
-   * 
-   * @return an ActionListener
-   */
-  private ActionListener createPushListener() {
-
-    return e -> {
-      int selectedRow = tagsTable.getSelectedRow();
-      TagsTableModel model = (TagsTableModel) tagsTable.getModel();
-      GitTag tag = model.getItemAt(selectedRow);
-      
-      if (!tag.isPushed()) {
-        try {
-          GitAccess.getInstance().pushTag(tag.getName());
-          pushButton.setEnabled(false);
-          deleteButton.setEnabled(false);
-          tag.setPushed(true);
-        } catch (GitAPIException ex) {
-          LOGGER.debug(ex);
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-        }
-      }
-    };
-  }
-  
-  /**
-   * Create the Listener for the Delete Button
-   * 
-   * @return an ActionListener
-   */
-  private ActionListener createDeleteListener() {
-
-    return e -> {
-      deleteButton.setEnabled(false);
-      pushButton.setEnabled(false);
-      int selectedRow = (tagsTable.getSelectedRow());
-      String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
-
-      try {
-        GitAccess.getInstance().deleteTag(tagName);
-
-        TagsTableModel model = (TagsTableModel) tagsTable.getModel();
-        GitTag tag = model.getItemAt(selectedRow);
-        model.remove(tag);
-        model.fireTableRowsDeleted(selectedRow,selectedRow);
-      } catch (GitAPIException ex) {
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-      }
-
-    };
   }
   
   /**
@@ -264,11 +167,11 @@ public class TagsDialog extends JDialog {
       if(selectedRow >= 0) {
         GitTag tag = model.getItemAt(selectedRow);
         if (!tag.isPushed()) {
-          pushButton.setEnabled(true);
-          deleteButton.setEnabled(true);
+          getOkButton().setEnabled(true);
+          getCancelButton().setEnabled(true);
         } else {
-          pushButton.setEnabled(false);
-          deleteButton.setEnabled(false);
+          getOkButton().setEnabled(false);
+          getCancelButton().setEnabled(false);
         }
       }
     });
@@ -350,5 +253,50 @@ public class TagsDialog extends JDialog {
       public void popupMenuCanceled(PopupMenuEvent e) { }
   });
     return contextualActions;
+  }
+  
+  /**
+   * Push button pressed.
+   */
+  @Override
+  protected void doOK() {
+
+    int selectedRow = tagsTable.getSelectedRow();
+    TagsTableModel model = (TagsTableModel) tagsTable.getModel();
+    GitTag tag = model.getItemAt(selectedRow);
+    
+    if (!tag.isPushed()) {
+      try {
+        GitAccess.getInstance().pushTag(tag.getName());
+        getOkButton().setEnabled(false);
+        getCancelButton().setEnabled(false);
+        tag.setPushed(true);
+      } catch (GitAPIException ex) {
+        LOGGER.debug(ex);
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+      }
+    }
+  }
+  
+  /**
+   * Delete button pressed.
+   */
+  @Override
+  protected void doCancel() {
+    getOkButton().setEnabled(false);
+    getCancelButton().setEnabled(false);
+    int selectedRow = (tagsTable.getSelectedRow());
+    String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
+
+    try {
+      GitAccess.getInstance().deleteTag(tagName);
+
+      TagsTableModel model = (TagsTableModel) tagsTable.getModel();
+      GitTag tag = model.getItemAt(selectedRow);
+      model.remove(tag);
+      model.fireTableRowsDeleted(selectedRow,selectedRow);
+    } catch (GitAPIException ex) {
+      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+    }
   }
  }
