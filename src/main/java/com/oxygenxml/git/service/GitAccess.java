@@ -2724,6 +2724,8 @@ public class GitAccess {
 	 * Drops one stash item from the list of stashes.
 	 * 
 	 * @param stashIndex The index of the stash item to be dropped.
+	 * 
+	 * @throws GitAPIException
 	 */
 	public void dropStash(int stashIndex) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
@@ -2740,6 +2742,8 @@ public class GitAccess {
 
 	/**
 	 * Drops all stashes.
+	 * 
+	 * @throws GitAPIException
 	 */
 	public void dropAllStashes() throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
