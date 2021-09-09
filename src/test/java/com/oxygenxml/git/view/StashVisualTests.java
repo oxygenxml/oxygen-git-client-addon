@@ -84,7 +84,7 @@ public class StashVisualTests extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     gitAccess.commit("First local commit.");
 
-    //Make the first commit for the remote repository and create a branch for it.
+    //Make the first commit for the remote repository
     gitAccess.setRepositorySynchronously(REMOTE_REPO);
     file = new File(REMOTE_REPO, "remote1.txt");
     file.createNewFile();
@@ -129,7 +129,7 @@ public class StashVisualTests extends GitTestBase {
         stashChangesItem.getAction().actionPerformed(null);
       });
       
-      sleep(500);
+      flushAWT();
       
       // Stash changes and test if the actions become disabled.
       JDialog stashChangesDialog = findDialog(Tags.STASH_CHANGES);
@@ -155,7 +155,7 @@ public class StashVisualTests extends GitTestBase {
         stashChangesItem.getAction().actionPerformed(null);
       });
       
-      sleep(500);
+      flushAWT();
       
       // Test if the user can add a custom text
       stashChangesDialog = findDialog(Tags.STASH_CHANGES);
@@ -182,7 +182,7 @@ public class StashVisualTests extends GitTestBase {
         stashChangesItem.getAction().actionPerformed(null);
       });
       
-      sleep(500);
+      flushAWT();
       
       // Stash changes and test if the actions become disabled.
       stashChangesDialog = findDialog(Tags.STASH_CHANGES);
@@ -224,7 +224,7 @@ public class StashVisualTests extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     gitAccess.commit("First local commit.");
 
-    // Make the first commit for the remote repository and create a branch for it.
+    // Make the first commit for the remote repository
     gitAccess.setRepositorySynchronously(REMOTE_REPO);
     file = new File(REMOTE_REPO, "remote1.txt");
     file.createNewFile();
@@ -348,7 +348,7 @@ public class StashVisualTests extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     gitAccess.commit("First local commit.");
 
-    // Make the first commit for the remote repository and create a branch for it.
+    // Make the first commit for the remote repository
     gitAccess.setRepositorySynchronously(REMOTE_REPO);
     file = new File(REMOTE_REPO, "remote1.txt");
     file.createNewFile();
@@ -480,7 +480,7 @@ public class StashVisualTests extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     gitAccess.commit("First local commit.");
 
-    // Make the first commit for the remote repository and create a branch for it.
+    // Make the first commit for the remote repository
     gitAccess.setRepositorySynchronously(REMOTE_REPO);
     file = new File(REMOTE_REPO, "remote1.txt");
     file.createNewFile();
@@ -523,7 +523,7 @@ public class StashVisualTests extends GitTestBase {
         stashChangesItem[0].getAction().actionPerformed(null);
       });
       
-      sleep(500);
+      flushAWT();
       
       // Stash changes and test if the actions become disabled.
       JDialog stashChangesDialog = findDialog(Tags.STASH_CHANGES);
@@ -585,7 +585,7 @@ public class StashVisualTests extends GitTestBase {
         stashChangesItem[0].getAction().actionPerformed(null);
       });
       
-      sleep(500);
+      flushAWT();
       
       stashChangesDialog = findDialog(Tags.STASH_CHANGES);
       assertNotNull(stashChangesDialog);
@@ -648,7 +648,7 @@ public class StashVisualTests extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
     gitAccess.commit("First local commit.");
 
-    // Make the first commit for the remote repository and create a branch for it.
+    // Make the first commit for the remote repository
     gitAccess.setRepositorySynchronously(REMOTE_REPO);
     file = new File(REMOTE_REPO, "remote1.txt");
     file.createNewFile();
@@ -705,7 +705,7 @@ public class StashVisualTests extends GitTestBase {
         stashChangesItem[0].getAction().actionPerformed(null);
       });
       
-      sleep(500);
+      flushAWT();
       
       JDialog stashChangesDialog = findDialog(Tags.STASH_CHANGES);
       flushAWT();
@@ -729,7 +729,7 @@ public class StashVisualTests extends GitTestBase {
         stashChangesItem[0].getAction().actionPerformed(null);
       });
       
-      sleep(500);
+      flushAWT();
       
       stashChangesDialog = findDialog(Tags.STASH_CHANGES);
       flushAWT();
