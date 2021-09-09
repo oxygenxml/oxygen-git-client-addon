@@ -32,6 +32,7 @@ import com.oxygenxml.git.options.OptionsManager;
 import com.oxygenxml.git.sax.XPRHandler;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitStatus;
+import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 
@@ -350,6 +351,19 @@ public class RepoUtil {
     b.append(Translator.getInstance().getTranslation(Tags.COMMIT_MESSAGE_LABEL)).append(": " + parseCommit.getFullMessage()).append("\n");
     b.append(Translator.getInstance().getTranslation(Tags.DATE)).append(": ")
     .append(new SimpleDateFormat("d MMM yyyy HH:mm").format(parseCommit.getAuthorIdent().getWhen())).append("\n");
+  }
+  
+  /**
+   * @return repository state or <code>null</code>.
+   */
+  public static RepositoryState getRepoState() {
+    RepositoryState repoState = null;
+    try {
+      repoState = GitAccess.getInstance().getRepository().getRepositoryState();
+    } catch (NoRepositorySelected e1) {
+      LOGGER.error(e1, e1);
+    }
+    return repoState;
   }
 
 }

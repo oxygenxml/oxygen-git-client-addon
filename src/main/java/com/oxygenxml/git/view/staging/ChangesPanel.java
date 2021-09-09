@@ -55,6 +55,7 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -871,43 +872,16 @@ public class ChangesPanel extends JPanel {
 	}
 	
 	/**
-	 * @return the state of the current repository or <code>null</code>, if there's no repository selected.
-	 */
-	 private RepositoryState getRepositoryState() {
-	   RepositoryState repositoryState = null;
-     Repository repo = getCurrentRepository();
-     if (repo != null) {
-       repositoryState = repo.getRepositoryState();
-     }
-     return repositoryState;
-   }
-	
-	/**
 	 * Check if the merging has been resolved.
 	 * 
 	 * @return <code>true</code> if the merging has been resolved.
 	 */
 	private boolean isMergingResolved() {
-	  RepositoryState repositoryState = getRepositoryState();
+	  RepositoryState repositoryState = RepoUtil.getRepoState();
     return repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED;
   }
 	
-	/**
-	 * @return the current repository or <code>null</code> if there's no repository selected.
-	 */
-	private Repository getCurrentRepository() {
-	  Repository repo = null;
-	  try {
-	    repo = GitAccess.getInstance().getRepository();
-    } catch (NoRepositorySelected e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e, e);
-      }
-    }
-	  return repo;
-	}
-	
-	 /**
+  /**
    * Show contextual menu
    * 
    * @param x         X coordinate where to show.
@@ -930,7 +904,7 @@ public class ChangesPanel extends JPanel {
         gitController,
         historyController,
         forStagedResources,
-        getRepositoryState());
+        RepoUtil.getRepoState());
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -1097,7 +1071,7 @@ public class ChangesPanel extends JPanel {
         gitController,
         historyController,
         forStagedResources,
-        getRepositoryState());
+        RepoUtil.getRepoState());
     
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override

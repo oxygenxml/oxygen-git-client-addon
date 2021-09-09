@@ -138,13 +138,7 @@ public class BranchTreeMenuActionsProvider {
       @Override
       public void actionPerformed(ActionEvent e) {
         ctrl.asyncTask(() -> {
-
-          RepositoryState repoState = null;
-          try {
-            repoState = GitAccess.getInstance().getRepository().getRepositoryState();
-          } catch (NoRepositorySelected e1) {
-            LOGGER.error(e1, e1);
-          }
+          RepositoryState repoState = RepoUtil.getRepoState();
           String branchToSet = BranchesUtil.createBranchPath(
               nodePath,
               BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
