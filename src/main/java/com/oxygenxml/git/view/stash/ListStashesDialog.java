@@ -23,7 +23,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -344,9 +343,7 @@ public class ListStashesDialog extends JDialog {
     });
     
     JPopupMenu contextualActions  = new JPopupMenu();
-    JMenuItem  menuItemShowDiff   = new JMenuItem(Translator.getInstance().getTranslation(Tags.COMPARE_WITH_WORKING_TREE_VERSION));
-    menuItemShowDiff.setAction(compareWithWorkingCopyAction);
-    contextualActions.add(menuItemShowDiff);
+    contextualActions.add(compareWithWorkingCopyAction);
     filesTable.setComponentPopupMenu(contextualActions);
     filesTable.addKeyListener(new KeyAdapter() {
 
@@ -609,22 +606,35 @@ public class ListStashesDialog extends JDialog {
    */
   private JPopupMenu createContextualActionsForStashedTable(JTable tableOfStashes) {
     JPopupMenu contextualActions = new JPopupMenu();
-    JMenuItem menuItemApply      = new JMenuItem(Translator.getInstance().getTranslation(Tags.APPLY));
-    JMenuItem menuItemDelete     = new JMenuItem(Translator.getInstance().getTranslation(Tags.DELETE));
 
-    menuItemApply.addActionListener(applySelectedStashAction);
-    
-    menuItemDelete.addActionListener(deleteSelectedStashAction);
-
-    contextualActions.add(menuItemApply);
+    contextualActions.add(applySelectedStashAction);
     contextualActions.addSeparator();
-    contextualActions.add(menuItemDelete);
+    contextualActions.add(deleteSelectedStashAction);
 
     addClickRightSelection((Table) tableOfStashes, contextualActions); 
     
     return contextualActions;
   }
-  
+
+  /**
+   * !!! FOR TEST !!!
+   *
+   * @return The affected files table.
+   */
+  public JTable getAffectedFilesTable() {
+    return affectedFilesTable;
+  }
+
+
+  /**
+   * !!! FOR TEST !!!
+   *
+   * @return The stashes table.
+   */
+  public JTable getStashesTable() {
+    return stashesTable;
+  }
+
 
   /**
    * A custom render for String.
@@ -717,7 +727,7 @@ public class ListStashesDialog extends JDialog {
      * @return the created action.
      */
     public Action createDeleteSelectedStashAction() {
-      return new AbstractAction() {
+      return new AbstractAction(TRANSLATOR.getTranslation(Tags.DELETE)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           int selectedRow = stashesTable.getSelectedRow();
@@ -745,7 +755,7 @@ public class ListStashesDialog extends JDialog {
      * @return the created action.
      */
     public Action createApplySelectedStashAction() {
-      return new AbstractAction() {
+      return new AbstractAction(TRANSLATOR.getTranslation(Tags.APPLY)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           int selectedRow = stashesTable.getSelectedRow();
@@ -773,7 +783,7 @@ public class ListStashesDialog extends JDialog {
      * @return the created action.
      */
     public Action createDeleteAllStashesAction() {
-      return new AbstractAction() {
+      return new AbstractAction(TRANSLATOR.getTranslation(Tags.DELETE_ALL)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           boolean wereAllStashesDropped = StashUtil.clearStashes();

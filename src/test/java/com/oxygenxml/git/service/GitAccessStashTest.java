@@ -213,10 +213,8 @@ public class GitAccessStashTest {
    */
   @Test
   public void testStashPop() throws Exception {
-    try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("modify");
-      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -252,10 +250,8 @@ public class GitAccessStashTest {
    */
   @Test
   public void testStashWithCommittedChangesWithConflicts() throws Exception {
-    try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("test");
-      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -264,10 +260,8 @@ public class GitAccessStashTest {
     assertTrue(isStashEmpty());
     RevCommit ref = gitAccess.createStash(false);
     assertFalse(isStashEmpty());
-    try {
-      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("modify");
-      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -299,10 +293,8 @@ public class GitAccessStashTest {
         "test5", "test6", "test7", "test8", "test9", "test10"};
     
     for(String fileAddedContent: texts) {
-      try {
-        PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
+      try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
         out.println(fileAddedContent);
-        out.close();
       } catch (FileNotFoundException e) {
         e.printStackTrace();
       }
