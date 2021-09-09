@@ -31,6 +31,11 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 public class DetachedHeadDialog extends OKCancelDialog {
 
   /**
+   * Bottom inset for the info message.
+   */
+  private static final int INFO_MESSAGE_BOTTOM_INSET = 11;
+
+  /**
    * Icon right padding.
    */
   private static final int ICON_RIGHT_PADDING = 10;
@@ -118,7 +123,7 @@ public class DetachedHeadDialog extends OKCancelDialog {
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.weightx = 1;
     gbc.gridheight = 1;
-    gbc.insets.bottom = 11;
+    gbc.insets.bottom = INFO_MESSAGE_BOTTOM_INSET;
     mainPanel.add(infoMessageArea, gbc);
     
     // Commit details (ID, author, date, message).
