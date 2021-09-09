@@ -31,18 +31,18 @@ public class CreateTagAction extends AbstractAction {
    */
   private static Translator translator = Translator.getInstance();
   /**
-   * The ID of the commit used for tag.
-   */
-  private String commitId;
-  /**
    * Logger for logging.
    */
   private static final Logger LOGGER = LogManager.getLogger(CreateTagAction.class.getName());
+  /**
+   * The ID of the commit used for tag.
+   */
+  private String commitId;
   
 /**
- * Constructor
- * 
- * @param commitCharacteristics
+ * Constructor that creates a tag action
+ *  
+ * @param commitId The id of the commit
  */
   public CreateTagAction(String commitId) {
     super(translator.getTranslation(Tags.CREATE_TAG_FOR_THIS_COMMIT));
@@ -52,7 +52,7 @@ public class CreateTagAction extends AbstractAction {
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    CreateTagDialog dialog = new CreateTagDialog(translator.getTranslation(Tags.CREATE_TAG_COMMIT_TITLE));
+    CreateTagDialog dialog = new CreateTagDialog();
     String tagTitle = dialog.getTagTitle();
     String tagMessage = dialog.getTagMessage();
     if (dialog.getResult() == OKCancelDialog.RESULT_OK) {

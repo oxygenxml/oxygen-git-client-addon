@@ -15,12 +15,12 @@ import java.awt.event.FocusListener;
 import javax.swing.AbstractAction;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.util.CoalescingDocumentListener;
 import com.oxygenxml.git.view.util.UIUtil;
 
 /**
@@ -33,14 +33,6 @@ public abstract class FilterTextField extends JTextField implements FocusListene
    * empty string
    */
   private static final String EMPTY = "";
-  /**
-   * colaescing delay
-   */
-  private static final int DELAY = 400;
-  /**
-   * Coalescing updater
-   */
-  private CoalescedEventUpdater updater;
   /**
    * Hint to present when the field is not focused.
    */
@@ -78,7 +70,6 @@ public abstract class FilterTextField extends JTextField implements FocusListene
    */
   protected FilterTextField(String noFocusHint) {
     this(noFocusHint, null);
-    updater = new CoalescedEventUpdater(DELAY,()-> filterChanged(getText()));
   }
 
   /**
@@ -93,24 +84,10 @@ public abstract class FilterTextField extends JTextField implements FocusListene
     setFont(this.getFont());
     addFocusListener(internalFocusListenerToForceRepaintOnFocusChange);
     addFocusListener(this);
-
-    docListener = new DocumentListener() {
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        insertUpdate(e);
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        updater.update();
-      }
-
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        // not used
-      }
-    };
+    
+    docListener = new CoalescingDocumentListener(()-> filterChanged(getText()));
     getDocument().addDocumentListener(docListener);
+    
     this.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "clear_field");
     this.getActionMap().put("clear_field", new AbstractAction() {
       @Override

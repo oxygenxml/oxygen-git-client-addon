@@ -6,8 +6,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javax.swing.JCheckBox;
@@ -28,6 +26,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.util.CoalescingDocumentListener;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -65,19 +64,18 @@ public class CreateTagDialog extends OKCancelDialog {
    * Check box to choose whether or not to checkout the branch when 
    * creating it from a local branch or commit.
    */
-  private JCheckBox pushTagCheckBox = 
-      new JCheckBox("Want to push the tag?");
+  private JCheckBox pushTagCheckBox;
 
   /**
    * Public constructor.
    * 
    * @param title            The title of the dialog.
    */
-  public CreateTagDialog(
-      String title) {
+  public CreateTagDialog() {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
-        ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame()
-        : null, title, true);
+        ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(): null,
+            translator.getTranslation(Tags.CREATE_TAG_COMMIT_TITLE),
+            true);
 
     // Create GUI
     JPanel panel = new JPanel(new GridBagLayout());
@@ -88,13 +86,10 @@ public class CreateTagDialog extends OKCancelDialog {
     pack();
     
     // Enable or disable the OK button based on the user input
-    updateUI(tagTitleField.getText());
-    tagTitleField.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyReleased(KeyEvent e) {
-        updateUI(tagTitleField.getText());
-      }
-    });
+    updateUI("");
+    Runnable updateRunnable = () -> updateUI(tagTitleField.getText());
+    
+    tagTitleField.getDocument().addDocumentListener(new CoalescingDocumentListener(updateRunnable));
     tagTitleField.requestFocus();
 
     if (PluginWorkspaceProvider.getPluginWorkspace() != null) {
