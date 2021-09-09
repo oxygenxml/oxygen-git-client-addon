@@ -831,9 +831,9 @@ public class HistoryPanel extends JPanel {
    * Distribute widths to the columns according to their content.
    */
   private void updateHistoryTableWidths() {
-    int dateColWidth = HiDPIUtil.scaleWidth(100);
-    int authorColWidth = HiDPIUtil.scaleWidth(120);
-    int commitIdColWidth = HiDPIUtil.scaleWidth(80);
+    int dateColWidth = HiDPIUtil.scaleWidth(100); // NOSONAR
+    int authorColWidth = HiDPIUtil.scaleWidth(120); // NOSONAR
+    int commitIdColWidth = HiDPIUtil.scaleWidth(80); // NOSONAR
 
     TableColumnModel tcm = historyTable.getColumnModel();
     TableColumn column = tcm.getColumn(0);
