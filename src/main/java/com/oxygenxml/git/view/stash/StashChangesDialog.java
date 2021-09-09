@@ -140,13 +140,19 @@ public class StashChangesDialog extends OKCancelDialog {
     constraints.weightx = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, 0, 0);
+    
     WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
-    includeUntrackedCheckBox.setSelected(
-        Boolean.parseBoolean(optionsStorage.getOption(OPTION_TAG_INCLUDE_UNTRACKED, Boolean.toString(true))));
-    includeUntrackedCheckBox.addItemListener(
-        e -> optionsStorage.setOption(
-            OPTION_TAG_INCLUDE_UNTRACKED,
-            Boolean.toString(includeUntrackedCheckBox.isSelected())));
+    if(optionsStorage != null) {
+      includeUntrackedCheckBox.setSelected(
+              Boolean.parseBoolean(optionsStorage.getOption(OPTION_TAG_INCLUDE_UNTRACKED, Boolean.toString(true))));
+      includeUntrackedCheckBox.addItemListener(
+          e -> optionsStorage.setOption(
+              OPTION_TAG_INCLUDE_UNTRACKED,
+              Boolean.toString(includeUntrackedCheckBox.isSelected())));
+    } else {
+      includeUntrackedCheckBox.setSelected(true);
+    }
+
     panel.add(includeUntrackedCheckBox, constraints);
     
     constraints.insets = new Insets(0, 0, 0, 0);
