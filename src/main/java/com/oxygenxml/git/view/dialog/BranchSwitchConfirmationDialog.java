@@ -20,6 +20,11 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
 
   /**
+   * Question icon right inset.
+   */
+  private static final int QUESTION_ICON_RIGHT_INSET = 10;
+
+  /**
    * The translator.
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
@@ -66,15 +71,15 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
     // Icon
     String iconPath = Icons.QUESTION_ICON;
     JLabel iconLabel = new JLabel();
-    Icon infoIcon = Icons.getIcon(iconPath);
-    if (infoIcon != null) {
-      iconLabel.setIcon(infoIcon);
+    Icon questionIcon = Icons.getIcon(iconPath);
+    if (questionIcon != null) {
+      iconLabel.setIcon(questionIcon);
     }
     gbc.insets = new Insets(
             UIConstants.COMPONENT_TOP_PADDING,
             UIConstants.COMPONENT_LEFT_PADDING,
             UIConstants.COMPONENT_BOTTOM_PADDING,
-            10);
+            QUESTION_ICON_RIGHT_INSET);
     gbc.anchor = GridBagConstraints.NORTHWEST;
     gbc.weightx = 0;
     gbc.weighty = 0;

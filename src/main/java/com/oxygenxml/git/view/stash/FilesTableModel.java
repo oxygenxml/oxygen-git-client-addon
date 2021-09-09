@@ -62,6 +62,12 @@ public class FilesTableModel extends AbstractTableModel {
   public int getRowCount() {
     return filesStatuses.size();
   }
+  
+  
+  @Override
+  public int getColumnCount() {
+    return 2;
+  }
 
 
   @Override
@@ -85,14 +91,7 @@ public class FilesTableModel extends AbstractTableModel {
   public boolean isCellEditable(int row, int column) {
     return false;
   }
-
-
-  @Override
-  public int getColumnCount() {
-    return 2;
-  }
-
-
+  
   @Override
   public Object getValueAt(int rowIndex, int columnIndex) {
     Object temp = null;

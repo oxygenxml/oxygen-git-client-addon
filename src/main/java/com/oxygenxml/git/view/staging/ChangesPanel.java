@@ -173,7 +173,7 @@ public class ChangesPanel extends JPanel {
 	/**
 	 * <code>true</code> if the contextual menu is showing for the resources in the tree view.
 	 */
-	private boolean isContextMenuShowing = false;
+	private boolean isContextualMenuShowing = false;
 	/**
 	 * History interface.
 	 */
@@ -570,7 +570,7 @@ public class ChangesPanel extends JPanel {
           public void actionPerformed(ActionEvent e) {
             setResourcesViewMode(currentViewMode == ResourcesViewMode.FLAT_VIEW ? 
                 ResourcesViewMode.TREE_VIEW : ResourcesViewMode.FLAT_VIEW);
-            isContextMenuShowing = false;
+            isContextualMenuShowing = false;
           }
         }, 
         false);
@@ -598,7 +598,7 @@ public class ChangesPanel extends JPanel {
     
     filesTable = UIUtil.createResourcesTable(
         new StagingResourcesTableModel(gitController, forStagedResources),
-        ()-> isContextMenuShowing);
+        ()-> isContextualMenuShowing);
 
     filesTable.getSelectionModel().addListSelectionListener(e -> {
       if (!e.getValueIsAdjusting()) {
@@ -908,16 +908,16 @@ public class ChangesPanel extends JPanel {
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        isContextMenuShowing = true;
+        isContextualMenuShowing = true;
       }
       @Override
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        isContextMenuShowing = false;
+        isContextualMenuShowing = false;
         contextualMenu.removePopupMenuListener(this);
       }
       @Override
       public void popupMenuCanceled(PopupMenuEvent e) {
-        isContextMenuShowing = false;
+        isContextualMenuShowing = false;
       }
     });
     contextualMenu.show(tree, x, y);
@@ -1076,16 +1076,16 @@ public class ChangesPanel extends JPanel {
     contextualMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        isContextMenuShowing = true;
+        isContextualMenuShowing = true;
       }
       @Override
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        isContextMenuShowing  = false;
+        isContextualMenuShowing  = false;
         contextualMenu.removePopupMenuListener(this);
       }
       @Override
       public void popupMenuCanceled(PopupMenuEvent e) {
-        isContextMenuShowing  = false;
+        isContextualMenuShowing  = false;
       }
     });
     
@@ -1160,7 +1160,7 @@ public class ChangesPanel extends JPanel {
 	    }
 	  };
 	  
-	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
+	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextualMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(gitController, null, forStagedResources, null));
 	  t.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 	  t.setLargeModel(true);
