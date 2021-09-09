@@ -124,10 +124,7 @@ public class StashVisualTests extends GitTestBase {
       
       JMenuItem stashChangesItem =  stashButton.getItem(0);
       
-      SwingUtilities.invokeLater(() -> {
-        stashChangesItem.setSelected(true);
-        stashChangesItem.getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> stashChangesItem.getAction().actionPerformed(null));
       
       flushAWT();
       
@@ -177,10 +174,7 @@ public class StashVisualTests extends GitTestBase {
       
       makeLocalChange("new 4");
       
-      SwingUtilities.invokeLater(() -> {
-        stashChangesItem.setSelected(true);
-        stashChangesItem.getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> stashChangesItem.getAction().actionPerformed(null));
       
       flushAWT();
       
@@ -263,10 +257,7 @@ public class StashVisualTests extends GitTestBase {
       JMenuItem[] listStashesItem =  new JMenuItem[1];
       listStashesItem[0] = stashButton.getItem(1);
 
-      SwingUtilities.invokeLater(() -> {
-        listStashesItem[0].setSelected(true);
-        listStashesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
 
       ListStashesDialog listStashesDialog = (ListStashesDialog)findDialog(Tags.STASHES);
       assertNotNull(listStashesDialog);
@@ -297,10 +288,7 @@ public class StashVisualTests extends GitTestBase {
       
       listStashesItem[0] =  stashButton.getItem(1);
 
-      SwingUtilities.invokeLater(() -> {
-        listStashesItem[0].setSelected(true);
-        listStashesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
       
       flushAWT();
       listStashesDialog = (ListStashesDialog)findDialog(Tags.STASHES);
@@ -387,10 +375,7 @@ public class StashVisualTests extends GitTestBase {
       JMenuItem[] listStashesItem =  new JMenuItem[1];
       listStashesItem[0] = stashButton.getItem(1);
 
-      SwingUtilities.invokeLater(() -> {
-        listStashesItem[0].setSelected(true);
-        listStashesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
       
       ListStashesDialog listStashesDialog = (ListStashesDialog) findDialog(Tags.STASHES);
       assertNotNull(listStashesDialog);
@@ -417,10 +402,7 @@ public class StashVisualTests extends GitTestBase {
       
      listStashesItem[0] =  stashButton.getItem(1);
 
-      SwingUtilities.invokeLater(() -> {
-        listStashesItem[0].setSelected(true);
-        listStashesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
       
       // Test the yes button.
       String[] stashesMessages = {
@@ -518,10 +500,7 @@ public class StashVisualTests extends GitTestBase {
       JMenuItem[] stashChangesItem = new JMenuItem[1];
       stashChangesItem[0] = stashButton.getItem(0);
       
-      SwingUtilities.invokeLater(() -> {
-        stashChangesItem[0].setSelected(true);
-        stashChangesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> stashChangesItem[0].getAction().actionPerformed(null));
       
       flushAWT();
       
@@ -541,10 +520,7 @@ public class StashVisualTests extends GitTestBase {
       JMenuItem[] listStashesItem =  new JMenuItem[1];
       listStashesItem[0] = stashButton.getItem(1);
 
-      SwingUtilities.invokeLater(() -> {
-        listStashesItem[0].setSelected(true);
-        listStashesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
       
       flushAWT();
       ListStashesDialog listStashesDialog = (ListStashesDialog) findDialog(Tags.STASHES);
@@ -580,10 +556,7 @@ public class StashVisualTests extends GitTestBase {
 
       stashChangesItem[0] = stashButton.getItem(0);
       
-      SwingUtilities.invokeLater(() -> {
-        stashChangesItem[0].setSelected(true);
-        stashChangesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> stashChangesItem[0].getAction().actionPerformed(null));
       
       flushAWT();
       
@@ -599,10 +572,7 @@ public class StashVisualTests extends GitTestBase {
       assertEquals("local content", getFileContent(LOCAL_REPO + "/local.txt"));
       listStashesItem[0] = stashButton.getItem(1);
 
-      SwingUtilities.invokeLater(() -> {
-        listStashesItem[0].setSelected(true);
-        listStashesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
       
       listStashesDialog = (ListStashesDialog) findDialog(Tags.STASHES);
       assertNotNull(listStashesDialog);
@@ -700,10 +670,7 @@ public class StashVisualTests extends GitTestBase {
       JMenuItem[] stashChangesItem = new JMenuItem[1];
       stashChangesItem[0] = stashButton.getItem(0);
       
-      SwingUtilities.invokeLater(() -> {
-        stashChangesItem[0].setSelected(true);
-        stashChangesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> stashChangesItem[0].getAction().actionPerformed(null));
       
       flushAWT();
       
@@ -724,10 +691,7 @@ public class StashVisualTests extends GitTestBase {
       
       stashChangesItem[0] = stashButton.getItem(0);
       
-      SwingUtilities.invokeLater(() -> {
-        stashChangesItem[0].setSelected(true);
-        stashChangesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> stashChangesItem[0].getAction().actionPerformed(null));
       
       flushAWT();
       
@@ -744,10 +708,7 @@ public class StashVisualTests extends GitTestBase {
       JMenuItem[] listStashesItem =  new JMenuItem[1];
       listStashesItem[0] = stashButton.getItem(1);
 
-      SwingUtilities.invokeLater(() -> {
-        listStashesItem[0].setSelected(true);
-        listStashesItem[0].getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> listStashesItem[0].getAction().actionPerformed(null));
       
       ListStashesDialog listStashesDialog = (ListStashesDialog) findDialog(Tags.STASHES);
       flushAWT();
@@ -824,10 +785,7 @@ public class StashVisualTests extends GitTestBase {
       
       JMenuItem stashChangesItem =  stashButton.getItem(0);
       
-      SwingUtilities.invokeLater(() -> {
-        stashChangesItem.setSelected(true);
-        stashChangesItem.getAction().actionPerformed(null);
-      });
+      SwingUtilities.invokeLater(() -> stashChangesItem.getAction().actionPerformed(null));
       
       flushAWT();
       
