@@ -850,9 +850,7 @@ public class ToolbarPanelTest extends GitTestBase {
       assertEquals(filesNames[0], ((FileStatus)filesTableModel.getValueAt(0, 1)).getFileLocation());
 
       filesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
-      SwingUtilities.invokeLater(() -> {
-        listStashesDialog.getStashesTable().setRowSelectionInterval(1, 1);
-      });
+      SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(1, 1));
       flushAWT();
       assertEquals(GitChangeType.CHANGED, filesTableModel.getValueAt(0, 0));
       assertEquals(filesNames[0], ((FileStatus)filesTableModel.getValueAt(0, 1)).getFileLocation());
@@ -863,9 +861,7 @@ public class ToolbarPanelTest extends GitTestBase {
       flushAWT();
 
       filesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
-      SwingUtilities.invokeLater(() -> {
-        listStashesDialog.getStashesTable().setRowSelectionInterval(0, 0);
-      });
+      SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(0, 0));
       flushAWT();
       assertEquals(GitChangeType.CHANGED, filesTableModel.getValueAt(0, 0));
       assertEquals(filesNames[0], ((FileStatus)filesTableModel.getValueAt(0, 1)).getFileLocation());
@@ -951,8 +947,7 @@ public class ToolbarPanelTest extends GitTestBase {
    * @return The content.
    * 
    * @author Alex_Smarandache
-   * 
-   * @throws Exception
+   *
    */
   private String getFileContent(String path)  {
     
