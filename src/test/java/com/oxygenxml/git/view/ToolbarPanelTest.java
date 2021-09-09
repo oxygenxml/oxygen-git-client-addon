@@ -123,13 +123,13 @@ public class ToolbarPanelTest extends GitTestBase {
         firstItem.getAction().actionPerformed(null);
       });
       
-      sleep(500);
+      flushAWT();
       Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
       
       JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
       yesButton.doClick();
       
-      sleep(500);
+      flushAWT();
       
       branchSplitMenuButton.setPopupMenuVisible(false);
       flushAWT();
