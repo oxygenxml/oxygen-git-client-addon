@@ -5,11 +5,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -28,6 +30,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
@@ -44,28 +47,40 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  *
  */
 public class TagsDialog extends OKCancelDialog {
-  
+
   /**
    * Preferred width
    */
   private static final int PREFERRED_WIDTH = 475;
 
+  /**
+   * The percents of the columns
+   */
   private static final float[] COLUMN_WIDTH_PER = {0.2f, 0.8f};
   /**
    * Logger for logging.
    */
   private static final Logger LOGGER = LogManager.getLogger(TagsDialog.class.getName());
-  
-  /**
-   * The table with the tags
-   */
-  private JTable tagsTable;
-  
+
   /**
    * Translator
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
-  
+
+  /**
+   * The table with the tags
+   */
+  private JTable tagsTable;
+  /**
+   * The button used to push a local tag
+   */
+  private JButton pushButton;
+
+  /**
+   * The button used to delete a local tag
+   */
+  private JButton deleteButton;
+
   /**
    * Constructor
    */
@@ -74,9 +89,9 @@ public class TagsDialog extends OKCancelDialog {
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
         TRANSLATOR.getTranslation(Tags.TAGS_DIALOG),
         false);
-    
+
     createGUI();
-    
+
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
         (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null;
     if (parentFrame != null) {
@@ -88,8 +103,8 @@ public class TagsDialog extends OKCancelDialog {
     setPreferredSize(new Dimension(PREFERRED_WIDTH, getPreferredSize().height));
     setResizable(true);
   }
-  
-  
+
+
   /**
    * Create GUI
    * 
@@ -104,7 +119,7 @@ public class TagsDialog extends OKCancelDialog {
 
     pack();
   }
-  
+
   /**
    * Creates a JPanel with the
    * 
@@ -115,15 +130,15 @@ public class TagsDialog extends OKCancelDialog {
    * @throws IOException
    */
   private JPanel createTagsPanel() throws GitAPIException, NoRepositorySelected, IOException {
-    
-    
+
+
     //add the table
     JPanel tagsPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
-    
+
     createTagsTable();
     tagsTable.getTableHeader().setReorderingAllowed(false);
-    
+
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.weighty = 1;
@@ -133,16 +148,44 @@ public class TagsDialog extends OKCancelDialog {
     gbc.insets = new Insets(0, 0, 0, 0);
 
     tagsPanel.add(new JScrollPane(tagsTable),gbc);
-    
-    getOkButton().setText(TRANSLATOR.getTranslation(Tags.PUSH));
-    getOkButton().setEnabled(false);
-    
-    getCancelButton().setText(TRANSLATOR.getTranslation(Tags.DELETE));
-    getCancelButton().setEnabled(false);
-    
+
+    //add a panel with buttons
+    JPanel buttonsPanel = new JPanel(new GridBagLayout());
+    GridBagConstraints buttonsGridBagConstraints = new GridBagConstraints();
+
+    buttonsGridBagConstraints.gridx = 0;
+    buttonsGridBagConstraints.gridy = 0;
+    buttonsGridBagConstraints.anchor = GridBagConstraints.SOUTHEAST;
+    buttonsGridBagConstraints.fill = GridBagConstraints.NONE;
+    buttonsGridBagConstraints.insets = new Insets(UIConstants.INDENT_5PX, 0, UIConstants.INDENT_5PX, UIConstants.INDENT_5PX);
+    pushButton = new JButton(TRANSLATOR.getTranslation(Tags.PUSH));
+    pushButton.addActionListener(createPushListener());
+    pushButton.setEnabled(false);
+    buttonsPanel.add(pushButton, buttonsGridBagConstraints);
+
+    deleteButton = new JButton(TRANSLATOR.getTranslation(Tags.DELETE));
+    deleteButton.addActionListener(createDeleteListener());
+    deleteButton.setEnabled(false);
+
+    buttonsGridBagConstraints.gridx ++;
+    buttonsGridBagConstraints.insets = new Insets(UIConstants.INDENT_5PX, 0, UIConstants.INDENT_5PX, 0);
+    buttonsPanel.add(deleteButton, buttonsGridBagConstraints);
+
+    gbc.gridx = 0;
+    gbc.gridy++;
+    gbc.gridwidth = 1;
+    gbc.weighty = 0;
+    gbc.weightx = 0;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.anchor = GridBagConstraints.SOUTHEAST;
+    tagsPanel.add(buttonsPanel, gbc);
+
+    getOkButton().setVisible(false);
+    getCancelButton().setText(TRANSLATOR.getTranslation(Tags.CLOSE));
+
     return tagsPanel;
   }
-  
+
   /**
    * Create a table with the tags
    * 
@@ -154,12 +197,12 @@ public class TagsDialog extends OKCancelDialog {
    */
   private void createTagsTable() throws GitAPIException, NoRepositorySelected, IOException {
     List<GitTag> localTagsList = GitTagsManager.getLocalTags();
-    
+
     String[] columnNames = {TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_NAME_COLUMN),
-                            TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_MESSAGE_COLUMN)};  
+        TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_MESSAGE_COLUMN)};  
     TagsTableModel model = new TagsTableModel(columnNames);
     model.setGitTags(localTagsList);
-    
+
     tagsTable = OxygenUIComponentsFactory.createTable(model);
     //Add the listener for selecting a row
     tagsTable.getSelectionModel().addListSelectionListener(e -> {
@@ -167,15 +210,15 @@ public class TagsDialog extends OKCancelDialog {
       if(selectedRow >= 0) {
         GitTag tag = model.getItemAt(selectedRow);
         if (!tag.isPushed()) {
-          getOkButton().setEnabled(true);
-          getCancelButton().setEnabled(true);
+          pushButton.setEnabled(true);
+          deleteButton.setEnabled(true);
         } else {
-          getOkButton().setEnabled(false);
-          getCancelButton().setEnabled(false);
+          pushButton.setEnabled(false);
+          deleteButton.setEnabled(false);
         }
       }
     });
-    
+
     //Add the listener for double clicked
     tagsTable.addMouseListener(new MouseAdapter() {
       @Override
@@ -194,23 +237,23 @@ public class TagsDialog extends OKCancelDialog {
         }
       }
     });
-    
+
     //Resize the table
     TableColumnModel tagsTableColumnModel = tagsTable.getColumnModel();
     int tableWidth = tagsTableColumnModel.getTotalColumnWidth();
-    
+
     TableColumn column;
     int cantCols = tagsTableColumnModel.getColumnCount();
     for (int i = 0; i < cantCols; i++) {
-        column = tagsTableColumnModel.getColumn(i);
-        int pWidth = Math.round(COLUMN_WIDTH_PER[i] * tableWidth);
-        column.setPreferredWidth(pWidth);
+      column = tagsTableColumnModel.getColumn(i);
+      int pWidth = Math.round(COLUMN_WIDTH_PER[i] * tableWidth);
+      column.setPreferredWidth(pWidth);
     }
-    
+
     tagsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tagsTable.setComponentPopupMenu(createTableComponentMenu());  
   }
-  
+
   /**
    * Create the popup menu for the tagsTable
    * 
@@ -219,7 +262,7 @@ public class TagsDialog extends OKCancelDialog {
   private JPopupMenu createTableComponentMenu() {
     JPopupMenu contextualActions = new JPopupMenu();
     JMenuItem menuItemDetails = new JMenuItem(TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_POPUP_MENU_DETAILS));
-    
+
     menuItemDetails.addActionListener(e -> {
       try {
         int selectedRow = tagsTable.getSelectedRow();
@@ -231,19 +274,19 @@ public class TagsDialog extends OKCancelDialog {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
       }
     });
-    
+
     contextualActions.add(menuItemDetails);
-    
+
     contextualActions.addPopupMenuListener(new PopupMenuListener() {
 
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-          SwingUtilities.invokeLater(() -> {
-              int rowAtPoint = tagsTable.rowAtPoint(SwingUtilities.convertPoint(contextualActions, new Point(0, 0), tagsTable));
-              if (rowAtPoint > -1) {
-                tagsTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
-              }
-          });
+        SwingUtilities.invokeLater(() -> {
+          int rowAtPoint = tagsTable.rowAtPoint(SwingUtilities.convertPoint(contextualActions, new Point(0, 0), tagsTable));
+          if (rowAtPoint > -1) {
+            tagsTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+          }
+        });
       }
 
       @Override
@@ -251,52 +294,61 @@ public class TagsDialog extends OKCancelDialog {
 
       @Override
       public void popupMenuCanceled(PopupMenuEvent e) { }
-  });
+    });
     return contextualActions;
   }
-  
+
   /**
-   * Push button pressed.
+   * Create the Listener for the Push Button
+   * 
+   * @return an ActionListener
    */
-  @Override
-  protected void doOK() {
+  private ActionListener createPushListener() {
 
-    int selectedRow = tagsTable.getSelectedRow();
-    TagsTableModel model = (TagsTableModel) tagsTable.getModel();
-    GitTag tag = model.getItemAt(selectedRow);
-    
-    if (!tag.isPushed()) {
-      try {
-        GitAccess.getInstance().pushTag(tag.getName());
-        getOkButton().setEnabled(false);
-        getCancelButton().setEnabled(false);
-        tag.setPushed(true);
-      } catch (GitAPIException ex) {
-        LOGGER.debug(ex);
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-      }
-    }
-  }
-  
-  /**
-   * Delete button pressed.
-   */
-  @Override
-  protected void doCancel() {
-    getOkButton().setEnabled(false);
-    getCancelButton().setEnabled(false);
-    int selectedRow = (tagsTable.getSelectedRow());
-    String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
-
-    try {
-      GitAccess.getInstance().deleteTag(tagName);
-
+    return e -> {
+      int selectedRow = tagsTable.getSelectedRow();
       TagsTableModel model = (TagsTableModel) tagsTable.getModel();
       GitTag tag = model.getItemAt(selectedRow);
-      model.remove(tag);
-      model.fireTableRowsDeleted(selectedRow,selectedRow);
-    } catch (GitAPIException ex) {
-      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
-    }
+
+      if (!tag.isPushed()) {
+        try {
+          GitAccess.getInstance().pushTag(tag.getName());
+          pushButton.setEnabled(false);
+          deleteButton.setEnabled(false);
+          tag.setPushed(true);
+        } catch (GitAPIException ex) {
+          LOGGER.debug(ex);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        }
+      }
+    };
   }
- }
+
+  /**
+   * Create the Listener for the Delete Button
+   * 
+   * @return an ActionListener
+   */
+  private ActionListener createDeleteListener() {
+
+    return e -> {
+      deleteButton.setEnabled(false);
+      pushButton.setEnabled(false);
+      int selectedRow = (tagsTable.getSelectedRow());
+      String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
+
+      try {
+        GitAccess.getInstance().deleteTag(tagName);
+
+        TagsTableModel model = (TagsTableModel) tagsTable.getModel();
+        GitTag tag = model.getItemAt(selectedRow);
+        model.remove(tag);
+        model.fireTableRowsDeleted(selectedRow,selectedRow);
+      } catch (GitAPIException ex) {
+        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+      }
+
+    };
+  }
+
+}
