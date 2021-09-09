@@ -87,12 +87,12 @@ public class ListStashesDialog extends JDialog {
   /**
    * The default width for table.
    */
-  private static final int TABLE_DEFAULT_WIDTH = 600;
+  private static final int STASHES_TABLE_DEFAULT_WIDTH = 600;
 
   /**
    * The default height for table.
    */
-  private static final int TABLE_DEFAULT_HEIGHT = 275;
+  private static final int STASHES_TABLE_DEFAULT_HEIGHT = 275;
   
   /**
    * The minimum dialog width.
@@ -117,12 +117,12 @@ public class ListStashesDialog extends JDialog {
   /**
    * The index for stash ID column in stashes table.
    */
-  private static final int STASH_ID_COLUMN = 0;
+  private static final int STASH_ID_COLUMN_INDEX = 0;
   
   /**
    * The index for stash description column in stashes table.
    */
-  private static final int STASH_DESCRIPTION_COLUMN = 1;
+  private static final int STASH_DESCRIPTION_COLUMN_INDEX = 1;
 
   /**
    * The table with the stashes.
@@ -180,12 +180,12 @@ public class ListStashesDialog extends JDialog {
   private Action deleteAllStashesAction;
   
   /**
-   * When is selected, if apply a stash, it will be deleted after that.
+   * When selected, after successfully applying a stash, the stash will be deleted.
    */
   private JCheckBox deleteAfterApplyingCheckBox;
 
   /**
-   * The actions provider.
+   * The stash-related actions provider.
    */
   private final StashActionsProvider stashActionsProvider = new StashActionsProvider();
 
@@ -248,7 +248,7 @@ public class ListStashesDialog extends JDialog {
     
     stashesTable = (Table) createStashesTable();
     JScrollPane tableStashesScrollPane = new JScrollPane(stashesTable);
-    tableStashesScrollPane.setPreferredSize(new Dimension(TABLE_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
+    tableStashesScrollPane.setPreferredSize(new Dimension(STASHES_TABLE_DEFAULT_WIDTH, STASHES_TABLE_DEFAULT_HEIGHT));
     tableStashesScrollPane.setMinimumSize(tableStashesScrollPane.getPreferredSize());
     constraints.gridx = 0;
     constraints.gridy++;
@@ -260,7 +260,7 @@ public class ListStashesDialog extends JDialog {
 
     affectedFilesTable = createAffectedFilesTable();
     JScrollPane changesOfStashScrollPane = new JScrollPane(affectedFilesTable);
-    changesOfStashScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH, TABLE_DEFAULT_HEIGHT));
+    changesOfStashScrollPane.setPreferredSize(new Dimension(FILES_LIST_DEFAULT_WIDTH, STASHES_TABLE_DEFAULT_HEIGHT));
     changesOfStashScrollPane.setMinimumSize(changesOfStashScrollPane.getPreferredSize());
     constraints.gridx++;
     constraints.weightx = 1;
@@ -306,11 +306,8 @@ public class ListStashesDialog extends JDialog {
    */
   private Button createDeleteAllButton() {
     Button deleteAllStashesButton = new Button(Translator.getInstance().getTranslation(Tags.DELETE_ALL));
-
     deleteAllStashesButton.addActionListener(deleteAllStashesAction);
-
     deleteAllStashesButton.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_ALL_STASHES_BUTTON_TOOLTIP));
-
     return deleteAllStashesButton;
   }
 
@@ -497,14 +494,10 @@ public class ListStashesDialog extends JDialog {
    * @return the created button.
    */
   private Button createApplyButton() {
-
-    Button button = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
-
-    button.setToolTipText(TRANSLATOR.getTranslation(Tags.APPLY_STASH_BUTTON_TOOLTIP));
-
-    button.addActionListener(applySelectedStashAction);
-
-    return button;
+    Button applyBtn = new Button(Translator.getInstance().getTranslation(Tags.APPLY));
+    applyBtn.setToolTipText(TRANSLATOR.getTranslation(Tags.APPLY_STASH_BUTTON_TOOLTIP));
+    applyBtn.addActionListener(applySelectedStashAction);
+    return applyBtn;
   }
 
 
@@ -514,14 +507,10 @@ public class ListStashesDialog extends JDialog {
    * @return the created button.
    */
   private Button createDeleteButton() {
-
-    Button button = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
-
-    button.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_STASH_BUTTON_TOOLTIP));
-
-    button.addActionListener(deleteSelectedStashAction);
-
-    return button;
+    Button deleteBtn = new Button(Translator.getInstance().getTranslation(Tags.DELETE));
+    deleteBtn.setToolTipText(TRANSLATOR.getTranslation(Tags.DELETE_STASH_BUTTON_TOOLTIP));
+    deleteBtn.addActionListener(deleteSelectedStashAction);
+    return deleteBtn;
   }
 
 
@@ -569,7 +558,7 @@ public class ListStashesDialog extends JDialog {
 
     tableOfStashes.setFillsViewportHeight(true);
     TableColumnModel columnModel = tableOfStashes.getColumnModel();
-    columnModel.getColumn(STASH_DESCRIPTION_COLUMN).setCellRenderer(new StashMessageRender());
+    columnModel.getColumn(STASH_DESCRIPTION_COLUMN_INDEX).setCellRenderer(new StashMessageRender());
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tableOfStashes.getTableHeader().setReorderingAllowed(false);
 
@@ -584,9 +573,9 @@ public class ListStashesDialog extends JDialog {
 
     stashesTableModel.fireTableDataChanged();
 
-    columnModel.getColumn(STASH_ID_COLUMN).setMinWidth(COLUMN_ID_SIZE);
-    columnModel.getColumn(STASH_ID_COLUMN).setPreferredWidth(COLUMN_ID_SIZE);
-    columnModel.getColumn(STASH_ID_COLUMN).setMaxWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(STASH_ID_COLUMN_INDEX).setMinWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(STASH_ID_COLUMN_INDEX).setPreferredWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(STASH_ID_COLUMN_INDEX).setMaxWidth(COLUMN_ID_SIZE);
 
 
     SwingUtilities.invokeLater(() -> tableOfStashes.setRowSelectionInterval(0, 0));
@@ -740,7 +729,7 @@ public class ListStashesDialog extends JDialog {
                 setStashTableButtonsEnabled(false);
                 affectedFilesTableModel.clear();
               } else {
-                selectNextRow(stashesTable, selectedRow, noOfRows);
+                selectNextRowAfterDeletion(stashesTable, selectedRow, noOfRows);
               }
             }
           }
@@ -804,7 +793,7 @@ public class ListStashesDialog extends JDialog {
      * @param selectedRow   The deleted row
      * @param noOfRows      The initial number of rows
      */
-    private void selectNextRow(Table table, int selectedRow, int noOfRows) {
+    private void selectNextRowAfterDeletion(Table table, int selectedRow, int noOfRows) {
       if(noOfRows > 1) {
         if (selectedRow == noOfRows - 1) {
           table.setRowSelectionInterval(noOfRows - 2,  noOfRows - 2);
@@ -826,17 +815,16 @@ public class ListStashesDialog extends JDialog {
      */
     private void popStash(List<RevCommit> stashes, int indexStashToDelete, int noOfStashes) throws GitAPIException {
       StashApplyStatus applyStashStatus =
-              GitAccess.getInstance().popStash(stashes.get(indexStashToDelete).getName());
+          GitAccess.getInstance().popStash(stashes.get(indexStashToDelete).getName());
       if(applyStashStatus == StashApplyStatus.APPLIED_SUCCESSFULLY) {
         stashesTableModel.removeRow(indexStashToDelete);
         if(stashesTableModel.getRowCount() == 0) {
           setStashTableButtonsEnabled(false);
           affectedFilesTableModel.clear();
         }
-        selectNextRow(stashesTable, indexStashToDelete, noOfStashes);
+        selectNextRowAfterDeletion(stashesTable, indexStashToDelete, noOfStashes);
       }
-
-     }
+    }
 
   }
 
