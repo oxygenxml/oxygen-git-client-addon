@@ -98,14 +98,15 @@ public class RevCommitUtil {
 
             if(commit.getParentCount() > 2) {
               oldC = rw.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
-              TreeWalk treeWalk = new TreeWalk(repository);
-              treeWalk.addTree(commit.getTree());
-              treeWalk.setRecursive(false);
-              treeWalk.setFilter(null);
-              treeWalk.reset(oldC.getTree().getId());
-              while (treeWalk.next()) {
-                String path = treeWalk.getPathString();
-                changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
+              try (TreeWalk treeWalk = new TreeWalk(repository)) {
+                treeWalk.addTree(commit.getTree());
+                treeWalk.setRecursive(false);
+                treeWalk.setFilter(null);
+                treeWalk.reset(oldC.getTree().getId());
+                while (treeWalk.next()) {
+                  String path = treeWalk.getPathString();
+                  changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
+                }
               }
             }
 
