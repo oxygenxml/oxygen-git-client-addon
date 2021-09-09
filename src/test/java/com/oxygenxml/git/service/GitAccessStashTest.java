@@ -134,7 +134,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
 
     assertTrue(isStashEmpty());
-    RevCommit commitStash = gitAccess.createStash(false);
+    RevCommit commitStash = gitAccess.createStash(false, null);
     assertFalse(isStashEmpty());
 
     boolean noCommitFound = false;
@@ -179,7 +179,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
     assertTrue(isStashEmpty());
-    RevCommit ref = gitAccess.createStash(false);
+    RevCommit ref = gitAccess.createStash(false, null);
     assertFalse(isStashEmpty());
     
     try {
@@ -221,7 +221,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
 
     assertTrue(isStashEmpty());
-    RevCommit commitStash = gitAccess.createStash(false);
+    RevCommit commitStash = gitAccess.createStash(false, null);
     assertFalse(isStashEmpty());
    
     BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
@@ -258,7 +258,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
     assertTrue(isStashEmpty());
-    RevCommit ref = gitAccess.createStash(false);
+    RevCommit ref = gitAccess.createStash(false, null);
     assertFalse(isStashEmpty());
     try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
       out.println("modify");
@@ -267,7 +267,7 @@ public class GitAccessStashTest {
     }
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("file test modified");
-    assertNull(gitAccess.createStash(false));
+    assertNull(gitAccess.createStash(false, null));
     
     gitAccess.applyStash(ref.getName());
     
@@ -300,7 +300,7 @@ public class GitAccessStashTest {
       }
       gitAccess.addAll(gitAccess.getUnstagedFiles());
 
-      RevCommit commitStash = gitAccess.createStash(true);
+      RevCommit commitStash = gitAccess.createStash(true, null);
       assertNotNull(commitStash);
     }
     

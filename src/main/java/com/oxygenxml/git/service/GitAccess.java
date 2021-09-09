@@ -42,6 +42,7 @@ import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.RmCommand;
+import org.eclipse.jgit.api.StashCreateCommand;
 import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
@@ -2445,66 +2446,39 @@ public class GitAccess {
 
 	
 	/**
-	 * Create a new stash command.
-	 *
-	 * @param includeUntrackedFiles <code>True</code> if the stash should include the untracked files.
-	 *
-	 * @return The created stash.
-	 */
-	public RevCommit createStash(boolean includeUntrackedFiles) {
-		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
-		RevCommit stash = null;
-		try {
-			stash = git.stashCreate().setIncludeUntracked(includeUntrackedFiles).call();
-			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
-		} catch (GitAPIException e) {
-			boolean isBecauseConflicts = getUnstagedFiles() != null
-							&& !getUnstagedFiles().isEmpty()
-							&& getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
-			if(isBecauseConflicts) {
-				PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-			} else {
-				PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-								TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_CREATED) + e.getMessage(), e);
-				LOGGER.error(e, e);
-			}
-			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
-		}
-
-		return stash;
-	}
-
-
-	/**
    * Create a new stash command.
    *
 	 * @param includeUntrackedFiles <code>True</code> if the stash should include the untracked files.
-   * @param description The description of stash.
+   * @param description           The description of stash. May be <code>null</code>.
    * 
    * @return The created stash.
    */
-  public RevCommit createStash(boolean includeUntrackedFiles, String description) {
-    fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
-    RevCommit stash = null;
-    try {
-      stash = git.stashCreate().setIncludeUntracked(includeUntrackedFiles).setWorkingDirectoryMessage(description).call();
-      fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
-    } catch (GitAPIException e) {
-      boolean isBecauseConflicts = getUnstagedFiles() != null 
-          && !getUnstagedFiles().isEmpty() 
-          && getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
-      if(isBecauseConflicts) {
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-      } else {
-				PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-						TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_CREATED) + e.getMessage(), e);
-        LOGGER.error(e, e);
-      }
-      fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
-    }
+	public RevCommit createStash(boolean includeUntrackedFiles, String description) {
+	  fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
+	  RevCommit stash = null;
+	  try {
+	    StashCreateCommand createStashCmd = git.stashCreate().setIncludeUntracked(includeUntrackedFiles);
+	    if (description != null) {
+	      createStashCmd.setWorkingDirectoryMessage(description);
+	    }
+      stash = createStashCmd.call();
+	    fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
+	  } catch (GitAPIException e) {
+	    boolean isBecauseConflicts = getUnstagedFiles() != null 
+	        && !getUnstagedFiles().isEmpty() 
+	        && getUnstagedFiles().stream().anyMatch(file -> file.getChangeType() == GitChangeType.CONFLICT);
+	    if(isBecauseConflicts) {
+	      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+	    } else {
+	      PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+	          TRANSLATOR.getTranslation(Tags.STASH_CANNOT_BE_CREATED) + e.getMessage(), e);
+	      LOGGER.error(e, e);
+	    }
+	    fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
+	  }
 
-    return stash;
-  }
+	  return stash;
+	}
   
   
   /**
