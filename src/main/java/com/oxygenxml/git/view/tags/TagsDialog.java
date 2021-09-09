@@ -53,16 +53,11 @@ public class TagsDialog extends JDialog {
    */
   private static final int PREFERRED_WIDTH = 475;
 
-  private static final float[] columnWidthPer = {0.2f, 0.8f};
+  private static final float[] COLUMN_WIDTH_PER = {0.2f, 0.8f};
   /**
    * Logger for logging.
    */
   private static final Logger LOGGER = LogManager.getLogger(TagsDialog.class.getName());
-  
-  /**
-   * A list with the remote tags titles
-   */
-  private List<String> remoteTagsTitle;
   
   /**
    * The button used to push a local tag
@@ -78,12 +73,6 @@ public class TagsDialog extends JDialog {
    * The table with the tags
    */
   private JTable tagsTable;
-  
-  /**
-   * A list with all GitTags 
-   */
-  private List<GitTag> localTagsList;
-  
   
   private int topInset = UIConstants.COMPONENT_TOP_PADDING;
   private int bottomInset = UIConstants.COMPONENT_BOTTOM_PADDING;
@@ -104,9 +93,6 @@ public class TagsDialog extends JDialog {
         TRANSLATOR.getTranslation(Tags.TAGS_DIALOG),
         false);
     
-    remoteTagsTitle = GitTagsManager.getRemoteTagsTitle();
-    localTagsList = GitTagsManager.getLocalTags();
-    
     createGUI();
     
     JFrame parentFrame = PluginWorkspaceProvider.getPluginWorkspace() != null ? 
@@ -124,8 +110,12 @@ public class TagsDialog extends JDialog {
   
   /**
    * Create GUI
+   * 
+   * @throws IOException 
+   * @throws NoRepositorySelected 
+   * @throws GitAPIException 
    */
-  private void createGUI() {
+  private void createGUI() throws GitAPIException, NoRepositorySelected, IOException {
 
     JPanel mainPanel = createTagsPanel();
     getContentPane().add(mainPanel);
@@ -142,7 +132,7 @@ public class TagsDialog extends JDialog {
    * @throws NoRepositorySelected
    * @throws IOException
    */
-  private JPanel createTagsPanel() {
+  private JPanel createTagsPanel() throws GitAPIException, NoRepositorySelected, IOException {
     
     
     //add the table
@@ -209,12 +199,12 @@ public class TagsDialog extends JDialog {
       TagsTableModel model = (TagsTableModel) tagsTable.getModel();
       GitTag tag = model.getItemAt(selectedRow);
       
-      if (!remoteTagsTitle.contains(tag.getName())) {
+      if (!tag.isPushed()) {
         try {
           GitAccess.getInstance().pushTag(tag.getName());
-          tag.setPushed(true);
           pushButton.setEnabled(false);
           deleteButton.setEnabled(false);
+          tag.setPushed(true);
         } catch (GitAPIException ex) {
           LOGGER.debug(ex);
           PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
@@ -238,13 +228,11 @@ public class TagsDialog extends JDialog {
 
       try {
         GitAccess.getInstance().deleteTag(tagName);
-        localTagsList.remove(selectedRow);
 
         TagsTableModel model = (TagsTableModel) tagsTable.getModel();
         GitTag tag = model.getItemAt(selectedRow);
         model.remove(tag);
-        model.fireTableStructureChanged();
-        tagsTable.repaint();
+        model.fireTableRowsDeleted(selectedRow,selectedRow);
       } catch (GitAPIException ex) {
         PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
       }
@@ -261,7 +249,9 @@ public class TagsDialog extends JDialog {
    * @throws NoRepositorySelected
    * @throws IOException
    */
-  private void createTagsTable() {
+  private void createTagsTable() throws GitAPIException, NoRepositorySelected, IOException {
+    List<GitTag> localTagsList = GitTagsManager.getLocalTags();
+    
     String[] columnNames = {TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_NAME_COLUMN),
                             TRANSLATOR.getTranslation(Tags.TAGS_DIALOG_MESSAGE_COLUMN)};  
     TagsTableModel model = new TagsTableModel(columnNames);
@@ -286,9 +276,9 @@ public class TagsDialog extends JDialog {
     //Add the listener for double clicked
     tagsTable.addMouseListener(new MouseAdapter() {
       @Override
-      public void mousePressed(MouseEvent mouseEvent) {
+      public void mouseClicked(MouseEvent mouseEvent) {
         tagsTable =(JTable) mouseEvent.getSource();
-        if (mouseEvent.getClickCount() == 2 && tagsTable.getSelectedRow() != -1) {
+        if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2 && tagsTable.getSelectedRow() != -1 ) {
           int selectedRow = tagsTable.getSelectedRow();
           GitTag tag = model.getItemAt(selectedRow);
           TagDetailsDialog dialog;
@@ -299,7 +289,7 @@ public class TagsDialog extends JDialog {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
           }
         }
-    }
+      }
     });
     
     //Resize the table
@@ -310,7 +300,7 @@ public class TagsDialog extends JDialog {
     int cantCols = tagsTableColumnModel.getColumnCount();
     for (int i = 0; i < cantCols; i++) {
         column = tagsTableColumnModel.getColumn(i);
-        int pWidth = Math.round(columnWidthPer[i] * tableWidth);
+        int pWidth = Math.round(COLUMN_WIDTH_PER[i] * tableWidth);
         column.setPreferredWidth(pWidth);
     }
     

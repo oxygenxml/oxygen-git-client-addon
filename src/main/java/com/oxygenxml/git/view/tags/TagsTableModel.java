@@ -59,8 +59,20 @@ public class TagsTableModel extends AbstractTableModel {
    * 
    * @param tag Tag to remove.
    */
-  public void remove(Object tag) {
+  public void remove(GitTag tag) {
     int index = getIndexOf(tag);
+    if (index != -1) {
+      gitTags.remove(index);
+      fireTableRowsDeleted(index, index);
+    }
+  }
+  
+  /**
+   * Remove a tag at a given index. 
+   * 
+   * @param index index of the Tag to remove.
+   */
+  public void remove(int index) {
     if (index != -1) {
       gitTags.remove(index);
       fireTableRowsDeleted(index, index);

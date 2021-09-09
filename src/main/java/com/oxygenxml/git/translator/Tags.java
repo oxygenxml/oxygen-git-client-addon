@@ -1366,6 +1366,17 @@ public class Tags {
   public static final String TAG_ALREADY_EXISTS = "Tag_Already_Exists";
   
   /**
+   * The message for error when we have a tag with spaces
+   */
+  public static final String TAG_CONTAINS_SPACES = "Tag_Contains_Spaces";
+  
+  /**
+   * The message for error when we have a tag with invalid chars
+   */
+  public static final String TAG_CONTAINS_INVALID_CHARS = "Tag_Contains_Invalid_Chars";
+  
+  
+  /**
    * The first column name in the table with the tags (column for the tag name)
    */
   public static final String TAGS_DIALOG_NAME_COLUMN= "Tags_Dialog_Name_Column";

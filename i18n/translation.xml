@@ -55,6 +55,22 @@
         <val lang="ja_JP">Tag already exists</val>
         <val lang="nl_NL">Tag already exists</val>
     </key>
+    <key value="Tag_Contains_Spaces">
+        <comment>The message for error when we have a tag with spaces</comment>
+        <val lang="en_US">Spaces are not allowed in tags</val>
+        <val lang="de_DE">Spaces are not allowed in tags</val>
+        <val lang="fr_FR">Spaces are not allowed in tags</val>
+        <val lang="ja_JP">Spaces are not allowed in tags</val>
+        <val lang="nl_NL">Spaces are not allowed in tags</val>
+    </key>
+        <key value="Tag_Contains_Invalid_Chars">
+        <comment>The message for error when we have a tag with invalid chars</comment>
+        <val lang="en_US">Tag contains not allowed characters</val>
+        <val lang="de_DE">Tag contains not allowed characters</val>
+        <val lang="fr_FR">Tag contains not allowed characters</val>
+        <val lang="ja_JP">Tag contains not allowed characters</val>
+        <val lang="nl_NL">Tag contains not allowed characters</val>
+    </key>
     <key value="Tags_Dialog_Name_Column">
         <comment>The first column name in the table with the tags (column for the tag name)</comment>
         <val lang="en_US">Name</val>

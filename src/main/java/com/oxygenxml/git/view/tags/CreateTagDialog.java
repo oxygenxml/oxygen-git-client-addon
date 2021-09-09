@@ -20,6 +20,8 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Repository;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
@@ -166,7 +168,6 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.fill = GridBagConstraints.BOTH;
     gbc.anchor = GridBagConstraints.BASELINE;
     gbc.insets = new Insets(topInset, leftInset, 0, 0);
-    //panel.add(tagMessageField, gbc);
     panel.add(tagMessageScrollPane, gbc);
 
     label.setLabelFor(tagMessageField);
@@ -204,15 +205,29 @@ public class CreateTagDialog extends OKCancelDialog {
    * @param tagTitle The tag title provided in the input field.
    */
   private void updateUI(String tagTitle) {
+
     boolean titleAlreadyExists = false;
-    try {
-      titleAlreadyExists = GitAccess.getInstance().existsTag(tagTitle);
-    } catch (NoRepositorySelected | IOException e) {
-      logger.debug(e, e);
-    }
-    errorMessageTextArea.setText(titleAlreadyExists ? translator.getTranslation(Tags.TAG_ALREADY_EXISTS) : "");
+    boolean titleContainsSpace = false;
+    boolean titleContainsInvalidChars = false;
     
-    boolean isTagTitleValid = !tagTitle.isEmpty() && !titleAlreadyExists;
+    if (!tagTitle.isEmpty()) {
+      titleContainsSpace = tagTitle.contains(" ");
+      titleContainsInvalidChars = !Repository.isValidRefName(Constants.R_TAGS + tagTitle);
+      if (titleContainsSpace) {
+        errorMessageTextArea.setText(translator.getTranslation(Tags.TAG_CONTAINS_SPACES));
+      } else if (titleContainsInvalidChars) {
+        errorMessageTextArea.setText(translator.getTranslation(Tags.TAG_CONTAINS_INVALID_CHARS));
+      } else  {
+        try {
+          titleAlreadyExists = GitAccess.getInstance().existsTag(tagTitle);
+        } catch (NoRepositorySelected | IOException e) {
+          logger.debug(e, e);
+        }
+        errorMessageTextArea.setText(titleAlreadyExists ? translator.getTranslation(Tags.TAG_ALREADY_EXISTS) : "");
+      } 
+    }
+
+    boolean isTagTitleValid = !tagTitle.isEmpty() && !titleAlreadyExists && !titleContainsSpace && !titleContainsInvalidChars;
     getOkButton().setEnabled(isTagTitleValid);
   }
 
