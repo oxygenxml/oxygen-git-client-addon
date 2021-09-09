@@ -139,13 +139,7 @@ public class BranchesUtil {
    * Show a message saying why checking out a newly created branch failed.
    */
   public static void showCannotCheckoutNewBranchMessage() {
-    RepositoryState state = null;
-    try {
-      state = GitAccess.getInstance().getRepository().getRepositoryState();
-    } catch (NoRepositorySelected e2) {
-      LOGGER.debug(e2, e2);
-    }
-
+    RepositoryState state = RepoUtil.getRepoState();
     if (state != null) {
       String messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH;
       switch (state) {
