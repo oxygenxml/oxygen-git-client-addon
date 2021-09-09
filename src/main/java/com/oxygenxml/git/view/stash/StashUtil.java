@@ -3,13 +3,14 @@ package com.oxygenxml.git.view.stash;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
@@ -43,6 +44,8 @@ public class StashUtil {
    * Tries to create a new stash.
    *
    * <code>True</code> if the stash was created.
+   * 
+   * @return <code>true</code> if the stash entry was created.
    */
   public static boolean stashChanges() {
     boolean successfullyCreated = false;
