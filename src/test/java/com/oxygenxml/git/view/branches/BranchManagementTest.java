@@ -575,7 +575,7 @@ public class BranchManagementTest extends GitTestBase{
    * <p><b>Description:</b> Tests the tool tips for branches on a tree with both local and remote branches.</p>
    * <p><b>Bug ID:</b> EXM-46438</p>
    * 
-   * @author Alex Smarandache
+   * @author Alex_Smarandache
    * 
    * @throws Exception
    */
@@ -738,6 +738,64 @@ public class BranchManagementTest extends GitTestBase{
         rendererLabel.getToolTipText());
     
     assertNull(leaf.getNextLeaf());
+    
+  }
+  
+  
+  /**
+   * <p><b>Description:</b> Tests the tool tips for deleted branches on a tree with both local and remote branches.</p>
+   * <p><b>Bug ID:</b> EXM-48768</p>
+   * 
+   * @author Alex_Smarandache
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testBranchesTreeToolTipsDeletedBranch() throws Exception {
+    // Local repo
+    File file = new File(LOCAL_TEST_REPOSITORY + "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("First local commit.");
+    gitAccess.createBranch(LOCAL_BRANCH_NAME1);
+    gitAccess.createBranch(LOCAL_BRANCH_NAME2);
+    
+    // Remote repo
+    gitAccess.setRepositorySynchronously(REMOTE_TEST_REPOSITORY);
+    file = new File(REMOTE_TEST_REPOSITORY + "remote1.txt");
+    file.createNewFile();
+    setFileContent(file, "remote content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "remote1.txt"));
+    gitAccess.commit("First remote commit.");
+    gitAccess.createBranch(REMOTE_BRANCH_NAME1);
+    gitAccess.createBranch(REMOTE_BRANCH_NAME2);
+    
+    // Local repo again
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
+    gitAccess.fetch();
+    
+    BranchManagementPanel branchManagementPanel = new BranchManagementPanel(Mockito.mock(GitControllerBase.class));
+    branchManagementPanel.refreshBranches();
+    flushAWT();
+    
+    JTree tree = branchManagementPanel.getTree();
+    gitAccess.deleteBranch(LOCAL_BRANCH_NAME2);
+    GitTreeNode root = (GitTreeNode)(branchManagementPanel.getTree().getModel().getRoot());
+    DefaultMutableTreeNode leaf = root.getFirstLeaf();
+    JLabel rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 2, true);
+    assertEquals(
+        "<html><p>Local_branch LocalBranch<br><br>"
+        + "Last_Commit_Details:<br>"
+        + "- Author: AlexJitianu &lt;alex_jitianu@sync.ro&gt;<br> "
+        + "- Date: {date}</p></html>".replaceAll("\\{date\\}",  DATE_FORMAT.format(new Date())),
+        rendererLabel.getToolTipText());
+    
+    leaf = leaf.getNextLeaf();
+    rendererLabel = (JLabel) tree.getCellRenderer()
+        .getTreeCellRendererComponent(tree, leaf, false, true, true, 3, true);
+    assertNull(rendererLabel.getToolTipText());
     
   }
   
