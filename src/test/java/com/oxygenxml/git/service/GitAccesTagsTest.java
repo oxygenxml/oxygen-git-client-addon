@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.transport.URIish;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +35,11 @@ public class GitAccesTagsTest {
    * The local repository.
    */
   private final static String LOCAL_TEST_REPOSITORY = "target/test-resources/GItAccessStagedFilesTest";
+  
+  /**
+   * The local repository.
+   */
+  private final static String REPOSITORY_TEST_CLONE = "target/test-resources/GItAccessStagedFiles-clone";
   
   /**
    * The GitAccess instance.
@@ -108,6 +115,33 @@ public class GitAccesTagsTest {
     
     assertFalse(gitAccess.existsTag("Tagul1"));
   }
+  
+  /**
+   * <p><b>Description:</b> Tests delete Tag method </p>
+   * <p><b>Bug ID:</b> EXM-46109</p>
+   *
+   * @author gabriel_nedianu
+   * 
+   * @throws NoRepositorySelected 
+   * @throws IOException 
+   * @throws GitAPIException 
+   * @throws RevisionSyntaxException 
+   */
+  @Test
+  public void testPush() throws GitAPIException, NoRepositorySelected, RevisionSyntaxException, IOException {
+    File file = new File(REPOSITORY_TEST_CLONE);
+    URL url = gitAccess.getRepository().getDirectory().toURI().toURL();
+    gitAccess.clone(new URIish(url), file, null, "refs/heads/main");
+
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    String commitId = commitsCharacteristics.get(0).getCommitId();
+    gitAccess.tagCommit("Tag", "", commitId);
+    gitAccess.pushTag("Tag");
+
+    gitAccess.setRepositorySynchronously(LOCAL_TEST_REPOSITORY);
+    assertTrue(gitAccess.existsTag("Tag"));
+
+  }
 
   
   /**
@@ -117,8 +151,10 @@ public class GitAccesTagsTest {
   public void freeResources() {
     gitAccess.closeRepo();
     File dirToDelete = new File(LOCAL_TEST_REPOSITORY);
+    File dirToDelete2 = new File(REPOSITORY_TEST_CLONE);
     try {
       FileUtils.deleteDirectory(dirToDelete);
+      FileUtils.deleteDirectory(dirToDelete2);
     } catch (IOException e) {
       e.printStackTrace();
     }
