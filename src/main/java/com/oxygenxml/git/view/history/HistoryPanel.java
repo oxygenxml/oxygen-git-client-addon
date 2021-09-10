@@ -607,7 +607,7 @@ public class HistoryPanel extends JPanel {
   private void showHistory(String filePath, boolean force) {
     Translator translator = Translator.getInstance();
 
-    updateSelectionMode(filePath);
+    SwingUtilities.invokeLater(() -> updateSelectionMode(filePath));
 
     if (force
         // Check if we don't already present the history for this path!!!!
@@ -774,9 +774,11 @@ public class HistoryPanel extends JPanel {
    */
   private void updateSelectionMode(String filePath) {
     if (filePath != null && filePath.length() > 0) {
-      historyTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-    } else {
-      historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      if(historyTable.getSelectionModel().getSelectionMode() != ListSelectionModel.MULTIPLE_INTERVAL_SELECTION) {
+        historyTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+      }
+    } else if(historyTable.getSelectionModel().getSelectionMode() != ListSelectionModel.SINGLE_SELECTION) {
+        historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
   }
 
