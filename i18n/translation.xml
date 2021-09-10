@@ -8,11 +8,11 @@
     </languageList>
     <key value="Pull_failed_because_conflicting_paths">
         <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
-        <val lang="en_US">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="de_DE">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="fr_FR">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="ja_JP">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="nl_NL">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="en_US">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="de_DE">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="fr_FR">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="ja_JP">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="nl_NL">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
     </key>
     <key value="Stash_Cannot_Be_Deleted">
         <comment>The message displayed to the user when a stash cannot be deleted.</comment>
@@ -152,11 +152,11 @@
     </key>
     <key value="Stash_Remove_Staged_Changes">
         <comment>The message presents user when are staged changes before to apply a stash.</comment>
-        <val lang="en_US">Cannot apply stash while having staged changes. Stash, commit, or unstage before trying again.</val>
-        <val lang="de_DE">Cannot apply stash while having staged changes. Stash, commit, or unstage before trying again.</val>
-        <val lang="fr_FR">Cannot apply stash while having staged changes. Stash, commit, or unstage before trying again.</val>
-        <val lang="ja_JP">Cannot apply stash while having staged changes. Stash, commit, or unstage before trying again.</val>
-        <val lang="nl_NL">Cannot apply stash while having staged changes. Stash, commit, or unstage before trying again.</val>
+        <val lang="en_US">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
+        <val lang="de_DE">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
+        <val lang="fr_FR">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
+        <val lang="ja_JP">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
+        <val lang="nl_NL">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
     </key>
     <key value="Stash_Apply">
         <comment>Stash apply</comment>
