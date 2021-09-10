@@ -17,7 +17,6 @@ import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -252,15 +251,10 @@ public class BranchTreeMenuActionsProvider {
           return null;
         }
 
-        RepositoryState repoState = null;
-        try {
-          repoState = GitAccess.getInstance().getRepository().getRepositoryState();
-        } catch (NoRepositorySelected e1) {
-          LOGGER.error(e1, e1);
-        }
+        RepositoryState repoState = RepoUtil.getRepoState();
         if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
           int answer = showUncommittedChangesWhenChangingBranchMsg();
-          if (answer == OKCancelDialog.RESULT_OK) {
+          if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
             ctrl.getGitAccess().setBranch(branchName);
           }
         } else {

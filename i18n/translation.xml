@@ -111,14 +111,6 @@
         <val lang="ja_JP">Opens this version of the file as read-only.</val>
         <val lang="nl_NL">Opens this version of the file as read-only.</val>
     </key>
-    <key value="History_resource_checkout_action_tooltip">
-        <comment>The text for the tooltip that explains the Checkout action for a  Git History resource.</comment>
-        <val lang="en_US">Resets the working copy file to this version.</val>
-        <val lang="de_DE">Resets the working copy file to this version.</val>
-        <val lang="fr_FR">Resets the working copy file to this version.</val>
-        <val lang="ja_JP">Resets the working copy file to this version.</val>
-        <val lang="nl_NL">Resets the working copy file to this version.</val>
-    </key>
      <key value="ID">
         <comment>ID</comment>
         <val lang="en_US">ID</val>

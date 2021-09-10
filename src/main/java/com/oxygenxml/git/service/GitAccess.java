@@ -1875,14 +1875,15 @@ public class GitAccess {
     fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
 	  return GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
-	      RepositoryState repositoryState = getRepository().getRepositoryState();
+	      Repository repo = getRepository();
+        RepositoryState repositoryState = repo.getRepositoryState();
 	      if (repositoryState == RepositoryState.REBASING_MERGE) {
 	        git.rebase().setOperation(Operation.ABORT).call();
 	        // EXM-47461 Should update submodules as well.
 	        CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
 	        pull(credentialsProvider, PullType.REBASE, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
 	      } else {
-	        AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
+	        AnyObjectId commitToMerge = repo.resolve("MERGE_HEAD");
 	        git.clean().call();
 	        git.reset().setMode(ResetType.HARD).call();
 	        git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();

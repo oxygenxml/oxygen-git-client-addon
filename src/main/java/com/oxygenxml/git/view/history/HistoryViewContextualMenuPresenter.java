@@ -8,10 +8,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.swing.AbstractAction;
@@ -53,6 +51,36 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  */
 public class HistoryViewContextualMenuPresenter {
   /**
+   * Action for a file in a commit.
+   */
+  public abstract class FileContextualAction extends AbstractAction {
+    /**
+     * Tooltip text.
+     */
+    private String tooltipText;
+    
+    /**
+     * Create action.
+     * 
+     * @param actionName Action name.
+     */
+    public FileContextualAction(String actionName) {
+      super(actionName);
+    }
+    
+    /**
+     * Create action.
+     * 
+     * @param actionName  Action name.
+     * @param tooltipText Action tooltip text.
+     */
+    public FileContextualAction(String actionName, String tooltipText) {
+      super(actionName);
+      this.tooltipText = tooltipText;
+    }
+  }
+  
+  /**
    * i18n
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
@@ -72,17 +100,6 @@ public class HistoryViewContextualMenuPresenter {
    * Executes GIT commands (stage, unstage, discard, etc).
    */
   protected GitControllerBase gitCtrl;
-  /**
-   * Contains the tooltips text for file contextual actions.
-   */
-  private static final Map<String, String> ACTION_NAMES_TO_TOOLTIP_TEXT = new HashMap<>();
-  static {
-    ACTION_NAMES_TO_TOOLTIP_TEXT.put(TRANSLATOR.getTranslation(Tags.CHECKOUT), 
-        TRANSLATOR.getTranslation(Tags.HISTORY_RESOURCE_CHECKOUT_ACTION_TOOLTIP));
-    ACTION_NAMES_TO_TOOLTIP_TEXT.put(TRANSLATOR.getTranslation(Tags.OPEN), 
-        TRANSLATOR.getTranslation(Tags.HISTORY_RESOURCE_OPEN_ACTION_TOOLTIP));
-  }
-
   
   /**
    * Constructor.
@@ -300,39 +317,33 @@ public class HistoryViewContextualMenuPresenter {
       FileStatus fileStatus,
       CommitCharacteristics commitCharacteristics,
       boolean addFileName) {
-    List<Action> contextualActions = getContextualActions(fileStatus, commitCharacteristics, addFileName);
+    List<FileContextualAction> contextualActions = getFileContextualActions(fileStatus, commitCharacteristics, addFileName);
     contextualActions.forEach(action -> {
       if(action == null) {
         jPopupMenu.addSeparator();
       } else {
-        String actionName = (String) action.getValue(Action.NAME);
-        if (ACTION_NAMES_TO_TOOLTIP_TEXT.containsKey(actionName)) {
-          JMenuItem currentAction = new JMenuItem(actionName);
-          currentAction.setAction(action);
-          currentAction.setToolTipText(ACTION_NAMES_TO_TOOLTIP_TEXT.get(actionName));
-          jPopupMenu.add(currentAction);
-        } else {
-          jPopupMenu.add(action);
-        }
+        JMenuItem menuItem = new JMenuItem(action);
+        menuItem.setToolTipText(action.tooltipText);
+        jPopupMenu.add(menuItem);
       }
     });  
   }
 
   /**
-   * Contributes the contextual actions for the given commit.
+   * Contributes the contextual actions for the given file and commit.
    * 
-   * @param fileStatus            File path do diff.
-   * @param commitCharacteristics Current commit data.
+   * @param fileStatus            The file.
+   * @param commitCharacteristics Commit information.
    * @param addFileName           <code>true</code> to add the name of the file to the action's name.
    * 
    * @return A list with actions that can be executed over the given file. Never null.
    */
-  public List<Action> getContextualActions(
+  public List<FileContextualAction> getFileContextualActions(
       FileStatus fileStatus,
       CommitCharacteristics commitCharacteristics,
       boolean addFileName) {
     
-    List<Action> actions = new LinkedList<>();
+    List<FileContextualAction> actions = new LinkedList<>();
     
     String fileStatusLocation = fileStatus.getFileLocation();
     GitChangeType fileStatusChangeType = fileStatus.getChangeType();
@@ -342,7 +353,7 @@ public class HistoryViewContextualMenuPresenter {
         createCompareActionsForCommit(actions, commitCharacteristics, addFileName, fileStatus);
       } else if (fileStatusChangeType != GitChangeType.ADD && fileStatusChangeType != GitChangeType.UNTRACKED) {
         // Uncommitted changes. Compare between local and HEAD.
-        actions.add(new AbstractAction(TRANSLATOR.getTranslation(Tags.OPEN_IN_COMPARE)) {
+        actions.add(new FileContextualAction(TRANSLATOR.getTranslation(Tags.OPEN_IN_COMPARE)) {
           @Override
           public void actionPerformed(ActionEvent e) {
             DiffPresenter.showDiff(fileStatus, gitCtrl);
@@ -382,7 +393,7 @@ public class HistoryViewContextualMenuPresenter {
    * @param fileStatus            File to diff.
    */
   private void createCompareActionsForCommit(
-      List<Action> actions, 
+      List<FileContextualAction> actions, 
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
       FileStatus fileStatus) {
@@ -390,7 +401,7 @@ public class HistoryViewContextualMenuPresenter {
     
     if (fileStatus instanceof FileStatusOverDiffEntry
         && fileStatus.getChangeType() == GitChangeType.RENAME) {
-      actions.add(new AbstractAction(getCompareWithPreviousVersionActionName(filePath, addFileName)) {
+      actions.add(new FileContextualAction(getCompareWithPreviousVersionActionName(filePath, addFileName)) {
         @Override
         public void actionPerformed(ActionEvent e) {
           try {
@@ -418,7 +429,7 @@ public class HistoryViewContextualMenuPresenter {
    * @param filePath File location relative to the WC root.
    */
   private void addCompareWithParentsAction(
-      List<Action> actions,
+      List<FileContextualAction> actions,
       CommitCharacteristics commitCharacteristics,
       boolean addFileName,
       String filePath) {
@@ -454,7 +465,7 @@ public class HistoryViewContextualMenuPresenter {
    * @param filePath Path of the resource to compare. Relative to the WC root.
    */
   private void addCompareWithWorkingTreeAction(
-      List<Action> actions, 
+      List<FileContextualAction> actions, 
       CommitCharacteristics commitCharacteristics, 
       boolean addFileName,
       String filePath) {
@@ -464,7 +475,7 @@ public class HistoryViewContextualMenuPresenter {
           TRANSLATOR.getTranslation(Tags.COMPARE_FILE_WITH_WORKING_TREE_VERSION),
           PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess().getFileName(filePath));
     }
-    actions.add(new AbstractAction(actionName) {
+    actions.add(new FileContextualAction(actionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
@@ -492,7 +503,7 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The action that invokes the DIFF.
    */
-  private AbstractAction createCompareWithPrevVersionAction(
+  private FileContextualAction createCompareWithPrevVersionAction(
       String filePath,
       String commitID,
       String parentFilePath,
@@ -507,7 +518,7 @@ public class HistoryViewContextualMenuPresenter {
     }
     
     // Create action
-    return new AbstractAction(actionName) {
+    return new FileContextualAction(actionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
@@ -572,8 +583,8 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The action that will open the file when invoked.
    */
-  private AbstractAction createCheckoutFileAction(String commitId, FileStatus fileStatus, boolean addFileName) {
-    return new AbstractAction(getCheckoutFileActionName(fileStatus, addFileName)) {
+  private FileContextualAction createCheckoutFileAction(String commitId, FileStatus fileStatus, boolean addFileName) {
+    return new FileContextualAction(getCheckoutFileActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         GitOperationScheduler.getInstance().schedule(() -> GitAccess.getInstance().checkoutCommitForFile(fileStatus.getFileLocation(), commitId));
@@ -593,11 +604,11 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The action that will open the file when invoked.
    */
-  protected AbstractAction createOpenWorkingCopyFileAction(
+  protected FileContextualAction createOpenWorkingCopyFileAction(
       FileStatus fileStatus,
       String commitID,
       boolean addFileName) {
-    return new AbstractAction(getOpenFileWorkingCopyActionName(fileStatus, addFileName)) {
+    return new FileContextualAction(getOpenFileWorkingCopyActionName(fileStatus, addFileName)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
@@ -639,8 +650,10 @@ public class HistoryViewContextualMenuPresenter {
    * 
    * @return The action that will open the file when invoked.
    */
-  private AbstractAction createOpenFileAction(String revisionID, FileStatus fileStatus, boolean addFileName) {
-    return new AbstractAction(getOpenFileActionName(fileStatus, addFileName)) {
+  private FileContextualAction createOpenFileAction(String revisionID, FileStatus fileStatus, boolean addFileName) {
+    return new FileContextualAction(
+        getOpenFileActionName(fileStatus, addFileName),
+        addFileName ? null : TRANSLATOR.getTranslation(Tags.HISTORY_RESOURCE_OPEN_ACTION_TOOLTIP)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {

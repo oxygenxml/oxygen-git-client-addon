@@ -1341,10 +1341,6 @@ public class Tags {
    */
   public static final String STASHES = "Stashes";
   /**
-   * The text for the tooltip that explains the Checkout action for a  Git History resource.
-   */
-  public static final String HISTORY_RESOURCE_CHECKOUT_ACTION_TOOLTIP = "History_resource_checkout_action_tooltip";
-  /**
    * The text for the tooltip that explains the Open action for a Git History resource.
    */
   public static final String HISTORY_RESOURCE_OPEN_ACTION_TOOLTIP = "History_resource_open_action_tooltip";

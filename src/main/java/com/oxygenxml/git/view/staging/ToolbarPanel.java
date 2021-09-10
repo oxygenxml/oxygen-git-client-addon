@@ -500,12 +500,7 @@ public class ToolbarPanel extends JPanel {
     return new AbstractAction(branchName) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        RepositoryState repoState = null;
-        try {
-          repoState = GitAccess.getInstance().getRepository().getRepositoryState();
-        } catch (NoRepositorySelected e1) {
-          LOGGER.error(e1, e1);
-        }
+        RepositoryState repoState = RepoUtil.getRepoState();
         if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
           BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog();
 

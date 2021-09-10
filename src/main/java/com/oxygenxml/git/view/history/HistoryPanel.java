@@ -71,6 +71,7 @@ import com.oxygenxml.git.view.FilterTextField;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
+import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter.FileContextualAction;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
 import com.oxygenxml.git.view.util.HiDPIUtil;
 import com.oxygenxml.git.view.util.TreeUtil;
@@ -351,8 +352,8 @@ public class HistoryPanel extends JPanel {
           commitCharacteristics);
       if (optionalFileStatus.isPresent()) {
         FileStatus fileStatus = optionalFileStatus.get();
-        List<Action> contextualActions = contextualMenuPresenter.getContextualActions(fileStatus, commitCharacteristics,
-            false);
+        List<FileContextualAction> contextualActions = 
+            contextualMenuPresenter.getFileContextualActions(fileStatus, commitCharacteristics, false);
         if (!contextualActions.isEmpty()) {
           contextualActions.get(0).actionPerformed(null);
         }
@@ -401,8 +402,8 @@ public class HistoryPanel extends JPanel {
             CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits()
                 .get(historyTable.getSelectedRow());
 
-            List<Action> contextualActions = contextualMenuPresenter.getContextualActions(file, commitCharacteristics,
-                false);
+            List<FileContextualAction> contextualActions = 
+                contextualMenuPresenter.getFileContextualActions(file, commitCharacteristics, false);
             if (!contextualActions.isEmpty()) {
               contextualActions.get(0).actionPerformed(null);
             }
