@@ -33,7 +33,7 @@
     <key value="Rebase">
         <comment>Rebase.</comment>
         <val lang="en_US">rebase</val>
-        <val lang="de_DE">rebase</val>
+        <val lang="de_DE">Rebase</val>
         <val lang="fr_FR">rebase</val>
         <val lang="ja_JP">rebase</val>
         <val lang="nl_NL">rebase</val>
@@ -41,10 +41,10 @@
     <key value="Merge">
         <comment>Merge.</comment>
         <val lang="en_US">merge</val>
-        <val lang="de_DE">merge</val>
-        <val lang="fr_FR">merge</val>
+        <val lang="de_DE">Merge</val>
+        <val lang="fr_FR">fusion</val>
         <val lang="ja_JP">merge</val>
-        <val lang="nl_NL">merge</val>
+        <val lang="nl_NL">samenvoegen</val>
     </key>
     <key value="Branch_switch_checkout_conflict_error_msg">
         <comment>The the message displayed when branch selection fails</comment>
