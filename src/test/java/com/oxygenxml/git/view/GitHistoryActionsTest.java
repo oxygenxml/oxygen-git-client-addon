@@ -26,6 +26,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
+import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter.FileContextualAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -67,7 +68,7 @@ public class GitHistoryActionsTest extends GitTestBase {
 
       HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
 
-      List<Action> actions = new ArrayList<>();
+      List<FileContextualAction> actions = new ArrayList<>();
       JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
       
       //////////////////////////
@@ -84,7 +85,7 @@ public class GitHistoryActionsTest extends GitTestBase {
 
       // Assert the available actions for the changed file.
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
+      actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
       assertEquals(
           "[Compare_file_with_previous_version, "
@@ -96,7 +97,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       // A deleted file.
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(1), commitCharacteristic, true);
+      actions = presenter.getFileContextualActions(changedFiles.get(1), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
       assertEquals("[Open_previous_version]", dumpActions(actions));
@@ -109,7 +110,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           "(changeType=ADD, fileLocation=file2.txt)\n" + 
           "", dumpFS);
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
+      actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
       assertEquals("[Compare_file_with_working_tree_version,"
@@ -124,7 +125,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           "(changeType=ADD, fileLocation=file1.txt)\n" + 
           "", dumpFS);
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
+      actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, true);
       actions.removeIf(e -> e == null);
       assertEquals("[Compare_file_with_working_tree_version, Open_this_version_of_filename,"
           + " Open_the_working_copy_version_of, Reset_file_x_to_this_commit]", dumpActions(actions));
@@ -147,7 +148,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       // Assert the available actions for the changed file.
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
+      actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       assertEquals("[Compare_with_previous_version, Compare_with_working_tree_version, "
           + "Open, Open_working_copy_version, Reset_file_to_this_commit]", 
@@ -155,7 +156,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       // A deleted file.
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(1), commitCharacteristic, false);
+      actions = presenter.getFileContextualActions(changedFiles.get(1), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
       assertEquals("[Open_previous_version]", 
@@ -169,7 +170,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           "(changeType=ADD, fileLocation=file2.txt)\n" + 
           "", dumpFS);
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
+      actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristic);
       assertEquals("[Compare_with_working_tree_version, Open, Open_working_copy_version]", dumpActions(actions));
@@ -183,7 +184,7 @@ public class GitHistoryActionsTest extends GitTestBase {
           "", dumpFS);
       
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, false);
+      actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, false);
       actions.removeIf(e -> e == null);
       assertEquals(
           "[Compare_with_working_tree_version, Open, Open_working_copy_version, Reset_file_to_this_commit]", 
@@ -218,13 +219,13 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       // Assert the available actions for the untracked file.
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(0), uncommittedChanges, false);
+      actions = presenter.getFileContextualActions(changedFiles.get(0), uncommittedChanges, false);
       actions.removeIf(e -> e == null);
       assertEquals("[Open]", dumpActions(actions));
       
       // Assert the available actions for the modified file.
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(1), uncommittedChanges, false);
+      actions = presenter.getFileContextualActions(changedFiles.get(1), uncommittedChanges, false);
       actions.removeIf(e -> e == null);
       assertEquals("[Open_In_Compare, Open]", dumpActions(actions));
       
@@ -255,7 +256,7 @@ public class GitHistoryActionsTest extends GitTestBase {
       
       // Assert the available actions for the missing file.
       actions.clear();
-      actions = presenter.getContextualActions(changedFiles.get(0), uncommittedChanges, false);
+      actions = presenter.getFileContextualActions(changedFiles.get(0), uncommittedChanges, false);
       actions.removeIf(e -> e == null);
       assertEquals("[Open_previous_version]", dumpActions(actions));
 
@@ -309,7 +310,7 @@ public class GitHistoryActionsTest extends GitTestBase {
     }
   }
   
-  private String dumpActions(List<Action> actions) {
+  private String dumpActions(List<FileContextualAction> actions) {
     return actions.stream().map(action -> action.getValue(Action.NAME)).collect(Collectors.toList()).toString();
   }
 
@@ -347,7 +348,7 @@ public class GitHistoryActionsTest extends GitTestBase {
   
       HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
   
-      List<Action> actions = new ArrayList<>();
+      List<FileContextualAction> actions = new ArrayList<>();
       JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
       
       //////////////////////////
@@ -363,7 +364,7 @@ public class GitHistoryActionsTest extends GitTestBase {
   
       // A deleted file.
       actions.clear();
-      actions = presenter.getContextualActions(changes.get(0), commitCharacteristics, true);
+      actions = presenter.getFileContextualActions(changes.get(0), commitCharacteristics, true);
       presenter.populateContextualActionsHistoryContext(jPopupMenu, "file2.txt", commitCharacteristics);
       assertEquals("[Open_previous_version]", dumpActions(actions));
       

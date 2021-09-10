@@ -27,6 +27,7 @@ import com.oxygenxml.git.service.RevCommitUtil;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
+import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter.FileContextualAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -136,7 +137,7 @@ public class HistoryContextualActionsTest extends GitTestBase {
     CommitCharacteristics commitCharacteristic = iterator.next();
     HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
     List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-    List<Action> actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
+    List<FileContextualAction> actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, true);
     actions.removeIf(e -> e == null || !e.getValue(Action.NAME).toString().contains("Reset_file"));
     String[] checkoutFile = new String[2];
     
