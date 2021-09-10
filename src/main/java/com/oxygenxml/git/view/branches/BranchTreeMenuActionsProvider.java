@@ -260,7 +260,7 @@ public class BranchTreeMenuActionsProvider {
         }
         if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
           int answer = showUncommittedChangesWhenChangingBranchMsg();
-          if (answer == OKCancelDialog.RESULT_OK) {
+          if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
             ctrl.getGitAccess().setBranch(branchName);
           }
         } else {
