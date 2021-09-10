@@ -135,6 +135,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
   }
 
   /**
+   * Compute tooltip text.
+   * 
    * @param leaf <code>true<code> if is leaf
    * @param path the path
    * @param text the extracted text
