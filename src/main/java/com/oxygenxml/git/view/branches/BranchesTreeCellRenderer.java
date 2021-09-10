@@ -121,7 +121,9 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
             String branchName = BranchesUtil.createBranchPath(
                 path,
                 BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
-            toolTipText = constructLocalBranchToolTip(branchName);
+            if(BranchesUtil.existsLocalBranch(branchName)) {
+              toolTipText = constructLocalBranchToolTip(branchName);
+            }    
           }
         }
         label.setToolTipText(toolTipText);

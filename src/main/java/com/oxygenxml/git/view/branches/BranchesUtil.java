@@ -171,7 +171,7 @@ public class BranchesUtil {
    * 
    * @throws NoRepositorySelected 
    */
-  public static boolean doesBranchAlreadyExist(String branchName) throws NoRepositorySelected {
+  public static boolean existsLocalBranch(String branchName) throws NoRepositorySelected {
     return getLocalBranches().stream().anyMatch((String branch) -> branch.equalsIgnoreCase(branchName));
   }
 
