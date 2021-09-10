@@ -31,6 +31,7 @@ import com.oxygenxml.git.service.RebaseConflictsException;
 import com.oxygenxml.git.service.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
@@ -425,12 +426,7 @@ public class GitController extends GitControllerBase {
     protected Optional<PushPullEvent> doOperation(CredentialsProvider credentialsProvider) throws GitAPIException {
       PushPullEvent event = null;
 
-      RepositoryState repositoryState = null;
-      try {
-        repositoryState = gitAccess.getRepository().getRepositoryState();
-      } catch (NoRepositorySelected e) {
-        logger.debug(e, e);
-      }
+      RepositoryState repositoryState = RepoUtil.getRepoState();
 
       if (logger.isDebugEnabled()) {
         logger.debug("Do pull. Pull type: " + pullType);
