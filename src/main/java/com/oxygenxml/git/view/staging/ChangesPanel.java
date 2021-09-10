@@ -23,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -169,6 +170,25 @@ public class ChangesPanel extends JPanel {
 	 * The translator for the messages that are displayed in this panel
 	 */
 	private Translator translator = Translator.getInstance();
+	
+	/**
+	 * Popup menu listener for the tree and table context menu.
+	 */
+  private final PopupMenuListener popupMenuListener = new PopupMenuListener() {
+    @Override
+    public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+      isContextualMenuShowing = true;
+    }
+    @Override
+    public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+      isContextualMenuShowing = false;
+      ((JPopupMenu) e.getSource()).removePopupMenuListener(this);
+    }
+    @Override
+    public void popupMenuCanceled(PopupMenuEvent e) {
+      isContextualMenuShowing = false;
+    }
+  };
 
 	/**
 	 * <code>true</code> if the contextual menu is showing for the resources in the tree view.
@@ -905,21 +925,7 @@ public class ChangesPanel extends JPanel {
         historyController,
         forStagedResources,
         RepoUtil.getRepoState());
-    contextualMenu.addPopupMenuListener(new PopupMenuListener() {
-      @Override
-      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        isContextualMenuShowing = true;
-      }
-      @Override
-      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        isContextualMenuShowing = false;
-        contextualMenu.removePopupMenuListener(this);
-      }
-      @Override
-      public void popupMenuCanceled(PopupMenuEvent e) {
-        isContextualMenuShowing = false;
-      }
-    });
+    contextualMenu.addPopupMenuListener(popupMenuListener);
     contextualMenu.show(tree, x, y);
   }
 	
@@ -1073,21 +1079,7 @@ public class ChangesPanel extends JPanel {
         forStagedResources,
         RepoUtil.getRepoState());
     
-    contextualMenu.addPopupMenuListener(new PopupMenuListener() {
-      @Override
-      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        isContextualMenuShowing = true;
-      }
-      @Override
-      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        isContextualMenuShowing  = false;
-        contextualMenu.removePopupMenuListener(this);
-      }
-      @Override
-      public void popupMenuCanceled(PopupMenuEvent e) {
-        isContextualMenuShowing  = false;
-      }
-    });
+    contextualMenu.addPopupMenuListener(popupMenuListener);
     
     contextualMenu.show(filesTable, x, y);
   }
