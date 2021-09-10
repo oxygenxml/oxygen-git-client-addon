@@ -146,7 +146,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * @throws NoRepositorySelected
    */
   private String computeToolTipText(boolean leaf, String path, String text) throws GitAPIException, IOException, NoRepositorySelected {
-    String toolTipText = "";
+    String toolTipText = null;
     if (GitAccess.getInstance().isRepoInitialized() && leaf) {
       if(path.contains(Constants.R_REMOTES)) {
         toolTipText = constructRemoteBranchToolTip(text, path);
