@@ -32,23 +32,22 @@ public class FilesTableModel extends AbstractTableModel {
   /**
    * Index of the file status column.
    */
-  public static final int FILE_STATUS_COLUMN = 0;
+  public static final int STATUS_COLUMN = 0;
 
   /**
    * Index of the file location column.
    */
-  public static final int FILE_LOCATION_COLUMN = 1;
+  public static final int LOCATION_COLUMN = 1;
 
   /**
    * The internal representation of the model
    */
   private final List<FileStatus> filesStatuses = new ArrayList<>();
 
-
   /**
    * Compares file statuses.
    */
-  private final Comparator<FileStatus> fileStatusComparator = (f1, f2) -> {
+  private static final Comparator<FileStatus> FILE_STATUS_COMPARATOR = (f1, f2) -> {
     int changeTypeCompareResult = f1.getChangeType().compareTo(f2.getChangeType());
     if(changeTypeCompareResult == 0) {
       return f1.getFileLocation().compareTo(f2.getFileLocation());
@@ -56,6 +55,11 @@ public class FilesTableModel extends AbstractTableModel {
       return changeTypeCompareResult;
     }
   };
+  
+  @Override
+  public boolean isCellEditable(int row, int column) {
+    return false;
+  }
 
 
   @Override
@@ -69,37 +73,14 @@ public class FilesTableModel extends AbstractTableModel {
     return 2;
   }
 
-
-  @Override
-  public Class<?> getColumnClass(int columnIndex) {
-    Class<?> clazz = null;
-    switch (columnIndex) {
-      case FILE_STATUS_COLUMN:
-        clazz = DiffEntry.ChangeType.class;
-        break;
-      case FILE_LOCATION_COLUMN:
-        clazz = FileStatus.class;
-        break;
-      default:
-        break;
-    }
-    return clazz;
-  }
-
-
-  @Override
-  public boolean isCellEditable(int row, int column) {
-    return false;
-  }
-  
   @Override
   public Object getValueAt(int rowIndex, int columnIndex) {
     Object temp = null;
     switch (columnIndex) {
-      case FILE_STATUS_COLUMN:
+      case STATUS_COLUMN:
         temp = filesStatuses.get(rowIndex).getChangeType();
         break;
-      case FILE_LOCATION_COLUMN:
+      case LOCATION_COLUMN:
         temp = filesStatuses.get(rowIndex);
         break;
       default:
@@ -107,6 +88,22 @@ public class FilesTableModel extends AbstractTableModel {
     }
 
     return temp;
+  }
+  
+  @Override
+  public Class<?> getColumnClass(int columnIndex) {
+    Class<?> clazz = null;
+    switch (columnIndex) {
+      case STATUS_COLUMN:
+        clazz = DiffEntry.ChangeType.class;
+        break;
+      case LOCATION_COLUMN:
+        clazz = FileStatus.class;
+        break;
+      default:
+        break;
+    }
+    return clazz;
   }
 
 
@@ -119,7 +116,7 @@ public class FilesTableModel extends AbstractTableModel {
   public void setFilesStatus(List<FileStatus> filesStatuses) {
     fireTableRowsDeleted(0, getRowCount());
     filesStatuses = new ArrayList<>(filesStatuses);
-    filesStatuses.sort(fileStatusComparator);
+    filesStatuses.sort(FILE_STATUS_COMPARATOR);
     fireTableRowsInserted(0, getRowCount());
   }
 
