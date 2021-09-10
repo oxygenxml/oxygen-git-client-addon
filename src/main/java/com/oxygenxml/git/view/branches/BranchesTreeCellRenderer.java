@@ -113,19 +113,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     if (!text.isEmpty()) {
       label.setText(text);
       try {
-        String toolTipText = null;
-        if (GitAccess.getInstance().isRepoInitialized() && leaf) {
-          if(path.contains(Constants.R_REMOTES)) {
-            toolTipText = constructRemoteBranchToolTip(text, path);
-          } else if (path.contains(Constants.R_HEADS)) {
-            String branchName = BranchesUtil.createBranchPath(
-                path,
-                BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
-            if(BranchesUtil.existsLocalBranch(branchName)) {
-              toolTipText = constructLocalBranchToolTip(branchName);
-            }    
-          }
-        }
+        String toolTipText = computeToolTipText(leaf, path, text);
         label.setToolTipText(toolTipText);
       } catch (GitAPIException | IOException | NoRepositorySelected e) {
         LOGGER.error(e, e);
@@ -146,6 +134,34 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     return label;
   }
 
+  /**
+   * @param leaf <code>true<code> if is leaf
+   * @param path the path
+   * @param text the extracted text
+   * 
+   * @return the computed tooltip.
+   * 
+   * @throws GitAPIException
+   * @throws IOException
+   * @throws NoRepositorySelected
+   */
+  private String computeToolTipText(boolean leaf, String path, String text) throws GitAPIException, IOException, NoRepositorySelected {
+    String toolTipText = "";
+    if (GitAccess.getInstance().isRepoInitialized() && leaf) {
+      if(path.contains(Constants.R_REMOTES)) {
+        toolTipText = constructRemoteBranchToolTip(text, path);
+      } else if (path.contains(Constants.R_HEADS)) {
+        String branchName = BranchesUtil.createBranchPath(
+            path,
+            BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
+        if(BranchesUtil.existsLocalBranch(branchName)) {
+          toolTipText = constructLocalBranchToolTip(branchName);
+        }    
+      }
+    }
+    return toolTipText;
+  }
+  
   /**
    * Get the rendering info (such as icon) for the given branch.
    *
