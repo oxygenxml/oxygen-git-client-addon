@@ -6,6 +6,22 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
+    <key value="Pull_would_overwrite_uncommitted_changes">
+        <comment>The text is displayed when you pull(merge) but it fails because the files that are modified might become in conflict</comment>
+        <val lang="en_US">Cannot pull merge changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="de_DE">Cannot pull merge changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="fr_FR">Cannot pull merge changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="ja_JP">Cannot pull merge changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="nl_NL">Cannot pull merge changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+    </key>
+    <key value="Pull_rebase_failed_because_conflicting_paths">
+        <comment>Message shown when pull (rebase) failed because of conflicting paths.</comment>
+        <val lang="en_US">Cannot pull rebase changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="de_DE">Cannot pull rebase changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="fr_FR">Cannot pull rebase changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="ja_JP">Cannot pull rebase changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+        <val lang="nl_NL">Cannot pull rebase changes because conflicts were detected between local changes in the files listed below and the incoming remote changes. Commit, stash, or discard the conflicting local changes and try again.</val>
+    </key>
     <key value="Stash_Cannot_Be_Deleted">
         <comment>The message displayed to the user when a stash cannot be deleted.</comment>
         <val lang="en_US">Cannot delete stashed changes. Details:</val>
@@ -14,7 +30,6 @@
         <val lang="ja_JP">Cannot delete stashed changes. Details:</val>
         <val lang="nl_NL">Cannot delete stashed changes. Details:</val>
     </key>
-    
     <key value="Stash_Cannot_Be_Created">
         <comment>The message displayed to the user when a stash cannot be created.</comment>
         <val lang="en_US">Cannot stash changes. Details: </val>
@@ -1460,14 +1475,6 @@
         <val lang="ja_JP"></val>
         <val lang="nl_NL">Kan geen pull doen met rebase vanwege lokale wijzigingen zonder commit in de volgende bestanden:</val>
     </key>
-    <key value="Pull_rebase_failed_because_conflicting_paths">
-        <comment>Message shown when pull (rebase) failed because of conflicting paths.</comment>
-        <val lang="en_US">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
-        <val lang="de_DE">Pull mit Rebase nicht möglich, da die lokalen Änderungen der folgenden Dateien im Konflikt stehen mit den Remote-Änderungen:</val>
-        <val lang="fr_FR">Impossible d'effectuer le pull avec rebase parce que les modifications locales des fichiers suivants sont en conflit avec les modifications remote entrantes:</val>
-        <val lang="ja_JP"></val>
-        <val lang="nl_NL">Kan geen pull doen met rebase omdat de lokale wijzigingen in de volgende bestanden conflicteren met de inkomende externe wijzigingen:</val>
-    </key>
     <key value="Continue_rebase">
         <comment>Continue rebase</comment>
         <val lang="en_US">Continue rebase</val>
@@ -2381,14 +2388,6 @@
         <val lang="fr_FR">Tous les conflits ont été résolus, mais la fusion n'est pas terminée. Effectuez un commit pour finaliser la fusion.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Alle conflicten zijn opgelost, maar u bent nog bezig met samenvoegen. Commit om het samenvoegen af te ronden.</val>
-    </key>
-    <key value="Pull_would_overwrite_uncommitted_changes">
-        <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
-        <val lang="en_US">Cannot pull. Your uncommitted local changes done to the following files would be overwritten by merge: </val>
-        <val lang="de_DE">Pull nicht möglich. Die folgenden nicht-committeten lokalen Änderungen würden bei einem Pull überschrieben werden: </val>
-        <val lang="fr_FR">Impossible d'effectuer le pull. Vos modifications locales hors commit effectuées sur les fichiers suivants seraient écrasées par la fusion: </val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">Kan geen pull doen. Uw niet-bewaarde, lokale wijzigingen in de volgende bestanden zouden door het samenvoegen worden overschreven:</val>
     </key>
     <key value="CommitID">
         <comment>The text in the warning of detached-head </comment>
