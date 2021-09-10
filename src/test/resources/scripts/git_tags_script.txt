@@ -1,0 +1,26 @@
+<script>
+    <changeSet message="First commit.">
+        <change path="f1/file1.txt" type="add">file 1 content</change>
+        <change path="f1/file2.txt" type="add">file 2 content</change>
+        <change path="file.txt" type="add">content</change>
+    </changeSet>
+    
+    <changeSet message="Changes.">
+        <change path="f1/file2.txt" type="change">file 2 content changed</change>
+        <change path="f2/file1.txt" type="add">1</change>
+        <change path="file.txt" type="delete"/>
+    </changeSet>
+    
+    <changeSet message="Root file.">
+        <change path="root.txt" type="add">1</change>
+    </changeSet>
+
+    <changeSet message="Root file changed.">
+        <change path="root.txt" type="change">2</change>
+    </changeSet>
+    
+    <changeSet message="Root file 2nd change.">
+        <change path="root.txt" type="change">3</change>
+    </changeSet>
+
+</script>
