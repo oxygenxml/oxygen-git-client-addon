@@ -783,11 +783,6 @@ public class Tags {
    * Text for the toggle used to automatically push when committing.
    */
   public static final String PUSH_WHEN_COMMITTING = "Push_when_committing";
-
-	/**
-	 * The text is displayed when you pull but it fails because there are uncommitted changes.
-	 */
-	public static final String PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES = "Pull_would_overwrite_uncommitted_changes";
 	
 	/**
 	 * Message shown when reverting a commit resulted in conflicts.
@@ -842,6 +837,11 @@ public class Tags {
    * Pull rebase.
    */
   public static final String PULL_REBASE = "Pull_rebase";
+
+	/**
+	 * Rebase.
+	 */
+	public static final String REBASE = "Rebase";
   
   /**
    * Pull rebase from {0}.
@@ -936,9 +936,9 @@ public class Tags {
   public static final String PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED = "Pull_rebase_failed_because_uncommitted";
   
   /**
-   * Message shown when pull (rebase) failed because of conflicting paths.
+   * Message shown when pull failed because of conflicting paths.
    */
-  public static final String PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS = "Pull_rebase_failed_because_conflicting_paths";
+  public static final String PULL_FAILED_BECAUSE_CONFLICTING_PATHS = "Pull_failed_because_conflicting_paths";
 
   /**
    * Show current branch history.
@@ -1430,4 +1430,8 @@ public class Tags {
    * The message displayed to the user when a stash cannot be created.
    */
   public static final String STASH_CANNOT_BE_CREATED = "Stash_Cannot_Be_Created";
+	/**
+	 * Merge.
+	 */
+	public static final String MERGE = "Merge";
 }

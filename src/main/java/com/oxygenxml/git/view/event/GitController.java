@@ -187,7 +187,9 @@ public class GitController extends GitControllerBase {
           String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
           showPullFailedBecauseOfCertainChanges(
               Arrays.asList(conflictingFile),
-              translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
+              MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
+                      translator.getTranslation(Tags.REBASE))
+          );
         } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
           // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
           LockFailedException lockFailedException = (org.eclipse.jgit.errors.LockFailedException) cause;
@@ -224,11 +226,15 @@ public class GitController extends GitControllerBase {
       } catch (RebaseConflictsException e) {
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
-            translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
+                MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
+                        translator.getTranslation(Tags.REBASE))
+        );
       } catch (CheckoutConflictException e) {
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
-            translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
+                MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
+                        translator.getTranslation(Tags.MERGE))
+        );
       } catch (TransportException e) {
         boolean shouldTryAgain = treatTransportException(e);
         if (shouldTryAgain) {
