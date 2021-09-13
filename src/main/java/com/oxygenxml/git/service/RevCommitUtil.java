@@ -93,39 +93,52 @@ public class RevCommitUtil {
 
           if (commit.getParentCount() > 0) {
             RevCommit oldC = rw.parseCommit(commit.getParent(0));
-
             changedFiles = RevCommitUtil.getChanges(repository, commit, oldC);
-
-            if(commit.getParentCount() > 2) {
-              oldC = rw.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
-              try (TreeWalk treeWalk = new TreeWalk(repository)) {
-                treeWalk.addTree(commit.getTree());
-                treeWalk.setRecursive(false);
-                treeWalk.setFilter(null);
-                treeWalk.reset(oldC.getTree().getId());
-                while (treeWalk.next()) {
-                  if (treeWalk.isSubtree()) {
-                    treeWalk.enterSubtree();
-                  } else {
-                    String path = treeWalk.getPathString();
-                    changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
-                  }
-                }
-              }
-
-            } else {
-              changedFiles = RevCommitUtil.getFiles(repository, commit);
+            if (commit.getParentCount() > 2) {
+              addUntrackedFiles(changedFiles, repository, rw, commit);
             }
           } else {
-            changedFiles = GitAccess.getInstance().getUnstagedFiles();
+            changedFiles = RevCommitUtil.getFiles(repository, commit);
           }
         }
+      } else {
+        changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
     } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
       LOGGER.error(e, e);
 
     }
     return changedFiles;
+  }
+
+
+  /**
+   * Add the untracked files to files list.
+   *
+   * @param changedFiles    The container to add files.
+   * @param repository      The Git repository.
+   * @param revWalk         The RevWalk.
+   * @param commit          The stash commit.
+   *
+   * @throws IOException
+   */
+  private static void addUntrackedFiles(List<FileStatus> changedFiles, Repository repository, RevWalk revWalk, RevCommit commit) throws IOException {
+    RevCommit oldC;
+    oldC = revWalk.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
+    try (TreeWalk treeWalk = new TreeWalk(repository)) {
+      treeWalk.addTree(commit.getTree());
+      treeWalk.setRecursive(false);
+      treeWalk.setFilter(null);
+      treeWalk.reset(oldC.getTree().getId());
+      while (treeWalk.next()) {
+        if (treeWalk.isSubtree()) {
+          treeWalk.enterSubtree();
+        } else {
+          String path = treeWalk.getPathString();
+          changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
+        }
+      }
+    }
   }
 
 
