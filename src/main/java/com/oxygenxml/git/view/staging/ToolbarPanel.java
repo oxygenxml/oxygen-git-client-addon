@@ -1303,7 +1303,7 @@ public class ToolbarPanel extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
         ListStashesDialog stashesDialog = new ListStashesDialog();
-        SwingUtilities.invokeLater(() -> stashesDialog.setVisible(true));
+        stashesDialog.setVisible(true);
       }
     };
     splitMenuButton.addActionToMenu(listStashesAction, false);

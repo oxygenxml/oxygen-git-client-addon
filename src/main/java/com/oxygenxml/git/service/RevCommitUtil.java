@@ -106,8 +106,8 @@ public class RevCommitUtil {
       }
     } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
       LOGGER.error(e, e);
-
     }
+
     return changedFiles;
   }
 

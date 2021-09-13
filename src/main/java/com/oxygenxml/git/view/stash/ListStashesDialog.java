@@ -294,6 +294,8 @@ public class ListStashesDialog extends JDialog {
     constraints.anchor = GridBagConstraints.EAST;
     constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, UIConstants.INSETS_7PX, UIConstants.INSETS_11PX);
     stashesPanel.add(closeButton, constraints);
+
+    stashesTable.setRowSelectionInterval(0, 0);
     
     return stashesPanel;
   }
@@ -397,14 +399,12 @@ public class ListStashesDialog extends JDialog {
 
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        SwingUtilities.invokeLater(() -> {
-          int rowAtPoint = table.rowAtPoint(SwingUtilities.convertPoint(contextualActions,
-                  new Point(0, 0),
-                  table));
-          if (rowAtPoint >= 0) {
-            table.setRowSelectionInterval(rowAtPoint, rowAtPoint);
-          }
-        });
+        int rowAtPoint = table.rowAtPoint(SwingUtilities.convertPoint(contextualActions,
+                new Point(0, 0),
+                table));
+        if (rowAtPoint >= 0) {
+          table.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+        }
       }
 
       @Override
@@ -520,12 +520,18 @@ public class ListStashesDialog extends JDialog {
    * @param newStatus the new status for enabled all buttons.
    */
   private void setStashTableButtonsEnabled(boolean newStatus) {
-    SwingUtilities.invokeLater(() -> {
+    if(applyButton != null && applyButton.isEnabled() != newStatus) {
       applyButton.setEnabled(newStatus);
+    }
+    if(deleteSelectedButton != null && deleteSelectedButton.isEnabled() != newStatus) {
       deleteSelectedButton.setEnabled(newStatus);
+    }
+    if(deleteAllButton != null && deleteAllButton.isEnabled() != newStatus) {
       deleteAllButton.setEnabled(newStatus);
+    }
+    if(deleteAfterApplyingCheckBox != null && deleteAfterApplyingCheckBox.isEnabled() != newStatus) {
       deleteAfterApplyingCheckBox.setEnabled(newStatus);
-    });
+    }
   }
 
 
@@ -576,9 +582,6 @@ public class ListStashesDialog extends JDialog {
     columnModel.getColumn(STASH_ID_COLUMN_INDEX).setMinWidth(COLUMN_ID_SIZE);
     columnModel.getColumn(STASH_ID_COLUMN_INDEX).setPreferredWidth(COLUMN_ID_SIZE);
     columnModel.getColumn(STASH_ID_COLUMN_INDEX).setMaxWidth(COLUMN_ID_SIZE);
-
-
-    SwingUtilities.invokeLater(() -> tableOfStashes.setRowSelectionInterval(0, 0));
 
     tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
