@@ -26,7 +26,6 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.utils.script.RepoGenerationScript;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter;
-import com.oxygenxml.git.view.history.HistoryViewContextualMenuPresenter.FileContextualAction;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -68,7 +67,7 @@ public class GitHistoryActionsTest extends GitTestBase {
 
       HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
 
-      List<FileContextualAction> actions = new ArrayList<>();
+      List<Action> actions = new ArrayList<>();
       JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
       
       //////////////////////////
@@ -310,7 +309,7 @@ public class GitHistoryActionsTest extends GitTestBase {
     }
   }
   
-  private String dumpActions(List<FileContextualAction> actions) {
+  private String dumpActions(List<Action> actions) {
     return actions.stream().map(action -> action.getValue(Action.NAME)).collect(Collectors.toList()).toString();
   }
 
@@ -348,7 +347,7 @@ public class GitHistoryActionsTest extends GitTestBase {
   
       HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
   
-      List<FileContextualAction> actions = new ArrayList<>();
+      List<Action> actions = new ArrayList<>();
       JPopupMenu jPopupMenu = Mockito.mock(JPopupMenu.class);
       
       //////////////////////////
