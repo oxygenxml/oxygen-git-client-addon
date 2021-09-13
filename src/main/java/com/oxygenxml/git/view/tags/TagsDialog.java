@@ -350,5 +350,32 @@ public class TagsDialog extends OKCancelDialog {
 
     };
   }
-
+  
+  /**
+   * Table with the tags
+   * 
+   * @return a JTable
+   */
+  public JTable getTagsTable() {
+    return tagsTable;
+  }
+  
+  /**
+   * Push Button
+   * 
+   * @return the Button used to push a tag
+   */
+  public JButton getPushButton() {
+    return pushButton;
+  }
+  
+  /**
+   * Delete Button
+   *    
+   * @return the Button used to delete a tag
+   */
+  public JButton getDeleteButton() {
+    return deleteButton;
+  }
+  
 }

@@ -1254,4 +1254,8 @@ public class ToolbarPanel extends JPanel {
 	public SplitMenuButton getSettingsMenuButton() {
     return settingsMenuButton;
   }
+	
+	public ToolbarButton getShowTagsButton() {
+	  return showTagsButton;
+	}
 }
