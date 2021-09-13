@@ -122,7 +122,7 @@ public class ConflictButtonsPanel extends JPanel {
   public void updateBasedOnRepoState() {
     boolean shouldBeVisible = false;
 
-    RepositoryState repoState = RepoUtil.getRepoState();
+    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     if (repoState != null) {
       boolean isRebaseConflict = isRebaseConflict(repoState);
       boolean isMergeConflict = isMergeConflict(repoState);

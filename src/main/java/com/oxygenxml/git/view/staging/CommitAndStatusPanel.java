@@ -119,7 +119,7 @@ public class CommitAndStatusPanel extends JPanel {
     @Override
     public void actionPerformed(ActionEvent e) {
       GitOperationScheduler.getInstance().schedule(() -> {
-        RepositoryState repoState = RepoUtil.getRepoState();
+        RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
         if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
             // which actually calls git.status(), operation that is slow
             repoState == RepositoryState.MERGING 

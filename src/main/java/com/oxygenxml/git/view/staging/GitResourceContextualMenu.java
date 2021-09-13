@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.staging;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -117,17 +118,17 @@ public class GitResourceContextualMenu extends JPopupMenu {
    * @param historyController     History interface.
    * @param isStage               <code>true</code> if we create the menu for the staged resources,
    *                                  <code>false</code> for the unstaged resources.
-	 * @param repoState             Repository state.
+	 * @param repoStateOptional     Repository state.
    */
   public GitResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
       GitControllerBase gitController,
       HistoryController historyController,
       boolean isStage,
-      RepositoryState repoState) {
+      Optional<RepositoryState> repoStateOptional) {
     this.gitCtrl = gitController;
     this.historyController = historyController;
-    this.repoState = repoState;
+    this.repoState = repoStateOptional.orElse(null);
     populateMenu(selResProvider, isStage);
   }
 

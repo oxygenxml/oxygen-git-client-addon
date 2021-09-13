@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -356,14 +357,13 @@ public class RepoUtil {
   /**
    * @return repository state or <code>null</code>.
    */
-  public static RepositoryState getRepoState() {
-    RepositoryState repoState = null;
+  public static Optional<RepositoryState> getRepoState() {
     try {
-      repoState = GitAccess.getInstance().getRepository().getRepositoryState();
+      return Optional.of(GitAccess.getInstance().getRepository().getRepositoryState());
     } catch (NoRepositorySelected e1) {
       LOGGER.error(e1, e1);
     }
-    return repoState;
+    return Optional.empty();
   }
 
 }

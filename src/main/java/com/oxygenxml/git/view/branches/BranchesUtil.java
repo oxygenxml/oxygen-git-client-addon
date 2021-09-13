@@ -132,7 +132,7 @@ public class BranchesUtil {
    * Show a message saying why checking out a newly created branch failed.
    */
   public static void showCannotCheckoutNewBranchMessage() {
-    RepositoryState state = RepoUtil.getRepoState();
+    RepositoryState state = RepoUtil.getRepoState().orElse(null);
     if (state != null) {
       String messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH;
       switch (state) {
@@ -154,7 +154,7 @@ public class BranchesUtil {
    * Show error message when switching to another branch failed.
    */
   public static void showBranchSwitchErrorMessage() {
-    RepositoryState repoState = RepoUtil.getRepoState();
+    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     String msg = 
         RepoUtil.isUnfinishedConflictState(repoState) 
           ? TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_WHEN_REPO_IN_CONFLICT_ERROR_MSG)

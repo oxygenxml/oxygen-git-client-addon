@@ -432,7 +432,7 @@ public class GitController extends GitControllerBase {
     protected Optional<PushPullEvent> doOperation(CredentialsProvider credentialsProvider) throws GitAPIException {
       PushPullEvent event = null;
 
-      RepositoryState repositoryState = RepoUtil.getRepoState();
+      RepositoryState repositoryState = RepoUtil.getRepoState().orElse(null);
 
       if (logger.isDebugEnabled()) {
         logger.debug("Do pull. Pull type: " + pullType);

@@ -227,7 +227,7 @@ public abstract class GitControllerBase {
    */
   private boolean shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution cmd) {
     boolean shouldContinue = false;
-    RepositoryState repoState = RepoUtil.getRepoState();
+    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     if (repoState != null && repoState != RepositoryState.REBASING_MERGE
         // When having a conflict while rebasing, 'mine' and 'theirs' are switched.
         // Tell this to the user and ask if they are OK with their choice.
