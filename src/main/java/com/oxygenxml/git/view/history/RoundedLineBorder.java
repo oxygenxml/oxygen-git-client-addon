@@ -1,6 +1,7 @@
 package com.oxygenxml.git.view.history;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -96,6 +97,37 @@ public class RoundedLineBorder extends AbstractBorder {
    */
   @Override
   public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+    paintInternal(c, g, x, y, width, height, false);
+  }
+  
+  
+  /**
+   * Paints the rounded border using the parameters from AbstractBorder and the variables from this class.
+   * 
+   * @param c       the component for which this border is being painted
+   * @param g       the paint graphics
+   * @param x       the x position of the rounded border
+   * @param y       the y position of the rounded border
+   * @param width   the width of the rounded border
+   * @param height  the height of the rounded border
+   */
+  public void fillBorder(Component c, Graphics g, int x, int y, int width, int height) {
+    paintInternal(c, g, x, y, width, height, true);
+  }
+  
+  
+  /**
+   * Paints or fills the rounded border using the parameters from AbstractBorder and the variables from this class.
+   * 
+   * @param c             the component for which this border is being painted
+   * @param g             the paint graphics
+   * @param x             the x position of the rounded border
+   * @param y             the y position of the rounded border
+   * @param width         the width of the rounded border
+   * @param height        the height of the rounded border
+   * @param shouldFill    <code>True</code> if should fill
+   */
+  private void paintInternal(Component c, Graphics g, int x, int y, int width, int height, boolean shouldFill) {
     Graphics2D g2d = (Graphics2D) g;
     //Stores the paint, stroke and rendering hint for the old graphics
     Paint oldPaint = g2d.getPaint();
@@ -103,7 +135,13 @@ public class RoundedLineBorder extends AbstractBorder {
     Object oldAA = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
     try {
       //Uses the new paint, stroke and rendering hint for drawing the border
-      g2d.setPaint(fill != null ? fill : c.getForeground());
+      Color colorPaint;
+      if(shouldFill) {
+        colorPaint = c.getBackground();
+      } else {
+        colorPaint = fill != null ? (Color)fill : c.getForeground();
+      }
+      g2d.setPaint(colorPaint);
       g2d.setStroke(stroke);
       if (aaHint != null) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, aaHint);
@@ -111,7 +149,11 @@ public class RoundedLineBorder extends AbstractBorder {
       int off = lineSize << 1;
       // Draws a rectangle with rounded corners, using the coordinates of
       // AbstractBorder, width of lines and the diameter of the corners
-      g2d.drawRoundRect(x + off, y + off, width - off * 2 - 1 , height - off * 2 - 1, cornerSize, cornerSize);
+      if(shouldFill) {
+        g2d.fillRoundRect(x + off, y + off, width - off * 2 - 1 , height - off * 2 - 1, cornerSize, cornerSize);
+      } else {
+        g2d.drawRoundRect(x + off, y + off, width - off * 2 - 1 , height - off * 2 - 1, cornerSize, cornerSize);
+      }
     } finally {
       //Resets the graphics to the old paint, stroke and rendering hint
       g2d.setPaint(oldPaint);
@@ -119,7 +161,7 @@ public class RoundedLineBorder extends AbstractBorder {
       if (aaHint != null) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
       }
-    }
+    } 
   }
   
 }
