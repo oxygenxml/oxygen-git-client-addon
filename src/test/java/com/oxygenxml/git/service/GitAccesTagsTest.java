@@ -117,7 +117,7 @@ public class GitAccesTagsTest {
   }
   
   /**
-   * <p><b>Description:</b> Tests delete Tag method </p>
+   * <p><b>Description:</b> Tests push Tag method </p>
    * <p><b>Bug ID:</b> EXM-46109</p>
    *
    * @author gabriel_nedianu
