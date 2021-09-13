@@ -104,25 +104,27 @@ public class RevCommitUtil {
                 treeWalk.setFilter(null);
                 treeWalk.reset(oldC.getTree().getId());
                 while (treeWalk.next()) {
-                  String path = treeWalk.getPathString();
-                  changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
+                  if (treeWalk.isSubtree()) {
+                    treeWalk.enterSubtree();
+                  } else {
+                    String path = treeWalk.getPathString();
+                    changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
+                  }
                 }
               }
-            }
 
+            } else {
+              changedFiles = RevCommitUtil.getFiles(repository, commit);
+            }
           } else {
-            changedFiles = RevCommitUtil.getFiles(repository, commit);
+            changedFiles = GitAccess.getInstance().getUnstagedFiles();
           }
         }
-      } else {
-        changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
     } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
       LOGGER.error(e, e);
+
     }
-
-
-
     return changedFiles;
   }
 
@@ -143,7 +145,7 @@ public class RevCommitUtil {
 
     try (RevWalk rw = new RevWalk(repository)) {
       RevCommit commit = rw.parseCommit(head);
-      
+
       try (TreeWalk treeWalk = TreeWalk.forPath(repository, path, commit.getTree())) {
         return treeWalk != null ? treeWalk.getObjectId(0) : null;
       }
@@ -163,14 +165,14 @@ public class RevCommitUtil {
    */
   private static List<FileStatus> getChanges(Repository repository, RevCommit newCommit, RevCommit oldCommit) throws IOException, GitAPIException {
     List<DiffEntry> diffs = diff(repository, newCommit, oldCommit);
-    
+
     return diffs
         .stream()
         .map(t -> new FileStatusOverDiffEntry(t, newCommit.getId().name(), oldCommit.getId().name()))
         .collect(Collectors.toList());
   }
-  
-  
+
+
   /**
    * Gets all the files changed between two revisions.
    * 
@@ -190,12 +192,12 @@ public class RevCommitUtil {
     try (ObjectReader reader = repository.newObjectReader()) {
       CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
       newTreeIter.reset(reader, newCommit.getTree().getId());
-      
+
       CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
       if (oldCommit != null) {
         oldTreeIter.reset(reader, oldCommit.getTree().getId());
       }
-      
+
 
       // finally get the list of changed files
       try (Git git = new Git(repository)) {
@@ -203,7 +205,7 @@ public class RevCommitUtil {
             .setNewTree(newTreeIter)
             .setOldTree(oldTreeIter)
             .call();
-        
+
         // Identify potential renames.
         RenameDetector rd = new RenameDetector(git.getRepository());
         rd.addAll(diffs);
@@ -213,7 +215,7 @@ public class RevCommitUtil {
 
     return collect;
   }
-  
+
   /**
    * Iterates over the entire tree of files inside a commit. <b>Note:</b> Not just hte changes, the entire tree.
    * 
@@ -261,7 +263,7 @@ public class RevCommitUtil {
 
     return new RevCommit[0];
   }
-  
+
   /**
    * Checks if the given path was renamed between the two revisions.
    * 
@@ -303,8 +305,8 @@ public class RevCommitUtil {
     return ent.getChangeType() == ChangeType.RENAME
         || ent.getChangeType() == ChangeType.COPY;
   }
-  
-  
+
+
 
   /**
    * Collects the revisions from the current branch and the remote branch linked to it.
@@ -320,14 +322,14 @@ public class RevCommitUtil {
       String filePath, 
       List<CommitCharacteristics> revisions, 
       Repository repository) throws IOException, GitAPIException {
-    
- // a RevWalk allows to walk over commits based on some filtering that is defined
+
+    // a RevWalk allows to walk over commits based on some filtering that is defined
     // EXM-44307 Show current branch commits only.
     String fullBranch = repository.getFullBranch();
     Ref branchHead = repository.exactRef(fullBranch);
     if (branchHead != null) {
       try (RevWalk revWalk = new RevWalk(repository)) {
-        
+
         RevCommit revCommit = revWalk.parseCommit(branchHead.getObjectId());
         revWalk.markStart(revCommit);
 
@@ -339,15 +341,15 @@ public class RevCommitUtil {
             revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
           }
         }
-        
+
         collectRevisions(filePath, revisions, repository, revWalk);
       }
-      
+
     } else {
       // Probably a new repository without any history. 
     }
   }
-  
+
   /**
    * Gets the full remote-tracking branch name or null is the local branch is not tracking a remote branch.
    * 
@@ -379,7 +381,7 @@ public class RevCommitUtil {
       List<CommitCharacteristics> commits, 
       Repository repository,
       RevWalk revWalk) throws IOException, GitAPIException {
-    
+
     if (filePath != null) {
       revWalk.setTreeFilter(
           AndTreeFilter.create(
@@ -391,10 +393,10 @@ public class RevCommitUtil {
     RevCommit lastProcessedRevision = null;
     for (RevCommit commit : revWalk) {
       appendRevCommit(commits, commit);
-      
+
       lastProcessedRevision = commit;
     }
-    
+
     // If we are following a resource, check for rename events.
     if (filePath != null && lastProcessedRevision != null) {
       handleRename(filePath, commits, repository, lastProcessedRevision);
@@ -418,7 +420,7 @@ public class RevCommitUtil {
       List<CommitCharacteristics> commits, 
       Repository repository,
       RevCommit current)
-      throws IOException, GitAPIException {
+          throws IOException, GitAPIException {
     try (RevWalk revWalk = new RevWalk(repository)) {
       current = revWalk.parseCommit(current.getId());
 
@@ -431,7 +433,7 @@ public class RevCommitUtil {
           String oldPath = renameRev.get().getOldPath();
 
           revWalk.markStart(current);
-          
+
           // We will re-append this commit but this time it will be linked to 
           commits.remove(commits.size() - 1);
           collectRevisions(oldPath, commits, repository, revWalk);
@@ -439,7 +441,7 @@ public class RevCommitUtil {
       }
     }
   }
-  
+
   /**
    * Creates a list with the characteristics of all revisions.
    * 
@@ -495,8 +497,8 @@ public class RevCommitUtil {
     }
     return parentsIds;
   }
-  
-  
+
+
   /**
    * Checks if a resource was moved or renamed between two revisions. We know the path in the old revision and 
    * we want to find out the path in the new revision.
@@ -517,12 +519,12 @@ public class RevCommitUtil {
       RevCommit until,
       String filePath) throws GitAPIException, IOException {
     Iterable<RevCommit> revs = git.log().addRange(since, until).call();
-    
+
     List<RevCommit> revisions = sort(revs, since, true);
-    
+
     return findPath(git, filePath, revisions);
   }
-  
+
   /**
    * Checks if a resource was moved or renamed between two revisions. We know the path in the NEW revision and 
    * we want to find out the path in the OLD revision.
@@ -543,13 +545,13 @@ public class RevCommitUtil {
       RevCommit until,
       String newFilePath) throws GitAPIException, IOException {
     Iterable<RevCommit> revs = git.log().addRange(since, until).call();
-    
+
     List<RevCommit> sorted = sort(revs, since, false);
-    
+
     return findPath(git, newFilePath, sorted);
   }
-  
-  
+
+
   /**
    * Checks if a resource was moved or renamed between HEAD and an older revision. We know the path in the HEAD revision and 
    * we want to find out the path in the OLD revision.
@@ -567,11 +569,11 @@ public class RevCommitUtil {
       Git git, 
       String oldRevisionId, 
       String originalFilePath) throws GitAPIException, IOException {
-    
+
     Repository repository = git.getRepository();
     RevCommit olderRevCommit = repository.parseCommit(repository.resolve(oldRevisionId));
     RevCommit headRevCommit = repository.parseCommit(repository.resolve("HEAD"));
-    
+
     return getOldPath(git, olderRevCommit, headRevCommit, originalFilePath);
   }
 
@@ -599,7 +601,7 @@ public class RevCommitUtil {
       RevCommit lastRev = revisions.get(revisions.size() - 1);
       List<FileStatus> targetRevFiles = getFiles(git.getRepository(), lastRev);
       Set<String> lastRevFiles = targetRevFiles.stream().map(FileStatus::getFileLocation).collect(Collectors.toSet());
-      
+
       RevCommit previous = null;
       for (RevCommit revCommit : revisions) {
         if (previous != null) {
@@ -612,19 +614,19 @@ public class RevCommitUtil {
             }
             break;
           }
-          
+
           // Check if the current discovered path is also present in the new revision to consume.
           // TThis way we will avoid a time consuming diff with rename detection.
           List<FileStatus> currentRevisionFiles = getFiles(git.getRepository(), revCommit);
           final String fpath = path;
           boolean same = currentRevisionFiles.stream().anyMatch(t -> fpath.equals(t.getFileLocation()));
-          
+
           if (!same) {
             // Do a diff with rename detection.
             if (LOGGER.isDebugEnabled()) {
               LOGGER.info("Search for a rename at revision " + revCommit.getFullMessage());
             }
-            
+
             List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
             for (DiffEntry diffEntry : diff) {
               if (isRename(diffEntry) 
@@ -643,7 +645,7 @@ public class RevCommitUtil {
 
     return path;
   }
-  
+
   /**
    * Utility method  to put the revisions in a proper order.
    * 
@@ -666,10 +668,10 @@ public class RevCommitUtil {
       for (E revCommit : new2old) {
         sorted.addFirst(revCommit);
       }
-      
+
       sorted.addFirst(oldestRev);
     }
-    
+
     return sorted;
   }
 
@@ -690,11 +692,11 @@ public class RevCommitUtil {
       Git git, 
       String filePath, 
       String commitId) throws IOException, GitAPIException {
-    
+
     String originalPath = filePath;
-    
+
     Repository repository = git.getRepository();
-    
+
     File targetFile = new File(repository.getWorkTree(), originalPath);
     if (!targetFile.exists()) {
       // The file is not present in the working copy. Perhaps it was renamed.
@@ -706,8 +708,8 @@ public class RevCommitUtil {
           older, 
           newer,
           filePath);
-      
-      
+
+
       targetFile = new File(repository.getWorkTree(), originalPath);
       if (!targetFile.exists()) {
         // Still not present inside the WC. Probably a rename that wasn't committed yet.
@@ -721,7 +723,7 @@ public class RevCommitUtil {
         }
       }
     }
-    
+
     return originalPath;
   }
 
@@ -759,18 +761,18 @@ public class RevCommitUtil {
       RenameDetector rd = new RenameDetector(repository);
       rd.addAll(diffs);
       List<DiffEntry> collect = rd.compute();
-      
+
       for (DiffEntry diffEntry : collect) {
         if (isRename(diffEntry) && diffEntry.getOldPath().equals(path)) {
           toReturn = diffEntry.getNewPath();
           break;
         }
-       }
+      }
 
       return toReturn;
     }
   }
-  
+
   /**
    * Get commits ahead and behind.
    * 
@@ -820,7 +822,7 @@ public class RevCommitUtil {
       return new CommitsAheadAndBehind(commitsAhead, commitsBehind);
     }
   }
-  
+
 
   /**
    * Returns the SHA-1 id for the BASE commit of a file. The BASE commit
@@ -920,7 +922,7 @@ public class RevCommitUtil {
    */
   public static ObjectId getLastLocalCommitForPath(Git git, String path) throws IOException {
     ObjectId toReturn = null;
-    
+
     ObjectId lastLocalCommit = getLastLocalCommitInRepo(git);
     RevWalk revWalk = new RevWalk(git.getRepository());
     RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
@@ -934,10 +936,10 @@ public class RevCommitUtil {
     }
     treeWalk.close();
     revWalk.close();
-    
+
     return toReturn;
   }
-  
+
   /**
    * Finds the last local commit in the repository
    * 
@@ -954,6 +956,6 @@ public class RevCommitUtil {
     }
     return null;
   }
-  
+
 
 }

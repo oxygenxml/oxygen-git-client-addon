@@ -2585,7 +2585,6 @@ public class GitAccess {
 				LOGGER.error(exception, exception);
 				break;
 			default:
-				status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
 				PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH) + ".",
 								exception);
 				LOGGER.error(exception, exception);
