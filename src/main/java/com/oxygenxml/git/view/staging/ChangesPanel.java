@@ -897,7 +897,7 @@ public class ChangesPanel extends JPanel {
 	 * @return <code>true</code> if the merging has been resolved.
 	 */
 	private boolean isMergingResolved() {
-	  RepositoryState repositoryState = RepoUtil.getRepoState();
+	  RepositoryState repositoryState = RepoUtil.getRepoState().orElse(null);
     return repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED;
   }
 	

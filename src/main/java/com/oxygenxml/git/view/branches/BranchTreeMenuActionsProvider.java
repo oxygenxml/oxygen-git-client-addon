@@ -137,7 +137,7 @@ public class BranchTreeMenuActionsProvider {
       @Override
       public void actionPerformed(ActionEvent e) {
         ctrl.asyncTask(() -> {
-          RepositoryState repoState = RepoUtil.getRepoState();
+          RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
           String branchToSet = BranchesUtil.createBranchPath(
               nodePath,
               BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
@@ -251,7 +251,7 @@ public class BranchTreeMenuActionsProvider {
           return null;
         }
 
-        RepositoryState repoState = RepoUtil.getRepoState();
+        RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
         if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
           int answer = showUncommittedChangesWhenChangingBranchMsg();
           if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
