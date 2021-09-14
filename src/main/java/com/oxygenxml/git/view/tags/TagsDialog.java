@@ -290,10 +290,10 @@ public class TagsDialog extends OKCancelDialog {
       }
 
       @Override
-      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) { } 
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) { /*//Not necessary to be implemented*/ } 
 
       @Override
-      public void popupMenuCanceled(PopupMenuEvent e) { }
+      public void popupMenuCanceled(PopupMenuEvent e) { /*//Not necessary to be implemented*/ }
     });
     return contextualActions;
   }

@@ -157,27 +157,7 @@ public class GitTagsManager {
   }
   
   private static Comparator<GitTag> getDescendingComparator() {
-    return (o1, o2) -> {
-      int compareResult = o1.getTaggingDate().compareTo(o2.getTaggingDate());
-      if(compareResult > 0) {
-        return -1;
-      } else if (compareResult < 0) {
-        return 1;
-      }
-      return 0;
-    };
-  }
-  
-  private static Comparator<GitTag> getAscendingComparator() {
-    return (o1, o2) -> {
-      int compareResult = o1.getTaggingDate().compareTo(o2.getTaggingDate());
-      if(compareResult < 0) {
-        return -1;
-      } else if (compareResult > 0) {
-        return 1;
-      }
-      return 0;
-    };
+    return (o1, o2) -> o2.getTaggingDate().compareTo(o1.getTaggingDate());
   }
   
 }

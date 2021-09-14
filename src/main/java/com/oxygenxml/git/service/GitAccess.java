@@ -2511,7 +2511,7 @@ public class GitAccess {
  * @param commitId the id of the commit where the tag will be
  * @throws GitAPIException 
  */
-	public void tagCommit(String name, String message, String commitId) throws GitAPIException, NoRepositorySelected, RevisionSyntaxException, IOException {
+	public void tagCommit(String name, String message, String commitId) throws GitAPIException, NoRepositorySelected, IOException {
 	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_COMMIT));
 	  try {
 	    RevWalk walk = new RevWalk(getRepository());

@@ -47,7 +47,7 @@ public class CreateTagDialog extends OKCancelDialog {
   /**
    * Translator.
    */
-  private static final Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    * A text field for the tag title.
    */
@@ -67,6 +67,11 @@ public class CreateTagDialog extends OKCancelDialog {
   private JCheckBox pushTagCheckBox;
 
   /**
+   * The width preferred by Message Pane
+   */
+  private static final int MESSAGE_PREFFERED_WIDTH = 200;
+
+  /**
    * Public constructor.
    * 
    * @param title            The title of the dialog.
@@ -74,13 +79,13 @@ public class CreateTagDialog extends OKCancelDialog {
   public CreateTagDialog() {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
         ? (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame(): null,
-            translator.getTranslation(Tags.CREATE_TAG_COMMIT_TITLE),
+            TRANSLATOR.getTranslation(Tags.CREATE_TAG_COMMIT_TITLE),
             true);
 
     // Create GUI
     JPanel panel = new JPanel(new GridBagLayout());
     createGUI(panel);
-    getOkButton().setText(translator.getTranslation(Tags.CREATE));
+    getOkButton().setText(TRANSLATOR.getTranslation(Tags.CREATE));
     getContentPane().add(panel);
     setResizable(true);
     pack();
@@ -110,7 +115,7 @@ public class CreateTagDialog extends OKCancelDialog {
     int leftInset = 5;
     
     // Tag title label.
-    JLabel label = new JLabel(translator.getTranslation(Tags.CREATE_TAG_TITLE_LABEL) + ":");
+    JLabel label = new JLabel(TRANSLATOR.getTranslation(Tags.CREATE_TAG_TITLE_LABEL) + ":");
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
@@ -145,7 +150,7 @@ public class CreateTagDialog extends OKCancelDialog {
     panel.add(errorMessageTextArea, gbc);
 
     // Tag message label.
-    JLabel messageLabel = new JLabel(translator.getTranslation(Tags.CREATE_TAG_MESSAGE_LABEL) + ":");
+    JLabel messageLabel = new JLabel(TRANSLATOR.getTranslation(Tags.CREATE_TAG_MESSAGE_LABEL) + ":");
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.BASELINE_LEADING;
@@ -155,7 +160,7 @@ public class CreateTagDialog extends OKCancelDialog {
     // Tag message field.
     tagMessageField = new JTextArea();
     JScrollPane tagMessageScrollPane = new JScrollPane(tagMessageField);
-    tagMessageScrollPane.setPreferredSize(new Dimension(200, 2* tagMessageField.getPreferredSize().height));
+    tagMessageScrollPane.setPreferredSize(new Dimension(MESSAGE_PREFFERED_WIDTH, 2* tagMessageField.getPreferredSize().height));
     tagMessageField.selectAll();
     gbc.gridx ++;
     gbc.weightx = 1;
@@ -168,7 +173,7 @@ public class CreateTagDialog extends OKCancelDialog {
     label.setLabelFor(tagMessageField);
 
     // "Push tag" check box
-    pushTagCheckBox = new JCheckBox(translator.getTranslation(Tags.CREATE_TAG_PUSH_CHECKBOX));
+    pushTagCheckBox = new JCheckBox(TRANSLATOR.getTranslation(Tags.CREATE_TAG_PUSH_CHECKBOX));
     pushTagCheckBox.setSelected(false);
     gbc.gridx = 0;
     gbc.gridy ++;
@@ -209,16 +214,16 @@ public class CreateTagDialog extends OKCancelDialog {
       titleContainsSpace = tagTitle.contains(" ");
       titleContainsInvalidChars = !Repository.isValidRefName(Constants.R_TAGS + tagTitle);
       if (titleContainsSpace) {
-        errorMessageTextArea.setText(translator.getTranslation(Tags.TAG_CONTAINS_SPACES));
+        errorMessageTextArea.setText(TRANSLATOR.getTranslation(Tags.TAG_CONTAINS_SPACES));
       } else if (titleContainsInvalidChars) {
-        errorMessageTextArea.setText(translator.getTranslation(Tags.TAG_CONTAINS_INVALID_CHARS));
+        errorMessageTextArea.setText(TRANSLATOR.getTranslation(Tags.TAG_CONTAINS_INVALID_CHARS));
       } else  {
         try {
           titleAlreadyExists = GitAccess.getInstance().existsTag(tagTitle);
         } catch (NoRepositorySelected | IOException e) {
           logger.debug(e, e);
         }
-        errorMessageTextArea.setText(titleAlreadyExists ? translator.getTranslation(Tags.TAG_ALREADY_EXISTS) : "");
+        errorMessageTextArea.setText(titleAlreadyExists ? TRANSLATOR.getTranslation(Tags.TAG_ALREADY_EXISTS) : "");
       } 
     }
 

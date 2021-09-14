@@ -130,14 +130,19 @@ public class TagsTableModel extends AbstractTableModel {
    */
   @Override
   public Object getValueAt(int rowIndex, int columnIndex) {
+    String toReturn;
     switch (columnIndex) {
     case 0:
-      return gitTags.get(rowIndex).getName();
+      toReturn = gitTags.get(rowIndex).getName();
+      break;
     case 1:
-      return gitTags.get(rowIndex).getMessage();
+      toReturn = gitTags.get(rowIndex).getMessage();
+      break;
     default:
-      return null;
+      toReturn = null;
+      break;
     }
+    return toReturn;
   }
   
   /**
