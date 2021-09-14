@@ -54,33 +54,33 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static Logger logger = Logger.getLogger(CommitMessageTableRenderer.class);
+  private static final Logger LOGGER = Logger.getLogger(CommitMessageTableRenderer.class);
 
   /**
    * Git repository.
    */
-  private Repository repository;
+  private final Repository repository;
 
   /**
    * Commits ahead (to push) and behind (to pull).
    */
-  private CommitsAheadAndBehind commitsAheadAndBehind;
+  private final CommitsAheadAndBehind commitsAheadAndBehind;
   /**
    * The current branch name in the git repository.
    */
-  private String currentBranchName;
+  private final String currentBranchName;
   /**
    * Commit ID to a list of tags.
    */
-  private Map<String, List<String>> tagMap;
+  private final Map<String, List<String>> tagMap;
   /**
    * Commit ID to a list of branch labels.
    */
-  private Map<String, List<String>> localBranchMap;
+  private final Map<String, List<String>> localBranchMap;
   /**
    * Commit ID to a list of branch labels.
    */
-  private Map<String, List<String>> remoteBranchMap;
+  private final Map<String, List<String>> remoteBranchMap;
   /**
    * The table.
    */
@@ -203,19 +203,16 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       List<String> tagList = tagMap.get(abbreviatedId);
       Color tagBackgroundColor = isDarkTheme ?
           UIUtil.TAG_GRAPHITE_BACKGROUND : UIUtil.TAG_LIGHT_BACKGROUND;
-      Color tagForegroundColor = isDarkTheme ?
-          UIUtil.TAG_GRAPHITE_FOREGROUND : UIUtil.TAG_LIGHT_FOREGROUND;
-      addTagOrBranchLabel(tagList, constr, tagBackgroundColor, tagForegroundColor);
+      addTagOrBranchLabel(tagList, constr, tagBackgroundColor);
 
       List<String> localBranchList = localBranchMap.get(abbreviatedId);
-      addTagOrBranchLabel(localBranchList, constr, table.getBackground(), null);
+      addTagOrBranchLabel(localBranchList, constr, table.getBackground());
 
       List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
       Color remoteBackgroundColor = isDarkTheme ?
           UIUtil.REMOTE_BRANCH_GRAPHITE_BACKGROUND : UIUtil.REMOTE_BRANCH_LIGHT_BACKGROUND;
-      Color remoteForegroundColor = isDarkTheme ?
-          UIUtil.REMOTE_BRANCH_GRAPHITE_FOREGROUND : UIUtil.REMOTE_BRANCH_LIGHT_FOREGROUND;
-      addTagOrBranchLabel(remoteBranchList, constr, remoteBackgroundColor, remoteForegroundColor);
+     
+      addTagOrBranchLabel(remoteBranchList, constr, remoteBackgroundColor);
     }
     
     return toRender;
@@ -227,10 +224,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * @param nameForLabelList List of tags or branches corresponding the commit.
    * @param constr           The constraints for tag / branch label when wrapping
    * @param backgroundColor  The background color.
-   * @param foregroundColor  The foreground color.
    */
   private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr,
-                                   Color backgroundColor, Color foregroundColor) {
+                                   Color backgroundColor) {
     if (nameForLabelList != null && !nameForLabelList.isEmpty()) {
       Insets oldInsets = constr.insets;
       // No insets. We will impose space from the borders.
@@ -238,7 +234,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       int lineSize = 1;
       
       for (String name : nameForLabelList) {
-        RoundedLineBorder border = new RoundedLineBorder(foregroundColor, lineSize, LABEL_BORDER_CORNER_SIZE, true);
+        RoundedLineBorder border = new RoundedLineBorder(null, lineSize, LABEL_BORDER_CORNER_SIZE, true);
         JLabel label = new JLabel(name) {
           @Override
           protected void paintComponent(Graphics g) {
@@ -249,7 +245,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         if (name.equals(currentBranchName)) {
           label.setFont(label.getFont().deriveFont(Font.BOLD));
         }
-        label.setForeground(foregroundColor);
+        label.setForeground(getForeground());
         label.setBorder(border);
         label.setBackground(backgroundColor);
         constr.gridx ++;
