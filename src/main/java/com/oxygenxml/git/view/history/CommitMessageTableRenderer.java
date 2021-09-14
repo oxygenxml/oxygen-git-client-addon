@@ -81,7 +81,10 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * Commit ID to a list of branch labels.
    */
   private Map<String, List<String>> remoteBranchMap;
-  
+  /**
+   * The table.
+   */
+  private JTable table;
 
   /**
    * Construct the Table Renderer with accurate alignment.
@@ -144,6 +147,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
     String toRender = "";
     if (value instanceof CommitCharacteristics) {
+      this.table = table;
       toRender = getRenderingStringForCommit(value, constr);
     } else {
       toRender = value != null ? value.toString() : "";
@@ -204,7 +208,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       addTagOrBranchLabel(tagList, constr, tagBackgroundColor, tagForegroundColor);
 
       List<String> localBranchList = localBranchMap.get(abbreviatedId);
-      addTagOrBranchLabel(localBranchList, constr, null, null);
+      addTagOrBranchLabel(localBranchList, constr, table.getBackground(), null);
 
       List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
       Color remoteBackgroundColor = isDarkTheme ?
