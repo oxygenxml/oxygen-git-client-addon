@@ -100,7 +100,7 @@ public class UIUtil {
   /**
    * Color for background when have a tag name in graphite theme.
    */
-  public static final Color TAG_GRAPHITE_BACKGROUND = new Color(0,100,0);
+  public static final Color TAG_GRAPHITE_BACKGROUND = new Color(90,80,175);
   /**
    * Color for background when have a remote branch name in light/classic theme.
    */
