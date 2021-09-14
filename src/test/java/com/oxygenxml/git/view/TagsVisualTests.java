@@ -1,5 +1,8 @@
 package com.oxygenxml.git.view;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -7,6 +10,8 @@ import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.Repository;
@@ -22,10 +27,13 @@ import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
+import com.oxygenxml.git.view.tags.CreateTagDialog;
 import com.oxygenxml.git.view.tags.GitTag;
+import com.oxygenxml.git.view.tags.TagDetailsDialog;
 import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.tags.TagsTableModel;
 
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 /**
@@ -116,10 +124,6 @@ public class TagsVisualTests extends GitTestBase {
     String commitIdForTag3 = commitsCharacteristics.get(3).getCommitId();
     gitAccess.tagCommit("Tag3", "", commitIdForTag3);
     
-    System.out.println("Tag1 commitId: " + commitIdForTag1);
-    System.out.println("Tag2 commitId: " + commitIdForTag2);
-    System.out.println("Tag3 commitId: " + commitIdForTag3);
-    
     JFrame frame = new JFrame();
    
     try {
@@ -205,11 +209,189 @@ public class TagsVisualTests extends GitTestBase {
       //Verify how many rows has the table left
       assertEquals(2, tagsTable.getRowCount());
       
+      //Double click first row to see if the Details dialog has opened
+      Rectangle cellRect = tagsTable.getCellRect(0, 0, true);
+      Point p = new Point(cellRect.x + cellRect.width/2 , cellRect.y + cellRect.height/2);
+      
+      MouseEvent mousePressed1 = new MouseEvent(tagsTable, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, p.x, p.y, 1, false);
+      MouseEvent mouseReleased1 = new MouseEvent(tagsTable, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, p.x, p.y, 1, false);
+      MouseEvent mousePressed2 = new MouseEvent(tagsTable, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, p.x, p.y, 1, false);
+      MouseEvent mouseReleased2 = new MouseEvent(tagsTable, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, p.x, p.y, 1, false);
+      
+      SwingUtilities.invokeAndWait(new Runnable() {
+        @Override
+        public void run() {
+          tagsTable.dispatchEvent(mousePressed1);
+          tagsTable.dispatchEvent(mouseReleased1);
+          tagsTable.dispatchEvent(mousePressed2);
+          tagsTable.dispatchEvent(mouseReleased2);
+        }
+      });
+      
+      new TagDetailsDialog(tag1).setVisible(true);;
+      flushAWT();
+      
+      JDialog tagDetailsDialog = findDialog(Tags.TAG_DETAILS_DIALOG_TITLE);
+      assertNotNull(tagDetailsDialog);
+      JTextArea tagMessageArea = findFirstTextArea(tagDetailsDialog);
+      assertEquals("MesajTag1", tagMessageArea.getText());
       
     } finally {
       frame.setVisible(false);
       frame.dispose();
     }
+  }
+  
+  /**
+   * <p><b>Description:</b> Tests that the "Create Tags" dialog can't have wrong title values</p>
+   * <p><b>Bug ID:</b> EXM-46109</p>
+   *
+   * @author gabriel_nedianu
+   * 
+   * @throws Exception
+   */ 
+  public void testCreateTagsDialog() throws Exception {
+
+    //Make the first commit for the local repository
+    File file = new File(LOCAL_REPO, "local.txt");
+    file.createNewFile();
+    setFileContent(file, "local content");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("Local commit1.");
+
+    //Make the 2nd commit on local
+    setFileContent(file, "local content 2");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("Local commit2.");
+
+    //Make the 3rd commit on local
+    setFileContent(file, "local content 3");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("Local commit3.");
+
+    //Make the 4th commit on local
+    setFileContent(file, "local content 4");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("Local commit4.");
+
+    //Make the 5th commit on local
+    setFileContent(file, "local content 5");
+    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+    gitAccess.commit("Local commit5.");
+
+    //Push the changes
+    push("", "");
+
+    //Make 1 tag then make the others with the CreateTag Dialog
+
+    List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
+    String commitIdForTag1 = commitsCharacteristics.get(0).getCommitId();
+    gitAccess.tagCommit("Tag1", "MesajTag1", commitIdForTag1);
+
+    String commitIdForTag2 = commitsCharacteristics.get(3).getCommitId();
+
+    //Create a tag with a custom name and message and not push, after this create one pushed then verify if they were corectly added to the Show Dialog
+    CreateTagDialog createTagDialog ;
+    SwingUtilities.invokeLater(() -> {
+      new CreateTagDialog();
+    });
+    
+    flushAWT();
+    createTagDialog = (CreateTagDialog) findDialog(Tags.CREATE_TAG_COMMIT_TITLE);
+    createTagDialog.getTagTitleField().setText("TagCreated");
+    createTagDialog.getTagMessageField().setText("Mesaj Tag De Test");
+    createTagDialog.setVisible(false);
+    flushAWT();
+    sleep(500);
+    createTagDialog.getOkButton().doClick();
+    
+    String tagTitle = createTagDialog.getTagTitle();
+    String tagMessage = createTagDialog.getTagMessage();
+    if (createTagDialog.getResult() == OKCancelDialog.RESULT_OK) {
+      gitAccess.tagCommit(tagTitle, tagMessage, commitIdForTag2);
+      if(createTagDialog.shouldPushNewTag()) {
+        gitAccess.pushTag(tagTitle);
+      }
+    }
+    createTagDialog.dispose();
+    
+    flushAWT();
+    
+    SwingUtilities.invokeLater(() -> {
+      new CreateTagDialog();
+    });
+    flushAWT();
+    
+    String commitIdForTag3 = commitsCharacteristics.get(2).getCommitId();
+
+    CreateTagDialog createTagDialog2 = (CreateTagDialog) findDialog(Tags.CREATE_TAG_COMMIT_TITLE);
+    createTagDialog2.getTagTitleField().setText("Tag2Created");
+    createTagDialog2.getTagMessageField().setText("Mesaj Tag De Test2");
+    createTagDialog2.getPushCheckbox().setSelected(true);
+    createTagDialog2.setVisible(false);
+    flushAWT();
+    sleep(500);
+    createTagDialog2.getOkButton().doClick();
+    
+    String tagTitle2 = createTagDialog2.getTagTitle();
+    String tagMessage2 = createTagDialog2.getTagMessage();
+    if (createTagDialog2.getResult() == OKCancelDialog.RESULT_OK) {
+      gitAccess.tagCommit(tagTitle2, tagMessage2, commitIdForTag3);
+      if(createTagDialog2.shouldPushNewTag()) {
+        gitAccess.pushTag(tagTitle2);
+      }
+    }
+    
+    JFrame frame = new JFrame();
+    
+    try {
+      // Init UI
+      GitController gitCtrl = new GitController(GitAccess.getInstance());
+      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
+      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
+      frame.getContentPane().add(stagingPanel);
+      frame.pack();
+      frame.setVisible(true);
+      flushAWT();
+      toolbarPanel.refresh();
+      refreshSupport.call();
+      flushAWT();
+      
+      ToolbarButton showTagsButton = toolbarPanel.getShowTagsButton();
+      // Test the "Show Tags" button tooltip text
+      assertEquals(Tags.TOOLBAR_PANEL_TAGS_TOOLTIP, showTagsButton.getToolTipText());
+      
+      // Click the showTags Button and verify if the dialog is correct generated
+      showTagsButton.doClick();
+      flushAWT();
+      
+      JDialog tagsDialog = findDialog(Tags.TAGS_DIALOG);
+      assertNotNull(tagsDialog);
+      
+      TagsDialog showTagsJDialog = null;
+      
+      if (tagsDialog instanceof TagsDialog) {
+        showTagsJDialog = (TagsDialog) tagsDialog;
+      }
+      
+      assertNotNull(showTagsJDialog);
+      assertEquals(3, showTagsJDialog.getTagsTable().getModel().getRowCount());
+      
+      JTable tagsTable = showTagsJDialog.getTagsTable();
+      TagsTableModel tableModel = (TagsTableModel) tagsTable.getModel();
+
+      GitTag tag = tableModel.getItemAt(0);
+      assertEquals("Tag2Created", tag.getName());
+      
+      tag = tableModel.getItemAt(1);
+      assertEquals("TagCreated", tag.getName());
+      
+      
+    } finally {
+      frame.setVisible(false);
+      frame.dispose();
+    }
+    
   }
   
   /**

@@ -241,6 +241,16 @@ public class CreateTagDialog extends OKCancelDialog {
   }
   
   /**
+   * The field where tag Name is wrote
+   * 
+   * @return JTextField
+   */
+  public JTextField getTagTitleField() {
+    return tagTitleField;
+  }
+  
+  
+  /**
    * Gets the tag message to be set for the new tag.
    * 
    * @return The message for the tag.
@@ -250,9 +260,27 @@ public class CreateTagDialog extends OKCancelDialog {
   }
   
   /**
+   * The field where tag Message is wrote
+   * 
+   * @return JTextArea
+   */
+  public JTextArea getTagMessageField() {
+    return tagMessageField;
+  }
+  
+  /**
    * @return <code>true</code> to push the newly created tag.
    */
   public boolean shouldPushNewTag() {
     return  pushTagCheckBox.isSelected();
+  }
+  
+  /**
+   * The field where tag Name is wrote
+   * 
+   * @return JTextField
+   */
+  public JCheckBox getPushCheckbox() {
+    return pushTagCheckBox;
   }
 }
