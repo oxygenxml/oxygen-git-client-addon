@@ -23,23 +23,23 @@ public class RoundedLineBorder extends AbstractBorder {
   /**
    * The width of the border.
    */
-  private int lineSize;
+  private final int lineSize;
   /**
    * The diameter of the round corner.
    */
-  private int cornerSize;
+  private final int cornerSize;
   /**
    * The color of the foreground.
    */
-  private Paint fill;
+  private final Paint fill;
   /**
    * Initialized in constructor with a BasicStroke with line width of lineSize.
    */
-  private Stroke stroke;
+  private final Stroke stroke;
   /**
    * RenderingHint for anti aliasing.
    */
-  private Object aaHint;
+  private final Object aaHint;
 
   /**
    * A class that extends AbstractBorder and is used for creating borders with
@@ -119,15 +119,21 @@ public class RoundedLineBorder extends AbstractBorder {
   /**
    * Paints or fills the rounded border using the parameters from AbstractBorder and the variables from this class.
    * 
-   * @param c             the component for which this border is being painted
-   * @param g             the paint graphics
-   * @param x             the x position of the rounded border
-   * @param y             the y position of the rounded border
-   * @param width         the width of the rounded border
-   * @param height        the height of the rounded border
-   * @param shouldFill    <code>True</code> if should fill
+   * @param c                the component for which this border is being painted
+   * @param g                the paint graphics
+   * @param x                the x position of the rounded border
+   * @param y                the y position of the rounded border
+   * @param width            the width of the rounded border
+   * @param height           the height of the rounded border
+   * @param shouldFill       <code>True</code> if should fill
    */
-  private void paintInternal(Component c, Graphics g, int x, int y, int width, int height, boolean shouldFill) {
+  private void paintInternal(Component c, 
+      Graphics g, 
+      int x, 
+      int y, 
+      int width, 
+      int height,
+      boolean shouldFill) {
     Graphics2D g2d = (Graphics2D) g;
     //Stores the paint, stroke and rendering hint for the old graphics
     Paint oldPaint = g2d.getPaint();
@@ -137,7 +143,7 @@ public class RoundedLineBorder extends AbstractBorder {
       //Uses the new paint, stroke and rendering hint for drawing the border
       Color colorPaint;
       if(shouldFill) {
-        colorPaint = c.getBackground();
+         colorPaint = c.getBackground();
       } else {
         colorPaint = fill != null ? (Color)fill : c.getForeground();
       }

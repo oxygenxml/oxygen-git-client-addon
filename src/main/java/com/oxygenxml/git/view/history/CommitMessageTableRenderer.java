@@ -24,6 +24,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.util.UIUtil;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Renderer for HistoryTable including tag and branch labels.
@@ -78,6 +81,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * Commit ID to a list of branch labels.
    */
   private Map<String, List<String>> remoteBranchMap;
+  
 
   /**
    * Construct the Table Renderer with accurate alignment.
@@ -190,15 +194,26 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
     } else if (repository != null) {
       String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
+      boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
+      
       List<String> tagList = tagMap.get(abbreviatedId);
-      addTagOrBranchLabel(tagList, constr);
+      Color tagBackgroundColor = isDarkTheme ?
+          UIUtil.TAG_GRAPHITE_BACKGROUND : UIUtil.TAG_LIGHT_BACKGROUND;
+      Color tagForegroundColor = isDarkTheme ?
+          UIUtil.TAG_GRAPHITE_FOREGROUND : UIUtil.TAG_LIGHT_FOREGROUND;
+      addTagOrBranchLabel(tagList, constr, tagBackgroundColor, tagForegroundColor);
 
       List<String> localBranchList = localBranchMap.get(abbreviatedId);
-      addTagOrBranchLabel(localBranchList, constr);
+      addTagOrBranchLabel(localBranchList, constr, null, null);
 
       List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
-      addTagOrBranchLabel(remoteBranchList, constr);
+      Color remoteBackgroundColor = isDarkTheme ?
+          UIUtil.REMOTE_BRANCH_GRAPHITE_BACKGROUND : UIUtil.REMOTE_BRANCH_LIGHT_BACKGROUND;
+      Color remoteForegroundColor = isDarkTheme ?
+          UIUtil.REMOTE_BRANCH_GRAPHITE_FOREGROUND : UIUtil.REMOTE_BRANCH_LIGHT_FOREGROUND;
+      addTagOrBranchLabel(remoteBranchList, constr, remoteBackgroundColor, remoteForegroundColor);
     }
+    
     return toRender;
   }
 
@@ -208,8 +223,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * @param nameForLabelList List of tags or branches corresponding the commit.
    * @param constr           The constraints for tag / branch label when wrapping
    */
-  private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr) {
-    Color foregroundColor = getForeground();
+  private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr, Color background, Color foreground) {
     if (nameForLabelList != null && !nameForLabelList.isEmpty()) {
       Insets oldInsets = constr.insets;
       // No insets. We will impose space from the borders.
@@ -217,19 +231,20 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       int lineSize = 1;
       
       for (String name : nameForLabelList) {
-        RoundedLineBorder border = new RoundedLineBorder(foregroundColor, lineSize, LABEL_BORDER_CORNER_SIZE, true);
+        RoundedLineBorder border = new RoundedLineBorder(foreground, lineSize, LABEL_BORDER_CORNER_SIZE, true);
         JLabel label = new JLabel(name) {
           @Override
           protected void paintComponent(Graphics g) {
-            border.fillBorder(this, g, 0, 0, getWidth(), getHeight());  
+            border.fillBorder(this, g, 0, 0, getWidth(), getHeight());
             super.paintComponent(g);
           }         
         };
         if (name.equals(currentBranchName)) {
           label.setFont(label.getFont().deriveFont(Font.BOLD));
         }
-        label.setForeground(foregroundColor);
+        label.setForeground(foreground);
         label.setBorder(border);
+        label.setBackground(background);
         constr.gridx ++;
         add(label, constr);
       }

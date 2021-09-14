@@ -94,6 +94,42 @@ public class UIUtil {
    */
   public static final String DATE_FORMAT_WITH_COMMA_PATTERN = "d MMM yyyy, HH:mm";
   
+  //TODO update the colors
+  
+  /**
+   * Color for background when have a remote branch name in graphite theme.
+   */
+  public static final Color REMOTE_BRANCH_GRAPHITE_BACKGROUND = Color.BLACK;
+  /**
+   * Color for foreground when have a remote branch name in graphite theme.
+   */
+  public static final Color REMOTE_BRANCH_GRAPHITE_FOREGROUND = Color.YELLOW;
+  /**
+   * Color for background when have a tag name in graphite theme.
+   */
+  public static final Color TAG_GRAPHITE_BACKGROUND = Color.CYAN;
+  /**
+   * Color for foreground when have a tag name in graphite theme.
+   */
+  public static final Color TAG_GRAPHITE_FOREGROUND = Color.RED;
+  /**
+   * Color for background when have a remote branch name in light/classic theme.
+   */
+  public static final Color REMOTE_BRANCH_LIGHT_BACKGROUND = Color.GREEN;
+  /**
+   * Color for foreground when have a remote branch name in light/classic theme.
+   */
+  public static final Color REMOTE_BRANCH_LIGHT_FOREGROUND = Color.PINK;
+  /**
+   * Color for background when have a tag name in light/classic theme.
+   */
+  public static final Color TAG_LIGHT_BACKGROUND = Color.BLUE;
+  /**
+   * Color for foreground when have a tag name in light/classic theme.
+   */
+  public static final Color TAG_LIGHT_FOREGROUND = Color.BLACK;
+  
+  
   /**
    * Hidden constructor.
    */
