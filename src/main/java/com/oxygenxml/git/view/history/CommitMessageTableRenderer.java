@@ -114,7 +114,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
     // keep the selection for whole columns of the row when selecting.
     if (isSelected) {
-      super.setForeground(table.getSelectionForeground());
+      super.setForeground(table.getForeground());
       super.setBackground(table.getSelectionBackground());
     } else {
       Color background = table.getBackground();
