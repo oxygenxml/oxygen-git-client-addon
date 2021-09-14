@@ -24,6 +24,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.util.UIUtil;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Renderer for HistoryTable including tag and branch labels.
@@ -51,33 +54,37 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * Logger for logging.
    */
   @SuppressWarnings("unused")
-  private static Logger logger = Logger.getLogger(CommitMessageTableRenderer.class);
+  private static final Logger LOGGER = Logger.getLogger(CommitMessageTableRenderer.class);
 
   /**
    * Git repository.
    */
-  private Repository repository;
+  private final Repository repository;
 
   /**
    * Commits ahead (to push) and behind (to pull).
    */
-  private CommitsAheadAndBehind commitsAheadAndBehind;
+  private final CommitsAheadAndBehind commitsAheadAndBehind;
   /**
    * The current branch name in the git repository.
    */
-  private String currentBranchName;
+  private final String currentBranchName;
   /**
    * Commit ID to a list of tags.
    */
-  private Map<String, List<String>> tagMap;
+  private final Map<String, List<String>> tagMap;
   /**
    * Commit ID to a list of branch labels.
    */
-  private Map<String, List<String>> localBranchMap;
+  private final Map<String, List<String>> localBranchMap;
   /**
    * Commit ID to a list of branch labels.
    */
-  private Map<String, List<String>> remoteBranchMap;
+  private final Map<String, List<String>> remoteBranchMap;
+  /**
+   * The table.
+   */
+  private JTable table;
 
   /**
    * Construct the Table Renderer with accurate alignment.
@@ -140,6 +147,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
     String toRender = "";
     if (value instanceof CommitCharacteristics) {
+      this.table = table;
       toRender = getRenderingStringForCommit(value, constr);
     } else {
       toRender = value != null ? value.toString() : "";
@@ -190,15 +198,23 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
     } else if (repository != null) {
       String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
+      boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
+      
       List<String> tagList = tagMap.get(abbreviatedId);
-      addTagOrBranchLabel(tagList, constr);
+      Color tagBackgroundColor = isDarkTheme ?
+          UIUtil.TAG_GRAPHITE_BACKGROUND : UIUtil.TAG_LIGHT_BACKGROUND;
+      addTagOrBranchLabel(tagList, constr, tagBackgroundColor);
 
       List<String> localBranchList = localBranchMap.get(abbreviatedId);
-      addTagOrBranchLabel(localBranchList, constr);
+      addTagOrBranchLabel(localBranchList, constr, table.getBackground());
 
       List<String> remoteBranchList = remoteBranchMap.get(abbreviatedId);
-      addTagOrBranchLabel(remoteBranchList, constr);
+      Color remoteBackgroundColor = isDarkTheme ?
+          UIUtil.REMOTE_BRANCH_GRAPHITE_BACKGROUND : UIUtil.REMOTE_BRANCH_LIGHT_BACKGROUND;
+     
+      addTagOrBranchLabel(remoteBranchList, constr, remoteBackgroundColor);
     }
+    
     return toRender;
   }
 
@@ -207,9 +223,10 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * 
    * @param nameForLabelList List of tags or branches corresponding the commit.
    * @param constr           The constraints for tag / branch label when wrapping
+   * @param backgroundColor  The background color.
    */
-  private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr) {
-    Color foregroundColor = getForeground();
+  private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr,
+                                   Color backgroundColor) {
     if (nameForLabelList != null && !nameForLabelList.isEmpty()) {
       Insets oldInsets = constr.insets;
       // No insets. We will impose space from the borders.
@@ -217,19 +234,20 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       int lineSize = 1;
       
       for (String name : nameForLabelList) {
-        RoundedLineBorder border = new RoundedLineBorder(foregroundColor, lineSize, LABEL_BORDER_CORNER_SIZE, true);
+        RoundedLineBorder border = new RoundedLineBorder(null, lineSize, LABEL_BORDER_CORNER_SIZE, true);
         JLabel label = new JLabel(name) {
           @Override
           protected void paintComponent(Graphics g) {
-            border.fillBorder(this, g, 0, 0, getWidth(), getHeight());  
+            border.fillBorder(this, g, 0, 0, getWidth(), getHeight());
             super.paintComponent(g);
           }         
         };
         if (name.equals(currentBranchName)) {
           label.setFont(label.getFont().deriveFont(Font.BOLD));
         }
-        label.setForeground(foregroundColor);
+        label.setForeground(getForeground());
         label.setBorder(border);
+        label.setBackground(backgroundColor);
         constr.gridx ++;
         add(label, constr);
       }

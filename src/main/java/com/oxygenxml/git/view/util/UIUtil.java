@@ -93,6 +93,23 @@ public class UIUtil {
    * Date format with comma.
    */
   public static final String DATE_FORMAT_WITH_COMMA_PATTERN = "d MMM yyyy, HH:mm";
+  /**
+   * Color for background when have a remote branch name in graphite theme.
+   */
+  public static final Color REMOTE_BRANCH_GRAPHITE_BACKGROUND = new Color(35,35,35);
+  /**
+   * Color for background when have a tag name in graphite theme.
+   */
+  public static final Color TAG_GRAPHITE_BACKGROUND = new Color(90,80,175);
+  /**
+   * Color for background when have a remote branch name in light/classic theme.
+   */
+  public static final Color REMOTE_BRANCH_LIGHT_BACKGROUND = new Color(232,232,232);
+  /**
+   * Color for background when have a tag name in light/classic theme.
+   */
+  public static final Color TAG_LIGHT_BACKGROUND = new Color(255,255,153);
+  
   
   /**
    * Hidden constructor.
