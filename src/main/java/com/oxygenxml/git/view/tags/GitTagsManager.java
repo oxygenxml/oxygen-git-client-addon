@@ -138,7 +138,7 @@ public class GitTagsManager {
           
         } else if (object instanceof RevCommit) {
           RevCommit lightTag = (RevCommit) object;
-          String lightTagTitle = Repository.shortenRefName(lightTag.getName());
+          String lightTagTitle = Repository.shortenRefName(ref.getName());
           boolean isPushed = remoteTagsTitle.contains(lightTagTitle);
           allTags.add(
               new GitTag(lightTagTitle,
