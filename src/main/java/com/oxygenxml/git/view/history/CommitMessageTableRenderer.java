@@ -120,7 +120,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
 
     // keep the selection for whole columns of the row when selecting.
     if (isSelected) {
-      super.setForeground(table.getForeground());
+      super.setForeground(table.getSelectionForeground());
       super.setBackground(table.getSelectionBackground());
     } else {
       Color background = table.getBackground();
@@ -198,8 +198,11 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
     } else if (repository != null) {
       String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
-      boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
-      
+      boolean isDarkTheme = false;
+      if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
+        isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
+      }
+
       List<String> tagList = tagMap.get(abbreviatedId);
       Color tagBackgroundColor = isDarkTheme ?
           UIUtil.TAG_GRAPHITE_BACKGROUND : UIUtil.TAG_LIGHT_BACKGROUND;
@@ -245,7 +248,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         if (name.equals(currentBranchName)) {
           label.setFont(label.getFont().deriveFont(Font.BOLD));
         }
-        label.setForeground(getForeground());
+        label.setForeground(table.getForeground());
         label.setBorder(border);
         label.setBackground(backgroundColor);
         constr.gridx ++;
