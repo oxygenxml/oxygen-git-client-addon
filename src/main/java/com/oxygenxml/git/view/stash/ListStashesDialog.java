@@ -322,13 +322,15 @@ public class ListStashesDialog extends JDialog {
     filesTable.setFillsViewportHeight(true);
 
     filesTable.addMouseListener(new MouseAdapter() {
+      
       @Override
       public void mouseClicked (MouseEvent evt) {
         int selectedRow = stashesTable.getSelectedRow();
-        if(selectedRow >= 0 && evt.getClickCount() == 2) {
+        if(selectedRow >= 0 && !evt.isPopupTrigger() && evt.getClickCount() == 2) {
           compareWithWorkingCopyAction.actionPerformed(null);
         }
       }
+      
     });
     
     JPopupMenu contextualActions  = new JPopupMenu();
@@ -537,19 +539,12 @@ public class ListStashesDialog extends JDialog {
     stashesTableModel = new StashesTableModel(stashes);
 
     JTable tableOfStashes = new Table(stashesTableModel) {
+      
       @Override
       public JToolTip createToolTip() {
         return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
       }
-      
-      @Override
-      public void setRowSelectionInterval(int a, int b) {
-        super.setRowSelectionInterval(a, b);
-        if(affectedStashFilesTableModel != null) {
-          affectedStashFilesTableModel.updateTable(a);
-        }  
-      }
-      
+   
     };
 
     tableOfStashes.setFillsViewportHeight(true);
@@ -598,6 +593,7 @@ public class ListStashesDialog extends JDialog {
     return contextualActions;
   }
 
+  
   /**
    * !!! FOR TEST !!!
    *
