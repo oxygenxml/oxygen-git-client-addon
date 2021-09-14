@@ -22,10 +22,19 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
+
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 
 /**
@@ -36,6 +45,8 @@ import com.oxygenxml.git.view.stash.StashApplyStatus;
  *
  * @throws Exception
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(FileStatusDialog.class)
 public class GitAccessStashTest {
 
   /**
@@ -70,6 +81,11 @@ public class GitAccessStashTest {
     gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
     gitAccess.add(new FileStatus(GitChangeType.ADD, file2.getName()));
     gitAccess.commit("file test added");
+   
+    PowerMockito.mockStatic(FileStatusDialog.class);
+    
+    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
   }
 
 

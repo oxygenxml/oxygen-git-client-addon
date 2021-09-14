@@ -2516,13 +2516,9 @@ public class GitAccess {
 
 		} catch (StashApplyFailureWithStatusException e) {
 			status = e.getStatus();
-			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
-				displayStashApplyFailedCauseMessage(true, status ,e);
-			}
-		} catch (StashApplyFailureException | IOException e) {
-			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
-				displayStashApplyFailedCauseMessage(true, status ,e);
-			}
+			displayStashApplyFailedCauseMessage(true, status ,e);
+		} catch (StashApplyFailureException | IOException e) {	 
+			displayStashApplyFailedCauseMessage(true, status ,e);
 		}
 
 		return status;
@@ -2619,13 +2615,9 @@ public class GitAccess {
 
 		} catch (StashApplyFailureWithStatusException e) {
 			status = e.getStatus();
-			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
-				displayStashApplyFailedCauseMessage(false, status ,e);
-			}
+			displayStashApplyFailedCauseMessage(false, status ,e);
 		} catch (StashApplyFailureException | IOException e) {
-			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
-				displayStashApplyFailedCauseMessage(false, status ,e);
-			}
+		  displayStashApplyFailedCauseMessage(false, status ,e);
 		}
 
 		return status;
