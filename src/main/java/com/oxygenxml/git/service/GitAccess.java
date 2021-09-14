@@ -2509,7 +2509,10 @@ public class GitAccess {
  * @param name the name of the tag
  * @param message the message of the tag
  * @param commitId the id of the commit where the tag will be
+ * 
  * @throws GitAPIException 
+ * @throws NoRepositorySelected
+ * @throws IOException
  */
 	public void tagCommit(String name, String message, String commitId) throws GitAPIException, NoRepositorySelected, IOException {
 	  fireOperationAboutToStart(new GitEventInfo(GitOperation.TAG_COMMIT));
