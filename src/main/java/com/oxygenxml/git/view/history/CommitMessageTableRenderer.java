@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
@@ -23,8 +24,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-
-import sun.swing.DefaultLookup;
 
 /**
  * Renderer for HistoryTable including tag and branch labels.
@@ -119,7 +118,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
     } else {
       Color background = table.getBackground();
       if (background == null || background instanceof javax.swing.plaf.UIResource) {
-        Color alternateColor = DefaultLookup.getColor(this, ui, "Table.alternateRowColor");
+        Color alternateColor = UIManager.getColor("Table.alternateRowColor");
         if (alternateColor != null && row % 2 != 0) {
           background = alternateColor;
         }
@@ -279,7 +278,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
   private Border getNoFocusBorder() {
     Border toReturn = noFocusBorder;
     
-    Border border = DefaultLookup.getBorder(this, ui, "Table.cellNoFocusBorder");
+    Border border = UIManager.getBorder("Table.cellNoFocusBorder");
     if (System.getSecurityManager() != null) {
       toReturn = border != null ? border : SAFE_NO_FOCUS_BORDER;
     } else if (border != null) {
