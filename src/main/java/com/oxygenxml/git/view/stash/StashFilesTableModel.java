@@ -22,12 +22,12 @@ import com.oxygenxml.git.service.entities.FileStatus;
  *
  * @author Alex_Smarandche
  */
-public class FilesTableModel extends AbstractTableModel {
+public class StashFilesTableModel extends AbstractTableModel {
 
   /**
    * Logger for logging.
    */
-  private static final Logger LOGGER = Logger.getLogger(FilesTableModel.class);
+  private static final Logger LOGGER = Logger.getLogger(StashFilesTableModel.class);
 
   /**
    * Index of the file status column.
@@ -183,11 +183,10 @@ public class FilesTableModel extends AbstractTableModel {
   public void updateTable(int stashIndex) {
     if(stashIndex >= 0) {
       List<RevCommit> stashesList = new ArrayList<>(GitAccess.getInstance().listStashes());
-      int size = filesStatuses.size();
       clear();
       try {
         filesStatuses.addAll(RevCommitUtil.getChangedFiles(stashesList.get(stashIndex).getName()));
-        fireTableRowsUpdated(0, Math.max(size, filesStatuses.size()) - 1);
+        fireTableRowsInserted(0, filesStatuses.size() - 1);
       } catch (IOException | GitAPIException exc) {
         LOGGER.error(exc, exc);
       }

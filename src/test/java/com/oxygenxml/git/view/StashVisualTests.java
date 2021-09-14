@@ -29,7 +29,7 @@ import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.staging.StagingPanel;
 import com.oxygenxml.git.view.staging.ToolbarPanel;
-import com.oxygenxml.git.view.stash.FilesTableModel;
+import com.oxygenxml.git.view.stash.StashFilesTableModel;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
 
 import ro.sync.exml.workspace.api.standalone.ui.SplitMenuButton;
@@ -713,26 +713,26 @@ public class StashVisualTests extends GitTestBase {
       ListStashesDialog listStashesDialog = (ListStashesDialog) findDialog(Tags.STASHES);
       flushAWT();
       assertNotNull(listStashesDialog);
-      FilesTableModel filesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
-      assertEquals(GitChangeType.CHANGED, filesTableModel.getValueAt(0, 0));
-      assertEquals(filesNames[0], ((FileStatus)filesTableModel.getValueAt(0, 1)).getFileLocation());
+      StashFilesTableModel stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
+      assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation());
 
-      filesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(1, 1));
       flushAWT();
-      assertEquals(GitChangeType.CHANGED, filesTableModel.getValueAt(0, 0));
-      assertEquals(filesNames[0], ((FileStatus)filesTableModel.getValueAt(0, 1)).getFileLocation());
+      assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
+      assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation());
       for (int i = 1; i < filesNames.length; i++) {
-        assertEquals(GitChangeType.ADD, filesTableModel.getValueAt(i, 0));
-        assertEquals(filesNames[i], ((FileStatus)filesTableModel.getValueAt(i, 1)).getFileLocation());
+        assertEquals(GitChangeType.ADD, stashFilesTableModel.getValueAt(i, 0));
+        assertEquals(filesNames[i], ((FileStatus) stashFilesTableModel.getValueAt(i, 1)).getFileLocation());
       }
       flushAWT();
 
-      filesTableModel = (FilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
+      stashFilesTableModel = (StashFilesTableModel) listStashesDialog.getAffectedFilesTable().getModel();
       SwingUtilities.invokeLater(() -> listStashesDialog.getStashesTable().setRowSelectionInterval(0, 0));
       flushAWT();
-      assertEquals(GitChangeType.CHANGED, filesTableModel.getValueAt(0, 0));
-      assertEquals(filesNames[0], ((FileStatus)filesTableModel.getValueAt(0, 1)).getFileLocation());
+      assertEquals(GitChangeType.CHANGED, stashFilesTableModel.getValueAt(0, 0));
+      assertEquals(filesNames[0], ((FileStatus) stashFilesTableModel.getValueAt(0, 1)).getFileLocation());
             
       JButton cancelButton = findFirstButton(listStashesDialog, Tags.CLOSE);
       assertNotNull(cancelButton);

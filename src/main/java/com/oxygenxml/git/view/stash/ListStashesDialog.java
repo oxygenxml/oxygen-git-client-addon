@@ -113,16 +113,6 @@ public class ListStashesDialog extends JDialog {
    * The size of column id.
    */
   private static final int COLUMN_ID_SIZE = 25;
-  
-  /**
-   * The index for stash ID column in stashes table.
-   */
-  private static final int STASH_ID_COLUMN_INDEX = 0;
-  
-  /**
-   * The index for stash description column in stashes table.
-   */
-  private static final int STASH_DESCRIPTION_COLUMN_INDEX = 1;
 
   /**
    * The table with the stashes.
@@ -137,7 +127,7 @@ public class ListStashesDialog extends JDialog {
   /**
    * The model for the files table.
    */
-  private FilesTableModel affectedFilesTableModel;
+  private StashFilesTableModel affectedStashFilesTableModel;
 
   /**
    * The model for the stashes table.
@@ -292,7 +282,7 @@ public class ListStashesDialog extends JDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.EAST;
-    constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, UIConstants.INSETS_7PX, UIConstants.INSETS_11PX);
+    constraints.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, 0, UIConstants.INSETS_7PX, UIConstants.INSETS_11PX);
     stashesPanel.add(closeButton, constraints);
 
     stashesTable.setRowSelectionInterval(0, 0);
@@ -321,9 +311,9 @@ public class ListStashesDialog extends JDialog {
    */
   private Table createAffectedFilesTable() {
 
-    affectedFilesTableModel = new FilesTableModel();
+    affectedStashFilesTableModel = new StashFilesTableModel();
 
-    Table filesTable = new Table(affectedFilesTableModel) {
+    Table filesTable = new Table(affectedStashFilesTableModel) {
       @Override
       public JToolTip createToolTip() {
         return UIUtil.createMultilineTooltip(this).orElseGet(super::createToolTip);
@@ -442,7 +432,7 @@ public class ListStashesDialog extends JDialog {
     panel.add(deleteAfterApplyingCheckBox, constraints);
 
     JPanel buttonsPanel = createButtonsPanel();
-    constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, 0, 0);
+    constraints.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, 0, 0, 0);
     constraints.gridx++;
     constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.EAST;
@@ -555,8 +545,8 @@ public class ListStashesDialog extends JDialog {
       @Override
       public void setRowSelectionInterval(int a, int b) {
         super.setRowSelectionInterval(a, b);
-        if(affectedFilesTableModel != null) {
-          affectedFilesTableModel.updateTable(a);
+        if(affectedStashFilesTableModel != null) {
+          affectedStashFilesTableModel.updateTable(a);
         }  
       }
       
@@ -564,7 +554,7 @@ public class ListStashesDialog extends JDialog {
 
     tableOfStashes.setFillsViewportHeight(true);
     TableColumnModel columnModel = tableOfStashes.getColumnModel();
-    columnModel.getColumn(STASH_DESCRIPTION_COLUMN_INDEX).setCellRenderer(new StashMessageRender());
+    columnModel.getColumn(StashesTableModel.STASH_DESCRIPTION_COLUMN).setCellRenderer(new StashMessageRender());
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tableOfStashes.getTableHeader().setReorderingAllowed(false);
 
@@ -574,14 +564,14 @@ public class ListStashesDialog extends JDialog {
     tableOfStashes.getSelectionModel().addListSelectionListener(e -> {
       setStashTableButtonsEnabled(true);
       int selectedRow = tableOfStashes.getSelectedRow();
-      affectedFilesTableModel.updateTable(selectedRow);
+      affectedStashFilesTableModel.updateTable(selectedRow);
     });
 
     stashesTableModel.fireTableDataChanged();
 
-    columnModel.getColumn(STASH_ID_COLUMN_INDEX).setMinWidth(COLUMN_ID_SIZE);
-    columnModel.getColumn(STASH_ID_COLUMN_INDEX).setPreferredWidth(COLUMN_ID_SIZE);
-    columnModel.getColumn(STASH_ID_COLUMN_INDEX).setMaxWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setMinWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setPreferredWidth(COLUMN_ID_SIZE);
+    columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setMaxWidth(COLUMN_ID_SIZE);
 
     tableOfStashes.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
@@ -730,7 +720,7 @@ public class ListStashesDialog extends JDialog {
               stashesTableModel.removeRow(selectedRow);
               if(stashesTableModel.getRowCount() == 0) {
                 setStashTableButtonsEnabled(false);
-                affectedFilesTableModel.clear();
+                affectedStashFilesTableModel.clear();
               } else {
                 selectNextRowAfterDeletion(stashesTable, selectedRow, noOfRows);
               }
@@ -781,7 +771,7 @@ public class ListStashesDialog extends JDialog {
           boolean wereAllStashesDropped = StashUtil.clearStashes();
           if (wereAllStashesDropped) {
             stashesTableModel.clear();
-            affectedFilesTableModel.clear();
+            affectedStashFilesTableModel.clear();
             setStashTableButtonsEnabled(false);
           }
         }
@@ -823,7 +813,7 @@ public class ListStashesDialog extends JDialog {
         stashesTableModel.removeRow(indexStashToDelete);
         if(stashesTableModel.getRowCount() == 0) {
           setStashTableButtonsEnabled(false);
-          affectedFilesTableModel.clear();
+          affectedStashFilesTableModel.clear();
         }
         selectNextRowAfterDeletion(stashesTable, indexStashToDelete, noOfStashes);
       }
