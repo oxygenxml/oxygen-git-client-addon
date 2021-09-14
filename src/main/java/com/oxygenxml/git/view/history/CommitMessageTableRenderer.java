@@ -198,10 +198,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       toRender = "<html><body><b>" + uncommittedChangesMessage + "</b></body></html>";
     } else if (repository != null) {
       String abbreviatedId = commitCharacteristics.getCommitAbbreviatedId();
-      boolean isDarkTheme = false;
-      if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
-        isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
-      }
+      boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
 
       List<String> tagList = tagMap.get(abbreviatedId);
       Color tagBackgroundColor = isDarkTheme ?
