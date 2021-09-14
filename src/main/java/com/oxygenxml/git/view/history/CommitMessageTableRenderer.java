@@ -222,8 +222,11 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
    * 
    * @param nameForLabelList List of tags or branches corresponding the commit.
    * @param constr           The constraints for tag / branch label when wrapping
+   * @param backgroundColor  The background color.
+   * @param foregroundColor  The foreground color.
    */
-  private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr, Color background, Color foreground) {
+  private void addTagOrBranchLabel(List<String> nameForLabelList, GridBagConstraints constr,
+                                   Color backgroundColor, Color foregroundColor) {
     if (nameForLabelList != null && !nameForLabelList.isEmpty()) {
       Insets oldInsets = constr.insets;
       // No insets. We will impose space from the borders.
@@ -231,7 +234,7 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
       int lineSize = 1;
       
       for (String name : nameForLabelList) {
-        RoundedLineBorder border = new RoundedLineBorder(foreground, lineSize, LABEL_BORDER_CORNER_SIZE, true);
+        RoundedLineBorder border = new RoundedLineBorder(foregroundColor, lineSize, LABEL_BORDER_CORNER_SIZE, true);
         JLabel label = new JLabel(name) {
           @Override
           protected void paintComponent(Graphics g) {
@@ -242,9 +245,9 @@ public class CommitMessageTableRenderer extends JPanel implements TableCellRende
         if (name.equals(currentBranchName)) {
           label.setFont(label.getFont().deriveFont(Font.BOLD));
         }
-        label.setForeground(foreground);
+        label.setForeground(foregroundColor);
         label.setBorder(border);
-        label.setBackground(background);
+        label.setBackground(backgroundColor);
         constr.gridx ++;
         add(label, constr);
       }
