@@ -53,6 +53,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Ref.Storage;
 import org.eclipse.jgit.transport.URIish;
 
+import com.oxygenxml.git.auth.AuthUtil;
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.options.CredentialsBase;
@@ -182,7 +183,7 @@ public class CloneRepositoryDialog extends OKCancelDialog { // NOSONAR squid:Max
         } else if (cause instanceof TransportException) {
           // Invalid credentials
           String lowercaseMsg = cause.getMessage().toLowerCase();
-          if (lowercaseMsg.contains("not authorized")) {
+          if (lowercaseMsg.contains(AuthUtil.NOT_AUTHORIZED)) {
             String message = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
             CredentialsBase creds = OptionsManager.getInstance().getGitCredentials(sourceUrl.getHost());
             if (creds.getType() == CredentialsType.USER_AND_PASSWORD) {

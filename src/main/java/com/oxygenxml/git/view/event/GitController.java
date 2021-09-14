@@ -236,14 +236,24 @@ public class GitController extends GitControllerBase {
                         translator.getTranslation(Tags.MERGE))
         );
       } catch (TransportException e) {
-        boolean shouldTryAgain = treatTransportException(e);
+        String exMsg = e.getMessage();
+        boolean isAuthProblem = exMsg.contains(AuthUtil.NOT_AUTHORIZED)
+            || exMsg.contains(AuthUtil.AUTHENTICATION_NOT_SUPPORTED)
+            || exMsg.contains(AuthUtil.NOT_PERMITTED);
+        boolean shouldTryAgain = isAuthProblem ? 
+            AuthUtil.handleAuthException(
+                e,
+                hostName,
+                pluginWS::showErrorMessage,
+                true) 
+            : treatTransportException(e);
         if (shouldTryAgain) {
           // Skip notification now. We try again.
           notifyFinish = false;
           // Try again.
           executeCommand();
         } else {
-          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
+          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(exMsg), e));
         }
       } catch (GitAPIException e) {
         // Exception handling.

@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ScheduledFuture;
 
-import com.oxygenxml.git.view.stash.StashApplyFailureWithStatusException;
 import org.apache.log4j.Logger;
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
@@ -119,6 +118,7 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
+import com.oxygenxml.git.view.stash.StashApplyFailureWithStatusException;
 import com.oxygenxml.git.view.stash.StashApplyStatus;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -1837,9 +1837,10 @@ public class GitAccess {
 
 			String message = e.getMessage();
       if (message != null && (message.contains("Authentication is required but no CredentialsProvider has been registered")
-					|| message.contains("not authorized"))) {
+					|| message.contains(AuthUtil.NOT_AUTHORIZED))) {
 				throw new PrivateRepositoryException(e);
-			} else if (message != null && message.contains("Auth fail") && credentialsProvider.isPassphaseRequested()
+			} else if (message != null && message.toLowerCase().contains(AuthUtil.AUTH_FAIL) 
+			    && credentialsProvider.isPassphaseRequested()
 			    || (cause instanceof SshException)
               && ((SshException) cause).getDisconnectCode() == SshConstants.SSH2_DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE) {
 			  throw new SSHPassphraseRequiredException(e);
