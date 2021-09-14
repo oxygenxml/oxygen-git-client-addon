@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ScheduledFuture;
 
+import com.oxygenxml.git.view.stash.StashApplyFailureWithStatusException;
 import org.apache.log4j.Logger;
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.SshException;
@@ -2495,28 +2496,28 @@ public class GitAccess {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
 		StashApplyStatus status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
 		try {
-			status = checkIfStashIsApplicable(stashRef);
+			checkIfStashIsApplicable(stashRef);
 
-			if(status == StashApplyStatus.STASH_APPLY_READY_TO_START) {
+			git.stashApply().setStashRef(stashRef).call();
 
-				git.stashApply().setStashRef(stashRef).call();
-
-				List<RevCommit> stashes = new ArrayList<>(listStashes());
+			List<RevCommit> stashes = new ArrayList<>(listStashes());
 				
-				status = StashApplyStatus.APPLIED_SUCCESSFULLY;
+			status = StashApplyStatus.APPLIED_SUCCESSFULLY;
 				
-				for(int i = 0; i < stashes.size(); i++) {
-				  if(stashRef.equals(stashes.get(i).getName())) {
-				    dropStash(i);
-				    break;
-				  }
+			for(int i = 0; i < stashes.size(); i++) {
+				if(stashRef.equals(stashes.get(i).getName())) {
+					dropStash(i);
+					break;
 				}
-
-				fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
-			} else {
-				throw new StashApplyFailureException("Impossible to apply.");
 			}
 
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
+
+		} catch (StashApplyFailureWithStatusException e) {
+			status = e.getStatus();
+			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
+				displayStashApplyFailedCauseMessage(true, status ,e);
+			}
 		} catch (StashApplyFailureException | IOException e) {
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
 				displayStashApplyFailedCauseMessage(true, status ,e);
@@ -2607,39 +2608,38 @@ public class GitAccess {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
 		StashApplyStatus status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
 		try {
-		  status = checkIfStashIsApplicable(stashRef);
-		  
-		  if(status == StashApplyStatus.STASH_APPLY_READY_TO_START) {
+			checkIfStashIsApplicable(stashRef);
 
-				git.stashApply().setStashRef(stashRef).call();
+			git.stashApply().setStashRef(stashRef).call();
 
-				status = StashApplyStatus.APPLIED_SUCCESSFULLY;
+			status = StashApplyStatus.APPLIED_SUCCESSFULLY;
 
-	      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
-		  } else {
-		    throw new StashApplyFailureException("Impossible to apply.");
-		  }
+			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
 
+		} catch (StashApplyFailureWithStatusException e) {
+			status = e.getStatus();
+			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
+				displayStashApplyFailedCauseMessage(false, status ,e);
+			}
 		} catch (StashApplyFailureException | IOException e) {
 			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
 				displayStashApplyFailedCauseMessage(false, status ,e);
-		  }
-	  }
-		
+			}
+		}
+
 		return status;
 	}
+
   
 	
   /**
    * @param stashRef       The stash reference.
    *
-   * @return               The status for stash.
-   *
    * @throws IOException
    * @throws GitAPIException
+	 * @throws StashApplyFailureWithStatusException
    */
-	private StashApplyStatus checkIfStashIsApplicable(String stashRef) throws IOException, GitAPIException {
-	  StashApplyStatus status = StashApplyStatus.STASH_APPLY_READY_TO_START;
+	private void checkIfStashIsApplicable(String stashRef) throws IOException, GitAPIException, StashApplyFailureWithStatusException {
 	  List<FileStatus> list = RevCommitUtil.getChangedFiles(stashRef);
 		List<FileStatus> unstagedFiles = new ArrayList<>(getUnstagedFiles());
 
@@ -2647,20 +2647,18 @@ public class GitAccess {
 
 			for (FileStatus file : unstagedFiles) {
 				if (file.getChangeType() == GitChangeType.CONFLICT) {
-					status = StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS;
-					break;
+					throw new StashApplyFailureWithStatusException(StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS, "Impossible to apply");
 				} else if (file.getFileLocation().compareTo(fileStatus.getFileLocation()) == 0) {
-					status = StashApplyStatus.CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES;
+					throw new StashApplyFailureWithStatusException(StashApplyStatus.CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES, "Impossible to apply");
 				}
 			}
 
 			if(!getStagedFiles().isEmpty()) {
-				status = StashApplyStatus.CANNOT_START_BECAUSE_STAGED_FILES;
+				throw new StashApplyFailureWithStatusException(StashApplyStatus.CANNOT_START_BECAUSE_STAGED_FILES, "Impossible to apply");
 			}
 			
 		}
-      
-    return status;
+
 	}
 	
 	
