@@ -73,9 +73,9 @@ import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
+import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
-import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -427,9 +427,9 @@ public class ToolbarPanel extends JPanel {
 		addPushAndPullButtons();
 		addBranchSelectButton(branchManagementViewPresenter);
 		addSubmoduleSelectButton();
+		addTagsShowButton();
 		addStashButton();
 		addHistoryButton(historyController);
-		addTagsShowButton();
 		addSettingsButton();
 		this.add(gitToolbar, gbc);
 
@@ -641,10 +641,6 @@ public class ToolbarPanel extends JPanel {
     submoduleSelectButton.setIcon(Icons.getIcon(Icons.GIT_SUBMODULE_ICON));
     submoduleSelectButton.setToolTipText(TRANSLATOR.getTranslation(Tags.SELECT_SUBMODULE_BUTTON_TOOLTIP));
     setDefaultToolbarButtonWidth(submoduleSelectButton);
-    gitToolbar.add(submoduleSelectButton);
-
-    submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
-  }
 	
 /**
  * Add the "Show Tags" button
@@ -671,7 +667,10 @@ public class ToolbarPanel extends JPanel {
 
   }
 
+    gitToolbar.add(submoduleSelectButton);
 
+    submoduleSelectButton.setEnabled(gitRepoHasSubmodules());
+  }
 
   /**
    * Adds to the tool bar a button for selecting branches. When clicked, a new
