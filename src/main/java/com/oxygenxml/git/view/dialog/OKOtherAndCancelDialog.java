@@ -198,7 +198,7 @@ public class OKOtherAndCancelDialog extends JDialog {
     gridBagConstr.weighty = 0;
     gridBagConstr.anchor = GridBagConstraints.EAST;
     gridBagConstr.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstr.insets = new Insets(UIConstants.INSETS_5PX, 0, 0, 0);
+    gridBagConstr.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, 0, 0, 0);
     mainPanel.add(buttonsPanel, gridBagConstr);
 
     setContentPane(mainPanel);
