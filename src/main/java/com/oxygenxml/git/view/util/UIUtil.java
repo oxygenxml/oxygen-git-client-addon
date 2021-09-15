@@ -109,8 +109,10 @@ public class UIUtil {
    * Color for background when have a tag name in light/classic theme.
    */
   public static final Color TAG_LIGHT_BACKGROUND = new Color(255,255,153);
-  
-  // TODO change color of link to parents in git history to 96, 209, 240
+  /**
+   * Color string for parents link in Git History in graphite theme.
+   */
+  public static final String PARENTS_LINK_COLOR_GRAPHITE_STRING = "#60d1f0";
   
   
   /**
