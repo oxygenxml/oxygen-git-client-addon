@@ -28,6 +28,7 @@ import com.oxygenxml.git.options.PersonalAccessTokenInfo;
 import com.oxygenxml.git.options.UserAndPasswordCredentials;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.PlatformDetectionUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -45,7 +46,7 @@ public class LoginDialog extends OKCancelDialog {
   /**
    * Dialog preferred height.
    */
-  private static final int DLG_PREF_HEIGHT = 250;
+  private static final int DLG_PREF_HEIGHT = PlatformDetectionUtil.isMacOS() ? 305 : 250;
   /**
    * Dialog preferred width.
    */
