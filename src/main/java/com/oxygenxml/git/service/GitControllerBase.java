@@ -8,13 +8,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
@@ -28,10 +28,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * @author Beniamin Savu
  */
 public abstract class GitControllerBase {
-  /**
-   * Logger for logging.
-   */
-  private static Logger logger = Logger.getLogger(GitControllerBase.class);
   /**
    * Translator for the UI.
    */
@@ -231,16 +227,12 @@ public abstract class GitControllerBase {
    */
   private boolean shouldContinueResolvingConflictUsingMineOrTheirs(ConflictResolution cmd) {
     boolean shouldContinue = false;
-    try {
-      RepositoryState repositoryState = gitAccess.getRepository().getRepositoryState();
-      if (repositoryState != RepositoryState.REBASING_MERGE
-          // When having a conflict while rebasing, 'mine' and 'theirs' are switched.
-          // Tell this to the user and ask if they are OK with their choice.
-          || isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(cmd)) {
-        shouldContinue = true;
-      }
-    } catch (NoRepositorySelected e) {
-      logger.debug(e, e);
+    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+    if (repoState != null && repoState != RepositoryState.REBASING_MERGE
+        // When having a conflict while rebasing, 'mine' and 'theirs' are switched.
+        // Tell this to the user and ask if they are OK with their choice.
+        || isUserOKWithResolvingRebaseConflictUsingMineOrTheirs(cmd)) {
+      shouldContinue = true;
     }
     return shouldContinue;
   }

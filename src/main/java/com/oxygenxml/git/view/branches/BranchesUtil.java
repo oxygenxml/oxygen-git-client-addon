@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
@@ -36,11 +34,6 @@ public class BranchesUtil {
    * i18n.
    */
   private static final Translator TRANSLATOR = Translator.getInstance();
-  
-  /**
-   * Logger for logging.
-   */
-  private static final Logger LOGGER = LogManager.getLogger(BranchesUtil.class.getName());
   
   /**
     * Constructor.
@@ -139,13 +132,7 @@ public class BranchesUtil {
    * Show a message saying why checking out a newly created branch failed.
    */
   public static void showCannotCheckoutNewBranchMessage() {
-    RepositoryState state = null;
-    try {
-      state = GitAccess.getInstance().getRepository().getRepositoryState();
-    } catch (NoRepositorySelected e2) {
-      LOGGER.debug(e2, e2);
-    }
-
+    RepositoryState state = RepoUtil.getRepoState().orElse(null);
     if (state != null) {
       String messageTag = Tags.CANNOT_CHECKOUT_NEW_BRANCH;
       switch (state) {
@@ -167,12 +154,7 @@ public class BranchesUtil {
    * Show error message when switching to another branch failed.
    */
   public static void showBranchSwitchErrorMessage() {
-    RepositoryState repoState = null;
-    try {
-      repoState = GitAccess.getInstance().getRepository().getRepositoryState();
-    } catch (NoRepositorySelected e1) {
-      LOGGER.error(e1, e1);
-    }
+    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     String msg = 
         RepoUtil.isUnfinishedConflictState(repoState) 
           ? TRANSLATOR.getTranslation(Tags.BRANCH_SWITCH_WHEN_REPO_IN_CONFLICT_ERROR_MSG)
@@ -189,7 +171,7 @@ public class BranchesUtil {
    * 
    * @throws NoRepositorySelected 
    */
-  public static boolean doesBranchAlreadyExist(String branchName) throws NoRepositorySelected {
+  public static boolean existsLocalBranch(String branchName) throws NoRepositorySelected {
     return getLocalBranches().stream().anyMatch((String branch) -> branch.equalsIgnoreCase(branchName));
   }
 

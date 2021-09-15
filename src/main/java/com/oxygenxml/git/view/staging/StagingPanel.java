@@ -317,6 +317,9 @@ public class StagingPanel extends JPanel {
             Collection<String> affectedFiles = Arrays.asList(fileInWorkPath.substring(selectedRepositoryPath.length () + 1));
             FileGitEventInfo changeEvent = new FileGitEventInfo(GitOperation.UNSTAGE, affectedFiles);
             SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
+						if(toolbarPanel != null) {
+							toolbarPanel.refreshStashButton();
+						}
           }
         } catch (NoRepositorySelected e) {
           logger.debug(e, e);
@@ -452,7 +455,7 @@ public class StagingPanel extends JPanel {
 	    /**
 	     * Push/pull finished. Treat the event.
 	     * 
-	     * @param pushPullEventThe event.
+	     * @param pushPullEvent The event.
 	     */
 	    private void treatPushPullFinished(PushPullEvent pushPullEvent) {
 	      commitPanel.setStatusMessage(pushPullEvent.getMessage());
@@ -475,7 +478,7 @@ public class StagingPanel extends JPanel {
 	    /**
 	     * Push/pull started. Treat the event.
 	     * 
-	     * @param pushPullEventThe event.
+	     * @param pushPullEvent The event.
 	     */
 	    private void treatPushPullStarted(PushPullEvent pushPullEvent) {
 	      commitPanel.setStatusMessage(pushPullEvent.getMessage());

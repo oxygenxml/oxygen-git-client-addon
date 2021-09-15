@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import javax.swing.JFrame;
@@ -49,12 +49,12 @@ public class DiffPresenter {
   /**
    * i18n
    */
-	private static Translator translator = Translator.getInstance();
+	private static final Translator TRANSLATOR = Translator.getInstance();
 	
   /**
 	 * Logger for logging.
 	 */
-	private static Logger logger = Logger.getLogger(DiffPresenter.class);
+	private static final Logger LOGGER = Logger.getLogger(DiffPresenter.class);
 	
 	/**
 	 * Avoid instantiation.
@@ -103,8 +103,8 @@ public class DiffPresenter {
 	  } catch (Exception ex) {
 	    PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage());
 	    
-	    if (logger.isDebugEnabled()) {
-	      logger.debug(ex, ex);
+	    if (LOGGER.isDebugEnabled()) {
+	      LOGGER.debug(ex, ex);
 	    }
 	  }
 	}
@@ -127,8 +127,8 @@ public class DiffPresenter {
 	    }
 	  } catch (MalformedURLException | NoRepositorySelected e) {
 	    // Shouldn't rreally happen
-	    if (logger.isDebugEnabled()) {
-	      logger.debug(e, e);
+	    if (LOGGER.isDebugEnabled()) {
+	      LOGGER.debug(e, e);
 	    }
 	  }
 	  showDiffFrame(url, null, null, fileStatus.getFileLocation());
@@ -145,8 +145,8 @@ public class DiffPresenter {
 	    lastCommitedFileURL = GitRevisionURLHandler.encodeURL(
 	        VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
 	  } catch (MalformedURLException e1) {
-	    if (logger.isDebugEnabled()) {
-	      logger.debug(e1, e1);
+	    if (LOGGER.isDebugEnabled()) {
+	      LOGGER.debug(e1, e1);
 	    }
 	  }
 	  showDiffFrame(null, lastCommitedFileURL, null, path);
@@ -165,8 +165,8 @@ public class DiffPresenter {
 			
 			showDiffFrame(currentSubmoduleCommit, previouslySubmoduleCommit, previouslySubmoduleCommit, path);
 		} catch (MalformedURLException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e, e);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(e, e);
 			}
 		}
 	}
@@ -187,8 +187,8 @@ public class DiffPresenter {
 			lastCommitedFileURL = GitRevisionURLHandler.encodeURL(
 			    VersionIdentifier.INDEX_OR_LAST_COMMIT, path);
 		} catch (MalformedURLException e1) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e1, e1);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(e1, e1);
 			}
 		}
 		
@@ -212,8 +212,8 @@ public class DiffPresenter {
       
       rightSideURL = GitRevisionURLHandler.encodeURL(VersionIdentifier.LAST_COMMIT, path);
     } catch (MalformedURLException e1) {
-      if (logger.isDebugEnabled()) {
-        logger.debug(e1, e1);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(e1, e1);
       }
     }
 
@@ -262,21 +262,21 @@ public class DiffPresenter {
 			    public void componentHidden(ComponentEvent e) {
 			      long diffClosedTimeStamp = localCopy.lastModified();
 			      if (diffClosedTimeStamp == diffStartedTimeStamp) {
-			        String message = isRebase ? translator.getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
-			            : translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
+			        String message = isRebase ? TRANSLATOR.getTranslation(Tags.KEEP_RESOLVED_VERSION_FOR_REBASE_CONFLICT)
+			            : TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED);
 			        int response = FileStatusDialog.showWarningMessageWithConfirmation(
-			            translator.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
+			            TRANSLATOR.getTranslation(Tags.CHECK_IF_CONFLICT_RESOLVED_TITLE),
 			            message,
-			            translator.getTranslation(Tags.RESOLVE_ANYWAY),
-			            translator.getTranslation(Tags.KEEP_CONFLICT));
+			            TRANSLATOR.getTranslation(Tags.RESOLVE_ANYWAY),
+			            TRANSLATOR.getTranslation(Tags.KEEP_CONFLICT));
 			        if (response == OKCancelDialog.RESULT_OK) {
-			          gitController.asyncResolveUsingMine(Arrays.asList(file));
+			          gitController.asyncResolveUsingMine(Collections.singletonList(file));
 			        }
 			      } else {
 			        // Instead of requesting the file status again, we just mark it as modified.
 			        file.setChangeType(GitChangeType.MODIFIED);
 			        
-			        gitController.asyncAddToIndex(Arrays.asList(file));
+			        gitController.asyncAddToIndex(Collections.singletonList(file));
 			      }
 			      
 			      d.removeComponentListener(this);
@@ -285,8 +285,8 @@ public class DiffPresenter {
 			);
 
 		} catch (MalformedURLException | NoRepositorySelected e1) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(e1, e1);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(e1, e1);
 			}
 		}
 	}
@@ -323,10 +323,10 @@ public class DiffPresenter {
 	 * @return The DIFF frame.
 	 */
 	private static Optional<JFrame> showDiffFrame(URL localURL, URL remoteUL, URL baseURL, String filePath) {
-	  if (logger.isDebugEnabled()) {
-	    logger.debug("Local  " + localURL);
-	    logger.debug("Remote " + remoteUL);
-	    logger.debug("Base   " + baseURL);
+	  if (LOGGER.isDebugEnabled()) {
+	    LOGGER.debug("Local  " + localURL);
+	    LOGGER.debug("Remote " + remoteUL);
+	    LOGGER.debug("Base   " + baseURL);
 	  }
 	  
 	  boolean threeWays = baseURL != null;
@@ -342,7 +342,7 @@ public class DiffPresenter {
 	    }
 	  } catch (IOException e) {
 	    threeWays = false;
-	    logger.error(e, e);
+	    LOGGER.error(e, e);
 	  }
 
 	  JFrame diffFrame = null;
@@ -390,6 +390,23 @@ public class DiffPresenter {
     
     showDiffFrame(left, right, null, filePath);
   }
+  
+  
+  /**
+  * Shows a two-way diff between the local copy and the copy at the given revision.
+  * 
+  * @param filePath File to compare.
+  * @param commitId Revision ID.
+  *
+  * @throws IOException 
+  */
+ public static void showTwoWayDiffOnlyGitFile(String filePath, String commitId) throws IOException {
+  
+   URL right = GitRevisionURLHandler.encodeURL(commitId, filePath);
+   
+   showDiffFrame(null, right, null, filePath);
+ }
+  
 
   /**
    * Show a two way compare over 2 revisions. 

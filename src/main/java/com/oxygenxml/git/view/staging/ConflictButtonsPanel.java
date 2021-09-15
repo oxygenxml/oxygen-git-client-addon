@@ -7,17 +7,15 @@ import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
-import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
 import com.oxygenxml.git.service.GitEventAdapter;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
 
@@ -32,10 +30,6 @@ public class ConflictButtonsPanel extends JPanel {
    * i18n
    */
   private static Translator translator = Translator.getInstance();
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(ConflictButtonsPanel.class.getName());
   /**
    * Merge conflict panel ID.
    */
@@ -127,9 +121,9 @@ public class ConflictButtonsPanel extends JPanel {
    */
   public void updateBasedOnRepoState() {
     boolean shouldBeVisible = false;
-    try {
-      Repository repository = GitAccess.getInstance().getRepository();
-      RepositoryState repoState = repository.getRepositoryState();
+
+    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+    if (repoState != null) {
       boolean isRebaseConflict = isRebaseConflict(repoState);
       boolean isMergeConflict = isMergeConflict(repoState);
       shouldBeVisible = isRebaseConflict || isMergeConflict;
@@ -144,8 +138,6 @@ public class ConflictButtonsPanel extends JPanel {
         
         setEnabled(true);
       }
-    } catch (NoRepositorySelected e) {
-      logger.debug(e, e);
     }
     
     setVisible(shouldBeVisible);

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.eclipse.jgit.api.Git;
@@ -95,7 +94,7 @@ public class HistoryContextualActionsTest extends GitTestBase {
       assertNotNull(PluginWorkspaceProvider.getPluginWorkspace());
       
       HistoryViewContextualMenuPresenter historyContextualMenu = new HistoryViewContextualMenuPresenter(null);
-      AbstractAction openWCVersionAction = historyContextualMenu.createOpenWorkingCopyFileAction(
+      Action openWCVersionAction = historyContextualMenu.createOpenWorkingCopyFileAction(
           new FileStatus(GitChangeType.RENAME, LOCAL_TEST_REPOSITORY + "/test.xpr"),
           LOCAL_TEST_REPOSITORY + "/test.xpr",
           false);
@@ -136,8 +135,8 @@ public class HistoryContextualActionsTest extends GitTestBase {
     CommitCharacteristics commitCharacteristic = iterator.next();
     HistoryViewContextualMenuPresenter presenter = new HistoryViewContextualMenuPresenter(null);
     List<FileStatus> changedFiles = RevCommitUtil.getChangedFiles(commitCharacteristic.getCommitId());
-    List<Action> actions = presenter.getContextualActions(changedFiles.get(0), commitCharacteristic, true);
-    actions.removeIf(e -> e == null || !e.getValue(Action.NAME).toString().contains("Check"));
+    List<Action> actions = presenter.getFileContextualActions(changedFiles.get(0), commitCharacteristic, true);
+    actions.removeIf(e -> e == null || !e.getValue(Action.NAME).toString().contains("Reset_file"));
     String[] checkoutFile = new String[2];
     
     try (MockedStatic<GitAccess> git = Mockito.mockStatic(GitAccess.class)) {
@@ -184,35 +183,32 @@ public class HistoryContextualActionsTest extends GitTestBase {
     final String location = "src/test/resources/EXM-46986";
     gitAccess = GitAccess.getInstance();
     gitAccess.createNewRepository(location);
+    
     File file = new File(location + "/source.txt");
     file.createNewFile();
     gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
     gitAccess.commit("file test added");
-    try {
-      PrintWriter out = new PrintWriter(location + "/source.txt");
+    
+    try (PrintWriter out = new PrintWriter(location + "/source.txt")) {
       out.println("modify");
-      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
-    }
+    }   
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     gitAccess.commit("file test modified");
+    
     String commitID = gitAccess.getLatestCommitOnCurrentBranch().getId().getName();
     BufferedReader reader = new BufferedReader(new FileReader(location + "/source.txt"));
     String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();
     assertEquals("modify", content);
     
-    try {
-      PrintWriter out = new PrintWriter(location + "/source.txt");
+    try (PrintWriter out = new PrintWriter(location + "/source.txt")) {
       out.println("oxygen");
-      out.close();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     }
-    
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     gitAccess.commit("file updated");
+    
     reader = new BufferedReader(new FileReader(location + "/source.txt"));
     content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
     reader.close();

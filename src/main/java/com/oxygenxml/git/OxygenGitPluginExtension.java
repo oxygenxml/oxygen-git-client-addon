@@ -6,6 +6,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -16,8 +17,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 
 import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.auth.ResolvingProxyDataFactory;
@@ -36,6 +40,7 @@ import com.oxygenxml.git.utils.Log4jUtil;
 import com.oxygenxml.git.view.blame.BlameManager;
 import com.oxygenxml.git.view.branches.BranchManagementPanel;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
+import com.oxygenxml.git.view.dialog.DetachedHeadDialog;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.GitOperation;
@@ -298,6 +303,10 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
             || operation == GitOperation.OPEN_WORKING_COPY
             || operation == GitOperation.MERGE
             || operation == GitOperation.REVERT_COMMIT 
+            || operation == GitOperation.STASH_CREATE
+            || operation == GitOperation.STASH_DROP
+            || operation == GitOperation.STASH_APPLY
+            || operation == GitOperation.STASH_POP
             || operation == GitOperation.CHECKOUT_FILE
             || operation == GitOperation.TAG_COMMIT
             || operation == GitOperation.TAG_DELETE) {
@@ -318,14 +327,24 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
       }
       
       private void treatDetachedHead(WorkingCopyGitEventInfo wcEventInfo) {
-        if (!wcEventInfo.isWorkingCopySubmodule()) {
-          try {
-            RepositoryState repositoryState = GitAccess.getInstance().getRepository().getRepositoryState();
-            if (repositoryState != RepositoryState.REBASING_MERGE) {
-              PluginWorkspaceProvider.getPluginWorkspace().showInformationMessage(
-                  translator.getTranslation(Tags.DETACHED_HEAD_MESSAGE));
-            }
-          } catch (NoRepositorySelected e) {
+        if (wcEventInfo.isWorkingCopySubmodule()) {
+          return;
+        }
+
+        Repository repo = null;
+        try {
+          repo = GitAccess.getInstance().getRepository();
+        } catch (NoRepositorySelected e) {
+          logger.error(e, e);
+        }
+
+        if (repo != null && repo.getRepositoryState() != RepositoryState.REBASING_MERGE) {
+          String commitFullID = GitAccess.getInstance().getBranchInfo().getBranchName();
+          try (RevWalk revWalk = new RevWalk(repo)) {
+            RevCommit commit = revWalk.parseCommit(repo.resolve(commitFullID));
+            DetachedHeadDialog dlg = new DetachedHeadDialog(commit);
+            dlg.setVisible(true);
+          } catch (RevisionSyntaxException | IOException e) {
             logger.debug(e, e);
           }
         }

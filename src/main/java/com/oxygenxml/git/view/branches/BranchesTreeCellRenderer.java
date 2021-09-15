@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -29,6 +30,7 @@ import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.history.RoundedLineBorder;
 import com.oxygenxml.git.view.util.RendererUtil;
 import com.oxygenxml.git.view.util.RenderingInfo;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.ColorTheme;
@@ -66,6 +68,10 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * Logger for logging.
    */
   private static final Logger LOGGER = LogManager.getLogger(BranchesTreeCellRenderer.class.getName());
+  /**
+   * Date format.
+   */
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat(UIUtil.DATE_FORMAT_PATTERN);
 
   /**
    * Constructor.
@@ -107,14 +113,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     if (!text.isEmpty()) {
       label.setText(text);
       try {
-        String toolTipText = null;
-        if (leaf) {
-          if(BranchesUtil.getRemoteBranches().contains(path)) {
-            toolTipText = constructRemoteBranchToolTip(text, path);
-          } else if (BranchesUtil.getLocalBranches().contains(text)) {
-            toolTipText = constructLocalBranchToolTip(text);
-          }
-        }
+        String toolTipText = computeToolTipText(leaf, path, text);
         label.setToolTipText(toolTipText);
       } catch (GitAPIException | IOException | NoRepositorySelected e) {
         LOGGER.error(e, e);
@@ -135,6 +134,36 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
     return label;
   }
 
+  /**
+   * Compute tooltip text.
+   * 
+   * @param leaf <code>true<code> if is leaf
+   * @param path the path
+   * @param text the extracted text
+   * 
+   * @return the computed tooltip.
+   * 
+   * @throws GitAPIException
+   * @throws IOException
+   * @throws NoRepositorySelected
+   */
+  private String computeToolTipText(boolean leaf, String path, String text) throws GitAPIException, IOException, NoRepositorySelected {
+    String toolTipText = null;
+    if (GitAccess.getInstance().isRepoInitialized() && leaf) {
+      if(path.contains(Constants.R_REMOTES)) {
+        toolTipText = constructRemoteBranchToolTip(text, path);
+      } else if (path.contains(Constants.R_HEADS)) {
+        String branchName = BranchesUtil.createBranchPath(
+            path,
+            BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
+        if(BranchesUtil.existsLocalBranch(branchName)) {
+          toolTipText = constructLocalBranchToolTip(branchName);
+        }    
+      }
+    }
+    return toolTipText;
+  }
+  
   /**
    * Get the rendering info (such as icon) for the given branch.
    *
@@ -215,15 +244,24 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
    * 
    * @throws GitAPIException
    * @throws IOException
+   * @throws NoRepositorySelected 
    */
-  private String constructLocalBranchToolTip(String nameBranch) throws GitAPIException, IOException {
+  private String constructLocalBranchToolTip(String nameBranch) throws GitAPIException, IOException, NoRepositorySelected {
     StringBuilder toolTipText = new StringBuilder();
     PersonIdent authorDetails = GitAccess.getInstance().getLatestCommitForBranch(nameBranch).getAuthorIdent();
+    String remoteBranchName = GitAccess.getInstance().getUpstreamBranchShortNameFromConfig(nameBranch);
+    boolean foundRemoteBranch = remoteBranchName != null;
     toolTipText.append("<html><p>")
       .append(TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH))
       .append(" ")
-      .append(nameBranch)
-      .append("<br>")
+      .append(nameBranch);
+    if(foundRemoteBranch) {
+      toolTipText.append("<br>")
+        .append(TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH))
+        .append(" ")
+        .append(remoteBranchName);
+    }
+    toolTipText.append("<br>")
       .append("<br>")
       .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
       .append(":<br>- ")
@@ -235,7 +273,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       .append("&gt;<br> - ")
       .append(TRANSLATOR.getTranslation(Tags.DATE))
       .append(": ")
-      .append(authorDetails.getWhen())
+      .append(dateFormat.format(authorDetails.getWhen()))
       .append("</p></html>");
     return toolTipText.toString();
   }
@@ -265,8 +303,8 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       .append("<br>")
       .append(TRANSLATOR.getTranslation(Tags.CLONE_REPOSITORY_DIALOG_URL_LABEL))
       .append(": ")
-      .append("<a href=" + remoteURL + "> ")
-      .append(remoteURL + " </a>")
+      .append("<a href=\"" + remoteURL + "\">")
+      .append(remoteURL + "</a>")
       .append("<br>")
       .append("<br>")
       .append(TRANSLATOR.getTranslation(Tags.LAST_COMMIT_DETAILS))
@@ -279,7 +317,7 @@ public class BranchesTreeCellRenderer extends DefaultTreeCellRenderer {
       .append("&gt;<br> - ")
       .append(TRANSLATOR.getTranslation(Tags.DATE))
       .append(": ")
-      .append(authorDetails.getWhen())
+      .append(dateFormat.format(authorDetails.getWhen()))
       .append("</p></html>");
     return toolTipText.toString();
   }

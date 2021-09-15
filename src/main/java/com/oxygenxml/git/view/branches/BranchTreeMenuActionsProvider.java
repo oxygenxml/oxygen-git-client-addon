@@ -17,12 +17,14 @@ import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitControllerBase;
-import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.GitTreeNode;
+import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
+import com.oxygenxml.git.view.dialog.OKOtherAndCancelDialog;
+import com.oxygenxml.git.view.stash.StashUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -35,11 +37,11 @@ public class BranchTreeMenuActionsProvider {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = LogManager.getLogger(BranchTreeMenuActionsProvider.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(BranchTreeMenuActionsProvider.class.getName());
   /**
    * Translator instance.
    */
-  private static Translator translator = Translator.getInstance();
+  private static final Translator TRANSLATOR = Translator.getInstance();
   /**
    * A list with all the possible actions for a specific node in the tree.
    */
@@ -47,7 +49,8 @@ public class BranchTreeMenuActionsProvider {
   /**
    * Git operation controller.
    */
-  private GitControllerBase ctrl;
+  private final GitControllerBase ctrl;
+
 
   /**
    * Constructor.
@@ -120,6 +123,7 @@ public class BranchTreeMenuActionsProvider {
     return nodeActions;
   }
 
+
   /**
    * Creates the checkout action for local branches.
    * 
@@ -129,36 +133,34 @@ public class BranchTreeMenuActionsProvider {
    * @return The action created.
    */
   private AbstractAction createCheckoutLocalBranchAction(String nodePath) {
-    return new AbstractAction(translator.getTranslation(Tags.CHECKOUT)) {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.CHECKOUT)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         ctrl.asyncTask(() -> {
-
-          RepositoryState repoState = null;
-          try {
-            repoState = GitAccess.getInstance().getRepository().getRepositoryState();
-          } catch (NoRepositorySelected e1) {
-            logger.error(e1, e1);
-          }
+          RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+          String branchToSet = BranchesUtil.createBranchPath(
+              nodePath,
+              BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
           if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
             int answer = showUncommittedChangesWhenChangingBranchMsg();
-            if (answer == OKCancelDialog.RESULT_OK) {
-              ctrl.getGitAccess().setBranch(
-                  BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
-
+            if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
+              ctrl.getGitAccess().setBranch(branchToSet);
               BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
+            } else if (answer == OKOtherAndCancelDialog.RESULT_OK) {
+              boolean wasStashCreated = StashUtil.stashChanges();
+              if(wasStashCreated) {
+                ctrl.getGitAccess().setBranch(branchToSet);
+              }
             }
           } else {
-            ctrl.getGitAccess().setBranch(
-                BranchesUtil.createBranchPath(nodePath, BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL));
-
+            ctrl.getGitAccess().setBranch(branchToSet);
             BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
           }
           return null;
 
         }, ex -> {
           if (ex instanceof CheckoutConflictException) {
-            logger.debug(ex, ex);
+            LOGGER.debug(ex, ex);
             BranchesUtil.showBranchSwitchErrorMessage();
           } else {
             PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
@@ -167,6 +169,7 @@ public class BranchTreeMenuActionsProvider {
       }
     };
   }
+
 
   /**
    * Creates the checkout action for remote branches.
@@ -177,12 +180,12 @@ public class BranchTreeMenuActionsProvider {
    * @return The action created.
    */
   private AbstractAction createCheckoutRemoteBranchAction(String nodePath) {
-    return new AbstractAction(translator.getTranslation(Tags.CHECKOUT) + "...") {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.CHECKOUT) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
         String branchPath = BranchesUtil.createBranchPath(nodePath,
             BranchManagementConstants.REMOTE_BRANCH_NODE_TREE_LEVEL);
-        CreateBranchDialog dialog = new CreateBranchDialog(translator.getTranslation(Tags.CHECKOUT_BRANCH), branchPath,
+        CreateBranchDialog dialog = new CreateBranchDialog(TRANSLATOR.getTranslation(Tags.CHECKOUT_BRANCH), branchPath,
             true);
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(() -> {
@@ -211,10 +214,10 @@ public class BranchTreeMenuActionsProvider {
    * @return The action created.
    */
   private AbstractAction createNewBranchAction(String nodePath) {
-    return new AbstractAction(translator.getTranslation(Tags.CREATE_BRANCH) + "...") {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        CreateBranchDialog dialog = new CreateBranchDialog(translator.getTranslation(Tags.CREATE_BRANCH), null, false);
+        CreateBranchDialog dialog = new CreateBranchDialog(TRANSLATOR.getTranslation(Tags.CREATE_BRANCH), null, false);
 
         if (dialog.getResult() == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(
@@ -225,10 +228,11 @@ public class BranchTreeMenuActionsProvider {
                 } else if (ex instanceof GitAPIException || ex instanceof JGitInternalException) {
                   PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
                 }
-              });
+              }
+              );
         }
       }
-      
+
       /**
        * Do create the new branch. 
        *  
@@ -247,15 +251,10 @@ public class BranchTreeMenuActionsProvider {
           return null;
         }
 
-        RepositoryState repoState = null;
-        try {
-          repoState = GitAccess.getInstance().getRepository().getRepositoryState();
-        } catch (NoRepositorySelected e1) {
-          logger.error(e1, e1);
-        }
+        RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
         if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
           int answer = showUncommittedChangesWhenChangingBranchMsg();
-          if (answer == OKCancelDialog.RESULT_OK) {
+          if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
             ctrl.getGitAccess().setBranch(branchName);
           }
         } else {
@@ -266,7 +265,7 @@ public class BranchTreeMenuActionsProvider {
       }
     };
   }
-  
+
   /**
    * Create merge action for [selected_branch] into [current_branch].
    * 
@@ -279,29 +278,29 @@ public class BranchTreeMenuActionsProvider {
         nodePath,
         BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
     String currentBranch = GitAccess.getInstance().getBranchInfo().getBranchName();
-    
+
     String mergeActionName = MessageFormat.format(
         Translator.getInstance().getTranslation(Tags.MERGE_BRANCH1_INTO_BRANCH2),
         selectedBranch,
         currentBranch);
-    
+
     return new AbstractAction(mergeActionName) {
       @Override
       public void actionPerformed(ActionEvent e) {
         ctrl.asyncTask(
             () -> {
               if (RepoUtil.isUnfinishedConflictState(ctrl.getGitAccess().getRepository().getRepositoryState())) {
-                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+                PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
               } else {
                 String questionMessage = MessageFormat.format(
                     Translator.getInstance().getTranslation(Tags.MERGE_BRANCHES_QUESTION_MESSAGE),
                     selectedBranch,
                     currentBranch);
-                
-                int answer = FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.MERGE_BRANCHES),
+
+                int answer = FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.MERGE_BRANCHES),
                     questionMessage,
-                    translator.getTranslation(Tags.YES),
-                    translator.getTranslation(Tags.CANCEL));
+                    TRANSLATOR.getTranslation(Tags.YES),
+                    TRANSLATOR.getTranslation(Tags.CANCEL));
                 if (answer == OKCancelDialog.RESULT_OK) {
                   ctrl.getGitAccess().mergeBranch(nodePath);
                 }
@@ -313,6 +312,7 @@ public class BranchTreeMenuActionsProvider {
     };
   }
 
+
   /**
    * Treat the checkout conflict exception thrown for a newly created branch (when
    * the checkout is to be automatically performed after branch creation).
@@ -320,9 +320,10 @@ public class BranchTreeMenuActionsProvider {
    * @param ex The exception.
    */
   private void treatCheckoutConflictForNewlyCreatedBranche(CheckoutConflictException ex) {
-    logger.debug(ex, ex);
+    LOGGER.debug(ex, ex);
     BranchesUtil.showCannotCheckoutNewBranchMessage();
   }
+
 
   /**
    * Create the delete local branch action.
@@ -333,13 +334,13 @@ public class BranchTreeMenuActionsProvider {
    * @return The action created.
    */
   private AbstractAction createDeleteLocalBranchAction(String nodePath) {
-    return new AbstractAction(translator.getTranslation(Tags.DELETE) + "...") {
+    return new AbstractAction(TRANSLATOR.getTranslation(Tags.DELETE) + "...") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.DELETE_BRANCH),
-            MessageFormat.format(translator.getTranslation(Tags.CONFIRMATION_MESSAGE_DELETE_BRANCH),
-                nodePath.substring(nodePath.indexOf("refs/heads/") != -1 ? "refs/heads/".length() : 0)),
-            translator.getTranslation(Tags.YES), translator.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
+        if (FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_BRANCH),
+            MessageFormat.format(TRANSLATOR.getTranslation(Tags.CONFIRMATION_MESSAGE_DELETE_BRANCH),
+                nodePath.substring(nodePath.contains("refs/heads/") ? "refs/heads/".length() : 0)),
+            TRANSLATOR.getTranslation(Tags.YES), TRANSLATOR.getTranslation(Tags.NO)) == OKCancelDialog.RESULT_OK) {
           ctrl.asyncTask(() -> {
             String branch = BranchesUtil.createBranchPath(nodePath,
                 BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
@@ -350,17 +351,20 @@ public class BranchTreeMenuActionsProvider {
       }
     };
   }
-  
+
+
   /**
    * Show a message when there are uncommitted changes and we try to switch repo.
    * 
    * @return The option chosen by the user. OKCancelDialog#RESULT_OK or OKCancelDialog#RESULT_CANCEL.
    */
   private int showUncommittedChangesWhenChangingBranchMsg() {
-    return FileStatusDialog.showQuestionMessage(translator.getTranslation(Tags.SWITCH_BRANCH),
-        translator.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
-        translator.getTranslation(Tags.MOVE_CHANGES),
-        translator.getTranslation(Tags.CANCEL));
+
+    BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog();
+
+    dialog.setVisible(true);
+
+    return dialog.getResult();
   }
 
 }

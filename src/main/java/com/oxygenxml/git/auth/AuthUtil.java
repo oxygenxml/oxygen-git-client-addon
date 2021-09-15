@@ -32,6 +32,31 @@ public class AuthUtil {
    * Translator for i18n.
    */
   private static Translator translator = Translator.getInstance();
+  /**
+   * Part of exception message shown when no value was found in the configuration for remote.origin.url.
+   */
+  private static final String NO_VALUE_FOR_ORIGIN_URL_IN_CONFIG = 
+      "no value for key remote.origin.url found in configuration";
+  /**
+   * Part of the exception message shown when origin is not found.
+   */
+  private static final String ORIGIN_NOT_FOUND = "origin: not found";
+  /**
+   * Part of the exception message shown when authentication fails.
+   */
+  public static final String AUTH_FAIL = "auth fail";
+  /**
+   * Part of the exception message shown when an operation is not permitted.
+   */
+  public static final String NOT_PERMITTED = "not permitted";
+  /**
+   * Part of the exception message shown when an operation is not authorized.
+   */
+  public static final String NOT_AUTHORIZED = "not authorized";
+  /**
+   * Part of the exception message shown when a specific authentication type is not supported.
+   */
+  public static final String AUTHENTICATION_NOT_SUPPORTED = "authentication not supported";
   
   /**
    * Hidden constructor.
@@ -91,7 +116,8 @@ public class AuthUtil {
     
     boolean tryAgainOutside = false;
     String lowercaseMsg = ex.getMessage().toLowerCase();
-    if (lowercaseMsg.contains("not authorized") || lowercaseMsg.contains("authentication not supported")) {
+    if (lowercaseMsg.contains(NOT_AUTHORIZED) 
+        || lowercaseMsg.contains(AUTHENTICATION_NOT_SUPPORTED)) {
       // Authorization problems.
       String loginMessage = translator.getTranslation(Tags.AUTHENTICATION_FAILED) + " ";
       if (userCredentials.getType() == CredentialsType.USER_AND_PASSWORD) {
@@ -102,7 +128,7 @@ public class AuthUtil {
         loginMessage += translator.getTranslation(Tags.CHECK_TOKEN_VALUE_AND_PERMISSIONS);
       }
       tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
-    } else if (lowercaseMsg.contains("not permitted")) {
+    } else if (lowercaseMsg.contains(NOT_PERMITTED)) {
       // The user doesn't have permissions.
       ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
           .showErrorMessage(translator.getTranslation(Tags.NO_RIGHTS_TO_PUSH_MESSAGE));
@@ -112,11 +138,11 @@ public class AuthUtil {
       }
       loginMessage += ".";
       tryAgainOutside = shouldTryAgainOutside(hostName, retryLoginHere, loginMessage);
-    } else if (lowercaseMsg.contains("origin: not found")
-        || lowercaseMsg.contains("no value for key remote.origin.url found in configuration")) {
+    } else if (lowercaseMsg.contains(ORIGIN_NOT_FOUND)
+        || lowercaseMsg.contains(NO_VALUE_FOR_ORIGIN_URL_IN_CONFIG)) {
       // No remote linked with the local.
       tryAgainOutside  = new AddRemoteDialog().linkRemote();
-    } else if (lowercaseMsg.contains("auth fail")
+    } else if (lowercaseMsg.contains(AUTH_FAIL)
         || (cause instanceof SshException)
             && ((SshException) cause).getDisconnectCode() == SshConstants.SSH2_DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE) {
       // This message is thrown for SSH.
