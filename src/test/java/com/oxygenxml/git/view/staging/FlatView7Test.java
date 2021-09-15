@@ -29,10 +29,29 @@ public class FlatView7Test extends FlatViewTestBase {
     stagingPanel.getStagedChangesPanel().setResourcesViewMode(ResourcesViewMode.FLAT_VIEW);
   }
   
+  /**
+   * Replace the current date with {Date}.
+   * 
+   * @param text The String to be modified.
+   * 
+   * @return The new String.
+   */
+  private String replaceDateString(String text) {
+    int startDate = text.indexOf("[");
+    int endDate = text.indexOf("]", startDate) + 1;
+    if(startDate == -1 || endDate == 0) {
+      return text;
+    }
+    String substrDate = text.substring(startDate, endDate);
+    return replaceDateString( ("[...]".compareTo(substrDate) != 0) ? 
+        text.replace(substrDate, "{Date}") : text.replace(substrDate, "{...}"));
+  }
+  
   
   /**
    * <p><b>Description:</b> Test the tooltips of the pull/push buttons and branch label.</p>
-   * <p><b>Bug ID:</b> EXM-45599, EXM-44564</p>
+   * <p><b>Bug ID:</b> EXM-45599</p>
+   * <p><b>Bug ID:</b> EXM-44564</p>
    *
    * @author sorin_carbunaru
    * @author Alex_Smarandache
@@ -118,24 +137,22 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     
     // Tooltip texts changed again
-    String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (2 files)"
-        + "<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
-    String regexDate = "(([0-9])|([0-2][0-9])|([3][0-1]))\\ (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\ \\d{4}";
-    String regexHour = "(\\d\\d:\\d\\d)";
+    String expected = "<html>Pull_merge_from.<br>One_commit_behind<br><br>- AlexJitianu [18 Aug 2021 - 00:34]: "
+        + "New file: anotherFile_2.txt - 2 file(s).<br></html>";
     String actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
-        expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+        replaceDateString(expected),
+        replaceDateString(actual)
     ); 
     
-    expected = "<html>Push_to.<br>One_commit_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
+    expected = "<html>Push_to.<br>One_commit_ahead<br><br>- AlexJitianu [18 Aug 2021 - 00:36]: New file: anotherFile.txt "
+        + "- 1 file(s).<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
    
     assertEquals(
-        expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
-    );  
+        replaceDateString(expected),
+        replaceDateString(actual)
+    ); 
    
     assertEquals(
         "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
@@ -155,22 +172,23 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     sleep(200);
     
-    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour &ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
+    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>"
+        + "- AlexJitianu [18 Aug 2021 - 00:36]: New file: anotherFile_2.txt - 1 file(s).<br>"
+        + "- AlexJitianu [18 Aug 2021 - 00:36]: New file: anotherFile_2.txt - 2 file(s).<br></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
-        expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
+        replaceDateString(expected),
+        replaceDateString(actual)
     ); 
     
-    expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
+    expected = "<html>Push_to.<br>Commits_ahead<br><br>"
+        + "- AlexJitianu [18 Aug 2021 - 01:13]: New file: anotherFile.txt - 1 file(s).<br>"
+        + "- AlexJitianu [18 Aug 2021 - 01:13]: New file: anotherFile.txt - 1 file(s).<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
-        expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
-    );  
+        replaceDateString(expected),
+        replaceDateString(actual)
+    ); 
     
     assertEquals(
         "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
@@ -196,79 +214,201 @@ public class FlatView7Test extends FlatViewTestBase {
     flushAWT();
     sleep(200);
     
-    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile300000000000000000000000000000000000000...<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br></html>";
+    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>"
+        + "- AlexJitianu {Date}: New file: anotherFile300000000000000000000000000000000000000000000000000000{...} - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherFile_2.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherFile_2.txt - 2 file(s).<br></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
-        expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
-    );  
+        replaceDateString(expected),
+        replaceDateString(actual)
+    ); 
     
-    expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile200000000000000000000000000000000000000...<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br></html>";
+    expected = "<html>Push_to.<br>Commits_ahead<br><br>"
+        + "- AlexJitianu {Date}: New file: anotherFile200000000000000000000000000000000000000000000000000000{...} - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherFile.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherFile.txt - 1 file(s).<br></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
-        expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
-    );  
+        replaceDateString(expected),
+        replaceDateString(actual)
+    ); 
     
-    String[] filesForCommit = {
-        "6anotherFile45.txt",
-        "5anotherFile45.txt",
-        "4anotherFile45.txt",
-        "3anotherFile45.txt",
-        "2anotherFile45.txt",
-        "1anotherFile45.txt",
-        "anotherFil233e45.txt",
-        "anotherFil333e45.txt",
-        "anotherFileee45.txt",
-        "anotherFile45w.txt"
-    };
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "6anotherFile45.txt", "changed");
+    waitForScheluerBetter();
     
-    for (int i = 0; i < filesForCommit.length; i++) {
-      // Commit a new change locally
-      commitOneFile(localTestRepository, filesForCommit[i], "changed");
-      waitForScheluerBetter();
-      
-      // Commit to remote
-      commitOneFile(remoteTestRepository, "_" + filesForCommit[i], "changed");
-      waitForScheluerBetter();
-    }
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "6anotherFile_25.txt", "changed");
+    waitForScheluerBetter();
     
     GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
     toolbarPanel.refresh();
     flushAWT();
-    sleep(500);
+    sleep(200);
     
-    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFile45w.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFileee45.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFil333e45.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: _anotherFil233e45.txt<br>&#x25AA; [...] "
-        + "&ndash; N_More_Commits<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (2 files)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile_2.txt<br><br>See_all_commits_in_Git_History</html>";
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "5anotherFile45.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "5anotherFile_25.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "4anotherFile45.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "4anotherFile_25.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "3anotherFile45.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "3anotherFile_25.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "2anotherFile45.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "2anotherFile_25.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "1anotherFile45.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "1anotherFile_25.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "anotherFil233e45.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "anothe323rFile_25.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "anotherFil333e45.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "anotherrrFile_25.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "anotherFileee45.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "anotherFile_2w5.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    
+    // Commit a new change locally
+    commitOneFile(localTestRepository, "anotherFile45w.txt", "changed");
+    waitForScheluerBetter();
+    
+    // Commit to remote
+    commitOneFile(remoteTestRepository, "anotherFile_256.txt", "changed");
+    waitForScheluerBetter();
+    
+    GitAccess.getInstance().setRepositorySynchronously(localTestRepository);
+    toolbarPanel.refresh();
+    flushAWT();
+    sleep(200);
+    
+    expected =  "<html>Pull_merge_from.<br>Commits_behind<br><br>"
+        + "- AlexJitianu {Date}: New file: anotherFile_256.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherFile_2w5.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherrrFile_25.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anothe323rFile_25.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 1anotherFile_25.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 2anotherFile_25.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 3anotherFile_25.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 4anotherFile_25.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 5anotherFile_25.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 6anotherFile_25.txt - 1 file(s).<br>"
+        + "<br><a href=git-open-view://history>Show_More_In_NAME</a></html>";
     actual = toolbarPanel.getPullMenuButton().getToolTipText();
     assertEquals(
-        expected,
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
-    );  
+        replaceDateString(expected),
+        replaceDateString(actual)
+    ); 
     
-    expected = "<html>Push_to.<br>Commits_ahead<br><br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile45w.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFileee45.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil333e45.txt<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFil233e45.txt<br>&#x25AA; [...] "
-        + "&ndash; N_More_Commits<br>&#x25AA; Date, Hour "
-        + "&ndash; AlexJitianu (1 file)<br>&nbsp;&nbsp;&nbsp;New file: anotherFile.txt<br><br>See_all_commits_in_Git_History</html>";
+    expected = "<html>Push_to.<br>Commits_ahead<br><br>"
+        + "- AlexJitianu {Date}: New file: anotherFile45w.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherFileee45.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherFil333e45.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: anotherFil233e45.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 1anotherFile45.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 2anotherFile45.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 3anotherFile45.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 4anotherFile45.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 5anotherFile45.txt - 1 file(s).<br>"
+        + "- AlexJitianu {Date}: New file: 6anotherFile45.txt - 1 file(s).<br>"
+        + "<br><a href=git-open-view://history>Show_More_In_NAME</a></html>";
     actual = toolbarPanel.getPushButton().getToolTipText();
     assertEquals(
-        expected.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour"),
-        actual.replaceAll(regexDate, "Date").replaceAll(regexHour, "Hour")
-    );      
+        replaceDateString(expected),
+        replaceDateString(actual)
+    );
+    
   }
   
   /**

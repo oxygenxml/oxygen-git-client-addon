@@ -272,5 +272,4 @@ public class StagingResourcesTreeModel extends DefaultTreeModel {
       gitController.asyncAddToIndex(filesToBeUpdated);
     }
   }
-  
 }

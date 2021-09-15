@@ -88,7 +88,6 @@ import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.listeners.WSEditorListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.project.ProjectController;
-import ro.sync.exml.workspace.api.util.ColorTheme;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
@@ -376,10 +375,7 @@ public class GitTestBase extends JFCTestCase { // NOSONAR
     
     gitInit();
     
-    ColorTheme colorTheme = Mockito.mock(ColorTheme.class);
-    Mockito.when(colorTheme.isDarkTheme()).thenReturn(false);
     StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
-    Mockito.when(pluginWSMock.getColorTheme()).thenReturn(colorTheme);
     PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
     
     Mockito.doAnswer(new Answer<Object>() {

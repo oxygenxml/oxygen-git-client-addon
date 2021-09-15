@@ -7,7 +7,6 @@ package com.oxygenxml.git.translator;
  *
  */
 public class Tags {
-
   /**
    * Private constructor.
    */
@@ -18,14 +17,6 @@ public class Tags {
    * Last commit details.
    */
   public static final String LAST_COMMIT_DETAILS = "Last_Commit_Details";
-  /**
-   * Commit before pushing.
-   */
-  public static final String COMMIT_BEFORE_PUSHING = "Commit_before_pushing";
-  /**
-   * Unborn branch {0}.
-   */
-  public static final String UNBORN_BRANCH = "Unborn_branch";
   /**
    * Staged files.
    */
@@ -78,14 +69,6 @@ public class Tags {
    * Displays the message "Checkout".
    */
   public static final String CHECKOUT = "Checkout";
-  /**
-   * Action name.
-   */
-  public static final String RESET_FILE_TO_THIS_COMMIT = "Reset_file_to_this_commit";
-  /**
-   * The text displayed for the "Reset {0} to this commit" contextual menu item
-   */
-  public static final String RESET_FILE_X_TO_THIS_COMMIT = "Reset_file_x_to_this_commit";
   /**
    * Displays the message "Delete".
    */
@@ -244,6 +227,13 @@ public class Tags {
    * en: Please enter your SSH passphrase.
    */
   public static final String ENTER_SSH_PASS_PHRASE = "Enter_ssh_passphrase";
+  /**
+   * Shown when a command is aborted.
+   * 
+   * en: Command aborted.
+   */
+  public static final String COMMAND_ABORTED = "Command_aborted";
+
 	/**
 	 * Label displayed on the left of the working copy combo box
 	 */
@@ -283,6 +273,11 @@ public class Tags {
 	 * The text displayed on the Unstage Selected button
 	 */
 	public static final String UNSTAGE_SELECTED_BUTTON_TEXT = "Unstage_Selected_Button_Text";
+
+	/**
+	 * The tooltip for the ChangeView button
+	 */
+	public static final String CHANGE_VIEW_BUTTON_TOOLTIP = "Change_View_Button_ToolTip";
 
 	/**
 	 * The massage displayed above the previously committed messages combo box
@@ -366,6 +361,11 @@ public class Tags {
 	public static final String PUSH_IN_PROGRESS = "Push_In_Progress";
 
 	/**
+	 * The massage displayed when you pull with uncommitted files
+	 */
+	public static final String PULL_WITH_UNCOMMITED_CHANGES = "Pull_With_Uncommitted_Changes";
+
+	/**
 	 * The massage displayed when your repository is up to date
 	 */
 	public static final String PULL_UP_TO_DATE = "Pull_Up_To_Date";
@@ -395,6 +395,11 @@ public class Tags {
 	 */
 	public static final String OPEN_IN_COMPARE = "Open_In_Compare";
 
+	/**
+   * The text displayed for the "Open this version" contextual menu item
+   */
+  public static final String OPEN_THIS_VERSION = "Open_this_version";
+  
   /**
    * The text displayed for the "Open this version of FILENAME" contextual menu item
    */
@@ -409,6 +414,11 @@ public class Tags {
    * The text displayed for the "Open the working copy version of " contextual menu item
    */
   public static final String OPEN_WORKING_COPY_VERSION = "Open_the_working_copy_version_of";
+  
+  /**
+   * The text displayed for the "Checkout this version" contextual menu item
+   */
+  public static final String CHECK_OUT_THIS_VERSION = "Check_out_this_version";
   
 	/**
 	 * The text displayed for the "Open" contextual menu item
@@ -473,6 +483,12 @@ public class Tags {
 	public static final String WORKINGCOPY_NOT_GIT_DIRECTORY = "Workingcopy_Not_Git_Directory";
 
 	/**
+	 * The text displayed when the application starts and the last selected
+	 * repository doesn't exists
+	 */
+	public static final String WORKINGCOPY_LAST_SELECTED_REPOSITORY_DELETED = "Workingcopy_Last_Selected_Repository_Deleted";
+
+	/**
 	 * The text displayed after exiting the diff for a conflict file and you don't
 	 * modify anithing
 	 */
@@ -483,6 +499,12 @@ public class Tags {
 	 * the diff for a conflict file and you don't modify anithing
 	 */
 	public static final String CHECK_IF_CONFLICT_RESOLVED_TITLE = "Title_Check_If_Conflict_Resolved";
+
+	/**
+	 * The text displayed in the title for the dialog that appears when you select
+	 * your current branch
+	 */
+	public static final String BRANCH_SELECTION_DIALOG_TITLE = "Branch_Selection_Dialog_Title";
 
 	/**
 	 * The the message displayed when branch selection fails because of checkout conflict.
@@ -499,6 +521,12 @@ public class Tags {
 	 * while having no remote set
 	 */
 	public static final String ADD_REMOTE_DIALOG_TITLE = "Add_Remote_Dialog_Title";
+
+	/**
+	 * The text displayed in the dialog that appears near the text field for
+	 * remote name
+	 */
+	public static final String ADD_REMOTE_DIALOG_ADD_REMOTE_NAME_LABEL = "Add_Remote_Dialog_Add_Remote_Name_Label";
 
 	/**
 	 * The text displayed in the dialog that appears near the text field for
@@ -741,7 +769,12 @@ public class Tags {
 	 * The text displayed if the destination path is invalid
 	 */
 	public static final String CLONE_REPOSITORY_DIALOG_INVALID_DESTINATION_PATH = "Clone_Repository_Dialog_Invalid_Destination_Path";
-	
+
+	/**
+	 * The text displayed if an error occured during cloning
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_CLONE_ERROR = "Clone_Repository_Dialog_Clone_Error";
+
 	/**
 	 * The text displayed if the chosen destionation path is not an empty folder
 	 */
@@ -751,6 +784,12 @@ public class Tags {
 	 * The text displayed if the URL doesn't point to a remote repository
 	 */
 	public static final String CLONE_REPOSITORY_DIALOG_URL_IS_NOT_A_REPOSITORY = "Clone_Repository_Dialog_Url_Is_Not_A_Repository";
+
+	/**
+	 * The text displayed in the login dialog if you are not authorized to clone
+	 * the repository
+	 */
+	public static final String CLONE_REPOSITORY_DIALOG_LOGIN_MESSAGE = "Clone_Repository_Dialog_Login_Message";
 
 	/**
 	 * The text in the title of the cloning progress dialog
@@ -783,11 +822,12 @@ public class Tags {
    * Text for the toggle used to automatically push when committing.
    */
   public static final String PUSH_WHEN_COMMITTING = "Push_when_committing";
-	
+
 	/**
-	 * Message shown when reverting a commit resulted in conflicts.
+	 * The text is displayed when you pull but it fails because there are uncommitted changes.
 	 */
-	public static final String REVERT_COMMIT_RESULTED_IN_CONFLICTS = "Revert_commit_resulted_in_conflicts";
+	public static final String PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES = "Pull_would_overwrite_uncommitted_changes";
+	
 	/**
 	 * Lock failed when pulling.
 	 */
@@ -837,11 +877,6 @@ public class Tags {
    * Pull rebase.
    */
   public static final String PULL_REBASE = "Pull_rebase";
-
-	/**
-	 * Rebase.
-	 */
-	public static final String REBASE = "Rebase";
   
   /**
    * Pull rebase from {0}.
@@ -936,9 +971,9 @@ public class Tags {
   public static final String PULL_REBASE_FAILED_BECAUSE_UNCOMMITTED = "Pull_rebase_failed_because_uncommitted";
   
   /**
-   * Message shown when pull failed because of conflicting paths.
+   * Message shown when pull (rebase) failed because of conflicting paths.
    */
-  public static final String PULL_FAILED_BECAUSE_CONFLICTING_PATHS = "Pull_failed_because_conflicting_paths";
+  public static final String PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS = "Pull_rebase_failed_because_conflicting_paths";
 
   /**
    * Show current branch history.
@@ -946,9 +981,9 @@ public class Tags {
   public static final String SHOW_CURRENT_BRANCH_HISTORY = "Show_current_branch_history";
   
   /**
-   * Show all commits in Git History.
+   * Show more in ... message.
    */
-  public static final String SEE_ALL_COMMITS_IN_GIT_HISTORY = "See_all_commits_in_Git_History";
+  public static final String SHOW_MORE_IN = "Show_More_In_NAME";
   
   /**
    * Git History.
@@ -1019,6 +1054,10 @@ public class Tags {
    * History table column name.
    */
   public static final String DATE = "Date";
+  /**
+   * History table column name.
+   */
+  public static final String COMMITTER = "Comitter";
   /**
    * Cancel. Taken from oXygen's "translation.xml".
    */
@@ -1161,6 +1200,11 @@ public class Tags {
   public static final String NO_DETAILS_AVAILABLE = "No_details_available";
   
   /**
+   * Details.
+   */
+  public static final String DETAILS = "Details";
+  
+  /**
    * A custom message for the Git "pre-receive hook declined" message.
    */
   public static final String PRE_RECEIVE_HOOK_DECLINED_CUSTOM_MESSAGE = "Pre_receive_hook_declined_custom_message";
@@ -1253,10 +1297,16 @@ public class Tags {
    */
   public static final String STASH = "Stash";
   /**
+   * Stash apply failed.
+   */
+  public static final String STASH_APPLY_FAILED = "Stash_Apply_Failed";
+
+  /**
    * Message for when "Revert commit" fails because of uncommitted changes.
    */
   public static final String REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE = 
       "Revert_Commit_Failed_Uncommitted_Changes_Message";
+  
   /**
    * The message in the warning File Status Dialog when Merge Fail because of uncommitted changes
    */
@@ -1287,154 +1337,6 @@ public class Tags {
    * {0} = selected, {1} = current
    */
   public static final String MERGE_BRANCHES_QUESTION_MESSAGE = "Merge_Branches_Question_Message";
-  
-  /**
-   * 1 more commit message.
-   */
-  public static final String ONE_MORE_COMMIT = "One_more_commit";
-  /**
-   * n more commits message.
-   */
-  public static final String N_MORE_COMMITS = "N_More_Commits";
-
-  /**
-   * The informative message for stash.
-   */
-  public static final String STASH_INFORMATIVE_MESSAGE = "Stash_Informative_Message";
-  /**
-   * The text to tell user about adding stash description.
-   */
-  public static final String STASH_ADD_DESCRIPTION = "Stash_Add_Description";
-  /**
-   * List Stashes.
-   */
-  public static final String LIST_STASHES = "List_Stashes";
-  /**
-   * Apply.
-   */
-  public static final String APPLY = "Apply";
-  /**
-   * Stash all changes.
-   */
-  public static final String STASH_CHANGES = "Stash_Changes";
-  /**
-   * Stash generate conflicts message
-   */
-  public static final String STASH_GENERATE_CONFLICTS = "Stash_Generate_Conflicts";
-  /**
-   * The message for confirmation delete stash.
-   */
-  public static final String STASH_DELETE_CONFIRMATION = "Stash_Delete_Confirmation";
-  /**
-   * Message for unable to compare.
-   */
-  public static final String UNABLE_TO_COMPARE = "Unable_To_Compare";
-  /**
-   * ID.
-   */
-  public static final String ID = "ID";
-  /**
-   * Description.
-   */
-  public static final String DESCRIPTION = "Description";
-  /**
-   * Stashes.
-   */
-  public static final String STASHES = "Stashes";
-  /**
-   * The text for the tooltip that explains the Open action for a Git History resource.
-   */
-  public static final String HISTORY_RESOURCE_OPEN_ACTION_TOOLTIP = "History_resource_open_action_tooltip";
-  
-  /**
-   * The name of the commit
-   */
-  public static final String COMMITID = "CommitID";
-  
-  /**
-   * Detached-Head
-   */
-  public static final String DETACHED_HEAD = "Detached_Head";
-  /**
-   * Unable to apply stash message.
-   */
-  public static final String UNABLE_TO_APPLY_STASH = "Unable_To_Apply_Stash";
-  /**
-  * The message presents user solutions to can apply the stash.
-  */
-  public static final String STASH_SOLUTIONS_TO_APPLY = "Stash_Solutions_To_Apply";
-  /**
-   * The message presents user when are staged changes before to apply a stash.
-   */
-  public static final String STASH_REMOVE_STAGED_CHANGES = "Stash_Remove_Staged_Changes";
-  /**
-   * The message presents user that the stash was kept.
-   */
-  public static final String STASH_WAS_KEPT = "Stash_Was_Kept";
-  /**
-   * Stash apply.
-   */
-  public static final String STASH_APPLY = "Stash_Apply";
-  /**
-   * Delete all.
-   */
-  public static final String DELETE_ALL = "Delete_All";
-  /**
-   * Delete all stashes.
-   */
-  public static final String DELETE_ALL_STASHES = "Delete_All_Stashes";
-  /**
-   * The message for confirmation clear all stashes message.
-   */
-  public static final String CONFIRMATION_CLEAR_STASHES_MESSAGE = "Confirmation_Clear_Stashes_Message";
-  /**
-   * The tooltip for apply stash button.
-   */
-  public static final String APPLY_STASH_BUTTON_TOOLTIP = "Apply_Stash_Button_Tooltip";
-  /**
-   * The tooltip for delete stash button.
-   */
-  public static final String DELETE_STASH_BUTTON_TOOLTIP = "Delete_Stash_Button_Tooltip";
-  /**
-   * The text for delete stash dialog title.
-   */
-  public static final String DELETE_STASH = "Delete_Stash";
-  /**
-   * The checkbox text for delete stash after applied successfully.
-   */
-  public static final String DELETE_STASH_AFTER_APPLIED = "Delete_Stash_After_Applied";
-  /**
-   * Affected files.
-   */
-  public static final String AFFECTED_FILES = "Affected_Files";
-  /**
-   * Include untracked files message.
-   */
-  public static final String INCLUDE_UNTRACKED = "Include_Untracked";
-  /**
-   * The tooltip for delete all stashes button.
-   */
-  public static final String DELETE_ALL_STASHES_BUTTON_TOOLTIP = "Delete_All_Button_Tooltip";
-  /**
-   * OK.
-   */
-  public static final String OK = "Ok";
-  /**
-   * Other.
-   */
-  public static final String OTHER = "Other";
-  /**
-   * The message displayed to the user when a stash cannot be deleted.
-   */
-  public static final String STASH_CANNOT_BE_DELETED = "Stash_Cannot_Be_Deleted";
-  /**
-   * The message displayed to the user when a stash cannot be created.
-   */
-  public static final String STASH_CANNOT_BE_CREATED = "Stash_Cannot_Be_Created";
-  /**
-   * Merge.
-   */
-  public static final String MERGE = "Merge";
   
   /**
    * The message for the create Tag action (Create tag...)

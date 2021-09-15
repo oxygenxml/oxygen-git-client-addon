@@ -120,7 +120,7 @@ public class GitAccessRevertWithUncommitedChangesTest extends GitTestBase {
     JDialog errorDlg = findDialog(Tags.REVERT_COMMIT);
     JTextArea errorTextArea = findFirstTextArea(errorDlg);
     assertEquals(Tags.REVERT_COMMIT_FAILED_UNCOMMITTED_CHANGES_MESSAGE, errorTextArea.getText().toString());
-    JButton errorOkButton = findFirstButton(errorDlg, "Close");
+    JButton errorOkButton = findFirstButton(errorDlg, "OK");
     errorOkButton.doClick();
 
     flushAWT();

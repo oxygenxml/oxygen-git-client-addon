@@ -22,19 +22,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
-import com.oxygenxml.git.view.dialog.FileStatusDialog;
-import com.oxygenxml.git.view.stash.StashApplyStatus;
-
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 
 /**
@@ -45,8 +35,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  *
  * @throws Exception
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(FileStatusDialog.class)
 public class GitAccessStashTest {
 
   /**
@@ -81,11 +69,6 @@ public class GitAccessStashTest {
     gitAccess.add(new FileStatus(GitChangeType.ADD, file.getName()));
     gitAccess.add(new FileStatus(GitChangeType.ADD, file2.getName()));
     gitAccess.commit("file test added");
-   
-    PowerMockito.mockStatic(FileStatusDialog.class);
-    
-    StandalonePluginWorkspace pluginWSMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(pluginWSMock);
   }
 
 
@@ -122,10 +105,10 @@ public class GitAccessStashTest {
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     assertTrue(isStashEmpty());
-    assertEquals("stash_description", gitAccess.createStash(false,"stash_description").getFullMessage());
+    assertNotNull(gitAccess.createStash());
     assertFalse(isStashEmpty());
-    assertEquals(1, gitAccess.listStashes().size());
-    gitAccess.dropStash(0);
+    assertEquals(1, gitAccess.listStash().size());
+    gitAccess.stashDrop(0);
     assertTrue(isStashEmpty());
   }
 
@@ -150,7 +133,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
 
     assertTrue(isStashEmpty());
-    RevCommit commitStash = gitAccess.createStash(false, null);
+    RevCommit commitStash = gitAccess.createStash();
     assertFalse(isStashEmpty());
 
     boolean noCommitFound = false;
@@ -195,7 +178,7 @@ public class GitAccessStashTest {
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
     assertTrue(isStashEmpty());
-    RevCommit ref = gitAccess.createStash(false, null);
+    RevCommit ref = gitAccess.createStash();
     assertFalse(isStashEmpty());
     
     try {
@@ -217,44 +200,7 @@ public class GitAccessStashTest {
     reader.close();
     assertEquals("modify", content);
   }
-  
-  
-  /**
-   * <p><b>Description:</b> tests the pop method</p>
-   * <p><b>Bug ID:</b> EXM-45983</p>
-   *
-   * @author Alex_Smarandache
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testStashPop() throws Exception {
-    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
-      out.println("modify");
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-    gitAccess.addAll(gitAccess.getUnstagedFiles());
 
-    assertTrue(isStashEmpty());
-    RevCommit commitStash = gitAccess.createStash(false, null);
-    assertFalse(isStashEmpty());
-   
-    BufferedReader reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
-    String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-    reader.close();
-    assertEquals("", content);
-
-    assertEquals(StashApplyStatus.APPLIED_SUCCESSFULLY, gitAccess.popStash(commitStash.getName()));
-    
-    assertEquals(0, gitAccess.listStashes().size());
-    
-    reader = new BufferedReader(new FileReader(LOCAL_TEST_REPOSITORY + "/test.txt"));
-    content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-    reader.close();
-    assertEquals("modify", content);
-  }  
-  
 
   /**
    * <p><b>Description:</b> tests the situation in which we want to apply a stash and we have committed changes that do cause conflicts.</p>
@@ -266,24 +212,28 @@ public class GitAccessStashTest {
    */
   @Test
   public void testStashWithCommittedChangesWithConflicts() throws Exception {
-    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
+    try {
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
       out.println("test");
+      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
     gitAccess.addAll(gitAccess.getUnstagedFiles());
     
     assertTrue(isStashEmpty());
-    RevCommit ref = gitAccess.createStash(false, null);
+    RevCommit ref = gitAccess.createStash();
     assertFalse(isStashEmpty());
-    try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
+    try {
+      PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt");
       out.println("modify");
+      out.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
     gitAccess.add(new FileStatus(GitChangeType.MODIFIED, "test.txt"));
     gitAccess.commit("file test modified");
-    assertNull(gitAccess.createStash(false, null));
+    assertNull(gitAccess.createStash());
     
     gitAccess.applyStash(ref.getName());
     
@@ -292,41 +242,6 @@ public class GitAccessStashTest {
     reader.close();
     assertTrue(content.contains("<<<<<<<") || content.contains("=======") || content.contains(">>>>>>>"));
   }
-  
-  
-  /**
-   * <p><b>Description:</b> tests the drop all method</p>
-   * <p><b>Bug ID:</b> EXM-45983</p>
-   *
-   * @author Alex_Smarandache
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testStashDropAll() throws Exception {
-    
-    String[] texts = {"test1", "test2", "test3", "test4", 
-        "test5", "test6", "test7", "test8", "test9", "test10"};
-    
-    for(String fileAddedContent: texts) {
-      try (PrintWriter out = new PrintWriter(LOCAL_TEST_REPOSITORY + "/test.txt")) {
-        out.println(fileAddedContent);
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-      }
-      gitAccess.addAll(gitAccess.getUnstagedFiles());
-
-      RevCommit commitStash = gitAccess.createStash(true, null);
-      assertNotNull(commitStash);
-    }
-    
-    assertEquals(10, gitAccess.listStashes().size());
-    
-    gitAccess.dropAllStashes();
-    
-    assertTrue(isStashEmpty());
-    
-  }  
   
   
   /**

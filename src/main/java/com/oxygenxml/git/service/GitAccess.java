@@ -42,7 +42,6 @@ import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.RmCommand;
-import org.eclipse.jgit.api.StashCreateCommand;
 import org.eclipse.jgit.api.StashListCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
@@ -118,8 +117,6 @@ import com.oxygenxml.git.view.event.GitOperation;
 import com.oxygenxml.git.view.event.PullType;
 import com.oxygenxml.git.view.event.WorkingCopyGitEventInfo;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
-import com.oxygenxml.git.view.stash.StashApplyFailureWithStatusException;
-import com.oxygenxml.git.view.stash.StashApplyStatus;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -165,7 +162,7 @@ public class GitAccess {
 	/**
 	 * Translation support.
 	 */
-	private static final Translator TRANSLATOR = Translator.getInstance();
+	private static Translator translator = Translator.getInstance();
 
 	/**
 	 * Singleton instance.
@@ -389,9 +386,9 @@ public class GitAccess {
         LOGGER.debug("SSH dir exists " + exists);
         if (exists) {
           File[] listFiles = sshDir.listFiles();
-					for (File listFile : listFiles) {
-						LOGGER.debug("SSH resource path " + listFile);
-					}
+          for (int i = 0; i < listFiles.length; i++) {
+            LOGGER.debug("SSH resource path " + listFiles[i]);
+          }
         }
       } else {
         LOGGER.debug("Null FS");
@@ -998,20 +995,20 @@ public class GitAccess {
 				|| repoState == RepositoryState.REBASING_REBASING
 				|| repoState == RepositoryState.REVERTING) {
 			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-			response.setMessage(TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
+			response.setMessage(translator.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
 			return response;
 		}
 
 		if (getPullsBehind() > 0) {
 			response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD);
-			response.setMessage(TRANSLATOR.getTranslation(Tags.BRANCH_BEHIND));
+			response.setMessage(translator.getTranslation(Tags.BRANCH_BEHIND));
 			return response;
 		}
 
 		try {
 			if (getPushesAhead() == 0) {
 				response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE);
-				response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_UP_TO_DATE));
+				response.setMessage(translator.getTranslation(Tags.PUSH_UP_TO_DATE));
 				return response;
 			}
 		} catch (RepoNotInitializedException e) {
@@ -1060,7 +1057,7 @@ public class GitAccess {
 			}
 		}
 		response.setStatus(org.eclipse.jgit.transport.RemoteRefUpdate.Status.REJECTED_OTHER_REASON);
-		response.setMessage(TRANSLATOR.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
+		response.setMessage(translator.getTranslation(Tags.PUSH_FAILED_UNKNOWN));
 
 
 
@@ -1110,7 +1107,7 @@ public class GitAccess {
 		  if (!lockFailureMessage.isEmpty()) {
 		    // Lock failure
 		    ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showErrorMessage(TRANSLATOR.getTranslation(lockFailureMessage));
+            .showErrorMessage(translator.getTranslation(lockFailureMessage));
 		    pullResponseToReturn.setStatus(PullStatus.LOCK_FAILED);
 		  } else {
 		    ObjectId head = resolveHead(repository);
@@ -1258,26 +1255,31 @@ public class GitAccess {
 	 */
   private String createLockFailureMessageIfNeeded(Collection<TrackingRefUpdate> trackingRefUpdates) {
     StringBuilder fetchResultStringBuilder = new StringBuilder();
-		for (TrackingRefUpdate trackingRefUpdate : trackingRefUpdates) {
-			if (trackingRefUpdate.getResult() == RefUpdate.Result.LOCK_FAILURE) {
-				if (fetchResultStringBuilder.length() > 0) {
-					fetchResultStringBuilder.append("\n\n");
-				}
-				fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.ERROR)).append(": ");
-				fetchResultStringBuilder.append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.CANNOT_LOCK_REF), trackingRefUpdate.getLocalName())).append(" ");
-				try {
-					String repoDir = getRepository().getDirectory().getAbsolutePath();
-					File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock");
-					fetchResultStringBuilder.append(MessageFormat.format(TRANSLATOR.getTranslation(Tags.UNABLE_TO_CREATE_FILE), lockFile.getAbsolutePath())).append(" ");
-					if (lockFile.exists()) {
-						fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.FILE_EXISTS)).append("\n");
-					}
-				} catch (NoRepositorySelected e) {
-					LOGGER.error(e, e);
-				}
-				fetchResultStringBuilder.append(TRANSLATOR.getTranslation(Tags.LOCK_FAILED_EXPLANATION));
-			}
-		}
+    for (Iterator<TrackingRefUpdate> iterator = trackingRefUpdates.iterator(); iterator.hasNext();) {
+      TrackingRefUpdate trackingRefUpdate = iterator.next();
+      if (trackingRefUpdate.getResult() == RefUpdate.Result.LOCK_FAILURE) {
+        if (fetchResultStringBuilder.length() > 0) {
+          fetchResultStringBuilder.append("\n\n");
+        }
+        fetchResultStringBuilder.append(translator.getTranslation(Tags.ERROR) + ": ");
+				fetchResultStringBuilder.append(
+						MessageFormat.format(translator.getTranslation(Tags.CANNOT_LOCK_REF), trackingRefUpdate.getLocalName())
+								+ " ");
+        try {
+          String repoDir = getRepository().getDirectory().getAbsolutePath();
+          File lockFile = new File(repoDir, trackingRefUpdate.getLocalName() + ".lock");
+					fetchResultStringBuilder.append(
+							MessageFormat.format(translator.getTranslation(Tags.UNABLE_TO_CREATE_FILE), lockFile.getAbsolutePath())
+									+ " ");
+          if (lockFile.exists()) {
+            fetchResultStringBuilder.append(translator.getTranslation(Tags.FILE_EXISTS) + "\n");
+          }
+        } catch (NoRepositorySelected e) {
+          LOGGER.error(e, e);
+        }
+        fetchResultStringBuilder.append(translator.getTranslation(Tags.LOCK_FAILED_EXPLANATION));
+      }
+    }
     return fetchResultStringBuilder.toString();
   }
 
@@ -1429,9 +1431,10 @@ public class GitAccess {
   public List<FileStatus> getStagedFile(Collection<String> paths) {
     if (git != null) {
       StatusCommand statusCmd = git.status();
-			for (String path : paths) {
-				statusCmd.addPath(path);
-			}
+      for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
+        String path = iterator.next();
+        statusCmd.addPath(path);
+      }
 
       try {
         Status status = statusCmd.call();
@@ -1712,13 +1715,6 @@ public class GitAccess {
       try (RevWalk revWalk = new RevWalk(repo)) {
         RevCommit revcom = revWalk.parseCommit(getRepository().resolve(commitId));
         git.revert().include(revcom).call();
-        Set<String> conflictingFiles = getConflictingFiles();
-        if (!conflictingFiles.isEmpty()) {
-          FileStatusDialog.showWarningMessage(
-              TRANSLATOR.getTranslation(Tags.REVERT_COMMIT),
-              new ArrayList<>(conflictingFiles),
-              TRANSLATOR.getTranslation(Tags.REVERT_COMMIT_RESULTED_IN_CONFLICTS));
-        }
         fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.REVERT_COMMIT));
       } catch (GitAPIException | RevisionSyntaxException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.REVERT_COMMIT), e);
@@ -1837,10 +1833,9 @@ public class GitAccess {
 
 			String message = e.getMessage();
       if (message != null && (message.contains("Authentication is required but no CredentialsProvider has been registered")
-					|| message.contains(AuthUtil.NOT_AUTHORIZED))) {
+					|| message.contains("not authorized"))) {
 				throw new PrivateRepositoryException(e);
-			} else if (message != null && message.toLowerCase().contains(AuthUtil.AUTH_FAIL) 
-			    && credentialsProvider.isPassphaseRequested()
+			} else if (message != null && message.contains("Auth fail") && credentialsProvider.isPassphaseRequested()
 			    || (cause instanceof SshException)
               && ((SshException) cause).getDisconnectCode() == SshConstants.SSH2_DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE) {
 			  throw new SSHPassphraseRequiredException(e);
@@ -1877,15 +1872,14 @@ public class GitAccess {
     fireOperationAboutToStart(new GitEventInfo(GitOperation.MERGE_RESTART));
 	  return GitOperationScheduler.getInstance().schedule(() -> {
 	    try {
-	      Repository repo = getRepository();
-        RepositoryState repositoryState = repo.getRepositoryState();
+	      RepositoryState repositoryState = getRepository().getRepositoryState();
 	      if (repositoryState == RepositoryState.REBASING_MERGE) {
 	        git.rebase().setOperation(Operation.ABORT).call();
 	        // EXM-47461 Should update submodules as well.
 	        CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(getHostName());
 	        pull(credentialsProvider, PullType.REBASE, OptionsManager.getInstance().getUpdateSubmodulesOnPull());
 	      } else {
-	        AnyObjectId commitToMerge = repo.resolve("MERGE_HEAD");
+	        AnyObjectId commitToMerge = getRepository().resolve("MERGE_HEAD");
 	        git.clean().call();
 	        git.reset().setMode(ResetType.HARD).call();
 	        git.merge().include(commitToMerge).setStrategy(MergeStrategy.RECURSIVE).call();
@@ -2056,7 +2050,7 @@ public class GitAccess {
 	 * @return The full remote-tracking branch name or null is the local branch is not tracking a remote branch.
 	 */
 	public String getUpstreamBranchNameFromConfig(String localBranchShortName) {
-	  return git != null ? RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName) : null;
+	  return RevCommitUtil.getUpstreamBranchName(git.getRepository(), localBranchShortName);
   }
 	
 	 /**
@@ -2212,7 +2206,7 @@ public class GitAccess {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         LOGGER.debug(e, e);
         ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace())
-            .showErrorMessage(TRANSLATOR.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
+            .showErrorMessage(translator.getTranslation(Tags.CANNOT_CONTINUE_REBASE_BECAUSE_OF_CONFLICTS));
       } catch (GitAPIException e) {
         fireOperationFailed(new GitEventInfo(GitOperation.CONTINUE_REBASE), e);
         LOGGER.debug(e, e);
@@ -2349,11 +2343,10 @@ public class GitAccess {
 	 * 
 	 * @throws GitAPIException 
 	 * @throws IOException 
-	 * @throws NoRepositorySelected 
 	 */
-	public RevCommit getLatestCommitOnCurrentBranch() throws GitAPIException, IOException, NoRepositorySelected {
-	  Repository repo = getRepository();
+	public RevCommit getLatestCommitOnCurrentBranch() throws GitAPIException, IOException {
 	  String branchNAme = getBranchInfo().getBranchName();
+	  Repository repo = git.getRepository();
 	  RevWalk revWalk = (RevWalk) git.log().add(repo.resolve(branchNAme)).call();
 	  revWalk.sort(RevSort.COMMIT_TIME_DESC);
 	  return revWalk.next();
@@ -2369,10 +2362,9 @@ public class GitAccess {
    * 
    * @throws GitAPIException 
    * @throws IOException 
-	 * @throws NoRepositorySelected 
    */
-  public RevCommit getLatestCommitForBranch (String branchNAme) throws GitAPIException, IOException, NoRepositorySelected {
-    Repository repo = getRepository();
+  public RevCommit getLatestCommitForBranch (String branchNAme) throws GitAPIException, IOException {
+    Repository repo = git.getRepository();
     RevWalk revWalk = (RevWalk) git.log().add(repo.resolve(branchNAme)).call();
     revWalk.sort(RevSort.COMMIT_TIME_DESC);
     return revWalk.next();
@@ -2399,18 +2391,18 @@ public class GitAccess {
         }
         List<String> conflictingFiles = new ArrayList<>(res.getConflicts().keySet());
         FileStatusDialog.showWarningMessage(
-            TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
+            translator.getTranslation(Tags.MERGE_CONFLICTS_TITLE),
             conflictingFiles,
-            TRANSLATOR.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
+            translator.getTranslation(Tags.MERGE_CONFLICTS_MESSAGE));
       } else if (res.getMergeStatus().equals(MergeResult.MergeStatus.FAILED)) {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Failed because of this files:" + res.getFailingPaths());
         }
         List<String> failingFiles = new ArrayList<>(res.getFailingPaths().keySet());
-        FileStatusDialog.showErrorMessage(
-            TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
+        FileStatusDialog.showWarningMessage(
+            translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
             failingFiles,
-            TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+            translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
       }
 
       fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.MERGE, branchName));
@@ -2421,9 +2413,9 @@ public class GitAccess {
     } catch (CheckoutConflictException e) {
       fireOperationFailed(new BranchGitEventInfo(GitOperation.MERGE, branchName), e);
       FileStatusDialog.showWarningMessage(
-        TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
+        translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_TITLE),
         e.getConflictingPaths(),
-        TRANSLATOR.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
+        translator.getTranslation(Tags.MERGE_FAILED_UNCOMMITTED_CHANGES_MESSAGE));
     }
   }
   
@@ -2432,16 +2424,18 @@ public class GitAccess {
 	 * Stash List command.
 	 *
 	 * @return the list of all stashes.
+	 *
+	 * @throws GitAPIException
 	 */
-	public Collection<RevCommit> listStashes() {
+	protected Collection<RevCommit> listStash() {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_LIST));
-		 Collection<RevCommit> stashedRefsCollection = null;
+		StashListCommand stashList = git.stashList();
+		Collection<RevCommit> stashedRefsCollection = null;
 		try {
-		  StashListCommand stashList = git.stashList();
 			stashedRefsCollection = stashList.call();
 			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()));
-		} catch (Exception e) {
-			LOGGER.debug(e, e);
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
 			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_LIST, getBranchInfo().getBranchName()), e);
 		}
 		return stashedRefsCollection;
@@ -2453,137 +2447,52 @@ public class GitAccess {
 	 * 
 	 * @return The created stash.
 	 */
-	private void displayStashApplyFailedCauseMessage(boolean isPop, StashApplyStatus status, Exception exception) {
-		List<String> conflictingList = new ArrayList<>(getConflictingFiles());
-		if(!conflictingList.isEmpty() && status != StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS) {
-			status = StashApplyStatus.APPLIED_SUCCESSFULLY_WITH_CONFLICTS;
+	protected RevCommit createStash() {
+		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_CREATE));
+		RevCommit stash = null;
+		try {
+			stash = git.stashCreate().call();
+			fireOperationSuccessfullyEnded(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()));
+		} catch (GitAPIException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new BranchGitEventInfo(GitOperation.STASH_CREATE, getBranchInfo().getBranchName()), e);
 		}
-		switch (status) {
-			case APPLIED_SUCCESSFULLY_WITH_CONFLICTS:
-				if(isPop) {
-					FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.STASH_APPLY),
-									conflictingList,
-									TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
-													+ " "
-													+ TRANSLATOR.getTranslation(Tags.STASH_WAS_KEPT)
-					);
-				} else {
-					FileStatusDialog.showWarningMessage(TRANSLATOR.getTranslation(Tags.STASH_APPLY),
-									conflictingList,
-									TRANSLATOR.getTranslation(Tags.STASH_GENERATE_CONFLICTS)
-					);
-				}
-				fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
-				break;
-			case CANNOT_START_APPLY_BECAUSE_CONFLICTS:
-				FileStatusDialog.showErrorMessage(
-								TRANSLATOR.getTranslation(Tags.STASH_APPLY),
-								new ArrayList<>(getConflictingFiles()),
-								TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
-												+ ". "
-												+ TRANSLATOR.getTranslation(Tags.RESOLVE_CONFLICTS_FIRST));
-				fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), exception);
-				LOGGER.error(exception, exception);
-				break;
-			case CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES:
-				FileStatusDialog.showErrorMessage(
-								TRANSLATOR.getTranslation(Tags.STASH_APPLY),
-								null,
-								TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH)
-												+ ". "
-												+ TRANSLATOR.getTranslation(Tags.STASH_SOLUTIONS_TO_APPLY));
-				fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), exception);
-				LOGGER.error(exception, exception);
-				break;
-			case CANNOT_START_BECAUSE_STAGED_FILES:
-				FileStatusDialog.showErrorMessage(
-								TRANSLATOR.getTranslation(Tags.STASH_APPLY),
-								null,
-								TRANSLATOR.getTranslation(Tags.STASH_REMOVE_STAGED_CHANGES));
-				fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), exception);
-				LOGGER.error(exception, exception);
-				break;
-			default:
-				PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(TRANSLATOR.getTranslation(Tags.UNABLE_TO_APPLY_STASH) + ".",
-								exception);
-				LOGGER.error(exception, exception);
-				fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), exception);
-				break;
-		}
+		return stash;
 	}
 
-
+	
 	/**
 	 * Apply the given stash.
 	 *
 	 * @param stashRef the stash which will be applied.
 	 * 
-	 * @return the status for stash apply operation.
-	 * 
 	 * @throws GitAPIException 
 	 */
-	public StashApplyStatus applyStash(String stashRef) throws GitAPIException {
+	public void applyStash(String stashRef) throws GitAPIException {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_APPLY));
-		StashApplyStatus status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
 		try {
-			checkIfStashIsApplicable(stashRef);
-
 			git.stashApply().setStashRef(stashRef).call();
-
-			status = StashApplyStatus.APPLIED_SUCCESSFULLY;
-
 			fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_APPLY));
-
-		} catch (StashApplyFailureWithStatusException e) {
-			status = e.getStatus();
-			displayStashApplyFailedCauseMessage(false, status ,e);
-		} catch (StashApplyFailureException | IOException e) {
-		  displayStashApplyFailedCauseMessage(false, status ,e);
+		} catch (StashApplyFailureException e) {
+			LOGGER.error(e, e);
+			fireOperationFailed(new GitEventInfo(GitOperation.STASH_APPLY), e);
+			if(PluginWorkspaceProvider.getPluginWorkspace() != null) {
+			  // TODO: better explanation in the message
+				FileStatusDialog.showWarningMessage(
+				    translator.getTranslation(Tags.STASH),
+				    new ArrayList<>(git.status().call().getModified()),
+						translator.getTranslation(Tags.STASH_APPLY_FAILED));
+			}
 		}
-
-		return status;
 	}
 
-  
-	
-  /**
-   * @param stashRef       The stash reference.
-   *
-   * @throws IOException
-   * @throws GitAPIException
-	 * @throws StashApplyFailureWithStatusException
-   */
-	private void checkIfStashIsApplicable(String stashRef) throws IOException, GitAPIException, StashApplyFailureWithStatusException {
-	  List<FileStatus> list = RevCommitUtil.getChangedFiles(stashRef);
-		List<FileStatus> unstagedFiles = new ArrayList<>(getUnstagedFiles());
 
-		for (FileStatus fileStatus : list) {
-
-			for (FileStatus file : unstagedFiles) {
-				if (file.getChangeType() == GitChangeType.CONFLICT) {
-					throw new StashApplyFailureWithStatusException(StashApplyStatus.CANNOT_START_APPLY_BECAUSE_CONFLICTS, "Impossible to apply");
-				} else if (file.getFileLocation().compareTo(fileStatus.getFileLocation()) == 0) {
-					throw new StashApplyFailureWithStatusException(StashApplyStatus.CANNOT_START_APPLY_BECAUSE_UNCOMMITTED_FILES, "Impossible to apply");
-				}
-			}
-
-			if(!getStagedFiles().isEmpty()) {
-				throw new StashApplyFailureWithStatusException(StashApplyStatus.CANNOT_START_BECAUSE_STAGED_FILES, "Impossible to apply");
-			}
-			
-		}
-
-	}
-	
-	
 	/**
 	 * Drops one stash item from the list of stashes.
 	 * 
 	 * @param stashIndex The index of the stash item to be dropped.
-	 * 
-	 * @throws GitAPIException
 	 */
-	public void dropStash(int stashIndex) throws GitAPIException {
+	protected void stashDrop(int stashIndex) {
 		fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
 		try {
 			git.stashDrop().setStashRef(stashIndex).call();
@@ -2591,26 +2500,8 @@ public class GitAccess {
 		} catch (GitAPIException e) {
 			LOGGER.error(e, e);
 			fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
-			throw e;
 		}
 	}
-	
-	/**
-   * Drops all stashes.
-   * 
-   * @throws GitAPIException
-   */
-  public void dropAllStashes() throws GitAPIException {
-    fireOperationAboutToStart(new GitEventInfo(GitOperation.STASH_DROP));
-    try {
-      git.stashDrop().setAll(true).call();
-      fireOperationSuccessfullyEnded(new GitEventInfo(GitOperation.STASH_DROP));
-    } catch (GitAPIException e) {
-      LOGGER.error(e, e);
-      fireOperationFailed(new GitEventInfo(GitOperation.STASH_DROP), e);
-      throw e;
-    }
-  }
 	
 /**
  * Creates a tag commit

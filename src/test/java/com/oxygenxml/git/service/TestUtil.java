@@ -8,11 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JTextField;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -21,8 +18,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import com.oxygenxml.git.view.event.GitController;
 import com.oxygenxml.git.view.event.GitEventInfo;
 import com.oxygenxml.git.view.event.PushPullEvent;
-
-import junit.extensions.jfcunit.finder.ComponentFinder;
 
 /**
  * Test utility methods.
@@ -108,34 +103,6 @@ public class TestUtil {
     }
     return null;
   }
-  
-  /**
-   * Searches for the first text field.
-   * 
-   * @param parent  The parent container.
-   * @param index   The index of the button in the list of all buttons having that text.
-   * @return        The text field, or null if there is no button having that text.
-   */
-  public static JTextField findFirstTextField(Container parent) {
-    JTextField result = null;
-
-    ComponentFinder cf = new ComponentFinder(JTextField.class);
-    @SuppressWarnings("unchecked")
-    List<Component> allTextFields = cf.findAll(parent);
-
-    // Selects the one with the given text.
-    for (Iterator<Component> iterator = allTextFields.iterator(); iterator.hasNext();) {
-      JTextField textField = (JTextField) iterator.next();
-      boolean equals = textField.getText() != null ;
-      if (equals) {
-        result = textField;
-        break;
-      }
-    }
-
-    return result;
-  }
-  
   
   /**
    * Gets the content from a given URL.

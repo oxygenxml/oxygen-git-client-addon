@@ -23,7 +23,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -56,7 +55,6 @@ import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
-import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.DiffPresenter;
 import com.oxygenxml.git.view.GitTreeNode;
 import com.oxygenxml.git.view.event.GitEventInfo;
@@ -170,30 +168,11 @@ public class ChangesPanel extends JPanel {
 	 * The translator for the messages that are displayed in this panel
 	 */
 	private Translator translator = Translator.getInstance();
-	
-	/**
-	 * Popup menu listener for the tree and table context menu.
-	 */
-  private final PopupMenuListener popupMenuListener = new PopupMenuListener() {
-    @Override
-    public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-      isContextualMenuShowing = true;
-    }
-    @Override
-    public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-      isContextualMenuShowing = false;
-      ((JPopupMenu) e.getSource()).removePopupMenuListener(this);
-    }
-    @Override
-    public void popupMenuCanceled(PopupMenuEvent e) {
-      isContextualMenuShowing = false;
-    }
-  };
 
 	/**
 	 * <code>true</code> if the contextual menu is showing for the resources in the tree view.
 	 */
-	private boolean isContextualMenuShowing = false;
+	private boolean isContextMenuShowing = false;
 	/**
 	 * History interface.
 	 */
@@ -590,7 +569,7 @@ public class ChangesPanel extends JPanel {
           public void actionPerformed(ActionEvent e) {
             setResourcesViewMode(currentViewMode == ResourcesViewMode.FLAT_VIEW ? 
                 ResourcesViewMode.TREE_VIEW : ResourcesViewMode.FLAT_VIEW);
-            isContextualMenuShowing = false;
+            isContextMenuShowing = false;
           }
         }, 
         false);
@@ -618,7 +597,7 @@ public class ChangesPanel extends JPanel {
     
     filesTable = UIUtil.createResourcesTable(
         new StagingResourcesTableModel(gitController, forStagedResources),
-        ()-> isContextualMenuShowing);
+        ()-> isContextMenuShowing);
 
     filesTable.getSelectionModel().addListSelectionListener(e -> {
       if (!e.getValueIsAdjusting()) {
@@ -892,16 +871,43 @@ public class ChangesPanel extends JPanel {
 	}
 	
 	/**
+	 * @return the state of the current repository or <code>null</code>, if there's no repository selected.
+	 */
+	 private RepositoryState getRepositoryState() {
+	   RepositoryState repositoryState = null;
+     Repository repo = getCurrentRepository();
+     if (repo != null) {
+       repositoryState = repo.getRepositoryState();
+     }
+     return repositoryState;
+   }
+	
+	/**
 	 * Check if the merging has been resolved.
 	 * 
 	 * @return <code>true</code> if the merging has been resolved.
 	 */
 	private boolean isMergingResolved() {
-	  RepositoryState repositoryState = RepoUtil.getRepoState().orElse(null);
+	  RepositoryState repositoryState = getRepositoryState();
     return repositoryState != null && repositoryState == RepositoryState.MERGING_RESOLVED;
   }
 	
-  /**
+	/**
+	 * @return the current repository or <code>null</code> if there's no repository selected.
+	 */
+	private Repository getCurrentRepository() {
+	  Repository repo = null;
+	  try {
+	    repo = GitAccess.getInstance().getRepository();
+    } catch (NoRepositorySelected e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(e, e);
+      }
+    }
+	  return repo;
+	}
+	
+	 /**
    * Show contextual menu
    * 
    * @param x         X coordinate where to show.
@@ -924,8 +930,22 @@ public class ChangesPanel extends JPanel {
         gitController,
         historyController,
         forStagedResources,
-        RepoUtil.getRepoState());
-    contextualMenu.addPopupMenuListener(popupMenuListener);
+        getRepositoryState());
+    contextualMenu.addPopupMenuListener(new PopupMenuListener() {
+      @Override
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        isContextMenuShowing = true;
+      }
+      @Override
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        isContextMenuShowing = false;
+        contextualMenu.removePopupMenuListener(this);
+      }
+      @Override
+      public void popupMenuCanceled(PopupMenuEvent e) {
+        isContextMenuShowing = false;
+      }
+    });
     contextualMenu.show(tree, x, y);
   }
 	
@@ -1077,9 +1097,23 @@ public class ChangesPanel extends JPanel {
         gitController,
         historyController,
         forStagedResources,
-        RepoUtil.getRepoState());
+        getRepositoryState());
     
-    contextualMenu.addPopupMenuListener(popupMenuListener);
+    contextualMenu.addPopupMenuListener(new PopupMenuListener() {
+      @Override
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        isContextMenuShowing = true;
+      }
+      @Override
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        isContextMenuShowing  = false;
+        contextualMenu.removePopupMenuListener(this);
+      }
+      @Override
+      public void popupMenuCanceled(PopupMenuEvent e) {
+        isContextMenuShowing  = false;
+      }
+    });
     
     contextualMenu.show(filesTable, x, y);
   }
@@ -1152,7 +1186,7 @@ public class ChangesPanel extends JPanel {
 	    }
 	  };
 	  
-	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextualMenuShowing));
+	  t.setCellRenderer(new ChangesTreeCellRenderer(() -> isContextMenuShowing));
 	  t.setModel(new StagingResourcesTreeModel(gitController, null, forStagedResources, null));
 	  t.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 	  t.setLargeModel(true);

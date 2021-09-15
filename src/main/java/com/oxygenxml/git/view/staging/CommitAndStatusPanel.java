@@ -55,7 +55,6 @@ import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.PlatformDetectionUtil;
-import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.utils.RepositoryStatusInfo;
 import com.oxygenxml.git.utils.RepositoryStatusInfo.RepositoryStatus;
 import com.oxygenxml.git.view.UndoRedoSupportInstaller;
@@ -119,7 +118,7 @@ public class CommitAndStatusPanel extends JPanel {
     @Override
     public void actionPerformed(ActionEvent e) {
       GitOperationScheduler.getInstance().schedule(() -> {
-        RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+        RepositoryState repoState = getRepoState();
         if (// EXM-43923: Faster evaluation. Only seldom ask for the conflicting files,
             // which actually calls git.status(), operation that is slow
             repoState == RepositoryState.MERGING 
@@ -147,6 +146,19 @@ public class CommitAndStatusPanel extends JPanel {
       });
     }
     
+    /**
+     * @return repository state.
+     */
+    private RepositoryState getRepoState() {
+      RepositoryState repoState = null;
+      try {
+        repoState = gitAccess.getRepository().getRepositoryState();
+      } catch (NoRepositorySelected e1) {
+        logger.debug(e1, e1);
+      }
+      return repoState;
+    }
+
     /**
      * Commit the staged files.
      */
@@ -464,8 +476,8 @@ public class CommitAndStatusPanel extends JPanel {
         RevCommit latestCommitOnBranch = null;
         try {
           latestCommitOnBranch = GitAccess.getInstance().getLatestCommitOnCurrentBranch();
-        } catch (GitAPIException | IOException | NoRepositorySelected e) {
-          logger.error(e, e);
+        } catch (GitAPIException | IOException e) {
+          logger.debug(e, e);
         }
         if (latestCommitOnBranch != null) {
           String text = latestCommitOnBranch.getFullMessage();

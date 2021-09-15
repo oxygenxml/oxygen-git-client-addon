@@ -71,7 +71,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
               .append("</b>: ").append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getAuthor())).append("<br>") 
               .append("<b>").append(Translator.getInstance().getTranslation(Tags.DATE)).append("</b>: ")
               .append(commitCharacteristics.getDate()).append("<br>") 
-              .append("<b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR)).append("</b>: ")
+              .append("<b>").append(Translator.getInstance().getTranslation(Tags.COMMITTER)).append("</b>: ")
               .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitter())).append("<br><br>")
               .append(xmlUtilAccess.escapeTextValue(commitCharacteristics.getCommitMessage()).replace("\n", "<br>"))
               .append("</html>");

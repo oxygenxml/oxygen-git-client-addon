@@ -515,7 +515,7 @@ public class GitPullCasesTest extends GitTestBase {
     pc.pull(PullType.REBASE).get();
 
     assertEquals(
-        "[Pull_failed_because_conflicting_paths] FOR [test.txt]",
+        "[Pull_rebase_failed_because_conflicting_paths] FOR [test.txt]",
         messages + " FOR " + filesWithChanges);
   }
   
@@ -576,7 +576,7 @@ public class GitPullCasesTest extends GitTestBase {
     pc.pull().get();
 
     assertEquals(
-        "[Pull_failed_because_conflicting_paths] FOR [test.txt]",
+        "[Pull_would_overwrite_uncommitted_changes] FOR [test.txt]",
         messages + " FOR " + filesWithChanges);
   }
   

@@ -2,7 +2,6 @@ package com.oxygenxml.git.view.staging;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
-import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -118,17 +117,17 @@ public class GitResourceContextualMenu extends JPopupMenu {
    * @param historyController     History interface.
    * @param isStage               <code>true</code> if we create the menu for the staged resources,
    *                                  <code>false</code> for the unstaged resources.
-	 * @param repoStateOptional     Repository state.
+	 * @param repoState             Repository state.
    */
   public GitResourceContextualMenu(
       SelectedResourcesProvider selResProvider,
       GitControllerBase gitController,
       HistoryController historyController,
       boolean isStage,
-      Optional<RepositoryState> repoStateOptional) {
+      RepositoryState repoState) {
     this.gitCtrl = gitController;
     this.historyController = historyController;
-    this.repoState = repoStateOptional.orElse(null);
+    this.repoState = repoState;
     populateMenu(selResProvider, isStage);
   }
 
@@ -207,7 +206,7 @@ public class GitResourceContextualMenu extends JPopupMenu {
 		showDiffAction.setEnabled(selectedLeaves.size() == 1);
 		openAction.setEnabled(!selectionContainsDeletions && !allSelectedResources.isEmpty());
 		stageUnstageAction.setEnabled(!selectionContainsConflicts && !allSelectedResources.isEmpty());
-		resolveConflict.setEnabled(RepoUtil.isUnfinishedConflictState(repoState) || selectionContainsConflicts);
+		resolveConflict.setEnabled(RepoUtil.isUnfinishedConflictState(repoState));
 		resolveUsingMineAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		resolveUsingTheirsAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());
 		markResolvedAction.setEnabled(selectionContainsConflicts && allSelResHaveSameChangeType && !allSelectedResources.isEmpty());

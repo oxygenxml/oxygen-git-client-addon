@@ -186,7 +186,7 @@ public class CreateBranchDialog extends OKCancelDialog { // NOSONAR (java:S110)
   private void updateUI(String branchName) {
     boolean branchAlreadyExists = false;
     try {
-      branchAlreadyExists = BranchesUtil.existsLocalBranch(branchName);
+      branchAlreadyExists = BranchesUtil.doesBranchAlreadyExist(branchName);
     } catch (NoRepositorySelected e) {
       // Not really possible 
       logger.debug(e, e);

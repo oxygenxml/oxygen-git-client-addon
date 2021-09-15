@@ -25,21 +25,21 @@ public class ProjectsTestedForGit {
 	 * The list with the users repositories
 	 */
 	@XmlElement(name = "path")
-	private List<String> projectPaths = new ArrayList<>();
+	private List<String> paths = new ArrayList<>();
 
 	public List<String> getPaths() {
-		return projectPaths;
+		return paths;
 	}
 
 	public void setPaths(List<String> paths) {
-		this.projectPaths = paths;
+		this.paths = paths;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((projectPaths == null) ? 0 : projectPaths.hashCode());
+		result = prime * result + ((paths == null) ? 0 : paths.hashCode());
 		return result;
 	}
 
@@ -48,7 +48,7 @@ public class ProjectsTestedForGit {
 	  boolean toReturn = false;
 	  if (obj instanceof ProjectsTestedForGit) {
 	    ProjectsTestedForGit projects = (ProjectsTestedForGit) obj;
-	    toReturn = Equaler.verifyListEquals(projectPaths, projects.getPaths());
+	    toReturn = Equaler.verifyListEquals(paths, projects.getPaths());
 	  }
 	  return toReturn;
 	}

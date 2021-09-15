@@ -82,11 +82,6 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	}
 
 	@Override
-	public int getColumnCount() {
-	  return 2;
-	}
-
-	@Override
   public int getRowCount() {
 		return filesStatuses != null ? filesStatuses.size() : 0;
 	}
@@ -110,6 +105,11 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 	@Override
 	public boolean isCellEditable(int row, int column) {
 		return false;
+	}
+
+	@Override
+  public int getColumnCount() {
+		return 2;
 	}
 
 	@Override
@@ -181,6 +181,7 @@ public class StagingResourcesTableModel extends AbstractTableModel {
 		} else {
 		  gitController.asyncAddToIndex(filesToBeUpdated);
 		}
+		
 	}
 
 	/**

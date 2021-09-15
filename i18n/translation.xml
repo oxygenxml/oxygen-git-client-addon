@@ -6,150 +6,6 @@
         <language description="French" lang="fr_FR" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
-    <key value="Pull_failed_because_conflicting_paths">
-        <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
-        <val lang="en_US">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="de_DE">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="fr_FR">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="ja_JP">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
-        <val lang="nl_NL">Cannot pull ({0}) changes because conflicts were detected between local changes in the files listed below and the incoming remote changes.\nCommit, stash, or discard the conflicting local changes and try again.</val>
-    </key>
-    <key value="Stash_Cannot_Be_Deleted">
-        <comment>The message displayed to the user when a stash cannot be deleted.</comment>
-        <val lang="en_US">Cannot delete stashed changes. Details:</val>
-        <val lang="de_DE">Cannot delete stashed changes. Details:</val>
-        <val lang="fr_FR">Cannot delete stashed changes. Details:</val>
-        <val lang="ja_JP">Cannot delete stashed changes. Details:</val>
-        <val lang="nl_NL">Cannot delete stashed changes. Details:</val>
-    </key>
-    <key value="Stash_Cannot_Be_Created">
-        <comment>The message displayed to the user when a stash cannot be created.</comment>
-        <val lang="en_US">Cannot stash changes. Details: </val>
-        <val lang="de_DE">Cannot stash changes. Details: </val>
-        <val lang="fr_FR">Cannot stash changes. Details: </val>
-        <val lang="ja_JP">Cannot stash changes. Details: </val>
-        <val lang="nl_NL">Cannot stash changes. Details: </val>
-    </key>
-    <key value="Branch_switch_checkout_conflict_error_msg">
-        <comment>The the message displayed when branch selection fails</comment>
-        <val lang="en_US">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
-			\nCommit, stash or discard your changes before you switch branches.</val>
-        <val lang="de_DE">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
-			\nCommit, stash or discard your changes before you switch branches.</val>
-	    <val lang="fr_FR">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
-			\nCommit, stash or discard your changes before you switch branches.</val>
-        <val lang="ja_JP">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
-			\nCommit, stash or discard your changes before you switch branches.</val>
-        <val lang="nl_NL">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
-			\nCommit, stash or discard your changes before you switch branches.</val>
-    </key>
-     <key value="Cannot_checkout_new_branch_because_uncommitted_changes">
-        <comment>Message shown when cannot checkout newly created branch because of uncommitted changes.</comment>
-        <val lang="en_US">The new branch was created, but it could not be checked out because 
-        there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
-        <val lang="de_DE">The new branch was created, but it could not be checked out because 
-        there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
-        <val lang="fr_FR">The new branch was created, but it could not be checked out because 
-        there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
-        <val lang="ja_JP">The new branch was created, but it could not be checked out because 
-        there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
-        <val lang="nl_NL">The new branch was created, but it could not be checked out because 
-        there are uncommitted changes in your working copy.\nCommit, stash or discard the changes to switch branches.</val>
-    </key>
-     <key value="Uncommitted_changes_when_switching_branches">
-        <comment>The message in the question dialog shown when you switch branches 
-        	and you have uncommitted changes.</comment>
-        <val lang="en_US">You have uncommitted changes on the current branch.
-        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
-        <val lang="de_DE">You have uncommitted changes on the current branch.
-        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
-        <val lang="fr_FR">You have uncommitted changes on the current branch.
-        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
-        <val lang="ja_JP">You have uncommitted changes on the current branch.
-        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
-        <val lang="nl_NL">You have uncommitted changes on the current branch.
-        	\nYou can stash them on this branch for later use or move them to the new branch.</val>
-    </key>
-    <key value="Delete_All_Button_Tooltip">
-        <comment>The tooltip for delete all stashes button.</comment>
-        <val lang="en_US">Delete all stashed changes from the repository.</val>
-        <val lang="de_DE">Delete all stashed changes from the repository.</val>
-        <val lang="fr_FR">Delete all stashed changes from the repository.</val>
-        <val lang="ja_JP">Delete all stashed changes from the repository.</val>
-        <val lang="nl_NL">Delete all stashed changes from the repository.</val>
-    </key>
-    <key value="Include_Untracked">
-        <comment>Message for include untracked files.</comment>
-        <val lang="en_US">Include untracked files</val>
-        <val lang="de_DE">Include untracked files</val>
-        <val lang="fr_FR">Include untracked files</val>
-        <val lang="ja_JP">Include untracked files</val>
-        <val lang="nl_NL">Include untracked files</val>
-    </key>
-    <key value="Other">
-        <comment>Other.</comment>
-        <val lang="en_US">Other</val>
-        <val lang="de_DE">Other</val>
-        <val lang="fr_FR">Other</val>
-        <val lang="ja_JP">Other</val>
-        <val lang="nl_NL">Other</val>
-    </key>
-     <key value="Stashes">
-        <comment>Stashes</comment>
-        <val lang="en_US">Stashes</val>
-        <val lang="de_DE">Stashes</val>
-        <val lang="fr_FR">Stashes</val>
-        <val lang="ja_JP">Stashes</val>
-        <val lang="nl_NL">Stashes</val>
-    </key>
-     <key value="Description">
-        <comment>Description</comment>
-        <val lang="en_US">Description</val>
-        <val lang="de_DE">Description</val>
-        <val lang="fr_FR">Description</val>
-        <val lang="ja_JP">Description</val>
-        <val lang="nl_NL">Description</val>
-    </key>
-    <key value="History_resource_open_action_tooltip">
-        <comment>The text for the tooltip that explains the Open action for a Git History resource.</comment>
-        <val lang="en_US">Opens this version of the file as read-only.</val>
-        <val lang="de_DE">Opens this version of the file as read-only.</val>
-        <val lang="fr_FR">Opens this version of the file as read-only.</val>
-        <val lang="ja_JP">Opens this version of the file as read-only.</val>
-        <val lang="nl_NL">Opens this version of the file as read-only.</val>
-    </key>
-     <key value="ID">
-        <comment>ID</comment>
-        <val lang="en_US">ID</val>
-        <val lang="de_DE">ID</val>
-        <val lang="fr_FR">ID</val>
-        <val lang="ja_JP">ID</val>
-        <val lang="nl_NL">ID</val>
-    </key>
-    <key value="Unable_To_Apply_Stash">
-        <comment>Unable to apply stash message.</comment>
-        <val lang="en_US">Unable to apply stash</val>
-        <val lang="de_DE">Unable to apply stash</val>
-        <val lang="fr_FR">Unable to apply stash</val>
-        <val lang="ja_JP">Unable to apply stash</val>
-        <val lang="nl_NL">Unable to apply stash</val>
-    </key>
-    <key value="Stash_Remove_Staged_Changes">
-        <comment>The message presents user when are staged changes before to apply a stash.</comment>
-        <val lang="en_US">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
-        <val lang="de_DE">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
-        <val lang="fr_FR">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
-        <val lang="ja_JP">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
-        <val lang="nl_NL">Cannot apply stash while having staged changes. Commit, stash, or unstage before trying again.</val>
-    </key>
-    <key value="Stash_Apply">
-        <comment>Stash apply</comment>
-        <val lang="en_US">Stash apply</val>
-        <val lang="de_DE">Stash apply</val>
-        <val lang="fr_FR">Stash apply</val>
-        <val lang="ja_JP">Stash apply</val>
-        <val lang="nl_NL">Stash apply</val>
-    </key>
     
     <key value="Create_Tag_Commit_Title">
         <comment>The title for the create Tag Commit dialog</comment>
@@ -320,213 +176,11 @@
         <val lang="nl_NL">Show Tags</val>
     </key>
     
-    <key value="Stash_Was_Kept">
-        <comment>The message presents user that the stash was kept.</comment>
-        <val lang="en_US">The stash entry was kept just in case you need it again.</val>
-        <val lang="de_DE">The stash entry was kept just in case you need it again.</val>
-        <val lang="fr_FR">The stash entry was kept just in case you need it again.</val>
-        <val lang="ja_JP">The stash entry was kept just in case you need it again.</val>
-        <val lang="nl_NL">The stash entry was kept just in case you need it again.</val>
-    </key>
-    <key value="Stash_Solutions_To_Apply">
-        <comment>The message presents user solutions to can apply the stash.</comment>
-        <val lang="en_US">Commit, stash or revert your local changes first.</val>
-        <val lang="de_DE">Commit, stash or revert your local changes first.</val>
-        <val lang="fr_FR">Commit, stash or revert your local changes first.</val>
-        <val lang="ja_JP">Commit, stash or revert your local changes first.</val>
-        <val lang="nl_NL">Commit, stash or revert your local changes first.</val>
-    </key>
-     <key value="Stash_Add_Description">
-        <comment>The text to tell user about adding stash description.</comment>
-        <val lang="en_US">You can enter a message to describe the stash</val>
-        <val lang="de_DE">You can enter a message to describe the stash</val>
-        <val lang="fr_FR">You can enter a message to describe the stash</val>
-        <val lang="ja_JP">You can enter a message to describe the stash</val>
-        <val lang="nl_NL">You can enter a message to describe the stash</val>
-    </key>
-     <key value="Stash_Informative_Message">
-        <comment>The informative message for stash.</comment>
-        <val lang="en_US">This will stash your current changes and return your working copy to a clean state.</val>
-        <val lang="de_DE">This will stash your current changes and return your working copy to a clean state.</val>
-        <val lang="fr_FR">This will stash your current changes and return your working copy to a clean state.</val>
-        <val lang="ja_JP">This will stash your current changes and return your working copy to a clean state.</val>
-        <val lang="nl_NL">This will stash your current changes and return your working copy to a clean state.</val>
-    </key>
-    <key value="Stash_Delete_Confirmation">
-        <comment>The text to tell user to confirm the stash deleting</comment>
-        <val lang="en_US">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="de_DE">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="fr_FR">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="ja_JP">Are you sure you want to delete the selected stashed changes?</val>
-        <val lang="nl_NL">Are you sure you want to delete the selected stashed changes?</val>
-    </key>
-     <key value="Stash_Generate_Conflicts">
-        <comment>The message for generated conflicts from stash</comment>
-        <val lang="en_US">The stash entry was applied, but the following files have conflicts now.</val>
-        <val lang="de_DE">The stash entry was applied, but the following files have conflicts now.</val>
-        <val lang="fr_FR">The stash entry was applied, but the following files have conflicts now.</val>
-        <val lang="ja_JP">The stash entry was applied, but the following files have conflicts now.</val>
-        <val lang="nl_NL">The stash entry was applied, but the following files have conflicts now.</val>
-    </key>
-    <key value="Unable_To_Compare">
-        <comment>Message when is unnable to compare</comment>
-        <val lang="en_US">Unable to compare.</val>
-        <val lang="de_DE">Unable to compare.</val>
-        <val lang="fr_FR">Unable to compare.</val>
-        <val lang="ja_JP">Unable to compare.</val>
-        <val lang="nl_NL">Unable to compare.</val>
-    </key>
-     <key value="Affected_Files">
-        <comment>Affected files.</comment>
-        <val lang="en_US">Affected files</val>
-        <val lang="de_DE">Affected files</val>
-        <val lang="fr_FR">Affected files</val>
-        <val lang="ja_JP">Affected files</val>
-        <val lang="nl_NL">Affected files</val>
-    </key>
-     <key value="Delete_All">
-        <comment>Delete all.</comment>
-        <val lang="en_US">Delete all</val>
-        <val lang="de_DE">Delete all</val>
-        <val lang="fr_FR">Delete all</val>
-        <val lang="ja_JP">Delete all</val>
-        <val lang="nl_NL">Delete all</val>
-    </key>
-    <key value="Delete_All_Stashes">
-        <comment>Delete all stashes.</comment>
-        <val lang="en_US">Delete all stashes</val>
-        <val lang="de_DE">Delete all stashes</val>
-        <val lang="fr_FR">Delete all stashes</val>
-        <val lang="ja_JP">Delete all stashes</val>
-        <val lang="nl_NL">Delete all stashes</val>
-    </key>
-    <key value="Confirmation_Clear_Stashes_Message">
-        <comment>The message for confirmation clear all stashes message.</comment>
-        <val lang="en_US">Are you sure you want to delete all the stashes?</val>
-        <val lang="de_DE">Are you sure you want to delete all the stashes?</val>
-        <val lang="fr_FR">Are you sure you want to delete all the stashes?</val>
-        <val lang="ja_JP">Are you sure you want to delete all the stashes?</val>
-        <val lang="nl_NL">Are you sure you want to delete all the stashes?</val>
-    </key>
-     <key value="Stash_Changes">
-        <comment>Stash changes.</comment>
-        <val lang="en_US">Stash changes</val>
-        <val lang="de_DE">Stash changes</val>
-        <val lang="fr_FR">Stash changes</val>
-        <val lang="ja_JP">Stash changes</val>
-        <val lang="nl_NL">Stash changes</val>
-    </key>
-    <key value="Apply_Stash_Button_Tooltip">
-        <comment>The tooltip for apply stash button.</comment>
-        <val lang="en_US">Apply the selected stashed changes.</val>
-        <val lang="de_DE">Apply the selected stashed changes.</val>
-        <val lang="fr_FR">Apply the selected stashed changes.</val>
-        <val lang="ja_JP">Apply the selected stashed changes.</val>
-        <val lang="nl_NL">Apply the selected stashed changes.</val>
-    </key>
-    <key value="Delete_Stash_Button_Tooltip">
-        <comment>The tooltip for delete stash button.</comment>
-        <val lang="en_US">Delete the selected stashed changes.</val>
-        <val lang="de_DE">Delete the selected stashed changes.</val>
-        <val lang="fr_FR">Delete the selected stashed changes.</val>
-        <val lang="ja_JP">Delete the selected stashed changes.</val>
-        <val lang="nl_NL">Delete the selected stashed changes.</val>
-    </key>
-     <key value="Delete_Stash">
-        <comment>Delete Stash.</comment>
-        <val lang="en_US">Delete stash</val>
-        <val lang="de_DE">Delete stash</val>
-        <val lang="fr_FR">Delete stash</val>
-        <val lang="ja_JP">Delete stash</val>
-        <val lang="nl_NL">Delete stash</val>
-    </key>
-    <key value="Delete_Stash_After_Applied">
-        <comment>The checkbox text for delete stash after applied successfully.</comment>
-        <val lang="en_US">Delete stash after being applied</val>
-        <val lang="de_DE">Delete stash after being applied</val>
-        <val lang="fr_FR">Delete stash after being applied</val>
-        <val lang="ja_JP">Delete stash after being applied</val>
-        <val lang="nl_NL">Delete stash after being applied</val>
-    </key>
-   <key value="List_Stashes">
-        <comment>List Stashes.</comment>
-        <val lang="en_US">List stashes</val>
-        <val lang="de_DE">List stashes</val>
-        <val lang="fr_FR">List stashes</val>
-        <val lang="ja_JP">List stashes</val>
-        <val lang="nl_NL">List stashes</val>
-    </key>
-    <key value="Reset_file_to_this_commit">
-        <comment>Action name.</comment>
-        <val lang="en_US">Reset file to this commit</val>
-        <val lang="de_DE">Reset file to this commit</val>
-        <val lang="fr_FR">Reset file to this commit</val>
-        <val lang="ja_JP">Reset file to this commit</val>
-        <val lang="nl_NL">Reset file to this commit</val>
-    </key>
-    <key value="Reset_file_x_to_this_commit">
-        <comment>Checkout this version of a file at a given revision.</comment>
-        <val lang="en_US">Reset "{0}" to this commit</val>
-        <val lang="de_DE">Reset "{0}" to this commit</val>
-        <val lang="fr_FR">Reset "{0}" to this commit</val>
-        <val lang="ja_JP">Reset "{0}" to this commit</val>
-        <val lang="nl_NL">Reset "{0}" to this commit</val>
-    </key>
-    <key value="Commit_before_pushing">
-        <comment>Message shown when a branch is unborn and we need to commit
-        before trying to push.</comment>
-        <val lang="en_US">Perform at least one local commit before trying to push again.</val>
-        <val lang="de_DE">Perform at least one local commit before trying to push again.</val>
-        <val lang="fr_FR">Perform at least one local commit before trying to push again.</val>
-        <val lang="ja_JP">Perform at least one local commit before trying to push again.</val>
-        <val lang="nl_NL">Perform at least one local commit before trying to push again.</val>
-    </key>
-    <key value="Unborn_branch">
-        <comment>"Unborn branch X".</comment>
-        <val lang="en_US">branch "{0}" is empty.</val>
-        <val lang="de_DE">branch "{0}" is empty.</val>
-        <val lang="fr_FR">branch "{0}" is empty.</val>
-        <val lang="ja_JP">branch "{0}" is empty.</val>
-        <val lang="nl_NL">branch "{0}" is empty.</val>
-    </key>
-    <key value="Rebase">
-        <comment>Rebase.</comment>
-        <val lang="en_US">rebase</val>
-        <val lang="de_DE">Rebase</val>
-        <val lang="fr_FR">rebase</val>
-        <val lang="ja_JP">rebase</val>
-        <val lang="nl_NL">rebase</val>
-    </key>
-    <key value="Merge">
-        <comment>Merge.</comment>
-        <val lang="en_US">merge</val>
-        <val lang="de_DE">Merge</val>
-        <val lang="fr_FR">fusion</val>
-        <val lang="ja_JP">merge</val>
-        <val lang="nl_NL">samenvoegen</val>
-    </key>
-    <key value="Revert_commit_resulted_in_conflicts">
-        <comment>Message shown when reverting a commit resulted in conflicts.</comment>
-        <val lang="en_US">Resolve the following conflicts to complete the revert operation:</val>
-        <val lang="de_DE">Resolve the following conflicts to complete the revert operation:</val>
-        <val lang="fr_FR">Résolvez les conflits suivants pour terminer l'opération de rétablissement:</val>
-        <val lang="ja_JP">Resolve the following conflicts to complete the revert operation:</val>
-        <val lang="nl_NL">Resolve the following conflicts to complete the revert operation:</val>
-    </key>
-    <key value="No_details_available">
-        <comment>No details available</comment>
-        <val lang="en_US">No details available.</val>
-        <val lang="de_DE">No details available.</val>
-        <val lang="fr_FR">Aucun détail disponible.</val>
-        <val lang="ja_JP">No details available.</val>
-        <val lang="nl_NL">No details available.</val>
-    </key>
-
 	<key value="Revert_Commit_Failed_Uncommitted_Changes_Message">
         <comment>Message for when "Revert commit" fails because of uncommitted changes.</comment>
         <val lang="en_US">Cannot revert commit because of the following uncommitted files:</val>
         <val lang="de_DE">Cannot revert commit because of the following uncommitted files:</val>
-	    <val lang="fr_FR">Impossible de rétablir le commit à cause des fichiers hors commit suivants:</val>
+        <val lang="fr_FR">Cannot revert commit because of the following uncommitted files:</val>
         <val lang="ja_JP">Cannot revert commit because of the following uncommitted files:</val>
         <val lang="nl_NL">Cannot revert commit because of the following uncommitted files:</val>	
     </key>
@@ -534,7 +188,7 @@
         <comment>Merge branches</comment>
         <val lang="en_US">Merge branches</val>
         <val lang="de_DE">Merge branches</val>
-	    <val lang="fr_FR">Fusionner les branches</val>
+        <val lang="fr_FR">Merge branches</val>
         <val lang="ja_JP">Merge branches</val>
         <val lang="nl_NL">Merge branches</val>
     </key>
@@ -542,63 +196,69 @@
         <comment>The question message on the merge branches pop up dialog</comment>
         <val lang="en_US">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
         <val lang="de_DE">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
-        <val lang="fr_FR">Etes-vous sûr de vouloir ajouter toutes les modifications de "{0}" dans "{1}"?</val>
+        <val lang="fr_FR">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
         <val lang="ja_JP">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
         <val lang="nl_NL">Are you sure you want to add all changes from "{0}" to "{1}"?</val>
     </key>   	
+    	
     <key value="Open_the_working_copy_version_of">
         <comment>Action name to open the working copy for a file at a given revision.</comment>
-        <val lang="en_US">Open the working copy version of "{0}"</val>
-        <val lang="de_DE">Open the working copy version of "{0}"</val>
-        <val lang="fr_FR">Ouvrir la version de la copie de travail de "{0}"</val>
-        <val lang="ja_JP">Open the working copy version of "{0}"</val>
-        <val lang="nl_NL">Open the working copy version of "{0}"</val>
+        <val lang="en_US">Open the working copy version of {0}</val>
+        <val lang="de_DE">Open the working copy version of {0}</val>
+        <val lang="fr_FR">Open the working copy version of {0}</val>
+        <val lang="ja_JP">Open the working copy version of {0}</val>
+        <val lang="nl_NL">Open the working copy version of {0}</val>
     </key>
+    
      <key value="Open_working_copy_version">
         <comment>Open working copy version.</comment>
         <val lang="en_US">Open working copy version</val>
         <val lang="de_DE">Open working copy version</val>
-        <val lang="fr_FR">Ouvrir la version de la copie de travail</val>
+        <val lang="fr_FR">Open working copy version</val>
         <val lang="ja_JP">Open working copy version</val>
         <val lang="nl_NL">Open working copy version</val>
     </key>
+    <key value="Check_out_this_version">
+        <comment>Checkout this version of a file at a given revision.</comment>
+        <val lang="en_US">Checkout this version of {0}</val>
+        <val lang="de_DE">Checkout this version of {0}</val>
+        <val lang="fr_FR">Checkout this version of {0}</val>
+        <val lang="ja_JP">Checkout this version of {0}</val>
+        <val lang="nl_NL">Checkout this version of {0}</val>
+    </key>
+    
     <key value="Open_this_version_of_filename">
         <comment>Open this version of file.</comment>
-        <val lang="en_US">Open this version of "{0}"</val>
-        <val lang="de_DE">Open this version of "{0}"</val>
-        <val lang="fr_FR">Ouvrir cette version de "{0}"</val>
-        <val lang="ja_JP">Open this version of "{0}"</val>
-        <val lang="nl_NL">Open this version of "{0}"</val>
+        <val lang="en_US">Open this version of {0}</val>
+        <val lang="de_DE">Open this version of {0}</val>
+        <val lang="fr_FR">Open this version of {0}</val>
+        <val lang="ja_JP">Open this version of {0}</val>
+        <val lang="nl_NL">Open this version of {0}</val>
     </key>
-    <key value="See_all_commits_in_Git_History">
-        <comment>See all commits in Git History.</comment>
-        <val lang="en_US">See all commits in Git History view.</val>
-        <val lang="de_DE">See all commits in Git History view.</val>
-        <val lang="fr_FR">Voir tous les commits dans la vue historique de Git.</val>
-        <val lang="ja_JP">See all commits in Git History view.</val>
-        <val lang="nl_NL">See all commits in Git History view.</val>
+    
+    <key value="Show_More_In_NAME">
+        <comment>Show more in ... message.</comment>
+        <val lang="en_US">Show more in {0}</val>
+        <val lang="de_DE">Show more in {0}</val>
+        <val lang="fr_FR">Show more in {0}</val>
+        <val lang="ja_JP">Show more in {0}</val>
+        <val lang="nl_NL">Show more in {0}</val>
     </key>
-    <key value="One_more_commit">
-        <comment>One more commit message</comment>
-        <val lang="en_US">1 more commit</val>
-        <val lang="de_DE">1 more commit</val>
-        <val lang="fr_FR">1 commit supplémentaire</val>
-        <val lang="ja_JP">1 more commit</val>
-        <val lang="nl_NL">1 more commit</val>
+    
+    <key value="Open_this_version">
+        <comment>Open this version.</comment>
+        <val lang="en_US">Open selected version</val>
+        <val lang="de_DE">Open selected version</val>
+        <val lang="fr_FR">Open selected version</val>
+        <val lang="ja_JP">Open selected version</val>
+        <val lang="nl_NL">Open selected version</val>
     </key>
-    <key value="N_More_Commits">
-        <comment> n more commits message.</comment>
-        <val lang="en_US">{0} more commits</val>
-        <val lang="de_DE">{0} more commits</val>
-        <val lang="fr_FR">{0} commits supplémentaires</val>
-        <val lang="ja_JP">{0} more commits</val>
-        <val lang="nl_NL">{0} more commits</val>
-    </key>
+
 	<key value="Merge_Branch1_Into_Branch2">
         <comment>Merge {branch1} into {branch2}</comment>
         <val lang="en_US">Merge "{0}" into "{1}"</val>
         <val lang="de_DE">Merge "{0}" into "{1}"</val>
-        <val lang="fr_FR">Fusionner "{0}" dans "{1}"</val>
+        <val lang="fr_FR">Merge "{0}" into "{1}"</val>
         <val lang="ja_JP">Merge "{0}" into "{1}"</val>
         <val lang="nl_NL">Merge "{0}" into "{1}"</val>
     </key> 
@@ -606,7 +266,7 @@
         <comment>The message in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
         <val lang="en_US">Cannot merge because of the following uncommitted files:</val>
         <val lang="de_DE">Cannot merge because of the following uncommitted files:</val>
-        <val lang="fr_FR">Impossible de fusionner à cause des fichiers hors commit suivants:</val>
+        <val lang="fr_FR">Cannot merge because of the following uncommitted files:</val>
         <val lang="ja_JP">Cannot merge because of the following uncommitted files:</val>
         <val lang="nl_NL">Cannot merge because of the following uncommitted files:</val>	
     </key> 
@@ -614,7 +274,7 @@
         <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
         <val lang="en_US">Merge failed</val>
         <val lang="de_DE">Merge failed</val>
-        <val lang="fr_FR">La fusion a échouée</val>
+        <val lang="fr_FR">Merge failed</val>
         <val lang="ja_JP">Merge failed</val>
         <val lang="nl_NL">Merge failed</val>
     </key>
@@ -622,7 +282,7 @@
         <comment>The message in the warning File Status Dialog when there are merge conflicts</comment>
         <val lang="en_US">Resolve the following conflicts to complete the merge:</val>
         <val lang="de_DE">Resolve the following conflicts to complete the merge:</val>
-        <val lang="fr_FR">Résolvez les conflits suivants pour terminer la fusion:</val>
+        <val lang="fr_FR">Resolve the following conflicts to complete the merge:</val>
         <val lang="ja_JP">Resolve the following conflicts to complete the merge:</val>
         <val lang="nl_NL">Resolve the following conflicts to complete the merge:</val>
     </key>
@@ -630,39 +290,42 @@
         <comment>The tile in the warning File Status Dialog when Merge Fail because of uncommitted changes</comment>
         <val lang="en_US">Merge conflicts</val>
         <val lang="de_DE">Merge conflicts</val>
-        <val lang="fr_FR">Fusionner les conflits</val>
+        <val lang="fr_FR">Merge conflicts</val>
         <val lang="ja_JP">Merge conflicts</val>
         <val lang="nl_NL">Merge conflicts</val>
+    </key>
+    
+    <key value="Stash_Apply_Failed">
+        <comment>Stash apply failed</comment>
+        <val lang="en_US">Unable to apply stash.</val>
+        <val lang="de_DE">Unable to apply stash.</val>
+        <val lang="fr_FR">Unable to apply stash.</val>
+        <val lang="ja_JP">Unable to apply stash.</val>
+        <val lang="nl_NL">Unable to apply stash.</val>
     </key>
     <key value="Stash">
         <comment>Stash</comment>
         <val lang="en_US">Stash</val>
         <val lang="de_DE">Stash</val>
-        <val lang="fr_FR" skipTranslation="true">Stash</val>
+        <val lang="fr_FR">Stash</val>
         <val lang="ja_JP">Stash</val>
         <val lang="nl_NL">Stash</val>
     </key>
-    <key value="Apply">
-        <comment>Apply</comment>
-        <val lang="en_US">Apply</val>
-        <val lang="de_DE">Apply</val>
-        <val lang="fr_FR">Apply</val>
-        <val lang="ja_JP">Apply</val>
-        <val lang="nl_NL">Apply</val>
-    </key>
+    
     <key value="Revert_Commit_Confirmation">
         <comment>Warns about reverting the last commit</comment>
         <val lang="en_US">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
         <val lang="de_DE">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
-        <val lang="fr_FR">Êtes-vous sûr de vouloir créer un nouveau commit qui rétabli toutes les modifications dans le commit sélectionné?</val>
+        <val lang="fr_FR">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
         <val lang="ja_JP">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
         <val lang="nl_NL">Are you sure you want to create a new commit that reverts all the changes in the selected commit?</val>
     </key>
+    
     <key value="Revert_Commit">
         <comment>Revert the last commit</comment>
         <val lang="en_US">Revert commit</val>
         <val lang="de_DE">Revert commit</val>
-        <val lang="fr_FR">Rétablir le commit</val>
+        <val lang="fr_FR">Revert commit</val>
         <val lang="ja_JP">Revert commit</val>
         <val lang="nl_NL">Revert commit</val>
     </key>
@@ -671,15 +334,28 @@
         <comment>The last commit details</comment>
         <val lang="en_US">Last commit details</val>
         <val lang="de_DE">Last commit details</val>
-        <val lang="fr_FR">Détails du dernier commit</val>
+        <val lang="fr_FR">Last commit details</val>
         <val lang="ja_JP">Last commit details</val>
         <val lang="nl_NL">Last commit details</val>
+    </key>
+	<key value="Branch_switch_checkout_conflict_error_msg">
+        <comment>The the message displayed when branch selection fails</comment>
+        <val lang="en_US">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
+        <val lang="de_DE">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
+        <val lang="fr_FR">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
+        <val lang="ja_JP">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
+        <val lang="nl_NL">The uncommitted changes could not be moved to the new branch because they are conflicting with changes committed on that branch.
+			\nCommit or discard your changes before you switch branches.</val>
     </key>
     <key value = "Conflict_markers_message">
         <comment> The message displayed to the user when conflict markers are detected.</comment>
         <val lang="en_US">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
         <val lang="de_DE">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
-        <val lang="fr_FR">Il y a des marqueurs de conflit dans le(s) fichier(s) sélectionné(s). En général, ces marqueurs ne doivent pas être commités. Assurez-vous que vous avez correctement résolu le(s) conflit(s).</val>
+        <val lang="fr_FR">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
         <val lang="ja_JP">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
         <val lang="nl_NL">There are conflict markers inside the selected file(s). Usually these markers are not to be committed. Make sure you have properly resolved the conflict(s).</val>
     </key>
@@ -687,16 +363,30 @@
         <comment>"Switch branch" label.</comment>
         <val lang="en_US">Switch branch</val>
         <val lang="de_DE">Switch branch</val>
-        <val lang="fr_FR">Changer de branche</val>
+        <val lang="fr_FR">Switch branch</val>
         <val lang="ja_JP">Switch branch</val>
         <val lang="nl_NL">Switch branch</val>
+    </key>
+    <key value="Uncommitted_changes_when_switching_branches">
+        <comment>The message in the question dialog shown when you switch branches 
+        	and you have uncommitted changes.</comment>
+        <val lang="en_US">You have uncommitted changes on the current branch.
+        	\nWould you like to move these changes to the new branch?</val>
+        <val lang="de_DE">You have uncommitted changes on the current branch.
+        	\nWould you like to move these changes to the new branch?</val>
+        <val lang="fr_FR">You have uncommitted changes on the current branch.
+        	\nWould you like to move these changes to the new branch?</val>
+        <val lang="ja_JP">You have uncommitted changes on the current branch.
+        	\nWould you like to move these changes to the new branch?</val>
+        <val lang="nl_NL">You have uncommitted changes on the current branch.
+        	\nWould you like to move these changes to the new branch?</val>
     </key>
     <key value="Move_changes">
         <comment>The message on the OK button of the question dialog shown
          when you try to switch branches and having uncommitted changes.</comment>
         <val lang="en_US">Move changes</val>
         <val lang="de_DE">Move changes</val>
-        <val lang="fr_FR">Déplacer les modifications</val>
+        <val lang="fr_FR">Move changes</val>
         <val lang="ja_JP">Move changes</val>
         <val lang="nl_NL">Move changes</val>
     </key>
@@ -704,7 +394,7 @@
         <comment>The text is displayed when you try to push to remote repository but no internet</comment>
         <val lang="en_US">Unable to access remote repository at:</val>
         <val lang="de_DE">Unable to access remote repository at:</val>
-        <val lang="fr_FR">Impossible d'accéder au dépôt remote à:</val>
+        <val lang="fr_FR">Unable to access remote repository at:</val>
         <val lang="ja_JP">Unable to access remote repository at:</val>
         <val lang="nl_NL">Unable to access remote repository at:</val>
     </key>
@@ -825,7 +515,7 @@
         <comment>Authentication failure message.</comment>
         <val lang="en_US">Authentication failed.</val>
         <val lang="de_DE">Authentication failed.</val>
-        <val lang="fr_FR">L'authentification a échouée.</val>
+        <val lang="fr_FR">L'authentification a échoué.</val>
         <val lang="ja_JP">Authentication failed.</val>
         <val lang="nl_NL">Authenticatie mislukt.</val>
     </key>
@@ -899,8 +589,8 @@
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
         <val lang="de_DE">No changes have been made to the version on the left side that will be used to resolve
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
-        <val lang="fr_FR">Aucune modification n'a été apportée à la version de gauche qui sera utilisée pour résoudre
-          le conflit.\nVos modifications (côté droit) seront perdues si vous ne les fusionnez pas avant de résoudre le conflit.</val>
+        <val lang="fr_FR">Aucun changement n'a été apporté à la version de gauche qui sera utilisée pour résoudre
+          le conflit.\nVos changements (côté droit) seront perdus si vous ne les fusionnez pas avant de résoudre le conflit.</val>
         <val lang="ja_JP">No changes have been made to the version on the left side that will be used to resolve
           the conflict.\nYour changes (right side) will be lost if you don't merge them before resolving the conflict.</val>
         <val lang="nl_NL">Er zijn geen wijzigingen aangebracht in de versie aan de linkerkant die gebruikt kunnen worden om het 
@@ -985,6 +675,19 @@
         <val lang="fr_FR">Voulez-vous effectuer un pull les modifications remote dans le dépôt local?</val>
         <val lang="ja_JP">Do you want to pull the remote changes into the local repository?</val>
         <val lang="nl_NL">Wilt u de externe wijzigingen naar de lokale repository toehalen?</val>
+    </key>
+    <key value="Cannot_checkout_new_branch_because_uncommitted_changes">
+        <comment>Message shown when cannot checkout newly created branch because of uncommitted changes.</comment>
+        <val lang="en_US">The new branch was created, but it could not be checked out because 
+        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
+        <val lang="de_DE">The new branch was created, but it could not be checked out because 
+        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
+        <val lang="fr_FR">La nouvelle branche a été créée, mais elle n'a pas pu être extraite car 
+        il y a des changements hors commit dans votre copie de travail. Effectuez le commit ou abandonnez les changements pour changer de branche.</val>
+        <val lang="ja_JP">The new branch was created, but it could not be checked out because 
+        there are uncommitted changes in your working copy.\nCommit or discard the changes to switch branches.</val>
+        <val lang="nl_NL">De nieuwe branch is gemaakt, maar kon niet worden uitgecheckt omdat er nog niet-bewaarde wijzigingen 
+            in uw werkkopie staan.\nCommit of annuleer de wijzigingen voordat u van branch wisselt.</val>
     </key>
     <key value="Cannot_checkout_new_branch">
         <comment>Message shown when cannot checkout newly created branch for an uknown reason.</comment>
@@ -1107,7 +810,7 @@
         <comment>"Displays information about what a hard reset of a branch does."</comment>
         <val lang="en_US">discard all changes</val>
         <val lang="de_DE">discard all changes</val>
-        <val lang="fr_FR">annuler toutes les modifications</val>
+        <val lang="fr_FR">annuler tous les changements</val>
         <val lang="ja_JP">discard all changes</val>
         <val lang="nl_NL">alle wijzigingen annuleren</val>
     </key>
@@ -1198,6 +901,14 @@
         <val lang="fr_FR">L'attache "pre-receive" côté serveur a refusé l'opération.</val>
         <val lang="ja_JP">The "pre-receive" server-side hook declined the operation.</val>
         <val lang="nl_NL">De "pre-receive" hook op de server heeft de bewerking geweigerd.</val>
+    </key>
+    <key value = "Details">
+		<comment>"Details:"</comment>
+        <val lang="en_US">Details:</val>
+        <val lang="de_DE">Details:</val>
+        <val lang="fr_FR">Détails:</val>
+        <val lang="ja_JP">Details:</val>
+        <val lang="nl_NL">Details:</val>
     </key>
     <key value = "Remote_changes_label">
 		<comment> The message when there are changes in the remote repository.</comment>
@@ -1309,7 +1020,7 @@
         <comment>"Upstream branch {0} does not exist" label.</comment>
         <val lang="en_US">Upstream branch "{0}" does not exist.</val>
         <val lang="de_DE">Upstream-Branch "{0}" existiert nicht.</val>
-        <val lang="fr_FR">La branche upstream  "{0}" n''existe pas.</val>
+        <val lang="fr_FR">La branche upstream  "{0}" n'existe pas.</val>
         <val lang="ja_JP">Upstream branch "{0}" does not exist.</val>
         <val lang="nl_NL">Upstream-branch "{0}" bestaat niet.</val>
     </key>
@@ -1419,7 +1130,7 @@
         <comment>The text displayed on the right side of the toolbar buttons if the repository is 2 or more commits ahead.</comment>
         <val lang="en_US">{0} commits ahead.</val>
         <val lang="de_DE">{0} Commits voraus.</val>
-        <val lang="fr_FR">{0} commits d''avance.</val>
+        <val lang="fr_FR">{0} commits d'avance.</val>
         <val lang="ja_JP">{0} commits ahead.</val>
         <val lang="nl_NL">{0} commits verder.</val>
     </key>
@@ -1577,7 +1288,7 @@
             It appears as the commit message.</comment>
         <val lang="en_US">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
         <val lang="de_DE">Alle Konflikte wurden gelöst. Bitte committen Sie um den Branch ''{0}'' von {1} zu mergen.</val>
-        <val lang="fr_FR">Tous les conflits ont été résolus. Effectuez un commit pour fusionner la branche ''{0}'' de {1}.</val>
+        <val lang="fr_FR">Tous les conflits ont été résolus. Commit pour fusionner la branche ''{0}'' de {1}.</val>
         <val lang="ja_JP">All conflicts were resolved. Commit to merge branch ''{0}'' of {1}.</val>
         <val lang="nl_NL">Alle conflicten zijn opgelost. Commit om samen te voegen met branch ''{0}'' van {1}.</val>
     </key>
@@ -1621,6 +1332,14 @@
         <val lang="ja_JP">Git Staging</val>
         <val lang="nl_NL">Git staging</val>
     </key>
+    <key value="Comitter">
+        <comment>History table column name.</comment>
+        <val lang="en_US">Committer</val>
+        <val lang="de_DE">Committer</val>
+        <val lang="fr_FR">Auteur du commit</val>
+        <val lang="ja_JP">Committer</val>
+        <val lang="nl_NL">Committer</val>
+    </key>
     <key value="Date">
         <comment>History table column name.</comment>
         <val lang="en_US">Date</val>
@@ -1653,6 +1372,14 @@
         <val lang="ja_JP"></val>
         <val lang="nl_NL">Kan geen pull doen met rebase vanwege lokale wijzigingen zonder commit in de volgende bestanden:</val>
     </key>
+    <key value="Pull_rebase_failed_because_conflicting_paths">
+        <comment>Message shown when pull (rebase) failed because of conflicting paths.</comment>
+        <val lang="en_US">Cannot pull with rebase because the local changes from the following files are in conflict with the incoming remote changes:</val>
+        <val lang="de_DE">Pull mit Rebase nicht möglich, da die lokalen Änderungen der folgenden Dateien im Konflikt stehen mit den Remote-Änderungen:</val>
+        <val lang="fr_FR">Impossible d'effectuer le pull avec rebase parce que les modifications locales des fichiers suivants sont en conflit avec les modifications remote entrantes:</val>
+        <val lang="ja_JP"></val>
+        <val lang="nl_NL">Kan geen pull doen met rebase omdat de lokale wijzigingen in de volgende bestanden conflicteren met de inkomende externe wijzigingen:</val>
+    </key>
     <key value="Continue_rebase">
         <comment>Continue rebase</comment>
         <val lang="en_US">Continue rebase</val>
@@ -1673,7 +1400,7 @@
         <comment>Confirmation message for "Restart merge"</comment>
         <val lang="en_US">Are you sure you want to restart the merge process?\nThe uncommitted changes from all files will be reverted.</val>
         <val lang="de_DE">Sind Sie sicher, dass Sie den Merge-Prozess neu starten möchten?\nDie nicht-committeten Änderungen aller Dateien werden dabei verworfen.</val>
-        <val lang="fr_FR">Êtes-vous sûr de vouloir relancer le processus de fusion?\nLes modifications hors commit de tous les fichiers seront rétablies.</val>
+        <val lang="fr_FR">Êtes-vous sûr de vouloir relancer le processus de fusion?\nLes modifications hors commit de tous les fichiers seront annulées.</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL">Weet u zeker dat u het samenvoegproces opnieuw wilt starten?\nWijzigingen zonder commit, worden in alle bestanden teruggedraaid.</val>
     </key>
@@ -1713,7 +1440,7 @@
         <comment>Message shown when invoking "Resolve using Mine" or "Resolve using Theirs" for a conflict generated when trying to rebase.</comment>
         <val lang="en_US">You are about to resolve a rebase conflict. In this situation, Git''s definitions of "Mine" and "Theirs" are reversed.\nThe former current working branch becomes "Theirs" while the upstream branch becomes "Mine".\n\nDo you want to continue resolving the conflict using "{0}" ({1})?</val>
         <val lang="de_DE">Sie lösen einen Rebase-Konflikt. In dieser Situation ist Git''s Definition von "Meins" und "Ihres" vertauscht.\nDer aktuelle lokale Branch wird zu "Ihres", während der Remote-Branch zu "Meins" wird.\n\nMöchten Sie "{0}" ({1}) zur Behebung des Konflikts auswählen?</val>
-        <val lang="fr_FR">Vous êtes sur le point de résoudre un conflit de rebase. Dans cette situation, les définitions de "La mienne" et "La leur" de Git sont inversées.\nL''ancienne branche de travail actuelle devient "La leur" tandis que la branche upstream devient "La mienne"..\n\nVoulez-vous continuer à résoudre le conflit en utilisant "{0}" ({1})?</val>
+        <val lang="fr_FR">Vous êtes sur le point de résoudre un conflit de rebase. Dans cette situation, les définitions de "La mienne" et "La leur" de Git sont inversées.\nL'ancienne branche de travail actuelle devient "La leur" tandis que la branche upstream devient "La mienne"..\n\nVoulez-vous continuer à résoudre le conflit en utilisant "{0}" ({1})?</val>
         <val lang="ja_JP"></val>
         <val lang="nl_NL">U staat op het punt een rebase-conflict op te lossen. In deze situatie zijn de Git-definities van "Mijn" en "Hun" omgedraaid.\nDe voormalige, huidige werk-branch wordt "Hun" terwijl de upstream-branch "Mijn" wordt.\n\nWilt u het conflict oplossen met "{0}" ({1})?</val>
     </key>
@@ -1777,7 +1504,7 @@
         <comment>Pull failed</comment>
         <val lang="en_US">Pull failed</val>
         <val lang="de_DE">Pull fehlgeschlagen</val>
-        <val lang="fr_FR">Le pull a échoué</val>
+        <val lang="fr_FR">Échec du pull</val>
         <val lang="ja_JP">Pull failed</val>
         <val lang="nl_NL">Pull mislukt</val>
     </key>
@@ -1785,7 +1512,7 @@
         <comment>Push failed</comment>
         <val lang="en_US">Push failed</val>
         <val lang="de_DE">Push fehlgeschlagen</val>
-        <val lang="fr_FR">Le push a échoué</val>
+        <val lang="fr_FR">Échec du push</val>
         <val lang="ja_JP">Push failed</val>
         <val lang="nl_NL">Push mislukt</val>
     </key>
@@ -1815,27 +1542,27 @@
     </key>
     <key value="Compare_file_with_working_tree_version">
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
-        <val lang="en_US">Compare "{0}" with working copy version</val>
-        <val lang="de_DE">Vergleiche "{0}" mit der lokalen Version</val>
-        <val lang="fr_FR">Comparer "{0}" avec la version de travail</val>
-        <val lang="ja_JP">Compare "{0}" with working copy version</val>
-        <val lang="nl_NL">Vergelijken "{0}" met hudige werkkopieversie</val>
+        <val lang="en_US">Compare {0} with working copy version</val>
+        <val lang="de_DE">Vergleiche {0} mit der lokalen Version</val>
+        <val lang="fr_FR">Comparer {0} avec la version de travail</val>
+        <val lang="ja_JP">Compare {0} with working copy version</val>
+        <val lang="nl_NL">Vergelijken {0} met hudige werkkopieversie</val>
     </key>
     <key value="Compare_file_with_previous_version">
         <comment>Action name to compare a file with its previous version.</comment>
-        <val lang="en_US">Compare "{0}" with previous version</val>
-        <val lang="de_DE">Vergleiche "{0}" mit der Vorversion</val>
-        <val lang="fr_FR">Comparer "{0}" avec la version précédente</val>
-        <val lang="ja_JP">Compare "{0}" with previous version</val>
-        <val lang="nl_NL">Vergelijken "{0}" met vorige versie</val>
+        <val lang="en_US">Compare {0} with previous version</val>
+        <val lang="de_DE">Vergleiche {0} mit der Vorversion</val>
+        <val lang="fr_FR">Comparer {0} avec la version précédente</val>
+        <val lang="ja_JP">Compare {0} with previous version</val>
+        <val lang="nl_NL">Vergelijken {0} met vorige versie</val>
     </key>
     <key value="Open_file">
         <comment>Open file action name.</comment>
-        <val lang="en_US">Open "{0}"</val>
-        <val lang="de_DE">Öffne "{0}"</val>
-        <val lang="fr_FR">Ouvrir "{0}"</val>
-        <val lang="ja_JP">Open "{0}"</val>
-        <val lang="nl_NL">Open "{0}"</val>
+        <val lang="en_US">Open {0}</val>
+        <val lang="de_DE">Öffne {0}</val>
+        <val lang="fr_FR">Ouvrir {0}</val>
+        <val lang="ja_JP">Open {0}</val>
+        <val lang="nl_NL">Open {0}</val>
     </key>
     <key value="Compare_with_working_tree_version">
         <comment>Action name to compare a file at a given revision with the version from the working copy.</comment>
@@ -1929,7 +1656,7 @@
         <comment>Message shown when the lock failed while trying to update.</comment>
         <val lang="en_US">Lock failed</val>
         <val lang="de_DE">Sperre fehlgeschlagen</val>
-        <val lang="fr_FR">Le verrouillage a échoué</val>
+        <val lang="fr_FR">Echec du verrouillage</val>
         <val lang="ja_JP">Lock failed</val>
         <val lang="nl_NL">Lock mislukt</val>
     </key>
@@ -2005,7 +1732,14 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Voer uw SSH wachtwoord in</val>
     </key>
-   
+    <key value="Command_aborted">
+        <comment>Message displayed when a command is aborted.</comment>
+        <val lang="en_US">Command aborted.</val>
+        <val lang="de_DE">Aktion abgebrochen.</val>
+        <val lang="fr_FR">Commande abandonnée</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">Commando afgebroken</val>
+    </key>
     <key value="Working_Copy_Label">
         <comment>Label displayed on the left of the working copy combo box</comment>
         <val lang="en_US">Working copy: </val>
@@ -2069,6 +1803,14 @@
         <val lang="fr_FR">Libérer la sélection</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Unstage geselecteerde</val>
+    </key>
+    <key value="Change_View_Button_ToolTip">
+        <comment>The tooltip for the ChangeView button</comment>
+        <val lang="en_US">Change View</val>
+        <val lang="de_DE">Ansicht ändern</val>
+        <val lang="fr_FR">Changer de vue</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">Weergave wijzigen</val>
     </key>
     <key value="Add_Icon_ToolTip">
         <comment>The tooltip for the "+" icon that appears on the left side of the file</comment>
@@ -2181,6 +1923,14 @@
         <val lang="fr_FR">Push en cours...</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Bezig met push ...</val>
+    </key>
+    <key value="Pull_With_Uncommitted_Changes">
+        <comment>The message displayed when you pull with uncommitted files</comment>
+        <val lang="en_US">Cannot pull with uncommitted changes</val>
+        <val lang="de_DE">Pull kann nicht ausgeführt werden solange es nicht-committete Änderungen gibt</val>
+        <val lang="fr_FR">Pull impossible avec des modifications hors commit</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">Kan geen pull doen zolang er wijzigingen zonder commit zijn.</val>
     </key>
     
     <key value="Pull_Up_To_Date">
@@ -2319,6 +2069,14 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Selecteer een git-repository</val>
     </key>
+    <key value="Workingcopy_Last_Selected_Repository_Deleted">
+        <comment>The text displayed when the application starts and the last selected repository doesn't exists</comment>
+        <val lang="en_US">Last selected repository not found. It may have been deleted</val>
+        <val lang="de_DE">Das zuletzt verwendete Repository wurde nicht gefunden. Eventuell wurde es gelöscht.</val>
+        <val lang="fr_FR">Le dernier dépôt sélectionné n'a pas été trouvé. Il peut avoir été supprimé</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">Laatst geselecteerde repository niet gevonden. Mogelijk is deze verwijderd.</val>
+    </key>
     <key value="Check_If_Conflict_Resolved">
         <comment>The text displayed after exiting the diff for a conflict file and you don't modify anithing</comment>
         <val lang="en_US">You have not modified the local version. Do you want to resolve the conflict by keeping your version?</val>
@@ -2335,6 +2093,14 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Conflictoplossing</val>
     </key>
+    <key value="Branch_Selection_Dialog_Title">
+        <comment>The text displayed in the title for the dialog that appears when you select your current branch</comment>
+        <val lang="en_US">Select Branch</val>
+        <val lang="de_DE">Branch-Auswahl</val>
+        <val lang="fr_FR">Sélectionner la branche</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">Branch selecteren</val>
+    </key>
     <key value="Add_Remote_Dialog_Title">
         <comment>The text displayed in the title for the dialog that appears when you push while having no remote set</comment>
         <val lang="en_US">Add Remote</val>
@@ -2342,6 +2108,14 @@
         <val lang="fr_FR">Ajouter remote</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Externe repository toevoegen</val>
+    </key>
+    <key value="Add_Remote_Dialog_Add_Remote_Name_Label">
+        <comment>The text displayed in the dialog that appears near the text field for remote name</comment>
+        <val lang="en_US">Remote Name: </val>
+        <val lang="de_DE">Remote-Name: </val>
+        <val lang="fr_FR">Nom du remote: </val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">Naam externe repository: </val>
     </key>
     <key value="Add_Remote_Dialog_Add_Remote_Repo_Label">
         <comment>The text displayed in the dialog that appears near the text field for remote repo</comment>
@@ -2535,6 +2309,14 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Doelpad is niet geldig</val>
     </key>
+    <key value="Clone_Repository_Dialog_Clone_Error">
+        <comment>The text displayed if an error occured during cloning</comment>
+        <val lang="en_US">We could not clone the repository</val>
+        <val lang="de_DE">Dieses Repository konnte nicht geklont werden</val>
+        <val lang="fr_FR">Nous n'avons pas pu cloner le dépôt</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">We konden de repository niet klonen</val>
+    </key>
     <key value="Clone_Repository_Dialog_Destination_Path_Not_Empty">
         <comment>The text displayed if the chosen destionation path is not an empty folder</comment>
         <val lang="en_US">The destination path already exists and is not an empty folder.</val>
@@ -2542,6 +2324,14 @@
         <val lang="fr_FR">Le chemin de destination existe déjà et n'est pas un dossier vide.</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Het doelpad bestaat al en is geen lege map.</val>
+    </key>
+    <key value="Clone_Repository_Dialog_Login_Message">
+        <comment>The text displayed in the login dialog if you are not authorized to clone the repository</comment>
+        <val lang="en_US">You are not authorized to clone this repository</val>
+        <val lang="de_DE">Sie haben keine Berechtigung dieses Repository zu klonen</val>
+        <val lang="fr_FR">Vous n'êtes pas autorisé à cloner ce dépôt</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">U hebt niet de bevoegdheden deze repository te klonen.</val>
     </key>
     <key value="Cloning_Progress_Dialog_TItle">
         <comment>The text in the title of the cloning progress dialog </comment>
@@ -2567,20 +2357,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">Alle conflicten zijn opgelost, maar u bent nog bezig met samenvoegen. Commit om het samenvoegen af te ronden.</val>
     </key>
-    <key value="CommitID">
-        <comment>The text in the warning of detached-head </comment>
-        <val lang="en_US">Commit</val>
-        <val lang="de_DE">Commit</val>
-        <val lang="fr_FR" skipTranslation="true">Commit</val>
-        <val lang="ja_JP">Commit</val>
-        <val lang="nl_NL">Commit</val>
+    <key value="Pull_would_overwrite_uncommitted_changes">
+        <comment>The text is displayed when you pull but it fails because the files that are modified might become in conflict</comment>
+        <val lang="en_US">Cannot pull. Your uncommitted local changes done to the following files would be overwritten by merge: </val>
+        <val lang="de_DE">Pull nicht möglich. Die folgenden nicht-committeten lokalen Änderungen würden bei einem Pull überschrieben werden: </val>
+        <val lang="fr_FR">Impossible d'effectuer le pull. Vos modifications locales hors commit effectuées sur les fichiers suivants seraient écrasées par la fusion: </val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">Kan geen pull doen. Uw niet-bewaarde, lokale wijzigingen in de volgende bestanden zouden door het samenvoegen worden overschreven:</val>
     </key>
-    <key value="Detached_Head">
-        <comment>The title in the warning of detached-head </comment>
-        <val lang="en_US">Detached HEAD</val>
-        <val lang="de_DE">Detached HEAD</val>
-        <val lang="fr_FR">HEAD détaché</val>
-        <val lang="ja_JP">Detached HEAD</val>
-        <val lang="nl_NL">Detached HEAD</val>
-    </key>
+
 </translation>

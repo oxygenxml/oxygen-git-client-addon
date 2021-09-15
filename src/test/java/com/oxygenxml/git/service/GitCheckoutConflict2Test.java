@@ -478,14 +478,15 @@ public class GitCheckoutConflict2Test extends GitTestBase {
    * @throws Exception
    */
   public void testCheckoutNewBranch_checkoutConflict_1() throws Exception {
-    // Push from main branch
+    // Push from first repo
     gitAccess.setRepositorySynchronously(FIRST_LOCAL_TEST_REPOSITPRY);
+
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "hellllo");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("file test added");
     push("", "");
   
-    // Create new_branch, change file and commit
+    // Change file on the new branch
     gitAccess.createBranchFromLocalBranch(
         "new_branch",
         gitAccess.getGit().getRepository().getFullBranch());
@@ -493,7 +494,7 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
     gitAccess.commit("commit on ew branch");
     
-    // Move to main branch and change file
+    // move to main branch
     gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     writeToFile(new File(FIRST_LOCAL_TEST_REPOSITPRY + "/test.txt"), "new content");
     gitAccess.add(new FileStatus(GitChangeType.ADD, "test.txt"));
@@ -543,7 +544,6 @@ public class GitCheckoutConflict2Test extends GitTestBase {
     
     JButton yesButton = TestUtil.findButton(focusedWindow, translator.getTranslation(Tags.MOVE_CHANGES));
     yesButton.doClick();
-    flushAWT();
     sleep(1000);
     
     assertEquals(GitAccess.DEFAULT_BRANCH_NAME, gitAccess.getRepository().getBranch());

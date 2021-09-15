@@ -353,8 +353,8 @@ public class HistoryPanel extends JPanel {
           commitCharacteristics);
       if (optionalFileStatus.isPresent()) {
         FileStatus fileStatus = optionalFileStatus.get();
-        List<Action> contextualActions = 
-            contextualMenuPresenter.getFileContextualActions(fileStatus, commitCharacteristics, false);
+        List<Action> contextualActions = contextualMenuPresenter.getContextualActions(fileStatus, commitCharacteristics,
+            false);
         if (!contextualActions.isEmpty()) {
           contextualActions.get(0).actionPerformed(null);
         }
@@ -403,8 +403,8 @@ public class HistoryPanel extends JPanel {
             CommitCharacteristics commitCharacteristics = historyTableModel.getAllCommits()
                 .get(historyTable.getSelectedRow());
 
-            List<Action> contextualActions = 
-                contextualMenuPresenter.getFileContextualActions(file, commitCharacteristics, false);
+            List<Action> contextualActions = contextualMenuPresenter.getContextualActions(file, commitCharacteristics,
+                false);
             if (!contextualActions.isEmpty()) {
               contextualActions.get(0).actionPerformed(null);
             }
@@ -609,7 +609,7 @@ public class HistoryPanel extends JPanel {
   private void showHistory(String filePath, boolean force) {
     Translator translator = Translator.getInstance();
 
-    SwingUtilities.invokeLater(() -> updateSelectionMode(filePath));
+    updateSelectionMode(filePath);
 
     if (force
         // Check if we don't already present the history for this path!!!!
@@ -663,7 +663,7 @@ public class HistoryPanel extends JPanel {
           updateHistoryTableWidths();
 
           historyTable.setDefaultRenderer(CommitCharacteristics.class, renderer);
-          historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer(UIUtil.DATE_FORMAT_PATTERN));
+          historyTable.setDefaultRenderer(Date.class, new DateTableCellRenderer("d MMM yyyy HH:mm"));
           TableColumn authorColumn = historyTable.getColumn(translator.getTranslation(Tags.AUTHOR));
           authorColumn.setCellRenderer(createAuthorColumnRenderer());
 
@@ -776,11 +776,9 @@ public class HistoryPanel extends JPanel {
    */
   private void updateSelectionMode(String filePath) {
     if (filePath != null && filePath.length() > 0) {
-      if(historyTable.getSelectionModel().getSelectionMode() != ListSelectionModel.MULTIPLE_INTERVAL_SELECTION) {
-        historyTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-      }
-    } else if(historyTable.getSelectionModel().getSelectionMode() != ListSelectionModel.SINGLE_SELECTION) {
-        historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      historyTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    } else {
+      historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
   }
 
@@ -835,9 +833,9 @@ public class HistoryPanel extends JPanel {
    * Distribute widths to the columns according to their content.
    */
   private void updateHistoryTableWidths() {
-    int dateColWidth = HiDPIUtil.scaleWidth(100); // NOSONAR
-    int authorColWidth = HiDPIUtil.scaleWidth(120); // NOSONAR
-    int commitIdColWidth = HiDPIUtil.scaleWidth(80); // NOSONAR
+    int dateColWidth = scaleColumnsWidth(100);
+    int authorColWidth = scaleColumnsWidth(120);
+    int commitIdColWidth = scaleColumnsWidth(80);
 
     TableColumnModel tcm = historyTable.getColumnModel();
     TableColumn column = tcm.getColumn(0);
@@ -851,6 +849,22 @@ public class HistoryPanel extends JPanel {
 
     column = tcm.getColumn(3);
     column.setPreferredWidth(commitIdColWidth);
+  }
+
+  /**
+   * Applies a scaling factor depending if we are on a hidpi display.
+   * 
+   * @param width Width to scale.
+   * 
+   * @return A scaled width.
+   */
+  public static int scaleColumnsWidth(int width) {
+    float scalingFactor = (float) 1.0;
+    if (HiDPIUtil.isRetinaNoImplicitSupport()) {
+      scalingFactor = HiDPIUtil.getScalingFactor();
+    }
+
+    return (int) (scalingFactor * width);
   }
 
   /**

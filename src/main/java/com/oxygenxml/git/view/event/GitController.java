@@ -1,7 +1,5 @@
 package com.oxygenxml.git.view.event;
 
-import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +12,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.LockFailedException;
-import org.eclipse.jgit.errors.NoRemoteRepositoryException;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
@@ -31,8 +28,6 @@ import com.oxygenxml.git.service.RebaseConflictsException;
 import com.oxygenxml.git.service.RebaseUncommittedChangesException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
-import com.oxygenxml.git.utils.RepoUtil;
-import com.oxygenxml.git.view.dialog.AddRemoteDialog;
 import com.oxygenxml.git.view.dialog.FileStatusDialog;
 import com.oxygenxml.git.view.dialog.RebaseInProgressDialog;
 
@@ -173,7 +168,6 @@ public class GitController extends GitControllerBase {
       CredentialsProvider credentialsProvider = AuthUtil.getCredentialsProvider(hostName);
       Optional<PushPullEvent> event = Optional.empty();
       boolean notifyFinish = true;
-      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
       try {
         if (logger.isDebugEnabled()) {
           logger.debug("Preparing for push/pull command");
@@ -187,36 +181,17 @@ public class GitController extends GitControllerBase {
           String[] conflictingFile = ((org.eclipse.jgit.errors.CheckoutConflictException) cause).getConflictingFiles();
           showPullFailedBecauseOfCertainChanges(
               Arrays.asList(conflictingFile),
-              MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
-                      translator.getTranslation(Tags.REBASE))
-          );
+              translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
         } else if (cause instanceof org.eclipse.jgit.errors.LockFailedException) {
           // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
           LockFailedException lockFailedException = (org.eclipse.jgit.errors.LockFailedException) cause;
-          pluginWS.showErrorMessage(lockFailedException.getMessage(), lockFailedException);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(lockFailedException.getMessage(), lockFailedException);
 
           // This message gets presented in a status, at the bottom of the staging view.
           event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(lockFailedException.getMessage()), e));
-        } else if (cause instanceof IOException) {
-          String causeMsg = cause.getMessage();
-          if (getOperation() == GitOperation.PUSH 
-              && causeMsg.contains("Source ref") 
-              && causeMsg.contains("doesn't resolve")) {
-            pluginWS.showErrorMessage(
-                translator.getTranslation(Tags.PUSH_FAILED) + ": " 
-                    + MessageFormat.format(
-                        translator.getTranslation(Tags.UNBORN_BRANCH),
-                        gitAccess.getBranchInfo().getBranchName()) + " "
-                    + translator.getTranslation(Tags.COMMIT_BEFORE_PUSHING),
-                e);
-            event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(cause.getMessage()), e));
-          } else {
-            pluginWS.showErrorMessage(e.getMessage(), e);
-            event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
-          }
         } else {
           // It's a pretty serious exception. Present it in a dialog so that the user takes measures.
-          pluginWS.showErrorMessage(e.getMessage(), e);
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e.getMessage(), e);
           event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(e.getMessage()), e));
         }
       } catch (RebaseUncommittedChangesException e) {
@@ -226,41 +201,19 @@ public class GitController extends GitControllerBase {
       } catch (RebaseConflictsException e) {
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
-                MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
-                        translator.getTranslation(Tags.REBASE))
-        );
+            translator.getTranslation(Tags.PULL_REBASE_FAILED_BECAUSE_CONFLICTING_PATHS));
       } catch (CheckoutConflictException e) {
         showPullFailedBecauseOfCertainChanges(
             e.getConflictingPaths(),
-                MessageFormat.format(translator.getTranslation(Tags.PULL_FAILED_BECAUSE_CONFLICTING_PATHS),
-                        translator.getTranslation(Tags.MERGE))
-        );
+            translator.getTranslation(Tags.PULL_WOULD_OVERWRITE_UNCOMMITTED_CHANGES));
       } catch (TransportException e) {
-        String exMsg = e.getMessage();
-        boolean isAuthProblem = exMsg.contains(AuthUtil.NOT_AUTHORIZED)
-            || exMsg.contains(AuthUtil.AUTHENTICATION_NOT_SUPPORTED)
-            || exMsg.contains(AuthUtil.NOT_PERMITTED);
-        boolean shouldTryAgain = isAuthProblem ? 
-            AuthUtil.handleAuthException(
-                e,
-                hostName,
-                pluginWS::showErrorMessage,
-                true) 
-            : treatTransportException(e);
-        if (shouldTryAgain) {
-          // Skip notification now. We try again.
-          notifyFinish = false;
-          // Try again.
-          executeCommand();
-        } else {
-          event = Optional.of(new PushPullEvent(getOperation(), composeAndReturnFailureMessage(exMsg), e));
-        }
+        treatTransportException(e);
       } catch (GitAPIException e) {
         // Exception handling.
         boolean shouldTryAgain = AuthUtil.handleAuthException(
             e,
             hostName,
-            pluginWS::showErrorMessage,
+            exMessage -> PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(exMessage),
             true);
         if (shouldTryAgain) {
           // Skip notification now. We try again.
@@ -304,39 +257,34 @@ public class GitController extends GitControllerBase {
      * Treat transport exception.
      * 
      * @param e The exception.
-     * 
-     * @return <code>true</code> to try the operation again.
      */
-    private boolean treatTransportException(TransportException e) {
-      boolean tryAgainOutside = false;
-      Throwable cause = e.getCause();
-      if (cause instanceof NoRemoteRepositoryException) {
-        tryAgainOutside  = new AddRemoteDialog().linkRemote();
-      } else {
-        String remoteURL = null;
-        try {
-          remoteURL = gitAccess.getRemoteURLFromConfig();
-        } catch (NoRepositorySelected e1) {
-          logger.error(e1, e1);
-        }
-
-        PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
-        String unableToAccessRepoMsg = translator.getTranslation(Tags.UNABLE_TO_ACCESS_REPO) + " " + remoteURL;
-        if (getOperation() == GitOperation.PUSH ) {
-          pluginWS.showErrorMessage(
-              translator.getTranslation(Tags.PUSH_FAILED)
-              + ". "
-              + unableToAccessRepoMsg,
-              e);
-        } else {
-          pluginWS.showErrorMessage(
-              translator.getTranslation(Tags.PULL_FAILED)
-              + ". "
-              + unableToAccessRepoMsg,
-              e);
-        }
+    private void treatTransportException(TransportException e) {
+      PluginWorkspace pluginWS = PluginWorkspaceProvider.getPluginWorkspace();
+      
+      String remoteURL = null;
+      try {
+        remoteURL = gitAccess.getRemoteURLFromConfig();
+      } catch (NoRepositorySelected e1) {
+        logger.error(e1, e1);
       }
-      return tryAgainOutside;
+      
+      String unableToAccessRepoMsg = translator.getTranslation(Tags.UNABLE_TO_ACCESS_REPO) + " " + remoteURL;
+      
+      if (getOperation() == GitOperation.PUSH ) {
+        pluginWS.showErrorMessage(
+            translator.getTranslation(Tags.PUSH_FAILED)
+                + ". "
+                + unableToAccessRepoMsg,
+            e);
+
+      } else {
+        pluginWS.showErrorMessage(
+            translator.getTranslation(Tags.PULL_FAILED)
+                + ". "
+                + unableToAccessRepoMsg,
+            e);
+
+      }
     }
 
     /**
@@ -442,7 +390,12 @@ public class GitController extends GitControllerBase {
     protected Optional<PushPullEvent> doOperation(CredentialsProvider credentialsProvider) throws GitAPIException {
       PushPullEvent event = null;
 
-      RepositoryState repositoryState = RepoUtil.getRepoState().orElse(null);
+      RepositoryState repositoryState = null;
+      try {
+        repositoryState = gitAccess.getRepository().getRepositoryState();
+      } catch (NoRepositorySelected e) {
+        logger.debug(e, e);
+      }
 
       if (logger.isDebugEnabled()) {
         logger.debug("Do pull. Pull type: " + pullType);

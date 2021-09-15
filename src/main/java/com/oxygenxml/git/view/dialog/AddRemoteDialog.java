@@ -17,7 +17,6 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 
-import com.oxygenxml.git.auth.AuthenticationInterceptor;
 import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
@@ -159,13 +158,10 @@ public class AddRemoteDialog extends OKCancelDialog {
 			remoteConfig.addFetchRefSpec(spec);
 			remoteConfig.update(config);
 			config.save();
-			
-			String host = uri.getHost();
-			if (!AuthenticationInterceptor.isBound(host)) {
-        AuthenticationInterceptor.bind(host);
-      }
 		} catch (NoRepositorySelected | URISyntaxException | IOException e) {
-			logger.error(e, e);
+			if (logger.isDebugEnabled()) {
+				logger.debug(e, e);
+			}
 		}
 		dispose();
 	}
