@@ -68,7 +68,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
                 .append("\"");
               if(isDarkTheme) {
                 commitDescription.append("style=\"color: ")
-                .append(UIUtil.PARENTS_LINK_COLOR_GRAPHITE_STRING)
+                .append(UIUtil.PARENTS_LINK_HEX_COLOR_GRAPHITE)
                 .append("\"");
               }
                 
@@ -82,7 +82,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
               .append("\"");
             if(isDarkTheme) {
               commitDescription.append("style=\"color: ")
-              .append(UIUtil.PARENTS_LINK_COLOR_GRAPHITE_STRING)
+              .append(UIUtil.PARENTS_LINK_HEX_COLOR_GRAPHITE)
               .append("\"");
             }
             commitDescription.append(">")
