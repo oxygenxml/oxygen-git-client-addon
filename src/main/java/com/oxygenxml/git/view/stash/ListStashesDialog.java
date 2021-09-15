@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -31,6 +32,7 @@ import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -112,7 +114,7 @@ public class ListStashesDialog extends JDialog {
   /**
    * The size of column id.
    */
-  private static final int COLUMN_ID_SIZE = 25;
+  private static final int COLUMN_ID_SIZE = 30;
 
   /**
    * The table with the stashes.
@@ -573,6 +575,7 @@ public class ListStashesDialog extends JDialog {
 
     tableOfStashes.setFillsViewportHeight(true);
     TableColumnModel columnModel = tableOfStashes.getColumnModel();
+    columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setCellRenderer(new StashIndexRender());
     columnModel.getColumn(StashesTableModel.STASH_DESCRIPTION_COLUMN).setCellRenderer(new StashMessageRender());
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tableOfStashes.getTableHeader().setReorderingAllowed(false);
@@ -639,11 +642,21 @@ public class ListStashesDialog extends JDialog {
 
 
   /**
-   * A custom render for String.
+   * A custom render for Stash message.
    *
    * @author Alex_Smarandache
    */
   private static class StashMessageRender extends DefaultTableCellRenderer {
+    
+    /**
+     * The border for padding.
+     */
+    private final Border padding = BorderFactory.createEmptyBorder(
+        0, 
+        UIConstants.COMPONENT_LEFT_PADDING, 
+        0, 
+        UIConstants.COMPONENT_RIGHT_PADDING
+    );
     
     @Override
     public Component getTableCellRendererComponent(JTable table,
@@ -658,6 +671,8 @@ public class ListStashesDialog extends JDialog {
       setText((String) value);
       setToolTipText((String) value);
       
+      setBorder(BorderFactory.createCompoundBorder(getBorder(), padding));
+      
       return this;
     }
     
@@ -667,6 +682,41 @@ public class ListStashesDialog extends JDialog {
     }
   }
 
+  
+  /**
+   * A custom render for Stash index.
+   *
+   * @author Alex_Smarandache
+   */
+  private static class StashIndexRender extends DefaultTableCellRenderer {
+    
+    /**
+     * The border for padding.
+     */
+    private final Border padding = BorderFactory.createEmptyBorder(
+        0, 
+        UIConstants.COMPONENT_LEFT_PADDING, 
+        0, 
+        UIConstants.COMPONENT_RIGHT_PADDING
+    );
+    
+    @Override
+    public Component getTableCellRendererComponent(JTable table,
+        Object value,
+        boolean isSelected,
+        boolean hasFocus,
+        int row,
+        int column) {  
+      
+      super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+      
+      setBorder(BorderFactory.createCompoundBorder(getBorder(), padding));
+      
+      return this;
+    }
+    
+  }
+  
 
   /**
    * Creates the actions for buttons.
