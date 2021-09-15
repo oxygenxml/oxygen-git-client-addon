@@ -5,11 +5,14 @@ import java.awt.Component;
 import java.awt.FontMetrics;
 import java.util.function.BooleanSupplier;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.oxygenxml.git.constants.UIConstants;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.utils.FileUtil;
@@ -21,10 +24,23 @@ import com.oxygenxml.git.view.util.RenderingInfo;
  */
 @SuppressWarnings("java:S110")
 public final class StagingResourcesTableCellRenderer extends DefaultTableCellRenderer {
+  
   /**
    * Tells if a contextual menu is presented over the table.
    */
   private BooleanSupplier contextMenuShowing;
+  
+  /**
+   * The border for padding.
+   */
+  private static final Border PADDING = BorderFactory.createEmptyBorder(
+      0, 
+      UIConstants.COMPONENT_LEFT_PADDING - 1, 
+      0, 
+      UIConstants.COMPONENT_RIGHT_PADDING - 1
+  );
+  
+  
   /**
    * Constructor.
    * 
@@ -49,12 +65,14 @@ public final class StagingResourcesTableCellRenderer extends DefaultTableCellRen
     
     if (value instanceof GitChangeType) {
       RenderingInfo renderingInfo = RendererUtil.getChangeRenderingInfo((GitChangeType) value);
+      setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
       if (renderingInfo != null) {
         icon = renderingInfo.getIcon();
         tooltipText = renderingInfo.getTooltip();
       }
     } else if (value instanceof FileStatus) {
       String location = ((FileStatus) value).getFileLocation();
+      setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
       
       FontMetrics metrics = getFontMetrics(getFont());
       location = FileUtil.truncateText(location, metrics, table.getWidth() - table.getColumnModel().getColumn(0).getWidth());
