@@ -434,7 +434,7 @@ public class ToolbarPanel extends JPanel {
 		this.add(gitToolbar, gbc);
 
 		gbc.insets = new Insets(0, 0, 0, 0);
-		gbc.anchor = GridBagConstraints.WEST;
+		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 1;
 		gbc.gridy = 0;
