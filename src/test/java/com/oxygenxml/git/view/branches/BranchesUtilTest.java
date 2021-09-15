@@ -111,9 +111,9 @@ public class BranchesUtilTest extends TestCase {
     Method getLocalBranchesMethod = PowerMockito.method(BranchesUtil.class, "getLocalBranches");
     PowerMockito.stub(getLocalBranchesMethod).toReturn(Arrays.asList("my_branch"));
     
-    assertTrue(BranchesUtil.doesBranchAlreadyExist("my_branch"));
-    assertTrue(BranchesUtil.doesBranchAlreadyExist("my_Branch"));
-    assertFalse(BranchesUtil.doesBranchAlreadyExist("my_branch_2"));
+    assertTrue(BranchesUtil.existsLocalBranch("my_branch"));
+    assertTrue(BranchesUtil.existsLocalBranch("my_Branch"));
+    assertFalse(BranchesUtil.existsLocalBranch("my_branch_2"));
   }
 
 }

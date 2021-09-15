@@ -58,6 +58,22 @@ public class HiDPIUtil {
   }
   
   /**
+   * Applies a scaling factor depending if we are on a hidpi display.
+   * 
+   * @param width Width to scale.
+   * 
+   * @return A scaled width.
+   */
+  public static int scaleWidth(int width) {
+    float scalingFactor = (float) 1.0;
+    if (HiDPIUtil.isRetinaNoImplicitSupport()) {
+      scalingFactor = HiDPIUtil.getScalingFactor();
+    }
+
+    return (int) (scalingFactor * width);
+  }
+  
+  /**
    * Converts the given insets with the scaling factor if the HiDPI support is activated.
    * 
    * @param insets The current insets.

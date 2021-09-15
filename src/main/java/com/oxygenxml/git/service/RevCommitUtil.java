@@ -43,6 +43,7 @@ import org.eclipse.jgit.util.io.NullOutputStream;
 
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.service.entities.FileStatusOverDiffEntry;
+import com.oxygenxml.git.service.entities.GitChangeType;
 import com.oxygenxml.git.view.history.CommitCharacteristics;
 import com.oxygenxml.git.view.history.CommitsAheadAndBehind;
 
@@ -57,20 +58,26 @@ public class RevCommitUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(RevCommitUtil.class);
-  
+  private static final Logger LOGGER = Logger.getLogger(RevCommitUtil.class);
+  /**
+   * Index of the parent commit which contains untracked changes.
+   */
+  public static final int PARENT_COMMIT_UNTRACKED = 2;
+
+
   /**
    * Utility class. Not indented to be instantiated.
    */
   private RevCommitUtil() {}
-  
+
+
   /**
    * Get changed files as compared with the parent version.
-   * 
+   *
    * @param commitID The commit ID.
-   * 
+   *
    * @return A list with changed files. Never <code>null</code>.
-   * 
+   *
    * @throws IOException
    * @throws GitAPIException
    */
@@ -83,11 +90,13 @@ public class RevCommitUtil {
 
         try (RevWalk rw = new RevWalk(repository)) {
           RevCommit commit = rw.parseCommit(head);
-          
+
           if (commit.getParentCount() > 0) {
             RevCommit oldC = rw.parseCommit(commit.getParent(0));
-
             changedFiles = RevCommitUtil.getChanges(repository, commit, oldC);
+            if (commit.getParentCount() > 2) {
+              addUntrackedFiles(changedFiles, repository, rw, commit);
+            }
           } else {
             changedFiles = RevCommitUtil.getFiles(repository, commit);
           }
@@ -96,12 +105,43 @@ public class RevCommitUtil {
         changedFiles = GitAccess.getInstance().getUnstagedFiles();
       }
     } catch (GitAPIException | RevisionSyntaxException | IOException | NoRepositorySelected e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
 
     return changedFiles;
   }
-  
+
+
+  /**
+   * Add the untracked files to files list.
+   *
+   * @param changedFiles    The container to add files.
+   * @param repository      The Git repository.
+   * @param revWalk         The RevWalk.
+   * @param commit          The stash commit.
+   *
+   * @throws IOException
+   */
+  private static void addUntrackedFiles(List<FileStatus> changedFiles, Repository repository, RevWalk revWalk, RevCommit commit) throws IOException {
+    RevCommit oldC;
+    oldC = revWalk.parseCommit(commit.getParent(PARENT_COMMIT_UNTRACKED));
+    try (TreeWalk treeWalk = new TreeWalk(repository)) {
+      treeWalk.addTree(commit.getTree());
+      treeWalk.setRecursive(false);
+      treeWalk.setFilter(null);
+      treeWalk.reset(oldC.getTree().getId());
+      while (treeWalk.next()) {
+        if (treeWalk.isSubtree()) {
+          treeWalk.enterSubtree();
+        } else {
+          String path = treeWalk.getPathString();
+          changedFiles.add(new FileStatus(GitChangeType.UNTRACKED, path));
+        }
+      }
+    }
+  }
+
+
   /**
    * Gets the Object ID for a file path at a given revision.
    * 
@@ -118,7 +158,7 @@ public class RevCommitUtil {
 
     try (RevWalk rw = new RevWalk(repository)) {
       RevCommit commit = rw.parseCommit(head);
-      
+
       try (TreeWalk treeWalk = TreeWalk.forPath(repository, path, commit.getTree())) {
         return treeWalk != null ? treeWalk.getObjectId(0) : null;
       }
@@ -138,14 +178,14 @@ public class RevCommitUtil {
    */
   private static List<FileStatus> getChanges(Repository repository, RevCommit newCommit, RevCommit oldCommit) throws IOException, GitAPIException {
     List<DiffEntry> diffs = diff(repository, newCommit, oldCommit);
-    
+
     return diffs
         .stream()
         .map(t -> new FileStatusOverDiffEntry(t, newCommit.getId().name(), oldCommit.getId().name()))
         .collect(Collectors.toList());
   }
-  
-  
+
+
   /**
    * Gets all the files changed between two revisions.
    * 
@@ -165,12 +205,12 @@ public class RevCommitUtil {
     try (ObjectReader reader = repository.newObjectReader()) {
       CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
       newTreeIter.reset(reader, newCommit.getTree().getId());
-      
+
       CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
       if (oldCommit != null) {
         oldTreeIter.reset(reader, oldCommit.getTree().getId());
       }
-      
+
 
       // finally get the list of changed files
       try (Git git = new Git(repository)) {
@@ -178,7 +218,7 @@ public class RevCommitUtil {
             .setNewTree(newTreeIter)
             .setOldTree(oldTreeIter)
             .call();
-        
+
         // Identify potential renames.
         RenameDetector rd = new RenameDetector(git.getRepository());
         rd.addAll(diffs);
@@ -188,7 +228,7 @@ public class RevCommitUtil {
 
     return collect;
   }
-  
+
   /**
    * Iterates over the entire tree of files inside a commit. <b>Note:</b> Not just hte changes, the entire tree.
    * 
@@ -236,7 +276,7 @@ public class RevCommitUtil {
 
     return new RevCommit[0];
   }
-  
+
   /**
    * Checks if the given path was renamed between the two revisions.
    * 
@@ -278,8 +318,8 @@ public class RevCommitUtil {
     return ent.getChangeType() == ChangeType.RENAME
         || ent.getChangeType() == ChangeType.COPY;
   }
-  
-  
+
+
 
   /**
    * Collects the revisions from the current branch and the remote branch linked to it.
@@ -295,14 +335,14 @@ public class RevCommitUtil {
       String filePath, 
       List<CommitCharacteristics> revisions, 
       Repository repository) throws IOException, GitAPIException {
-    
- // a RevWalk allows to walk over commits based on some filtering that is defined
+
+    // a RevWalk allows to walk over commits based on some filtering that is defined
     // EXM-44307 Show current branch commits only.
     String fullBranch = repository.getFullBranch();
     Ref branchHead = repository.exactRef(fullBranch);
     if (branchHead != null) {
       try (RevWalk revWalk = new RevWalk(repository)) {
-        
+
         RevCommit revCommit = revWalk.parseCommit(branchHead.getObjectId());
         revWalk.markStart(revCommit);
 
@@ -314,15 +354,15 @@ public class RevCommitUtil {
             revWalk.markStart(revWalk.parseCommit(fullRemoteBranchHead.getObjectId()));
           }
         }
-        
+
         collectRevisions(filePath, revisions, repository, revWalk);
       }
-      
+
     } else {
       // Probably a new repository without any history. 
     }
   }
-  
+
   /**
    * Gets the full remote-tracking branch name or null is the local branch is not tracking a remote branch.
    * 
@@ -354,7 +394,7 @@ public class RevCommitUtil {
       List<CommitCharacteristics> commits, 
       Repository repository,
       RevWalk revWalk) throws IOException, GitAPIException {
-    
+
     if (filePath != null) {
       revWalk.setTreeFilter(
           AndTreeFilter.create(
@@ -366,10 +406,10 @@ public class RevCommitUtil {
     RevCommit lastProcessedRevision = null;
     for (RevCommit commit : revWalk) {
       appendRevCommit(commits, commit);
-      
+
       lastProcessedRevision = commit;
     }
-    
+
     // If we are following a resource, check for rename events.
     if (filePath != null && lastProcessedRevision != null) {
       handleRename(filePath, commits, repository, lastProcessedRevision);
@@ -393,8 +433,8 @@ public class RevCommitUtil {
       List<CommitCharacteristics> commits, 
       Repository repository,
       RevCommit current)
-      throws IOException, GitAPIException {
-    try (RevWalk revWalk = new RevWalk(repository);) {
+          throws IOException, GitAPIException {
+    try (RevWalk revWalk = new RevWalk(repository)) {
       current = revWalk.parseCommit(current.getId());
 
       if (current.getParentCount() > 0) {
@@ -406,7 +446,7 @@ public class RevCommitUtil {
           String oldPath = renameRev.get().getOldPath();
 
           revWalk.markStart(current);
-          
+
           // We will re-append this commit but this time it will be linked to 
           commits.remove(commits.size() - 1);
           collectRevisions(oldPath, commits, repository, revWalk);
@@ -414,7 +454,7 @@ public class RevCommitUtil {
       }
     }
   }
-  
+
   /**
    * Creates a list with the characteristics of all revisions.
    * 
@@ -470,8 +510,8 @@ public class RevCommitUtil {
     }
     return parentsIds;
   }
-  
-  
+
+
   /**
    * Checks if a resource was moved or renamed between two revisions. We know the path in the old revision and 
    * we want to find out the path in the new revision.
@@ -492,12 +532,12 @@ public class RevCommitUtil {
       RevCommit until,
       String filePath) throws GitAPIException, IOException {
     Iterable<RevCommit> revs = git.log().addRange(since, until).call();
-    
+
     List<RevCommit> revisions = sort(revs, since, true);
-    
+
     return findPath(git, filePath, revisions);
   }
-  
+
   /**
    * Checks if a resource was moved or renamed between two revisions. We know the path in the NEW revision and 
    * we want to find out the path in the OLD revision.
@@ -518,13 +558,13 @@ public class RevCommitUtil {
       RevCommit until,
       String newFilePath) throws GitAPIException, IOException {
     Iterable<RevCommit> revs = git.log().addRange(since, until).call();
-    
+
     List<RevCommit> sorted = sort(revs, since, false);
-    
+
     return findPath(git, newFilePath, sorted);
   }
-  
-  
+
+
   /**
    * Checks if a resource was moved or renamed between HEAD and an older revision. We know the path in the HEAD revision and 
    * we want to find out the path in the OLD revision.
@@ -542,11 +582,11 @@ public class RevCommitUtil {
       Git git, 
       String oldRevisionId, 
       String originalFilePath) throws GitAPIException, IOException {
-    
+
     Repository repository = git.getRepository();
     RevCommit olderRevCommit = repository.parseCommit(repository.resolve(oldRevisionId));
     RevCommit headRevCommit = repository.parseCommit(repository.resolve("HEAD"));
-    
+
     return getOldPath(git, olderRevCommit, headRevCommit, originalFilePath);
   }
 
@@ -565,16 +605,16 @@ public class RevCommitUtil {
   private static String findPath(Git git, String filePath, List<RevCommit> revisions)
       throws IOException, GitAPIException {
     String path = filePath;
-    if (logger.isDebugEnabled()) {
-      logger.debug("====SORTED===");
-      revisions.stream().forEach(r -> logger.debug(r.getFullMessage()));
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("====SORTED===");
+      revisions.forEach(r -> LOGGER.debug(r.getFullMessage()));
     }
 
     if (!revisions.isEmpty()) {
       RevCommit lastRev = revisions.get(revisions.size() - 1);
       List<FileStatus> targetRevFiles = getFiles(git.getRepository(), lastRev);
       Set<String> lastRevFiles = targetRevFiles.stream().map(FileStatus::getFileLocation).collect(Collectors.toSet());
-      
+
       RevCommit previous = null;
       for (RevCommit revCommit : revisions) {
         if (previous != null) {
@@ -582,24 +622,24 @@ public class RevCommitUtil {
           // Fast stop.
           if (lastRevFiles.contains(path)) {
             // The current discovered path is the same as in the target revision.
-            if (logger.isDebugEnabled()) {
-              logger.info("Same path as in target. Stop. " + revCommit.getFullMessage());
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.info("Same path as in target. Stop. " + revCommit.getFullMessage());
             }
             break;
           }
-          
+
           // Check if the current discovered path is also present in the new revision to consume.
           // TThis way we will avoid a time consuming diff with rename detection.
           List<FileStatus> currentRevisionFiles = getFiles(git.getRepository(), revCommit);
           final String fpath = path;
           boolean same = currentRevisionFiles.stream().anyMatch(t -> fpath.equals(t.getFileLocation()));
-          
+
           if (!same) {
             // Do a diff with rename detection.
-            if (logger.isDebugEnabled()) {
-              logger.info("Search for a rename at revision " + revCommit.getFullMessage());
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.info("Search for a rename at revision " + revCommit.getFullMessage());
             }
-            
+
             List<DiffEntry> diff = diff(git.getRepository(), revCommit, previous);
             for (DiffEntry diffEntry : diff) {
               if (isRename(diffEntry) 
@@ -618,7 +658,7 @@ public class RevCommitUtil {
 
     return path;
   }
-  
+
   /**
    * Utility method  to put the revisions in a proper order.
    * 
@@ -641,10 +681,10 @@ public class RevCommitUtil {
       for (E revCommit : new2old) {
         sorted.addFirst(revCommit);
       }
-      
+
       sorted.addFirst(oldestRev);
     }
-    
+
     return sorted;
   }
 
@@ -665,11 +705,11 @@ public class RevCommitUtil {
       Git git, 
       String filePath, 
       String commitId) throws IOException, GitAPIException {
-    
+
     String originalPath = filePath;
-    
+
     Repository repository = git.getRepository();
-    
+
     File targetFile = new File(repository.getWorkTree(), originalPath);
     if (!targetFile.exists()) {
       // The file is not present in the working copy. Perhaps it was renamed.
@@ -681,8 +721,8 @@ public class RevCommitUtil {
           older, 
           newer,
           filePath);
-      
-      
+
+
       targetFile = new File(repository.getWorkTree(), originalPath);
       if (!targetFile.exists()) {
         // Still not present inside the WC. Probably a rename that wasn't committed yet.
@@ -696,7 +736,7 @@ public class RevCommitUtil {
         }
       }
     }
-    
+
     return originalPath;
   }
 
@@ -734,18 +774,18 @@ public class RevCommitUtil {
       RenameDetector rd = new RenameDetector(repository);
       rd.addAll(diffs);
       List<DiffEntry> collect = rd.compute();
-      
+
       for (DiffEntry diffEntry : collect) {
         if (isRename(diffEntry) && diffEntry.getOldPath().equals(path)) {
           toReturn = diffEntry.getNewPath();
           break;
         }
-       }
+      }
 
       return toReturn;
     }
   }
-  
+
   /**
    * Get commits ahead and behind.
    * 
@@ -795,7 +835,7 @@ public class RevCommitUtil {
       return new CommitsAheadAndBehind(commitsAhead, commitsBehind);
     }
   }
-  
+
 
   /**
    * Returns the SHA-1 id for the BASE commit of a file. The BASE commit
@@ -815,8 +855,8 @@ public class RevCommitUtil {
     if (!entries.isEmpty()) {
       toReturn = entries.get(0).getOldId().toObjectId();
     } else { 
-      if (logger.isDebugEnabled()) {
-        logger.debug("No BASE commit for: '" + filePath + "'");
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("No BASE commit for: '" + filePath + "'");
       }
       toReturn = getLastLocalCommitForPath(git, filePath);
     }
@@ -844,8 +884,8 @@ public class RevCommitUtil {
     if (indexOfTheirs < noOfDiffEntries) {
       toReturn =  entries.get(indexOfTheirs).getOldId().toObjectId();
     } else {
-      if (logger.isDebugEnabled()) {
-        logger.debug("No THEIRS commit available for: '" + filePath + "'. "
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("No THEIRS commit available for: '" + filePath + "'. "
             + "Falling back to the last commit for this path.");
       }
       toReturn = getLastLocalCommitForPath(git, filePath);
@@ -874,8 +914,8 @@ public class RevCommitUtil {
     if (indexOfMine < noOfDiffEntries) {
       toReturn =  entries.get(indexOfMine).getOldId().toObjectId();
     } else {
-      if (logger.isDebugEnabled()) {
-        logger.debug("No MINE commit available for: '" + path + "'."
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("No MINE commit available for: '" + path + "'."
             + " Falling back to the last commit for this path.");
       }
       toReturn = getLastLocalCommitForPath(git, path);
@@ -895,7 +935,7 @@ public class RevCommitUtil {
    */
   public static ObjectId getLastLocalCommitForPath(Git git, String path) throws IOException {
     ObjectId toReturn = null;
-    
+
     ObjectId lastLocalCommit = getLastLocalCommitInRepo(git);
     RevWalk revWalk = new RevWalk(git.getRepository());
     RevCommit revCommit = revWalk.parseCommit(lastLocalCommit);
@@ -909,10 +949,10 @@ public class RevCommitUtil {
     }
     treeWalk.close();
     revWalk.close();
-    
+
     return toReturn;
   }
-  
+
   /**
    * Finds the last local commit in the repository
    * 
@@ -925,11 +965,10 @@ public class RevCommitUtil {
     try {
       return repo.resolve("HEAD^{commit}");
     } catch (IOException e) {
-      logger.error(e, e);
+      LOGGER.error(e, e);
     }
     return null;
   }
-  
   /**
    * Finds the commit from the commitID 
    * 
@@ -946,5 +985,6 @@ public class RevCommitUtil {
       return revWalk.parseCommit(commitId);
     }
   }
+
 
 }
