@@ -36,9 +36,18 @@ public class UIConstants {
 	public static final int COMPONENT_LEFT_PADDING = 3;
 	
 	/**
-	 * Bad padding for components (in general).
+	 * Right padding for components (in general).
 	 */
 	public static final int COMPONENT_RIGHT_PADDING = 3;
+	/**
+   * Large left padding for components.
+   */
+  public static final int COMPONENT_LEFT_LARGE_PADDING = 5;
+  
+  /**
+   * Large right padding for components (in general).
+   */
+  public static final int COMPONENT_RIGHT_LARGE_PADDING = 5;
 	
 	/**
 	 * Minimum panels width.
