@@ -21,6 +21,7 @@ import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.staging.StagingResourcesTableModel;
+import com.oxygenxml.git.view.util.UIUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.util.XMLUtilAccess;
@@ -59,12 +60,34 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
             commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.PARENTS)).append("</b>: ");
             int parentSize = commitCharacteristics.getParentCommitId().size();
 
+            boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
             for (int j = 0; j < parentSize - 1; j++) {
-              commitDescription.append("<a href=\"").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(j)).append("\">")
-                  .append(commitCharacteristics.getParentCommitId().get(j)).append("</a> , ");
+              commitDescription.append("<a href=\"")
+                .append(PARENT_COMMIT_URL)
+                .append(commitCharacteristics.getParentCommitId().get(j))
+                .append("\"");
+              if(isDarkTheme) {
+                commitDescription.append("style=\"color: ")
+                .append(UIUtil.PARENTS_LINK_HEX_COLOR_GRAPHITE)
+                .append("\"");
+              }
+                
+              commitDescription.append(">")
+                .append(commitCharacteristics.getParentCommitId().get(j))
+                .append("</a> , ");
             }
-            commitDescription.append("<a href=\" ").append(PARENT_COMMIT_URL).append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("\">")
-                .append(commitCharacteristics.getParentCommitId().get(parentSize - 1)).append("</a> ");
+            commitDescription.append("<a href=\" ")
+              .append(PARENT_COMMIT_URL)
+              .append(commitCharacteristics.getParentCommitId().get(parentSize - 1))
+              .append("\"");
+            if(isDarkTheme) {
+              commitDescription.append("style=\"color: ")
+              .append(UIUtil.PARENTS_LINK_HEX_COLOR_GRAPHITE)
+              .append("\"");
+            }
+            commitDescription.append(">")
+              .append(commitCharacteristics.getParentCommitId().get(parentSize - 1))
+              .append("</a> ");
           }
           
           commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR))

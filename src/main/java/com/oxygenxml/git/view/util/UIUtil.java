@@ -96,11 +96,11 @@ public class UIUtil {
   /**
    * Color for background when have a remote branch name in graphite theme.
    */
-  public static final Color REMOTE_BRANCH_GRAPHITE_BACKGROUND = new Color(35,35,35);
+  public static final Color REMOTE_BRANCH_GRAPHITE_BACKGROUND = new Color(40, 40, 40); 
   /**
    * Color for background when have a tag name in graphite theme.
    */
-  public static final Color TAG_GRAPHITE_BACKGROUND = new Color(90,80,175);
+  public static final Color TAG_GRAPHITE_BACKGROUND = new Color(101, 93,174); 
   /**
    * Color for background when have a remote branch name in light/classic theme.
    */
@@ -109,6 +109,10 @@ public class UIUtil {
    * Color for background when have a tag name in light/classic theme.
    */
   public static final Color TAG_LIGHT_BACKGROUND = new Color(255,255,153);
+  /**
+   * Color hex for parents link in Git History in graphite theme.
+   */
+  public static final String PARENTS_LINK_HEX_COLOR_GRAPHITE = "#60d1f0";
   
   /**
    * Hidden constructor.

@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -31,6 +32,7 @@ import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -112,7 +114,7 @@ public class ListStashesDialog extends JDialog {
   /**
    * The size of column id.
    */
-  private static final int COLUMN_ID_SIZE = 25;
+  private static final int COLUMN_ID_SIZE = 30;
 
   /**
    * The table with the stashes.
@@ -222,9 +224,9 @@ public class ListStashesDialog extends JDialog {
     constraints.gridheight = 1;
     constraints.anchor = GridBagConstraints.WEST;
     constraints.insets = new Insets(
-        UIConstants.INSETS_3PX, 
-        UIConstants.INSETS_11PX, 
-        UIConstants.INSETS_5PX, 
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_LARGE_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
         0);
     constraints.weightx = 1;
     constraints.weighty = 0;
@@ -233,7 +235,11 @@ public class ListStashesDialog extends JDialog {
     
     JLabel tableTitleLabel = new JLabel(TRANSLATOR.getTranslation(Tags.AFFECTED_FILES) + ":");
     constraints.gridx++;
-    constraints.insets = new Insets(UIConstants.INSETS_3PX, UIConstants.INSETS_5PX, UIConstants.INSETS_5PX, 0);
+    constraints.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_LARGE_PADDING,
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        0);
     stashesPanel.add(tableTitleLabel, constraints);
     
     stashesTable = (Table) createStashesTable();
@@ -244,7 +250,11 @@ public class ListStashesDialog extends JDialog {
     constraints.gridy++;
     constraints.weightx = 1;
     constraints.weighty = 1;
-    constraints.insets = new Insets(0, UIConstants.INSETS_11PX, 0, UIConstants.INSETS_11PX);
+    constraints.insets = new Insets(
+        0, 
+        UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
+        0, 
+        UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
     constraints.fill = GridBagConstraints.BOTH;
     stashesPanel.add(tableStashesScrollPane, constraints);
 
@@ -256,7 +266,11 @@ public class ListStashesDialog extends JDialog {
     constraints.weightx = 1;
     constraints.weighty = 1;
     constraints.fill = GridBagConstraints.BOTH;
-    constraints.insets = new Insets(0, UIConstants.INSETS_5PX, 0, UIConstants.INSETS_11PX);
+    constraints.insets = new Insets(
+        0, 
+        UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
+        0, 
+        UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
     stashesPanel.add(changesOfStashScrollPane, constraints);
 
     JPanel stashesTableButtons = createUnderStashesPanel();
@@ -265,7 +279,11 @@ public class ListStashesDialog extends JDialog {
     constraints.weightx = 1;
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.insets = new Insets(UIConstants.INSETS_3PX, UIConstants.INSETS_11PX, 0, UIConstants.INSETS_11PX);
+    constraints.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING,
+        UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
+        0, 
+        UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
     stashesPanel.add(stashesTableButtons, constraints);
 
     JPanel emptyPanel = new JPanel();
@@ -282,7 +300,11 @@ public class ListStashesDialog extends JDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.EAST;
-    constraints.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, 0, UIConstants.INSETS_7PX, UIConstants.INSETS_11PX);
+    constraints.insets = new Insets(
+        UIConstants.COMPONENT_TOP_PADDING, 
+        0, 
+        UIConstants.COMPONENT_BOTTOM_PADDING,
+        UIConstants.COMPONENT_RIGHT_LARGE_PADDING);
     stashesPanel.add(closeButton, constraints);
 
     stashesTable.setRowSelectionInterval(0, 0);
@@ -461,7 +483,11 @@ public class ListStashesDialog extends JDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(0, UIConstants.INSETS_3PX, UIConstants.INSETS_7PX, 0);
+    constraints.insets = new Insets(
+        0, 
+        UIConstants.COMPONENT_LEFT_LARGE_PADDING, 
+        UIConstants.COMPONENT_BOTTOM_PADDING, 
+        0);
 
     applyButton = createApplyButton();
     buttonsPanel.add(applyButton, constraints);
@@ -549,6 +575,7 @@ public class ListStashesDialog extends JDialog {
 
     tableOfStashes.setFillsViewportHeight(true);
     TableColumnModel columnModel = tableOfStashes.getColumnModel();
+    columnModel.getColumn(StashesTableModel.STASH_INDEX_COLUMN).setCellRenderer(new StashIndexRender());
     columnModel.getColumn(StashesTableModel.STASH_DESCRIPTION_COLUMN).setCellRenderer(new StashMessageRender());
     tableOfStashes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tableOfStashes.getTableHeader().setReorderingAllowed(false);
@@ -615,11 +642,21 @@ public class ListStashesDialog extends JDialog {
 
 
   /**
-   * A custom render for String.
+   * A custom render for Stash message.
    *
    * @author Alex_Smarandache
    */
   private static class StashMessageRender extends DefaultTableCellRenderer {
+    
+    /**
+     * The border for padding.
+     */
+    private final Border padding = BorderFactory.createEmptyBorder(
+        0, 
+        UIConstants.COMPONENT_LEFT_PADDING, 
+        0, 
+        UIConstants.COMPONENT_RIGHT_PADDING
+    );
     
     @Override
     public Component getTableCellRendererComponent(JTable table,
@@ -634,6 +671,8 @@ public class ListStashesDialog extends JDialog {
       setText((String) value);
       setToolTipText((String) value);
       
+      setBorder(BorderFactory.createCompoundBorder(getBorder(), padding));
+      
       return this;
     }
     
@@ -643,6 +682,41 @@ public class ListStashesDialog extends JDialog {
     }
   }
 
+  
+  /**
+   * A custom render for Stash index.
+   *
+   * @author Alex_Smarandache
+   */
+  private static class StashIndexRender extends DefaultTableCellRenderer {
+    
+    /**
+     * The border for padding.
+     */
+    private final Border padding = BorderFactory.createEmptyBorder(
+        0, 
+        UIConstants.COMPONENT_LEFT_PADDING, 
+        0, 
+        UIConstants.COMPONENT_RIGHT_PADDING
+    );
+    
+    @Override
+    public Component getTableCellRendererComponent(JTable table,
+        Object value,
+        boolean isSelected,
+        boolean hasFocus,
+        int row,
+        int column) {  
+      
+      super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+      
+      setBorder(BorderFactory.createCompoundBorder(getBorder(), padding));
+      
+      return this;
+    }
+    
+  }
+  
 
   /**
    * Creates the actions for buttons.

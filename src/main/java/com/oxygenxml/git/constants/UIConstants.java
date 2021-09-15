@@ -51,9 +51,18 @@ public class UIConstants {
 	public static final int COMPONENT_LEFT_PADDING = 3;
 	
 	/**
-	 * Bad padding for components (in general).
+	 * Right padding for components (in general).
 	 */
 	public static final int COMPONENT_RIGHT_PADDING = 3;
+	/**
+   * Large left padding for components.
+   */
+  public static final int COMPONENT_LEFT_LARGE_PADDING = 5;
+  
+  /**
+   * Large right padding for components (in general).
+   */
+  public static final int COMPONENT_RIGHT_LARGE_PADDING = 5;
 	
 	/**
 	 * Minimum panels width.
@@ -84,27 +93,6 @@ public class UIConstants {
    * Commit panel preferred height.
    */
 	public static final int COMMIT_PANEL_PREF_HEIGHT = 150;
-	
-	/**
-	 * Insets with 3px value.
-	 */
-	public static final int INSETS_3PX = 3;
-	
-	/**
-   * Insets with 5px value.
-   */
-  public static final int INSETS_5PX = 5;
-  
-  /**
-   * Insets with 7px value.
-   */
-  public static final int INSETS_7PX = 7;
-  
-  /**
-   * Insets with 11px value.
-   */
-  public static final int INSETS_11PX = 11;
-  
   
   /**
    * DlG Margin GAP for MacOS.

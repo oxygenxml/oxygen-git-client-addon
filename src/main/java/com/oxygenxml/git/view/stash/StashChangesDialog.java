@@ -111,7 +111,7 @@ public class StashChangesDialog extends OKCancelDialog {
     constraints.weighty = 0;
     constraints.fill = GridBagConstraints.NONE;
     constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(0, 0, UIConstants.INSETS_3PX, 0);
+    constraints.insets = new Insets(0, 0, UIConstants.COMPONENT_BOTTOM_PADDING, 0);
     panel.add(informativeLabel, constraints);
     
     JLabel addDescriptionMessage = new JLabel(TextFormatUtil.toHTML(TRANSLATOR.getTranslation(Tags.STASH_ADD_DESCRIPTION)
@@ -131,7 +131,7 @@ public class StashChangesDialog extends OKCancelDialog {
     constraints.gridy ++;
     constraints.weightx = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.insets = new Insets(UIConstants.INSETS_3PX, 0, 0, 0);
+    constraints.insets = new Insets(UIConstants.COMPONENT_TOP_PADDING, 0, 0, 0);
     panel.add(stashDescriptionField, constraints);
 
     addDescriptionMessage.setLabelFor(stashDescriptionField);
@@ -139,7 +139,6 @@ public class StashChangesDialog extends OKCancelDialog {
     constraints.gridy++;
     constraints.weightx = 0;
     constraints.fill = GridBagConstraints.NONE;
-    constraints.insets = new Insets(UIConstants.INSETS_5PX, 0, 0, 0);
     
     WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
     if(optionsStorage != null) {
