@@ -156,6 +156,11 @@ public class GitTagsManager {
     return allTags;
   }
   
+  /**
+   * Creates a comparator for descending order of tags
+   * 
+   * @return A Comparator<GitTag> for descending order
+   */
   private static Comparator<GitTag> getDescendingComparator() {
     return (o1, o2) -> o2.getTaggingDate().compareTo(o1.getTaggingDate());
   }

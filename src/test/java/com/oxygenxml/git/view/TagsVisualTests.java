@@ -4,18 +4,16 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.After;
 import org.junit.Before;
 
 import com.oxygenxml.git.service.GitAccess;
@@ -46,7 +44,6 @@ public class TagsVisualTests extends GitTestBase {
 
   private final static String LOCAL_REPO = "target/test-resources/GitTags/localRepository";
   private final static String REMOTE_REPO = "target/test-resources/GitTags/remoteRepository";
-  private final static String LOCAL_BRANCH = "LocalBranch";
 
   /**
    * The git acces
@@ -76,6 +73,25 @@ public class TagsVisualTests extends GitTestBase {
     bindLocalToRemote(localRepository, remoteRepository);
   }
   
+  /**
+   * Used to create some commits
+   * 
+   * @param numberOfCommits
+   * 
+   * @throws Exception 
+   */
+  private void createCommits(int numberOfCommits) throws Exception {
+    
+    File file = new File(LOCAL_REPO, "local.txt");
+    file.createNewFile();
+    for (int i = 0; i < numberOfCommits; i++) {
+      setFileContent(file, "local content" + i);
+      gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
+      gitAccess.commit("Local commit." + i);
+    }
+    //Push the changes
+    push("", "");
+  }
 
   /**
    * <p><b>Description:</b> Tests the "Show Tags" button basic characteristics and the "Show details" functionality.</p>
@@ -86,30 +102,8 @@ public class TagsVisualTests extends GitTestBase {
    * @throws Exception
    */ 
   public void testTagsDialog() throws Exception {
-    //Make the first commit for the local repository
-    File file = new File(LOCAL_REPO, "local.txt");
-    file.createNewFile();
-    setFileContent(file, "local content");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("First local commit.");
     
-    //Make the 2nd commit on local
-    setFileContent(file, "local content 2");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Second local commit.");
-    
-    //Make the 3rd commit on local
-    setFileContent(file, "local content 3");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Third local commit.");
-    
-    //Make the 4th commit on local
-    setFileContent(file, "local content 4");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Fourth local commit.");
-    
-    //Push the changes
-    push("", "");
+    createCommits(4);
     
     //Make 3 tags ( 2nd tag will be pushed )
     
@@ -213,22 +207,8 @@ public class TagsVisualTests extends GitTestBase {
       Rectangle cellRect = tagsTable.getCellRect(0, 0, true);
       Point p = new Point(cellRect.x + cellRect.width/2 , cellRect.y + cellRect.height/2);
       
-      MouseEvent mousePressed1 = new MouseEvent(tagsTable, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, p.x, p.y, 1, false);
-      MouseEvent mouseReleased1 = new MouseEvent(tagsTable, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, p.x, p.y, 1, false);
-      MouseEvent mousePressed2 = new MouseEvent(tagsTable, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, p.x, p.y, 1, false);
-      MouseEvent mouseReleased2 = new MouseEvent(tagsTable, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, p.x, p.y, 1, false);
-      
-      SwingUtilities.invokeAndWait(new Runnable() {
-        @Override
-        public void run() {
-          tagsTable.dispatchEvent(mousePressed1);
-          tagsTable.dispatchEvent(mouseReleased1);
-          tagsTable.dispatchEvent(mousePressed2);
-          tagsTable.dispatchEvent(mouseReleased2);
-        }
-      });
-      
-      new TagDetailsDialog(tag1).setVisible(true);;
+      createDoubleClick(tagsTable, p.x, p.y);
+      new TagDetailsDialog(tag1).setVisible(true);
       flushAWT();
       
       JDialog tagDetailsDialog = findDialog(Tags.TAG_DETAILS_DIALOG_TITLE);
@@ -251,37 +231,9 @@ public class TagsVisualTests extends GitTestBase {
    * @throws Exception
    */ 
   public void testCreateTagsDialog() throws Exception {
-
-    //Make the first commit for the local repository
-    File file = new File(LOCAL_REPO, "local.txt");
-    file.createNewFile();
-    setFileContent(file, "local content");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Local commit1.");
-
-    //Make the 2nd commit on local
-    setFileContent(file, "local content 2");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Local commit2.");
-
-    //Make the 3rd commit on local
-    setFileContent(file, "local content 3");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Local commit3.");
-
-    //Make the 4th commit on local
-    setFileContent(file, "local content 4");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Local commit4.");
-
-    //Make the 5th commit on local
-    setFileContent(file, "local content 5");
-    gitAccess.add(new FileStatus(GitChangeType.ADD, "local.txt"));
-    gitAccess.commit("Local commit5.");
-
-    //Push the changes
-    push("", "");
-
+    
+    createCommits(5);
+    
     //Make 1 tag then make the others with the CreateTag Dialog
 
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
@@ -342,71 +294,34 @@ public class TagsVisualTests extends GitTestBase {
       }
     }
     
-    JFrame frame = new JFrame();
-    
-    try {
-      // Init UI
-      GitController gitCtrl = new GitController(GitAccess.getInstance());
-      stagingPanel = new StagingPanel(refreshSupport, gitCtrl, null, null);
-      ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
-      frame.getContentPane().add(stagingPanel);
-      frame.pack();
-      frame.setVisible(true);
-      flushAWT();
-      toolbarPanel.refresh();
-      refreshSupport.call();
-      flushAWT();
-      
-      ToolbarButton showTagsButton = toolbarPanel.getShowTagsButton();
-      // Test the "Show Tags" button tooltip text
-      assertEquals(Tags.TOOLBAR_PANEL_TAGS_TOOLTIP, showTagsButton.getToolTipText());
-      
-      // Click the showTags Button and verify if the dialog is correct generated
-      showTagsButton.doClick();
-      flushAWT();
-      
-      JDialog tagsDialog = findDialog(Tags.TAGS_DIALOG);
-      assertNotNull(tagsDialog);
-      
-      TagsDialog showTagsJDialog = null;
-      
-      if (tagsDialog instanceof TagsDialog) {
-        showTagsJDialog = (TagsDialog) tagsDialog;
-      }
-      
-      assertNotNull(showTagsJDialog);
-      assertEquals(3, showTagsJDialog.getTagsTable().getModel().getRowCount());
-      
-      JTable tagsTable = showTagsJDialog.getTagsTable();
-      TagsTableModel tableModel = (TagsTableModel) tagsTable.getModel();
-
-      GitTag tag = tableModel.getItemAt(0);
-      assertEquals("Tag2Created", tag.getName());
-      
-      tag = tableModel.getItemAt(1);
-      assertEquals("TagCreated", tag.getName());
-      
-      
-    } finally {
-      frame.setVisible(false);
-      frame.dispose();
-    }
-    
+    //Verify if the tags were created
+    assertTrue(gitAccess.existsTag("Tag1"));
+    assertTrue(gitAccess.existsTag("TagCreated"));
+    assertTrue(gitAccess.existsTag("Tag2Created"));
   }
   
   /**
-   * Used to free up test resources.
+   * Create double click at that given position on a JComponent
+   * 
+   * @param component the component where the double click will be
+   * @param x the x coordinate
+   * @param y the y coordinate
+   * 
    */
-  @After
-  public void freeResources() {
-    gitAccess.closeRepo();
-    File dirToDelete = new File(REMOTE_REPO);
-    File dirToDelete2 = new File(LOCAL_REPO);
-    try {
-      FileUtils.deleteDirectory(dirToDelete);
-      FileUtils.deleteDirectory(dirToDelete2);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  private void createDoubleClick(JComponent component,int x, int y) throws Exception {
+    MouseEvent mousePressed1 = new MouseEvent(component, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y, 1, false);
+    MouseEvent mouseReleased1 = new MouseEvent(component, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, x, y, 1, false);
+    MouseEvent mousePressed2 = new MouseEvent(component, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y, 1, false);
+    MouseEvent mouseReleased2 = new MouseEvent(component, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, x, y, 1, false);
+    
+    SwingUtilities.invokeAndWait(new Runnable() {
+      @Override
+      public void run() {
+        component.dispatchEvent(mousePressed1);
+        component.dispatchEvent(mouseReleased1);
+        component.dispatchEvent(mousePressed2);
+        component.dispatchEvent(mouseReleased2);
+      }
+    });
   }
 }
