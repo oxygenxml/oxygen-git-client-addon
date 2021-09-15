@@ -110,9 +110,9 @@ public class UIUtil {
    */
   public static final Color TAG_LIGHT_BACKGROUND = new Color(255,255,153);
   /**
-   * Color string for parents link in Git History in graphite theme.
+   * Color hex for parents link in Git History in graphite theme.
    */
-  public static final String PARENTS_LINK_COLOR_GRAPHITE_STRING = "#60d1f0";
+  public static final String PARENTS_LINK_HEX_COLOR_GRAPHITE = "#60d1f0";
   
   
   /**
