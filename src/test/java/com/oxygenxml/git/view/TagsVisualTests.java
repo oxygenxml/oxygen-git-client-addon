@@ -1,12 +1,8 @@
 package com.oxygenxml.git.view;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTable;
@@ -203,11 +199,7 @@ public class TagsVisualTests extends GitTestBase {
       //Verify how many rows has the table left
       assertEquals(2, tagsTable.getRowCount());
       
-      //Double click first row to see if the Details dialog has opened
-      Rectangle cellRect = tagsTable.getCellRect(0, 0, true);
-      Point p = new Point(cellRect.x + cellRect.width/2 , cellRect.y + cellRect.height/2);
-      
-      createDoubleClick(tagsTable, p.x, p.y);
+      //Verify the tagDetails Dialog
       new TagDetailsDialog(tag1).setVisible(true);
       flushAWT();
       
@@ -300,28 +292,4 @@ public class TagsVisualTests extends GitTestBase {
     assertTrue(gitAccess.existsTag("Tag2Created"));
   }
   
-  /**
-   * Create double click at that given position on a JComponent
-   * 
-   * @param component the component where the double click will be
-   * @param x the x coordinate
-   * @param y the y coordinate
-   * 
-   */
-  private void createDoubleClick(JComponent component,int x, int y) throws Exception {
-    MouseEvent mousePressed1 = new MouseEvent(component, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y, 1, false);
-    MouseEvent mouseReleased1 = new MouseEvent(component, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, x, y, 1, false);
-    MouseEvent mousePressed2 = new MouseEvent(component, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, y, 1, false);
-    MouseEvent mouseReleased2 = new MouseEvent(component, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0, x, y, 1, false);
-    
-    SwingUtilities.invokeAndWait(new Runnable() {
-      @Override
-      public void run() {
-        component.dispatchEvent(mousePressed1);
-        component.dispatchEvent(mouseReleased1);
-        component.dispatchEvent(mousePressed2);
-        component.dispatchEvent(mouseReleased2);
-      }
-    });
-  }
 }
