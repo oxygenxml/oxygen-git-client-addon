@@ -12,8 +12,17 @@ public class StashApplyFailureWithStatusException extends StashApplyFailureExcep
   /**
    * The stash apply operation status.
    */
-  private StashApplyStatus status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
+  private final StashApplyStatus status;
 
+  /**
+   * Constructor.
+   *
+   * @param message  The message.
+   */
+  public StashApplyFailureWithStatusException(String message) {
+    super(message);
+    status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
+  }
 
   /**
    * Constructor.
@@ -23,16 +32,18 @@ public class StashApplyFailureWithStatusException extends StashApplyFailureExcep
    */
   public StashApplyFailureWithStatusException(String message, Throwable cause) {
     super(message, cause);
+    status = StashApplyStatus.NOT_APPLIED_UNKNOWN_CAUSE;
   }
-
-
+  
   /**
    * Constructor.
    *
+   * @param status   The stash operation status.
    * @param message  The message.
    */
-  public StashApplyFailureWithStatusException(String message) {
+  public StashApplyFailureWithStatusException(StashApplyStatus status, String message) {
     super(message);
+    this.status = status;
   }
 
 
@@ -45,18 +56,6 @@ public class StashApplyFailureWithStatusException extends StashApplyFailureExcep
    */
   public StashApplyFailureWithStatusException(StashApplyStatus status, String message, Throwable cause) {
     super(message, cause);
-    this.status = status;
-  }
-
-
-  /**
-   * Constructor.
-   *
-   * @param status   The stash operation status.
-   * @param message  The message.
-   */
-  public StashApplyFailureWithStatusException(StashApplyStatus status, String message) {
-    super(message);
     this.status = status;
   }
 

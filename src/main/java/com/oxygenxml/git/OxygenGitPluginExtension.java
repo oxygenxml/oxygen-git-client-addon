@@ -326,30 +326,6 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
         }
       }
       
-      private void treatDetachedHead(WorkingCopyGitEventInfo wcEventInfo) {
-        if (wcEventInfo.isWorkingCopySubmodule()) {
-          return;
-        }
-
-        Repository repo = null;
-        try {
-          repo = GitAccess.getInstance().getRepository();
-        } catch (NoRepositorySelected e) {
-          logger.error(e, e);
-        }
-
-        if (repo != null && repo.getRepositoryState() != RepositoryState.REBASING_MERGE) {
-          String commitFullID = GitAccess.getInstance().getBranchInfo().getBranchName();
-          try (RevWalk revWalk = new RevWalk(repo)) {
-            RevCommit commit = revWalk.parseCommit(repo.resolve(commitFullID));
-            DetachedHeadDialog dlg = new DetachedHeadDialog(commit);
-            dlg.setVisible(true);
-          } catch (RevisionSyntaxException | IOException e) {
-            logger.debug(e, e);
-          }
-        }
-      }
-      
       @Override
       public void operationFailed(GitEventInfo info, Throwable t) {
         GitOperation operation = info.getGitOperation();
@@ -363,6 +339,35 @@ public class OxygenGitPluginExtension implements WorkspaceAccessPluginExtension,
     
     viewInfo.setIcon(Icons.getIcon(Icons.GIT_ICON));
     viewInfo.setTitle(translator.getTranslation(Tags.GIT_STAGING));
+  }
+	
+	/**
+	 * Treat detached HEAD.
+	 * 
+	 * @param wcEventInfo event info.
+	 */
+  private void treatDetachedHead(WorkingCopyGitEventInfo wcEventInfo) {
+    if (wcEventInfo.isWorkingCopySubmodule()) {
+      return;
+    }
+
+    Repository repo = null;
+    try {
+      repo = GitAccess.getInstance().getRepository();
+    } catch (NoRepositorySelected e) {
+      logger.error(e, e);
+    }
+
+    if (repo != null && repo.getRepositoryState() != RepositoryState.REBASING_MERGE) {
+      String commitFullID = GitAccess.getInstance().getBranchInfo().getBranchName();
+      try (RevWalk revWalk = new RevWalk(repo)) {
+        RevCommit commit = revWalk.parseCommit(repo.resolve(commitFullID));
+        DetachedHeadDialog dlg = new DetachedHeadDialog(commit);
+        dlg.setVisible(true);
+      } catch (RevisionSyntaxException | IOException e) {
+        logger.debug(e, e);
+      }
+    }
   }
 	
 	/**

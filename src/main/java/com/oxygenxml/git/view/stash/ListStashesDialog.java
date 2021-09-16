@@ -693,7 +693,7 @@ public class ListStashesDialog extends JDialog {
     /**
      * The border for padding.
      */
-    private final Border padding = BorderFactory.createEmptyBorder(
+    private static final Border PADDING = BorderFactory.createEmptyBorder(
         0, 
         UIConstants.COMPONENT_LEFT_PADDING, 
         0, 
@@ -710,7 +710,7 @@ public class ListStashesDialog extends JDialog {
       
       super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       
-      setBorder(BorderFactory.createCompoundBorder(getBorder(), padding));
+      setBorder(BorderFactory.createCompoundBorder(getBorder(), PADDING));
       
       return this;
     }
