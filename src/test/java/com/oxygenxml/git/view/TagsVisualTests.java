@@ -106,10 +106,12 @@ public class TagsVisualTests extends GitTestBase {
     List<CommitCharacteristics> commitsCharacteristics = gitAccess.getCommitsCharacteristics(null);
     String commitIdForTag1 = commitsCharacteristics.get(0).getCommitId();
     gitAccess.tagCommit("Tag1", "MesajTag1", commitIdForTag1);
+    sleep(1000);
     
     String commitIdForTag2 = commitsCharacteristics.get(2).getCommitId();
     gitAccess.tagCommit("Tag2", "MesajTag2", commitIdForTag2);
     gitAccess.pushTag("Tag2");
+    sleep(1000);
     
     String commitIdForTag3 = commitsCharacteristics.get(3).getCommitId();
     gitAccess.tagCommit("Tag3", "", commitIdForTag3);
@@ -153,8 +155,8 @@ public class TagsVisualTests extends GitTestBase {
       //Get the model of the tags table and verify the tags
       TagsTableModel tableModel = (TagsTableModel) tagsTable.getModel();
       
-      //Verify 1st tag
-      GitTag tag1 = tableModel.getItemAt(0);
+      //Verify 1st tag that should be the last in the table
+      GitTag tag1 = tableModel.getItemAt(2);
       assertEquals(commitIdForTag1, tag1.getCommitID());
       assertEquals("Tag1", tag1.getName());
       assertEquals("MesajTag1", tag1.getMessage());
@@ -167,8 +169,8 @@ public class TagsVisualTests extends GitTestBase {
       assertEquals("MesajTag2", tag2.getMessage());
       assertTrue(tag2.isPushed());
       
-      //Verify 3rd tag
-      GitTag tag3 = tableModel.getItemAt(2);
+      //Verify 3rd tag added (the most recent so it s first in the tags table)
+      GitTag tag3 = tableModel.getItemAt(0);
       assertEquals(commitIdForTag3, tag3.getCommitID());
       assertEquals("Tag3", tag3.getName());
       assertEquals("", tag3.getMessage());
@@ -189,24 +191,24 @@ public class TagsVisualTests extends GitTestBase {
       showTagsJDialog.getPushButton().doClick();
       assertFalse(showTagsJDialog.getPushButton().isEnabled());
       assertFalse(showTagsJDialog.getDeleteButton().isEnabled());
-      assertTrue(tag1.isPushed());
+      assertTrue(tag3.isPushed());
       
       //Select last row and delete the tag and verify if the tag doesn't exist
       tagsTable.setRowSelectionInterval(2, 2);
       showTagsJDialog.getDeleteButton().doClick();
-      assertFalse(gitAccess.existsTag("Tag3"));
+      assertFalse(gitAccess.existsTag("Tag1"));
       
       //Verify how many rows has the table left
       assertEquals(2, tagsTable.getRowCount());
       
       //Verify the tagDetails Dialog
-      new TagDetailsDialog(tag1).setVisible(true);
+      new TagDetailsDialog(tag3).setVisible(true);
       flushAWT();
       
       JDialog tagDetailsDialog = findDialog(Tags.TAG_DETAILS_DIALOG_TITLE);
       assertNotNull(tagDetailsDialog);
       JTextArea tagMessageArea = findFirstTextArea(tagDetailsDialog);
-      assertEquals("MesajTag1", tagMessageArea.getText());
+      assertEquals("", tagMessageArea.getText()); //Tag doesn't have a message
       
     } finally {
       frame.setVisible(false);
