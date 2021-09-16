@@ -2,6 +2,7 @@ package com.oxygenxml.git.view.dialog;
 
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.text.MessageFormat;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -11,6 +12,7 @@ import javax.swing.JTextArea;
 
 import com.oxygenxml.git.constants.Icons;
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.view.util.UIUtil;
@@ -35,11 +37,6 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
   private static final String TITLE = TRANSLATOR.getTranslation(Tags.SWITCH_BRANCH);
 
   /**
-   * A question message connected to the presented information. May be <code>null</code>
-   */
-  private static final String QUESTION_MESSAGE = TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES);
-
-  /**
    * Text to be written on the button in case the answer to the question is OK.
    */
   private static final String OK_BUTTON_NAME = TRANSLATOR.getTranslation(Tags.STASH_CHANGES);
@@ -57,8 +54,10 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
 
   /**
    * Constructor.
+   * 
+   * @param newBranch The branch to set.
    */
-  public BranchSwitchConfirmationDialog() {
+  public BranchSwitchConfirmationDialog(String newBranch) {
     super(
             PluginWorkspaceProvider.getPluginWorkspace() != null ?
                     (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame() : null,
@@ -92,7 +91,11 @@ public class BranchSwitchConfirmationDialog extends OKOtherAndCancelDialog {
     JTextArea textArea = UIUtil.createMessageArea("");
     textArea.setDocument(new FileStatusDialog.CustomWrapDocument());
     textArea.setLineWrap(false);
-    textArea.setText(QUESTION_MESSAGE);
+    textArea.setText(
+        MessageFormat.format(
+            TRANSLATOR.getTranslation(Tags.UNCOMMITTED_CHANGES_WHEN_SWITCHING_BRANCHES),
+            GitAccess.getInstance().getBranchInfo().getBranchName(),
+            newBranch));
     gbc.anchor = GridBagConstraints.WEST;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.weightx = 1;

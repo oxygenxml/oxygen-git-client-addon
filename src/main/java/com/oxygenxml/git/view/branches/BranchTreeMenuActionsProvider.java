@@ -142,7 +142,7 @@ public class BranchTreeMenuActionsProvider {
               nodePath,
               BranchManagementConstants.LOCAL_BRANCH_NODE_TREE_LEVEL);
           if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-            int answer = showUncommittedChangesWhenChangingBranchMsg();
+            int answer = showUncommittedChangesWhenChangingBranchMsg(branchToSet);
             if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
               ctrl.getGitAccess().setBranch(branchToSet);
               BranchesUtil.fixupFetchInConfig(ctrl.getGitAccess().getRepository().getConfig());
@@ -253,7 +253,7 @@ public class BranchTreeMenuActionsProvider {
 
         RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
         if (RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-          int answer = showUncommittedChangesWhenChangingBranchMsg();
+          int answer = showUncommittedChangesWhenChangingBranchMsg(branchName);
           if (answer == OKOtherAndCancelDialog.RESULT_OTHER) {
             ctrl.getGitAccess().setBranch(branchName);
           }
@@ -356,11 +356,13 @@ public class BranchTreeMenuActionsProvider {
   /**
    * Show a message when there are uncommitted changes and we try to switch repo.
    * 
+   * @param newBranch The branch to set.
+   * 
    * @return The option chosen by the user. OKCancelDialog#RESULT_OK or OKCancelDialog#RESULT_CANCEL.
    */
-  private int showUncommittedChangesWhenChangingBranchMsg() {
+  private int showUncommittedChangesWhenChangingBranchMsg(String newBranch) {
 
-    BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog();
+    BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(newBranch);
 
     dialog.setVisible(true);
 

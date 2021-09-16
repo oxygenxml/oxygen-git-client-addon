@@ -25,6 +25,8 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.translator.Tags;
+import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchesUtil;
 import com.oxygenxml.git.view.dialog.BranchSwitchConfirmationDialog;
@@ -36,17 +38,36 @@ import com.oxygenxml.git.view.stash.StashUtil;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
+/**
+ * Panel in Git Staging view from where to change the current branch.
+ */
 public class BranchesPanel extends JPanel {
 
+  /**
+   * Branch names combo.
+   */
   private JComboBox<String> branchNamesCombo;
   
+  /**
+   * <code>true</code> if the combo popup is showing.
+   */
   private boolean isComboPopupShowing;
   
+  /**
+   * <code>true</code> to inhibit branch selection listener.
+   */
+  private boolean inhibitBranchSelectionListener;
+  
+  /**
+   * Creates the panel.
+   * 
+   * @param gitController Git Controller.
+   */
   public BranchesPanel(GitController gitController) {
     createGUI();
     
     branchNamesCombo.addItemListener(event -> {
-      if (event.getStateChange() == ItemEvent.SELECTED) {
+      if (!inhibitBranchSelectionListener && event.getStateChange() == ItemEvent.SELECTED) {
         treatBranchSelectedEvent(event);
       }
     });
@@ -81,8 +102,9 @@ public class BranchesPanel extends JPanel {
   }
 
   /**
+   * Treat a branch name selection event.
    * 
-   * @param event
+   * @param event The event to treat.
    */
   private void treatBranchSelectedEvent(ItemEvent event) {
     String branchName = (String) event.getItem();
@@ -93,7 +115,7 @@ public class BranchesPanel extends JPanel {
     
     RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
     if(RepoUtil.isNonConflictualRepoWithUncommittedChanges(repoState)) {
-      BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog();
+      BranchSwitchConfirmationDialog dialog = new BranchSwitchConfirmationDialog(branchName);
 
       dialog.setVisible(true);
 
@@ -115,11 +137,13 @@ public class BranchesPanel extends JPanel {
   }
 
   /**
-   * 
+   * Create the graphical user interface.
    */
   private void createGUI() {
     setLayout(new GridBagLayout());
-    JLabel currentBranchLabel = new JLabel("Branch:");
+    
+    // Branch label
+    JLabel currentBranchLabel = new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH));
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
@@ -130,6 +154,7 @@ public class BranchesPanel extends JPanel {
         UIConstants.COMPONENT_RIGHT_PADDING);
     add(currentBranchLabel, gbc);
     
+    // Branches combo
     branchNamesCombo = new JComboBox<>();
     gbc.gridx++;
     gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -145,19 +170,14 @@ public class BranchesPanel extends JPanel {
   }
   
   /**
-   * @return the branches combo.
-   */
-  public JComboBox<String> getBranchNamesCombo() {
-    return branchNamesCombo;
-  }
-  
-  /**
    * Adds the branches given as a parameter to the branchSplitMenuButton.
    * 
    * @param branches A list with the branches to be added.
    */
   private void addBranchesToCombo(List<String> branches) {
+    inhibitBranchSelectionListener = true;
     branches.forEach(branchNamesCombo::addItem);
+    inhibitBranchSelectionListener = false;
     String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
     branchNamesCombo.setSelectedItem(currentBranchName);
   }
@@ -226,5 +246,12 @@ public class BranchesPanel extends JPanel {
         break;
       }
     }
+  }
+  
+  /**
+   * @return the branches combo.
+   */
+  public JComboBox<String> getBranchNamesCombo() {
+    return branchNamesCombo;
   }
 }

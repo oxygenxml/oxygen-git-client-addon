@@ -68,6 +68,8 @@ public class FlatView7Test extends FlatViewTestBase {
     git.branchCreate().setName("new_branch").call();
     GitAccess.getInstance().setBranch("new_branch");
     
+    BranchesPanel branchesPanel = stagingPanel.getBranchesPanel();
+    
     ToolbarPanel toolbarPanel = stagingPanel.getToolbarPanel();
     toolbarPanel.refresh();
     flushAWT();
@@ -81,7 +83,7 @@ public class FlatView7Test extends FlatViewTestBase {
         toolbarPanel.getPushButton().getToolTipText());
     assertEquals(
         "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>No_upstream_branch</b>.<br></html>",
-        toolbarPanel.getBranchSplitMenuButton().getToolTipText());
+        branchesPanel.getToolTipText());
     
     // Push to create the remote branch
     ((GitController) stagingPanel.getGitController()).push();
@@ -99,7 +101,7 @@ public class FlatView7Test extends FlatViewTestBase {
     assertEquals(
         "<html>Local_branch <b>new_branch</b>.<br>Upstream_branch <b>origin/new_branch</b>.<br>"
         + "Toolbar_Panel_Information_Status_Up_To_Date<br>Nothing_to_push</html>",
-        toolbarPanel.getBranchSplitMenuButton().getToolTipText());
+        branchesPanel.getToolTipText());
     
     gitAccess.setBranch(GitAccess.DEFAULT_BRANCH_NAME);
     flushAWT();
@@ -140,7 +142,7 @@ public class FlatView7Test extends FlatViewTestBase {
     assertEquals(
         "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
         + "One_commit_behind<br>One_commit_ahead</html>",
-        toolbarPanel.getBranchSplitMenuButton().getToolTipText());
+        branchesPanel.getToolTipText());
     
     // Commit a new change locally
     commitOneFile(localTestRepository, "anotherFile.txt", "changed");
@@ -175,7 +177,7 @@ public class FlatView7Test extends FlatViewTestBase {
     assertEquals(
         "<html>Local_branch <b>" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>Upstream_branch <b>origin/" + GitAccess.DEFAULT_BRANCH_NAME + "</b>.<br>"
         + "Commits_behind<br>Commits_ahead</html>",
-        toolbarPanel.getBranchSplitMenuButton().getToolTipText());
+        branchesPanel.getToolTipText());
     
     // Commit a new change locally
     commitOneFile(localTestRepository, "anotherFile200000000000000000000000000000000000000000000000000000000000"

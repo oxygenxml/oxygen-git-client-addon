@@ -75,6 +75,11 @@ public class StagingPanel extends JPanel {
 	 * The tool bar panel used for the push and pull
 	 */
 	private ToolbarPanel toolbarPanel;
+	
+	/**
+	 * Branch selection panel.
+	 */
+	private BranchesPanel branchesPanel;
 
 	/**
 	 * The working copy panel used for selecting and adding a working copy
@@ -188,6 +193,7 @@ public class StagingPanel extends JPanel {
 		unstagedChangesPanel = new ChangesPanel(gitController, historyController, false);
 		stagedChangesPanel = new ChangesPanel(gitController, historyController, true);
 		workingCopySelectionPanel = new WorkingCopySelectionPanel(gitController);
+		branchesPanel = new BranchesPanel(gitController);
 		commitPanel = new CommitAndStatusPanel(gitController);
 		toolbarPanel = createToolbar(historyController, branchManagementViewPresenter);
 		conflictButtonsPanel = new ConflictButtonsPanel(gitController);
@@ -245,7 +251,7 @@ public class StagingPanel extends JPanel {
     gbc.gridy++;
     gbc.weightx = 1;
     gbc.weighty = 0;
-    this.add(new BranchesPanel(gitController), gbc);
+    this.add(branchesPanel, gbc);
   }
 
   /**
@@ -569,6 +575,10 @@ public class StagingPanel extends JPanel {
   
   public WorkingCopySelectionPanel getWorkingCopySelectionPanel() {
     return workingCopySelectionPanel;
+  }
+  
+  public BranchesPanel getBranchesPanel() {
+    return branchesPanel;
   }
   
   /**
