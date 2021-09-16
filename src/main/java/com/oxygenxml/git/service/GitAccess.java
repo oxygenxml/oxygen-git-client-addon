@@ -2630,9 +2630,8 @@ public class GitAccess {
    *
    * @throws IOException
    * @throws GitAPIException
-   * @throws StashApplyFailureWithStatusException
    */
-  private void checkIfStashIsApplicable(String stashRef) throws IOException, GitAPIException, StashApplyFailureWithStatusException {
+  private void checkIfStashIsApplicable(String stashRef) throws IOException, GitAPIException {
     List<FileStatus> list = RevCommitUtil.getChangedFiles(stashRef);
     List<FileStatus> unstagedFiles = new ArrayList<>(getUnstagedFiles());
 

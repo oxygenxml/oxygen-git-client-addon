@@ -16,7 +16,7 @@ public class CoalescingDocumentListener implements DocumentListener {
   /**
    * The delay for the updater
    */
-  private static int DELAY = 400;
+  private static final int DELAY = 400;
   /**
    * The updater for the coalesced event
    */

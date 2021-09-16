@@ -38,7 +38,7 @@ public class TagDetailsDialog extends OKCancelDialog{
   /**
    * i18n
    */
-  private static final Translator translator = Translator.getInstance();
+  private static final Translator translator = Translator.getInstance(); // NOSONAR checkstyle:ConstantNameCheckSyncro
   
   /**
    * The preferred width of the scroll pane for the files list.

@@ -46,7 +46,7 @@ public class LoginDialog extends OKCancelDialog {
   /**
    * Dialog preferred height.
    */
-  private static final int DLG_PREF_HEIGHT = PlatformDetectionUtil.isMacOS() ? 305 : 250;
+  private static final int DLG_PREF_HEIGHT = PlatformDetectionUtil.isMacOS() ? 305 : 250; // NOSONAR
   /**
    * Dialog preferred width.
    */

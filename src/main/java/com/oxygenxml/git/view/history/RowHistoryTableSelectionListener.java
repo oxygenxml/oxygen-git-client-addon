@@ -57,37 +57,7 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
           // Add all parent commit IDs to the text
           if (commitCharacteristics.getParentCommitId() != null) {
-            commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.PARENTS)).append("</b>: ");
-            int parentSize = commitCharacteristics.getParentCommitId().size();
-
-            boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
-            for (int j = 0; j < parentSize - 1; j++) {
-              commitDescription.append("<a href=\"")
-                .append(PARENT_COMMIT_URL)
-                .append(commitCharacteristics.getParentCommitId().get(j))
-                .append("\"");
-              if(isDarkTheme) {
-                commitDescription.append("style=\"color: ")
-                .append(UIUtil.PARENTS_LINK_HEX_COLOR_GRAPHITE)
-                .append("\"");
-              }
-                
-              commitDescription.append(">")
-                .append(commitCharacteristics.getParentCommitId().get(j))
-                .append("</a> , ");
-            }
-            commitDescription.append("<a href=\" ")
-              .append(PARENT_COMMIT_URL)
-              .append(commitCharacteristics.getParentCommitId().get(parentSize - 1))
-              .append("\"");
-            if(isDarkTheme) {
-              commitDescription.append("style=\"color: ")
-              .append(UIUtil.PARENTS_LINK_HEX_COLOR_GRAPHITE)
-              .append("\"");
-            }
-            commitDescription.append(">")
-              .append(commitCharacteristics.getParentCommitId().get(parentSize - 1))
-              .append("</a> ");
+            addParentIDsToCommitDescription(commitCharacteristics, commitDescription);
           }
           
           commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.AUTHOR))
@@ -104,6 +74,46 @@ public class RowHistoryTableSelectionListener implements ListSelectionListener {
 
         updateDataModel(commitCharacteristics);
       }
+    }
+
+    /**
+     * Add the parent IDs to the commit description.
+     * 
+     * @param commitCharacteristics The current commit.
+     * @param commitDescription     Builds the commit description.
+     */
+    private void addParentIDsToCommitDescription(CommitCharacteristics commitCharacteristics, StringBuilder commitDescription) {
+      commitDescription.append("<br> <b>").append(Translator.getInstance().getTranslation(Tags.PARENTS)).append("</b>: ");
+      int parentSize = commitCharacteristics.getParentCommitId().size();
+
+      boolean isDarkTheme = PluginWorkspaceProvider.getPluginWorkspace().getColorTheme().isDarkTheme();
+      for (int j = 0; j < parentSize - 1; j++) {
+        commitDescription.append("<a href=\"")
+          .append(PARENT_COMMIT_URL)
+          .append(commitCharacteristics.getParentCommitId().get(j))
+          .append("\"");
+        if(isDarkTheme) {
+          commitDescription.append("style=\"color: ")
+          .append(UIUtil.PARENTS_LINK_HEX_COLOR_GRAPHITE)
+          .append("\"");
+        }
+          
+        commitDescription.append(">")
+          .append(commitCharacteristics.getParentCommitId().get(j))
+          .append("</a> , ");
+      }
+      commitDescription.append("<a href=\" ")
+        .append(PARENT_COMMIT_URL)
+        .append(commitCharacteristics.getParentCommitId().get(parentSize - 1))
+        .append("\"");
+      if(isDarkTheme) {
+        commitDescription.append("style=\"color: ")
+        .append(UIUtil.PARENTS_LINK_HEX_COLOR_GRAPHITE)
+        .append("\"");
+      }
+      commitDescription.append(">")
+        .append(commitCharacteristics.getParentCommitId().get(parentSize - 1))
+        .append("</a> ");
     }
 
     /**
