@@ -35,6 +35,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
  */
 public class TagDetailsDialog extends OKCancelDialog{
   
+
   /**
    * i18n
    */
@@ -45,6 +46,11 @@ public class TagDetailsDialog extends OKCancelDialog{
    */
   private static final int MESSAGE_SCROLLPANE_PREFERRED_WIDTH = 320;
 
+  /**
+   * The multiplier used for separator
+   */
+  private static final int SEPARATOR_MULTIPLIER = 3;
+  
   /**
    * The preferred eight of the scroll pane for the files list.
    */
@@ -81,6 +87,8 @@ public class TagDetailsDialog extends OKCancelDialog{
   
   /**
    * Create the main Panel for the dialog 
+   * 
+   * @param tag, a GitTag needed to generate the panel
    * 
    * @return a panel with all components added
    * 
@@ -153,7 +161,7 @@ public class TagDetailsDialog extends OKCancelDialog{
     
     JSeparator separator = new JSeparator();
     gbc.gridy++;
-    gbc.insets = new Insets(3* topInset, leftInset, 3 * bottomInset, rightInset);
+    gbc.insets = new Insets(SEPARATOR_MULTIPLIER* topInset, leftInset, SEPARATOR_MULTIPLIER * bottomInset, rightInset);
     mainPanel.add(separator, gbc);
     
     JLabel commitIDLabel = new JLabel();

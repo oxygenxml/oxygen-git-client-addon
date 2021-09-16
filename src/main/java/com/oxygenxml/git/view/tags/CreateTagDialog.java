@@ -40,6 +40,7 @@ import ro.sync.exml.workspace.api.standalone.ui.TextField;
  *
  */
 public class CreateTagDialog extends OKCancelDialog {
+  
   /**
    * Logger for logging.
    */
@@ -70,11 +71,14 @@ public class CreateTagDialog extends OKCancelDialog {
    * The width preferred by Message Pane
    */
   private static final int MESSAGE_PREFFERED_WIDTH = 200;
+  /**
+   * The preffered tag name field width
+   */
+  private static final int FIELD_PREFFERED_WIDTH = 200;
 
   /**
    * Public constructor.
    * 
-   * @param title            The title of the dialog.
    */
   public CreateTagDialog() {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null
@@ -112,7 +116,7 @@ public class CreateTagDialog extends OKCancelDialog {
   private void createGUI(JPanel panel) {
       
     int topInset = UIConstants.COMPONENT_TOP_PADDING;
-    int leftInset = 5;
+    int leftInset = UIConstants.COMPONENT_LEFT_LARGE_PADDING;
     
     // Tag title label.
     JLabel label = new JLabel(TRANSLATOR.getTranslation(Tags.CREATE_TAG_TITLE_LABEL) + ":");
@@ -128,7 +132,7 @@ public class CreateTagDialog extends OKCancelDialog {
 
     // Tag title field.
     tagTitleField = new TextField();
-    tagTitleField.setPreferredSize(new Dimension(200, tagTitleField.getPreferredSize().height));
+    tagTitleField.setPreferredSize(new Dimension(FIELD_PREFFERED_WIDTH, tagTitleField.getPreferredSize().height));
     gbc.gridx ++;
     gbc.weightx = 1;
     gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -154,7 +158,7 @@ public class CreateTagDialog extends OKCancelDialog {
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-    gbc.insets = new Insets(topInset, 0, 0, 5);      
+    gbc.insets = new Insets(topInset, 0, 0, UIConstants.COMPONENT_RIGHT_LARGE_PADDING);      
     panel.add(messageLabel, gbc);
 
     // Tag message field.

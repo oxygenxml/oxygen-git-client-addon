@@ -83,6 +83,10 @@ public class TagsDialog extends OKCancelDialog {
 
   /**
    * Constructor
+   * 
+   * @throws GitAPIException
+   * @throws IOException
+   * @throws NoRepositorySelected
    */
   public TagsDialog() throws GitAPIException, IOException, NoRepositorySelected {
     super(PluginWorkspaceProvider.getPluginWorkspace() != null ? 
@@ -189,8 +193,6 @@ public class TagsDialog extends OKCancelDialog {
   /**
    * Create a table with the tags
    * 
-   * @return a JTable with the tags and the messages of every tag
-   * 
    * @throws GitAPIException
    * @throws NoRepositorySelected
    * @throws IOException
@@ -257,7 +259,7 @@ public class TagsDialog extends OKCancelDialog {
   /**
    * Create the popup menu for the tagsTable
    * 
-   * @return
+   * @return a JPopUpMenu
    */
   private JPopupMenu createTableComponentMenu() {
     JPopupMenu contextualActions = new JPopupMenu();
