@@ -205,9 +205,10 @@ public class StagingPanel extends JPanel {
 		// adds the panels to the staging panel using gird bag constraints
 		GridBagConstraints gbc = new GridBagConstraints();
 		if (toolbarPanel != null) {
-		  addToolbatPanel(gbc);
+		  addToolbarPanel(gbc);
 		}
 		addWorkingCopySelectionPanel(gbc);
+		addBranchesCombo(gbc);
 		addConflictButtonsPanel(gbc);
 		addSplitPanel(gbc, splitPane);
 
@@ -232,6 +233,22 @@ public class StagingPanel extends JPanel {
 	}
 
 	/**
+	 * Add branches combo.
+	 * 
+	 * @param gbc Grid bag constraints.
+	 */
+	private void addBranchesCombo(GridBagConstraints gbc) {
+	  gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.gridx = 0;
+    gbc.gridy++;
+    gbc.weightx = 1;
+    gbc.weighty = 0;
+    this.add(new BranchesPanel(gitController), gbc);
+  }
+
+  /**
 	 * @return The focus listener.
 	 */
   private FocusAdapter createFocusListener() {
@@ -405,14 +422,14 @@ public class StagingPanel extends JPanel {
 	 * @param gbc
 	 *          - the constraints used for this component
 	 */
-	private void addToolbatPanel(GridBagConstraints gbc) {
-		gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
+	private void addToolbarPanel(GridBagConstraints gbc) {
+	  gbc.gridx = 0;
+	  gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
+		gbc.insets = new Insets(0, HORIZONTAL_INSET, 0, HORIZONTAL_INSET);
 		this.add(toolbarPanel, gbc);
 	}
 
