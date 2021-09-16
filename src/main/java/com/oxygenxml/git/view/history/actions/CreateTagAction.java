@@ -64,7 +64,8 @@ public class CreateTagAction extends AbstractAction {
           }
         } catch (GitAPIException | RevisionSyntaxException | NoRepositorySelected | IOException ex) {
           LOGGER.debug(ex);
-          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);}
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        }
       });
     }
 

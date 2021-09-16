@@ -259,7 +259,7 @@ public class TagsDialog extends OKCancelDialog {
   /**
    * Create the popup menu for the tagsTable
    * 
-   * @return a JPopUpMenu
+   * @return a JPopUpMenu for the tags table
    */
   private JPopupMenu createTableComponentMenu() {
     JPopupMenu contextualActions = new JPopupMenu();
