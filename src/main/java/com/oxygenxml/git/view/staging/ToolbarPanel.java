@@ -315,7 +315,10 @@ public class ToolbarPanel extends JPanel {
             // After the fetch is done, update the toolbar icons.
             refresh();
           }).start();
-        } else if (operation == GitOperation.ABORT_REBASE || operation == GitOperation.CONTINUE_REBASE || operation == GitOperation.COMMIT) {
+        } else if (operation == GitOperation.ABORT_REBASE 
+            || operation == GitOperation.CONTINUE_REBASE 
+            || operation == GitOperation.COMMIT
+            || operation == GitOperation.DISCARD) {
           // Update status because we are coming from a detached HEAD
           refresh();
         }
