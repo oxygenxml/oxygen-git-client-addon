@@ -165,4 +165,17 @@ public class GitTagsManager {
     return (o1, o2) -> o2.getTaggingDate().compareTo(o1.getTaggingDate());
   }
   
+  /**
+   * The number of Git Tags
+   * 
+   * @return an integer that represents the number of local Git Tags
+   * 
+   * @throws GitAPIException
+   */
+  public static int getNoOfTags() throws GitAPIException {
+    List<Ref> refs = GitAccess.getInstance().getGit().tagList().call();
+    int noOfTags = refs == null ? 0 : refs.size();
+    return noOfTags;
+  }
+  
 }

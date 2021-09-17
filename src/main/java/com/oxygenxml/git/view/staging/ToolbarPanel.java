@@ -75,6 +75,7 @@ import com.oxygenxml.git.view.history.HistoryController;
 import com.oxygenxml.git.view.refresh.GitRefreshSupport;
 import com.oxygenxml.git.view.stash.ListStashesDialog;
 import com.oxygenxml.git.view.stash.StashUtil;
+import com.oxygenxml.git.view.tags.GitTagsManager;
 import com.oxygenxml.git.view.tags.TagsDialog;
 import com.oxygenxml.git.view.util.UIUtil;
 
@@ -668,7 +669,6 @@ public class ToolbarPanel extends JPanel {
     setDefaultToolbarButtonWidth(showTagsButton);
 
     gitToolbar.add(showTagsButton);
-
   }
 
 
@@ -718,6 +718,7 @@ public class ToolbarPanel extends JPanel {
     }
 
     refreshStashButton();
+    refreshTagsButton();
 
     SwingUtilities.invokeLater(() -> {
       updateBranchesMenu();
@@ -1363,6 +1364,24 @@ public class ToolbarPanel extends JPanel {
     listStashesAction.setEnabled(existsStashes);
 
     stashButton.setEnabled(existsLocalFiles || existsStashes);
+  }
+  
+  /**
+   * Refresh the button for showing tags
+   */
+  public void refreshTagsButton() {
+     int noOfTags = 0;
+    try {
+      noOfTags = GitTagsManager.getNoOfTags();
+    } catch (GitAPIException e) {
+      LOGGER.debug(e,e);
+    }
+     if (noOfTags > 0) {
+      getShowTagsButton().setEnabled(true);
+    }
+     else {
+      getShowTagsButton().setEnabled(false);
+    }
   }
 
 
