@@ -492,6 +492,8 @@ public class StagingPanel extends JPanel {
 	      unstagedChangesPanel.update(status.getUnstagedFiles());
 	      stagedChangesPanel.update(status.getStagedFiles());
 
+	      branchesPanel.refresh();
+	      
 	      if (toolbarPanel != null) {
 	        toolbarPanel.updateButtonState(true);
 	        toolbarPanel.refresh();

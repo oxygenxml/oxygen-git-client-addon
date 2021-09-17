@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,16 +16,21 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 
 import com.oxygenxml.git.constants.UIConstants;
+import com.oxygenxml.git.service.BranchInfo;
 import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.GitEventAdapter;
 import com.oxygenxml.git.service.GitOperationScheduler;
 import com.oxygenxml.git.service.NoRepositorySelected;
+import com.oxygenxml.git.service.RepoNotInitializedException;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
 import com.oxygenxml.git.utils.RepoUtil;
@@ -42,6 +48,22 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * Panel in Git Staging view from where to change the current branch.
  */
 public class BranchesPanel extends JPanel {
+  
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger LOGGER = Logger.getLogger(BranchesPanel.class);
+
+  /**
+   * i18n
+   */
+  private static final Translator TRANSLATOR = Translator.getInstance();
+  
+  /**
+   * Access to the Git API.
+   */
+  private static final GitAccess GIT_ACCESS = GitAccess.getInstance();
 
   /**
    * Branch names combo.
@@ -93,7 +115,8 @@ public class BranchesPanel extends JPanel {
         GitOperation operation = info.getGitOperation();
         if (operation == GitOperation.OPEN_WORKING_COPY
             || operation == GitOperation.ABORT_REBASE 
-            || operation == GitOperation.CONTINUE_REBASE) {
+            || operation == GitOperation.CONTINUE_REBASE
+            || operation == GitOperation.COMMIT) {
           refresh();
         }
       }
@@ -108,7 +131,7 @@ public class BranchesPanel extends JPanel {
    */
   private void treatBranchSelectedEvent(ItemEvent event) {
     String branchName = (String) event.getItem();
-    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+    String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
     if (branchName.equals(currentBranchName)) {
       return;
     }
@@ -166,7 +189,90 @@ public class BranchesPanel extends JPanel {
    * Refresh.
    */
   public void refresh() {
+    int pullsBehind = GIT_ACCESS.getPullsBehind();
+    int pushesAhead = -1;
+    try {
+      pushesAhead = GIT_ACCESS.getPushesAhead();
+    } catch (RepoNotInitializedException e) {
+      LOGGER.debug(e, e);
+    }
+    
     SwingUtilities.invokeLater(this::updateBranchesMenu);
+    
+    Repository repo = null;
+    try {
+      repo = GIT_ACCESS.getRepository();
+    } catch (NoRepositorySelected e) {
+      LOGGER.debug(e, e);
+    }
+
+    BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
+    String currentBranchName = branchInfo.getBranchName();
+    if (branchInfo.isDetached()) {
+      String tooltipText = "<html>"
+          + TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
+          + " "
+          + currentBranchName;
+      if (repo != null && repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
+        tooltipText += "<br>" + TRANSLATOR.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
+      }
+      tooltipText += "</html>";
+      String finalText = tooltipText;
+      SwingUtilities.invokeLater(() -> branchNamesCombo.setToolTipText(finalText));
+    } else {
+      String branchTooltip = null;
+      if (currentBranchName != null && !currentBranchName.isEmpty()) {
+
+        String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
+        boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
+
+        String upstreamShortestName = 
+            isAnUpstreamBranchDefinedInConfig 
+            ? upstreamBranchFromConfig.substring(upstreamBranchFromConfig.lastIndexOf('/') + 1)
+                : null;
+        Ref remoteBranchRefForUpstreamFromConfig = 
+            isAnUpstreamBranchDefinedInConfig 
+            ? RepoUtil.getRemoteBranch(upstreamShortestName) 
+                : null;
+        boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
+
+        branchTooltip = "<html>"
+            + TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
+            + " <b>" + currentBranchName + "</b>.<br>"
+            + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
+            + " <b>" 
+            + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig 
+                ? upstreamBranchFromConfig 
+                    : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
+            + "</b>.<br>";
+
+        String commitsBehindMessage = "";
+        String commitsAheadMessage = "";
+        if (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig) {
+          if (pullsBehind == 0) {
+            commitsBehindMessage = TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_UP_TO_DATE);
+          } else if (pullsBehind == 1) {
+            commitsBehindMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_BEHIND);
+          } else {
+            commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
+          }
+          branchTooltip += commitsBehindMessage + "<br>";
+
+          if (pushesAhead == 0) {
+            commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
+          } else if (pushesAhead == 1) {
+            commitsAheadMessage = TRANSLATOR.getTranslation(Tags.ONE_COMMIT_AHEAD);
+          } else {
+            commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
+          }
+          branchTooltip += commitsAheadMessage;
+        }
+
+        branchTooltip += "</html>";
+      }
+      String branchTooltipFinal = branchTooltip;
+      SwingUtilities.invokeLater(() -> branchNamesCombo.setToolTipText(branchTooltipFinal));
+    }
   }
   
   /**
@@ -178,7 +284,7 @@ public class BranchesPanel extends JPanel {
     inhibitBranchSelectionListener = true;
     branches.forEach(branchNamesCombo::addItem);
     inhibitBranchSelectionListener = false;
-    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+    String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
     branchNamesCombo.setSelectedItem(currentBranchName);
   }
   
@@ -221,8 +327,8 @@ public class BranchesPanel extends JPanel {
   private void tryCheckingOutBranch(String branchName) {
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        GitAccess.getInstance().setBranch(branchName);
-        BranchesUtil.fixupFetchInConfig(GitAccess.getInstance().getRepository().getConfig());
+        GIT_ACCESS.setBranch(branchName);
+        BranchesUtil.fixupFetchInConfig(GIT_ACCESS.getRepository().getConfig());
       } catch (CheckoutConflictException ex) {
         restoreCurrentBranchSelectionInMenu();
         BranchesUtil.showBranchSwitchErrorMessage();
@@ -237,7 +343,7 @@ public class BranchesPanel extends JPanel {
    * Restore current branch selection in branches menu.
    */
   private void restoreCurrentBranchSelectionInMenu() {
-    String currentBranchName = GitAccess.getInstance().getBranchInfo().getBranchName();
+    String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
     int itemCount = branchNamesCombo.getItemCount();
     for (int i = 0; i < itemCount; i++) {
       String branch = branchNamesCombo.getItemAt(i);

@@ -22,6 +22,7 @@ import org.apache.xerces.jaxp.SAXParserFactoryImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -52,6 +53,30 @@ public class RepoUtil {
    */
   private RepoUtil() {
     // Avoid instantiation 
+  }
+  
+  /**
+   * Get the remote branch that has the given name.
+   * This seems to look in ".git\refs\remotes\origin" for the necessary information.
+   * 
+   * @param branchName Local branch name.
+   * 
+   * @return The remote branch or <code>null</code>;
+   */
+  public static Ref getRemoteBranch(String branchName) {
+    Ref remoteBranchWithLocalBranchName = null;
+    if (branchName != null) {
+      List<Ref> remoteBrachListForCurrentRepo = GitAccess.getInstance().getRemoteBrachListForCurrentRepo();
+      for (Ref remoteBranchRef : remoteBrachListForCurrentRepo) {
+        String remoteBranchName = Repository.shortenRefName(remoteBranchRef.getName());
+        remoteBranchName = remoteBranchName.substring(remoteBranchName.lastIndexOf('/') + 1);
+        if (remoteBranchName.equals(branchName)) {
+          remoteBranchWithLocalBranchName = remoteBranchRef;
+          break;
+        }
+      }
+    }
+    return remoteBranchWithLocalBranchName;
   }
   
   /**

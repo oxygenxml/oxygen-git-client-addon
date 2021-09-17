@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.StringUtils;
 
@@ -52,6 +51,7 @@ import com.oxygenxml.git.service.SSHPassphraseRequiredException;
 import com.oxygenxml.git.service.entities.FileStatus;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.utils.RepoUtil;
 import com.oxygenxml.git.view.branches.BranchManagementViewPresenter;
 import com.oxygenxml.git.view.dialog.CloneRepositoryDialog;
 import com.oxygenxml.git.view.dialog.LoginDialog;
@@ -586,27 +586,13 @@ public class ToolbarPanel extends JPanel {
 
     BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     String currentBranchName = branchInfo.getBranchName();
-    String branchInfoText = "";
     if (branchInfo.isDetached()) {
-      branchInfoText += "<html><b>" + branchInfo.getShortBranchName() + "</b></html>";
-      String tooltipText = "<html>"
-          + TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
-          + " "
-          + currentBranchName;
-      if (repo != null && repo.getRepositoryState() == RepositoryState.REBASING_MERGE) {
-        tooltipText += "<br>" + TRANSLATOR.getTranslation(Tags.REBASE_IN_PROGRESS) + ".";
-      }
-      tooltipText += "</html>";
-      String finalText = tooltipText;
       SwingUtilities.invokeLater(() -> {
-//        branchesSplitMenuButton.setToolTipText(finalText); TODO
         pushButton.setToolTipText(TRANSLATOR.getTranslation(Tags.PUSH_BUTTON_TOOLTIP));
         pullMenuButton.setToolTipText(TRANSLATOR.getTranslation(Tags.PULL_BUTTON_TOOLTIP));
       });
     } else {
-      String branchTooltip = null;
       if (currentBranchName != null && !currentBranchName.isEmpty()) {
-        branchInfoText = "<html><b>" + currentBranchName + "</b></html>";
 
         String upstreamBranchFromConfig = GIT_ACCESS.getUpstreamBranchShortNameFromConfig(currentBranchName);
         boolean isAnUpstreamBranchDefinedInConfig = upstreamBranchFromConfig != null;
@@ -617,19 +603,9 @@ public class ToolbarPanel extends JPanel {
                 : null;
         Ref remoteBranchRefForUpstreamFromConfig = 
             isAnUpstreamBranchDefinedInConfig 
-            ? getRemoteBranch(upstreamShortestName) 
+            ? RepoUtil.getRemoteBranch(upstreamShortestName) 
                 : null;
         boolean existsRemoteBranchForUpstreamDefinedInConfig = remoteBranchRefForUpstreamFromConfig != null;
-
-        branchTooltip = "<html>"
-            + TRANSLATOR.getTranslation(Tags.LOCAL_BRANCH)
-            + " <b>" + currentBranchName + "</b>.<br>"
-            + TRANSLATOR.getTranslation(Tags.UPSTREAM_BRANCH)
-            + " <b>" 
-            + (isAnUpstreamBranchDefinedInConfig && existsRemoteBranchForUpstreamDefinedInConfig 
-                ? upstreamBranchFromConfig 
-                    : TRANSLATOR.getTranslation(Tags.NO_UPSTREAM_BRANCH))
-            + "</b>.<br>";
 
         String commitsBehindMessage = "";
         String commitsAheadMessage = "";
@@ -641,7 +617,6 @@ public class ToolbarPanel extends JPanel {
           } else {
             commitsBehindMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_BEHIND), pullsBehind);
           }
-          branchTooltip += commitsBehindMessage + "<br>";
 
           if (pushesAhead == 0) {
             commitsAheadMessage = TRANSLATOR.getTranslation(Tags.NOTHING_TO_PUSH);
@@ -650,10 +625,7 @@ public class ToolbarPanel extends JPanel {
           } else {
             commitsAheadMessage = MessageFormat.format(TRANSLATOR.getTranslation(Tags.COMMITS_AHEAD), pushesAhead);
           }
-          branchTooltip += commitsAheadMessage;
         }
-
-        branchTooltip += "</html>";
 
         // ===================== Push button tooltip =====================
         String pushButtonTooltipFinal = updatePushToolTip(
@@ -676,14 +648,7 @@ public class ToolbarPanel extends JPanel {
         SwingUtilities.invokeLater(() -> pullMenuButton.setToolTipText(pullButtonTooltipFinal));
 
       }
-      String branchTooltipFinal = branchTooltip;
-      // TODO
-//      SwingUtilities.invokeLater(() -> branchesSplitMenuButton.setToolTipText(branchTooltipFinal));
     }
-    String branchInfoTextFinal = branchInfoText;
-    // TODO
-//    SwingUtilities.invokeLater(() -> branchesSplitMenuButton.setText(branchInfoTextFinal));
-
   }
 
   /**
@@ -750,7 +715,7 @@ public class ToolbarPanel extends JPanel {
    * @param tooltipBuilder    Tooltip builder.
    */
   private void updatePushTooltipWhenNoUpstream(String currentBranchName, StringBuilder tooltipBuilder) {
-    Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
+    Ref remoteBranchWithLocalBranchName = RepoUtil.getRemoteBranch(currentBranchName);
     if (remoteBranchWithLocalBranchName != null) {
       // No upstream branch defined in "config", but there is a remote branch
       // that has the same name as the local branch.
@@ -841,7 +806,7 @@ public class ToolbarPanel extends JPanel {
   private void updatePullTooltipWhenNoUpstream(
       StringBuilder tooltipBuilder,
       String currentBranchName) {
-    Ref remoteBranchWithLocalBranchName = getRemoteBranch(currentBranchName);
+    Ref remoteBranchWithLocalBranchName = RepoUtil.getRemoteBranch(currentBranchName);
     if (remoteBranchWithLocalBranchName != null) {
       // No upstream defined in config, but there is a remote branch
       // that has the same name as the local branch
@@ -940,30 +905,6 @@ public class ToolbarPanel extends JPanel {
       }
     }
     return pullFromTag;
-  }
-
-  /**
-   * Get the remote branch that has the given name.
-   * This seems to look in ".git\refs\remotes\origin" for the necessary information.
-   * 
-   * @param branchName Local branch name.
-   * 
-   * @return The remote branch or <code>null</code>;
-   */
-  private Ref getRemoteBranch(String branchName) {
-    Ref remoteBranchWithLocalBranchName = null;
-    if (branchName != null) {
-      List<Ref> remoteBrachListForCurrentRepo = GitAccess.getInstance().getRemoteBrachListForCurrentRepo();
-      for (Ref remoteBranchRef : remoteBrachListForCurrentRepo) {
-        String remoteBranchName = Repository.shortenRefName(remoteBranchRef.getName());
-        remoteBranchName = remoteBranchName.substring(remoteBranchName.lastIndexOf('/') + 1);
-        if (remoteBranchName.equals(branchName)) {
-          remoteBranchWithLocalBranchName = remoteBranchRef;
-          break;
-        }
-      }
-    }
-    return remoteBranchWithLocalBranchName;
   }
 
   /**
