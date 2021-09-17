@@ -1537,6 +1537,15 @@ public class Tags {
   /**
    * The tooltip for the toolbar tags icon
    */
-  public static final String TOOLBAR_PANEL_TAGS_TOOLTIP= "Toolbar_Panel_Tags_Tooltip"; 
+  public static final String TOOLBAR_PANEL_TAGS_TOOLTIP= "Toolbar_Panel_Tags_Tooltip";
+  
+  /**
+   * The title of the dialog for deleting a tag
+   */
+  public static final String DELETE_TAG_DIALOG_TITLE= "Delete_Tag_Dialog_Title"; 
+  /**
+   * The message of the dialog for deleting a tag
+   */
+  public static final String DELETE_TAG_DIALOG_MESSAGE= "Delete_Tag_Dialog_Message"; 
   
 }

@@ -35,6 +35,7 @@ import com.oxygenxml.git.service.GitAccess;
 import com.oxygenxml.git.service.NoRepositorySelected;
 import com.oxygenxml.git.translator.Tags;
 import com.oxygenxml.git.translator.Translator;
+import com.oxygenxml.git.view.dialog.FileStatusDialog;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -334,22 +335,29 @@ public class TagsDialog extends OKCancelDialog {
   private ActionListener createDeleteListener() {
 
     return e -> {
-      deleteButton.setEnabled(false);
-      pushButton.setEnabled(false);
-      int selectedRow = (tagsTable.getSelectedRow());
-      String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
+      
+      int result = FileStatusDialog.showQuestionMessage(TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_TITLE),
+          TRANSLATOR.getTranslation(Tags.DELETE_TAG_DIALOG_MESSAGE),
+          TRANSLATOR.getTranslation(Tags.YES),
+          TRANSLATOR.getTranslation(Tags.NO));
+      
+      if ( result == OKCancelDialog.RESULT_OK) {
+        deleteButton.setEnabled(false);
+        pushButton.setEnabled(false);
+        int selectedRow = (tagsTable.getSelectedRow());
+        String tagName = (String) tagsTable.getValueAt(selectedRow, 0);
 
-      try {
-        GitAccess.getInstance().deleteTag(tagName);
+        try {
+          GitAccess.getInstance().deleteTag(tagName);
 
-        TagsTableModel model = (TagsTableModel) tagsTable.getModel();
-        GitTag tag = model.getItemAt(selectedRow);
-        model.remove(tag);
-        model.fireTableRowsDeleted(selectedRow,selectedRow);
-      } catch (GitAPIException ex) {
-        PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+          TagsTableModel model = (TagsTableModel) tagsTable.getModel();
+          GitTag tag = model.getItemAt(selectedRow);
+          model.remove(tag);
+          model.fireTableRowsDeleted(selectedRow,selectedRow);
+        } catch (GitAPIException ex) {
+          PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(ex.getMessage(), ex);
+        } 
       }
-
     };
   }
   

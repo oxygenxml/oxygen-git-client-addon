@@ -239,6 +239,23 @@
         <val lang="ja_JP">Push</val>
         <val lang="nl_NL">Push</val>
     </key>
+     <key value="Delete_Tag_Dialog_Title">
+        <comment>The title of the dialog for deleting a tag</comment>
+        <val lang="en_US">Delete tag</val>
+        <val lang="de_DE">Delete tag</val>
+        <val lang="fr_FR">Delete tag</val>
+        <val lang="ja_JP">Delete tag</val>
+        <val lang="nl_NL">Delete tag</val>
+    </key>
+     <key value="Delete_Tag_Dialog_Message">
+        <comment>The message of the dialog for deleting a tag</comment>
+        <val lang="en_US">Are you sure you want to delete this tag?</val>
+        <val lang="de_DE">Are you sure you want to delete this tag?</val>
+        <val lang="fr_FR">Are you sure you want to delete this tag?</val>
+        <val lang="ja_JP">Are you sure you want to delete this tag?</val>
+        <val lang="nl_NL">Are you sure you want to delete this tag?</val>
+    </key>
+    
     <key value="Tags_Dialog">
         <comment>Displays the message "Tags" for the Tags showing Dialog </comment>
         <val lang="en_US">Tags</val>
