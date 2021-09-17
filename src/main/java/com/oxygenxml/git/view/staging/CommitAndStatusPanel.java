@@ -163,6 +163,7 @@ public class CommitAndStatusPanel extends JPanel {
         gitAccess.commit(commitMessageArea.getText(), amendLastCommitToggle.isSelected());
         
         commitSuccessful = true;
+        
       } catch (GitAPIException e1) {
         logger.debug(e1, e1);
         
@@ -678,55 +679,49 @@ public class CommitAndStatusPanel extends JPanel {
    * 
    * @param forceEnable <code>true</code> to make the button enable without any additional checks.
    */
-  void toggleCommitButtonAndUpdateMessageArea(boolean forceEnable) {
-    if (forceEnable) {
-      commitButton.setEnabled(true);
-    } else {
-      try {
-        Repository repo = gitAccess.getRepository();
-        final RepositoryState repositoryState = repo.getRepositoryState();
-        final String mergeMessage = MessageFormat.format(
-            translator.getTranslation(Tags.COMMIT_TO_MERGE),
-            gitAccess.getBranchInfo().getBranchName(),
-            repo.getConfig().getString("remote", "origin", "url"));
-        if (repositoryState == RepositoryState.MERGING_RESOLVED
-            && mergeMessage.equals(commitMessageArea.getText())) {
-          commitMessageArea.setText("");
-          commitButton.setEnabled(false);
-        } else {
-          // Possible time consuming operations.
-          commitButtonAndMessageUpdateTask = new SwingWorker<Void, Void>() {
-            boolean enable = false;
-            String message = null;
-            @Override
-            protected Void doInBackground() throws Exception {
-              GitStatus status = gitAccess.getStatus();
-              if (repositoryState == RepositoryState.MERGING_RESOLVED
-                  && status.getStagedFiles().isEmpty()
-                  && status.getUnstagedFiles().isEmpty()) {
-                enable = true;
-                message = mergeMessage;
-              } else if (!status.getStagedFiles().isEmpty() || amendLastCommitToggle.isSelected()) {
-                enable = true;
-              }
-              return null;
-            }
+	void toggleCommitButtonAndUpdateMessageArea(boolean forceEnable) {
+	  if (forceEnable) {
+	    commitButton.setEnabled(true);
+	  } else {
+	    try {
+	      Repository repo = gitAccess.getRepository();
+	      final RepositoryState repositoryState = repo.getRepositoryState();
+	      final String mergeMessage = MessageFormat.format(
+	          translator.getTranslation(Tags.COMMIT_TO_MERGE),
+	          gitAccess.getBranchInfo().getBranchName(),
+	          repo.getConfig().getString("remote", "origin", "url"));
+	      // Possible time consuming operations.
+	      commitButtonAndMessageUpdateTask = new SwingWorker<Void, Void>() {
+	        boolean enable = false;
+	        String message = null;
+	        @Override
+	        protected Void doInBackground() throws Exception {
+	          GitStatus status = gitAccess.getStatus();
+	          if (repositoryState == RepositoryState.MERGING_RESOLVED
+	              && status.getStagedFiles().isEmpty()
+	              && status.getUnstagedFiles().isEmpty()) {
+	            enable = true;
+	            message = mergeMessage;
+	          } else if (!status.getStagedFiles().isEmpty() || amendLastCommitToggle.isSelected()) {
+	            enable = true;
+	          }
+	          return null;
+	        }
 
-            @Override
-            protected void done() {
-              if (message != null) {
-                commitMessageArea.setText(message);
-              }
-              commitButton.setEnabled(enable);
-            }
-          };
-          commitButtonAndMessageUpdateTaskTimer.restart();
-        }
-      } catch (NoRepositorySelected e) {
-        // Remains disabled
-      }
-    }
-  }
+	        @Override
+	        protected void done() {
+	          if (message != null) {
+	            commitMessageArea.setText(message);
+	          }
+	          commitButton.setEnabled(enable);
+	        }
+	      };
+	      commitButtonAndMessageUpdateTaskTimer.restart();
+	    } catch (NoRepositorySelected e) {
+	      // Remains disabled
+	    }
+	  }
+	}
 
 	/**
 	 * Update status.
