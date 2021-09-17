@@ -319,6 +319,7 @@ public class StagingPanel extends JPanel {
             SwingUtilities.invokeLater(() -> unstagedChangesPanel.fileStatesChanged(changeEvent));
 						if(toolbarPanel != null) {
 							toolbarPanel.refreshStashButton();
+							toolbarPanel.refreshTagsButton();
 						}
           }
         } catch (NoRepositorySelected e) {
