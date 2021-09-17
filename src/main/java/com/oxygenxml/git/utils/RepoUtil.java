@@ -97,6 +97,23 @@ public class RepoUtil {
    }
    return toReturn;
  }
+ 
+ /**
+  * Check if repo is rebasing.
+  * 
+  * @param repoState The repo state.
+  * 
+  * @return <code>true</code> if the repository rebasing.
+  */
+public static boolean isRepoRebasing(RepositoryState repoState) {
+  boolean toReturn = false;
+  if (repoState != null) {
+    toReturn = repoState == RepositoryState.REBASING
+        || repoState == RepositoryState.REBASING_MERGE
+        || repoState == RepositoryState.REBASING_REBASING;
+  }
+  return toReturn;
+}
   
   /**
    * Check if repo is in an unfinished conflict state (merging, rebasing, reverting, etc.).

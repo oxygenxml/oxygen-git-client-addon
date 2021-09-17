@@ -81,6 +81,11 @@ public class BranchesPanel extends JPanel {
   private boolean inhibitBranchSelectionListener;
   
   /**
+   * The ID of the commit on which a detached HEAD is set.
+   */
+  private String detachedHeadId;
+  
+  /**
    * Creates the panel.
    * 
    * @param gitController Git Controller.
@@ -131,7 +136,8 @@ public class BranchesPanel extends JPanel {
    */
   private void treatBranchSelectedEvent(ItemEvent event) {
     String branchName = (String) event.getItem();
-    String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
+    BranchInfo currentBranchInfo = GIT_ACCESS.getBranchInfo();
+    String currentBranchName = currentBranchInfo.getBranchName();
     if (branchName.equals(currentBranchName)) {
       return;
     }
@@ -145,17 +151,17 @@ public class BranchesPanel extends JPanel {
       int answer = dialog.getResult();
 
       if(answer == OKOtherAndCancelDialog.RESULT_OTHER) {
-        tryCheckingOutBranch(branchName);
+        tryCheckingOutBranch(currentBranchInfo, branchName);
       } else if(answer == OKOtherAndCancelDialog.RESULT_OK) {
         boolean wasStashCreated = StashUtil.stashChanges();
         if(wasStashCreated) {
-          tryCheckingOutBranch(branchName);
+          tryCheckingOutBranch(currentBranchInfo, branchName);
         }
       } else {
         restoreCurrentBranchSelectionInMenu();
       }
     } else {
-      tryCheckingOutBranch(branchName);
+      tryCheckingOutBranch(currentBranchInfo, branchName);
     }
   }
 
@@ -166,7 +172,7 @@ public class BranchesPanel extends JPanel {
     setLayout(new GridBagLayout());
     
     // Branch label
-    JLabel currentBranchLabel = new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH));
+    JLabel currentBranchLabel = new JLabel(Translator.getInstance().getTranslation(Tags.BRANCH) + ":");
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
@@ -197,7 +203,7 @@ public class BranchesPanel extends JPanel {
       LOGGER.debug(e, e);
     }
     
-    SwingUtilities.invokeLater(this::updateBranchesMenu);
+    SwingUtilities.invokeLater(this::updateBranchesPopup);
     
     Repository repo = null;
     try {
@@ -209,6 +215,8 @@ public class BranchesPanel extends JPanel {
     BranchInfo branchInfo = GIT_ACCESS.getBranchInfo();
     String currentBranchName = branchInfo.getBranchName();
     if (branchInfo.isDetached()) {
+      detachedHeadId = currentBranchName;
+      
       String tooltipText = "<html>"
           + TRANSLATOR.getTranslation(Tags.TOOLBAR_PANEL_INFORMATION_STATUS_DETACHED_HEAD)
           + " "
@@ -220,6 +228,8 @@ public class BranchesPanel extends JPanel {
       String finalText = tooltipText;
       SwingUtilities.invokeLater(() -> branchNamesCombo.setToolTipText(finalText));
     } else {
+      detachedHeadId = null;
+      
       String branchTooltip = null;
       if (currentBranchName != null && !currentBranchName.isEmpty()) {
 
@@ -284,14 +294,19 @@ public class BranchesPanel extends JPanel {
     inhibitBranchSelectionListener = true;
     branches.forEach(branchNamesCombo::addItem);
     inhibitBranchSelectionListener = false;
+    
+    if (detachedHeadId != null) {
+      branchNamesCombo.addItem(detachedHeadId);
+    }
+    
     String currentBranchName = GIT_ACCESS.getBranchInfo().getBranchName();
     branchNamesCombo.setSelectedItem(currentBranchName);
   }
   
   /**
-   * Updates the local branches in the split menu button where you can checkout them.
+   * Updates the local branches in the combo popup.
    */
-  private void updateBranchesMenu() {
+  private void updateBranchesPopup() {
     boolean isVisible = isComboPopupShowing;
     branchNamesCombo.hidePopup();
 
@@ -322,12 +337,19 @@ public class BranchesPanel extends JPanel {
   /**
    * The action performed for this Abstract Action
    * 
-   * @param branchName Branch name.
+   * @param oldBranchInfo Old branch info.
+   * @param newBranchName New branch name.
    */
-  private void tryCheckingOutBranch(String branchName) {
+  private void tryCheckingOutBranch(BranchInfo oldBranchInfo, String newBranchName) {
+    RepositoryState repoState = RepoUtil.getRepoState().orElse(null);
+    if (oldBranchInfo.isDetached() && !RepoUtil.isRepoRebasing(repoState)) {
+      detachedHeadId = null;
+      branchNamesCombo.removeItem(oldBranchInfo.getBranchName());
+    }
+    
     GitOperationScheduler.getInstance().schedule(() -> {
       try {
-        GIT_ACCESS.setBranch(branchName);
+        GIT_ACCESS.setBranch(newBranchName);
         BranchesUtil.fixupFetchInConfig(GIT_ACCESS.getRepository().getConfig());
       } catch (CheckoutConflictException ex) {
         restoreCurrentBranchSelectionInMenu();
