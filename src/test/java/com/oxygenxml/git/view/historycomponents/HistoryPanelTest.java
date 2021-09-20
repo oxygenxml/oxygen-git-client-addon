@@ -126,39 +126,6 @@ public class HistoryPanelTest extends HistoryPanelTestBase {
               "(changeType=ADD, fileLocation=f2/file4.txt)\n" + 
               "(changeType=ADD, fileLocation=newProject.xpr)\n" + 
           "");
-
-JTable affectedFiles = historyPanel.getAffectedFilesTable();
-      
-      TableCellRenderer render = affectedFiles.getDefaultRenderer(FileStatus.class);
-      
-      ((StagingResourcesTableCellRenderer)render).setSearchedFilePath("f2/file3.txt");
-      
-      Color foregroundColor = render.getTableCellRendererComponent(
-          affectedFiles, affectedFiles.getValueAt(0, 1), false, true, 0, 1).getForeground();
-      assertEquals(UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME, foregroundColor);
-      foregroundColor = render.getTableCellRendererComponent(
-          affectedFiles, affectedFiles.getValueAt(1, 1), false, true, 1, 1).getForeground();
-      assertEquals(UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME, foregroundColor);
-      foregroundColor = render.getTableCellRendererComponent(
-          affectedFiles, affectedFiles.getValueAt(2, 1), false, true, 2, 1).getForeground();
-      assertEquals(UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME, foregroundColor);
-      foregroundColor = render.getTableCellRendererComponent(
-          affectedFiles, affectedFiles.getValueAt(3, 1), false, true, 3, 1).getForeground();
-      assertEquals(UIUtil.NOT_SEARCHED_FILES_COLOR_LIGHT_THEME, foregroundColor);
-      
-      ((StagingResourcesTableCellRenderer)render).setSearchedFilePath("f2");
-      for(int i = 0; i < affectedFiles.getColumnCount(); i++) {
-        foregroundColor = render.getTableCellRendererComponent(
-            affectedFiles, affectedFiles.getValueAt(i, 1), false, true, 1, 1).getForeground();
-        assertEquals(UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME, foregroundColor);
-      }
-      
-      ((StagingResourcesTableCellRenderer)render).setSearchedFilePath(null);
-      for(int i = 0; i < affectedFiles.getColumnCount(); i++) {
-        foregroundColor = render.getTableCellRendererComponent(
-            affectedFiles, affectedFiles.getValueAt(i, 1), false, true, 1, 1).getForeground();
-        assertEquals(UIUtil.SEARCHED_FILES_COLOR_LIGHT_THEME, foregroundColor);
-      }
       
     } finally {
       GitAccess.getInstance().closeRepo();
@@ -171,6 +138,8 @@ JTable affectedFiles = historyPanel.getAffectedFilesTable();
   
   /**
    * Tests the affected files foreground when a file or folder is searched.
+   * <br><br>
+   * EXM: EXM-48807
    * 
    * @author Alex_Smarandache
    * 
